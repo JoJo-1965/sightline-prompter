@@ -1439,3 +1439,28 @@ body.points-mode #md li {
 body.points-mode #md::after {
 	height: 0;
 }
+
+/* Phone remote (Settings) */
+.phone-connect {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin: 8px 0;
+}
+.phone-connect.hidden {
+  display: none;
+}
+#set-phone-qr {
+  flex: none;
+  width: 200px;
+  height: 200px;
+  background: #fff;
+  border-radius: 6px;
+  image-rendering: pixelated;
+}
+.phone-url {
+  word-break: break-all;
+  user-select: text;
+  font-family: monospace;
+  font-size: 11px;
+}

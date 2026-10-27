@@ -5,11 +5,11 @@
     <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' wss://api.deepgram.com; media-src 'self' blob:"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' wss://api.deepgram.com; media-src 'self' blob:; img-src 'self' data:"
     />
     <meta
       http-equiv="X-Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' wss://api.deepgram.com; media-src 'self' blob:"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' wss://api.deepgram.com; media-src 'self' blob:; img-src 'self' data:"
     />
     <title>Sightline Prompter</title>
     <link rel="stylesheet" type="text/css" href="teleprompter.css" />
@@ -694,6 +694,26 @@
           <p class="field-hint">
             Only programs on this computer can connect, and only with the
             token. Turn this off when you don't need it.
+          </p>
+        </fieldset>
+
+        <fieldset id="set-phone-fieldset">
+          <legend>Phone remote</legend>
+          <label class="check"><input id="set-phone" type="checkbox" /> Control the prompter from a phone on the same Wi-Fi</label>
+          <div id="set-phone-connect" class="phone-connect hidden">
+            <img id="set-phone-qr" alt="QR code for the phone remote" width="200" height="200" />
+            <div>
+              <p class="field-hint">Scan this with the phone's camera, then add the page to the home screen for next time.</p>
+              <p class="field-hint"><span id="set-phone-url" class="phone-url"></span></p>
+              <button id="set-phone-new" type="button">New code</button>
+            </div>
+          </div>
+          <p class="field-hint" id="set-phone-status"></p>
+          <p class="field-hint">
+            Only a device with the code in the QR code can control the prompter.
+            The first time, Windows may ask whether to allow Sightline Prompter on
+            the network: allow it on private networks. New code disconnects any phone
+            already connected. Turn this off when you don't need it.
           </p>
         </fieldset>
 

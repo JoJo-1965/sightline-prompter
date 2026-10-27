@@ -1244,6 +1244,8 @@ async function openSettings() {
 	field( "set-remote" ).checked = !!settings.remoteControl;
 	field( "set-remote-port" ).value = settings.remotePort ?? 47615;
 	window.electron.getRemoteInfo();
+	field( "set-phone" ).checked = !!settings.phoneRemote;
+	window.electron.getPhoneInfo();
 	settingsModal.classList.remove( "hidden" );
 	await populateMicSelect();
 	field( "set-microphone" ).innerHTML = micSelect.innerHTML;
@@ -1290,6 +1292,7 @@ function saveSettingsPage() {
 			settings.eyeLineReadingLine
 		),
 		remoteControl: field( "set-remote" ).checked,
+		phoneRemote: field( "set-phone" ).checked,
 		remotePort: numberValue(
 			"set-remote-port",
 			1024,
@@ -2535,9 +2538,13 @@ function sendStatus() {
 		scrollY: Math.round( window.scrollY ),
 		progress: progressText?.textContent ?? "",
 		editing: isEditMode,
-		points: pointsMode()
+		points: pointsMode(),
+		sectionTitle: currentSectionTitle()
 	} );
 }
+
+// Keep the pad and phone remote in step with keys, pedals and the countdown.
+setInterval( sendStatus, 1000 );
 
 window.addEventListener(
 	"scroll",
@@ -2567,6 +2574,13 @@ function sectionOnScreen() {
 		index = i;
 	}
 	return index;
+}
+
+// The heading of the section on screen (or the current talking point).
+function currentSectionTitle() {
+	const headings = md?.querySelectorAll( "h2" ) ?? [];
+	const heading = pointsMode() ? headings[pointsIndex] : headings[sectionOnScreen() - 1];
+	return heading?.textContent.replace( /\{[^}]*\}/g, "" ).trim() ?? "";
 }
 
 function jumpSection( step ) {
@@ -2604,7 +2618,8 @@ window.electron.onRemoteCommand( ( action, value ) => {
 		syncControls();
 	} else if ( action === "go-to-section" && Number.isInteger( Number( value ) ) ) {
 		jumpSection( Number( value ) - scriptIndex );
-	} else if ( action === "help" ) openHelp();
+	} else if ( action === "marker" ) dropMarker();
+	else if ( action === "help" ) openHelp();
 	sendStatus();
 } );
 
@@ -2622,6 +2637,19 @@ onClick( "set-remote-copy", async () => {
 	showTransientHint( "Token copied", 1500 );
 } );
 onClick( "set-remote-new", () => window.electron.newRemoteToken() );
+
+window.electron.onPhoneInfo( ( info ) => {
+	const status = document.getElementById( "set-phone-status" );
+	const connect = document.getElementById( "set-phone-connect" );
+	if ( !status || !connect ) return;
+	connect.classList.toggle( "hidden", !info.qr );
+	if ( info.qr ) document.getElementById( "set-phone-qr" ).src = info.qr;
+	document.getElementById( "set-phone-url" ).textContent = info.url ?? "";
+	if ( info.error ) status.textContent = `Not running: ${ info.error }`;
+	else if ( info.running ) status.textContent = "On. Scan the code with your phone.";
+	else status.textContent = "Off. Tick the box and Save to turn it on.";
+} );
+onClick( "set-phone-new", () => window.electron.newPhoneKey() );
 
 function openRemoteSettings() {
 	openSettings();

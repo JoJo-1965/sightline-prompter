@@ -16,6 +16,8 @@ import { buildMenus } from "./menus.js";
 import { setSectionTargets } from "./utils/targets.js";
 import { createPad } from "./pad.js";
 import { startRemoteServer, newToken } from "./remote.js";
+import { startPhoneServer, newPhoneKey, lanAddress } from "./phone.js";
+import QRCode from "qrcode";
 import {
 	serialize as serializeSettings,
 	parse as parseSettings,
@@ -68,11 +70,13 @@ const defaultSettings = {
 	showProgress: true,
 	controlsPinned: false, // keep the control bar visible instead of auto-hiding it
 	remoteControl: false, // AI / script control over http://127.0.0.1 (see remote.js)
-	remotePort: 47615
+	remotePort: 47615,
+	phoneRemote: false, // phone remote over the home network (Settings > Phone remote)
+	phonePort: 47616
 };
 
 // Settings that a settings file or the remote API may not change.
-const PROTECTED_SETTINGS = [ "remoteControl", "remotePort" ];
+const PROTECTED_SETTINGS = [ "remoteControl", "remotePort", "phoneRemote", "phonePort" ];
 
 const SLOT_COUNT = 9;
 
@@ -143,6 +147,9 @@ let hasUnsavedChanges = false;
 let isClosing = false;
 let refreshMenus = () => {};
 let remoteToken = null;
+let phoneKey = null;
+let phoneServer = null;
+let phoneError = null;
 let remoteServer = null;
 let remoteError = null;
 let rendererStatus = {};
@@ -180,6 +187,7 @@ const saveState = async ( win ) => {
 		autoScrollSpeed: currentAutoScrollSpeed,
 		audioDeviceId: currentAudioDeviceId,
 		remoteToken,
+		phoneKey,
 		settings,
 		normalBounds,
 		slots,
@@ -553,6 +561,7 @@ app.whenReady().then( async () => {
 		= state.autoScrollSpeed ?? defaultConfig.autoScrollSpeed;
 	currentAudioDeviceId = state.audioDeviceId || null;
 	remoteToken = state.remoteToken || newToken();
+	phoneKey = state.phoneKey || newPhoneKey();
 	settings = { ...defaultSettings, ...state.settings };
 	normalBounds = state.normalBounds ?? null;
 	slots = Array.from( { length: SLOT_COUNT }, ( _, i ) =>
@@ -679,6 +688,7 @@ app.whenReady().then( async () => {
 		"reset-speed",
 		"set-wpm",
 		"go-to-section",
+		"marker",
 		"help"
 	];
 
@@ -810,8 +820,65 @@ app.whenReady().then( async () => {
 		saveSettings: partial => updateSettings( partial )
 	} );
 	controlPad.apply();
+	// --- Phone remote ---
+	async function phoneInfo() {
+		const address = lanAddress();
+		const url = address ? `http://${ address }:${ settings.phonePort }/?k=${ phoneKey }` : null;
+		const running = !!phoneServer;
+		return {
+			enabled: !!settings.phoneRemote,
+			running,
+			url: running ? url : null,
+			qr: running && url ? await QRCode.toDataURL( url, { margin: 1, width: 240 } ) : null,
+			error: phoneError ?? ( settings.phoneRemote && !address ? "No network connection found" : null )
+		};
+	}
+	const sendPhoneInfo = async () => win.webContents.send( "phoneInfo", await phoneInfo() );
+
+	async function syncPhoneServer( restart = false ) {
+		const wanted = settings.phoneRemote ? settings.phonePort : null;
+		if ( !restart && phoneServer?.phonePort === wanted && phoneServer ) return;
+		if ( !restart && !phoneServer && !wanted ) return;
+		if ( phoneServer ) {
+			phoneServer.closeAllConnections?.();
+			await new Promise( r => phoneServer.close( r ) );
+			phoneServer = null;
+		}
+		phoneError = null;
+		if ( wanted ) {
+			phoneServer = startPhoneServer( {
+				port: wanted,
+				key: phoneKey,
+				pagePath: path.join( __dirname, "client", "phone.html" ),
+				getStatus: () => ( {
+					scrolling: !!rendererStatus.scrolling,
+					editing: !!rendererStatus.editing,
+					points: !!rendererStatus.points,
+					sectionTitle: rendererStatus.sectionTitle ?? "",
+					progress: rendererStatus.progress ?? ""
+				} ),
+				onCommand: action => win.webContents.send( "remoteCommand", action ),
+				onError: ( err ) => {
+					phoneError = err.code === "EADDRINUSE" ? `Port ${ wanted } is already in use` : err.message;
+					phoneServer = null;
+					sendPhoneInfo();
+				}
+			} );
+			phoneServer.phonePort = wanted;
+		}
+		await sendPhoneInfo();
+	}
+	ipcMain.on( "getPhoneInfo", () => sendPhoneInfo() );
+	ipcMain.on( "newPhoneKey", async () => {
+		phoneKey = newPhoneKey();
+		await saveState( win );
+		await syncPhoneServer( true );
+	} );
+	syncPhoneServer();
+
 	onSettingsChanged = () => {
 		syncRemoteServer();
+		syncPhoneServer();
 		controlPad.apply();
 	};
 	// Samples are copied into the app's folder first, so editing one never
