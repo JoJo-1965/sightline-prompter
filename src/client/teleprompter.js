@@ -2973,11 +2973,13 @@ function logSection( index, seconds, startWords = 0 ) {
 			targetSeconds,
 			wpm: null,
 			targetWpm: null,
-			verdict: judgeTime( seconds, targetSeconds )
+			verdict: judgeTime( seconds, targetSeconds ),
+			partial: false
 		} );
 		return;
 	}
 	takeLog.set( index, {
+		partial: startWords > 0,
 		title: section.heading.textContent.replace( /\{[^}]*\}/g, "" ).trim(),
 		seconds,
 		targetSeconds,
@@ -3159,6 +3161,9 @@ function showTakeSummary() {
 		}
 		body.appendChild( tr );
 	}
+	const full = [ ...takeLog.values() ].some( r => !r.partial );
+	document.getElementById( "take-summary-targets" ).hidden = !full;
+	document.getElementById( "take-summary-targets-hint" ).hidden = !full;
 	summaryModal.classList.remove( "hidden" );
 	document.getElementById( "take-summary-close" )?.focus( { preventScroll: true } );
 }
@@ -3168,6 +3173,12 @@ function closeTakeSummary() {
 }
 
 onClick( "take-summary-close", closeTakeSummary );
+onClick( "take-summary-targets", () => {
+	const targets = {};
+	for ( const [ index, r ] of takeLog ) if ( !r.partial ) targets[index] = r.seconds;
+	window.electron.applySectionTargets( targets );
+	closeTakeSummary();
+} );
 summaryModal?.addEventListener( "keydown", ( e ) => {
 	if ( e.key === "Escape" || e.key === "Enter" ) closeTakeSummary();
 } );

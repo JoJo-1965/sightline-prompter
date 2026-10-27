@@ -54,6 +54,10 @@ next line:
 - `{wpm: n}` sets the target pace for this section.
 - If a section gives both, `target` wins and the pacing light uses time.
 - A section with neither uses the script's `wpm`, or else the slot's speed.
+- **Rehearsal timer:** after a practice run, the take summary's **Use these
+  times as targets** button writes each section's time into the script as
+  `{target: m:ss}`, to the nearest 5 seconds. It replaces a `target` already on
+  the heading line or the line after it, and otherwise adds one to the heading.
 
 ## Inside the text
 

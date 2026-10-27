@@ -13,6 +13,7 @@ import {
 	SCRIPT_EXTENSIONS
 } from "./utils/content.js";
 import { buildMenus } from "./menus.js";
+import { setSectionTargets } from "./utils/targets.js";
 import { createPad } from "./pad.js";
 import { startRemoteServer, newToken } from "./remote.js";
 import {
@@ -974,6 +975,27 @@ app.whenReady().then( async () => {
 			}
 		} else {
 			await saveFileAs( content );
+		}
+	} );
+
+	// Rehearsal timer: write a practice run's section times into the script.
+	ipcMain.on( "applySectionTargets", async ( _event, targets ) => {
+		const toast = text => win.webContents.send( "toast", text );
+		if ( !currentFilePath ) return toast( "Save the script first, then try again" );
+		if ( isRichFile( currentFilePath ) ) {
+			return toast( "Targets can only be written into .md and .txt scripts" );
+		}
+		if ( hasUnsavedChanges ) return toast( "Save or discard your edits first" );
+		try {
+			const raw = await fs.readFile( currentFilePath, "utf-8" );
+			const { text, changed } = setSectionTargets( raw, targets ?? {} );
+			if ( !changed ) return toast( "No sections to update" );
+			await fs.writeFile( currentFilePath, text, "utf-8" );
+			win.webContents.send( "content", await readAndConvertScript( currentFilePath ) );
+			toast( `Targets saved for ${ changed } section${ changed === 1 ? "" : "s" }` );
+		} catch ( err ) {
+			console.log( "Targets error:", err );
+			toast( "Couldn't save the targets" );
 		}
 	} );
 

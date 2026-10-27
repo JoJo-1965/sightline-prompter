@@ -12,7 +12,8 @@
 		"prebuild": "pnpm build:editor",
 		"build": "pnpm dlx @electron/packager --overwrite ./ --out ./dist --ignore=\"/node_modules/\\.ignored\" --ignore=\"/node_modules/(electron|@electron|eslint)\"",
 		"lint": "eslint --fix",
-		"check-script": "node scripts/check-script.mjs"
+		"check-script": "node scripts/check-script.mjs",
+		"test": "node scripts/targets.test.mjs"
 	},
 	"author": "Joanne Lockwood (SEE Change Happen Ltd)",
 	"contributors": [
