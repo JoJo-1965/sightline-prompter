@@ -15,6 +15,7 @@ import {
 import { buildMenus } from "./menus.js";
 import { setSectionTargets } from "./utils/targets.js";
 import { createPad } from "./pad.js";
+import { createControl } from "./control.js";
 import { startRemoteServer, newToken } from "./remote.js";
 import { startPhoneServer, newPhoneKey, lanAddress } from "./phone.js";
 import QRCode from "qrcode";
@@ -63,6 +64,9 @@ const defaultSettings = {
 	startBeep: false, // a short beep when the countdown ends (off: it would be recorded)
 	hideFromCapture: false, // keep the window out of screen sharing and recordings
 	showPad: false, // the floating control pad (View menu, Ctrl+Shift+P)
+	showControl: false, // the control window for the operator screen (Ctrl+Shift+O)
+	controlBounds: null, // where the control window was left
+	prompterDisplay: null, // monitor id: open the prompter full screen there
 	padX: null, // where the pad was left
 	padY: null,
 	clickThrough: false, // clicks on the script go to the window behind
@@ -155,6 +159,7 @@ let remoteError = null;
 let rendererStatus = {};
 let onSettingsChanged = () => {};
 let controlPad = null;
+let controlWindow = null;
 
 function addRecentFile( filePath ) {
 	recentFiles = [ filePath, ...recentFiles.filter( f => f !== filePath ) ].slice(
@@ -240,6 +245,15 @@ function releaseDate() {
 	} catch {
 		return null;
 	}
+}
+
+// Monitors for the prompter, numbered as Windows numbers them in Display settings.
+function displayList() {
+	const primary = screen.getPrimaryDisplay().id;
+	return screen.getAllDisplays().map( ( d, i ) => ( {
+		id: d.id,
+		label: `${ i + 1 }: ${ d.label || "Monitor" } · ${ d.size.width }×${ d.size.height }${ d.id === primary ? " (main)" : "" }`
+	} ) );
 }
 
 const createWindow = ( state ) => {
@@ -351,12 +365,45 @@ const createWindow = ( state ) => {
 		refreshMenus();
 	}
 
+	// Full screen on the chosen monitor (Settings > Display, or Window > Prompter Monitor).
+	// Leaving full screen (F11) gives a normal window on that monitor.
+	function placeOnDisplay() {
+		const display = screen.getAllDisplays().find( d => d.id === settings.prompterDisplay );
+		if ( !display || settings.eyeLine ) return;
+		const current = preMaxBounds ?? win.getBounds();
+		const area = display.workArea;
+		const width = Math.min( current.width, area.width );
+		const height = Math.min( current.height, area.height );
+		preMaxBounds = {
+			x: area.x + Math.round( ( area.width - width ) / 2 ),
+			y: area.y + Math.round( ( area.height - height ) / 2 ),
+			width,
+			height
+		};
+		windowMode = "fullscreen";
+		setWindowRect( display.bounds );
+		win.setAlwaysOnTop( true, "screen-saver" );
+		sendWindowState();
+		refreshMenus();
+	}
+	ipcMain.on( "getDisplays", () => win.webContents.send( "displays", displayList() ) );
+	for ( const event of [ "display-added", "display-removed" ] ) {
+		screen.on( event, () => {
+			refreshMenus();
+			if ( !win.isDestroyed() ) win.webContents.send( "displays", displayList() );
+		} );
+	}
+
 	async function updateSettings( partial ) {
 		const wasEyeLine = settings.eyeLine;
+		const moveTo
+			= "prompterDisplay" in partial && partial.prompterDisplay !== settings.prompterDisplay;
 		const cuesChanged
 			= "cuesFile" in partial && partial.cuesFile !== settings.cuesFile;
 		settings = { ...settings, ...partial };
 		applyWindowSettings( win, wasEyeLine );
+		if ( moveTo ) placeOnDisplay();
+		else if ( windowMode === "fullscreen" ) win.setAlwaysOnTop( true, "screen-saver" );
 		if ( cuesChanged ) {
 			cuePhrases = await readCuePhrases( settings.cuesFile );
 			win.webContents.send( "cuePhrases", cuePhrases );
@@ -542,10 +589,12 @@ const createWindow = ( state ) => {
 			activeSlot,
 			samples: SAMPLE_SCRIPTS,
 			openSample: name => openSampleRef?.( name ),
-			isMaximized: windowMode === "maximized"
+			isMaximized: windowMode === "maximized",
+			displays: displayList()
 		} );
 	refreshMenus();
 	applyWindowSettings( win, false );
+	if ( settings.prompterDisplay != null ) placeOnDisplay();
 
 	return {
 		win,
@@ -830,6 +879,18 @@ app.whenReady().then( async () => {
 		saveSettings: partial => updateSettings( partial )
 	} );
 	controlPad.apply();
+	controlWindow = createControl( {
+		dir: __dirname,
+		prompter: win,
+		getSettings: () => settings,
+		saveSettings: partial => updateSettings( partial ),
+		// Moving the window only needs saving, not a full settings update.
+		saveBounds: ( bounds ) => {
+			settings.controlBounds = bounds;
+			saveState( win );
+		}
+	} );
+	controlWindow.apply();
 	// --- Phone remote ---
 	async function phoneInfo() {
 		const address = lanAddress();
@@ -890,6 +951,7 @@ app.whenReady().then( async () => {
 		syncRemoteServer();
 		syncPhoneServer();
 		controlPad.apply();
+		controlWindow.apply();
 	};
 	// Samples are copied into the app's folder first, so editing one never
 	// changes the original (which is read-only inside an installed app).
@@ -926,6 +988,7 @@ app.whenReady().then( async () => {
 	ipcMain.on( "rendererStatus", ( _event, status ) => {
 		if ( status && typeof status === "object" ) rendererStatus = status;
 		controlPad?.sendStatus( rendererStatus );
+		controlWindow?.sendStatus( rendererStatus );
 	} );
 	syncRemoteServer();
 

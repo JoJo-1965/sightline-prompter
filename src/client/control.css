@@ -1,0 +1,332 @@
+:root {
+  color-scheme: dark;
+  --bg: #16171b;
+  --panel: #1f2126;
+  --line: rgba(255, 255, 255, 0.12);
+  --text: #ececec;
+  --muted: #9aa0a6;
+  --accent: #ffd54a;
+  --preview-size: 22px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  background: var(--bg);
+  color: var(--text);
+  font:
+    14px "Segoe UI",
+    system-ui,
+    sans-serif;
+  overflow: hidden;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* --- Top line: state, section, time left --- */
+#top {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 14px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+  min-width: 0;
+}
+
+#state {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 15px;
+  white-space: nowrap;
+}
+
+#state-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #6b6f77;
+}
+
+body.running #state-dot {
+  background: #e53935;
+  box-shadow: 0 0 8px rgba(229, 57, 53, 0.8);
+}
+
+#section {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #8fd3ff;
+}
+
+#progress {
+  color: var(--muted);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+#text-size {
+  display: flex;
+  gap: 4px;
+}
+
+#text-size button {
+  padding: 3px 8px;
+  font: inherit;
+  font-size: 12px;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* --- Pacing light (copied from the prompter) --- */
+#pacing {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 7px 14px 7px 34px;
+  position: relative;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  background: #1b1d22;
+  border-bottom: 1px solid var(--line);
+}
+
+#pacing::before {
+  content: "";
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  margin-top: -6px;
+  border-radius: 50%;
+  background: #9aa0a6;
+}
+
+#pacing.good::before {
+  background: #43a047;
+}
+#pacing.warn::before {
+  background: #ffb300;
+}
+#pacing.bad::before {
+  background: #e53935;
+}
+#pacing .pc-label {
+  color: #8fd3ff;
+}
+
+/* --- Live copy of the script --- */
+#preview {
+  position: relative;
+  overflow-y: auto;
+  padding: 0 28px;
+  outline: none;
+  cursor: pointer;
+  /* Room so the first and last lines can reach the reading line. */
+  scroll-padding: 0;
+}
+
+#md {
+  max-width: 900px;
+  margin: 0 auto;
+  font-size: var(--preview-size);
+  line-height: 1.45;
+}
+
+#md::before,
+#md::after {
+  content: "";
+  display: block;
+  height: 45vh;
+}
+
+#md h1,
+#md h2,
+#md h3 {
+  line-height: 1.2;
+  color: #8fd3ff;
+}
+
+#md h1 {
+  font-size: 1.5em;
+}
+#md h2 {
+  font-size: 1.25em;
+}
+
+#md > * {
+  border-radius: 6px;
+  transition: opacity 0.2s;
+}
+
+#md > *:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Talking points: the current point stands out. */
+body.points #md > *:not(.current-section) {
+  opacity: 0.35;
+}
+
+/* Placed by control.js at the same height as the prompter's reading line. */
+#reading-line {
+  position: fixed;
+  left: 0;
+  right: 0;
+  height: 0;
+  border-top: 2px solid var(--accent);
+  z-index: 2;
+  pointer-events: none;
+}
+
+#reading-line::before {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: -8px;
+  border: 7px solid transparent;
+  border-left: 10px solid var(--accent);
+}
+
+#empty {
+  position: absolute;
+  inset: 40% 0 auto;
+  text-align: center;
+  color: var(--muted);
+}
+
+/* Script decorations (see decorate.js), kept simple for the operator. */
+.direction {
+  font-style: italic;
+}
+.direction .dir-text {
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 85%;
+}
+.direction .say {
+  color: #fff;
+  font-style: normal;
+}
+mark.cue,
+#md u {
+  background: none;
+  color: #ffd54a;
+}
+.app-directive,
+.directive-line {
+  display: none;
+}
+.live-marker {
+  position: relative;
+}
+.live-marker::before {
+  content: "";
+  position: absolute;
+  left: -0.8em;
+  top: 0.2em;
+  width: 0.4em;
+  height: 0.8em;
+  background: #ff7043;
+}
+#md img {
+  max-width: 100%;
+}
+
+/* --- Buttons --- */
+#buttons {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+  padding: 8px 10px;
+  background: var(--panel);
+  border-top: 1px solid var(--line);
+}
+
+#buttons button {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 8px 4px;
+  font: inherit;
+  font-size: 12px;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+#buttons button:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+#buttons button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+#buttons svg {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+}
+
+#buttons button.primary {
+  flex-grow: 1.6;
+  font-size: 14px;
+  font-weight: 700;
+  background: #2e7d32;
+  border-color: #2e7d32;
+}
+
+body.running #buttons button.primary {
+  background: #b23b3b;
+  border-color: #b23b3b;
+}
+
+#toggle .icon-pause,
+body.running #toggle .icon-play {
+  display: none;
+}
+body.running #toggle .icon-pause {
+  display: block;
+}
+
+#speed {
+  flex: 0 0 auto;
+  align-self: center;
+  min-width: 70px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+
+button:focus-visible {
+  outline: 2px solid #8fd3ff;
+  outline-offset: 1px;
+}

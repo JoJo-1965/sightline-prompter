@@ -55,6 +55,7 @@ let pointsIndex = 0;
 let pointsRunning = false;
 let pacing = null; // { mode, total, sectionIndex, sectionTime, lastTick }
 let takeLog = new Map(); // section index -> result
+let controlOpen = false; // the control window is showing a copy of the script
 const pacingEl = document.getElementById( "pacing" );
 const summaryModal = document.getElementById( "take-summary" );
 const onAirEl = document.getElementById( "on-air" );
@@ -86,6 +87,7 @@ function renderScript( html ) {
 	liveMarkers = [];
 	tagSections();
 	applyPointsView();
+	sendPreviewContent();
 }
 
 const DEFAULT_FONT_SIZE = 3;
@@ -1235,6 +1237,7 @@ async function openSettings() {
 	field( "set-reading-marker" ).checked = !!settings.showReadingMarker;
 	field( "set-mirrored" ).value = mirrored;
 	field( "set-always-on-top" ).checked = !!settings.alwaysOnTop;
+	window.electron.getDisplays();
 	field( "set-highlight-cues" ).checked = !!settings.highlightCues;
 	field( "set-cues-file" ).value = settings.cuesFile ?? "";
 	field( "set-eye-line" ).checked = !!settings.eyeLine;
@@ -1253,6 +1256,19 @@ async function openSettings() {
 	field( "set-microphone" ).innerHTML = micSelect.innerHTML;
 	field( "set-microphone" ).value = audioDeviceId ?? "";
 }
+
+window.electron.onDisplays( ( displays ) => {
+	const select = field( "set-prompter-display" );
+	if ( !select ) return;
+	select.innerHTML = "";
+	select.append( new Option( "Leave it where it is", "" ) );
+	for ( const d of displays ) select.append( new Option( `Full screen on ${ d.label }`, String( d.id ) ) );
+	const chosen = settings.prompterDisplay;
+	if ( chosen != null && !displays.some( d => d.id === chosen ) ) {
+		select.append( new Option( "The monitor chosen before (not connected)", String( chosen ) ) );
+	}
+	select.value = chosen == null ? "" : String( chosen );
+} );
 
 function closeSettings( restore ) {
 	if ( restore && settingsSnapshot ) {
@@ -1273,6 +1289,9 @@ function saveSettingsPage() {
 		showReadingMarker: field( "set-reading-marker" ).checked,
 		readingLine: numberValue( "set-reading-line", 5, 80, settings.readingLine ),
 		alwaysOnTop: field( "set-always-on-top" ).checked,
+		prompterDisplay: field( "set-prompter-display" ).value
+			? Number( field( "set-prompter-display" ).value )
+			: null,
 		highlightCues: field( "set-highlight-cues" ).checked,
 		cuesFile: field( "set-cues-file" ).value || null,
 		eyeLine: field( "set-eye-line" ).checked,
@@ -1914,6 +1933,13 @@ function menuGroups() {
 					"Ctrl+Shift+P",
 					toggleSetting( "showPad" ),
 					{ checked: !!settings.showPad }
+				],
+				[
+					"▣",
+					"Control window (operator screen)",
+					"Ctrl+Shift+O",
+					toggleSetting( "showControl" ),
+					{ checked: !!settings.showControl }
 				]
 			]
 		},
@@ -2673,7 +2699,8 @@ function sendStatus() {
 		progress: progressText?.textContent ?? "",
 		editing: isEditMode,
 		points: pointsMode(),
-		sectionTitle: currentSectionTitle()
+		sectionTitle: currentSectionTitle(),
+		speed: settings.scrollMode === "voice" ? "Voice" : `${ getWpm() } wpm`
 	} );
 }
 
@@ -2690,6 +2717,87 @@ window.addEventListener(
 	},
 	{ passive: true }
 );
+
+// --- Control window: a live copy of the script on the operator screen ---
+// The copy has the same top-level blocks, so a position is sent as a block
+// number and how far through it the reading line is.
+
+function sendPreviewContent() {
+	if ( controlOpen && md ) window.electron.sendPreviewContent( md.innerHTML );
+}
+
+function previewPosition() {
+	const y = readingLineY();
+	let index = 0;
+	let fraction = 0;
+	const blocks = md?.children ?? [];
+	for ( let i = 0; i < blocks.length; i++ ) {
+		const el = blocks[i];
+		if ( !el.offsetHeight ) continue; // hidden (talking points, directives)
+		const top = layoutTop( el );
+		if ( top > y ) break;
+		index = i;
+		fraction = Math.min( 1, ( y - top ) / el.offsetHeight );
+	}
+	return { index, fraction };
+}
+
+function pacingSnapshot() {
+	if ( !pacingEl || pacingEl.classList.contains( "hidden" ) ) return null;
+	if ( settings.showPacing === false ) return null;
+	const level = [ "good", "warn", "bad", "wait" ].find( c =>
+		pacingEl.classList.contains( c )
+	);
+	const parts = [ ...pacingEl.children ].map( c => [ c.className, c.textContent ] );
+	return { level, parts };
+}
+
+let lastPreviewSent = 0;
+function sendPreviewPosition() {
+	if ( !controlOpen || !md ) return;
+	lastPreviewSent = Date.now();
+	window.electron.sendPreviewPosition( {
+		...previewPosition(),
+		anchor: getReadingAnchor(),
+		points: pointsMode(),
+		pointsIndex,
+		pacing: pacingSnapshot()
+	} );
+}
+
+window.electron.onControlOpen( ( open ) => {
+	controlOpen = !!open;
+	sendPreviewContent();
+	sendPreviewPosition();
+	sendStatus();
+} );
+setInterval( sendPreviewPosition, 250 );
+window.addEventListener(
+	"scroll",
+	() => {
+		if ( Date.now() - lastPreviewSent > 40 ) sendPreviewPosition();
+	},
+	{ passive: true }
+);
+
+// A click on a line in the control window: bring that line to the reading line.
+window.electron.onPreviewJump( ( index, fraction ) => {
+	if ( isEditMode || !md ) return;
+	const block = md.children[index];
+	if ( !block ) return;
+	if ( pointsMode() ) {
+		const section = Number( block.dataset.section );
+		if ( section >= 0 ) goToPoint( section );
+	} else {
+		const y = layoutTop( block ) + fraction * block.offsetHeight;
+		const top = y - window.innerHeight * getReadingAnchor();
+		window.scrollTo( 0, Math.max( 0, top ) );
+		previewManuallyScrolled = true;
+		scriptIndex = sectionOnScreen();
+	}
+	sendPreviewPosition();
+	sendStatus();
+} );
 
 // Top of an element in the page, ignoring the mirror transform.
 function layoutTop( el ) {
@@ -3112,6 +3220,7 @@ function dropMarker() {
 	liveMarkers.push( { el } );
 	scheduleMeasure();
 	showToast( "Marker added · Ctrl+B jumps between markers" );
+	sendPreviewContent();
 }
 
 function jumpToNextMarker() {

@@ -14,7 +14,8 @@ export function buildMenus(
 		activeSlot,
 		isMaximized,
 		samples = [],
-		openSample
+		openSample,
+		displays = []
 	}
 ) {
 	const isMac = process.platform === "darwin";
@@ -238,6 +239,13 @@ export function buildMenus(
 					click: menuItem => updateSettings( { showPad: menuItem.checked } )
 				},
 				{
+					label: "Control Window (operator screen)",
+					type: "checkbox",
+					accelerator: "CmdOrCtrl+Shift+O",
+					checked: !!settings.showControl,
+					click: menuItem => updateSettings( { showControl: menuItem.checked } )
+				},
+				{
 					label: "Keep on Top",
 					type: "checkbox",
 					checked: !!settings.alwaysOnTop,
@@ -266,6 +274,23 @@ export function buildMenus(
 					label: "Full Screen",
 					accelerator: "F11",
 					click: () => send( "menuWindowControl", "fullscreen" )
+				},
+				{
+					label: "Prompter Monitor",
+					submenu: [
+						{
+							label: "Leave It Where It Is",
+							type: "radio",
+							checked: settings.prompterDisplay == null,
+							click: () => updateSettings( { prompterDisplay: null } )
+						},
+						...displays.map( d => ( {
+							label: `Full Screen on ${ d.label }`,
+							type: "radio",
+							checked: settings.prompterDisplay === d.id,
+							click: () => updateSettings( { prompterDisplay: d.id } )
+						} ) )
+					]
 				},
 				{ type: "separator" },
 				{

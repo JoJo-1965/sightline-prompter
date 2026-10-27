@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: file:"
+    />
+    <title>Sightline Control</title>
+    <link rel="stylesheet" type="text/css" href="control.css" />
+  </head>
+  <body>
+    <header id="top">
+      <div id="state" role="status" aria-live="polite">
+        <span id="state-dot" aria-hidden="true"></span>
+        <span id="state-text">Waiting for the prompter…</span>
+      </div>
+      <div id="section"></div>
+      <div id="progress"></div>
+      <div id="text-size" role="group" aria-label="Preview text size">
+        <button type="button" id="size-down" title="Smaller preview text">
+          A−
+        </button>
+        <button type="button" id="size-up" title="Bigger preview text">
+          A+
+        </button>
+      </div>
+    </header>
+
+    <div id="pacing" class="hidden" aria-live="off"></div>
+
+    <main
+      id="preview"
+      tabindex="-1"
+      aria-label="Live copy of the script. Click a line to move the prompter there."
+    >
+      <div id="reading-line" aria-hidden="true"></div>
+      <div id="md"></div>
+      <p id="empty">Open a script in the prompter and it appears here.</p>
+    </main>
+
+    <footer id="buttons" role="toolbar" aria-label="Prompter controls">
+      <button
+        type="button"
+        data-action="restart"
+        title="Back to the top (Home)"
+      >
+        <svg viewBox="0 0 24 24"><path d="M5 4h2.5v16H5zM20 4v16L9 12z" /></svg>
+        <span>Top</span>
+      </button>
+      <button
+        type="button"
+        data-action="previous-section"
+        id="prev"
+        title="Previous section (Page Up)"
+      >
+        <svg viewBox="0 0 24 24"><path d="M16 4v16L5 12z" /></svg>
+        <span>Previous</span>
+      </button>
+      <button
+        type="button"
+        data-action="toggle"
+        id="toggle"
+        class="primary"
+        title="Start or pause (Space)"
+      >
+        <svg viewBox="0 0 24 24" class="icon-play">
+          <path d="M7 4v16l13-8z" />
+        </svg>
+        <svg viewBox="0 0 24 24" class="icon-pause">
+          <path d="M6 4h4v16H6zM14 4h4v16h-4z" />
+        </svg>
+        <span id="toggle-label">Start</span>
+      </button>
+      <button
+        type="button"
+        data-action="next-section"
+        id="next"
+        title="Next section (Page Down)"
+      >
+        <svg viewBox="0 0 24 24"><path d="M8 4v16l11-8z" /></svg>
+        <span>Next</span>
+      </button>
+      <button type="button" data-action="slower" title="Slower (↓)">
+        <svg viewBox="0 0 24 24"><path d="M5 11h14v2H5z" /></svg>
+        <span>Slower</span>
+      </button>
+      <div id="speed" title="Scrolling speed"></div>
+      <button type="button" data-action="faster" title="Faster (↑)">
+        <svg viewBox="0 0 24 24">
+          <path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6z" />
+        </svg>
+        <span>Faster</span>
+      </button>
+      <button
+        type="button"
+        data-action="marker"
+        title="Drop a marker at the reading line (B)"
+      >
+        <svg viewBox="0 0 24 24">
+          <path d="M6 3h2v18H6zM9 4h10l-3 4 3 4H9z" />
+        </svg>
+        <span>Marker</span>
+      </button>
+    </footer>
+    <script type="module" src="control.js"></script>
+  </body>
+</html>
