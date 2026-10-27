@@ -2564,10 +2564,47 @@ window.electron.onMenuHelp( () => {
 
 const aboutModal = document.getElementById( "about-modal" );
 
+// Floating chevrons instead of a scroll bar: ▲ and ▼ appear at the top and
+// bottom edge only when there is more to see that way. Wheel and keys still scroll.
+function scrollChevrons( box ) {
+	if ( !box ) return () => {};
+	const make = ( dir, label, text ) => {
+		const wrap = document.createElement( "div" );
+		wrap.className = `scroll-chevron ${ dir } off`;
+		const btn = document.createElement( "button" );
+		btn.type = "button";
+		btn.textContent = text;
+		btn.setAttribute( "aria-label", label );
+		btn.title = label;
+		btn.addEventListener( "click", () => {
+			const step = box.clientHeight * 0.8 * ( dir === "up" ? -1 : 1 );
+			box.scrollBy( { top: step, behavior: "smooth" } );
+		} );
+		wrap.append( btn );
+		return wrap;
+	};
+	const up = make( "up", "Scroll up", "▲" );
+	const down = make( "down", "Scroll down", "▼" );
+	box.prepend( up );
+	box.append( down );
+	const update = () => {
+		up.classList.toggle( "off", box.scrollTop <= 4 );
+		const end = box.scrollTop + box.clientHeight >= box.scrollHeight - 4;
+		down.classList.toggle( "off", end );
+	};
+	box.addEventListener( "scroll", update, { passive: true } );
+	window.addEventListener( "resize", update );
+	return update;
+}
+
+const updateAboutChevrons = scrollChevrons( aboutModal?.querySelector( ".about-content" ) );
+
 function openAbout() {
 	closePanels();
 	window.electron.getAppInfo();
 	aboutModal?.classList.remove( "hidden" );
+	aboutModal?.querySelector( ".about-content" )?.scrollTo( 0, 0 );
+	requestAnimationFrame( updateAboutChevrons );
 	document.getElementById( "about-close" )?.focus( { preventScroll: true } );
 	showControls();
 }
