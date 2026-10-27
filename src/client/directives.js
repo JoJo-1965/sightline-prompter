@@ -84,6 +84,7 @@ export function readDirectives( root ) {
 			continue;
 		}
 		if ( "pause" in d ) pauses.push( { el, seconds: parsePauseSeconds( d.pause ) } );
+		else if ( "stop" in d ) pauses.push( { el, seconds: 0 } );
 		if ( "marker" in d ) markers.push( { el } );
 		if ( current && "wpm" in d && parseWpm( d.wpm ) ) {
 			paceChanges.push( { el, wpm: parseWpm( d.wpm ) } );

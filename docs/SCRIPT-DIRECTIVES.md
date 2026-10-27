@@ -63,8 +63,9 @@ next line:
 
 | Directive     | What it does                                                                                                             |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `{pause}`     | Scrolling stops here until you press Space, the clicker or the phone remote. In section mode the section timer stops too |
-| `{pause: 3s}` | Stops for 3 seconds, then carries on by itself                                                                           |
+| `{stop}`      | Stops here until you carry on: say "Prompter, go" (or just "go"), or press Space, the clicker or the phone remote. A yellow **Stopped** label shows. Works in steady and voice scrolling. In section mode the section timer stops too |
+| `{pause}`     | The same as `{stop}`                                                                                                     |
+| `{pause: 3s}` | Stops for 3 seconds, with a blue **Carrying on in 3** countdown, then carries on by itself. "Prompter, go" carries on sooner; "Prompter, pause" turns it into a stop |
 | `{marker}`    | A bookmark you can jump to (`Ctrl+B` cycles through them), useful for retakes                                            |
 | `{wpm: n}`    | Changes the target pace from this point until the end of the section                                                     |
 

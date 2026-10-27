@@ -80,6 +80,25 @@ Choose when it listens on **Settings > Voice**, under **Voice commands**:
   uses speech recognition on this computer, so nothing is sent anywhere.
 - **Off**.
 
+## Stops and timed pauses
+
+Put these in the script where you want the prompter to wait. They work in
+steady scrolling and in voice scrolling.
+
+| In the script | What happens |
+| --- | --- |
+| `{stop}` (or `{pause}`) | The prompter stops, and a yellow **Stopped** label shows at the bottom right. Say **"Prompter, go"** (or just **"go"**), or press Space, the clicker or the remote, to carry on |
+| `{pause: 5s}` | The prompter waits 5 seconds (up to 30), with a blue **Carrying on in 5** countdown and a bar that runs down, then carries on by itself |
+
+During a stop or a countdown:
+
+- **"Prompter, go"** carries on straight away.
+- **"Prompter, pause"** turns a countdown into a stop, so it waits for you.
+- In steady scrolling, the microphone listens for "Prompter, go" while the
+  prompter waits, even if voice commands are set to voice mode only (the small
+  **🎙 Prompter** label shows). Set **Voice commands** to **Off** in
+  Settings > Voice to stop this.
+
 ## The sentence highlight
 
 The sentence you're on is lit with a soft band, so your eyes always have

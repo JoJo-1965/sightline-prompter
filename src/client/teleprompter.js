@@ -55,7 +55,6 @@ let directivePoints = {
 };
 let liveMarkers = []; // markers dropped with B during this session
 let cuePaused = false;
-let cueTimer = null;
 let lastReadingY = null;
 let appliedPace = null;
 let pointsIndex = 0;
@@ -782,15 +781,113 @@ function setIndicator( text, variant ) {
 		return;
 	}
 	autoScrollIndicator.textContent = text;
-	autoScrollIndicator.classList.remove( "hidden", "connecting", "error" );
+	autoScrollIndicator.classList.remove(
+		"hidden",
+		"connecting",
+		"error",
+		"stopped",
+		"counting"
+	);
 	if ( variant ) autoScrollIndicator.classList.add( variant );
 }
 
 function handleAutoScrollPosition( wordIdx, ranges ) {
 	// The words just heard end here, so the next thing to say is the word after.
 	if ( settings.highlightSentence !== false ) showSentenceAt( wordIdx + 1 );
+	const pause = voicePauseCrossed( wordIdx, ranges );
 	if ( Date.now() - lastManualScrollTs < MANUAL_SCROLL_GRACE_MS ) return;
 	scrollToWord( wordIdx, ranges );
+	if ( pause ) pauseVoiceAt( pause );
+}
+
+// --- Stops and timed pauses: {stop} or {pause}, and {pause: 5s} ---
+// A stop waits for the speaker ("Prompter, go", Space or the clicker); a timed
+// pause shows a countdown and carries on by itself. The pill says which.
+
+let pauseTicker = null;
+// The last word voice scrolling placed, to spot a pause being passed: -1
+// before the first word, null when unknown (after a jump).
+let voiceWordIdx = null;
+
+function voiceCanResume() {
+	return settings.voiceCommands !== "off" && usesLocalVoice() && speechModel.installed;
+}
+
+function stopText() {
+	if ( autoScrollActive ) return "Stopped · say “Prompter, go”";
+	return voiceCanResume()
+		? "Stopped · say “Prompter, go” or press Space"
+		: "Stopped · Space to carry on";
+}
+
+function clearPausePill() {
+	clearInterval( pauseTicker );
+	pauseTicker = null;
+}
+
+// seconds = 0: a stop. Otherwise count down, then onDone().
+function showPausePill( seconds, onDone ) {
+	clearPausePill();
+	if ( !seconds ) {
+		setIndicator( stopText(), "stopped" );
+		return;
+	}
+	let left = seconds;
+	// Start the draining bar afresh.
+	autoScrollIndicator?.classList.remove( "counting" );
+	void autoScrollIndicator?.offsetWidth;
+	autoScrollIndicator?.style.setProperty( "--pause-seconds", `${ seconds }s` );
+	setIndicator( `Carrying on in ${ left }`, "counting" );
+	pauseTicker = setInterval( () => {
+		left--;
+		if ( left > 0 ) {
+			if ( autoScrollIndicator ) autoScrollIndicator.textContent = `Carrying on in ${ left }`;
+			return;
+		}
+		clearPausePill();
+		onDone();
+	}, 1000 );
+}
+
+// "Prompter, pause" during a countdown: wait for the speaker instead.
+function holdPauseCountdown() {
+	if ( !pauseTicker ) return false;
+	clearPausePill();
+	setIndicator( stopText(), "stopped" );
+	return true;
+}
+
+// The pause whose last word before it the speaker has just said, if any.
+function voicePauseCrossed( wordIdx, ranges ) {
+	const before = voiceWordIdx;
+	voiceWordIdx = wordIdx;
+	if ( before === null || wordIdx <= before || autoScrollHandle?.isHeld() ) return null;
+	return directivePoints.pauses.find( ( pause ) => {
+		if ( pause.ranges !== ranges ) {
+			// The first word after the pause, found by halving.
+			let lo = 0;
+			let hi = ranges.length;
+			while ( lo < hi ) {
+				const mid = ( lo + hi ) >> 1;
+				if ( ranges[mid].comparePoint( pause.el, 0 ) < 0 ) hi = mid;
+				else lo = mid + 1;
+			}
+			pause.ranges = ranges;
+			pause.lastWord = lo - 1;
+		}
+		return pause.lastWord > before && pause.lastWord <= wordIdx;
+	} );
+}
+
+function pauseVoiceAt( pause ) {
+	if ( !autoScrollHandle ) return;
+	autoScrollHandle.setHold( true );
+	cancelScroll();
+	showPausePill( pause.seconds, () => {
+		if ( !autoScrollActive || !autoScrollHandle ) return;
+		autoScrollHandle.setHold( false );
+		setIndicator( "Listening" );
+	} );
 }
 
 async function startAutoScrollSession() {
@@ -810,6 +907,8 @@ async function startAutoScrollSession() {
 	}
 	autoScrollStarting = true;
 	pendingDeepgramKey = null;
+	// From the top, a pause after the first few words still counts.
+	voiceWordIdx = window.scrollY < 4 ? -1 : null;
 	await stopCommandListening();
 	if ( usesLocalVoice() ) {
 		setIndicator( "Starting…", "connecting" );
@@ -917,6 +1016,8 @@ async function stopAutoScrollSession() {
 	autoScrollStarting = false;
 	autoScrollHandle = null;
 	clearTimeout( manualScrollSyncTimer );
+	clearPausePill();
+	voiceWordIdx = null;
 	setIndicator( null );
 	try {
 		await stopAutoScroll();
@@ -950,9 +1051,11 @@ let commandListening = false;
 let commandChange = Promise.resolve();
 const commandPill = document.getElementById( "command-listening" );
 
+// Also at a {stop} in steady scrolling, so "Prompter, go" can carry on.
 function wantCommandListening() {
+	const wanted = settings.voiceCommands === "always" || ( cuePaused && settings.voiceCommands !== "off" );
 	return (
-		settings.voiceCommands === "always"
+		wanted
 		&& settings.scrollMode !== "voice"
 		&& usesLocalVoice()
 		&& speechModel.installed
@@ -975,7 +1078,8 @@ function syncCommandListening() {
 					scriptEl: md,
 					audioDeviceId,
 					followScript: false,
-					onCommand: runVoiceCommand
+					onCommand: runVoiceCommand,
+					isPaused: () => cuePaused
 				} );
 				commandListening = true;
 			} catch ( err ) {
@@ -1003,6 +1107,7 @@ function stopCommandListening() {
 
 // After a jump, voice scrolling picks up from the new place.
 function resyncAfterJump() {
+	voiceWordIdx = null;
 	if ( autoScrollActive ) setTimeout( () => autoScrollHandle?.syncToViewport(), 700 );
 }
 
@@ -1011,6 +1116,7 @@ function runVoiceCommand( id ) {
 	showToast( `Heard: “Prompter, ${ COMMAND_LABELS[id] ?? id }”` );
 	const voice = autoScrollActive && autoScrollHandle;
 	if ( id === "pause" ) {
+		if ( holdPauseCountdown() ) return;
 		if ( voice ) {
 			autoScrollHandle.setHold( true );
 			cancelScroll();
@@ -1018,6 +1124,7 @@ function runVoiceCommand( id ) {
 		} else if ( isScrolling() ) runRemoteAction( "pause" );
 	} else if ( id === "go" ) {
 		if ( voice ) {
+			clearPausePill();
 			autoScrollHandle.setHold( false );
 			setIndicator( "Listening" );
 		} else if ( !isScrolling() ) runRemoteAction( "play" );
@@ -3568,20 +3675,15 @@ function startCueTracking() {
 function pauseAtCue( pause ) {
 	stopSteadyScroll();
 	cuePaused = true;
-	clearTimeout( cueTimer );
-	if ( pause.seconds ) {
-		setIndicator( `Paused · ${ pause.seconds } s` );
-		cueTimer = setTimeout( resumeFromCue, pause.seconds * 1000 );
-	} else {
-		setIndicator( "Paused · Space to carry on" );
-	}
+	showPausePill( pause.seconds, resumeFromCue );
 	updatePlayButton();
+	syncCommandListening();
 }
 
 function resumeFromCue() {
-	clearTimeout( cueTimer );
-	cueTimer = null;
+	clearPausePill();
 	cuePaused = false;
+	syncCommandListening();
 	startSteadyScroll( {
 		el: md,
 		wordsPerMinute: settings.steadyWpm,
@@ -3592,9 +3694,10 @@ function resumeFromCue() {
 }
 
 function clearCuePause() {
-	clearTimeout( cueTimer );
-	cueTimer = null;
+	clearPausePill();
+	if ( !cuePaused ) return;
 	cuePaused = false;
+	syncCommandListening();
 }
 
 window.addEventListener(

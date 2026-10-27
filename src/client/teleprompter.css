@@ -69,6 +69,49 @@ a { color: #ffffffcc; }
 	content: "● ";
 }
 
+/* A {stop} in the script: waiting for the speaker. */
+#auto-scroll-indicator.stopped {
+	font-size: 14px;
+	background: rgba(255, 193, 7, 0.92);
+	color: #222;
+}
+
+#auto-scroll-indicator.stopped::before {
+	content: "■ ";
+}
+
+/* A timed {pause: 5s}: counts down, with a bar that drains. */
+#auto-scroll-indicator.counting {
+	font-size: 14px;
+	background: rgba(0, 123, 255, 0.92);
+	overflow: hidden;
+}
+
+#auto-scroll-indicator.counting::before {
+	content: "⏱ ";
+}
+
+#auto-scroll-indicator.counting::after {
+	content: "";
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+	height: 3px;
+	background: rgba(255, 255, 255, 0.85);
+	transform-origin: left;
+	animation: pause-drain var(--pause-seconds, 3s) linear forwards;
+}
+
+@keyframes pause-drain {
+	from {
+		transform: scaleX(1);
+	}
+	to {
+		transform: scaleX(0);
+	}
+}
+
 .modal {
 	position: fixed;
 	inset: 0;

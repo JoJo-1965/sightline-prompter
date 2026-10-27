@@ -74,6 +74,7 @@ const KNOWN_DIRECTIVES = new Set( [
 	"wpm",
 	"target",
 	"pause",
+	"stop",
 	"marker",
 	"mode"
 ] );

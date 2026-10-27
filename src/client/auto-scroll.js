@@ -211,6 +211,7 @@ export async function startAutoScroll( {
 	onStatus,
 	onScroll,
 	onCommand = null,
+	isPaused = null, // also counts as paused for a bare "go" (a {stop} in steady scrolling)
 	followScript = true,
 	audioDeviceId
 } ) {
@@ -227,7 +228,7 @@ export async function startAutoScroll( {
 	const wordIndex = buildWordIndex( scriptEl );
 	const aligner = createAligner( wordIndex.words );
 	aligner.setPosition( findWordAtViewport( wordIndex.ranges ) );
-	const takeCommands = onCommand ? createCommandListener( { onCommand, isPaused: () => held } ) : null;
+	const takeCommands = onCommand ? createCommandListener( { onCommand, isPaused: () => held || !!isPaused?.() } ) : null;
 	let held = false; // "Prompter, pause": keep listening, stop following
 
 	const stream = await openMic( audioDeviceId, onStatus );

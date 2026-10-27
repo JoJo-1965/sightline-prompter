@@ -84,7 +84,16 @@
 				"maximum": 30,
 				"example": "3s"
 			},
-			"description": "With no value: stop until the speaker continues (Space, clicker or remote). With a value: stop for that many seconds, then continue. In section mode the section timer stops too."
+			"description": "With no value: the same as {stop}. With a value: stop for that many seconds, with a countdown, then carry on (say \"Prompter, go\" to carry on sooner, or \"Prompter, pause\" to wait). Works in steady and voice scrolling. In section mode the section timer stops too."
+		},
+		"stop": {
+			"scopes": [
+				"inline"
+			],
+			"value": {
+				"type": "none"
+			},
+			"description": "Stop here until the speaker carries on: say \"Prompter, go\" (or just \"go\"), or press Space, the clicker or the remote. Works in steady and voice scrolling. The same as {pause} with no value."
 		},
 		"marker": {
 			"scopes": [
