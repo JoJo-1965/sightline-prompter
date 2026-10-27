@@ -2973,7 +2973,7 @@ function logSection( index, seconds, startWords = 0 ) {
 			targetSeconds,
 			wpm: null,
 			targetWpm: null,
-			verdict: judgeTime( seconds, targetSeconds ),
+			verdict: judgeFinished( seconds, targetSeconds ),
 			partial: false
 		} );
 		return;
@@ -2985,8 +2985,24 @@ function logSection( index, seconds, startWords = 0 ) {
 		targetSeconds,
 		wpm: Math.round( words / ( seconds / 60 ) ),
 		targetWpm,
-		verdict: judge( words, seconds, targetWpm, targetSeconds )
+		verdict: judgeFinished( seconds, ( words / targetWpm ) * 60 )
 	} );
+}
+
+// A finished section against the time it should have taken: within 5% is
+// on track; 5 to 10% under or over is amber; more than 10% is red.
+function judgeFinished( seconds, expected ) {
+	if ( !expected ) return { level: "wait", text: "No target" };
+	const gap = seconds - expected;
+	const share = Math.abs( gap ) / expected;
+	if ( share <= 0.05 ) return { level: "good", text: "On track" };
+	const amount = Math.abs( gap ) < 60
+		? `${ Math.round( Math.abs( gap ) ) } s`
+		: formatClock( Math.abs( gap ) );
+	return {
+		level: share <= 0.1 ? "warn" : "bad",
+		text: gap < 0 ? `Under by ${ amount }` : `Over by ${ amount }`
+	};
 }
 
 function stopPacing() {
