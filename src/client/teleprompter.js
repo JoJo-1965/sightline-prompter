@@ -1246,6 +1246,7 @@ async function openSettings() {
 	window.electron.getRemoteInfo();
 	field( "set-phone" ).checked = !!settings.phoneRemote;
 	window.electron.getPhoneInfo();
+	fillFilesTab();
 	showSettingsTab( lastSettingsTab() );
 	settingsModal.classList.remove( "hidden" );
 	await populateMicSelect();
@@ -1259,6 +1260,7 @@ function closeSettings( restore ) {
 		setOpacity( settingsSnapshot.opacity, false );
 	}
 	settingsSnapshot = null;
+	returnLayoutPanel();
 	settingsModal?.classList.add( "hidden" );
 }
 
@@ -1817,6 +1819,20 @@ document.addEventListener( "mousedown", ( e ) => {
 	if ( e.target.closest?.( ".panel, #app-menu, #control-bar, .modal" ) ) return;
 	closePanels();
 } );
+
+// The ☰ menu also closes on a click anywhere else: the control bar (except ☰
+// itself, which toggles it) or outside the window altogether.
+function closeAppMenu() {
+	if ( appMenu?.classList.contains( "hidden" ) ) return;
+	appMenu.classList.add( "hidden" );
+	refreshControlsVisibility();
+}
+document.addEventListener( "mousedown", ( e ) => {
+	if ( e.target.closest?.( "#control-bar" ) && !e.target.closest( "#cb-menu" ) ) {
+		closeAppMenu();
+	}
+} );
+window.addEventListener( "blur", closeAppMenu );
 
 window.electron.onMenuLayout( () => togglePanel( "layout-panel" ) );
 window.electron.onMenuVoice( () => togglePanel( "voice-panel" ) );
@@ -2733,6 +2749,7 @@ function showSettingsTab( name ) {
 	for ( const set of settingsModal?.querySelectorAll( "fieldset[data-tab]" ) ?? [] ) {
 		set.classList.toggle( "hidden", set.dataset.tab !== name );
 	}
+	if ( name === "layout" ) borrowLayoutPanel();
 	settingsModal?.querySelector( ".settings-content" )?.scrollTo( 0, 0 );
 	try {
 		localStorage.setItem( SETTINGS_TAB_KEY, name );
@@ -2753,6 +2770,98 @@ for ( const tab of settingsTabs ) {
 		next.focus();
 	} );
 }
+
+// The Layout tab shows the Layout panel's own controls (they apply straight
+// away), moved into Settings while it is open and put back when it closes.
+const layoutPanel = document.getElementById( "layout-panel" );
+const layoutHost = document.getElementById( "set-layout-host" );
+let layoutBorrowed = [];
+
+function borrowLayoutPanel() {
+	if ( layoutBorrowed.length || !layoutPanel || !layoutHost ) return;
+	layoutBorrowed = [ ...layoutPanel.children ].filter( el => el.tagName !== "H4" );
+	layoutHost.append( ...layoutBorrowed );
+	field( "lp-done" )?.classList.add( "hidden" );
+	syncControls();
+}
+
+function returnLayoutPanel() {
+	if ( !layoutBorrowed.length ) return;
+	layoutPanel.append( ...layoutBorrowed );
+	layoutBorrowed = [];
+	field( "lp-done" )?.classList.remove( "hidden" );
+}
+
+// Display has a few of the same settings: keep them in step with Layout, so
+// Save doesn't put back the old values (and Cancel keeps the new backing).
+function refreshSharedDisplayFields() {
+	field( "set-opacity" ).value = opacity;
+	field( "set-reading-line" ).value = settings.readingLine;
+	field( "set-reading-marker" ).checked = !!settings.showReadingMarker;
+	field( "set-mirrored" ).value = mirrored;
+	if ( settingsSnapshot ) settingsSnapshot.opacity = opacity;
+}
+for ( const type of [ "input", "change", "click" ] ) {
+	layoutHost?.addEventListener( type, () => setTimeout( refreshSharedDisplayFields, 200 ) );
+}
+
+// --- Files tab: scripts and the settings file ---
+
+function fillFilesTab() {
+	field( "set-file-save" ).disabled = !isDirty;
+	field( "set-file-save-as" ).disabled = !editorView;
+	field( "set-file-edit" ).textContent = isEditMode
+		? "Back to the teleprompter"
+		: "Edit script";
+	const fill = ( id, placeholder, entries ) => {
+		const select = field( id );
+		select.innerHTML = "";
+		select.append( new Option( placeholder, "" ) );
+		for ( const [ label, value, title ] of entries ) {
+			const option = new Option( label, value );
+			if ( title ) option.title = title;
+			select.append( option );
+		}
+		select.disabled = entries.length === 0;
+	};
+	fill(
+		"set-file-recent",
+		( slotState.recent ?? [] ).length ? "Choose…" : "None yet",
+		( slotState.recent ?? [] ).map( r => [ r.name, r.path, r.path ] )
+	);
+	fill(
+		"set-file-sample",
+		"Choose…",
+		( slotState.samples ?? [] ).map( x => [ x.label, x.file ] )
+	);
+}
+
+// Opening something closes Settings (without saving it), so you see the script.
+const closeThen = action => () => {
+	closeSettings( true );
+	action();
+};
+onClick(
+	"set-file-open",
+	closeThen( () => window.electron.openFileDialog() )
+);
+onClick( "set-file-edit", closeThen( toggleEditMode ) );
+onClick( "set-file-save", () => {
+	saveFromBar();
+	setTimeout( fillFilesTab, 300 );
+} );
+onClick( "set-file-save-as", () => saveEditorContentAs() );
+onClick(
+	"set-file-load-settings",
+	closeThen( () => window.electron.importSettings() )
+);
+onClick( "set-file-save-settings", () => window.electron.exportSettings() );
+field( "set-file-recent" )?.addEventListener( "change", ( e ) => {
+	if ( e.target.value ) closeThen( () => window.electron.openRecent( e.target.value ) )();
+} );
+field( "set-file-sample" )?.addEventListener( "change", ( e ) => {
+	if ( e.target.value ) closeThen( () => window.electron.openSample( e.target.value ) )();
+} );
 
 function lastSettingsTab() {
 	try {

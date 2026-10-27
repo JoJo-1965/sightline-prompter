@@ -516,8 +516,10 @@
         <button type="button" id="settings-close" class="modal-close" title="Close without saving (Esc)" aria-label="Close settings">×</button>
         <div class="settings-tabs" role="tablist" aria-label="Settings sections">
           <button type="button" role="tab" data-tab="scrolling">Scrolling</button>
+          <button type="button" role="tab" data-tab="voice">Voice</button>
           <button type="button" role="tab" data-tab="display">Display</button>
-          <button type="button" role="tab" data-tab="cues">Slide cues</button>
+          <button type="button" role="tab" data-tab="layout">Layout</button>
+          <button type="button" role="tab" data-tab="files">Files</button>
           <button type="button" role="tab" data-tab="remotes">Remotes</button>
         </div>
         </div>
@@ -545,6 +547,10 @@
             >Countdown before scrolling (seconds)
             <input id="set-countdown" type="range" min="0" max="10" step="1" />
           </label>
+        </fieldset>
+
+        <fieldset data-tab="voice">
+          <legend>Voice scroll sync</legend>
           <label class="row"
             >Voice responsiveness
             <input
@@ -569,6 +575,40 @@
             >Microphone (voice mode)
             <select id="set-microphone"></select>
           </label>
+          <p class="field-hint">Choose Voice as the mode on the Scrolling tab to use these.</p>
+        </fieldset>
+
+        <fieldset data-tab="layout" id="set-layout-host">
+          <legend>Layout</legend>
+          <p class="field-hint">Changes here show straight away, so you can see them on the script. Cancel doesn't undo them.</p>
+        </fieldset>
+
+        <fieldset data-tab="files">
+          <legend>Scripts</legend>
+          <div class="button-row">
+            <button id="set-file-open" type="button">Open script…</button>
+            <button id="set-file-edit" type="button">Edit script</button>
+            <button id="set-file-save" type="button">Save</button>
+            <button id="set-file-save-as" type="button">Save as…</button>
+          </div>
+          <label class="row"
+            >Open a recent script
+            <select id="set-file-recent"></select>
+          </label>
+          <label class="row"
+            >Open a sample script
+            <select id="set-file-sample"></select>
+          </label>
+          <p class="field-hint">Scripts can be Markdown, plain text, Word (.docx), rich text (.rtf) or web pages (.html).</p>
+        </fieldset>
+
+        <fieldset data-tab="files">
+          <legend>Settings file</legend>
+          <div class="button-row">
+            <button id="set-file-load-settings" type="button">Load settings from file…</button>
+            <button id="set-file-save-settings" type="button">Save settings to file…</button>
+          </div>
+          <p class="field-hint">JSON or XML. Useful for moving your set-up to another computer.</p>
         </fieldset>
 
         <fieldset data-tab="display">
@@ -624,7 +664,7 @@
           >
         </fieldset>
 
-        <fieldset data-tab="cues">
+        <fieldset data-tab="files">
           <legend>Slide cues</legend>
           <label class="check"
             ><input id="set-highlight-cues" type="checkbox" /> Highlight cue

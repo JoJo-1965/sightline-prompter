@@ -248,7 +248,7 @@ body.eye-line #md {
 }
 
 .settings-content {
-	width: min(560px, 92vw);
+	width: min(620px, 94vw);
 	max-height: 90vh;
 	overflow-y: auto;
 	font-size: 13px;
@@ -302,7 +302,32 @@ body.eye-line #md {
 	outline: none;
 }
 
+.settings-content .button-row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	margin: 0.4em 0 0.6em;
+}
+
+/* The Layout panel's controls, shown on the Layout tab. */
+#set-layout-host .lp-inline select {
+	width: auto;
+	min-width: 11em;
+}
+
+#set-layout-host .lp-check input {
+	width: auto;
+	margin: 0 0.4em 0 0;
+	vertical-align: middle;
+}
+
+.settings-content .button-row button:disabled {
+	opacity: 0.45;
+	cursor: default;
+}
+
 .settings-tabs {
+	flex-wrap: wrap;
 	display: flex;
 	gap: 4px;
 	margin: 0 0 0.75em;
@@ -374,7 +399,8 @@ body.eye-line #md {
 	margin: 0.4em 0;
 }
 
-.settings-content .file-row button {
+.settings-content .file-row button,
+.settings-content .button-row button {
 	font-size: 13px;
 	padding: 0.4em 0.8em;
 	background: #3a3d44;
@@ -580,25 +606,29 @@ body.controls-hidden * {
 	color: #8fd3ff;
 }
 
-.panel .lp-row {
+.panel .lp-row,
+#set-layout-host .lp-row {
 	display: flex;
 	flex-direction: column;
 	gap: 3px;
 	margin: 8px 0;
 }
 
-.panel .lp-row output {
+.panel .lp-row output,
+#set-layout-host .lp-row output {
 	float: right;
 	color: #ffd54a;
 }
 
-.panel .lp-inline {
+.panel .lp-inline,
+#set-layout-host .lp-inline {
 	flex-direction: row;
 	align-items: center;
 	justify-content: space-between;
 }
 
-.panel input[type="range"] {
+.panel input[type="range"],
+#set-layout-host input[type="range"] {
 	width: 100%;
 	accent-color: #ffd54a;
 }
@@ -613,18 +643,21 @@ body.controls-hidden * {
 	border-radius: 4px;
 }
 
-.panel .lp-check {
+.panel .lp-check,
+#set-layout-host .lp-check {
 	display: block;
 	margin: 5px 0;
 }
 
-.panel .lp-hint {
+.panel .lp-hint,
+#set-layout-host .lp-hint {
 	margin: 6px 0 0;
 	font-size: 11px;
 	color: #9a9a9a;
 }
 
-.panel button {
+.panel button,
+#set-layout-host button {
 	font-size: 12px;
 	padding: 4px 10px;
 	color: #f0f0f0;
@@ -634,12 +667,14 @@ body.controls-hidden * {
 	cursor: pointer;
 }
 
-.panel button.primary {
+.panel button.primary,
+#set-layout-host button.primary {
 	background: #007bff;
 	border-color: #007bff;
 }
 
-.panel .lp-actions {
+.panel .lp-actions,
+#set-layout-host .lp-actions {
 	display: flex;
 	justify-content: flex-end;
 	gap: 6px;
@@ -1222,7 +1257,8 @@ body.editing #cb-progress-text {
 	opacity: var(--text-opacity, 1);
 }
 
-.panel .lp-sub {
+.panel .lp-sub,
+#set-layout-host .lp-sub {
 	margin: 12px 0 2px;
 	font-size: 11px;
 	font-weight: 600;
@@ -1235,7 +1271,8 @@ body.editing #cb-progress-text {
 	filter: var(--text-filter, none);
 }
 
-.panel .lp-preset {
+.panel .lp-preset,
+#set-layout-host .lp-preset {
 	width: 100%;
 	margin: 4px 0 2px;
 	padding: 6px 10px;
@@ -1247,7 +1284,8 @@ body.editing #cb-progress-text {
 	cursor: pointer;
 }
 
-.panel .lp-preset:hover {
+.panel .lp-preset:hover,
+#set-layout-host .lp-preset:hover {
 	border-color: #ffd54a;
 }
 
