@@ -46,6 +46,7 @@ const defaultSettings = {
 	textOpacity: 1, // script text only; the controls stay solid
 	textBrightness: 1, // dims the script without making it see-through
 	showDirectives: false, // show {directives} as small tags for checking a script
+	followScriptPace: true, // steady scrolling uses the script's {wpm} and {target} pace
 	textAlign: "left", // "left" or "center"
 	showProgress: true,
 	controlsPinned: false, // keep the control bar visible instead of auto-hiding it

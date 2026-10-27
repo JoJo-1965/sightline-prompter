@@ -165,6 +165,9 @@ starts. Earlier version numbers belong to the original project.
 - `=== SECTION` lines in Word and rich-text scripts become sections you can jump between
 - `[Stage directions]` are dimmed or hidden, while "quoted words" inside them stay bright
 - Slide-cue phrases from a `cues.yaml` file are highlighted in script order
+- Script directives in `{curly braces}` are hidden while you read (see [docs/SCRIPT-DIRECTIVES.md](docs/SCRIPT-DIRECTIVES.md)). `{pause}` stops steady scrolling until you press Space or the clicker, and `{pause: 3s}` waits and carries on. A section's `{wpm: n}` or `{target: m:ss}` sets the scroll pace (switch this off with Layout > Follow the script's pace). Show directives in the Layout panel shows them as small tags, with ⚠ on typos
+- Markers: `{marker}` in a script, or press **B** to drop one at the reading line during a take; **Ctrl+B** jumps between them
+- Built-in sample scripts (Script > Sample scripts): a welcome tour, which opens on first run, plus batch recording, a single take, a formatting test and plain-text sections. Each opens as a copy, so editing never changes the original
 - Nine script slots (`Ctrl+1` to `Ctrl+9`). Each slot reopens where you left it, even after a restart
 - Drag a script file onto the window to open it
 

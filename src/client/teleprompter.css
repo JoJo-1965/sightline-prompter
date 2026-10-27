@@ -1151,17 +1151,31 @@ body.editing #cb-progress-text {
 }
 
 /* {Directives} are for the app: hidden while reading, small tags when checking. */
-.app-directive,
+.app-directive {
+	display: inline-block;
+	width: 0;
+	height: 0;
+	overflow: hidden;
+	vertical-align: top;
+}
+
 .directive-line {
-	display: none;
+	height: 0;
+	margin: 0;
+	overflow: hidden;
 }
 
 body.show-directives .directive-line {
-	display: block;
+	height: auto;
+	margin: revert;
+	overflow: visible;
 }
 
 body.show-directives .app-directive {
 	display: inline-block;
+	width: auto;
+	height: auto;
+	overflow: visible;
 	margin: 0 0.15em;
 	padding: 0 0.35em;
 	font: 500 0.42em/1.6 ui-monospace, Consolas, monospace;
@@ -1185,4 +1199,20 @@ body.show-directives .app-directive.unknown::before {
 .lp-hint-inline {
 	color: #9aa0a6;
 	font-size: 11px;
+}
+
+/* A marker dropped with B: a small flag in the left margin. */
+.live-marker {
+	position: relative;
+}
+
+.live-marker::before {
+	content: "";
+	position: absolute;
+	left: -0.9em;
+	top: 0.25em;
+	width: 0.45em;
+	height: 0.8em;
+	background: #ffd54a;
+	border-radius: 2px;
 }

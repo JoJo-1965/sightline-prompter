@@ -4,7 +4,7 @@
 Claude, Gemini, or your own pipeline) as instructions. It produces scripts that
 Sightline Prompter can pace and pause automatically.
 
-Spec version: **0.1 (syntax agreed 27 October 2026; the app support isn't built yet)**. Full spec:
+Spec version: **0.1 (syntax agreed 27 October 2026; pauses, markers and pace targets already work in the app)**. Full spec:
 [SCRIPT-DIRECTIVES.md](SCRIPT-DIRECTIVES.md). Machine-readable definition:
 [script-directives.json](script-directives.json).
 

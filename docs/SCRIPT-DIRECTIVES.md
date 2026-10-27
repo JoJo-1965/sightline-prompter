@@ -1,6 +1,6 @@
 # Script directives
 
-Status: **syntax agreed** (27 October 2026): `[ ]` for the speaker, `{ }` for the app. Not built yet. Parts of this are built in roadmap
+Status: **syntax agreed** (27 October 2026): `[ ]` for the speaker, `{ }` for the app. **Built:** hiding, `{pause}`, `{pause: ns}`, `{marker}`, and section and inline `{wpm}` and `{target}` for steady scrolling. **Still to come:** the pacing indicator, talking points (`mode`), and the script checker. Parts of this are built in roadmap
 items 6 (cue pause) and 8 to 10 (pacing).
 
 A script can carry two kinds of note besides the words you speak:

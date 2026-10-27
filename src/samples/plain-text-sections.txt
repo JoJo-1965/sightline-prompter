@@ -1,6 +1,6 @@
 {pacing: section, wpm: 145}
 
-=== SECTION 1 · PLAIN TEXT {target: 0:25}
+=== SECTION 1 · PLAIN TEXT {target: 0:10}
 
 [A sample in plain text, the same layout that Word scripts use.]
 
@@ -14,6 +14,6 @@ SECTION. Sightline turns those lines into sections you can jump between. {pause}
 And instructions to the app still go in curly brackets, which you never see.
 {pause}
 
-=== SECTION 3 · THE END {target: 0:15}
+=== SECTION 3 · THE END {target: 0:05}
 
 That's all there is to it. {pause}

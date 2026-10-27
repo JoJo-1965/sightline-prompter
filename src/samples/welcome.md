@@ -2,7 +2,7 @@
 
 # Welcome to Sightline Prompter
 
-## Welcome {target: 0:30}
+## Welcome {target: 0:15}
 
 [This is a sample script. Read it aloud, or just press Space and watch.]
 
@@ -12,7 +12,7 @@ while you read it.
 Press Space to start scrolling, and press it again to pause. Move the mouse to
 bring back the control bar at the top. {pause}
 
-## Reading and scrolling {target: 0:45}
+## Reading and scrolling {target: 0:30}
 
 The scroll speed is set in words per minute. Change it with the Speed slider,
 or type a number into the box beside it.
@@ -23,7 +23,7 @@ The right and left arrows jump to the next or previous section, like this one.
 A presenter clicker works too. Page Down starts and pauses, and Page Up goes
 back a section. {pause}
 
-## Making it comfortable {target: 0:50}
+## Making it comfortable {target: 0:30}
 
 [Open the Layout button in the control bar.]
 
@@ -37,7 +37,7 @@ fade the text out near the edges of the window.
 The reading line marks where the line you're reading sits. Put it just under
 your camera. {pause}
 
-## Your scripts {target: 0:45}
+## Your scripts {target: 0:25}
 
 Open a script with the Open button, or drop a file onto this window. Word,
 rich text, plain text and markdown all work.
@@ -47,7 +47,7 @@ and each slot remembers where you were.
 
 Press Control and E to edit a script right here. {pause}
 
-## Notes to you, instructions to the app {target: 0:50}
+## Notes to you, instructions to the app {target: 0:35}
 
 Words in square brackets are notes to you, the speaker. [like this one] They're
 shown dimmed, so you don't read them out. If a note holds words you should say,
@@ -59,7 +59,7 @@ pace for each section, and where to pause.
 
 To check them, tick Show directives in the Layout panel. {pause}
 
-## Recording setups {target: 0:45}
+## Recording setups {target: 0:20}
 
 For a beam-splitter rig, press Control and M to mirror the whole display:
 horizontally, vertically, or both.
@@ -69,7 +69,7 @@ background and dimmer text, so your camera picture stays clear.
 
 F11 goes full screen. {pause}
 
-## That's the tour {target: 0:25}
+## That's the tour {target: 0:15}
 
 Press F1 at any time for all the keyboard shortcuts. The menu button, top left,
 has everything else, including more sample scripts to practise with.

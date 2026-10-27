@@ -2,7 +2,7 @@
 	"$comment": "Machine-readable definition of Sightline Prompter script directives. Human spec: SCRIPT-DIRECTIVES.md. AI brief: AI-SCRIPT-BRIEF.md.",
 	"name": "sightline-script-directives",
 	"version": "0.1.0",
-	"status": "syntax agreed; not yet implemented",
+	"status": "syntax agreed; implemented: pause, marker, wpm, target (steady scrolling). Planned: pacing indicator, mode: points, script checker",
 	"date": "2026-10-27",
 	"syntax": {
 		"directive": "{ name[: value] [, name[: value]]... }",

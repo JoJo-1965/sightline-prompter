@@ -5,7 +5,7 @@
 [A sample for practising section-by-section recording. Each section has its
 own target, and ends with a pause, so you can stop, reset and go again.]
 
-## Section 1 · Cold open {target: 0:35}
+## Section 1 · Cold open {target: 0:20}
 
 [Say: "Section one". Pause.]
 
@@ -25,7 +25,7 @@ start listening to the rush.
 Slowing down a little gives your audience room to keep up. It also gives you
 room to breathe. {pause}
 
-## Section 3 · Three habits {target: 0:50}
+## Section 3 · Three habits {target: 0:20}
 
 [Say: "Section three".]
 
@@ -37,7 +37,7 @@ and find it. Nobody minds.
 
 {pause: 3s} Those three habits will carry you a long way. {pause}
 
-## Section 4 · Close {target: 0:25}
+## Section 4 · Close {target: 0:10}
 
 [Say: "Section four". Look straight at the camera.]
 

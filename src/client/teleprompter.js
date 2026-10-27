@@ -25,6 +25,7 @@ import {
 	WPM_STEP
 } from "./steady-scroll.js";
 import { decorateScript } from "./decorate.js";
+import { readDirectives } from "./directives.js";
 
 let scriptIndex = 0;
 const md = document.getElementById( "md" );
@@ -48,6 +49,8 @@ let lastScriptHtml = null;
 function renderScript( html ) {
 	md.innerHTML = html;
 	decorateScript( md, { cuePhrases, highlight: settings.highlightCues } );
+	scriptDirectives = readDirectives( md );
+	liveMarkers = [];
 }
 
 const DEFAULT_FONT_SIZE = 3;
@@ -507,6 +510,16 @@ document.addEventListener( "keydown", ( event ) => {
 		openHelp();
 		return;
 	}
+	if ( ( event.key === "b" || event.key === "B" ) && plainKey && !event.shiftKey ) {
+		event.preventDefault();
+		dropMarker();
+		return;
+	}
+	if ( ( event.key === "b" || event.key === "B" ) && ( event.ctrlKey || event.metaKey ) && !event.shiftKey ) {
+		event.preventDefault();
+		jumpToNextMarker();
+		return;
+	}
 	// Presenter clickers send Page Down / Page Up.
 	if ( event.key === "PageDown" && plainKey ) {
 		event.preventDefault();
@@ -796,6 +809,7 @@ function startSteadySession() {
 			wordsPerMinute: settings.steadyWpm,
 			onFinished: () => setIndicator( null )
 		} );
+		startCueTracking();
 		setIndicator( steadyIndicatorText() );
 	};
 	let remaining = Math.max( 0, Math.round( settings.countdown ?? 0 ) );
@@ -816,12 +830,17 @@ function startSteadySession() {
 }
 
 function stopSteadySession() {
+	clearCuePause();
 	hideCountdown();
 	stopSteadyScroll();
 	setIndicator( null );
 }
 
 function toggleAutoScrollSession() {
+	if ( cuePaused ) {
+		resumeFromCue();
+		return;
+	}
 	if ( steadySessionActive() ) {
 		stopSteadySession();
 	} else if ( autoScrollActive || autoScrollStarting ) {
@@ -1339,9 +1358,12 @@ let measureQueued = false;
 function scheduleMeasure() {
 	if ( measureQueued ) return;
 	measureQueued = true;
-	requestAnimationFrame( () => {
+	// A hidden window (minimised, screen locked) gets no animation frames.
+	const later = document.hidden ? cb => setTimeout( cb, 0 ) : requestAnimationFrame;
+	later( () => {
 		measureQueued = false;
 		const { ranges } = buildWordIndex( md );
+		measureDirectives( ranges );
 		if ( ranges.length < 2 ) {
 			textSpan = null;
 		} else {
@@ -2035,6 +2057,7 @@ function syncLayoutPanel() {
 	field( "lp-progress" ).checked = settings.showProgress !== false;
 	field( "lp-pinned" ).checked = !!settings.controlsPinned;
 	field( "lp-directives" ).checked = !!settings.showDirectives;
+	field( "lp-follow-pace" ).checked = settings.followScriptPace !== false;
 	document.body.classList.toggle( "show-directives", !!settings.showDirectives );
 }
 
@@ -2085,6 +2108,10 @@ if ( document.getElementById( "layout-panel" ) ) {
 		window.electron.saveSettings( { ...LAYOUT_DEFAULTS, readingLine: 33 } )
 	);
 	onClick( "lp-done", closePanels );
+	field( "lp-follow-pace" ).addEventListener( "change", () => {
+		settings.followScriptPace = field( "lp-follow-pace" ).checked;
+		window.electron.saveSettings( { followScriptPace: settings.followScriptPace } );
+	} );
 	field( "lp-directives" ).addEventListener( "change", () => {
 		settings.showDirectives = field( "lp-directives" ).checked;
 		document.body.classList.toggle( "show-directives", settings.showDirectives );
@@ -2412,6 +2439,161 @@ function openRemoteSettings() {
 	openSettings();
 	setTimeout( () => field( "set-remote-fieldset" )?.scrollIntoView( { block: "start" } ), 50 );
 }
+// --- Script directives: pauses, markers and pace targets ---
+// readDirectives() (directives.js) finds what the script asks for; this part
+// acts on it while steady scrolling. Positions are measured with the word
+// index (scheduleMeasure) because they move with the text size and width.
+
+let scriptDirectives = { script: {}, sections: [], pauses: [], markers: [], paceChanges: [] };
+let directivePoints = { pauses: [], markers: [], paceChanges: [], sections: [] };
+let liveMarkers = []; // markers dropped with B during this session
+let cuePaused = false;
+let cueTimer = null;
+let lastReadingY = null;
+let appliedPace = null;
+
+function pageY( el ) {
+	return el.getBoundingClientRect().top + window.scrollY;
+}
+
+function readingLineY() {
+	return window.scrollY + window.innerHeight * getReadingAnchor();
+}
+
+function measureDirectives( ranges ) {
+	const wordTops = ranges.map( r => r.getBoundingClientRect().top + window.scrollY );
+	const sections = scriptDirectives.sections.map( s => ( { ...s, y: pageY( s.heading ) } ) );
+	sections.forEach( ( s, i ) => {
+		const end = sections[i + 1]?.y ?? Infinity;
+		s.words = wordTops.filter( y => y >= s.y && y < end ).length;
+	} );
+	directivePoints = {
+		sections,
+		pauses: scriptDirectives.pauses.map( p => ( { ...p, y: pageY( p.el ) } ) ),
+		markers: [ ...scriptDirectives.markers, ...liveMarkers ]
+			.map( m => ( { ...m, y: pageY( m.el ) } ) )
+			.sort( ( a, b ) => a.y - b.y ),
+		paceChanges: scriptDirectives.paceChanges.map( c => ( { ...c, y: pageY( c.el ) } ) )
+	};
+}
+
+function sectionAt( y ) {
+	let found = null;
+	for ( const s of directivePoints.sections ) {
+		if ( s.y <= y + 1 ) found = s;
+	}
+	return found;
+}
+
+// The pace the script asks for at this point: an inline {wpm} in this section,
+// then the section's own wpm or target time, then the script's wpm.
+function scriptPaceAt( y ) {
+	const section = sectionAt( y );
+	if ( section ) {
+		const change = directivePoints.paceChanges
+			.filter( c => c.y >= section.y && c.y <= y + 1 )
+			.pop();
+		if ( change ) return change.wpm;
+		if ( section.wpm ) return section.wpm;
+		if ( section.targetSeconds && section.words > 0 ) {
+			return Math.round( section.words / ( section.targetSeconds / 60 ) );
+		}
+	}
+	return scriptDirectives.script.wpm ?? null;
+}
+
+function followScriptPace( y ) {
+	if ( settings.followScriptPace === false ) return;
+	const pace = scriptPaceAt( y );
+	if ( !pace || pace === appliedPace ) return;
+	appliedPace = pace;
+	settings.steadyWpm = setWpm( pace );
+	setIndicator( steadyIndicatorText() );
+	syncControls();
+}
+
+function startCueTracking() {
+	lastReadingY = readingLineY();
+	appliedPace = null;
+	followScriptPace( lastReadingY );
+}
+
+function pauseAtCue( pause ) {
+	stopSteadyScroll();
+	cuePaused = true;
+	clearTimeout( cueTimer );
+	if ( pause.seconds ) {
+		setIndicator( `Paused · ${ pause.seconds } s` );
+		cueTimer = setTimeout( resumeFromCue, pause.seconds * 1000 );
+	} else {
+		setIndicator( "Paused · Space to carry on" );
+	}
+	updatePlayButton();
+}
+
+function resumeFromCue() {
+	clearTimeout( cueTimer );
+	cueTimer = null;
+	cuePaused = false;
+	startSteadyScroll( {
+		el: md,
+		wordsPerMinute: settings.steadyWpm,
+		onFinished: () => setIndicator( null )
+	} );
+	lastReadingY = readingLineY();
+	setIndicator( steadyIndicatorText() );
+}
+
+function clearCuePause() {
+	clearTimeout( cueTimer );
+	cueTimer = null;
+	cuePaused = false;
+}
+
+window.addEventListener( "scroll", () => {
+	const y = readingLineY();
+	if ( isSteadyRunning() && lastReadingY !== null ) {
+		const pause = directivePoints.pauses.find( p => p.y > lastReadingY && p.y <= y );
+		if ( pause ) {
+			lastReadingY = y;
+			pauseAtCue( pause );
+			return;
+		}
+		followScriptPace( y );
+	}
+	lastReadingY = y;
+}, { passive: true } );
+
+// Markers: {marker} in the script, or dropped with B during a take.
+function dropMarker() {
+	const y = readingLineY();
+	const { ranges } = buildWordIndex( md );
+	const word = ranges.find( r => r.getBoundingClientRect().top + window.scrollY >= y - 4 );
+	if ( !word ) return;
+	const el = document.createElement( "span" );
+	el.className = "live-marker";
+	el.setAttribute( "aria-label", "Marker" );
+	const start = word.cloneRange();
+	start.collapse( true );
+	start.insertNode( el );
+	liveMarkers.push( { el } );
+	scheduleMeasure();
+	showToast( "Marker added · Ctrl+B jumps between markers" );
+}
+
+function jumpToNextMarker() {
+	const markers = directivePoints.markers;
+	if ( !markers.length ) {
+		showToast( "No markers yet · press B to add one" );
+		return;
+	}
+	const y = readingLineY();
+	const next = markers.find( m => m.y > y + 8 ) ?? markers[0];
+	window.scrollTo( 0, Math.max( 0, next.y - window.innerHeight * getReadingAnchor() ) );
+	previewManuallyScrolled = true;
+	showToast( `Marker ${ markers.indexOf( next ) + 1 } of ${ markers.length }` );
+}
+
 // --- Number boxes beside sliders ---
 // Every slider gets a number field (type a value, or use the arrow keys / the
 // up and down buttons) showing the value as a percentage or in wpm. The slider

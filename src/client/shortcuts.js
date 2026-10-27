@@ -12,6 +12,9 @@ export const SHORTCUTS = [
 			[ [ "→", "←" ], "Next / previous section (=== SECTION lines and headings)" ],
 			[ [ "Page Up" ], "Previous section (presenter clicker)" ],
 			[ [ "Ctrl+Home" ], "Back to the start" ],
+			[ [ "Space" ], "After a {pause} in the script: carry on" ],
+			[ [ "B" ], "Drop a marker at the reading line (for retakes)" ],
+			[ [ "Ctrl+B" ], "Jump to the next marker ({marker} or one you dropped)" ],
 			[ [ "↑", "↓", "Wheel" ], "When stopped: scroll by hand" ]
 		]
 	},
