@@ -1,6 +1,42 @@
-import { contextBridge, ipcRenderer } from "electron";
+import { contextBridge, ipcRenderer, webUtils } from "electron";
+
+const on = ( channel, callback ) => ipcRenderer.on( channel, ( _event, ...args ) => callback( ...args ) );
 
 contextBridge.exposeInMainWorld( "electron", {
+	// Control bar, slots and window IPC
+	windowControl: action => ipcRenderer.send( "windowControl", action ),
+	onWindowState: callback => on( "windowState", callback ),
+	onMenuWindowControl: callback => on( "menuWindowControl", callback ),
+	popupMenu: ( x, y ) => ipcRenderer.send( "popupMenu", x, y ),
+	openFileDialog: () => ipcRenderer.send( "openFileDialog" ),
+	openDroppedFile: file => ipcRenderer.send( "openDroppedFile", webUtils.getPathForFile( file ) ),
+	switchSlot: ( index, position ) => ipcRenderer.send( "switchSlot", index, position ),
+	clearSlot: () => ipcRenderer.send( "clearSlot" ),
+	saveSlotPosition: position => ipcRenderer.send( "slotPosition", position ),
+	onSlots: callback => on( "slots", callback ),
+	onRestorePosition: callback => on( "restorePosition", callback ),
+	onMenuSwitchSlot: callback => on( "menuSwitchSlot", callback ),
+	onMenuClearSlot: callback => on( "menuClearSlot", callback ),
+	onMenuHelp: callback => on( "menuHelp", callback ),
+	onMenuAbout: callback => on( "menuAbout", callback ),
+	getAppInfo: () => ipcRenderer.send( "getAppInfo" ),
+	onAppInfo: callback => on( "appInfo", callback ),
+	onMenuLayout: callback => on( "menuLayout", callback ),
+	onMenuVoice: callback => on( "menuVoice", callback ),
+	onRemoteCommand: callback => on( "remoteCommand", callback ),
+	sendRendererStatus: status => ipcRenderer.send( "rendererStatus", status ),
+	getRemoteInfo: () => ipcRenderer.send( "getRemoteInfo" ),
+	newRemoteToken: () => ipcRenderer.send( "newRemoteToken" ),
+	onRemoteInfo: callback => on( "remoteInfo", callback ),
+	openRecent: filePath => ipcRenderer.send( "openRecent", filePath ),
+	openSample: name => ipcRenderer.send( "openSample", name ),
+	exportSettings: () => ipcRenderer.send( "exportSettings" ),
+	importSettings: () => ipcRenderer.send( "importSettings" ),
+	onNotice: callback => on( "notice", callback ),
+	onMenuExportSettings: callback => on( "menuExportSettings", callback ),
+	onMenuImportSettings: callback => on( "menuImportSettings", callback ),
+	onMenuGoToStart: callback => on( "menuGoToStart", callback ),
+
 	onContent: callback => ipcRenderer.on( "content", ( _event, content ) => callback( content ) ),
 	onFontSize: callback => ipcRenderer.on( "fontSize", ( _event, size ) => callback( size ) ),
 	saveFontSize: size => ipcRenderer.send( "fontSize", size ),
@@ -41,5 +77,15 @@ contextBridge.exposeInMainWorld( "electron", {
 	getAudioDeviceId: () => ipcRenderer.send( "getAudioDeviceId" ),
 	setAudioDeviceId: deviceId => ipcRenderer.send( "setAudioDeviceId", deviceId ),
 	onAudioDeviceId: callback => ipcRenderer.on( "audioDeviceId", ( _event, payload ) => callback( payload ) ),
-	onMenuSelectMicrophone: callback => ipcRenderer.on( "menuSelectMicrophone", () => callback() )
+	onMenuSelectMicrophone: callback => ipcRenderer.on( "menuSelectMicrophone", () => callback() ),
+
+	// Settings IPC
+	getSettings: () => ipcRenderer.send( "getSettings" ),
+	saveSettings: partial => ipcRenderer.send( "saveSettings", partial ),
+	onSettings: callback => ipcRenderer.on( "settings", ( _event, settings ) => callback( settings ) ),
+	onMenuSettings: callback => ipcRenderer.on( "menuSettings", () => callback() ),
+	browseCuesFile: () => ipcRenderer.send( "browseCuesFile" ),
+	onCuesFileChosen: callback => ipcRenderer.on( "cuesFileChosen", ( _event, filePath ) => callback( filePath ) ),
+	onCuePhrases: callback => ipcRenderer.on( "cuePhrases", ( _event, phrases ) => callback( phrases ) ),
+	onEditorUnavailable: callback => ipcRenderer.on( "editorUnavailable", ( _event, fileName ) => callback( fileName ) )
 } );

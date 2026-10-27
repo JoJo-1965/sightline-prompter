@@ -1,73 +1,637 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
+  <head>
+    <meta charset="UTF-8" />
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' wss://api.deepgram.com; media-src 'self' blob:"
+    />
+    <meta
+      http-equiv="X-Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' wss://api.deepgram.com; media-src 'self' blob:"
+    />
+    <title>Sightline Prompter</title>
+    <link rel="stylesheet" type="text/css" href="teleprompter.css" />
+    <link rel="stylesheet" type="text/css" href="editor.css" />
+  </head>
 
-<head>
-	<meta charset="UTF-8">
-	<!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-	<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' wss://api.deepgram.com; media-src 'self' blob:">
-	<meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' wss://api.deepgram.com; media-src 'self' blob:">
-	<title>Electron Teleprompter</title>
-	<link rel="stylesheet" type="text/css" href="teleprompter.css">
-	<link rel="stylesheet" type="text/css" href="editor.css">
-</head>
+  <body>
+    <div id="control-bar">
+      <div class="cb-group">
+        <button id="cb-menu" class="cb-btn" title="Menu">☰</button>
+        <button
+          id="cb-open"
+          class="cb-btn cb-text"
+          title="Open a script into this slot (Ctrl+O)"
+        >
+          Open
+        </button>
+        <button
+          id="cb-save"
+          class="cb-btn cb-text"
+          title="Save edits (Ctrl+S) — opens Save As if the script isn't a text or Markdown file"
+        >
+          Save
+        </button>
+        <button
+          id="cb-edit"
+          class="cb-btn cb-text"
+          title="Edit the script (Ctrl+E)"
+        >
+          Edit
+        </button>
+      </div>
+      <div
+        class="cb-group"
+        id="cb-slots"
+        title="Script slots (Ctrl+1 to Ctrl+9)"
+      ></div>
+      <div class="cb-group">
+        <button
+          id="cb-restart"
+          class="cb-btn"
+          title="Back to the start (Ctrl+Home)"
+        >
+          ⏮
+        </button>
+        <button
+          id="cb-play"
+          class="cb-btn cb-play"
+          title="Start / pause scrolling (Space)"
+        >
+          ▶
+        </button>
+        <label
+          class="cb-slider"
+          title="Scroll speed (↑ / ↓ while scrolling, Ctrl+[ and Ctrl+])"
+        >
+          <span id="cb-speed-label">Speed</span>
+          <input id="cb-speed" type="range" min="60" max="300" step="5" />
+          <output id="cb-speed-value"></output>
+        </label>
+      </div>
+      <div class="cb-group">
+        <label class="cb-slider" title="Text size (Ctrl+= / Ctrl+-)">
+          <span>Size</span>
+          <input id="cb-font" type="range" min="1" max="8" step="0.05" />
+        </label>
+        <label class="cb-slider" title="Background opacity (Ctrl+Shift+↑ / ↓)">
+          <span>Backing</span>
+          <input id="cb-opacity" type="range" min="0" max="1" step="0.01" />
+        </label>
+        <button
+          id="cb-layout"
+          class="cb-btn cb-text"
+          title="Margins, line spacing, alignment (Ctrl+Shift+K)"
+        >
+          Layout
+        </button>
+        <button
+          id="cb-voice"
+          class="cb-btn cb-text"
+          title="Voice scroll sync: mode, Deepgram API key, microphone (Ctrl+Shift+V)"
+        >
+          Voice
+        </button>
+      </div>
+      <div class="cb-spacer"></div>
+      <div class="cb-group">
+        <button
+          id="cb-help"
+          class="cb-btn"
+          title="Keyboard shortcuts (F1 or ?)"
+        >
+          ?
+        </button>
+        <button id="cb-settings" class="cb-btn" title="Settings (Ctrl+,)">
+          ⚙
+        </button>
+        <button id="cb-min" class="cb-btn" title="Minimise (Ctrl+Shift+M)">
+          —
+        </button>
+        <button
+          id="cb-max"
+          class="cb-btn"
+          title="Maximise / restore (Shift+F11)"
+        >
+          ▢
+        </button>
+        <button id="cb-full" class="cb-btn" title="Full screen (F11)">⛶</button>
+        <button id="cb-close" class="cb-btn cb-close" title="Close (Ctrl+W)">
+          ✕
+        </button>
+      </div>
+    </div>
+    <nav id="app-menu" class="hidden" aria-label="Teleprompter menu"></nav>
+    <div id="voice-panel" class="panel hidden">
+      <h4>Voice scroll sync</h4>
+      <div class="lp-row lp-inline">
+        Scroll mode
+        <select id="vp-mode">
+          <option value="steady">Steady (words per minute)</option>
+          <option value="voice">Voice (follows what you say)</option>
+        </select>
+      </div>
+      <div class="lp-row">
+        Deepgram API key
+        <div class="vp-key-row">
+          <input
+            id="vp-key"
+            type="password"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="Paste your key here"
+          />
+          <button id="vp-key-save" type="button" class="primary">Save</button>
+          <button id="vp-key-clear" type="button">Clear</button>
+        </div>
+        <span id="vp-key-status" class="lp-hint"></span>
+      </div>
+      <div class="lp-row">
+        Microphone
+        <select id="vp-mic"></select>
+        <div id="vp-meter" title="Live level from the chosen microphone">
+          <div id="vp-meter-fill"></div>
+        </div>
+        <span id="vp-mic-status" class="lp-hint"></span>
+      </div>
+      <label class="lp-row"
+        >Voice responsiveness <output id="vp-speed-value"></output>
+        <input id="vp-speed" type="range" min="0.25" max="4" step="0.05" />
+      </label>
+      <p class="lp-hint">
+        The key is stored only on this computer, in the teleprompter's settings
+        file. Speak a few words: the meter should move for the mic you'll record
+        with (the RØDE).
+      </p>
+      <div class="lp-actions">
+        <button id="vp-done" type="button" class="primary">Done</button>
+      </div>
+    </div>
+    <div id="layout-panel" class="panel hidden">
+      <h4>Layout</h4>
+      <h5 class="lp-sub">Opacity</h5>
+      <label class="lp-row"
+        >Text <output id="lp-text-opacity-value"></output>
+        <input id="lp-text-opacity" type="range" min="0.2" max="1" step="0.01" />
+      </label>
+      <label class="lp-row"
+        >Background <output id="lp-bg-opacity-value"></output>
+        <input id="lp-bg-opacity" type="range" min="0" max="1" step="0.01" />
+      </label>
+      <label class="lp-row"
+        >Text brightness <output id="lp-text-brightness-value"></output>
+        <input id="lp-text-brightness" type="range" min="0.3" max="1" step="0.01" />
+      </label>
+      <button id="lp-beam-preset" type="button" class="lp-preset"
+        title="Black background, text at 70% brightness and mirrored, so the camera image stays clear">
+        Beam-splitter setup
+      </button>
+      <h5 class="lp-sub">Spacing</h5>
+      <label class="lp-row"
+        >Left / right margin <output id="lp-margin-x-value"></output>
+        <input id="lp-margin-x" type="range" min="0" max="35" step="1" />
+      </label>
+      <label class="lp-row"
+        >Top margin <output id="lp-margin-top-value"></output>
+        <input id="lp-margin-top" type="range" min="0" max="60" step="1" />
+      </label>
+      <label class="lp-row"
+        >Bottom margin <output id="lp-margin-bottom-value"></output>
+        <input id="lp-margin-bottom" type="range" min="0" max="60" step="1" />
+      </label>
+      <label class="lp-row"
+        >Line spacing <output id="lp-line-height-value"></output>
+        <input id="lp-line-height" type="range" min="1" max="2.5" step="0.05" />
+      </label>
+      <label class="lp-row"
+        >Reading line <output id="lp-reading-line-value"></output>
+        <input id="lp-reading-line" type="range" min="5" max="80" step="1" />
+      </label>
+      <div class="lp-row lp-inline">
+        Align
+        <select id="lp-align">
+          <option value="left">Left</option>
+          <option value="center">Centre</option>
+        </select>
+      </div>
+      <div class="lp-row lp-inline">
+        Mirror (Ctrl+M)
+        <select id="lp-mirrored">
+          <option value="off">Off</option>
+          <option value="horizontal">Horizontal</option>
+          <option value="vertical">Vertical</option>
+          <option value="both">Both</option>
+        </select>
+      </div>
+      <label class="lp-check"
+        ><input id="lp-marker" type="checkbox" /> Reading-line marker</label
+      >
+      <label class="lp-check"
+        ><input id="lp-progress" type="checkbox" /> Progress bar and time
+        left</label
+      >
+      <label class="lp-check"
+        ><input id="lp-directives" type="checkbox" /> Show directives
+        <span class="lp-hint-inline">{ } tags, for checking a script</span></label
+      >
+      <label class="lp-check"
+        ><input id="lp-pinned" type="checkbox" /> Keep controls visible</label
+      >
+      <p class="lp-hint">
+        Top and bottom margins fade the text out near the window edges, so your
+        eyes stay near the camera.
+      </p>
+      <div class="lp-actions">
+        <button id="lp-reset" type="button">Reset layout</button>
+        <button id="lp-done" type="button" class="primary">Done</button>
+      </div>
+    </div>
+<div id="about-modal" class="modal hidden">
+  <div
+    class="modal-content about-content"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="about-title"
+  >
+    <h3 id="about-title">Sightline Prompter</h3>
+    <p class="about-version" id="about-version"></p>
 
-<body>
-	<div id="preview-container" class="content">
-		<div id="md">
-			<h1><a name="0"></a>Electron Teleprompter</h1>
-			<p>The Electron Teleprompter app can load any markdown and/or HTML syntax and display that as a translucent
-				overlay on the screen. In this way you can load a script and still see your presentation, video
-				conferencing, or any other applications through the script.</p>
-			<p>Please use the File -> Open menu (or keyboard shortcut) to open a text file that contains markdown or
-				HTML as a script.</p>
-			<h2><a name="1"></a>What is Markdown?</h2>
-			<p>Markdown is a lightweight syntax for creating formatted documents.</p>
-			<p>Headings use the <code>#</code> symbol</p>
-			<code><pre>
+    <section>
+      <h4>Based on Electron Teleprompter</h4>
+      <p>
+        Created by <strong>David Neal</strong> (ReverentGeek), first built live
+        on the <em>All Hands on Tech</em> developer stream. It shows a
+        see-through script over your slides or video call, with a built-in
+        markdown editor and voice-driven scrolling.
+      </p>
+      <p>
+        <a
+          href="https://github.com/reverentgeek/electron-teleprompter"
+          target="_blank"
+          >github.com/reverentgeek/electron-teleprompter</a
+        >
+        ·
+        <a href="https://reverentgeek.com" target="_blank">reverentgeek.com</a>
+      </p>
+      <p class="field-hint">MIT License · Copyright © 2022 David Neal</p>
+    </section>
+
+    <section>
+      <h4>Sightline Prompter</h4>
+      <p>
+        Adapted and enhanced by <strong>Joanne Lockwood</strong> from
+        <strong>SEE Change Happen Ltd</strong>. It adds:
+      </p>
+      <ul>
+        <li>
+          Steady words-per-minute scrolling, a countdown, and a progress bar
+          with time left
+        </li>
+        <li>A control bar and menu, with a number box beside every slider</li>
+        <li>Nine script slots that each remember their place</li>
+        <li>
+          Layout controls: margins, line spacing, reading line and eye-line mode
+        </li>
+        <li>
+          Word, rich-text and plain-text scripts, dimmed stage directions and
+          slide-cue highlights
+        </li>
+        <li>Microphone choice with a live level meter</li>
+        <li>Settings saved to JSON or XML</li>
+        <li>
+          An optional local API so an AI assistant can load and drive scripts
+        </li>
+      </ul>
+      <p class="field-hint">
+        The fork keeps the original MIT licence. The full change log is in the
+        README.
+      </p>
+    </section>
+
+    <section>
+      <h4>More from Joanne Lockwood</h4>
+      <ul class="about-links">
+        <li><span>Speaker site</span> <a href="https://joannelockwood.co.uk" target="_blank">joannelockwood.co.uk</a></li>
+        <li><span>Book: Don't Be a D*ck</span> <a href="https://ninetynineways.co.uk" target="_blank">ninetynineways.co.uk</a></li>
+        <li><span>Inclusion Bites Podcast</span> <a href="https://inclusionbites.co.uk" target="_blank">inclusionbites.co.uk</a></li>
+        <li><span>Inclusion Bites Academy</span> <a href="https://academy.inclusionbites.co.uk" target="_blank">academy.inclusionbites.co.uk</a></li>
+        <li><span>Consulting: SEE Change Happen</span> <a href="https://seechangehappen.co.uk" target="_blank">seechangehappen.co.uk</a></li>
+        <li><span>The Trans Inclusion Toolkit</span> <a href="https://thetransinclusiontoolkit.co.uk" target="_blank">thetransinclusiontoolkit.co.uk</a></li>
+        <li><span>LGBTQ+ History</span> <a href="https://lgbtq-history.info" target="_blank">lgbtq-history.info</a></li>
+        <li><span>Connected Ecosystem</span> <a href="https://connected-ecosystem.co.uk/" target="_blank">connected-ecosystem.co.uk</a></li>
+      </ul>
+    </section>
+
+    <section>
+      <h4>Built with</h4>
+      <p class="field-hint">
+        Electron, CodeMirror, Showdown, Mammoth, chokidar, js-yaml and Deepgram
+        speech recognition.
+      </p>
+    </section>
+
+    <div class="modal-actions">
+      <button id="about-close" type="button" class="primary">Close</button>
+    </div>
+  </div>
+</div>
+
+    <div id="help-modal" class="modal hidden">
+      <div class="modal-content help-content">
+        <h3>Keyboard shortcuts</h3>
+        <div id="help-list"></div>
+        <p class="field-hint">
+          Move the mouse to show the control bar; it hides itself while you
+          read. A presenter clicker works too: Page Down starts and pauses, Page
+          Up goes back a section.
+        </p>
+        <div class="modal-actions">
+          <button id="help-close" type="button" class="primary">Close</button>
+        </div>
+      </div>
+    </div>
+    <div id="progress-bar" class="hidden"><div id="progress-fill"></div></div>
+    <div id="cb-progress-text"></div>
+    <div id="drop-overlay" class="hidden">
+      Drop a script to open it in this slot
+    </div>
+    <div id="preview-container" class="content">
+      <div id="md">
+        <h1><a name="0"></a>Sightline Prompter</h1>
+        <p>
+          Sightline Prompter can load any markdown and/or HTML syntax
+          and display that as a translucent overlay on the screen. In this way
+          you can load a script and still see your presentation, video
+          conferencing, or any other applications through the script.
+        </p>
+        <p>
+          Move the mouse to show the control bar, then press Open (or Ctrl+O) to
+          load a script, or drop a file onto this window. Press F1 for the
+          keyboard shortcuts.
+        </p>
+        <h2><a name="1"></a>What is Markdown?</h2>
+        <p>
+          Markdown is a lightweight syntax for creating formatted documents.
+        </p>
+        <p>Headings use the <code>#</code> symbol</p>
+        <code>
+          <pre>
 # This is a Main Heading
 ## This is a Secondary Heading
-			</pre></code>
+			</pre>
+        </code>
+      </div>
+    </div>
+    <div id="editor-container" class="hidden">
+      <div id="editor-toolbar">
+        <span class="toolbar-dirty hidden" id="toolbar-dirty">●</span>
+        <span class="toolbar-filename" id="toolbar-filename">No file open</span>
+        <button id="btn-save" class="primary">Save</button>
+        <button id="btn-save-as">Save As</button>
+        <button id="btn-cancel">Cancel</button>
+      </div>
+      <div id="editor"></div>
+    </div>
+    <div
+      id="auto-scroll-indicator"
+      class="hidden"
+      title="Click to stop auto-scroll"
+    ></div>
+    <div id="api-key-modal" class="modal hidden">
+      <div class="modal-content">
+        <h3>Deepgram API Key</h3>
+        <p>
+          Required for the auto-scroll feature. Get one at
+          <span class="modal-hint">console.deepgram.com</span>. Stored locally
+          in app state.
+        </p>
+        <input
+          id="api-key-input"
+          type="password"
+          placeholder="dg_..."
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <div class="modal-actions">
+          <button id="api-key-clear" type="button">Clear</button>
+          <button id="api-key-cancel" type="button">Cancel</button>
+          <button id="api-key-save" type="button" class="primary">Save</button>
+        </div>
+      </div>
+    </div>
+    <div id="mic-modal" class="modal hidden">
+      <div class="modal-content">
+        <h3>Select Microphone</h3>
+        <p id="mic-modal-hint">Used by auto-scroll for speech recognition.</p>
+        <select id="mic-modal-select"></select>
+        <div class="modal-actions">
+          <button id="mic-modal-cancel" type="button">Cancel</button>
+          <button id="mic-modal-save" type="button" class="primary">
+            Save
+          </button>
+        </div>
+      </div>
+    </div>
+    <div id="settings-modal" class="modal hidden">
+      <div class="modal-content settings-content">
+        <h3>Settings</h3>
 
+        <fieldset>
+          <legend>Scrolling</legend>
+          <label class="row"
+            >Mode
+            <select id="set-scroll-mode">
+              <option value="steady">Steady (words per minute)</option>
+              <option value="voice">Voice (follows you, needs Deepgram)</option>
+            </select>
+          </label>
+          <label class="row"
+            >Steady speed (words per minute)
+            <input
+              id="set-steady-wpm"
+              type="range"
+              min="60"
+              max="300"
+              step="5"
+            />
+          </label>
+          <label class="row"
+            >Countdown before scrolling (seconds)
+            <input id="set-countdown" type="range" min="0" max="10" step="1" />
+          </label>
+          <label class="row"
+            >Voice responsiveness
+            <input
+              id="set-voice-speed"
+              type="range"
+              min="0.25"
+              max="4"
+              step="0.05"
+            />
+          </label>
+          <label class="row"
+            >Deepgram API key
+            <input
+              id="set-deepgram-key"
+              type="password"
+              autocomplete="off"
+              spellcheck="false"
+            />
+          </label>
+          <p class="field-hint" id="set-deepgram-status"></p>
+          <label class="row"
+            >Microphone (voice mode)
+            <select id="set-microphone"></select>
+          </label>
+        </fieldset>
 
-		</div>
-	</div>
-	<div id="editor-container" class="hidden">
-		<div id="editor-toolbar">
-			<span class="toolbar-dirty hidden" id="toolbar-dirty">●</span>
-			<span class="toolbar-filename" id="toolbar-filename">No file open</span>
-			<button id="btn-save" class="primary">Save</button>
-			<button id="btn-save-as">Save As</button>
-			<button id="btn-cancel">Cancel</button>
-		</div>
-		<div id="editor"></div>
-	</div>
-	<div id="auto-scroll-indicator" class="hidden" title="Click to stop auto-scroll"></div>
-	<div id="api-key-modal" class="modal hidden">
-		<div class="modal-content">
-			<h3>Deepgram API Key</h3>
-			<p>Required for the auto-scroll feature. Get one at <span class="modal-hint">console.deepgram.com</span>. Stored locally in app state.</p>
-			<input id="api-key-input" type="password" placeholder="dg_..." autocomplete="off" spellcheck="false">
-			<div class="modal-actions">
-				<button id="api-key-clear" type="button">Clear</button>
-				<button id="api-key-cancel" type="button">Cancel</button>
-				<button id="api-key-save" type="button" class="primary">Save</button>
-			</div>
-		</div>
-	</div>
-	<div id="mic-modal" class="modal hidden">
-		<div class="modal-content">
-			<h3>Select Microphone</h3>
-			<p id="mic-modal-hint">Used by auto-scroll for speech recognition.</p>
-			<select id="mic-modal-select"></select>
-			<div class="modal-actions">
-				<button id="mic-modal-cancel" type="button">Cancel</button>
-				<button id="mic-modal-save" type="button" class="primary">Save</button>
-			</div>
-		</div>
-	</div>
-	<div id="resize-handle"></div>
-	<script src="./editor-bundle.js"></script>
-	<script type="module" src="./teleprompter.js"></script>
-</body>
+        <fieldset>
+          <legend>Display</legend>
+          <label class="row"
+            >Text size
+            <input
+              id="set-font-size"
+              type="range"
+              min="1"
+              max="8"
+              step="0.05"
+            />
+          </label>
+          <label class="row"
+            >Background darkness
+            <input id="set-opacity" type="range" min="0" max="1" step="0.01" />
+          </label>
+          <label class="row"
+            >Reading line (% from top)
+            <input
+              id="set-reading-line"
+              type="range"
+              min="5"
+              max="80"
+              step="1"
+            />
+          </label>
+          <label class="row"
+            >[Directions]
+            <select id="set-directions">
+              <option value="dim">Dimmed</option>
+              <option value="hide">Hidden (quoted words still shown)</option>
+              <option value="normal">Normal</option>
+            </select>
+          </label>
+          <label class="check"
+            ><input id="set-reading-marker" type="checkbox" /> Show reading-line
+            marker</label
+          >
+          <label class="row"
+            >Mirror text (beam-splitter rigs)
+            <select id="set-mirrored">
+              <option value="off">Off</option>
+              <option value="horizontal">Horizontal</option>
+              <option value="vertical">Vertical</option>
+              <option value="both">Both</option>
+            </select>
+          </label>
+          <label class="check"
+            ><input id="set-always-on-top" type="checkbox" /> Keep window on
+            top</label
+          >
+        </fieldset>
 
+        <fieldset>
+          <legend>Slide cues</legend>
+          <label class="check"
+            ><input id="set-highlight-cues" type="checkbox" /> Highlight cue
+            phrases (say these word for word)</label
+          >
+          <div class="row file-row">
+            <input
+              id="set-cues-file"
+              type="text"
+              readonly
+              placeholder="No cues.yaml chosen"
+            />
+            <button id="set-cues-browse" type="button">Browse…</button>
+            <button id="set-cues-clear" type="button">Clear</button>
+          </div>
+          <p class="field-hint">
+            Underlined words in rich-text and Word scripts are highlighted too.
+          </p>
+        </fieldset>
+
+        <fieldset>
+          <legend>Eye-line mode</legend>
+          <label class="check"
+            ><input id="set-eye-line" type="checkbox" /> Pin a narrow strip to
+            the top-centre of the screen, under the webcam</label
+          >
+          <label class="row"
+            >Strip width (% of screen)
+            <input
+              id="set-eye-line-width"
+              type="range"
+              min="20"
+              max="100"
+              step="5"
+            />
+          </label>
+          <label class="row"
+            >Strip height (% of screen)
+            <input
+              id="set-eye-line-height"
+              type="range"
+              min="15"
+              max="100"
+              step="5"
+            />
+          </label>
+          <label class="row"
+            >Reading line in the strip (% from top)
+            <input
+              id="set-eye-line-reading"
+              type="range"
+              min="5"
+              max="80"
+              step="1"
+            />
+          </label>
+        </fieldset>
+
+        <fieldset id="set-remote-fieldset">
+          <legend>AI and remote control</legend>
+          <label class="check"
+            ><input id="set-remote" type="checkbox" /> Let an AI assistant or
+            script on this computer load scripts and control the
+            teleprompter</label
+          >
+          <label class="row"
+            >Port
+            <input id="set-remote-port" type="number" min="1024" max="65535" step="1" />
+          </label>
+          <div class="row file-row">
+            <input id="set-remote-token" type="password" readonly />
+            <button id="set-remote-copy" type="button">Copy token</button>
+            <button id="set-remote-new" type="button">New token</button>
+          </div>
+          <p class="field-hint" id="set-remote-status"></p>
+          <p class="field-hint">
+            Only programs on this computer can connect, and only with the
+            token. Turn this off when you don't need it.
+          </p>
+        </fieldset>
+
+        <div class="modal-actions">
+          <button id="settings-cancel" type="button">Cancel</button>
+          <button id="settings-save" type="button" class="primary">Save</button>
+        </div>
+      </div>
+    </div>
+    <div id="countdown" class="hidden"></div>
+    <div id="reading-marker" class="hidden"></div>
+    <div id="resize-handle"></div>
+    <script src="./editor-bundle.js"></script>
+    <script type="module" src="./teleprompter.js"></script>
+  </body>
 </html>

@@ -13,7 +13,13 @@ export function buildWordIndex( rootEl ) {
 	const ranges = [];
 	if ( !rootEl ) return { words, ranges };
 
-	const walker = document.createTreeWalker( rootEl, NodeFilter.SHOW_TEXT );
+	// Stage directions ([CLAP], [Pause]) aren't spoken, so keep them out of the index.
+	const walker = document.createTreeWalker( rootEl, NodeFilter.SHOW_TEXT, {
+		acceptNode: n =>
+			n.parentElement?.closest( ".dir-text, .app-directive" )
+				? NodeFilter.FILTER_REJECT
+				: NodeFilter.FILTER_ACCEPT
+	} );
 	const wordRegex = /\S+/g;
 	let node;
 	while ( ( node = walker.nextNode() ) ) {
@@ -34,7 +40,18 @@ export function buildWordIndex( rootEl ) {
 
 // Index of the first word at or below the reading line (the same anchor
 // scrollToWord targets), so the aligner can start where the reader is looking.
-export function findWordAtViewport( ranges, verticalAnchor = 0.33 ) {
+// Where the reader's eyes rest, as a fraction of the window height (Settings: reading line).
+let readingAnchor = 0.33;
+
+export function setReadingAnchor( value ) {
+	if ( Number.isFinite( value ) ) readingAnchor = Math.min( 0.9, Math.max( 0, value ) );
+}
+
+export function getReadingAnchor() {
+	return readingAnchor;
+}
+
+export function findWordAtViewport( ranges, verticalAnchor = readingAnchor ) {
 	if ( !ranges?.length ) return 0;
 	const anchorY = window.innerHeight * verticalAnchor;
 	let lo = 0;
@@ -77,7 +94,10 @@ export const SCROLL_SPEED_STEP = 0.1;
 
 export function setScrollSpeed( value ) {
 	if ( !Number.isFinite( value ) ) return;
-	speedMultiplier = Math.max( SCROLL_SPEED_MIN, Math.min( SCROLL_SPEED_MAX, value ) );
+	speedMultiplier = Math.max(
+		SCROLL_SPEED_MIN,
+		Math.min( SCROLL_SPEED_MAX, value )
+	);
 }
 
 export function getScrollSpeed() {
@@ -105,7 +125,13 @@ function tickScroll( ts ) {
 	lastFrameTs = ts;
 
 	const smoothTime = BASE_SMOOTH_TIME / speedMultiplier;
-	const result = smoothDamp( scrollPos, scrollTargetY, scrollVel, smoothTime, dt );
+	const result = smoothDamp(
+		scrollPos,
+		scrollTargetY,
+		scrollVel,
+		smoothTime,
+		dt
+	);
 	scrollPos = result.newPos;
 	scrollVel = result.newVel;
 
@@ -135,8 +161,11 @@ export function scrollToWord( index, ranges, opts = {} ) {
 	const range = ranges[index];
 	const rect = range.getBoundingClientRect();
 	if ( rect.width === 0 && rect.height === 0 ) return;
-	const verticalAnchor = opts.verticalAnchor ?? 0.33;
-	const targetY = Math.max( 0, window.scrollY + rect.top - window.innerHeight * verticalAnchor );
+	const verticalAnchor = opts.verticalAnchor ?? readingAnchor;
+	const targetY = Math.max(
+		0,
+		window.scrollY + rect.top - window.innerHeight * verticalAnchor
+	);
 	if ( opts.smooth === false ) {
 		scrollTargetY = null;
 		scrollVel = 0;

@@ -1,6 +1,16 @@
-# Electron Teleprompter
+# Sightline Prompter
 
-Desktop teleprompter app built with [Electron.js](https://www.electronjs.org/).
+A see-through desktop teleprompter for recording to camera, built with [Electron.js](https://www.electronjs.org/).
+
+> **About Sightline Prompter.** This is a fork of
+> [reverentgeek/electron-teleprompter](https://github.com/reverentgeek/electron-teleprompter),
+> created by [David Neal](https://reverentgeek.com) and released under the MIT
+> licence. Adapted and enhanced by Joanne Lockwood from SEE Change Happen Ltd.
+> It adds steady words-per-minute scrolling, script
+> slots, a control bar and menu, layout controls, Word and rich-text scripts,
+> settings files and an optional local API for AI assistants. Everything from
+> the original still works. See the [change log](#change-log) for the details,
+> and **Help > About** in the app for credits.
 
 ## Features
 
@@ -17,7 +27,7 @@ Desktop teleprompter app built with [Electron.js](https://www.electronjs.org/).
 
 ## Usage
 
-The Electron Teleprompter app can load any markdown and/or HTML syntax and display that as a translucent overlay on the screen. In this way you can load a script and still see your presentation, video conferencing, or any other applications through the script.
+Sightline Prompter can load any markdown and/or HTML syntax and display that as a translucent overlay on the screen. In this way you can load a script and still see your presentation, video conferencing, or any other applications through the script.
 
 Use the File -> Open menu (or keyboard shortcut) to open a text file that contains markdown or HTML as a script.
 
@@ -47,7 +57,7 @@ The teleprompter can listen to you and scroll the script automatically as you sp
 #### Setup
 
 1. Get a Deepgram API key from [console.deepgram.com](https://console.deepgram.com/) (a free tier is available).
-2. Open `Script > Set Deepgram API Key…` and paste in your key. The key is stored locally in the app's state file.
+2. Click **Voice** in the control bar (or open Settings) and paste in your key. The key is stored locally in the app's state file and is never written to exported settings files.
 3. Grant microphone access the first time you start auto-scroll.
 
 #### Auto-Scroll Usage
@@ -116,6 +126,89 @@ A few notes:
 | `Cmd/Ctrl+[`          | Decrease auto-scroll speed    |
 | `Cmd/Ctrl+\`          | Reset auto-scroll speed       |
 
+## More from Joanne Lockwood
+
+| | |
+| --- | --- |
+| Speaker site | [joannelockwood.co.uk](https://joannelockwood.co.uk) |
+| Book: Don't Be a D*ck | [ninetynineways.co.uk](https://ninetynineways.co.uk) |
+| Inclusion Bites Podcast | [inclusionbites.co.uk](https://inclusionbites.co.uk) |
+| Inclusion Bites Academy | [academy.inclusionbites.co.uk](https://academy.inclusionbites.co.uk) |
+| Consulting: SEE Change Happen | [seechangehappen.co.uk](https://seechangehappen.co.uk) |
+| The Trans Inclusion Toolkit | [thetransinclusiontoolkit.co.uk](https://thetransinclusiontoolkit.co.uk) |
+| LGBTQ+ History | [lgbtq-history.info](https://lgbtq-history.info) |
+| Connected Ecosystem | [connected-ecosystem.co.uk](https://connected-ecosystem.co.uk/) |
+
+## Roadmap
+
+Planned features and their order are in [ROADMAP.md](ROADMAP.md).
+
+## Change log
+
+### 1.0.0 (27 October 2026), based on Electron Teleprompter 4.1.20
+
+The first Sightline Prompter release. Your settings, slots and saved scripts
+from Electron Teleprompter are copied across automatically the first time it
+starts. Earlier version numbers belong to the original project.
+
+**Scrolling and playback**
+
+- Steady scrolling at a set words per minute, alongside the original voice-driven mode
+- Countdown before scrolling starts
+- Progress bar and time left, worked out from your words per minute
+- Back to the start (`Ctrl+Home`)
+- Presenter clickers: `Page Down` starts and pauses, `Page Up` goes back a section
+
+**Scripts**
+
+- Opens Word (`.docx`), rich text (`.rtf`) and plain text as well as markdown and HTML
+- `=== SECTION` lines in Word and rich-text scripts become sections you can jump between
+- `[Stage directions]` are dimmed or hidden, while "quoted words" inside them stay bright
+- Slide-cue phrases from a `cues.yaml` file are highlighted in script order
+- Nine script slots (`Ctrl+1` to `Ctrl+9`). Each slot reopens where you left it, even after a restart
+- Drag a script file onto the window to open it
+
+**Controls and layout**
+
+- Control bar with open, save, edit, slots, play, sliders, layout, voice, help, settings and window buttons. It hides while you read and comes back when you move the mouse
+- Every slider has a number box beside it. You can type a value, use the arrow keys (`Page Up` / `Page Down` move 10 steps), or press and hold the ▲ ▼ buttons. Speed shows words per minute; everything else shows a percentage
+- In-app menu grouped into Script, Playback, Display, Window, Settings and Help
+- Layout panel: text opacity, background opacity and text brightness, each set independently (none affects the controls), left/right and top/bottom margins (the text fades out near the window edges), line spacing, reading line, alignment, mirror and reading-line marker
+- Eye-line mode: a small window near the camera
+- Beam-splitter setup button: a solid black background, text dimmed to 70% and mirroring on, which stops bright light from the screen making the camera image look milky
+- Mirror the script horizontally, vertically or both, for any beam-splitter or reflector rig. `Ctrl+M` steps through Off → Horizontal → Vertical → Both. The whole prompter display is mirrored, controls included, so everything reads correctly in the reflection (this also fixes the control bar scrolling away while mirrored)
+- Minimise, maximise and full screen, which work properly on a transparent window
+- Keyboard shortcuts panel (`F1` or `?`) and an About page
+
+**Voice scroll sync**
+
+- Voice panel with the Deepgram key box, microphone choice, a live level meter and a responsiveness setting
+
+**Settings**
+
+- Save and load all settings as JSON or XML (File > Save Settings to File). The Deepgram key is never written to these files
+
+**AI and remote control** (off by default)
+
+- An optional HTTP API on `127.0.0.1` so an AI assistant or a local script can open or write scripts, switch slots, play, pause, change speed and jump sections
+- Each request needs a secret token. Requests from web pages are refused, and the API can't switch itself on
+- When the API is on, its address and token are written to `remote-control.json` in the app's settings folder:
+  - Windows: `%APPDATA%\Sightline Prompter`
+  - Mac: `~/Library/Application Support/Sightline Prompter`
+  - Linux: `~/.config/Sightline Prompter`
+
+  The file is deleted when the API is switched off. The app never shows your full user path.
+
+| Endpoint            | What it does                                              |
+| ------------------- | --------------------------------------------------------- |
+| `GET /status`       | Current script, slot, speed, progress and slots           |
+| `POST /open`        | Open a script file `{ path, slot }`                       |
+| `POST /load-text`   | Save text as a script and open it `{ text, name, slot }`  |
+| `POST /command`     | `play`, `pause`, `toggle`, `restart`, `next-section`, `previous-section`, `faster`, `slower`, `reset-speed`, `set-wpm`, `go-to-section` |
+| `POST /slot`        | Switch to a slot `{ slot }`                               |
+| `POST /settings`    | Change display settings                                   |
+| `POST /window`      | `minimize`, `maximize` or `fullscreen` (each toggles)     |
+
 ## Developer Setup
 
 1. Install [Node.js LTS](https://nodejs.org/) (v22+)
@@ -125,4 +218,4 @@ A few notes:
 
 ## Origin Story
 
-This app was originally built "in the open" on the [All Hands on Tech Live](https://www.twitch.tv/pluralsight_live) developer stream. You can watch past streams on Pluralsight's [YouTube](https://www.youtube.com/c/pluralsight), [LinkedIn](https://www.linkedin.com/company/pluralsight), or [Facebook](https://www.facebook.com/pluralsight).
+Electron Teleprompter, the app this is based on, was originally built "in the open" on the [All Hands on Tech Live](https://www.twitch.tv/pluralsight_live) developer stream. You can watch past streams on Pluralsight's [YouTube](https://www.youtube.com/c/pluralsight), [LinkedIn](https://www.linkedin.com/company/pluralsight), or [Facebook](https://www.facebook.com/pluralsight).

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Electron Teleprompter is a desktop app that displays markdown/HTML as a translucent overlay, allowing users to read scripts while seeing through to presentations or video calls. Built with Electron.js using ES modules (`"type": "module"`). Includes a built-in CodeMirror 6 markdown editor that toggles with the preview.
+Sightline Prompter (a fork of Electron Teleprompter) is a desktop app that displays markdown/HTML as a translucent overlay, allowing users to read scripts while seeing through to presentations or video calls. Built with Electron.js using ES modules (`"type": "module"`). Includes a built-in CodeMirror 6 markdown editor that toggles with the preview.
 
 ## Commands
 
@@ -27,7 +27,7 @@ Main process (`src/main.js`) → preload (`src/client/teleprompter-preload.mjs`,
 
 **File watching:** Main process uses `chokidar` to watch the opened script file and auto-reloads on external changes. Watcher is paused during edit mode to prevent conflicts.
 
-**State persistence:** `app-state.json` at `~/Library/Application Support/Electron Teleprompter/` stores window geometry, fontSize, opacity, mirrored, and recentFiles. On first launch (no state file), the window centers on screen.
+**State persistence:** `app-state.json` at the app's userData folder (`Sightline Prompter`; settings from the old `Electron Teleprompter` folder are copied across once on first launch) stores window geometry, fontSize, opacity, mirrored, and recentFiles. On first launch (no state file), the window centers on screen.
 
 **Startup:** Auto-loads the most recent file from `recentFiles` and restores fontSize, opacity, and mirrored settings via `did-finish-load` IPC messages. Always starts in preview mode.
 
