@@ -3,7 +3,7 @@
 // otherwise it is the sentence on the reading line. Uses the CSS Custom
 // Highlight API, so the script's own markup is never touched.
 
-import { buildWordIndex, findWordAtViewport } from "./word-index.js";
+import { buildWordIndex, getReadingAnchor } from "./word-index.js";
 
 const NAME = "sightline-sentence";
 const SENTENCE_END = /[.!?…]["'”’)\]]*$/;
@@ -74,8 +74,24 @@ export function showSentenceAt( i ) {
 	CSS.highlights.set( NAME, new Highlight( range ) );
 }
 
-// The sentence on the reading line (steady scrolling, or scrolling by hand).
+// The sentence on the reading line (steady scrolling, or scrolling by hand):
+// the first word whose line reaches down to the reading line, so the line
+// being read counts, not the one below it.
 export function showSentenceAtReadingLine() {
-	if ( !index.ranges.length ) return;
-	showSentenceAt( findWordAtViewport( index.ranges ) );
+	const { ranges } = index;
+	if ( !ranges.length ) return;
+	const y = window.innerHeight * getReadingAnchor();
+	let lo = 0;
+	let hi = ranges.length - 1;
+	let found = ranges.length - 1;
+	while ( lo <= hi ) {
+		const mid = ( lo + hi ) >> 1;
+		if ( ranges[mid].getBoundingClientRect().bottom >= y ) {
+			found = mid;
+			hi = mid - 1;
+		} else {
+			lo = mid + 1;
+		}
+	}
+	showSentenceAt( found );
 }

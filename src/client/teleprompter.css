@@ -1724,3 +1724,14 @@ body.points-mode #md::after {
 ::highlight(sightline-sentence) {
 	background-color: rgba(255, 214, 102, 0.2);
 }
+
+/* A button that reads as a link (Help: "Open the user guide"). */
+.link-button {
+	padding: 0;
+	border: 0;
+	background: none;
+	color: #8fd3ff;
+	font: inherit;
+	text-decoration: underline;
+	cursor: pointer;
+}

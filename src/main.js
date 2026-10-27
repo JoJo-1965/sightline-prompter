@@ -17,6 +17,7 @@ import { setSectionTargets } from "./utils/targets.js";
 import { createPad } from "./pad.js";
 import { createControl } from "./control.js";
 import { createSpeech } from "./speech.js";
+import { createGuide } from "./guide.js";
 import { fitInside, keepTopReachable, sameRect } from "./utils/fit.js";
 import { startRemoteServer, newToken } from "./remote.js";
 import { startPhoneServer, newPhoneKey, lanAddress } from "./phone.js";
@@ -30,6 +31,10 @@ import {
 const __dirname = import.meta.dirname; // eslint-disable-line n/no-unsupported-features/node-builtins
 
 const MAX_RECENT_FILES = 10;
+
+// Help > User Guide: the pages in docs/guide, in their own window.
+const guide = createGuide( { dir: __dirname } );
+ipcMain.on( "openGuide", ( _event, page ) => guide.open( page ) );
 
 // Recording settings, edited on the Settings page and persisted as `settings` in app state.
 const defaultSettings = {
@@ -615,6 +620,7 @@ const createWindow = ( state ) => {
 			activeSlot,
 			samples: SAMPLE_SCRIPTS,
 			openSample: name => openSampleRef?.( name ),
+			openGuide: page => guide.open( page ),
 			isMaximized: windowMode === "maximized",
 			displays: displayList()
 		} );
@@ -907,6 +913,7 @@ app.whenReady().then( async () => {
 	} );
 	controlPad.apply();
 	createSpeech( { dir: __dirname, win } );
+	win.on( "closed", () => guide.close() );
 	controlWindow = createControl( {
 		dir: __dirname,
 		prompter: win,

@@ -87,6 +87,7 @@ export const SHORTCUTS = [
 			[ [ "Ctrl+Shift+O" ], "Control window: a live, upright copy of the script with the buttons, for the operator screen" ],
 			[ [ "Ctrl+," ], "Settings" ],
 			[ [ "F1", "?" ], "This help" ],
+			[ [ "Shift+F1" ], "The user guide, with pictures" ],
 			[ [ "Esc" ], "Close a panel" ],
 			[ [ "Ctrl+W" ], "Close the teleprompter" ]
 		]

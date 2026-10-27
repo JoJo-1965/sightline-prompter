@@ -1,0 +1,21 @@
+# Sightline Prompter user guide
+
+Sightline Prompter is a see-through teleprompter for recording to camera. The
+script floats over your screen, close to the webcam, and scrolls at a steady
+pace or follows your voice.
+
+![The prompter with the control bar, mid-take](images/running.png)
+
+## Contents
+
+1. [Getting started](01-getting-started.md): the control bar, opening a script, your first take
+2. [Writing scripts](02-scripts.md): file types, sections, notes to yourself and instructions to the app
+3. [Scrolling and voice](03-scrolling-and-voice.md): steady pace, voice scrolling, the sentence highlight
+4. [Layout and display](04-layout-and-display.md): text size, backing, the reading line, mirroring, reading aids
+5. [Recording a take](05-recording-a-take.md): the pacing light, take summary, markers, talking points
+6. [Remotes and second screens](06-remotes-and-screens.md): the pad, control window, phone remote, prompter monitor
+7. [Settings](07-settings.md): every tab explained
+8. [Shortcuts and troubleshooting](08-shortcuts-and-troubleshooting.md)
+
+Inside the app, open this guide from **Help > User Guide** or the **?** menu.
+**F1** shows the keyboard shortcuts.

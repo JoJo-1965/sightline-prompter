@@ -27,6 +27,8 @@ A see-through desktop teleprompter for recording to camera, built with [Electron
 
 ## Usage
 
+**New to Sightline? Read the [user guide](docs/guide/README.md)**, with screenshots of every screen. It's also built into the app: Help > User Guide (Shift+F1).
+
 Sightline Prompter can load any markdown and/or HTML syntax and display that as a translucent overlay on the screen. In this way you can load a script and still see your presentation, video conferencing, or any other applications through the script.
 
 Use the File -> Open menu (or keyboard shortcut) to open a text file that contains markdown or HTML as a script.
@@ -184,6 +186,8 @@ starts. Earlier version numbers belong to the original project.
 - **Voice scrolling on your own computer** (Settings > Voice): free, offline and private, and now the default. A one-off 73 MB download (with progress shown) fetches the speech model; after that nothing you say leaves the PC. Words reach the prompter while you're still speaking, not at the next pause. In a side-by-side test on a real 9-minute recording with retakes, it kept the prompter on the reader's line 96% of the time, with a typical delay of a few hundredths of a second; Moonshine, which waits for pauses, managed 75%. Deepgram stays as a choice, with your own key
 - **The sentence you're on is highlighted** (Settings > Display, the Layout panel or the ☰ menu under Display; on by default): in voice mode, the sentence you're about to say; otherwise the one on the reading line. A soft band that keeps the text colour on every theme
 - Words with apostrophes now match whichever apostrophe the script uses: "isn't" heard matches "isn’t" typed
+- **User guide with screenshots** ([docs/guide](docs/guide/README.md)): getting started, writing scripts, scrolling and voice, layout, recording a take, remotes and second screens, every Settings tab, shortcuts and troubleshooting. It opens inside the app from Help > User Guide, the ☰ menu or **Shift+F1**, and works offline; the shortcuts panel (F1) links to it
+- A [note in brackets] that wraps onto the next line of the script file is now dimmed like any other note (before, it showed as normal text)
 - **Tidier menu and Settings.** The ☰ menu groups fold up: Script and Playback start open; opening another group closes the rest, so the menu stays short (the menu remembers). The menu closes when you click anywhere else. The button pad is now in the menu under Playback (Ctrl+Shift+P). Settings is split into tabs (Scrolling, Voice, Display, Layout, Files, Remotes; Files has opening and saving scripts, the settings file and slide cues) with an × at the top right, and Save / Cancel always in view. A quiet line at the foot of the menu and Settings shows the version, release date, licence and credits, with a link to About (Help > About lists the newer features too)
 - **Rehearsal timer:** after a practice run, **Use these times as targets** in the take summary writes each section's time into the script as `{target: m:ss}` (to the nearest 5 seconds), replacing any target it had. Sections started part-way through are left alone. Works with .md and .txt scripts
 - The take summary flags sections that ran short as well as long: within 5% of the target is "On track", 5 to 10% under or over is amber ("Under by 8 s"), and more than 10% is red

@@ -135,7 +135,8 @@ function wrapAppDirectives( root ) {
 }
 
 function wrapDirections( root ) {
-	const regex = /\[[^\]\n]+\]/g;
+	// A direction can wrap onto the next line of the script file.
+	const regex = /\[[^[\]]+\]/g;
 	for ( const node of textNodes( root, "code, pre, .direction, .app-directive" ) ) {
 		const text = node.nodeValue;
 		if ( !regex.test( text ) ) continue;

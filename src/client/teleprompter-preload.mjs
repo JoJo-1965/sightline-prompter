@@ -18,6 +18,7 @@ contextBridge.exposeInMainWorld( "electron", {
 	onMenuSwitchSlot: callback => on( "menuSwitchSlot", callback ),
 	onMenuClearSlot: callback => on( "menuClearSlot", callback ),
 	onMenuHelp: callback => on( "menuHelp", callback ),
+	openGuide: page => ipcRenderer.send( "openGuide", page ),
 	onMenuAbout: callback => on( "menuAbout", callback ),
 	getAppInfo: () => ipcRenderer.send( "getAppInfo" ),
 	onAppInfo: callback => on( "appInfo", callback ),

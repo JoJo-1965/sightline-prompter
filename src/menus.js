@@ -15,6 +15,7 @@ export function buildMenus(
 		isMaximized,
 		samples = [],
 		openSample,
+		openGuide,
 		displays = []
 	}
 ) {
@@ -303,6 +304,11 @@ export function buildMenus(
 		{
 			label: "Help",
 			submenu: [
+				{
+					label: "User Guide",
+					accelerator: "Shift+F1",
+					click: () => openGuide?.()
+				},
 				{
 					label: "Keyboard Shortcuts",
 					accelerator: "F1",

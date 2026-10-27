@@ -585,6 +585,11 @@ document.addEventListener( "keydown", ( event ) => {
 	// Typing or nudging a slider in the control bar or a panel.
 	if ( event.target.closest?.( "input, select, textarea" ) ) return;
 	if ( handlePointsKey( event ) ) return;
+	if ( event.key === "F1" && event.shiftKey ) {
+		event.preventDefault();
+		window.electron.openGuide();
+		return;
+	}
 	if (
 		event.key === "F1"
 		|| ( event.key === "?" && !event.ctrlKey && !event.metaKey )
@@ -2179,6 +2184,7 @@ function menuGroups() {
 		{
 			heading: "Help",
 			items: [
+				[ "📖", "User guide", "Shift+F1", () => window.electron.openGuide() ],
 				[ "?", "Keyboard shortcuts", "F1", openHelp ],
 				[ "ⓘ", "About this teleprompter", "", openAbout ],
 				[
@@ -2679,6 +2685,11 @@ function renderHelp() {
 		list.appendChild( sectionEl );
 	}
 }
+
+document.getElementById( "help-guide" )?.addEventListener( "click", () => {
+	closeHelp();
+	window.electron.openGuide();
+} );
 
 function openHelp() {
 	closePanels();
