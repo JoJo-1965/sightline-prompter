@@ -44,15 +44,16 @@ The features that make the biggest difference when recording to camera.
 | 11  | **Markers.** Drop a bookmark during a take with one key, and jump back to it                     | S    | Useful for retakes                          |
 | 12  | **Highlight the word you're saying** in voice mode                                               | M    | An eye anchor while reading                 |
 | 13  | **On-air light and start beep** when the countdown ends                                          | S    | A clear "you're live" cue                   |
+| 14  | **Free on-device speech recognition as the default for voice scrolling.** Runs on the computer (Moonshine via sherpa-onnx, with Vosk for older machines), so it needs no account or key, works offline and keeps audio private. Cloud services (Deepgram, plus AssemblyAI and Speechmatics) stay available as options, each using the person's own key, through one shared connection point | L    | Joanne's request (27 October 2026): on-device by default **if it works**. Step 1 is a side-by-side test against Deepgram with Joanne's RØDE mic and real scripts. If on-device can't keep up, Deepgram stays the default and on-device becomes an option |
 
 ## 1.3: comfort and accessibility
 
 | #   | Item                                                                                                   | Size | Notes                                                                                   |
 | --- | ------------------------------------------------------------------------------------------------------ | ---- | --------------------------------------------------------------------------------------- |
-| 14  | **Colour themes,** for example yellow on black and high contrast, plus a dyslexia-friendly font option | S    | Saved per slot                                                                          |
-| 15  | **Foot pedals and game controllers** for hands-free scrolling                                          | S    | USB pedals that act as keyboards already work; this adds mapping and controller support |
-| 16  | **Right-to-left scripts** (Arabic, Hebrew)                                                             | S    | Text direction setting and RTL-aware alignment                                          |
-| 17  | **Open PDFs and Google Docs links** directly                                                           | M    | PDF text extraction; Google Docs via its export link                                    |
+| 15  | **Colour themes,** for example yellow on black and high contrast, plus a dyslexia-friendly font option | S    | Saved per slot                                                                          |
+| 16  | **Foot pedals and game controllers** for hands-free scrolling                                          | S    | USB pedals that act as keyboards already work; this adds mapping and controller support |
+| 17  | **Right-to-left scripts** (Arabic, Hebrew)                                                             | S    | Text direction setting and RTL-aware alignment                                          |
+| 18  | **Open PDFs and Google Docs links** directly                                                           | M    | PDF text extraction; Google Docs via its export link                                    |
 
 ## Later
 
@@ -60,7 +61,7 @@ The features that make the biggest difference when recording to camera.
 | ----------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
 | Automatic updates                         | Once installers are established                                                                             |
 | Code signing for Windows and Mac          | Removes the first-run warnings; needs a certificate and an Apple Developer account                          |
-| Short-lived Deepgram tokens and key terms | More secure voice scrolling, with better recognition of names and jargon. Approved (27 October 2026) |
+| Short-lived Deepgram tokens and key terms (applies to the Deepgram option in item 14) | More secure voice scrolling, with better recognition of names and jargon. Approved (27 October 2026) |
 
 ## On hold
 
