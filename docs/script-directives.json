@@ -1,0 +1,105 @@
+{
+	"$comment": "Machine-readable definition of Sightline Prompter script directives. Human spec: SCRIPT-DIRECTIVES.md. AI brief: AI-SCRIPT-BRIEF.md.",
+	"name": "sightline-script-directives",
+	"version": "0.1.0",
+	"status": "syntax agreed; not yet implemented",
+	"date": "2026-10-27",
+	"syntax": {
+		"directive": "{ name[: value] [, name[: value]]... }",
+		"directiveDelimiters": [
+			"{",
+			"}"
+		],
+		"speakerNoteDelimiters": [
+			"[",
+			"]"
+		],
+		"spokenQuoteDelimiters": [
+			"\"",
+			"“”"
+		],
+		"escape": "\\{ and \\} produce literal braces",
+		"caseSensitive": false,
+		"whitespaceInsideBraces": "ignored",
+		"separator": ","
+	},
+	"sections": {
+		"markdown": "A level-2 heading (## ) starts a section",
+		"plainTextAndWord": "A line starting '=== SECTION' starts a section",
+		"directivePlacement": "At the end of the heading line, or alone on the next line"
+	},
+	"scopes": {
+		"script": "Before the first section: one directive line, or YAML front matter in markdown",
+		"section": "On or straight after a section heading",
+		"inline": "Anywhere in the spoken text"
+	},
+	"directives": {
+		"pacing": {
+			"scopes": [
+				"script"
+			],
+			"value": {
+				"type": "enum",
+				"values": [
+					"section",
+					"session"
+				]
+			},
+			"default": "section",
+			"description": "section: per-section timers and targets for batch or modular recording. session: whole-script timing for one continuous take."
+		},
+		"wpm": {
+			"scopes": [
+				"script",
+				"section",
+				"inline"
+			],
+			"value": {
+				"type": "integer",
+				"minimum": 80,
+				"maximum": 220
+			},
+			"description": "Target words per minute. Inline, it applies until the end of the current section."
+		},
+		"target": {
+			"scopes": [
+				"script",
+				"section"
+			],
+			"value": {
+				"type": "duration",
+				"pattern": "^\\d{1,3}:[0-5]\\d$",
+				"example": "1:20"
+			},
+			"description": "Target duration (m:ss). Script scope is used in session mode. If a section has both target and wpm, target wins."
+		},
+		"pause": {
+			"scopes": [
+				"inline"
+			],
+			"value": {
+				"type": "optional-seconds",
+				"pattern": "^(\\d{1,2})s$",
+				"minimum": 1,
+				"maximum": 30,
+				"example": "3s"
+			},
+			"description": "With no value: stop until the speaker continues (Space, clicker or remote). With a value: stop for that many seconds, then continue. In section mode the section timer stops too."
+		},
+		"marker": {
+			"scopes": [
+				"inline"
+			],
+			"value": {
+				"type": "none"
+			},
+			"description": "A bookmark for retakes; Ctrl+B cycles through them."
+		}
+	},
+	"rules": [
+		"Curly braces are reserved for directives.",
+		"Square brackets never control the app; [Pause.] is only a note to the speaker.",
+		"Unknown directives are hidden and flagged with a warning in the editor.",
+		"Use either target or wpm on a section, not both."
+	]
+}

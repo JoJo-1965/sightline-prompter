@@ -1,0 +1,23 @@
+# Sightline Prompter
+
+> A free, see-through desktop teleprompter for recording to camera (Windows,
+> Mac, Linux). It's a fork of Electron Teleprompter by David Neal, adapted and
+> enhanced by Joanne Lockwood from SEE Change Happen Ltd. It offers steady or
+> voice-driven scrolling, script slots, and mirroring for beam-splitter rigs,
+> plus an optional local API for AI assistants.
+
+## Writing scripts for Sightline
+
+- [AI script brief](docs/AI-SCRIPT-BRIEF.md): instructions to paste into any script-writing AI
+- [Script directives spec](docs/SCRIPT-DIRECTIVES.md): `{curly}` directives for the app, `[square]` notes for the speaker
+- [Machine-readable directive definition](docs/script-directives.json)
+
+## Controlling the app
+
+- [README: AI and remote control](readme.md#change-log): the local HTTP API (off by default, token required) for opening or writing scripts, switching slots, playing, pausing and changing speed
+
+## Project
+
+- [README](readme.md)
+- [Roadmap](ROADMAP.md)
+- [Licence (MIT)](LICENSE)

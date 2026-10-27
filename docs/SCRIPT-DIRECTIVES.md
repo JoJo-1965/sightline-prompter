@@ -1,6 +1,6 @@
 # Script directives
 
-Status: **proposed** (27 October 2026). Parts of this are built in roadmap
+Status: **syntax agreed** (27 October 2026): `[ ]` for the speaker, `{ }` for the app. Not built yet. Parts of this are built in roadmap
 items 6 (cue pause) and 8 to 10 (pacing).
 
 A script can carry two kinds of note besides the words you speak:
