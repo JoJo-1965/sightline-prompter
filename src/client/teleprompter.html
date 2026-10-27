@@ -511,9 +511,18 @@
     </div>
     <div id="settings-modal" class="modal hidden">
       <div class="modal-content settings-content">
+        <div class="settings-head">
         <h3>Settings</h3>
+        <button type="button" id="settings-close" class="modal-close" title="Close without saving (Esc)" aria-label="Close settings">×</button>
+        <div class="settings-tabs" role="tablist" aria-label="Settings sections">
+          <button type="button" role="tab" data-tab="scrolling">Scrolling</button>
+          <button type="button" role="tab" data-tab="display">Display</button>
+          <button type="button" role="tab" data-tab="cues">Slide cues</button>
+          <button type="button" role="tab" data-tab="remotes">Remotes</button>
+        </div>
+        </div>
 
-        <fieldset>
+        <fieldset data-tab="scrolling">
           <legend>Scrolling</legend>
           <label class="row"
             >Mode
@@ -562,7 +571,7 @@
           </label>
         </fieldset>
 
-        <fieldset>
+        <fieldset data-tab="display">
           <legend>Display</legend>
           <label class="row"
             >Text size
@@ -615,7 +624,7 @@
           >
         </fieldset>
 
-        <fieldset>
+        <fieldset data-tab="cues">
           <legend>Slide cues</legend>
           <label class="check"
             ><input id="set-highlight-cues" type="checkbox" /> Highlight cue
@@ -636,7 +645,7 @@
           </p>
         </fieldset>
 
-        <fieldset>
+        <fieldset data-tab="display">
           <legend>Eye-line mode</legend>
           <label class="check"
             ><input id="set-eye-line" type="checkbox" /> Pin a narrow strip to
@@ -674,7 +683,7 @@
           </label>
         </fieldset>
 
-        <fieldset id="set-remote-fieldset">
+        <fieldset id="set-remote-fieldset" data-tab="remotes">
           <legend>AI and remote control</legend>
           <label class="check"
             ><input id="set-remote" type="checkbox" /> Let an AI assistant or
@@ -697,7 +706,7 @@
           </p>
         </fieldset>
 
-        <fieldset id="set-phone-fieldset">
+        <fieldset id="set-phone-fieldset" data-tab="remotes">
           <legend>Phone remote</legend>
           <label class="check"><input id="set-phone" type="checkbox" /> Control the prompter from a phone on the same Wi-Fi</label>
           <div id="set-phone-connect" class="phone-connect hidden">

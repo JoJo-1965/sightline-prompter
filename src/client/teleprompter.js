@@ -1246,6 +1246,7 @@ async function openSettings() {
 	window.electron.getRemoteInfo();
 	field( "set-phone" ).checked = !!settings.phoneRemote;
 	window.electron.getPhoneInfo();
+	showSettingsTab( lastSettingsTab() );
 	settingsModal.classList.remove( "hidden" );
 	await populateMicSelect();
 	field( "set-microphone" ).innerHTML = micSelect.innerHTML;
@@ -1334,6 +1335,7 @@ if ( settingsModal ) {
 	} );
 	field( "settings-save" ).addEventListener( "click", saveSettingsPage );
 	field( "settings-cancel" ).addEventListener( "click", () => closeSettings( true ) );
+	field( "settings-close" ).addEventListener( "click", () => closeSettings( true ) );
 	settingsModal.addEventListener( "keydown", ( e ) => {
 		if ( e.key === "Escape" ) closeSettings( true );
 	} );
@@ -1889,6 +1891,13 @@ function menuGroups() {
 					"Ctrl+Shift+V",
 					() => togglePanel( "voice-panel" ),
 					{ checked: voice }
+				],
+				[
+					"▦",
+					"Button pad (floating)",
+					"Ctrl+Shift+P",
+					toggleSetting( "showPad" ),
+					{ checked: !!settings.showPad }
 				]
 			]
 		},
@@ -2038,15 +2047,59 @@ function menuButton( icon, label, key, action, opts = {} ) {
 	return btn;
 }
 
+// Menu groups open or closed: the everyday ones start open. Remembered per
+// computer; the menu still works if storage isn't available.
+const MENU_OPEN_BY_DEFAULT = [ "Script", "Playback" ];
+const MENU_GROUPS_KEY = "menuGroupsOpen";
+
+function menuGroupsOpen() {
+	try {
+		const saved = JSON.parse( localStorage.getItem( MENU_GROUPS_KEY ) );
+		if ( saved && typeof saved === "object" ) return saved;
+	} catch {
+		// fall through to the defaults
+	}
+	return {};
+}
+
+function isMenuGroupOpen( heading ) {
+	return menuGroupsOpen()[heading] ?? MENU_OPEN_BY_DEFAULT.includes( heading );
+}
+
+function toggleMenuGroup( heading ) {
+	const open = { ...menuGroupsOpen(), [heading]: !isMenuGroupOpen( heading ) };
+	try {
+		localStorage.setItem( MENU_GROUPS_KEY, JSON.stringify( open ) );
+	} catch {
+		// not remembered this time
+	}
+	renderAppMenu();
+	appMenu
+		.querySelector( `.am-heading[data-group="${ CSS.escape( heading ) }"]` )
+		?.focus();
+}
+
 function renderAppMenu() {
 	appMenu.innerHTML = "";
 	for ( const group of menuGroups() ) {
 		const groupEl = document.createElement( "div" );
 		groupEl.className = "am-group";
-		const heading = document.createElement( "div" );
+		const open = isMenuGroupOpen( group.heading );
+		const heading = document.createElement( "button" );
+		heading.type = "button";
 		heading.className = "am-heading";
-		heading.textContent = group.heading;
+		heading.dataset.group = group.heading;
+		heading.setAttribute( "aria-expanded", String( open ) );
+		const title = document.createElement( "span" );
+		title.textContent = group.heading;
+		const chevron = document.createElement( "span" );
+		chevron.className = "am-chevron";
+		chevron.textContent = open ? "▾" : "▸";
+		heading.append( title, chevron );
+		heading.addEventListener( "click", () => toggleMenuGroup( group.heading ) );
 		groupEl.appendChild( heading );
+		appMenu.appendChild( groupEl );
+		if ( !open ) continue;
 		for ( const item of group.items ) {
 			if ( item.recent ) {
 				const recent = slotState.recent ?? [];
@@ -2106,7 +2159,6 @@ function renderAppMenu() {
 			const [ icon, label, key, action, opts ] = item;
 			groupEl.appendChild( menuButton( icon, label, key, action, opts ) );
 		}
-		appMenu.appendChild( groupEl );
 	}
 }
 
@@ -2123,7 +2175,9 @@ function toggleAppMenu() {
 }
 
 appMenu?.addEventListener( "keydown", ( e ) => {
-	const items = [ ...appMenu.querySelectorAll( ".am-item:not(:disabled)" ) ];
+	const items = [
+		...appMenu.querySelectorAll( ".am-heading, .am-item:not(:disabled)" )
+	];
 	const i = items.indexOf( document.activeElement );
 	if ( e.key === "ArrowDown" || e.key === "ArrowUp" ) {
 		e.preventDefault();
@@ -2579,7 +2633,9 @@ function sectionOnScreen() {
 // The heading of the section on screen (or the current talking point).
 function currentSectionTitle() {
 	const headings = md?.querySelectorAll( "h2" ) ?? [];
-	const heading = pointsMode() ? headings[pointsIndex] : headings[sectionOnScreen() - 1];
+	const heading = pointsMode()
+		? headings[pointsIndex]
+		: headings[sectionOnScreen() - 1];
 	return heading?.textContent.replace( /\{[^}]*\}/g, "" ).trim() ?? "";
 }
 
@@ -2646,17 +2702,60 @@ window.electron.onPhoneInfo( ( info ) => {
 	if ( info.qr ) document.getElementById( "set-phone-qr" ).src = info.qr;
 	document.getElementById( "set-phone-url" ).textContent = info.url ?? "";
 	if ( info.error ) status.textContent = `Not running: ${ info.error }`;
-	else if ( info.running ) status.textContent = "On. Scan the code with your phone.";
+	else if ( info.running )
+		status.textContent = "On. Scan the code with your phone.";
 	else status.textContent = "Off. Tick the box and Save to turn it on.";
 } );
 onClick( "set-phone-new", () => window.electron.newPhoneKey() );
 
 function openRemoteSettings() {
 	openSettings();
-	setTimeout(
-		() => field( "set-remote-fieldset" )?.scrollIntoView( { block: "start" } ),
-		50
-	);
+	showSettingsTab( "remotes" );
+}
+
+// Settings tabs: one section at a time, so nothing sits below the fold.
+// The last tab used opens next time.
+const SETTINGS_TAB_KEY = "settingsTab";
+const settingsTabs = [ ...document.querySelectorAll( ".settings-tabs [data-tab]" ) ];
+
+function showSettingsTab( name ) {
+	if ( !settingsTabs.some( t => t.dataset.tab === name ) ) name = "scrolling";
+	for ( const tab of settingsTabs ) {
+		const on = tab.dataset.tab === name;
+		tab.classList.toggle( "active", on );
+		tab.setAttribute( "aria-selected", String( on ) );
+		tab.tabIndex = on ? 0 : -1;
+	}
+	for ( const set of settingsModal?.querySelectorAll( "fieldset[data-tab]" ) ?? [] ) {
+		set.classList.toggle( "hidden", set.dataset.tab !== name );
+	}
+	settingsModal?.querySelector( ".settings-content" )?.scrollTo( 0, 0 );
+	try {
+		localStorage.setItem( SETTINGS_TAB_KEY, name );
+	} catch {
+		// not remembered this time
+	}
+}
+
+for ( const tab of settingsTabs ) {
+	tab.addEventListener( "click", () => showSettingsTab( tab.dataset.tab ) );
+	tab.addEventListener( "keydown", ( e ) => {
+		if ( e.key !== "ArrowRight" && e.key !== "ArrowLeft" ) return;
+		e.preventDefault();
+		e.stopPropagation();
+		const i = settingsTabs.indexOf( tab ) + ( e.key === "ArrowRight" ? 1 : -1 );
+		const next = settingsTabs[( i + settingsTabs.length ) % settingsTabs.length];
+		showSettingsTab( next.dataset.tab );
+		next.focus();
+	} );
+}
+
+function lastSettingsTab() {
+	try {
+		return localStorage.getItem( SETTINGS_TAB_KEY ) ?? "scrolling";
+	} catch {
+		return "scrolling";
+	}
 }
 // --- Script directives: pauses, markers and pace targets ---
 // readDirectives() (directives.js) finds what the script asks for; this part
@@ -3024,9 +3123,10 @@ function judgeFinished( seconds, expected ) {
 	const gap = seconds - expected;
 	const share = Math.abs( gap ) / expected;
 	if ( share <= 0.05 ) return { level: "good", text: "On track" };
-	const amount = Math.abs( gap ) < 60
-		? `${ Math.round( Math.abs( gap ) ) } s`
-		: formatClock( Math.abs( gap ) );
+	const amount
+		= Math.abs( gap ) < 60
+			? `${ Math.round( Math.abs( gap ) ) } s`
+			: formatClock( Math.abs( gap ) );
 	return {
 		level: share <= 0.1 ? "warn" : "bad",
 		text: gap < 0 ? `Under by ${ amount }` : `Over by ${ amount }`
@@ -3044,7 +3144,11 @@ function stopPacing() {
 			= directivePoints.sections[pacing.sectionIndex + 1]?.y ?? Infinity;
 		// Only a section read to its end counts as a full pass.
 		if ( section && y >= end - 2 ) {
-			logSection( pacing.sectionIndex, pacing.sectionTime, pacing.sectionStartWords );
+			logSection(
+				pacing.sectionIndex,
+				pacing.sectionTime,
+				pacing.sectionStartWords
+			);
 		}
 	}
 	pacing = null;
@@ -3074,7 +3178,11 @@ function pacingTick() {
 			pacing.sectionIndex !== null
 			&& ( index > pacing.sectionIndex || pointsMode() )
 		) {
-			logSection( pacing.sectionIndex, pacing.sectionTime, pacing.sectionStartWords );
+			logSection(
+				pacing.sectionIndex,
+				pacing.sectionTime,
+				pacing.sectionStartWords
+			);
 		}
 		pacing.sectionIndex = index;
 		pacing.sectionTime = 0;

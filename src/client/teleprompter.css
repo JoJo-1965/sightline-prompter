@@ -254,6 +254,85 @@ body.eye-line #md {
 	font-size: 13px;
 }
 
+/* Title, × and tabs stay at the top; Save and Cancel stay at the bottom. */
+.settings-content {
+	padding-top: 0;
+	padding-bottom: 0;
+}
+
+.settings-head {
+	position: sticky;
+	top: 0;
+	z-index: 2;
+	padding-top: 1em;
+	background: #2a2d34;
+}
+
+.settings-head h3 {
+	margin-top: 0;
+}
+
+.settings-content .modal-actions {
+	position: sticky;
+	bottom: 0;
+	z-index: 2;
+	padding: 0.75em 0 1em;
+	background: #2a2d34;
+}
+
+.modal-close {
+	position: absolute;
+	top: 0.6em;
+	right: -0.6em;
+	width: 32px;
+	height: 32px;
+	font-size: 22px;
+	line-height: 1;
+	color: #b8bcc4;
+	background: none;
+	border: none;
+	border-radius: 6px;
+	cursor: pointer;
+}
+
+.modal-close:hover,
+.modal-close:focus-visible {
+	color: #fff;
+	background: rgba(255, 255, 255, 0.1);
+	outline: none;
+}
+
+.settings-tabs {
+	display: flex;
+	gap: 4px;
+	margin: 0 0 0.75em;
+	border-bottom: 1px solid #444;
+}
+
+.settings-tabs button {
+	padding: 6px 12px;
+	font: inherit;
+	color: #b8bcc4;
+	background: none;
+	border: none;
+	border-bottom: 2px solid transparent;
+	margin-bottom: -1px;
+	cursor: pointer;
+}
+
+.settings-tabs button:hover {
+	color: #ececec;
+}
+
+.settings-tabs button.active {
+	color: #8fd3ff;
+	border-bottom-color: #8fd3ff;
+}
+
+.settings-content fieldset.hidden {
+	display: none;
+}
+
 .settings-content fieldset {
 	border: 1px solid #444;
 	border-radius: 6px;
@@ -713,6 +792,16 @@ body.editing .panel {
 }
 
 .am-heading {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	width: 100%;
+	border: none;
+	border-radius: 6px;
+	background: none;
+	cursor: pointer;
+	font-family: inherit;
+	text-align: left;
 	padding: 6px 10px 3px;
 	font-size: 10.5px;
 	font-weight: 600;
@@ -735,6 +824,18 @@ body.editing .panel {
 	border: none;
 	border-radius: 6px;
 	cursor: pointer;
+}
+
+.am-heading:hover,
+.am-heading:focus-visible {
+	color: #d0d4da;
+	background: rgba(255, 255, 255, 0.06);
+	outline: none;
+}
+
+.am-chevron {
+	font-size: 12px;
+	letter-spacing: 0;
 }
 
 .am-item:hover,
