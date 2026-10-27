@@ -38,20 +38,21 @@ The features that make the biggest difference when recording to camera.
 
 | #   | Item                                                                                             | Size | Notes                                       |
 | --- | ------------------------------------------------------------------------------------------------ | ---- | ------------------------------------------- |
-| 8   | **Rehearsal timer.** Times each section during a practice run and suggests your words per minute | M    | Uses the section markers that already exist |
-| 9   | **Finish by a target time.** Set a section or script length; the speed adjusts to match          | M    | Pairs well with the rehearsal timer         |
-| 10  | **Markers.** Drop a bookmark during a take with one key, and jump back to it                     | S    | Useful for retakes                          |
-| 11  | **Highlight the word you're saying** in voice mode                                               | M    | An eye anchor while reading                 |
-| 12  | **On-air light and start beep** when the countdown ends                                          | S    | A clear "you're live" cue                   |
+| 8   | **Pacing indicator.** During a take, show elapsed time against a target time for the script (or the current section), with an on-track / ahead / behind light (green, amber, red, plus words, not colour alone), and target words per minute next to your actual speaking rate | M    | Joanne's request (27 October 2026). Actual rate comes from voice recognition in voice mode, and from progress over time in steady mode |
+| 9   | **Finish by a target time.** Set a section or script length; the speed adjusts to match, and the pacing indicator shows the target | M    | Uses the same target times as the pacing indicator |
+| 10  | **Rehearsal timer.** Times each section during a practice run, then offers those times as targets and suggests your words per minute | M    | Uses the section markers that already exist |
+| 11  | **Markers.** Drop a bookmark during a take with one key, and jump back to it                     | S    | Useful for retakes                          |
+| 12  | **Highlight the word you're saying** in voice mode                                               | M    | An eye anchor while reading                 |
+| 13  | **On-air light and start beep** when the countdown ends                                          | S    | A clear "you're live" cue                   |
 
 ## 1.3: comfort and accessibility
 
 | #   | Item                                                                                                   | Size | Notes                                                                                   |
 | --- | ------------------------------------------------------------------------------------------------------ | ---- | --------------------------------------------------------------------------------------- |
-| 13  | **Colour themes,** for example yellow on black and high contrast, plus a dyslexia-friendly font option | S    | Saved per slot                                                                          |
-| 14  | **Foot pedals and game controllers** for hands-free scrolling                                          | S    | USB pedals that act as keyboards already work; this adds mapping and controller support |
-| 15  | **Right-to-left scripts** (Arabic, Hebrew)                                                             | S    | Text direction setting and RTL-aware alignment                                          |
-| 16  | **Open PDFs and Google Docs links** directly                                                           | M    | PDF text extraction; Google Docs via its export link                                    |
+| 14  | **Colour themes,** for example yellow on black and high contrast, plus a dyslexia-friendly font option | S    | Saved per slot                                                                          |
+| 15  | **Foot pedals and game controllers** for hands-free scrolling                                          | S    | USB pedals that act as keyboards already work; this adds mapping and controller support |
+| 16  | **Right-to-left scripts** (Arabic, Hebrew)                                                             | S    | Text direction setting and RTL-aware alignment                                          |
+| 17  | **Open PDFs and Google Docs links** directly                                                           | M    | PDF text extraction; Google Docs via its export link                                    |
 
 ## Later
 
