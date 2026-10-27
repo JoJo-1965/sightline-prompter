@@ -1267,6 +1267,21 @@ body.editing #cb-progress-text {
 	display: none;
 }
 
+/* The same for Settings, the panels, the menu and Help. */
+.settings-content,
+.panel,
+.help-content,
+#app-menu {
+	scrollbar-width: none;
+}
+
+.settings-content::-webkit-scrollbar,
+.panel::-webkit-scrollbar,
+.help-content::-webkit-scrollbar,
+#app-menu::-webkit-scrollbar {
+	display: none;
+}
+
 /* The feature list in two columns when there is room. */
 @media (min-width: 760px) {
 	.about-content ul:not(.about-links) {

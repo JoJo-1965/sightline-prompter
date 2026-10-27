@@ -1662,6 +1662,7 @@ async function openSettings() {
 	fillFilesTab();
 	showSettingsTab( lastSettingsTab() );
 	settingsModal.classList.remove( "hidden" );
+	requestAnimationFrame( () => updateSettingsChevrons() );
 	await populateMicSelect();
 	field( "set-microphone" ).innerHTML = micSelect.innerHTML;
 	field( "set-microphone" ).value = audioDeviceId ?? "";
@@ -3037,7 +3038,11 @@ const aboutModal = document.getElementById( "about-modal" );
 
 // Floating chevrons instead of a scroll bar: ▲ and ▼ appear at the top and
 // bottom edge only when there is more to see that way. Wheel and keys still scroll.
-function scrollChevrons( box ) {
+// `after` and `before`: parts pinned at the top and bottom of the box (the
+// Settings title and tabs, and its Save and Cancel), so the chevrons sit inside them.
+// They keep themselves up to date as the content changes (a menu group folding
+// open, a Settings tab, a panel opening).
+function scrollChevrons( box, { after = null, before = null } = {} ) {
 	if ( !box ) return () => {};
 	const make = ( dir, label, text ) => {
 		const wrap = document.createElement( "div" );
@@ -3056,21 +3061,52 @@ function scrollChevrons( box ) {
 	};
 	const up = make( "up", "Scroll up", "▲" );
 	const down = make( "down", "Scroll down", "▼" );
-	box.prepend( up );
-	box.append( down );
+	if ( after ) after.after( up );
+	else box.prepend( up );
+	if ( before ) before.before( down );
+	else box.append( down );
+	let queued = false;
 	const update = () => {
+		queued = false;
+		if ( after ) up.style.top = `${ after.offsetHeight }px`;
+		if ( before ) down.style.bottom = `${ before.offsetHeight }px`;
 		up.classList.toggle( "off", box.scrollTop <= 4 );
 		const end = box.scrollTop + box.clientHeight >= box.scrollHeight - 4;
 		down.classList.toggle( "off", end );
 	};
+	const schedule = () => {
+		if ( queued ) return;
+		queued = true;
+		requestAnimationFrame( update );
+	};
 	box.addEventListener( "scroll", update, { passive: true } );
-	window.addEventListener( "resize", update );
+	window.addEventListener( "resize", schedule );
+	new ResizeObserver( schedule ).observe( box );
+	new MutationObserver( schedule ).observe( box, {
+		childList: true,
+		subtree: true,
+		attributes: true,
+		attributeFilter: [ "class", "hidden", "open" ]
+	} );
 	return update;
 }
 
 const updateAboutChevrons = scrollChevrons(
 	aboutModal?.querySelector( ".about-content" )
 );
+const settingsBox = document.querySelector( ".settings-content" );
+const updateSettingsChevrons = scrollChevrons( settingsBox, {
+	after: settingsBox?.querySelector( ".settings-head" ),
+	before: settingsBox?.querySelector( ".modal-actions" )
+} );
+for ( const box of [
+	document.getElementById( "layout-panel" ),
+	document.getElementById( "voice-panel" ),
+	document.getElementById( "app-menu" ),
+	document.querySelector( ".help-content" )
+] ) {
+	scrollChevrons( box );
+}
 
 function openAbout() {
 	closePanels();
