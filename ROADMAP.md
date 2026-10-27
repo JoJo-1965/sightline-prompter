@@ -67,12 +67,31 @@ quick wins.
 | 20  | **Teach it your words:** a log of what voice scrolling misheard (script word against what it heard, for example "Moshe" heard as "Marsha"), and a short training mode where you read out the names, jargon and commands it gets wrong. The fixes become a personal word list that biases the on-device recogniser (sherpa-onnx hotwords) and the matching | ★★★   | M    | Joanne's idea, 27 Oct. The log needs no extra model; hotwords need the model's BPE vocabulary (a small extra download) |
 | 22  | **Sightline in a browser** (Cloudflare Pages): the prompter, steady and voice scrolling (speech on the device, in WebAssembly), talking points and the pacing light, for a tablet or phone used as a prompter, or a computer where nothing can be installed. The desktop-only parts stay in the app: floating over other windows, hiding from capture, click-through, monitor choice and global shortcuts | ★★    | L    | Same script format and settings files, so the two can be used side by side |
 
+## 1.4: recording workflow
+
+Ideas from 27 October 2026. Voice scrolling already knows which word was said
+when, which section was being read and when "Prompter, again" was said; these
+items keep that information and put it to work in the edit and in rehearsal.
+Ordered by value, then size.
+
+| #   | Item | Value | Size | Notes |
+| --- | ---- | ----- | ---- | ----- |
+| 23  | **Take log for the edit:** record each section and take as it happens (start and end times, retakes from "Prompter, again", markers) and export it when you stop, as JSON for an edit pipeline (and CSV), so the edit can pick the last good take of each section and cut false starts automatically | ★★★ | M | Recommended next, ahead of 20, so it pays off on the next module recording. Times line up with the recording by the slate (25) or the take's start |
+| 24  | **"Prompter, keeper" and "Prompter, scrap that":** rate a take as you go; the rating goes into the take log, so the edit uses your verdict rather than just the last take | ★★★ | S | Builds on 23 |
+| 25  | **Slate and sync mark:** at the start of each take, a full-screen slate ("M2 · Section 3 · Take 2") for a second, with a sharp beep and a white flash, giving the edit a sync point and a label in the footage | ★★ | S | Replaces the hand clap, which lands late when clapped straight after pressing record |
+| 26  | **Captions from the script:** voice scrolling knows when each word was said, so export an SRT or VTT captions file in the script's own wording and spelling, timed to the delivery, with no audio sent anywhere; and a "script against what you said" comparison for corrections and reshoots | ★★ | M | Uses the timings from 23 |
+| 27  | **Code signing for Windows and Mac:** no more "unknown publisher" warnings | ★★ | S | Moved up from Later. Needs a code-signing certificate and an Apple Developer account (Joanne's decision) |
+| 28  | **Rehearsal coach:** after a practice run, pace by section, lines skipped, "um"s and sentences you stumbled on, all on the computer | ★★ | M | Same speech engine as voice scrolling |
+| 29  | **Automatic updates:** new versions download and install themselves, so users get fixes without reinstalling | ★★ | M | Moved up from Later. Best done with code signing (27), which Mac updates need |
+| 30  | **Script health check in the editor:** reading time per section, and flags on sentences too long for one breath and on tongue-twisters | ★ | S | |
+| 31  | **Scripts folder sync:** choose a OneDrive, Dropbox or other folder, and scripts saved there from another computer appear in Sightline | ★ | S | |
+| 32  | **Advance slides at cue words:** when you say a slide-cue phrase, press the next-slide key in PowerPoint or Keynote, for live talks and webinars | ★ | M | Builds on the slide-cue highlighting that's already there |
+
 ## Later
 
 | Item                             | Notes                                                                              |
 | -------------------------------- | ---------------------------------------------------------------------------------- |
-| Automatic updates                | Once installers are established                                                    |
-| Code signing for Windows and Mac | Removes the first-run warnings; needs a certificate and an Apple Developer account |
+| Start and stop OBS recording with the prompter, with markers in OBS | Parked for the longer term at Joanne's request (27 October 2026): not using OBS at the moment. Would use OBS's built-in WebSocket remote control |
 
 ## On hold
 
