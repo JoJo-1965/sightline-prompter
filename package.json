@@ -14,7 +14,8 @@
 		"build": "pnpm dlx @electron/packager --overwrite ./ --out ./dist --ignore=\"/node_modules/\\.ignored\" --ignore=\"/node_modules/(electron|@electron|eslint)\"",
 		"lint": "eslint --fix",
 		"check-script": "node scripts/check-script.mjs",
-		"test": "node scripts/targets.test.mjs && node scripts/fit.test.mjs && node scripts/voice-commands.test.mjs"
+		"test": "node scripts/targets.test.mjs && node scripts/fit.test.mjs && node scripts/voice-commands.test.mjs",
+		"dist": "pnpm build:editor && electron-builder --publish never"
 	},
 	"author": "Joanne Lockwood (SEE Change Happen Ltd)",
 	"contributors": [
@@ -36,6 +37,7 @@
 		"@electron/packager": "^20.3.0",
 		"codemirror": "^6.0.2",
 		"electron": "45",
+		"electron-builder": "25.1.8",
 		"esbuild": "^0.28.2",
 		"eslint": "^10.13.0",
 		"eslint-config-reverentgeek": "^7.1.25"
@@ -50,5 +52,63 @@
 		"sherpa-onnx-node": "2.0.1",
 		"showdown": "^2.1.0"
 	},
-	"packageManager": "pnpm@12.15.0+sha512.b3951d6d6ff4a9f13dc7cf56cd28d2b8eb37dbcc9c68e52e1e1191873ea9f82a017287ab50baadc5ccc494f036c67c0e47eb13608c2fa36f47711b61ea128e61"
+	"packageManager": "pnpm@12.15.0+sha512.b3951d6d6ff4a9f13dc7cf56cd28d2b8eb37dbcc9c68e52e1e1191873ea9f82a017287ab50baadc5ccc494f036c67c0e47eb13608c2fa36f47711b61ea128e61",
+	"build": {
+		"appId": "uk.co.seechangehappen.sightline",
+		"productName": "Sightline Prompter",
+		"copyright": "© 2022–2026 David Neal and Joanne Lockwood (SEE Change Happen Ltd). MIT licence.",
+		"directories": {
+			"output": "dist",
+			"buildResources": "build"
+		},
+		"files": [
+			"src/**/*",
+			"docs/guide/**/*",
+			"docs/*.md",
+			"LICENSE",
+			"readme.md",
+			"package.json"
+		],
+		"asarUnpack": [
+			"node_modules/sherpa-onnx-*/**"
+		],
+		"icon": "build/icon.png",
+		"win": {
+			"target": [
+				{
+					"target": "nsis",
+					"arch": [
+						"x64"
+					]
+				}
+			]
+		},
+		"nsis": {
+			"oneClick": false,
+			"allowToChangeInstallationDirectory": true,
+			"artifactName": "Sightline-Prompter-Setup-${version}.${ext}"
+		},
+		"mac": {
+			"target": [
+				{
+					"target": "dmg"
+				}
+			],
+			"category": "public.app-category.video",
+			"identity": null,
+			"artifactName": "Sightline-Prompter-${version}-${arch}.${ext}",
+			"extendInfo": {
+				"NSMicrophoneUsageDescription": "Sightline Prompter listens to you to scroll the script and hear “Prompter, …” commands. Speech is recognised on this Mac."
+			}
+		},
+		"linux": {
+			"target": [
+				"AppImage",
+				"deb"
+			],
+			"category": "AudioVideo",
+			"maintainer": "Joanne Lockwood <jo.lockwood@seechangehappen.co.uk>",
+			"artifactName": "Sightline-Prompter-${version}-${arch}.${ext}"
+		}
+	}
 }
