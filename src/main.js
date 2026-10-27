@@ -53,6 +53,8 @@ const defaultSettings = {
 	theme: "default", // default, yellow, contrast or cream
 	scriptFont: "default", // default, atkinson, opendyslexic or verdana
 	onAirLight: true, // ON AIR light while scrolling
+	showPacing: true, // pacing light: time and pace against the target
+	takeSummary: true, // per-section summary when a take stops
 	startBeep: false, // a short beep when the countdown ends (off: it would be recorded)
 	hideFromCapture: false, // keep the window out of screen sharing and recordings
 	clickThrough: false, // clicks on the script go to the window behind

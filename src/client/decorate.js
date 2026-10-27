@@ -69,7 +69,14 @@ function buildDirection( text ) {
 // They're wrapped so they can be hidden while reading, or shown as small tags
 // for checking a script. Unknown names are marked so typos stand out.
 
-const KNOWN_DIRECTIVES = new Set( [ "pacing", "wpm", "target", "pause", "marker", "mode" ] );
+const KNOWN_DIRECTIVES = new Set( [
+	"pacing",
+	"wpm",
+	"target",
+	"pause",
+	"marker",
+	"mode"
+] );
 const DIRECTIVE_REGEX = /(?<!\\)\{[^{}\n]*\}/g;
 
 function directiveIsKnown( text ) {
@@ -99,6 +106,10 @@ function wrapAppDirectives( root ) {
 			span.textContent = match[0];
 			frag.append( span );
 			last = match.index + match[0].length;
+			// A directive at the start of a line shouldn't leave a space before
+			// the first spoken word.
+			const before = text.slice( 0, match.index );
+			if ( !before.trim() && !node.previousSibling && text[last] === " " ) last++;
 		}
 		if ( last < text.length ) frag.append( text.slice( last ) );
 		node.replaceWith( frag );

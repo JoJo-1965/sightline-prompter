@@ -274,6 +274,13 @@
       >
       <h5 class="lp-sub">Script</h5>
       <label class="lp-check"
+        ><input id="lp-pacing" type="checkbox" /> Pacing light while scrolling
+        <span class="lp-hint-inline">time and pace against the target</span></label
+      >
+      <label class="lp-check"
+        ><input id="lp-summary" type="checkbox" /> Summary after each take</label
+      >
+      <label class="lp-check"
         ><input id="lp-follow-pace" type="checkbox" /> Follow the script's pace
         <span class="lp-hint-inline">{wpm} and {target}</span></label
       >
@@ -400,6 +407,22 @@
     <div id="progress-bar" class="hidden"><div id="progress-fill"></div></div>
     <div id="cb-progress-text"></div>
     <div id="on-air" class="hidden" role="status">ON AIR</div>
+    <div id="pacing" class="hidden" role="status" aria-live="polite"></div>
+    <div id="take-summary" class="modal hidden">
+      <div class="modal-content summary-content" role="dialog" aria-modal="true" aria-labelledby="take-summary-title">
+        <h3 id="take-summary-title">How the take went</h3>
+        <table class="summary-table">
+          <thead>
+            <tr><th>Section</th><th>Time</th><th>Target</th><th>Pace (wpm)</th><th>Result</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        <p class="field-hint">Only sections you read to the end are listed. Turn this summary off in the Layout panel.</p>
+        <div class="modal-actions">
+          <button id="take-summary-close" type="button" class="primary">Close</button>
+        </div>
+      </div>
+    </div>
     <div id="drop-overlay" class="hidden">
       Drop a script to open it in this slot
     </div>

@@ -2099,6 +2099,8 @@ function syncLayoutPanel() {
 	field( "lp-theme" ).value = settings.theme ?? "default";
 	field( "lp-font" ).value = settings.scriptFont ?? "default";
 	field( "lp-on-air" ).checked = settings.onAirLight !== false;
+	field( "lp-pacing" ).checked = settings.showPacing !== false;
+	field( "lp-summary" ).checked = settings.takeSummary !== false;
 	field( "lp-start-beep" ).checked = !!settings.startBeep;
 	field( "lp-hide-capture" ).checked = !!settings.hideFromCapture;
 	field( "lp-click-through" ).checked = !!settings.clickThrough;
@@ -2157,6 +2159,8 @@ if ( document.getElementById( "layout-panel" ) ) {
 	for ( const [ id, key ] of [
 		[ "lp-focus-band", "focusBand" ],
 		[ "lp-on-air", "onAirLight" ],
+		[ "lp-pacing", "showPacing" ],
+		[ "lp-summary", "takeSummary" ],
 		[ "lp-start-beep", "startBeep" ],
 		[ "lp-hide-capture", "hideFromCapture" ],
 		[ "lp-click-through", "clickThrough" ]
@@ -2514,7 +2518,7 @@ function openRemoteSettings() {
 // index (scheduleMeasure) because they move with the text size and width.
 
 let scriptDirectives = { script: {}, sections: [], pauses: [], markers: [], paceChanges: [] };
-let directivePoints = { pauses: [], markers: [], paceChanges: [], sections: [] };
+let directivePoints = { pauses: [], markers: [], paceChanges: [], sections: [], wordTops: [] };
 let liveMarkers = []; // markers dropped with B during this session
 let cuePaused = false;
 let cueTimer = null;
@@ -2537,6 +2541,7 @@ function measureDirectives( ranges ) {
 		s.words = wordTops.filter( y => y >= s.y && y < end ).length;
 	} );
 	directivePoints = {
+		wordTops,
 		sections,
 		pauses: scriptDirectives.pauses.map( p => ( { ...p, y: pageY( p.el ) } ) ),
 		markers: [ ...scriptDirectives.markers, ...liveMarkers ]
@@ -2662,6 +2667,201 @@ function jumpToNextMarker() {
 	previewManuallyScrolled = true;
 	showToast( `Marker ${ markers.indexOf( next ) + 1 } of ${ markers.length }` );
 }
+
+// --- Pacing indicator ---
+// Section mode (batch and modular recording, the default): each pass through a
+// section is timed afresh, and the timer stops while held at a {pause}.
+// Session mode (one continuous take, `{pacing: session}`): the whole take is
+// timed. Both compare your actual pace with the target and show a light, with
+// words as well as colour. A summary of each section appears when you stop.
+
+const pacingEl = document.getElementById( "pacing" );
+const summaryModal = document.getElementById( "take-summary" );
+let pacing = null; // { mode, total, sectionIndex, sectionTime, lastTick }
+let takeLog = new Map(); // section index -> result
+
+function pacingMode() {
+	return scriptDirectives.script.pacing === "session" ? "session" : "section";
+}
+
+function wordsBefore( y, from = -Infinity ) {
+	return directivePoints.wordTops.filter( t => t >= from && t < y ).length;
+}
+
+function targetWpmFor( section ) {
+	if ( section?.wpm ) return section.wpm;
+	if ( section?.targetSeconds && section.words ) {
+		return Math.round( section.words / ( section.targetSeconds / 60 ) );
+	}
+	return scriptDirectives.script.wpm ?? settings.steadyWpm ?? 145;
+}
+
+function sectionTargetSeconds( section ) {
+	if ( section.targetSeconds ) return section.targetSeconds;
+	return Math.round( ( section.words / targetWpmFor( section ) ) * 60 );
+}
+
+// How far ahead (+) or behind (-) the target you are, in seconds, and a verdict.
+function judge( words, seconds, targetWpm, targetSeconds ) {
+	if ( seconds < 3 || words < 5 ) return { level: "wait", text: "Timing…" };
+	const diff = Math.round( ( words / targetWpm ) * 60 - seconds );
+	const tolerance = Math.max( 3, ( targetSeconds ?? 60 ) * 0.1 );
+	if ( Math.abs( diff ) <= tolerance ) return { level: "good", text: "On track", diff };
+	const level = Math.abs( diff ) <= tolerance * 2 ? "warn" : "bad";
+	return { level, text: diff > 0 ? `Ahead ${ diff } s` : `Behind ${ -diff } s`, diff };
+}
+
+function sectionIndexAt( y ) {
+	let index = -1;
+	directivePoints.sections.forEach( ( s, i ) => {
+		if ( s.y <= y + 1 ) index = i;
+	} );
+	return index;
+}
+
+function startPacing() {
+	if ( pacing ) return;
+	pacing = { mode: pacingMode(), total: 0, sectionIndex: null, sectionTime: 0, lastTick: performance.now() };
+	takeLog = new Map();
+}
+
+function logSection( index, seconds ) {
+	const section = directivePoints.sections[index];
+	if ( !section || seconds < 2 ) return;
+	const targetWpm = targetWpmFor( section );
+	const words = section.words;
+	const targetSeconds = sectionTargetSeconds( section );
+	takeLog.set( index, {
+		title: section.heading.textContent.replace( /\{[^}]*\}/g, "" ).trim(),
+		seconds,
+		targetSeconds,
+		wpm: Math.round( words / ( seconds / 60 ) ),
+		targetWpm,
+		verdict: judge( words, seconds, targetWpm, targetSeconds )
+	} );
+}
+
+function stopPacing() {
+	if ( !pacing ) return;
+	if ( pacing.mode === "section" && pacing.sectionIndex !== null ) {
+		const y = readingLineY();
+		const section = directivePoints.sections[pacing.sectionIndex];
+		const end = directivePoints.sections[pacing.sectionIndex + 1]?.y ?? Infinity;
+		// Only a section read to its end counts as a full pass.
+		if ( section && y >= end - 2 ) logSection( pacing.sectionIndex, pacing.sectionTime );
+	}
+	pacing = null;
+	pacingEl?.classList.add( "hidden" );
+	if ( settings.takeSummary !== false && takeLog.size ) showTakeSummary();
+}
+
+function formatClock( seconds ) {
+	const s = Math.max( 0, Math.round( seconds ) );
+	return `${ Math.floor( s / 60 ) }:${ String( s % 60 ).padStart( 2, "0" ) }`;
+}
+
+function pacingTick() {
+	const active = isScrolling() || cuePaused;
+	if ( !active ) {
+		if ( pacing ) stopPacing();
+		return;
+	}
+	startPacing();
+	const now = performance.now();
+	const dt = Math.min( 2, ( now - pacing.lastTick ) / 1000 );
+	pacing.lastTick = now;
+	const y = readingLineY();
+	const index = sectionIndexAt( y );
+	if ( index !== pacing.sectionIndex ) {
+		if ( pacing.sectionIndex !== null && index > pacing.sectionIndex ) {
+			logSection( pacing.sectionIndex, pacing.sectionTime );
+		}
+		pacing.sectionIndex = index;
+		pacing.sectionTime = 0;
+	}
+	const moving = isScrolling() && !cuePaused;
+	if ( pacing.mode === "session" || moving ) pacing.total += dt;
+	if ( moving ) pacing.sectionTime += dt;
+	renderPacing( y, index );
+}
+
+function renderPacing( y, index ) {
+	if ( !pacingEl || settings.showPacing === false ) return;
+	let label;
+	let seconds;
+	let targetSeconds;
+	let words;
+	let targetWpm;
+	if ( pacing.mode === "session" || index < 0 ) {
+		const totalWords = directivePoints.wordTops.length;
+		targetWpm = scriptDirectives.script.wpm ?? settings.steadyWpm ?? 145;
+		targetSeconds = scriptDirectives.script.targetSeconds ?? Math.round( ( totalWords / targetWpm ) * 60 );
+		seconds = pacing.total;
+		words = wordsBefore( y );
+		label = "Take";
+	} else {
+		const section = directivePoints.sections[index];
+		targetWpm = targetWpmFor( section );
+		targetSeconds = sectionTargetSeconds( section );
+		seconds = pacing.sectionTime;
+		words = wordsBefore( y, section.y );
+		label = `Section ${ index + 1 }`;
+	}
+	const verdict = judge( words, seconds, targetWpm, targetSeconds );
+	const actual = seconds >= 3 ? Math.round( words / ( seconds / 60 ) ) : null;
+	pacingEl.classList.remove( "hidden", "good", "warn", "bad", "wait" );
+	pacingEl.classList.add( verdict.level );
+	pacingEl.innerHTML = "";
+	const parts = [
+		[ "pc-label", label ],
+		[ "pc-time", `${ formatClock( seconds ) } / ${ formatClock( targetSeconds ) }` ],
+		[ "pc-wpm", `${ actual ?? "–" } wpm · aim ${ targetWpm }` ],
+		[ "pc-verdict", verdict.text ]
+	];
+	for ( const [ cls, text ] of parts ) {
+		const span = document.createElement( "span" );
+		span.className = cls;
+		span.textContent = text;
+		pacingEl.appendChild( span );
+	}
+}
+
+function showTakeSummary() {
+	if ( !summaryModal ) return;
+	const body = summaryModal.querySelector( "tbody" );
+	body.innerHTML = "";
+	for ( const [ index, r ] of [ ...takeLog.entries() ].sort( ( a, b ) => a[0] - b[0] ) ) {
+		const tr = document.createElement( "tr" );
+		tr.className = r.verdict.level;
+		for ( const text of [
+			`${ index + 1 }. ${ r.title }`,
+			formatClock( r.seconds ),
+			formatClock( r.targetSeconds ),
+			`${ r.wpm } (aim ${ r.targetWpm })`,
+			r.verdict.text
+		] ) {
+			const td = document.createElement( "td" );
+			td.textContent = text;
+			tr.appendChild( td );
+		}
+		body.appendChild( tr );
+	}
+	summaryModal.classList.remove( "hidden" );
+	document.getElementById( "take-summary-close" )?.focus( { preventScroll: true } );
+}
+
+function closeTakeSummary() {
+	summaryModal?.classList.add( "hidden" );
+}
+
+onClick( "take-summary-close", closeTakeSummary );
+summaryModal?.addEventListener( "keydown", ( e ) => {
+	if ( e.key === "Escape" || e.key === "Enter" ) closeTakeSummary();
+} );
+summaryModal?.addEventListener( "mousedown", ( e ) => {
+	if ( e.target === summaryModal ) closeTakeSummary();
+} );
+setInterval( pacingTick, 250 );
 
 // --- Reading aids and recording helpers ---
 
