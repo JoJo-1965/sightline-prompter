@@ -1,7 +1,7 @@
 import { app, BrowserWindow, dialog, globalShortcut, ipcMain, Menu, screen, shell } from "electron";
 import path from "node:path";
 import fs from "node:fs/promises";
-import { cpSync, existsSync } from "node:fs";
+import { cpSync, existsSync, readFileSync } from "node:fs";
 import chokidar from "chokidar";
 import stateFactory from "./utils/state.js";
 import {
@@ -231,6 +231,16 @@ const emptySlotHtml = index =>
 	`<h1>Slot ${ index + 1 } is empty</h1>`
 	+ "<p>Open a script with Ctrl+O, the Open button, or drop a file onto this window. "
 	+ "It goes into this slot, and Ctrl+1 to Ctrl+9 swap between slots.</p>";
+
+// When this version was released (package.json "releaseDate"; update it with the version).
+function releaseDate() {
+	try {
+		const pkg = JSON.parse( readFileSync( path.join( __dirname, "..", "package.json" ), "utf8" ) );
+		return pkg.releaseDate ?? null;
+	} catch {
+		return null;
+	}
+}
 
 const createWindow = ( state ) => {
 	const win = new BrowserWindow( {
@@ -899,6 +909,7 @@ app.whenReady().then( async () => {
 	ipcMain.on( "getAppInfo", () =>
 		win.webContents.send( "appInfo", {
 			version: app.getVersion(),
+			releaseDate: releaseDate(),
 			electron: process.versions.electron,
 			platform: process.platform
 		} )

@@ -2086,7 +2086,9 @@ function toggleMenuGroup( heading ) {
 	// Opening one group closes the others, so the menu stays short.
 	const opening = !isMenuGroupOpen( heading );
 	const open = opening
-		? Object.fromEntries( menuGroups().map( g => [ g.heading, g.heading === heading ] ) )
+		? Object.fromEntries(
+			menuGroups().map( g => [ g.heading, g.heading === heading ] )
+		)
 		: { ...menuGroupsOpen(), [heading]: false };
 	try {
 		localStorage.setItem( MENU_GROUPS_KEY, JSON.stringify( open ) );
@@ -2180,6 +2182,10 @@ function renderAppMenu() {
 			groupEl.appendChild( menuButton( icon, label, key, action, opts ) );
 		}
 	}
+	const footer = document.createElement( "p" );
+	footer.className = "app-footer am-footer";
+	fillFooter( footer );
+	appMenu.appendChild( footer );
 }
 
 function toggleAppMenu() {
@@ -2553,10 +2559,64 @@ aboutModal?.addEventListener( "mousedown", ( e ) => {
 	if ( e.target === aboutModal ) closeAbout();
 } );
 window.electron.onMenuAbout( openAbout );
+// A quiet line at the foot of the menu and Settings: version, date, licence, credit.
+let appInfo = null;
+function formatReleaseDate( iso ) {
+	const d = iso ? new Date( `${ iso }T12:00:00` ) : null;
+	return d && !Number.isNaN( d.getTime() )
+		? d.toLocaleDateString( "en-GB", {
+			day: "numeric",
+			month: "short",
+			year: "numeric"
+		} )
+		: null;
+}
+function fillFooter( el ) {
+	if ( !el ) return;
+	el.replaceChildren();
+	const date = formatReleaseDate( appInfo?.releaseDate );
+	const line = [
+		`Sightline Prompter ${ appInfo?.version ?? "" }`.trim(),
+		date && `updated ${ date }`,
+		"MIT licence"
+	]
+		.filter( Boolean )
+		.join( " · " );
+	const about = document.createElement( "button" );
+	about.type = "button";
+	about.className = "footer-link";
+	about.textContent = "About";
+	about.addEventListener( "click", () => {
+		closeSettings( true );
+		openAbout();
+	} );
+	const credit = document.createElement( "span" );
+	credit.className = "footer-credit";
+	const CREDIT = [
+		"Adapted and enhanced by Joanne Lockwood from SEE Change Happen Ltd",
+		"based on Electron Teleprompter by David Neal",
+		"© 2022–2026"
+	];
+	credit.textContent = CREDIT.join( " · " );
+	el.append( `${ line } · `, about, document.createElement( "br" ), credit );
+}
+window.electron.getAppInfo();
+
 window.electron.onAppInfo( ( info ) => {
+	appInfo = info;
+	fillFooter( document.getElementById( "settings-footer" ) );
 	const el = document.getElementById( "about-version" );
+	const date = formatReleaseDate( info.releaseDate );
 	if ( el )
-		el.textContent = `Version ${ info.version } · based on Electron Teleprompter 4.1.20 · Electron ${ info.electron } · ${ info.platform }`;
+		el.textContent = [
+			`Version ${ info.version }`,
+			date && `updated ${ date }`,
+			"based on Electron Teleprompter 4.1.20",
+			`Electron ${ info.electron }`,
+			info.platform
+		]
+			.filter( Boolean )
+			.join( " · " );
 } );
 
 // --- Settings files ---
@@ -2736,7 +2796,9 @@ function openRemoteSettings() {
 // Settings tabs: one section at a time, so nothing sits below the fold.
 // The last tab used opens next time.
 const SETTINGS_TAB_KEY = "settingsTab";
-const settingsTabs = [ ...document.querySelectorAll( ".settings-tabs [data-tab]" ) ];
+const settingsTabs = [
+	...document.querySelectorAll( ".settings-tabs [data-tab]" )
+];
 
 function showSettingsTab( name ) {
 	if ( !settingsTabs.some( t => t.dataset.tab === name ) ) name = "scrolling";
@@ -2746,7 +2808,8 @@ function showSettingsTab( name ) {
 		tab.setAttribute( "aria-selected", String( on ) );
 		tab.tabIndex = on ? 0 : -1;
 	}
-	for ( const set of settingsModal?.querySelectorAll( "fieldset[data-tab]" ) ?? [] ) {
+	const sets = settingsModal?.querySelectorAll( "fieldset[data-tab]" ) ?? [];
+	for ( const set of sets ) {
 		set.classList.toggle( "hidden", set.dataset.tab !== name );
 	}
 	if ( name === "layout" ) borrowLayoutPanel();
@@ -2779,7 +2842,9 @@ let layoutBorrowed = [];
 
 function borrowLayoutPanel() {
 	if ( layoutBorrowed.length || !layoutPanel || !layoutHost ) return;
-	layoutBorrowed = [ ...layoutPanel.children ].filter( el => el.tagName !== "H4" );
+	layoutBorrowed = [ ...layoutPanel.children ].filter(
+		el => el.tagName !== "H4"
+	);
 	layoutHost.append( ...layoutBorrowed );
 	field( "lp-done" )?.classList.add( "hidden" );
 	syncControls();
@@ -2802,7 +2867,9 @@ function refreshSharedDisplayFields() {
 	if ( settingsSnapshot ) settingsSnapshot.opacity = opacity;
 }
 for ( const type of [ "input", "change", "click" ] ) {
-	layoutHost?.addEventListener( type, () => setTimeout( refreshSharedDisplayFields, 200 ) );
+	layoutHost?.addEventListener( type, () =>
+		setTimeout( refreshSharedDisplayFields, 200 )
+	);
 }
 
 // --- Files tab: scripts and the settings file ---
@@ -2857,10 +2924,12 @@ onClick(
 );
 onClick( "set-file-save-settings", () => window.electron.exportSettings() );
 field( "set-file-recent" )?.addEventListener( "change", ( e ) => {
-	if ( e.target.value ) closeThen( () => window.electron.openRecent( e.target.value ) )();
+	if ( e.target.value )
+		closeThen( () => window.electron.openRecent( e.target.value ) )();
 } );
 field( "set-file-sample" )?.addEventListener( "change", ( e ) => {
-	if ( e.target.value ) closeThen( () => window.electron.openSample( e.target.value ) )();
+	if ( e.target.value )
+		closeThen( () => window.electron.openSample( e.target.value ) )();
 } );
 
 function lastSettingsTab() {

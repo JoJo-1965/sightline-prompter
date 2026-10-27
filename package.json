@@ -2,6 +2,7 @@
 	"name": "sightline-prompter",
 	"productName": "Sightline Prompter",
 	"version": "1.0.0",
+	"releaseDate": "2026-10-27",
 	"description": "See-through desktop teleprompter for recording to camera. A fork of Electron Teleprompter by David Neal.",
 	"main": "src/main.js",
 	"type": "module",
