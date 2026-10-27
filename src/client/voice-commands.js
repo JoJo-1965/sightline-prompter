@@ -91,6 +91,33 @@ export const COMMANDS = [
 		]
 	},
 	{
+		id: "keeper",
+		phrases: [
+			"keeper",
+			"kipper",
+			"keepa",
+			"keep",
+			"keep it",
+			"keep that",
+			"thats a keeper",
+			"good take"
+		]
+	},
+	{
+		id: "scrap",
+		phrases: [
+			"scrap",
+			"scrap that",
+			"scrap it",
+			"scrub that",
+			"bin that",
+			"bin it",
+			"ditch that",
+			"bad take",
+			"no good"
+		]
+	},
+	{
 		id: "resync",
 		phrases: [
 			"resync",

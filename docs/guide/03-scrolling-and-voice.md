@@ -68,6 +68,8 @@ such as *Heard: "Prompter, slower"*.
 | **from the top** (or top, reset) | Back to the start |
 | **again** (or retake) | Drops a marker where you are, then goes back to the start of the section for a retake |
 | **marker** | Drops a marker |
+| **keeper** (or keep that, good take) | Marks the take you're on, or the one you've just finished, as a keeper in the [take log](05-recording-a-take.md#the-take-log) |
+| **scrap that** (or bin it, bad take) | Marks that take to be thrown away |
 | **resync** (or find me) | Voice mode: if it has lost you, keep reading and it finds your place anywhere in the script |
 | **bigger** / **smaller** | Text size |
 

@@ -14,6 +14,8 @@ export const SHORTCUTS = [
 			[ [ "Ctrl+Home" ], "Back to the start" ],
 			[ [ "Space" ], "After a {pause} in the script: carry on" ],
 			[ [ "B" ], "Drop a marker at the reading line (for retakes)" ],
+			[ [ "K" ], "This take's a keeper (in the take log)" ],
+			[ [ "Shift+K" ], "Scrap this take" ],
 			[ [ "Ctrl+B" ], "Jump to the next marker ({marker} or one you dropped)" ],
 			[ [ "↑", "↓", "Wheel" ], "When stopped: scroll by hand" ]
 		]

@@ -27,6 +27,7 @@ import {
 } from "./steady-scroll.js";
 import { decorateScript } from "./decorate.js";
 import { readDirectives } from "./directives.js";
+import { createTakeLog } from "./take-log.js";
 import {
 	indexSentences,
 	setSentenceHighlight,
@@ -64,6 +65,11 @@ let takeLog = new Map(); // section index -> result
 let controlOpen = false; // the control window is showing a copy of the script
 const pacingEl = document.getElementById( "pacing" );
 const summaryModal = document.getElementById( "take-summary" );
+// Every take of every section, for the edit (File > Export Take Log).
+const recording = createTakeLog();
+let recordingSaved = 0; // the take log version last sent to be saved
+let recordingY = null; // reading line at the last tick, to see the text move on
+let pendingJumpReason = null; // "again" when a jump is a voice retake
 const onAirEl = document.getElementById( "on-air" );
 const THEMES = [ "default", "yellow", "contrast", "cream" ];
 const FONTS = [ "default", "atkinson", "opendyslexic", "verdana" ];
@@ -597,6 +603,11 @@ document.addEventListener( "keydown", ( event ) => {
 		openHelp();
 		return;
 	}
+	if ( ( event.key === "k" || event.key === "K" ) && plainKey ) {
+		event.preventDefault();
+		rateTake( event.shiftKey ? "scrap" : "keeper" );
+		return;
+	}
 	if ( ( event.key === "b" || event.key === "B" ) && plainKey && !event.shiftKey ) {
 		event.preventDefault();
 		dropMarker();
@@ -1044,7 +1055,9 @@ const COMMAND_LABELS = {
 	marker: "marker",
 	resync: "resync",
 	bigger: "bigger",
-	smaller: "smaller"
+	smaller: "smaller",
+	keeper: "keeper",
+	scrap: "scrap that"
 };
 
 let commandListening = false;
@@ -1145,10 +1158,14 @@ function runVoiceCommand( id ) {
 	} else if ( id === "retake" ) {
 		// Mark where it went wrong, then back to the start of the section.
 		dropMarker();
+		pendingJumpReason = "again";
 		runRemoteAction( "previous-section" );
+		pendingJumpReason = null;
 		resyncAfterJump();
 	} else if ( id === "marker" ) {
 		runRemoteAction( "marker" );
+	} else if ( id === "keeper" || id === "scrap" ) {
+		rateTake( id );
 	} else if ( id === "resync" ) {
 		if ( voice ) {
 			autoScrollHandle.setHold( false );
@@ -2140,6 +2157,7 @@ if ( controlBar && window.ResizeObserver ) {
 }
 
 function goToStart() {
+	recording.jump( "top" );
 	scriptIndex = 0;
 	previewManuallyScrolled = false;
 	window.scrollTo( 0, 0 );
@@ -2346,6 +2364,14 @@ function menuGroups() {
 					toggleAutoScrollSession
 				],
 				[ "⏮", "Back to the start", "Ctrl+Home", goToStart ],
+				[ "★", "This take's a keeper", "K", () => rateTake( "keeper" ) ],
+				[ "✗", "Scrap this take", "Shift+K", () => rateTake( "scrap" ) ],
+				[
+					"🗒",
+					"Export the take log…",
+					"",
+					() => window.electron.exportTakeLog()
+				],
 				[ "⏩", "Faster", "Ctrl+]", () => adjustAutoScrollSpeed( "up" ) ],
 				[ "⏪", "Slower", "Ctrl+[", () => adjustAutoScrollSpeed( "down" ) ],
 				[ "↺", "Reset speed", "Ctrl+\\", () => adjustAutoScrollSpeed( "reset" ) ],
@@ -3395,6 +3421,8 @@ function jumpSection( step ) {
 	if ( step < 0 && anchor && window.scrollY > layoutTop( anchor ) + 40 ) step = 0;
 	const next = scriptIndex + step;
 	if ( next < 0 || document.getElementsByName( next ).length === 0 ) return;
+	recording.jump( pendingJumpReason ?? ( step > 0 ? "next" : "back" ) );
+	pendingJumpReason = null;
 	scriptIndex = next;
 	previewManuallyScrolled = true;
 	jumpToSection( scriptIndex );
@@ -3424,6 +3452,7 @@ function runRemoteAction( action, value ) {
 	} else if ( action === "go-to-section" && Number.isInteger( Number( value ) ) ) {
 		jumpSection( Number( value ) - scriptIndex );
 	} else if ( action === "marker" ) dropMarker();
+	else if ( action === "keeper" || action === "scrap" ) rateTake( action );
 	else if ( action === "help" ) openHelp();
 	sendStatus();
 }
@@ -3777,6 +3806,7 @@ function dropMarker() {
 	start.collapse( true );
 	start.insertNode( el );
 	liveMarkers.push( { el } );
+	recording.marker();
 	scheduleMeasure();
 	showToast( "Marker added · Ctrl+B jumps between markers" );
 	sendPreviewContent();
@@ -4011,8 +4041,49 @@ function formatClock( seconds ) {
 	return `${ Math.floor( s / 60 ) }:${ String( s % 60 ).padStart( 2, "0" ) }`;
 }
 
+// What the take log needs each tick: where the reading line is, and whether
+// the text has moved on.
+function feedTakeLog( active ) {
+	const y = readingLineY();
+	const index = pointsMode() ? pointsIndex : sectionIndexAt( y );
+	const section = directivePoints.sections[index];
+	const next = directivePoints.sections[index + 1];
+	// Words still to read in this section. The line at the reading line counts
+	// as read: a stop leaves it a few pixels below.
+	const left = directivePoints.wordTops.filter(
+		t => t > y + 24 && t < ( next?.y ?? Infinity )
+	).length;
+	recording.tick( {
+		active,
+		index,
+		title: section?.heading.textContent.replace( /\{[^}]*\}/g, "" ).trim() ?? "",
+		// Moving on through words, not through the blank space after the script.
+		advanced: pointsMode()
+			? pointsRunning
+			: recordingY !== null && y > recordingY + 0.5 && left > 0,
+		atEnd: pointsMode() || left <= 3
+	} );
+	recordingY = y;
+	if ( recording.version() !== recordingSaved ) {
+		recordingSaved = recording.version();
+		window.electron.saveTakeLog( recording.data() );
+	}
+}
+
+function rateTake( rating ) {
+	const rated = recording.rate( rating );
+	if ( !rated ) {
+		showToast( "No take to rate yet: start reading a section first" );
+		return;
+	}
+	showToast(
+		`Section ${ rated.section }, take ${ rated.take }: ${ rating === "keeper" ? "keeper ★" : "scrapped" }`
+	);
+}
+
 function pacingTick() {
 	const active = isScrolling() || cuePaused || pointsRunning;
+	feedTakeLog( active );
 	if ( !active ) {
 		if ( pacing ) stopPacing();
 		return;
@@ -4163,6 +4234,14 @@ function showTakeSummary() {
 		}
 		body.appendChild( tr );
 	}
+	const logged = recording.data();
+	const keepers = logged.takes.filter( t => t.rating === "keeper" ).length;
+	const logLine = document.getElementById( "take-summary-log" );
+	if ( logLine ) {
+		logLine.textContent = logged.takes.length
+			? `Take log so far: ${ logged.takes.length } take${ logged.takes.length === 1 ? "" : "s" } of ${ logged.sections.length } section${ logged.sections.length === 1 ? "" : "s" }${ keepers ? `, ${ keepers } keeper${ keepers === 1 ? "" : "s" }` : "" }. Say “Prompter, keeper” or press K to mark a good take.`
+			: "";
+	}
 	const full = [ ...takeLog.values() ].some( r => !r.partial );
 	document.getElementById( "take-summary-targets" ).hidden = !full;
 	document.getElementById( "take-summary-targets-hint" ).hidden = !full;
@@ -4175,6 +4254,13 @@ function closeTakeSummary() {
 }
 
 onClick( "take-summary-close", closeTakeSummary );
+onClick( "take-summary-export", () => window.electron.exportTakeLog() );
+// The saved log for this script and day, so take numbers carry on.
+window.electron.onTakeLog( ( saved ) => {
+	recording.load( saved );
+	recordingSaved = recording.version();
+	recordingY = null;
+} );
 onClick( "take-summary-targets", () => {
 	const targets = {};
 	for ( const [ index, r ] of takeLog ) if ( !r.partial ) targets[index] = r.seconds;

@@ -4,6 +4,14 @@ import { matchCommand, createCommandListener } from "../src/client/voice-command
 
 // What the on-device recogniser actually heard for each command (speech-lab/cmd).
 const heard = {
+	KEEPER: "keeper",
+	KIPPER: "keeper",
+	"KEEP THAT": "keeper",
+	"THAT'S A KEEPER": "keeper",
+	"SCRAP THAT": "scrap",
+	"SCRUB THAT": "scrap",
+	"BIN IT": "scrap",
+	"KEEP GOING": "go",
 	PAUS: "pause",
 	HAWSE: "pause",
 	"SLOW DOWN": "slower",

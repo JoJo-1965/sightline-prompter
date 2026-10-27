@@ -13,7 +13,9 @@ const CONTROL_COMMANDS = [
 	"next-section",
 	"faster",
 	"slower",
-	"marker"
+	"marker",
+	"keeper",
+	"scrap"
 ];
 
 // Saved bounds are kept only if most of the window is still on a display.

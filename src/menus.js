@@ -17,6 +17,9 @@ export function buildMenus(
 		openSample,
 		openGoogleDoc,
 		copyAiPrompt,
+		exportTakeLog,
+		newTakeLog,
+		showTakeLogs,
 		reloadGoogleDoc,
 		openGuide,
 		displays = []
@@ -62,6 +65,19 @@ export function buildMenus(
 					accelerator: "CmdOrCtrl+O",
 					click: () => showOpenScriptDialog()
 				},
+				{
+					label: "Export Take Log…",
+					click: () => exportTakeLog?.()
+				},
+				{
+					label: "Start a New Take Log",
+					click: () => newTakeLog?.()
+				},
+				{
+					label: "Show Take Logs Folder",
+					click: () => showTakeLogs?.()
+				},
+				{ type: "separator" },
 				{
 					label: "Open a Google Doc…",
 					click: () => openGoogleDoc?.()

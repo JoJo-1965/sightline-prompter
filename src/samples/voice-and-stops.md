@@ -37,7 +37,10 @@ Want a breather? Say "Prompter, pause". When you're ready, "Prompter, go".
 If a line goes wrong, say "Prompter, again". It drops a marker where you were
 and takes you back to the start of the section for a retake. {marker}
 
-Bigger text? "Prompter, bigger". Smaller? "Prompter, smaller". {stop}
+Bigger text? "Prompter, bigger". Smaller? "Prompter, smaller".
+
+Happy with that? Say "Prompter, keeper", and the take log marks this take as
+the one to use. Not happy? "Prompter, scrap that". [Say: "Prompter, keeper".] {stop}
 
 ## In steady scrolling too {target: 0:25}
 

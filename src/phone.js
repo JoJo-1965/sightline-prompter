@@ -14,7 +14,9 @@ export const PHONE_COMMANDS = [
 	"next-section",
 	"faster",
 	"slower",
-	"marker"
+	"marker",
+	"keeper",
+	"scrap"
 ];
 
 const MAX_BAD_TRIES = 20;

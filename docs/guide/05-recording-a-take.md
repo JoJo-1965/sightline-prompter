@@ -33,7 +33,46 @@ Rehearsing? **Use these times as targets** writes each time into the script as
 - Press **B** to drop a marker at the reading line when you fluff a line.
 - **Ctrl+B** jumps to the next marker, whether you dropped it or it's a
   `{marker}` in the script.
-- **←** goes back to the start of the section, ready for a retake.
+- **←** goes back to the start of the section, ready for a retake. So does
+  saying **"Prompter, again"**, which drops a marker first.
+
+## The take log
+
+While you record, Sightline logs every take of every section: when it
+started and ended, whether you read it to the end or went back for another
+go, and any markers. The edit can then use the right take of each section
+without anyone hunting for it by ear.
+
+- A take starts when the reading line enters a section while the prompter is
+  running, and ends when you move on to the next section, go back for a retake,
+  or stop. Waiting at a `{stop}` doesn't count towards it.
+- **Rate a take** as you go, or straight after:
+  - Say **"Prompter, keeper"** (or press **K**) for a take you're happy with.
+  - Say **"Prompter, scrap that"** (or press **Shift+K**) for one to throw away.
+
+  A small message confirms it, such as *Section 3, take 2: keeper ★*.
+- For each section, the log picks the take to use: your last keeper, or else
+  the last take you read to the end and didn't scrap.
+- The take summary shows how many takes and keepers you have so far.
+
+The log is saved as you go, one per script per day, so nothing is lost if you
+close the app; open the script again the same day and the take numbers carry
+on. To get a copy for the edit, choose **File > Export Take Log…** (also in
+☰ > Playback, and the **Export take log…** button in the take summary). It
+saves a JSON file for edit tools and a CSV beside it for a spreadsheet:
+
+| Column | What it holds |
+| --- | --- |
+| section, title, take | Which section, and which take of it |
+| start, end, duration | Seconds from the start of the log |
+| started_at, ended_at | The clock time (UTC), to line up with your recording |
+| status | **complete** (read to the end), **retake** ("Prompter, again"), **stopped** or **skipped** |
+| rating | **keeper** or **scrap**, if you rated it |
+| use | **yes** on the take the log picks for that section |
+| markers | Times of any markers you dropped in it |
+
+**File > Start a New Take Log** starts again from take 1 (the old log is kept),
+and **File > Show Take Logs Folder** opens the folder where they're saved.
 
 ## Talking points
 

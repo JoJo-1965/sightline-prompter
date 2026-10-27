@@ -15,6 +15,7 @@ The ones you'll use most:
 | **→** / **←**            | Next / previous section                        |
 | **Ctrl+Home**            | Back to the start                              |
 | **B** / **Ctrl+B**       | Drop a marker / jump to the next marker        |
+| **K** / **Shift+K** | This take's a keeper / scrap this take (take log) |
 | **Ctrl+=** / **Ctrl+-**  | Bigger / smaller text                          |
 | **Ctrl+M**               | Mirror                                         |
 | **Ctrl+L**               | Eye-line mode                                  |

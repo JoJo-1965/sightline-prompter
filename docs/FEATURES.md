@@ -20,7 +20,7 @@ details, and the [user guide](guide/README.md) shows every screen.
 | Voice control       |                                                                                       | "Prompter, pause", go, slower, again, resync and more                                                                                                          |
 | Script formats      | Markdown and HTML, with a built-in Markdown editor                                    | Adds plain text, Word, rich text, **PDF** and **Google Docs links**                                                                                            |
 | Script instructions |                                                                                       | Stops, countdowns, markers, pace and target times in `{curly braces}`; notes in `[brackets]`                                                                   |
-| Pacing              |                                                                                       | Pacing light, section targets, take summary, rehearsal timer                                                                                                   |
+| Pacing and takes | | Pacing light, section targets, take summary, rehearsal timer, and a **take log** for the edit with keeper and scrap ratings |
 | Controls            | Keyboard shortcuts; arrow keys and a clicker jump between sections; microphone choice | Control bar, ☰ menu, six-tab Settings, nine script slots, floating pad, phone remote, control window, clickers that start and pause, pedals, game controllers |
 | Recording rigs      | Mirror (flip) mode                                                                    | Mirroring in any direction, prompter monitor (Elgato Prompter), eye-line mode, beam-splitter setup, hide from screen capture, click-through                    |
 | Reading aids        | Background opacity and font size                                                      | Sentence highlight, focus band, text edge, colour themes, Atkinson Hyperlegible and OpenDyslexic                                                               |
@@ -63,6 +63,11 @@ details, and the [user guide](guide/README.md) shows every screen.
   that runs down. The mic listens for "Prompter, go" at a stop.
 - **Markers:** `{marker}` in the script, or press B during a take; Ctrl+B
   jumps between them.
+- **Take log for the edit:** every take of every section, with its start and
+  end, whether it was read to the end or retaken, and its markers, saved as
+  you go and exported as JSON and CSV (File > Export Take Log). Say
+  **"Prompter, keeper"** or **"Prompter, scrap that"** (or press K or
+  Shift+K) to rate a take; the log picks the take to use for each section.
 - **Talking points** for speaking off script: one section at a time as large
   bullet points, with a talk timer.
 - Progress bar, time left, an ON AIR light and an optional end-of-countdown

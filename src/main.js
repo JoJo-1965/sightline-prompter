@@ -19,6 +19,7 @@ import { createControl } from "./control.js";
 import { createSpeech } from "./speech.js";
 import { createGuide } from "./guide.js";
 import { createGoogleDocs, GOOGLE_DOC_MESSAGES } from "./google-docs.js";
+import { takeLogCsv } from "./client/take-log.js";
 import { fitInside, keepTopReachable, sameRect } from "./utils/fit.js";
 import { startRemoteServer, newToken } from "./remote.js";
 import { startPhoneServer, newPhoneKey, lanAddress } from "./phone.js";
@@ -557,6 +558,7 @@ const createWindow = ( state ) => {
 			addRecentFile( scriptFile );
 			watchScriptFile( scriptFile );
 			refreshGoogleDoc( scriptFile );
+			sendTakeLog( scriptFile );
 			sendSlots();
 			refreshMenus();
 			await saveState( win );
@@ -584,6 +586,88 @@ const createWindow = ( state ) => {
 		} catch ( err ) {
 			if ( announce ) toast( GOOGLE_DOC_MESSAGES[err.reason] ?? "Couldn't reach Google Docs" );
 		}
+	}
+
+	// --- Take log (File > Export Take Log) ---
+	// One log per script per day, saved as the takes happen, in the app's
+	// take-logs folder: "<script> <yyyy-mm-dd>.json".
+	const takeLogDir = path.join( app.getPath( "userData" ), "take-logs" );
+	const today = () => new Date().toLocaleDateString( "en-CA" ); // yyyy-mm-dd
+	const scriptName = file =>
+		path.basename( file ?? "Script", path.extname( file ?? "" ) )
+			.replace( /[<>:"/\\|?*]/g, "" )
+			.trim() || "Script";
+	const takeLogFile = file => path.join( takeLogDir, `${ scriptName( file ) } ${ today() }.json` );
+	let takeLog = null; // the current script's log, as last saved
+
+	async function sendTakeLog( file ) {
+		try {
+			takeLog = JSON.parse( await fs.readFile( takeLogFile( file ), "utf-8" ) );
+		} catch {
+			takeLog = null;
+		}
+		win.webContents.send( "takeLog", takeLog );
+	}
+
+	function withHeader( data ) {
+		return {
+			app: `Sightline Prompter ${ app.getVersion() }`,
+			script: path.basename( currentFilePath ?? "" ),
+			date: today(),
+			timesAre: "seconds from startedAt; startedAt and endedAt are wall-clock times (UTC)",
+			...data
+		};
+	}
+
+	ipcMain.on( "saveTakeLog", async ( _event, data ) => {
+		if ( !currentFilePath || !data?.startedAt ) return;
+		try {
+			takeLog = withHeader( data );
+			await fs.mkdir( takeLogDir, { recursive: true } );
+			await fs.writeFile( takeLogFile( currentFilePath ), JSON.stringify( takeLog, null, 2 ) );
+		} catch ( err ) {
+			console.log( "Take log:", err.message );
+		}
+	} );
+
+	// Save the take log where you choose, as JSON and a CSV beside it.
+	async function exportTakeLog() {
+		const toast = text => win.webContents.send( "toast", text );
+		if ( !takeLog?.takes?.length ) {
+			toast( "No takes logged yet for this script today" );
+			return;
+		}
+		const result = await dialog.showSaveDialog( win, {
+			title: "Export take log",
+			defaultPath: `${ scriptName( currentFilePath ) } take log ${ today() }.json`,
+			filters: [ { name: "Take log (JSON, with a CSV beside it)", extensions: [ "json" ] } ]
+		} );
+		if ( result.canceled || !result.filePath ) return;
+		const json = result.filePath.replace( /\.json$/i, "" ) + ".json";
+		const csv = json.replace( /\.json$/i, ".csv" );
+		try {
+			await fs.writeFile( json, JSON.stringify( takeLog, null, 2 ) );
+			await fs.writeFile( csv, takeLogCsv( takeLog ) );
+			toast( `Take log saved: ${ path.basename( json ) } and .csv` );
+		} catch ( err ) {
+			console.log( "Take log export:", err.message );
+			toast( "Couldn't save the take log" );
+		}
+	}
+
+	// Start afresh: today's log is kept under a new name with the time.
+	async function newTakeLog() {
+		if ( !currentFilePath ) return;
+		const file = takeLogFile( currentFilePath );
+		const stamp = new Date().toTimeString().slice( 0, 5 ).replace( ":", "" );
+		try {
+			await fs.rename( file, file.replace( /\.json$/, ` ${ stamp }.json` ) );
+		} catch {
+			// nothing logged yet
+		}
+		takeLog = null;
+		win.webContents.send( "takeLog", null );
+		win.webContents.send( "toast", "New take log started. Take numbers start again at 1" );
 	}
 
 	async function showEmptySlot( note = "" ) {
@@ -670,6 +754,12 @@ const createWindow = ( state ) => {
 			openSample: name => openSampleRef?.( name ),
 			openGoogleDoc: () => win.webContents.send( "showGoogleDocDialog" ),
 			copyAiPrompt: () => copyAiPrompt( win ),
+			exportTakeLog: () => exportTakeLog(),
+			newTakeLog: () => newTakeLog(),
+			showTakeLogs: async () => {
+				await fs.mkdir( takeLogDir, { recursive: true } );
+				shell.openPath( takeLogDir );
+			},
 			reloadGoogleDoc: () => refreshGoogleDoc( currentFilePath, true ),
 			openGuide: page => guide.open( page ),
 			isMaximized: windowMode === "maximized",
@@ -832,6 +922,8 @@ app.whenReady().then( async () => {
 		"set-wpm",
 		"go-to-section",
 		"marker",
+		"keeper",
+		"scrap",
 		"help"
 	];
 
