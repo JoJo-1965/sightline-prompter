@@ -1439,13 +1439,69 @@ window.addEventListener( "resize", () => {
 	if ( isSteadyRunning() ) recalculateSteady();
 } );
 
-// Rich files (.rtf, .docx) are edited in Word; the watcher reloads them on save.
-window.electron.onEditorUnavailable( ( fileName ) => {
+// Rich files (.rtf, .docx, .pdf) and Google Docs are edited where they came
+// from; the watcher (or File > Reload from Google Docs) brings the changes in.
+const EDIT_ELSEWHERE = {
+	google: name => `${ name } comes from Google Docs, so edit it there. Sightline fetches the latest version each time you open it, or choose File > Reload from Google Docs.`,
+	pdf: name => `${ name } is a PDF, so it can't be edited here. Change the original document and save the PDF again: the teleprompter reloads it.`,
+	rich: name => `${ name } is a rich-text or Word file, so edit it in Word or WordPad. The teleprompter reloads it each time you save.`
+};
+window.electron.onEditorUnavailable( ( fileName, kind ) => {
 	isEditMode = false;
 	window.electron.resumeWatcher();
-	alert(
-		`${ fileName } is a rich-text or Word file, so edit it in Word or WordPad. The teleprompter reloads it each time you save.`
-	);
+	alert( ( EDIT_ELSEWHERE[kind] ?? EDIT_ELSEWHERE.rich )( fileName ) );
+} );
+
+// --- Open a Google Doc ---
+
+const gdocModal = document.getElementById( "gdoc-modal" );
+const gdocInput = document.getElementById( "gdoc-input" );
+const gdocError = document.getElementById( "gdoc-error" );
+const gdocOpenBtn = document.getElementById( "gdoc-open" );
+const GOOGLE_DOC_LINK = /docs\.google\.com\/document\//;
+
+function showGdocError( text ) {
+	gdocError.textContent = text;
+	gdocError.classList.toggle( "hidden", !text );
+}
+
+function showGoogleDocDialog( link = "" ) {
+	gdocInput.value = link;
+	showGdocError( "" );
+	gdocOpenBtn.disabled = false;
+	gdocModal.classList.remove( "hidden" );
+	setTimeout( () => gdocInput.focus(), 0 );
+}
+
+function hideGoogleDocDialog() {
+	gdocModal.classList.add( "hidden" );
+}
+
+function openGoogleDoc( link ) {
+	if ( !GOOGLE_DOC_LINK.test( link ) ) {
+		showGdocError( "That doesn't look like a Google Docs link. Copy it from the address bar or from Share > Copy link" );
+		return;
+	}
+	showGdocError( "" );
+	gdocOpenBtn.disabled = true;
+	gdocOpenBtn.textContent = "Opening…";
+	window.electron.openGoogleDoc( link.trim() );
+}
+
+window.electron.onGoogleDocResult( ( { ok, message } ) => {
+	gdocOpenBtn.disabled = false;
+	gdocOpenBtn.textContent = "Open";
+	if ( ok ) hideGoogleDocDialog();
+	else if ( !gdocModal.classList.contains( "hidden" ) ) showGdocError( message );
+	else showToast( message );
+} );
+window.electron.onShowGoogleDocDialog( () => showGoogleDocDialog() );
+gdocOpenBtn.addEventListener( "click", () => openGoogleDoc( gdocInput.value ) );
+document.getElementById( "gdoc-cancel" ).addEventListener( "click", hideGoogleDocDialog );
+gdocInput.addEventListener( "keydown", ( e ) => {
+	e.stopPropagation();
+	if ( e.key === "Enter" ) gdocOpenBtn.click();
+	else if ( e.key === "Escape" ) hideGoogleDocDialog();
 } );
 
 // --- Settings page ---
@@ -2138,6 +2194,12 @@ function menuGroups() {
 					"Open script…",
 					"Ctrl+O",
 					() => window.electron.openFileDialog()
+				],
+				[
+					"🔗",
+					"Open a Google Doc…",
+					"",
+					() => showGoogleDocDialog()
 				],
 				{ recent: true },
 				{ samples: true },
@@ -2990,8 +3052,11 @@ window.electron.onMenuImportSettings( () => window.electron.importSettings() );
 const dropOverlay = document.getElementById( "drop-overlay" );
 let dragDepth = 0;
 
+// A file, or a Google Docs link dragged from the browser's address bar.
+const droppable = types =>
+	types?.includes( "Files" ) || types?.includes( "text/uri-list" );
 window.addEventListener( "dragenter", ( e ) => {
-	if ( !e.dataTransfer?.types.includes( "Files" ) || isEditMode ) return;
+	if ( !droppable( e.dataTransfer?.types ) || isEditMode ) return;
 	dragDepth++;
 	dropOverlay?.classList.remove( "hidden" );
 } );
@@ -3006,8 +3071,20 @@ window.addEventListener( "drop", ( e ) => {
 	e.preventDefault();
 	dragDepth = 0;
 	dropOverlay?.classList.add( "hidden" );
+	if ( isEditMode ) return;
 	const file = e.dataTransfer?.files?.[0];
-	if ( file && !isEditMode ) window.electron.openDroppedFile( file );
+	if ( file ) {
+		window.electron.openDroppedFile( file );
+		return;
+	}
+	const link = e.dataTransfer?.getData( "text/uri-list" )?.split( /\r?\n/ )
+		.find( line => line && !line.startsWith( "#" ) );
+	if ( link && GOOGLE_DOC_LINK.test( link ) ) {
+		showGoogleDocDialog( link );
+		openGoogleDoc( link );
+	} else if ( link ) {
+		showToast( "Drop a script file or a Google Docs link" );
+	}
 } );
 
 window.addEventListener( "resize", () => {

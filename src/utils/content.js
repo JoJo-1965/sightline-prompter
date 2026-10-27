@@ -4,10 +4,11 @@ import showdown from "showdown";
 import mammoth from "mammoth";
 import { load as loadYaml } from "js-yaml";
 import { rtfToHtml } from "./rtf.js";
+import { pdfToHtml } from "./pdf.js";
 
 // Rich files are shown but not edited in the built-in markdown editor;
-// edit them in Word/WordPad and the watcher reloads them.
-const RICH_EXTENSIONS = new Set( [ ".rtf", ".docx" ] );
+// edit them in Word/WordPad (or make a new PDF) and the watcher reloads them.
+const RICH_EXTENSIONS = new Set( [ ".rtf", ".docx", ".pdf" ] );
 const HTML_EXTENSIONS = new Set( [ ".html", ".htm" ] );
 
 export const SCRIPT_EXTENSIONS = [
@@ -16,6 +17,7 @@ export const SCRIPT_EXTENSIONS = [
 	"txt",
 	"rtf",
 	"docx",
+	"pdf",
 	"html",
 	"htm"
 ];
@@ -70,6 +72,9 @@ export async function readAndConvertScript( filePath ) {
 				{ styleMap: [ "u => u" ] }
 			);
 			return addPadding( result.value );
+		}
+		if ( ext === ".pdf" ) {
+			return addPadding( await pdfToHtml( await fs.readFile( filePath ) ) );
 		}
 		if ( ext === ".rtf" ) {
 			const rtf = await fs.readFile( filePath, { encoding: "latin1" } );

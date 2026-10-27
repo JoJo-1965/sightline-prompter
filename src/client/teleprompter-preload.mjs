@@ -46,6 +46,9 @@ contextBridge.exposeInMainWorld( "electron", {
 	onRemoteInfo: callback => on( "remoteInfo", callback ),
 	openRecent: filePath => ipcRenderer.send( "openRecent", filePath ),
 	openSample: name => ipcRenderer.send( "openSample", name ),
+	openGoogleDoc: link => ipcRenderer.send( "openGoogleDoc", link ),
+	onGoogleDocResult: callback => on( "googleDocResult", callback ),
+	onShowGoogleDocDialog: callback => on( "showGoogleDocDialog", callback ),
 	setIgnoreMouse: ignore => ipcRenderer.send( "setIgnoreMouse", ignore ),
 	onToast: callback => on( "toast", callback ),
 	getPhoneInfo: () => ipcRenderer.send( "getPhoneInfo" ),
@@ -109,5 +112,5 @@ contextBridge.exposeInMainWorld( "electron", {
 	browseCuesFile: () => ipcRenderer.send( "browseCuesFile" ),
 	onCuesFileChosen: callback => ipcRenderer.on( "cuesFileChosen", ( _event, filePath ) => callback( filePath ) ),
 	onCuePhrases: callback => ipcRenderer.on( "cuePhrases", ( _event, phrases ) => callback( phrases ) ),
-	onEditorUnavailable: callback => ipcRenderer.on( "editorUnavailable", ( _event, fileName ) => callback( fileName ) )
+	onEditorUnavailable: callback => ipcRenderer.on( "editorUnavailable", ( _event, fileName, kind ) => callback( fileName, kind ) )
 } );

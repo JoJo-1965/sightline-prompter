@@ -18,6 +18,7 @@ import { createPad } from "./pad.js";
 import { createControl } from "./control.js";
 import { createSpeech } from "./speech.js";
 import { createGuide } from "./guide.js";
+import { createGoogleDocs, GOOGLE_DOC_MESSAGES } from "./google-docs.js";
 import { fitInside, keepTopReachable, sameRect } from "./utils/fit.js";
 import { startRemoteServer, newToken } from "./remote.js";
 import { startPhoneServer, newPhoneKey, lanAddress } from "./phone.js";
@@ -34,6 +35,8 @@ const MAX_RECENT_FILES = 10;
 
 // Help > User Guide: the pages in docs/guide, in their own window.
 const guide = createGuide( { dir: __dirname } );
+// Scripts from Google Docs links, kept in the app's folder.
+const googleDocs = createGoogleDocs( { dir: app.getPath( "userData" ) } );
 ipcMain.on( "openGuide", ( _event, page ) => guide.open( page ) );
 
 // Recording settings, edited on the Settings page and persisted as `settings` in app state.
@@ -532,11 +535,34 @@ const createWindow = ( state ) => {
 			win.webContents.send( "content", md );
 			addRecentFile( scriptFile );
 			watchScriptFile( scriptFile );
+			refreshGoogleDoc( scriptFile );
 			sendSlots();
 			refreshMenus();
 			await saveState( win );
 		}
 		return md;
+	}
+
+	// A script from a Google Docs link: fetch the latest version in the
+	// background. `announce` (File > Reload from Google Docs) reports the
+	// outcome either way; otherwise only an update is mentioned.
+	async function refreshGoogleDoc( file, announce = false ) {
+		const toast = text => win.webContents.send( "toast", text );
+		if ( !( await googleDocs.sourceOf( file ) ) ) {
+			if ( announce ) toast( "This script isn't from a Google Docs link" );
+			return;
+		}
+		try {
+			const changed = await googleDocs.refresh( file, announce );
+			if ( changed && currentFilePath === file ) {
+				win.webContents.send( "content", await readAndConvertScript( file ) );
+				toast( "Updated from Google Docs" );
+			} else if ( announce ) {
+				toast( "Already up to date with Google Docs" );
+			}
+		} catch ( err ) {
+			if ( announce ) toast( GOOGLE_DOC_MESSAGES[err.reason] ?? "Couldn't reach Google Docs" );
+		}
 	}
 
 	async function showEmptySlot( note = "" ) {
@@ -621,6 +647,8 @@ const createWindow = ( state ) => {
 			activeSlot,
 			samples: SAMPLE_SCRIPTS,
 			openSample: name => openSampleRef?.( name ),
+			openGoogleDoc: () => win.webContents.send( "showGoogleDocDialog" ),
+			reloadGoogleDoc: () => refreshGoogleDoc( currentFilePath, true ),
 			openGuide: page => guide.open( page ),
 			isMaximized: windowMode === "maximized",
 			displays: displayList()
@@ -914,6 +942,24 @@ app.whenReady().then( async () => {
 	} );
 	controlPad.apply();
 	createSpeech( { dir: __dirname, win } );
+
+	ipcMain.on( "openGoogleDoc", async ( _event, link ) => {
+		try {
+			const { file, title } = await googleDocs.open( link );
+			if ( await openScriptFile( file ) ) {
+				win.webContents.send( "googleDocResult", { ok: true } );
+				win.webContents.send( "toast", `Opened “${ title }” from Google Docs` );
+			} else {
+				win.webContents.send( "googleDocResult", { ok: true } );
+			}
+		} catch ( err ) {
+			console.log( "Google Docs:", err.message );
+			win.webContents.send( "googleDocResult", {
+				ok: false,
+				message: GOOGLE_DOC_MESSAGES[err.reason] ?? "Couldn't open that doc"
+			} );
+		}
+	} );
 	win.on( "closed", () => guide.close() );
 	controlWindow = createControl( {
 		dir: __dirname,
@@ -1098,7 +1144,10 @@ app.whenReady().then( async () => {
 	// Editor IPC handlers
 	ipcMain.on( "requestRawMarkdown", async () => {
 		if ( currentFilePath && isRichFile( currentFilePath ) ) {
-			win.webContents.send( "editorUnavailable", path.basename( currentFilePath ) );
+			const kind = ( await googleDocs.sourceOf( currentFilePath ) )
+				? "google"
+				: path.extname( currentFilePath ).toLowerCase() === ".pdf" ? "pdf" : "rich";
+			win.webContents.send( "editorUnavailable", path.basename( currentFilePath ), kind );
 		} else if ( currentFilePath ) {
 			const raw = await readRawMarkdown( currentFilePath );
 			win.webContents.send( "rawMarkdown", raw, currentFilePath );

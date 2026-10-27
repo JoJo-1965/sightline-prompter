@@ -530,6 +530,28 @@
         </div>
       </div>
     </div>
+    <div id="gdoc-modal" class="modal hidden">
+      <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="gdoc-title">
+        <h3 id="gdoc-title">Open a Google Doc</h3>
+        <p>
+          Paste the doc's link. In Google Docs, choose <strong>Share</strong> and set
+          General access to <strong>Anyone with the link</strong> first. Sightline
+          fetches the latest version each time you open it.
+        </p>
+        <input
+          id="gdoc-input"
+          type="url"
+          placeholder="https://docs.google.com/document/d/…"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <p id="gdoc-error" class="modal-error hidden" role="alert"></p>
+        <div class="modal-actions">
+          <button id="gdoc-cancel" type="button">Cancel</button>
+          <button id="gdoc-open" type="button" class="primary">Open</button>
+        </div>
+      </div>
+    </div>
     <div id="mic-modal" class="modal hidden">
       <div class="modal-content">
         <h3>Select Microphone</h3>

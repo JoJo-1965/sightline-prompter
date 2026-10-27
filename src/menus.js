@@ -15,6 +15,8 @@ export function buildMenus(
 		isMaximized,
 		samples = [],
 		openSample,
+		openGoogleDoc,
+		reloadGoogleDoc,
 		openGuide,
 		displays = []
 	}
@@ -58,6 +60,14 @@ export function buildMenus(
 					label: "Open…",
 					accelerator: "CmdOrCtrl+O",
 					click: () => showOpenScriptDialog()
+				},
+				{
+					label: "Open a Google Doc…",
+					click: () => openGoogleDoc?.()
+				},
+				{
+					label: "Reload from Google Docs",
+					click: () => reloadGoogleDoc?.()
 				},
 				{
 					label: "Open Recent",

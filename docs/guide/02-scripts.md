@@ -3,9 +3,32 @@
 ## File types
 
 Sightline opens Markdown (`.md`, `.markdown`), plain text (`.txt`), Word
-(`.docx`), rich text (`.rtf`) and web pages (`.html`, `.htm`). Markdown and
-plain text can be edited inside the app (**Edit** or **Ctrl+E**). Word and rich
-text files open in Word, and the prompter reloads them when you save.
+(`.docx`), rich text (`.rtf`), PDF (`.pdf`) and web pages (`.html`, `.htm`).
+Markdown and plain text can be edited inside the app (**Edit** or **Ctrl+E**).
+Word and rich text files open in Word, and the prompter reloads them when you
+save.
+
+**PDFs:** Sightline reads the text and rebuilds the paragraphs. Larger text
+becomes headings, so the arrow keys jump between sections, and page numbers and
+running headers or footers are left out. To change a PDF script, edit the
+original document and save the PDF again: the prompter reloads it. A scanned
+PDF is a picture of the page, with no text to read, so open the original
+instead.
+
+### Google Docs
+
+Choose **File > Open a Google Doc…** (or ☰ > Script), paste the doc's link and
+click **Open**. You can also drag the link from your browser's address bar onto
+the prompter.
+
+- In Google Docs, choose **Share** and set General access to **Anyone with the
+  link** first. Sightline doesn't sign in to Google, so it can only fetch docs
+  shared that way.
+- Headings in the doc become sections, and `{pause}`, `[directions]` and the
+  other script markings work as usual.
+- Edit the script in Google Docs. Each time you open it, Sightline fetches the
+  latest version; to fetch it now, choose **File > Reload from Google Docs**.
+- Offline, the last copy fetched is used.
 
 ![The built-in editor](images/editor.png)
 
