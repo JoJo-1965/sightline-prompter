@@ -1,10 +1,12 @@
 # Brief for AI script writers: Sightline Prompter scripts
 
 **Paste everything below the line into your script-writing AI** (ChatGPT,
-Claude, Gemini, or your own pipeline) as instructions. It produces scripts that
-Sightline Prompter can pace and pause automatically.
+Claude, Gemini, or your own pipeline) as instructions, then describe the script
+you want. It produces scripts that Sightline Prompter can pace, stop and count
+down automatically. In the app, **Help > Copy the AI Script Prompt** (or ☰ >
+Help) puts it on the clipboard for you.
 
-Spec version: **0.1 (syntax agreed 27 October 2026; pauses, markers and pace targets already work in the app)**. Full spec:
+Spec version: **0.2 (27 October 2026: adds `{stop}` and countdown pauses, which work in steady and voice scrolling)**. Full spec:
 [SCRIPT-DIRECTIVES.md](SCRIPT-DIRECTIVES.md). Machine-readable definition:
 [script-directives.json](script-directives.json).
 
@@ -21,8 +23,8 @@ use the mark-up below. Follow every rule exactly.
    `[slower here]` or `[Say: "Section one". Pause.]`. They're shown dimmed. Put
    any words the speaker must say inside a note in "double quotes".
 3. **Directives to the app:** in `{curly braces}`. They're hidden from the
-   speaker and control pacing and pauses. Use only the directives listed in
-   section 3.
+   speaker and control pacing, stops and countdowns. Use only the directives
+   listed in section 3.
 
 Never use `{` or `}` for anything else. Never put directives inside
 `[square brackets]`, or notes inside `{curly braces}`.
@@ -49,8 +51,8 @@ Never use `{` or `}` for anything else. Never put directives inside
 | `{pacing: section}` or `{pacing: session}` | Script settings                                                   | `section` for batch or modular recording with pause points (the default); `session` for one continuous take       |
 | `{wpm: n}`                                 | Script settings, a section heading, or inline                     | Target words per minute, a whole number from 80 to 220. Inline, it applies until the end of the section           |
 | `{target: m:ss}`                           | Script settings (whole script, session mode) or a section heading | Target duration, for example `0:45`, `1:20` or `12:00`                                                            |
-| `{pause}`                                  | Inline, on its own or at the end of a sentence                    | Scrolling stops until the speaker continues. Use it at natural breath or retake points, and before a slide change |
-| `{pause: ns}`                              | Inline                                                            | Stops for n seconds (1 to 30), then continues, for example `{pause: 3s}`                                          |
+| `{stop}`                                   | Inline, on its own or at the end of a sentence                    | The prompter stops until the speaker carries on (they say "Prompter, go", or press Space or a clicker). Use it at the end of each section in batch recording, at retake points, and before a demo or a slide change. `{pause}` with no value means the same |
+| `{pause: ns}`                              | Inline, at the end of a sentence                                  | A countdown: the prompter waits n seconds (1 to 30), showing "Carrying on in n", then carries on by itself, for example `{pause: 3s}`. Use 2s to 5s for a breath, a beat for emphasis, or time to look at a slide |
 | `{mode: points}` | Script settings | For a talk spoken off script: each section is shown as large bullet points, one at a time. Write each section as 3 to 6 short bullets (`- `) and give every section a `{target: m:ss}` |
 | `{marker}`                                 | Inline                                                            | A bookmark for retakes. Put one at the start of any passage that's hard to deliver                                |
 
@@ -64,9 +66,15 @@ Several settings can share one pair of braces, separated by commas:
 - Default pace is **145 wpm**. Use a slower `wpm` (125 to 135) for emotional or
   complex sections, and a faster one (150 to 160) for light, familiar material.
 - For **batch or modular recording**, use `pacing: section`, keep each section
-  between 30 seconds and 2 minutes, and end each section with `{pause}`.
+  between 30 seconds and 2 minutes, and end each section with `{stop}`.
 - For **one continuous take**, use `pacing: session`, give a whole-script
-  `target`, and use `{pause}` only where a real stop is needed.
+  `target`, and use `{stop}` only where a real stop is needed. Use short
+  countdowns (`{pause: 2s}` to `{pause: 5s}`) for beats and breaths instead.
+- A stop or countdown goes at the end of a sentence, never in the middle of one.
+- Speakers can control the prompter by voice with "Prompter, …" commands (go,
+  pause, again, resync). Don't write instructions for these into the spoken
+  text; if a reminder helps, put it in a note, for example
+  `[Say: "Prompter, go" when you're ready.]`.
 - Don't put stage directions, camera notes or slide numbers in the spoken text.
   Put them in `[square brackets]`.
 - Never invent other directives. If you need something not listed, write it as
@@ -88,6 +96,7 @@ It exits with 1 if anything below is broken.
       as shown.
 - [ ] Every `{` has a matching `}`, and no braces appear anywhere else.
 - [ ] Notes in `[ ]` contain no directives.
+- [ ] Every section in batch recording ends with `{stop}`.
 
 ## 6. Example (markdown)
 
@@ -99,12 +108,12 @@ It exits with 1 if anything below is broken.
 [Say: "Section one". Pause.]
 
 There's one worry I hear from managers more than any other. It isn't
-hostility. It's "what if I say the wrong thing?" {pause}
+hostility. {pause: 2s} It's "what if I say the wrong thing?" {stop}
 
 ## Section 2 · Why it matters {wpm: 135}
 
 [slower, warmer] {marker} I get it. But if you're afraid of saying the wrong
 thing, it's very easy to end up saying nothing at all.
 
-And saying nothing is still a decision. {pause}
+And saying nothing is still a decision. {stop}
 ```

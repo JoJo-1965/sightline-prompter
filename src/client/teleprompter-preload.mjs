@@ -47,6 +47,7 @@ contextBridge.exposeInMainWorld( "electron", {
 	openRecent: filePath => ipcRenderer.send( "openRecent", filePath ),
 	openSample: name => ipcRenderer.send( "openSample", name ),
 	openGoogleDoc: link => ipcRenderer.send( "openGoogleDoc", link ),
+	copyAiPrompt: () => ipcRenderer.send( "copyAiPrompt" ),
 	onGoogleDocResult: callback => on( "googleDocResult", callback ),
 	onShowGoogleDocDialog: callback => on( "showGoogleDocDialog", callback ),
 	setIgnoreMouse: ignore => ipcRenderer.send( "setIgnoreMouse", ignore ),

@@ -2494,6 +2494,12 @@ function menuGroups() {
 			heading: "Help",
 			items: [
 				[ "📖", "User guide", "Shift+F1", () => window.electron.openGuide() ],
+				[
+					"✨",
+					"Copy the AI script prompt",
+					"",
+					() => window.electron.copyAiPrompt()
+				],
 				[ "?", "Keyboard shortcuts", "F1", openHelp ],
 				[ "ⓘ", "About this teleprompter", "", openAbout ],
 				[

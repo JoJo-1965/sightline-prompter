@@ -1,4 +1,4 @@
-import { app, BrowserWindow, dialog, globalShortcut, ipcMain, Menu, screen, shell } from "electron";
+import { app, BrowserWindow, clipboard, dialog, globalShortcut, ipcMain, Menu, screen, shell } from "electron";
 import path from "node:path";
 import fs from "node:fs/promises";
 import { cpSync, existsSync, readFileSync } from "node:fs";
@@ -38,6 +38,26 @@ const guide = createGuide( { dir: __dirname } );
 // Scripts from Google Docs links, kept in the app's folder.
 const googleDocs = createGoogleDocs( { dir: app.getPath( "userData" ) } );
 ipcMain.on( "openGuide", ( _event, page ) => guide.open( page ) );
+
+// Help > Copy the AI script prompt: the part of docs/AI-SCRIPT-BRIEF.md below
+// the first rule, ready to paste into ChatGPT, Claude or Gemini.
+async function copyAiPrompt( win ) {
+	try {
+		const brief = await fs.readFile(
+			path.join( __dirname, "..", "docs", "AI-SCRIPT-BRIEF.md" ),
+			"utf-8"
+		);
+		const prompt = brief.replace( /\r\n/g, "\n" ).split( /\n---\n/ ).slice( 1 ).join( "\n---\n" ).trim();
+		clipboard.writeText( prompt );
+		win?.webContents.send(
+			"toast",
+			"AI script prompt copied: paste it into ChatGPT, Claude or Gemini, then describe your script"
+		);
+	} catch ( err ) {
+		console.log( "AI prompt:", err.message );
+		win?.webContents.send( "toast", "Couldn't copy the AI script prompt" );
+	}
+}
 
 // Recording settings, edited on the Settings page and persisted as `settings` in app state.
 const defaultSettings = {
@@ -135,6 +155,7 @@ const stateManager = stateFactory( defaultConfig );
 // Sample scripts shipped in src/samples, for onboarding and testing.
 export const SAMPLE_SCRIPTS = [
 	{ file: "welcome.md", label: "Welcome tour" },
+	{ file: "voice-and-stops.md", label: "Voice control, stops and countdowns" },
 	{ file: "batch-module.md", label: "Batch recording, section by section" },
 	{ file: "single-take.md", label: "Single continuous take" },
 	{ file: "talking-points.md", label: "Talking points (speaking off script)" },
@@ -648,6 +669,7 @@ const createWindow = ( state ) => {
 			samples: SAMPLE_SCRIPTS,
 			openSample: name => openSampleRef?.( name ),
 			openGoogleDoc: () => win.webContents.send( "showGoogleDocDialog" ),
+			copyAiPrompt: () => copyAiPrompt( win ),
 			reloadGoogleDoc: () => refreshGoogleDoc( currentFilePath, true ),
 			openGuide: page => guide.open( page ),
 			isMaximized: windowMode === "maximized",
@@ -942,6 +964,7 @@ app.whenReady().then( async () => {
 	} );
 	controlPad.apply();
 	createSpeech( { dir: __dirname, win } );
+	ipcMain.on( "copyAiPrompt", () => copyAiPrompt( win ) );
 
 	ipcMain.on( "openGoogleDoc", async ( _event, link ) => {
 		try {

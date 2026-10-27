@@ -59,8 +59,8 @@ read.
 
 | Directive                     | What it does                                              |
 | ----------------------------- | --------------------------------------------------------- |
-| `{pause}`                     | Scrolling stops here until you press Space or the clicker |
-| `{pause: 3s}`                 | Stops for 3 seconds, then carries on                      |
+| `{stop}` (or `{pause}`)       | Stops here until you say "Prompter, go", or press Space or the clicker |
+| `{pause: 3s}`                 | A 3-second countdown, then it carries on by itself        |
 | `{marker}`                    | A bookmark for retakes. **Ctrl+B** jumps to the next one  |
 | `{wpm: 140}`                  | On a section heading: that section's pace                 |
 | `{target: 1:20}`              | On a section heading: that section's target time          |
@@ -73,6 +73,14 @@ typo).
 
 ![Directives shown as tags for checking](images/directives.png)
 
-The full reference is in [SCRIPT-DIRECTIVES.md](../SCRIPT-DIRECTIVES.md). If
-you write scripts with an AI assistant, [AI-SCRIPT-BRIEF.md](../AI-SCRIPT-BRIEF.md)
-is a brief you can give it.
+Stops and countdowns work in steady and voice scrolling: see
+[Stops and timed pauses](03-scrolling-and-voice.md#stops-and-timed-pauses).
+The full reference is in [SCRIPT-DIRECTIVES.md](../SCRIPT-DIRECTIVES.md).
+
+### Writing scripts with an AI assistant
+
+Choose **Help > Copy the AI Script Prompt** (or ☰ > Help). It puts a set of
+instructions on the clipboard: paste it into ChatGPT, Claude or Gemini, then
+describe the script you want. The script that comes back has sections, target
+times, stops and countdowns ready for Sightline. The same instructions are in
+[AI-SCRIPT-BRIEF.md](../AI-SCRIPT-BRIEF.md).

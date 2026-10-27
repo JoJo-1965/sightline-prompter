@@ -90,6 +90,10 @@ steady scrolling and in voice scrolling.
 | `{stop}` (or `{pause}`) | The prompter stops, and a yellow **Stopped** label shows at the bottom right. Say **"Prompter, go"** (or just **"go"**), or press Space, the clicker or the remote, to carry on |
 | `{pause: 5s}` | The prompter waits 5 seconds (up to 30), with a blue **Carrying on in 5** countdown and a bar that runs down, then carries on by itself |
 
+![A countdown: the blue label at the bottom right](images/pill-countdown.png)
+
+![A stop: the yellow label, with the Prompter label showing the mic is listening for "Prompter, go"](images/pill-stop.png)
+
 During a stop or a countdown:
 
 - **"Prompter, go"** carries on straight away.
@@ -98,6 +102,9 @@ During a stop or a countdown:
   prompter waits, even if voice commands are set to voice mode only (the small
   **🎙 Prompter** label shows). Set **Voice commands** to **Off** in
   Settings > Voice to stop this.
+
+To try it all, open ☰ > Script > **Sample scripts > Voice control, stops and
+countdowns**. It walks you through a countdown, a stop and the voice commands.
 
 ## The sentence highlight
 

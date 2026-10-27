@@ -23,7 +23,7 @@ because nobody gave us a moment to think. {pause}
 start listening to the rush.
 
 Slowing down a little gives your audience room to keep up. It also gives you
-room to breathe. {pause}
+room to breathe. {stop}
 
 ## Section 3 · Three habits {target: 0:20}
 
@@ -35,7 +35,7 @@ First, pause before your key point, not after it. Second, finish your sentence
 before you look at your notes. Third, when you lose your place, stop, smile,
 and find it. Nobody minds.
 
-{pause: 3s} Those three habits will carry you a long way. {pause}
+{pause: 3s} Those three habits will carry you a long way. {stop}
 
 ## Section 4 · Close {target: 0:10}
 

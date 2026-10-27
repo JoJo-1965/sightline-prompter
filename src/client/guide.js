@@ -6,12 +6,23 @@ const contents = document.getElementById( "contents" );
 const pageEl = document.getElementById( "page" );
 let current = null;
 
-async function show( name ) {
-	const result = await window.guide.page( name );
+// "03-scrolling-and-voice.md#stops-and-timed-pauses" opens the page at that
+// heading (matched on its letters and digits).
+const plain = text => text.toLowerCase().replace( /[^a-z0-9]/g, "" );
+
+async function show( link ) {
+	const [ name, anchor ] = ( link ?? "" ).split( "#" );
+	const result = await window.guide.page( name || undefined );
 	if ( !result ) return;
 	current = result.name;
 	pageEl.innerHTML = result.html;
-	pageEl.scrollTo( 0, 0 );
+	const heading = anchor
+		? [ ...pageEl.querySelectorAll( "h2, h3" ) ].find(
+			h => plain( h.textContent ) === plain( anchor )
+		)
+		: null;
+	if ( heading ) heading.scrollIntoView();
+	else pageEl.scrollTo( 0, 0 );
 	document.title = `${ pageEl.querySelector( "h1" )?.textContent ?? "Guide" } · Sightline Prompter`;
 	for ( const a of contents.querySelectorAll( "a" ) )
 		a.classList.toggle( "current", a.dataset.page === current );
@@ -42,7 +53,7 @@ document.addEventListener( "click", ( event ) => {
 	event.preventDefault();
 	const href = a.dataset.page ?? a.getAttribute( "href" ) ?? "";
 	if ( /^https:\/\//.test( href ) ) window.guide.openExternal( href );
-	else if ( /\.md$/.test( href ) ) show( href );
+	else if ( /\.md(#.*)?$/.test( href ) ) show( href );
 } );
 
 window.guide.onShow( name => show( name ) );

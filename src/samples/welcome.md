@@ -55,7 +55,8 @@ they go in quotes. [Say: "Hello everyone".]
 
 Words in curly brackets are instructions to the app, and you never see them.
 There's one at the end of every section in this script. They set the target
-pace for each section, and where to pause.
+pace for each section, where to stop until you say "Prompter, go", and where
+to count down and carry on by itself.
 
 To check them, tick Show directives in the Layout panel. {pause}
 
@@ -68,6 +69,14 @@ The Beam-splitter setup button, in the Layout panel, gives a solid black
 background and dimmer text, so your camera picture stays clear.
 
 F11 goes full screen. {pause}
+
+## Talk to it {target: 0:20}
+
+In voice mode, the prompter follows you as you speak. Say "Prompter", then a
+command, such as pause, go, slower, again or resync.
+
+To try it, open the menu, then Sample scripts, then Voice control, stops and
+countdowns. {pause}
 
 ## That's the tour {target: 0:15}
 

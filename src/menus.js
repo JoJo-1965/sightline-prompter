@@ -16,6 +16,7 @@ export function buildMenus(
 		samples = [],
 		openSample,
 		openGoogleDoc,
+		copyAiPrompt,
 		reloadGoogleDoc,
 		openGuide,
 		displays = []
@@ -318,6 +319,10 @@ export function buildMenus(
 					label: "User Guide",
 					accelerator: "Shift+F1",
 					click: () => openGuide?.()
+				},
+				{
+					label: "Copy the AI Script Prompt",
+					click: () => copyAiPrompt?.()
 				},
 				{
 					label: "Keyboard Shortcuts",
