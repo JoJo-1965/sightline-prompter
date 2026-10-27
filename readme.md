@@ -16,7 +16,7 @@ A see-through desktop teleprompter for recording to camera, built with [Electron
 
 - Translucent overlay — see through the script to your presentation or video call
 - Built-in markdown editor with syntax highlighting
-- Voice-driven auto-scroll — speak your script and the prompter follows you, powered by [Deepgram](https://deepgram.com/)
+- Voice-driven auto-scroll — speak your script and the prompter follows you. Recognition runs on your own computer (free, offline, private), or online with [Deepgram](https://deepgram.com/) if you prefer
 - Live reload — script automatically reloads when the file is modified externally
 - Adjustable background opacity
 - Font size is persisted across sessions
@@ -52,13 +52,15 @@ You can freely toggle between the editor and the teleprompter preview with `Cmd/
 
 ### Voice-Driven Auto-Scroll
 
-The teleprompter can listen to you and scroll the script automatically as you speak. No keyboard, remote, or foot pedals required! Speech is transcribed by [Deepgram](https://deepgram.com/) and the recognized words are matched against your script, so the prompter follows your real cadence and tolerates ad-libs and re-reads.
+The teleprompter can listen to you and scroll the script automatically as you speak. No keyboard, remote, or foot pedals required! Your speech is turned into words and matched against your script, so the prompter follows your real cadence and tolerates ad-libs and re-reads. The sentence you're about to say is lit up as you go.
+
+Speech recognition runs **on this computer** by default, with the [sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx) streaming Zipformer English model: no account or key, it works offline, and nothing you say leaves the PC. [Deepgram](https://deepgram.com/) (online, with your own key) is still there as an option.
 
 #### Setup
 
-1. Get a Deepgram API key from [console.deepgram.com](https://console.deepgram.com/) (a free tier is available).
-2. Click **Voice** in the control bar (or open Settings) and paste in your key. The key is stored locally in the app's state file and is never written to exported settings files.
-3. Grant microphone access the first time you start auto-scroll.
+1. Open **Settings > Voice** (or click **Voice** in the control bar). With "On this computer" chosen, click **Download speech model**. It's a one-off download of about 73 MB.
+2. To use Deepgram instead, choose it there and paste in a key from [console.deepgram.com](https://console.deepgram.com/). The key is stored locally in the app's state file and is never written to exported settings files.
+3. Choose **Voice** as the scroll mode, and grant microphone access the first time you start.
 
 #### Auto-Scroll Usage
 
@@ -179,6 +181,9 @@ starts. Earlier version numbers belong to the original project.
 - **Control window** (View > Control Window or the ☰ menu under Playback, **Ctrl+Shift+O**): an ordinary, upright window for a second screen. It shows a live copy of the script that follows the prompter, with the reading line, the pacing light, the section and time left, and big Top / Previous / Start / Next / Slower / Faster / Marker buttons. Click any line in the copy to move the prompter there. Keys work too: Space, Page Up / Down, Home, ↑ / ↓ and B. A− / A+ change the copy's text size, and it reopens where you left it
 - **Prompter monitor** (Settings > Display, or Window > Prompter Monitor): pick a monitor (the Elgato Prompter shows up by name) and the prompter opens full screen there, now and each time the app starts. F11 gives a normal window on that monitor
 - **Windows stay in view.** If the prompter is bigger than its screen, or its control bar ends up above or off the screen (after a drag, a monitor unplugged, or a resolution change), it shrinks or moves back so the bar can be reached. The control window does the same when a monitor goes away
+- **Voice scrolling on your own computer** (Settings > Voice): free, offline and private, and now the default. A one-off 73 MB download (with progress shown) fetches the speech model; after that nothing you say leaves the PC. Words reach the prompter while you're still speaking, not at the next pause. In a side-by-side test on a real 9-minute recording with retakes, it kept the prompter on the reader's line 96% of the time, with a typical delay of a few hundredths of a second; Moonshine, which waits for pauses, managed 75%. Deepgram stays as a choice, with your own key
+- **The sentence you're on is highlighted** (Settings > Display, the Layout panel or the ☰ menu under Display; on by default): in voice mode, the sentence you're about to say; otherwise the one on the reading line. A soft band that keeps the text colour on every theme
+- Words with apostrophes now match whichever apostrophe the script uses: "isn't" heard matches "isn’t" typed
 - **Tidier menu and Settings.** The ☰ menu groups fold up: Script and Playback start open; opening another group closes the rest, so the menu stays short (the menu remembers). The menu closes when you click anywhere else. The button pad is now in the menu under Playback (Ctrl+Shift+P). Settings is split into tabs (Scrolling, Voice, Display, Layout, Files, Remotes; Files has opening and saving scripts, the settings file and slide cues) with an × at the top right, and Save / Cancel always in view. A quiet line at the foot of the menu and Settings shows the version, release date, licence and credits, with a link to About (Help > About lists the newer features too)
 - **Rehearsal timer:** after a practice run, **Use these times as targets** in the take summary writes each section's time into the script as `{target: m:ss}` (to the nearest 5 seconds), replacing any target it had. Sections started part-way through are left alone. Works with .md and .txt scripts
 - The take summary flags sections that ran short as well as long: within 5% of the target is "On track", 5 to 10% under or over is amber ("Under by 8 s"), and more than 10% is red

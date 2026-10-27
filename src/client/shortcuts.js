@@ -68,7 +68,7 @@ export const SHORTCUTS = [
 	{
 		section: "Voice scroll sync",
 		keys: [
-			[ [ "Ctrl+Shift+V" ], "Voice panel: mode, Deepgram API key, microphone" ]
+			[ [ "Ctrl+Shift+V" ], "Voice panel: mode, speech recognition, microphone" ]
 		]
 	},
 	{

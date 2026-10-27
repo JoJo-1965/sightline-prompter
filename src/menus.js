@@ -142,7 +142,7 @@ export function buildMenus(
 							click: () => updateSettings( { scrollMode: "steady" } )
 						},
 						{
-							label: "Voice (Deepgram)",
+							label: "Voice (Follows What You Say)",
 							type: "radio",
 							checked: settings.scrollMode === "voice",
 							click: () => updateSettings( { scrollMode: "voice" } )

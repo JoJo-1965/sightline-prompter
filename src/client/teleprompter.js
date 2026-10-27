@@ -27,6 +27,13 @@ import {
 } from "./steady-scroll.js";
 import { decorateScript } from "./decorate.js";
 import { readDirectives } from "./directives.js";
+import {
+	indexSentences,
+	setSentenceHighlight,
+	clearSentence,
+	showSentenceAt,
+	showSentenceAtReadingLine
+} from "./sentence-highlight.js";
 
 let scriptIndex = 0;
 
@@ -88,7 +95,32 @@ function renderScript( html ) {
 	tagSections();
 	applyPointsView();
 	sendPreviewContent();
+	indexSentences( md );
+	updateSentence();
 }
+
+// The sentence highlight (Settings > Display). Voice scrolling moves it as you
+// speak (handleAutoScrollPosition); otherwise it follows the reading line.
+function updateSentence() {
+	if ( settings.highlightSentence === false || isEditMode || pointsMode() ) {
+		clearSentence();
+	} else if ( !autoScrollActive ) {
+		showSentenceAtReadingLine();
+	}
+}
+
+let sentenceFrame = 0;
+window.addEventListener(
+	"scroll",
+	() => {
+		if ( sentenceFrame ) return;
+		sentenceFrame = requestAnimationFrame( () => {
+			sentenceFrame = 0;
+			updateSentence();
+		} );
+	},
+	{ passive: true }
+);
 
 const DEFAULT_FONT_SIZE = 3;
 const FONT_SIZE_STEP = 0.25;
@@ -750,6 +782,8 @@ function setIndicator( text, variant ) {
 }
 
 function handleAutoScrollPosition( wordIdx, ranges ) {
+	// The words just heard end here, so the next thing to say is the word after.
+	if ( settings.highlightSentence !== false ) showSentenceAt( wordIdx + 1 );
 	if ( Date.now() - lastManualScrollTs < MANUAL_SCROLL_GRACE_MS ) return;
 	scrollToWord( wordIdx, ranges );
 }
@@ -760,8 +794,22 @@ async function startAutoScrollSession() {
 		alert( "Exit the editor before starting auto-scroll." );
 		return;
 	}
+	if ( usesLocalVoice() && !speechModel.installed ) {
+		// The speech model comes down once; send the reader to where that happens.
+		openSettings();
+		showSettingsTab( "voice" );
+		showToast(
+			"Download the speech model first (Settings > Voice), then press Play again"
+		);
+		return;
+	}
 	autoScrollStarting = true;
 	pendingDeepgramKey = null;
+	if ( usesLocalVoice() ) {
+		setIndicator( "Starting…", "connecting" );
+		beginVoice( "local", null );
+		return;
+	}
 	setIndicator( "Connecting…", "connecting" );
 	window.electron.getDeepgramKey();
 }
@@ -778,10 +826,57 @@ async function tryStartFlow() {
 		showApiKeyModal();
 		return;
 	}
+	beginVoice( "deepgram", dgKey.key );
+}
 
+// Voice scrolling on this computer unless Deepgram is chosen (Settings > Voice).
+function usesLocalVoice() {
+	return settings.voiceEngine !== "deepgram";
+}
+
+let speechModel = { installed: false };
+window.electron.onSpeechModel( ( status ) => {
+	speechModel = status;
+	showSpeechModel();
+} );
+window.electron.speechModelStatus();
+
+// The model line on Settings > Voice: installed, downloading (with progress) or not yet.
+function showSpeechModel() {
+	showSpeechModelIn( "set-speech-model-status", "set-speech-model-get" );
+	showSpeechModelIn( "vp-model-status", "vp-model-get" );
+}
+
+function showSpeechModelIn( statusId, buttonId ) {
+	const status = document.getElementById( statusId );
+	const button = document.getElementById( buttonId );
+	if ( !status || !button ) return;
+	const mb = bytes => Math.round( bytes / 1e6 );
+	if ( speechModel.installed ) {
+		status.textContent
+			= "Speech model installed. Voice scrolling works offline.";
+		button.classList.add( "hidden" );
+	} else if ( speechModel.downloading ) {
+		const pct = Math.floor( ( 100 * speechModel.received ) / speechModel.total );
+		status.textContent = `Downloading… ${ mb( speechModel.received ) } of ${ mb( speechModel.total ) } MB (${ pct }%)`;
+		button.classList.add( "hidden" );
+	} else {
+		const failed = speechModel.error
+			? `Download failed: ${ speechModel.error }. `
+			: "";
+		status.textContent = `${ failed }One-off download of ${ mb( speechModel.total ?? 73e6 ) } MB, then no internet needed.`;
+		button.textContent = speechModel.error
+			? "Try again"
+			: "Download speech model";
+		button.classList.remove( "hidden" );
+	}
+}
+
+async function beginVoice( engine, deepgramKey ) {
 	try {
 		autoScrollHandle = await startAutoScroll( {
-			deepgramKey: dgKey.key,
+			engine,
+			deepgramKey,
 			scriptEl: md,
 			audioDeviceId,
 			onStatus: ( status ) => {
@@ -820,6 +915,7 @@ async function stopAutoScrollSession() {
 	} catch ( err ) {
 		console.warn( "[auto-scroll] stop error", err );
 	}
+	updateSentence();
 }
 
 // --- Steady scroll (fixed words per minute) ---
@@ -1174,16 +1270,19 @@ function applySettings( next ) {
 	updateReadingMarker();
 	setWpm( settings.steadyWpm );
 	if ( isSteadyRunning() ) setIndicator( steadyIndicatorText() );
-	if ( prev.scrollMode !== settings.scrollMode ) {
+	const engineChanged = prev.voiceEngine !== settings.voiceEngine;
+	if ( prev.scrollMode !== settings.scrollMode || engineChanged ) {
 		stopSteadySession();
 		stopAutoScrollSession();
 	}
+	setSentenceHighlight( settings.highlightSentence !== false );
 	if ( prev.highlightCues !== settings.highlightCues ) rerenderScript();
 	applyDisplayClasses();
 	if ( prev.pointsMode !== settings.pointsMode ) applyPointsView();
 	applyLayout();
 	syncControls();
 	refreshControlsVisibility();
+	updateSentence();
 }
 
 window.electron.onSettings( applySettings );
@@ -1226,15 +1325,19 @@ async function openSettings() {
 	field( "set-steady-wpm" ).value = settings.steadyWpm;
 	field( "set-countdown" ).value = settings.countdown;
 	field( "set-voice-speed" ).value = autoScrollSpeed;
+	field( "set-voice-engine" ).value = usesLocalVoice() ? "local" : "deepgram";
+	showVoiceEngineFields();
+	window.electron.speechModelStatus();
 	field( "set-deepgram-key" ).value = "";
 	field( "set-deepgram-status" ).textContent = settings.hasDeepgramKey
 		? "A key is saved. Type a new one to replace it (Script > Set Deepgram API Key… to clear it)."
-		: "No key saved. Only needed for voice mode.";
+		: "No key saved. Only needed for Deepgram.";
 	field( "set-font-size" ).value = fontSize;
 	field( "set-opacity" ).value = opacity;
 	field( "set-reading-line" ).value = settings.readingLine;
 	field( "set-directions" ).value = settings.directions ?? "dim";
 	field( "set-reading-marker" ).checked = !!settings.showReadingMarker;
+	field( "set-sentence" ).checked = settings.highlightSentence !== false;
 	field( "set-mirrored" ).value = mirrored;
 	field( "set-always-on-top" ).checked = !!settings.alwaysOnTop;
 	window.electron.getDisplays();
@@ -1262,13 +1365,29 @@ window.electron.onDisplays( ( displays ) => {
 	if ( !select ) return;
 	select.innerHTML = "";
 	select.append( new Option( "Leave it where it is", "" ) );
-	for ( const d of displays ) select.append( new Option( `Full screen on ${ d.label }`, String( d.id ) ) );
+	for ( const d of displays )
+		select.append( new Option( `Full screen on ${ d.label }`, String( d.id ) ) );
 	const chosen = settings.prompterDisplay;
 	if ( chosen != null && !displays.some( d => d.id === chosen ) ) {
-		select.append( new Option( "The monitor chosen before (not connected)", String( chosen ) ) );
+		select.append(
+			new Option( "The monitor chosen before (not connected)", String( chosen ) )
+		);
 	}
 	select.value = chosen == null ? "" : String( chosen );
 } );
+
+// Settings > Voice shows the model download for on-device recognition, or the
+// key for Deepgram, whichever is chosen.
+function showVoiceEngineFields() {
+	const local = field( "set-voice-engine" ).value !== "deepgram";
+	for ( const el of settingsModal.querySelectorAll( ".voice-local-only" ) )
+		el.classList.toggle( "hidden", !local );
+	for ( const el of settingsModal.querySelectorAll( ".voice-deepgram-only" ) )
+		el.classList.toggle( "hidden", local );
+}
+
+field( "set-voice-engine" )?.addEventListener( "change", showVoiceEngineFields );
+field( "set-speech-model-get" )?.addEventListener( "click", () => window.electron.speechModelDownload() );
 
 function closeSettings( restore ) {
 	if ( restore && settingsSnapshot ) {
@@ -1283,10 +1402,12 @@ function closeSettings( restore ) {
 function saveSettingsPage() {
 	window.electron.saveSettings( {
 		scrollMode: field( "set-scroll-mode" ).value === "voice" ? "voice" : "steady",
+		voiceEngine: field( "set-voice-engine" ).value === "deepgram" ? "deepgram" : "local",
 		steadyWpm: numberValue( "set-steady-wpm", 60, 300, settings.steadyWpm ),
 		countdown: numberValue( "set-countdown", 0, 10, settings.countdown ),
 		directions: field( "set-directions" ).value,
 		showReadingMarker: field( "set-reading-marker" ).checked,
+		highlightSentence: field( "set-sentence" ).checked,
 		readingLine: numberValue( "set-reading-line", 5, 80, settings.readingLine ),
 		alwaysOnTop: field( "set-always-on-top" ).checked,
 		prompterDisplay: field( "set-prompter-display" ).value
@@ -1974,6 +2095,13 @@ function menuGroups() {
 					{ checked: !!settings.showReadingMarker }
 				],
 				[
+					"▭",
+					"Highlight the sentence you're on",
+					"",
+					toggleSetting( "highlightSentence" ),
+					{ checked: settings.highlightSentence !== false }
+				],
+				[
 					"▬",
 					"Progress and time left",
 					"",
@@ -2275,6 +2403,7 @@ function syncLayoutPanel() {
 	field( "lp-align" ).disabled = !!settings.eyeLine;
 	field( "lp-mirrored" ).value = mirrored;
 	field( "lp-marker" ).checked = !!settings.showReadingMarker;
+	field( "lp-sentence" ).checked = settings.highlightSentence !== false;
 	field( "lp-progress" ).checked = settings.showProgress !== false;
 	field( "lp-pinned" ).checked = !!settings.controlsPinned;
 	field( "lp-directives" ).checked = !!settings.showDirectives;
@@ -2324,6 +2453,11 @@ if ( document.getElementById( "layout-panel" ) ) {
 	field( "lp-marker" ).addEventListener( "change", () =>
 		window.electron.saveSettings( {
 			showReadingMarker: field( "lp-marker" ).checked
+		} )
+	);
+	field( "lp-sentence" ).addEventListener( "change", () =>
+		window.electron.saveSettings( {
+			highlightSentence: field( "lp-sentence" ).checked
 		} )
 	);
 	field( "lp-progress" ).addEventListener( "change", () =>
@@ -2393,7 +2527,7 @@ if ( document.getElementById( "layout-panel" ) ) {
 	} );
 }
 
-// --- Voice panel: scroll mode, Deepgram key, microphone with a live meter ---
+// --- Voice panel: scroll mode, speech recognition, microphone with a live meter ---
 
 let meterStream = null;
 let meterContext = null;
@@ -2402,9 +2536,16 @@ let meterRaf = null;
 function syncVoicePanel() {
 	if ( !document.getElementById( "voice-panel" ) ) return;
 	field( "vp-mode" ).value = settings.scrollMode === "voice" ? "voice" : "steady";
+	field( "vp-engine" ).value = usesLocalVoice() ? "local" : "deepgram";
+	const panel = field( "voice-panel" );
+	for ( const el of panel.querySelectorAll( ".voice-local-only" ) )
+		el.classList.toggle( "hidden", !usesLocalVoice() );
+	for ( const el of panel.querySelectorAll( ".voice-deepgram-only" ) )
+		el.classList.toggle( "hidden", usesLocalVoice() );
+	showSpeechModel();
 	field( "vp-key-status" ).textContent = settings.hasDeepgramKey
 		? "✓ A key is saved. Paste a new one to replace it."
-		: "No key saved yet. Voice mode needs one (console.deepgram.com).";
+		: "No key saved yet. Only needed for Deepgram (console.deepgram.com).";
 	if ( document.activeElement !== field( "vp-speed" ) )
 		field( "vp-speed" ).value = autoScrollSpeed;
 	field( "vp-speed-value" ).textContent = formatSpeed( autoScrollSpeed );
@@ -2475,6 +2616,10 @@ if ( document.getElementById( "voice-panel" ) ) {
 	field( "vp-mode" ).addEventListener( "change", () => {
 		window.electron.saveSettings( { scrollMode: field( "vp-mode" ).value } );
 	} );
+	field( "vp-engine" ).addEventListener( "change", () => {
+		window.electron.saveSettings( { voiceEngine: field( "vp-engine" ).value } );
+	} );
+	onClick( "vp-model-get", () => window.electron.speechModelDownload() );
 	const saveKey = () => {
 		const key = field( "vp-key" ).value.trim();
 		if ( !key ) return;
@@ -2597,7 +2742,9 @@ function scrollChevrons( box ) {
 	return update;
 }
 
-const updateAboutChevrons = scrollChevrons( aboutModal?.querySelector( ".about-content" ) );
+const updateAboutChevrons = scrollChevrons(
+	aboutModal?.querySelector( ".about-content" )
+);
 
 function openAbout() {
 	closePanels();
@@ -3008,6 +3155,7 @@ function refreshSharedDisplayFields() {
 	field( "set-opacity" ).value = opacity;
 	field( "set-reading-line" ).value = settings.readingLine;
 	field( "set-reading-marker" ).checked = !!settings.showReadingMarker;
+	field( "set-sentence" ).checked = settings.highlightSentence !== false;
 	field( "set-mirrored" ).value = mirrored;
 	if ( settingsSnapshot ) settingsSnapshot.opacity = opacity;
 }

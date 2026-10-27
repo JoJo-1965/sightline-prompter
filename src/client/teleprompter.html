@@ -137,7 +137,18 @@
           <option value="voice">Voice (follows what you say)</option>
         </select>
       </div>
-      <div class="lp-row">
+      <div class="lp-row lp-inline">
+        Speech recognition
+        <select id="vp-engine">
+          <option value="local">On this computer (offline)</option>
+          <option value="deepgram">Deepgram (online)</option>
+        </select>
+      </div>
+      <div class="lp-row voice-local-only">
+        <span id="vp-model-status" class="lp-hint"></span>
+        <button id="vp-model-get" type="button" class="hidden">Download speech model</button>
+      </div>
+      <div class="lp-row voice-deepgram-only">
         Deepgram API key
         <div class="vp-key-row">
           <input
@@ -165,8 +176,9 @@
         <input id="vp-speed" type="range" min="0.25" max="4" step="0.05" />
       </label>
       <p class="lp-hint">
-        The key is stored only on this computer, in the teleprompter's settings
-        file. Speak a few words: the meter should move for the mic you'll record
+        On this computer, nothing you say leaves the PC. A Deepgram key is
+        stored only on this computer, in the teleprompter's settings file.
+        Speak a few words: the meter should move for the mic you'll record
         with (the RØDE).
       </p>
       <div class="lp-actions">
@@ -231,6 +243,10 @@
       </div>
       <label class="lp-check"
         ><input id="lp-marker" type="checkbox" /> Reading-line marker</label
+      >
+      <label class="lp-check"
+        ><input id="lp-sentence" type="checkbox" /> Highlight the sentence
+        you're on</label
       >
       <label class="lp-check"
         ><input id="lp-progress" type="checkbox" /> Progress bar and time
@@ -541,7 +557,7 @@
             >Mode
             <select id="set-scroll-mode">
               <option value="steady">Steady (words per minute)</option>
-              <option value="voice">Voice (follows you, needs Deepgram)</option>
+              <option value="voice">Voice (follows what you say)</option>
             </select>
           </label>
           <label class="row"
@@ -563,6 +579,19 @@
         <fieldset data-tab="voice">
           <legend>Voice scroll sync</legend>
           <label class="row"
+            >Speech recognition
+            <select id="set-voice-engine">
+              <option value="local">On this computer (private, works offline)</option>
+              <option value="deepgram">Deepgram (online, needs a key)</option>
+            </select>
+          </label>
+          <div class="row voice-local-only">
+            <p class="field-hint" id="set-speech-model-status"></p>
+            <div class="button-row">
+              <button id="set-speech-model-get" type="button" class="hidden">Download speech model</button>
+            </div>
+          </div>
+          <label class="row"
             >Voice responsiveness
             <input
               id="set-voice-speed"
@@ -572,7 +601,7 @@
               step="0.05"
             />
           </label>
-          <label class="row"
+          <label class="row voice-deepgram-only"
             >Deepgram API key
             <input
               id="set-deepgram-key"
@@ -581,7 +610,7 @@
               spellcheck="false"
             />
           </label>
-          <p class="field-hint" id="set-deepgram-status"></p>
+          <p class="field-hint voice-deepgram-only" id="set-deepgram-status"></p>
           <label class="row"
             >Microphone (voice mode)
             <select id="set-microphone"></select>
@@ -659,6 +688,10 @@
           <label class="check"
             ><input id="set-reading-marker" type="checkbox" /> Show reading-line
             marker</label
+          >
+          <label class="check"
+            ><input id="set-sentence" type="checkbox" /> Highlight the sentence
+            you're on (in voice mode, the one you're about to say)</label
           >
           <label class="row"
             >Mirror text (beam-splitter rigs)

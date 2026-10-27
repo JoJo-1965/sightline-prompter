@@ -16,6 +16,7 @@ import { buildMenus } from "./menus.js";
 import { setSectionTargets } from "./utils/targets.js";
 import { createPad } from "./pad.js";
 import { createControl } from "./control.js";
+import { createSpeech } from "./speech.js";
 import { fitInside, keepTopReachable, sameRect } from "./utils/fit.js";
 import { startRemoteServer, newToken } from "./remote.js";
 import { startPhoneServer, newPhoneKey, lanAddress } from "./phone.js";
@@ -32,11 +33,13 @@ const MAX_RECENT_FILES = 10;
 
 // Recording settings, edited on the Settings page and persisted as `settings` in app state.
 const defaultSettings = {
-	scrollMode: "steady", // "steady" (fixed words per minute) or "voice" (Deepgram)
+	scrollMode: "steady", // "steady" (fixed words per minute) or "voice" (follows what you say)
+	voiceEngine: "local", // "local" (on this computer) or "deepgram" (online, needs a key)
 	steadyWpm: 140,
 	countdown: 3,
 	directions: "dim", // "dim", "hide" or "normal" for [bracketed] directions
 	showReadingMarker: true,
+	highlightSentence: true, // light up the sentence you're on (the next to say, in voice mode)
 	readingLine: 33, // % from the top of the window
 	alwaysOnTop: false,
 	highlightCues: true,
@@ -903,6 +906,7 @@ app.whenReady().then( async () => {
 		saveSettings: partial => updateSettings( partial )
 	} );
 	controlPad.apply();
+	createSpeech( { dir: __dirname, win } );
 	controlWindow = createControl( {
 		dir: __dirname,
 		prompter: win,

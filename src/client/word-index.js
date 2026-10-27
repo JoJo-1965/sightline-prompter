@@ -2,7 +2,8 @@
 // Walks text nodes inside a root element, splits into normalized words,
 // and stores a DOM Range for each word so we can scroll to it later.
 
-const NORMALIZE_REGEX = /[^\w']/g;
+// Apostrophes go too, so "isn't" (heard) matches "isn’t" (typed with a curly one).
+const NORMALIZE_REGEX = /[^\w]/g;
 
 function normalize( word ) {
 	return word.toLowerCase().replace( NORMALIZE_REGEX, "" );

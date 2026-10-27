@@ -1718,3 +1718,9 @@ body.points-mode #md::after {
 .app-footer .footer-credit {
 	color: #6f747c;
 }
+
+/* The sentence you're on (sentence-highlight.js). A soft band, so the text
+   stays the same colour on every theme. */
+::highlight(sightline-sentence) {
+	background-color: rgba(255, 214, 102, 0.2);
+}

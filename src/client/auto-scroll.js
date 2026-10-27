@@ -1,5 +1,6 @@
-// Deepgram-driven auto-scroll: capture mic, stream to Deepgram, align recognized
-// words against the rendered script, and smooth-scroll to the speaker's position.
+// Voice auto-scroll: capture the mic, turn speech into words (on this computer,
+// or online with Deepgram), align the words against the rendered script, and
+// smooth-scroll to the speaker's position.
 
 import {
 	buildWordIndex,
@@ -27,18 +28,173 @@ const DEEPGRAM_URL = `wss://api.deepgram.com/v1/listen?${ DEEPGRAM_QUERY }`;
 
 let activeCtx = null;
 
+// On-device recognition (speech.js in the main process). The listeners are set
+// once; each session points them at its own handlers.
+let localWords = null;
+let localState = null;
+window.electron?.onSpeechWords?.( words => localWords?.( words ) );
+window.electron?.onSpeechState?.( state => localState?.( state ) );
+
 export function isActive() {
 	return activeCtx !== null;
 }
 
-export async function startAutoScroll( { deepgramKey, scriptEl, onStatus, onScroll, audioDeviceId } ) {
+async function openLocal( stream, onWords, onStatus ) {
+	let started = false;
+	const ready = new Promise( ( resolve, reject ) => {
+		const timeout = setTimeout(
+			() => reject( new Error( "The speech engine didn't start." ) ),
+			20000
+		);
+		localState = ( state ) => {
+			if ( state.type === "ready" ) {
+				clearTimeout( timeout );
+				started = true;
+				resolve();
+			} else if ( state.type === "error" ) {
+				clearTimeout( timeout );
+				if ( started ) onStatus?.( { type: "error", error: state.message } );
+				else reject( new Error( state.message ) );
+			}
+		};
+	} );
+	window.electron.speechStart();
+	await ready;
+
+	// The recogniser wants 16 kHz audio; the audio context resamples the mic.
+	const audioCtx = new AudioContext( { sampleRate: 16000 } );
+	await audioCtx.audioWorklet.addModule(
+		new URL( "./mic-worklet.js", import.meta.url )
+	);
+	const source = audioCtx.createMediaStreamSource( stream );
+	const blocks = new AudioWorkletNode( audioCtx, "mic-blocks" );
+	const silent = audioCtx.createGain();
+	silent.gain.value = 0;
+	blocks.port.onmessage = event =>
+		window.electron.sendSpeechAudio( event.data );
+	source.connect( blocks ).connect( silent ).connect( audioCtx.destination );
+	localWords = words => onWords( words );
+
+	return {
+		close() {
+			localWords = null;
+			localState = null;
+			window.electron.speechStop();
+			blocks.port.onmessage = null;
+			source.disconnect();
+			audioCtx.close().catch( () => {} );
+		}
+	};
+}
+
+async function openDeepgram( deepgramKey, stream, onWords, onStatus ) {
+	const dgSocket = new WebSocket( DEEPGRAM_URL, [ "token", deepgramKey ] );
+
+	await new Promise( ( resolve, reject ) => {
+		const timeout = setTimeout(
+			() => reject( new Error( "Deepgram open timeout" ) ),
+			5000
+		);
+		dgSocket.addEventListener(
+			"open",
+			() => {
+				clearTimeout( timeout );
+				resolve();
+			},
+			{ once: true }
+		);
+		dgSocket.addEventListener(
+			"error",
+			( evt ) => {
+				clearTimeout( timeout );
+				reject(
+					new Error( "Deepgram websocket error: " + ( evt?.message || "unknown" ) )
+				);
+			},
+			{ once: true }
+		);
+	} );
+
+	dgSocket.addEventListener( "message", ( event ) => {
+		let data;
+		try {
+			data = JSON.parse( event.data );
+		} catch ( err ) {
+			console.warn( "[deepgram] invalid JSON", err );
+			return;
+		}
+		if ( data.type !== "Results" || !data.is_final ) return;
+		const alt = data.channel?.alternatives?.[0];
+		if ( !alt?.words?.length ) return;
+		onWords(
+			alt.words.map( w => w.word ),
+			alt.transcript
+		);
+	} );
+
+	dgSocket.addEventListener( "error", ( err ) => {
+		onStatus?.( { type: "error", error: err?.message || "websocket error" } );
+	} );
+
+	dgSocket.addEventListener( "close", () => {
+		onStatus?.( { type: "closed" } );
+	} );
+
+	const mimeType = MediaRecorder.isTypeSupported( "audio/webm;codecs=opus" )
+		? "audio/webm;codecs=opus"
+		: "audio/webm";
+	const recorder = new MediaRecorder( stream, { mimeType } );
+	recorder.ondataavailable = async ( event ) => {
+		if (
+			event.data
+			&& event.data.size > 0
+			&& dgSocket.readyState === WebSocket.OPEN
+		) {
+			try {
+				const buf = await event.data.arrayBuffer();
+				dgSocket.send( buf );
+			} catch ( err ) {
+				console.warn( "[deepgram] send failed", err );
+			}
+		}
+	};
+	recorder.start( 250 );
+
+	return {
+		close() {
+			try {
+				if ( recorder.state !== "inactive" ) recorder.stop();
+			} catch ( err ) {
+				console.warn( "[auto-scroll] recorder.stop error", err );
+			}
+			try {
+				if ( dgSocket.readyState === WebSocket.OPEN ) {
+					dgSocket.send( JSON.stringify( { type: "CloseStream" } ) );
+				}
+				dgSocket.close();
+			} catch ( err ) {
+				console.warn( "[auto-scroll] deepgram close error", err );
+			}
+		}
+	};
+}
+
+// engine: "local" (on this computer) or "deepgram" (online, needs deepgramKey).
+export async function startAutoScroll( {
+	engine = "deepgram",
+	deepgramKey,
+	scriptEl,
+	onStatus,
+	onScroll,
+	audioDeviceId
+} ) {
 	if ( activeCtx ) {
 		throw new Error( "Auto-scroll already active." );
 	}
 	if ( !scriptEl ) {
 		throw new Error( "scriptEl is required." );
 	}
-	if ( !deepgramKey ) {
+	if ( engine === "deepgram" && !deepgramKey ) {
 		throw new Error( "Deepgram API key is required." );
 	}
 
@@ -62,7 +218,9 @@ export async function startAutoScroll( { deepgramKey, scriptEl, onStatus, onScro
 			// to the system default rather than failing the whole session.
 			if ( err.name === "OverconstrainedError" || err.name === "NotFoundError" ) {
 				usedFallback = true;
-				stream = await navigator.mediaDevices.getUserMedia( { audio: baseAudio } );
+				stream = await navigator.mediaDevices.getUserMedia( {
+					audio: baseAudio
+				} );
 			} else {
 				throw err;
 			}
@@ -74,68 +232,36 @@ export async function startAutoScroll( { deepgramKey, scriptEl, onStatus, onScro
 		onStatus?.( { type: "device-fallback", requestedDeviceId: audioDeviceId } );
 	}
 
-	const dgSocket = new WebSocket( DEEPGRAM_URL, [ "token", deepgramKey ] );
-
-	await new Promise( ( resolve, reject ) => {
-		const timeout = setTimeout( () => reject( new Error( "Deepgram open timeout" ) ), 5000 );
-		dgSocket.addEventListener( "open", () => {
-			clearTimeout( timeout );
-			resolve();
-		}, { once: true } );
-		dgSocket.addEventListener( "error", ( evt ) => {
-			clearTimeout( timeout );
-			reject( new Error( "Deepgram websocket error: " + ( evt?.message || "unknown" ) ) );
-		}, { once: true } );
-	} );
-
-	dgSocket.addEventListener( "message", ( event ) => {
-		let data;
-		try {
-			data = JSON.parse( event.data );
-		} catch ( err ) {
-			console.warn( "[deepgram] invalid JSON", err );
-			return;
-		}
-		if ( data.type !== "Results" || !data.is_final ) return;
-		const alt = data.channel?.alternatives?.[0];
-		if ( !alt?.words?.length ) return;
+	const onWords = ( heard, transcript ) => {
 		const prevPos = aligner.currentPosition();
-		for ( const w of alt.words ) {
-			aligner.addRecognized( w.word );
+		for ( const w of heard ) {
+			aligner.addRecognized( w );
 		}
 		const newPos = aligner.step();
 		const moved = newPos !== prevPos;
 		if ( moved ) {
 			onScroll?.( newPos, wordIndex.ranges );
 		}
-		onStatus?.( { type: "transcript", wordIdx: newPos, transcript: alt.transcript, moved } );
-	} );
-
-	dgSocket.addEventListener( "error", ( err ) => {
-		onStatus?.( { type: "error", error: err?.message || "websocket error" } );
-	} );
-
-	dgSocket.addEventListener( "close", () => {
-		onStatus?.( { type: "closed" } );
-	} );
-
-	const mimeType = MediaRecorder.isTypeSupported( "audio/webm;codecs=opus" )
-		? "audio/webm;codecs=opus"
-		: "audio/webm";
-	const recorder = new MediaRecorder( stream, { mimeType } );
-	recorder.ondataavailable = async ( event ) => {
-		if ( event.data && event.data.size > 0 && dgSocket.readyState === WebSocket.OPEN ) {
-			try {
-				const buf = await event.data.arrayBuffer();
-				dgSocket.send( buf );
-			} catch ( err ) {
-				console.warn( "[deepgram] send failed", err );
-			}
-		}
+		onStatus?.( {
+			type: "transcript",
+			wordIdx: newPos,
+			transcript: transcript ?? heard.join( " " ),
+			moved
+		} );
 	};
-	recorder.start( 250 );
 
-	activeCtx = { stream, recorder, dgSocket, wordIndex };
+	let source;
+	try {
+		source
+			= engine === "local"
+				? await openLocal( stream, onWords, onStatus )
+				: await openDeepgram( deepgramKey, stream, onWords, onStatus );
+	} catch ( err ) {
+		stream.getTracks().forEach( t => t.stop() );
+		throw err;
+	}
+
+	activeCtx = { stream, source, wordIndex };
 	onStatus?.( { type: "started", wordCount: wordIndex.words.length } );
 
 	return {
@@ -151,21 +277,13 @@ export async function startAutoScroll( { deepgramKey, scriptEl, onStatus, onScro
 
 export async function stopAutoScroll() {
 	if ( !activeCtx ) return;
-	const { stream, recorder, dgSocket } = activeCtx;
+	const { stream, source } = activeCtx;
 	activeCtx = null;
 	cancelScroll();
 	try {
-		if ( recorder.state !== "inactive" ) recorder.stop();
+		source.close();
 	} catch ( err ) {
-		console.warn( "[auto-scroll] recorder.stop error", err );
-	}
-	try {
-		if ( dgSocket.readyState === WebSocket.OPEN ) {
-			dgSocket.send( JSON.stringify( { type: "CloseStream" } ) );
-		}
-		dgSocket.close();
-	} catch ( err ) {
-		console.warn( "[auto-scroll] deepgram close error", err );
+		console.warn( "[auto-scroll] close error", err );
 	}
 	try {
 		stream.getTracks().forEach( t => t.stop() );

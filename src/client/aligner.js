@@ -24,7 +24,8 @@ const CONTENT_WORD_MAX_DF = 3;
 const MIN_CONTENT_MATCHES_LOCAL = 2;
 const MIN_CONTENT_MATCHES_GLOBAL = 3;
 
-const NORMALIZE_REGEX = /[^\w']/g;
+// Apostrophes go too, so "isn't" (heard) matches "isn’t" (typed with a curly one).
+const NORMALIZE_REGEX = /[^\w]/g;
 
 function normalize( word ) {
 	return word.toLowerCase().replace( NORMALIZE_REGEX, "" );
@@ -98,14 +99,21 @@ export function createAligner( scriptWords ) {
 			Math.min( scriptWords.length, position + FORWARD_WINDOW ),
 			recentCounts
 		);
-		const localRatio = local.pos < position ? MIN_SCORE_RATIO_REWIND : MIN_SCORE_RATIO_ADVANCE;
-		if ( local.score >= maxScore * localRatio && local.content >= MIN_CONTENT_MATCHES_LOCAL ) {
+		const localRatio
+			= local.pos < position ? MIN_SCORE_RATIO_REWIND : MIN_SCORE_RATIO_ADVANCE;
+		if (
+			local.score >= maxScore * localRatio
+			&& local.content >= MIN_CONTENT_MATCHES_LOCAL
+		) {
 			position = local.pos;
 			return position;
 		}
 
 		const global = search( 0, scriptWords.length, recentCounts );
-		if ( global.score >= maxScore * MIN_SCORE_RATIO_GLOBAL && global.content >= MIN_CONTENT_MATCHES_GLOBAL ) {
+		if (
+			global.score >= maxScore * MIN_SCORE_RATIO_GLOBAL
+			&& global.content >= MIN_CONTENT_MATCHES_GLOBAL
+		) {
 			position = global.pos;
 		}
 		return position;
@@ -128,7 +136,14 @@ export function createAligner( scriptWords ) {
 		recent.length = 0;
 	}
 
-	return { addRecognized, step, currentPosition, setPosition, clearRecent, reset };
+	return {
+		addRecognized,
+		step,
+		currentPosition,
+		setPosition,
+		clearRecent,
+		reset
+	};
 }
 
 export const ALIGNER_CONSTANTS = {

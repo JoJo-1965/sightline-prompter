@@ -3,5 +3,12 @@ allowBuilds:
   esbuild: true
 minimumReleaseAgeExclude:
   - eslint-config-reverentgeek
+  - sherpa-onnx-darwin-arm64@2.0.1
+  - sherpa-onnx-darwin-x64@2.0.1
+  - sherpa-onnx-linux-arm64@2.0.1
+  - sherpa-onnx-linux-x64@2.0.1
+  - sherpa-onnx-win-arm64@2.0.1
+  - sherpa-onnx-win-ia32@2.0.1
+  - sherpa-onnx-win-x64@2.0.1
 onlyBuiltDependencies:
   - electron
