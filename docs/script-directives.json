@@ -2,7 +2,7 @@
 	"$comment": "Machine-readable definition of Sightline Prompter script directives. Human spec: SCRIPT-DIRECTIVES.md. AI brief: AI-SCRIPT-BRIEF.md.",
 	"name": "sightline-script-directives",
 	"version": "0.1.0",
-	"status": "syntax agreed; implemented: pause, marker, wpm, target (steady scrolling). Planned: pacing indicator, mode: points, script checker",
+	"status": "syntax agreed; implemented in the app (27 October 2026): pause, marker, wpm, target, pacing, mode",
 	"date": "2026-10-27",
 	"syntax": {
 		"directive": "{ name[: value] [, name[: value]]... }",
@@ -108,7 +108,6 @@
 				]
 			},
 			"default": "script",
-			"status": "planned (roadmap item 9)",
 			"description": "script: read word for word with scrolling. points: show the section as large bullet points with no scrolling, for speaking off script; the section timer and target still apply."
 		}
 	},

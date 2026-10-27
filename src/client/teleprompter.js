@@ -28,6 +28,38 @@ import { decorateScript } from "./decorate.js";
 import { readDirectives } from "./directives.js";
 
 let scriptIndex = 0;
+
+// State shared by the directive, pacing, talking-points and display code
+// further down. Declared here so nothing can use it before it exists.
+let scriptDirectives = {
+	script: {},
+	sections: [],
+	pauses: [],
+	markers: [],
+	paceChanges: []
+};
+let directivePoints = {
+	pauses: [],
+	markers: [],
+	paceChanges: [],
+	sections: [],
+	wordTops: []
+};
+let liveMarkers = []; // markers dropped with B during this session
+let cuePaused = false;
+let cueTimer = null;
+let lastReadingY = null;
+let appliedPace = null;
+let pointsIndex = 0;
+let pointsRunning = false;
+let pacing = null; // { mode, total, sectionIndex, sectionTime, lastTick }
+let takeLog = new Map(); // section index -> result
+const pacingEl = document.getElementById( "pacing" );
+const summaryModal = document.getElementById( "take-summary" );
+const onAirEl = document.getElementById( "on-air" );
+const THEMES = [ "default", "yellow", "contrast", "cream" ];
+const FONTS = [ "default", "atkinson", "opendyslexic", "verdana" ];
+const EFFECTS = [ "none", "outline", "shadow" ];
 const md = document.getElementById( "md" );
 
 // Recording settings (from main; edited on the Settings page).
@@ -51,6 +83,8 @@ function renderScript( html ) {
 	decorateScript( md, { cuePhrases, highlight: settings.highlightCues } );
 	scriptDirectives = readDirectives( md );
 	liveMarkers = [];
+	tagSections();
+	applyPointsView();
 }
 
 const DEFAULT_FONT_SIZE = 3;
@@ -96,7 +130,12 @@ window.electron.onOpacity( ( value ) => {
 } );
 
 const MIRROR_MODES = [ "off", "horizontal", "vertical", "both" ];
-const MIRROR_LABELS = { off: "Off", horizontal: "Horizontal", vertical: "Vertical", both: "Both" };
+const MIRROR_LABELS = {
+	off: "Off",
+	horizontal: "Horizontal",
+	vertical: "Vertical",
+	both: "Both"
+};
 let mirrored = "off";
 
 // Older settings stored mirroring as true / false.
@@ -138,9 +177,13 @@ function applyMirror() {
 	hud.style.transform = `scale(${ sx }, ${ sy })`;
 }
 
-window.addEventListener( "scroll", () => {
-	if ( mirroredVertically() ) applyMirror();
-}, { passive: true } );
+window.addEventListener(
+	"scroll",
+	() => {
+		if ( mirroredVertically() ) applyMirror();
+	},
+	{ passive: true }
+);
 window.addEventListener( "resize", applyMirror );
 
 function setMirrored( value, save = true ) {
@@ -155,7 +198,8 @@ function setMirrored( value, save = true ) {
 
 // Ctrl+M steps through off, horizontal, vertical and both.
 function cycleMirror() {
-	const next = MIRROR_MODES[( MIRROR_MODES.indexOf( mirrored ) + 1 ) % MIRROR_MODES.length];
+	const next
+		= MIRROR_MODES[( MIRROR_MODES.indexOf( mirrored ) + 1 ) % MIRROR_MODES.length];
 	setMirrored( next );
 	showToast( `Mirror: ${ MIRROR_LABELS[next] }` );
 }
@@ -505,7 +549,11 @@ document.addEventListener( "keydown", ( event ) => {
 	}
 	// Typing or nudging a slider in the control bar or a panel.
 	if ( event.target.closest?.( "input, select, textarea" ) ) return;
-	if ( event.key === "F1" || ( event.key === "?" && !event.ctrlKey && !event.metaKey ) ) {
+	if ( handlePointsKey( event ) ) return;
+	if (
+		event.key === "F1"
+		|| ( event.key === "?" && !event.ctrlKey && !event.metaKey )
+	) {
 		event.preventDefault();
 		openHelp();
 		return;
@@ -515,7 +563,11 @@ document.addEventListener( "keydown", ( event ) => {
 		dropMarker();
 		return;
 	}
-	if ( ( event.key === "b" || event.key === "B" ) && ( event.ctrlKey || event.metaKey ) && !event.shiftKey ) {
+	if (
+		( event.key === "b" || event.key === "B" )
+		&& ( event.ctrlKey || event.metaKey )
+		&& !event.shiftKey
+	) {
 		event.preventDefault();
 		jumpToNextMarker();
 		return;
@@ -838,6 +890,10 @@ function stopSteadySession() {
 }
 
 function toggleAutoScrollSession() {
+	if ( pointsMode() ) {
+		togglePoints();
+		return;
+	}
 	if ( cuePaused ) {
 		resumeFromCue();
 		return;
@@ -1132,6 +1188,7 @@ function applySettings( next ) {
 	}
 	if ( prev.highlightCues !== settings.highlightCues ) rerenderScript();
 	applyDisplayClasses();
+	if ( prev.pointsMode !== settings.pointsMode ) applyPointsView();
 	applyLayout();
 	syncControls();
 	refreshControlsVisibility();
@@ -1243,7 +1300,12 @@ function saveSettingsPage() {
 			settings.eyeLineReadingLine
 		),
 		remoteControl: field( "set-remote" ).checked,
-		remotePort: numberValue( "set-remote-port", 1024, 65535, settings.remotePort ?? 47615 )
+		remotePort: numberValue(
+			"set-remote-port",
+			1024,
+			65535,
+			settings.remotePort ?? 47615
+		)
 	} );
 	setFontSize( Number( field( "set-font-size" ).value ) );
 	setOpacity( Number( field( "set-opacity" ).value ) );
@@ -1313,10 +1375,16 @@ function applyLayout() {
 		"--line-height",
 		settings.lineHeight ?? LAYOUT_DEFAULTS.lineHeight
 	);
-	style.setProperty( "--text-opacity", settings.textOpacity ?? LAYOUT_DEFAULTS.textOpacity );
+	style.setProperty(
+		"--text-opacity",
+		settings.textOpacity ?? LAYOUT_DEFAULTS.textOpacity
+	);
 	// Only filter when dimmed: a filter on the whole script costs a little on every frame.
 	const brightness = settings.textBrightness ?? LAYOUT_DEFAULTS.textBrightness;
-	style.setProperty( "--text-filter", brightness < 1 ? `brightness(${ brightness })` : "none" );
+	style.setProperty(
+		"--text-filter",
+		brightness < 1 ? `brightness(${ brightness })` : "none"
+	);
 	style.setProperty(
 		"--text-align",
 		settings.eyeLine ? "center" : ( settings.textAlign ?? "left" )
@@ -1363,7 +1431,12 @@ function updateEdgeMask() {
 	points.add( Math.max( 0, top - EDGE_FADE ) );
 	points.add( Math.min( 100, 100 - bottom + EDGE_FADE ) );
 	if ( focus ) {
-		for ( const p of [ centre - half - fade, centre - half, centre + half, centre + half + fade ] ) {
+		for ( const p of [
+			centre - half - fade,
+			centre - half,
+			centre + half,
+			centre + half + fade
+		] ) {
 			points.add( Math.min( 100, Math.max( 0, p ) ) );
 		}
 	}
@@ -1393,7 +1466,9 @@ function scheduleMeasure() {
 	if ( measureQueued ) return;
 	measureQueued = true;
 	// A hidden window (minimised, screen locked) gets no animation frames.
-	const later = document.hidden ? cb => setTimeout( cb, 0 ) : requestAnimationFrame;
+	const later = document.hidden
+		? cb => setTimeout( cb, 0 )
+		: requestAnimationFrame;
 	later( () => {
 		measureQueued = false;
 		const { ranges } = buildWordIndex( md );
@@ -1420,7 +1495,10 @@ function formatMinutes( minutes ) {
 
 function updateProgress() {
 	const hasScript = !!slotState.slots[slotState.active];
-	const show = settings.showProgress !== false && !!textSpan && !isEditMode && hasScript;
+	// Talking points don't scroll, so "time left" means nothing there.
+	const points = document.body.classList.contains( "points-mode" );
+	const wanted = settings.showProgress !== false && !points;
+	const show = wanted && !!textSpan && !isEditMode && hasScript;
 	progressBar?.classList.toggle( "hidden", !show );
 	if ( !show ) {
 		if ( progressText ) progressText.textContent = "";
@@ -1517,7 +1595,12 @@ const IDLE_MS_SCROLLING = 1500;
 const IDLE_MS_STOPPED = 5000;
 
 function isScrolling() {
-	return steadySessionActive() || autoScrollActive || autoScrollStarting;
+	return (
+		steadySessionActive()
+		|| autoScrollActive
+		|| autoScrollStarting
+		|| pointsRunning
+	);
 }
 
 function updatePlayButton() {
@@ -1678,12 +1761,12 @@ opacityInput?.addEventListener( "change", () =>
 	setOpacity( Number( opacityInput.value ) )
 );
 // The Layout panel's background slider is the same setting as the bar's Backing.
-document.getElementById( "lp-bg-opacity" )?.addEventListener( "input", e =>
-	setOpacity( Number( e.target.value ), false )
-);
-document.getElementById( "lp-bg-opacity" )?.addEventListener( "change", e =>
-	setOpacity( Number( e.target.value ) )
-);
+document
+	.getElementById( "lp-bg-opacity" )
+	?.addEventListener( "input", e => setOpacity( Number( e.target.value ), false ) );
+document
+	.getElementById( "lp-bg-opacity" )
+	?.addEventListener( "change", e => setOpacity( Number( e.target.value ) ) );
 
 window.electron.onWindowState( ( state ) => {
 	window.lastWindowState = state;
@@ -2100,6 +2183,7 @@ function syncLayoutPanel() {
 	field( "lp-font" ).value = settings.scriptFont ?? "default";
 	field( "lp-on-air" ).checked = settings.onAirLight !== false;
 	field( "lp-pacing" ).checked = settings.showPacing !== false;
+	field( "lp-points" ).checked = !!settings.pointsMode;
 	field( "lp-summary" ).checked = settings.takeSummary !== false;
 	field( "lp-start-beep" ).checked = !!settings.startBeep;
 	field( "lp-hide-capture" ).checked = !!settings.hideFromCapture;
@@ -2160,6 +2244,7 @@ if ( document.getElementById( "layout-panel" ) ) {
 		[ "lp-focus-band", "focusBand" ],
 		[ "lp-on-air", "onAirLight" ],
 		[ "lp-pacing", "showPacing" ],
+		[ "lp-points", "pointsMode" ],
 		[ "lp-summary", "takeSummary" ],
 		[ "lp-start-beep", "startBeep" ],
 		[ "lp-hide-capture", "hideFromCapture" ],
@@ -2183,7 +2268,9 @@ if ( document.getElementById( "layout-panel" ) ) {
 	}
 	field( "lp-follow-pace" ).addEventListener( "change", () => {
 		settings.followScriptPace = field( "lp-follow-pace" ).checked;
-		window.electron.saveSettings( { followScriptPace: settings.followScriptPace } );
+		window.electron.saveSettings( {
+			followScriptPace: settings.followScriptPace
+		} );
 	} );
 	field( "lp-directives" ).addEventListener( "change", () => {
 		settings.showDirectives = field( "lp-directives" ).checked;
@@ -2458,12 +2545,16 @@ function sendStatus() {
 	} );
 }
 
-window.addEventListener( "scroll", () => {
-	if ( Date.now() - lastStatusSent > 500 ) {
-		lastStatusSent = Date.now();
-		sendStatus();
-	}
-}, { passive: true } );
+window.addEventListener(
+	"scroll",
+	() => {
+		if ( Date.now() - lastStatusSent > 500 ) {
+			lastStatusSent = Date.now();
+			sendStatus();
+		}
+	},
+	{ passive: true }
+);
 
 function jumpSection( step ) {
 	const next = scriptIndex + step;
@@ -2499,7 +2590,8 @@ window.electron.onRemoteInfo( ( info ) => {
 	if ( !status ) return;
 	field( "set-remote-token" ).value = info.token ?? "";
 	if ( info.error ) status.textContent = `Not running: ${ info.error }`;
-	else if ( info.running ) status.textContent = `On at ${ info.url } (details for assistants in ${ info.file })`;
+	else if ( info.running )
+		status.textContent = `On at ${ info.url } (details for assistants in ${ info.file })`;
 	else status.textContent = "Off.";
 } );
 onClick( "set-remote-copy", async () => {
@@ -2510,20 +2602,15 @@ onClick( "set-remote-new", () => window.electron.newRemoteToken() );
 
 function openRemoteSettings() {
 	openSettings();
-	setTimeout( () => field( "set-remote-fieldset" )?.scrollIntoView( { block: "start" } ), 50 );
+	setTimeout(
+		() => field( "set-remote-fieldset" )?.scrollIntoView( { block: "start" } ),
+		50
+	);
 }
 // --- Script directives: pauses, markers and pace targets ---
 // readDirectives() (directives.js) finds what the script asks for; this part
 // acts on it while steady scrolling. Positions are measured with the word
 // index (scheduleMeasure) because they move with the text size and width.
-
-let scriptDirectives = { script: {}, sections: [], pauses: [], markers: [], paceChanges: [] };
-let directivePoints = { pauses: [], markers: [], paceChanges: [], sections: [], wordTops: [] };
-let liveMarkers = []; // markers dropped with B during this session
-let cuePaused = false;
-let cueTimer = null;
-let lastReadingY = null;
-let appliedPace = null;
 
 function pageY( el ) {
 	return el.getBoundingClientRect().top + window.scrollY;
@@ -2534,8 +2621,13 @@ function readingLineY() {
 }
 
 function measureDirectives( ranges ) {
-	const wordTops = ranges.map( r => r.getBoundingClientRect().top + window.scrollY );
-	const sections = scriptDirectives.sections.map( s => ( { ...s, y: pageY( s.heading ) } ) );
+	const wordTops = ranges.map(
+		r => r.getBoundingClientRect().top + window.scrollY
+	);
+	const sections = scriptDirectives.sections.map( s => ( {
+		...s,
+		y: pageY( s.heading )
+	} ) );
 	sections.forEach( ( s, i ) => {
 		const end = sections[i + 1]?.y ?? Infinity;
 		s.words = wordTops.filter( y => y >= s.y && y < end ).length;
@@ -2547,7 +2639,10 @@ function measureDirectives( ranges ) {
 		markers: [ ...scriptDirectives.markers, ...liveMarkers ]
 			.map( m => ( { ...m, y: pageY( m.el ) } ) )
 			.sort( ( a, b ) => a.y - b.y ),
-		paceChanges: scriptDirectives.paceChanges.map( c => ( { ...c, y: pageY( c.el ) } ) )
+		paceChanges: scriptDirectives.paceChanges.map( c => ( {
+			...c,
+			y: pageY( c.el )
+		} ) )
 	};
 }
 
@@ -2573,7 +2668,13 @@ function scriptPaceAt( y ) {
 			return Math.round( section.words / ( section.targetSeconds / 60 ) );
 		}
 	}
-	return scriptDirectives.script.wpm ?? null;
+	// A single take with a whole-script {target}: pace to land on it.
+	const { script } = scriptDirectives;
+	const words = directivePoints.wordTops.length;
+	if ( script.pacing === "session" && script.targetSeconds && words ) {
+		return Math.round( words / ( script.targetSeconds / 60 ) );
+	}
+	return script.wpm ?? null;
 }
 
 function followScriptPace( y ) {
@@ -2624,25 +2725,33 @@ function clearCuePause() {
 	cuePaused = false;
 }
 
-window.addEventListener( "scroll", () => {
-	const y = readingLineY();
-	if ( isSteadyRunning() && lastReadingY !== null ) {
-		const pause = directivePoints.pauses.find( p => p.y > lastReadingY && p.y <= y );
-		if ( pause ) {
-			lastReadingY = y;
-			pauseAtCue( pause );
-			return;
+window.addEventListener(
+	"scroll",
+	() => {
+		const y = readingLineY();
+		if ( isSteadyRunning() && lastReadingY !== null ) {
+			const pause = directivePoints.pauses.find(
+				p => p.y > lastReadingY && p.y <= y
+			);
+			if ( pause ) {
+				lastReadingY = y;
+				pauseAtCue( pause );
+				return;
+			}
+			followScriptPace( y );
 		}
-		followScriptPace( y );
-	}
-	lastReadingY = y;
-}, { passive: true } );
+		lastReadingY = y;
+	},
+	{ passive: true }
+);
 
 // Markers: {marker} in the script, or dropped with B during a take.
 function dropMarker() {
 	const y = readingLineY();
 	const { ranges } = buildWordIndex( md );
-	const word = ranges.find( r => r.getBoundingClientRect().top + window.scrollY >= y - 4 );
+	const word = ranges.find(
+		r => r.getBoundingClientRect().top + window.scrollY >= y - 4
+	);
 	if ( !word ) return;
 	const el = document.createElement( "span" );
 	el.className = "live-marker";
@@ -2663,9 +2772,84 @@ function jumpToNextMarker() {
 	}
 	const y = readingLineY();
 	const next = markers.find( m => m.y > y + 8 ) ?? markers[0];
-	window.scrollTo( 0, Math.max( 0, next.y - window.innerHeight * getReadingAnchor() ) );
+	window.scrollTo(
+		0,
+		Math.max( 0, next.y - window.innerHeight * getReadingAnchor() )
+	);
 	previewManuallyScrolled = true;
 	showToast( `Marker ${ markers.indexOf( next ) + 1 } of ${ markers.length }` );
+}
+
+// --- Talking points: one section at a time, no scrolling, for speaking off script ---
+// On with `{mode: points}` in the script, or Layout > Talking points.
+// Space starts and stops the timer; Page Down / → moves on (and starts the timer
+// if it isn't running); Page Up / ← goes back.
+
+function pointsMode() {
+	return scriptDirectives.script.mode === "points" || !!settings.pointsMode;
+}
+
+function tagSections() {
+	let index = -1;
+	for ( const el of md.children ) {
+		if ( el.tagName === "H2" ) index++;
+		el.dataset.section = String( index );
+	}
+}
+
+function applyPointsView() {
+	const on = pointsMode() && scriptDirectives.sections.length > 0;
+	document.body.classList.toggle( "points-mode", on );
+	if ( !on ) {
+		for ( const el of md.querySelectorAll( ".current-section" ) )
+			el.classList.remove( "current-section" );
+		return;
+	}
+	pointsIndex = Math.max(
+		0,
+		Math.min( pointsIndex, scriptDirectives.sections.length - 1 )
+	);
+	for ( const el of md.children ) {
+		el.classList.toggle(
+			"current-section",
+			el.dataset.section === String( pointsIndex )
+		);
+	}
+	window.scrollTo( 0, 0 );
+}
+
+function goToPoint( index ) {
+	const last = scriptDirectives.sections.length - 1;
+	if ( index > last ) {
+		// Past the last section: the talk is over.
+		if ( pointsRunning ) togglePoints();
+		return;
+	}
+	pointsIndex = Math.max( 0, index );
+	applyPointsView();
+	updateOnAir();
+}
+
+function togglePoints() {
+	pointsRunning = !pointsRunning;
+	setIndicator( pointsRunning ? "Talking points · timing" : null );
+	updateOnAir();
+	updatePlayButton();
+}
+
+function handlePointsKey( event ) {
+	if ( !pointsMode() || event.ctrlKey || event.metaKey || event.altKey )
+		return false;
+	const next = [ "PageDown", "ArrowRight", "ArrowDown" ].includes( event.key );
+	const prev = [ "PageUp", "ArrowLeft", "ArrowUp" ].includes( event.key );
+	if ( !next && !prev ) return false;
+	event.preventDefault();
+	if ( next && !pointsRunning && event.key === "PageDown" ) {
+		togglePoints();
+		return true;
+	}
+	goToPoint( pointsIndex + ( next ? 1 : -1 ) );
+	return true;
 }
 
 // --- Pacing indicator ---
@@ -2674,11 +2858,6 @@ function jumpToNextMarker() {
 // Session mode (one continuous take, `{pacing: session}`): the whole take is
 // timed. Both compare your actual pace with the target and show a light, with
 // words as well as colour. A summary of each section appears when you stop.
-
-const pacingEl = document.getElementById( "pacing" );
-const summaryModal = document.getElementById( "take-summary" );
-let pacing = null; // { mode, total, sectionIndex, sectionTime, lastTick }
-let takeLog = new Map(); // section index -> result
 
 function pacingMode() {
 	return scriptDirectives.script.pacing === "session" ? "session" : "section";
@@ -2706,9 +2885,14 @@ function judge( words, seconds, targetWpm, targetSeconds ) {
 	if ( seconds < 3 || words < 5 ) return { level: "wait", text: "Timing…" };
 	const diff = Math.round( ( words / targetWpm ) * 60 - seconds );
 	const tolerance = Math.max( 3, ( targetSeconds ?? 60 ) * 0.1 );
-	if ( Math.abs( diff ) <= tolerance ) return { level: "good", text: "On track", diff };
+	if ( Math.abs( diff ) <= tolerance )
+		return { level: "good", text: "On track", diff };
 	const level = Math.abs( diff ) <= tolerance * 2 ? "warn" : "bad";
-	return { level, text: diff > 0 ? `Ahead ${ diff } s` : `Behind ${ -diff } s`, diff };
+	return {
+		level,
+		text: diff > 0 ? `Ahead ${ diff } s` : `Behind ${ -diff } s`,
+		diff
+	};
 }
 
 function sectionIndexAt( y ) {
@@ -2721,7 +2905,13 @@ function sectionIndexAt( y ) {
 
 function startPacing() {
 	if ( pacing ) return;
-	pacing = { mode: pacingMode(), total: 0, sectionIndex: null, sectionTime: 0, lastTick: performance.now() };
+	pacing = {
+		mode: pacingMode(),
+		total: 0,
+		sectionIndex: null,
+		sectionTime: 0,
+		lastTick: performance.now()
+	};
 	takeLog = new Map();
 }
 
@@ -2730,7 +2920,20 @@ function logSection( index, seconds ) {
 	if ( !section || seconds < 2 ) return;
 	const targetWpm = targetWpmFor( section );
 	const words = section.words;
-	const targetSeconds = sectionTargetSeconds( section );
+	const targetSeconds = pointsMode()
+		? section.targetSeconds
+		: sectionTargetSeconds( section );
+	if ( pointsMode() ) {
+		takeLog.set( index, {
+			title: section.heading.textContent.replace( /\{[^}]*\}/g, "" ).trim(),
+			seconds,
+			targetSeconds,
+			wpm: null,
+			targetWpm: null,
+			verdict: judgeTime( seconds, targetSeconds )
+		} );
+		return;
+	}
 	takeLog.set( index, {
 		title: section.heading.textContent.replace( /\{[^}]*\}/g, "" ).trim(),
 		seconds,
@@ -2743,12 +2946,16 @@ function logSection( index, seconds ) {
 
 function stopPacing() {
 	if ( !pacing ) return;
-	if ( pacing.mode === "section" && pacing.sectionIndex !== null ) {
+	if ( pointsMode() && pacing.sectionIndex !== null ) {
+		logSection( pacing.sectionIndex, pacing.sectionTime );
+	} else if ( pacing.mode === "section" && pacing.sectionIndex !== null ) {
 		const y = readingLineY();
 		const section = directivePoints.sections[pacing.sectionIndex];
-		const end = directivePoints.sections[pacing.sectionIndex + 1]?.y ?? Infinity;
+		const end
+			= directivePoints.sections[pacing.sectionIndex + 1]?.y ?? Infinity;
 		// Only a section read to its end counts as a full pass.
-		if ( section && y >= end - 2 ) logSection( pacing.sectionIndex, pacing.sectionTime );
+		if ( section && y >= end - 2 )
+			logSection( pacing.sectionIndex, pacing.sectionTime );
 	}
 	pacing = null;
 	pacingEl?.classList.add( "hidden" );
@@ -2761,7 +2968,7 @@ function formatClock( seconds ) {
 }
 
 function pacingTick() {
-	const active = isScrolling() || cuePaused;
+	const active = isScrolling() || cuePaused || pointsRunning;
 	if ( !active ) {
 		if ( pacing ) stopPacing();
 		return;
@@ -2771,15 +2978,18 @@ function pacingTick() {
 	const dt = Math.min( 2, ( now - pacing.lastTick ) / 1000 );
 	pacing.lastTick = now;
 	const y = readingLineY();
-	const index = sectionIndexAt( y );
+	const index = pointsMode() ? pointsIndex : sectionIndexAt( y );
 	if ( index !== pacing.sectionIndex ) {
-		if ( pacing.sectionIndex !== null && index > pacing.sectionIndex ) {
+		if (
+			pacing.sectionIndex !== null
+			&& ( index > pacing.sectionIndex || pointsMode() )
+		) {
 			logSection( pacing.sectionIndex, pacing.sectionTime );
 		}
 		pacing.sectionIndex = index;
 		pacing.sectionTime = 0;
 	}
-	const moving = isScrolling() && !cuePaused;
+	const moving = ( isScrolling() && !cuePaused ) || pointsRunning;
 	if ( pacing.mode === "session" || moving ) pacing.total += dt;
 	if ( moving ) pacing.sectionTime += dt;
 	renderPacing( y, index );
@@ -2787,6 +2997,10 @@ function pacingTick() {
 
 function renderPacing( y, index ) {
 	if ( !pacingEl || settings.showPacing === false ) return;
+	if ( pointsMode() ) {
+		renderPointsPacing();
+		return;
+	}
 	let label;
 	let seconds;
 	let targetSeconds;
@@ -2795,7 +3009,8 @@ function renderPacing( y, index ) {
 	if ( pacing.mode === "session" || index < 0 ) {
 		const totalWords = directivePoints.wordTops.length;
 		targetWpm = scriptDirectives.script.wpm ?? settings.steadyWpm ?? 145;
-		targetSeconds = scriptDirectives.script.targetSeconds ?? Math.round( ( totalWords / targetWpm ) * 60 );
+		const estimate = Math.round( ( totalWords / targetWpm ) * 60 );
+		targetSeconds = scriptDirectives.script.targetSeconds ?? estimate;
 		seconds = pacing.total;
 		words = wordsBefore( y );
 		label = "Take";
@@ -2826,6 +3041,57 @@ function renderPacing( y, index ) {
 	}
 }
 
+// Talking points are timed against each section's {target}, not words per minute.
+function judgeTime( seconds, targetSeconds ) {
+	if ( !targetSeconds ) return { level: "wait", text: "No target" };
+	const left = Math.round( targetSeconds - seconds );
+	if ( left >= 0 )
+		return {
+			level: left <= 10 ? "warn" : "good",
+			text: left <= 10 ? `${ left } s left` : "On track"
+		};
+	const over = -left;
+	return {
+		level: over <= targetSeconds * 0.1 ? "warn" : "bad",
+		text: `Over by ${ over } s`
+	};
+}
+
+function renderPointsPacing() {
+	if ( !pacingEl || settings.showPacing === false ) return;
+	const measured = directivePoints.sections[pointsIndex];
+	const section = measured ?? scriptDirectives.sections[pointsIndex];
+	const total = scriptDirectives.sections.length;
+	const target = section?.targetSeconds ?? null;
+	const verdict = judgeTime( pacing.sectionTime, target );
+	const sumOfTargets = scriptDirectives.sections.reduce(
+		( sum, s ) => sum + ( s.targetSeconds ?? 0 ),
+		0
+	);
+	const totalTarget = scriptDirectives.script.targetSeconds ?? sumOfTargets;
+	pacingEl.classList.remove( "hidden", "good", "warn", "bad", "wait" );
+	pacingEl.classList.add( verdict.level );
+	pacingEl.innerHTML = "";
+	const parts = [
+		[ "pc-label", `Point ${ pointsIndex + 1 } of ${ total }` ],
+		[
+			"pc-time",
+			`${ formatClock( pacing.sectionTime ) }${ target ? ` / ${ formatClock( target ) }` : "" }`
+		],
+		[
+			"pc-wpm",
+			`Talk ${ formatClock( pacing.total ) }${ totalTarget ? ` / ${ formatClock( totalTarget ) }` : "" }`
+		],
+		[ "pc-verdict", verdict.text ]
+	];
+	for ( const [ cls, text ] of parts ) {
+		const span = document.createElement( "span" );
+		span.className = cls;
+		span.textContent = text;
+		pacingEl.appendChild( span );
+	}
+}
+
 function showTakeSummary() {
 	if ( !summaryModal ) return;
 	const body = summaryModal.querySelector( "tbody" );
@@ -2836,8 +3102,8 @@ function showTakeSummary() {
 		for ( const text of [
 			`${ index + 1 }. ${ r.title }`,
 			formatClock( r.seconds ),
-			formatClock( r.targetSeconds ),
-			`${ r.wpm } (aim ${ r.targetWpm })`,
+			r.targetSeconds ? formatClock( r.targetSeconds ) : "–",
+			r.wpm ? `${ r.wpm } (aim ${ r.targetWpm })` : "–",
 			r.verdict.text
 		] ) {
 			const td = document.createElement( "td" );
@@ -2865,23 +3131,25 @@ setInterval( pacingTick, 250 );
 
 // --- Reading aids and recording helpers ---
 
-const THEMES = [ "default", "yellow", "contrast", "cream" ];
-const FONTS = [ "default", "atkinson", "opendyslexic", "verdana" ];
-const EFFECTS = [ "none", "outline", "shadow" ];
-
 function applyDisplayClasses() {
 	const body = document.body;
-	for ( const t of THEMES ) body.classList.toggle( `theme-${ t }`, ( settings.theme ?? "default" ) === t );
-	for ( const f of FONTS ) body.classList.toggle( `font-${ f }`, ( settings.scriptFont ?? "default" ) === f );
-	for ( const e of EFFECTS ) body.classList.toggle( `edge-${ e }`, ( settings.textEffect ?? "none" ) === e );
+	for ( const t of THEMES )
+		body.classList.toggle( `theme-${ t }`, ( settings.theme ?? "default" ) === t );
+	for ( const f of FONTS )
+		body.classList.toggle(
+			`font-${ f }`,
+			( settings.scriptFont ?? "default" ) === f
+		);
+	for ( const e of EFFECTS )
+		body.classList.toggle( `edge-${ e }`, ( settings.textEffect ?? "none" ) === e );
 	updateOnAir();
 }
 
 // ON AIR: lit while a scrolling session is running or held at a {pause}.
-const onAirEl = document.getElementById( "on-air" );
 function updateOnAir() {
 	if ( !onAirEl ) return;
-	const live = settings.onAirLight !== false && ( isScrolling() || cuePaused );
+	const running = isScrolling() || cuePaused || pointsRunning;
+	const live = settings.onAirLight !== false && running;
 	onAirEl.classList.toggle( "hidden", !live );
 }
 
@@ -2945,7 +3213,9 @@ function pollGamepads() {
 			const down = !!pad.buttons[index]?.pressed;
 			const id = `${ pad.index }:${ index }`;
 			if ( down && !padPressed.get( id ) ) {
-				document.dispatchEvent( new KeyboardEvent( "keydown", { ...keyInit, bubbles: true } ) );
+				document.dispatchEvent(
+					new KeyboardEvent( "keydown", { ...keyInit, bubbles: true } )
+				);
 			}
 			padPressed.set( id, down );
 		}
@@ -3007,10 +3277,30 @@ const NUMBER_BOXES = {
 		word: "percent",
 		name: "Bottom margin"
 	} ),
-	"lp-focus-strength": () => ( { scale: 100, unit: "%", word: "percent", name: "Focus strength" } ),
-	"lp-text-brightness": () => ( { scale: 100, unit: "%", word: "percent", name: "Text brightness" } ),
-	"lp-bg-opacity": () => ( { scale: 100, unit: "%", word: "percent", name: "Background opacity" } ),
-	"lp-text-opacity": () => ( { scale: 100, unit: "%", word: "percent", name: "Text opacity" } ),
+	"lp-focus-strength": () => ( {
+		scale: 100,
+		unit: "%",
+		word: "percent",
+		name: "Focus strength"
+	} ),
+	"lp-text-brightness": () => ( {
+		scale: 100,
+		unit: "%",
+		word: "percent",
+		name: "Text brightness"
+	} ),
+	"lp-bg-opacity": () => ( {
+		scale: 100,
+		unit: "%",
+		word: "percent",
+		name: "Background opacity"
+	} ),
+	"lp-text-opacity": () => ( {
+		scale: 100,
+		unit: "%",
+		word: "percent",
+		name: "Text opacity"
+	} ),
 	"lp-line-height": () => ( {
 		scale: 100,
 		unit: "%",
@@ -3030,12 +3320,42 @@ const NUMBER_BOXES = {
 		word: "percent",
 		name: "Text size"
 	} ),
-	"set-steady-wpm": () => ( { scale: 1, unit: "wpm", word: "words per minute", name: "Steady speed" } ),
-	"set-countdown": () => ( { scale: 1, unit: "s", word: "seconds", name: "Countdown" } ),
-	"set-reading-line": () => ( { scale: 1, unit: "%", word: "percent from the top", name: "Reading line" } ),
-	"set-eye-line-width": () => ( { scale: 1, unit: "%", word: "percent of the screen", name: "Strip width" } ),
-	"set-eye-line-height": () => ( { scale: 1, unit: "%", word: "percent of the screen", name: "Strip height" } ),
-	"set-eye-line-reading": () => ( { scale: 1, unit: "%", word: "percent from the top", name: "Reading line in the strip" } ),
+	"set-steady-wpm": () => ( {
+		scale: 1,
+		unit: "wpm",
+		word: "words per minute",
+		name: "Steady speed"
+	} ),
+	"set-countdown": () => ( {
+		scale: 1,
+		unit: "s",
+		word: "seconds",
+		name: "Countdown"
+	} ),
+	"set-reading-line": () => ( {
+		scale: 1,
+		unit: "%",
+		word: "percent from the top",
+		name: "Reading line"
+	} ),
+	"set-eye-line-width": () => ( {
+		scale: 1,
+		unit: "%",
+		word: "percent of the screen",
+		name: "Strip width"
+	} ),
+	"set-eye-line-height": () => ( {
+		scale: 1,
+		unit: "%",
+		word: "percent of the screen",
+		name: "Strip height"
+	} ),
+	"set-eye-line-reading": () => ( {
+		scale: 1,
+		unit: "%",
+		word: "percent from the top",
+		name: "Reading line in the strip"
+	} ),
 	"set-opacity": () => ( {
 		scale: 100,
 		unit: "%",
@@ -3118,7 +3438,8 @@ function attachNumberBox( range, getSpec ) {
 		const step = Number( range.step ) || 1;
 		if ( !Number.isFinite( shown ) ) return refresh();
 		let v = Math.min( max, Math.max( min, shown / spec.scale ) );
-		if ( v < max ) v = Math.min( max, tidy( min + Math.round( ( v - min ) / step ) * step ) );
+		if ( v < max )
+			v = Math.min( max, tidy( min + Math.round( ( v - min ) / step ) * step ) );
 		range.value = v;
 		range.dispatchEvent( new Event( "input", { bubbles: true } ) );
 		if ( commit ) range.dispatchEvent( new Event( "change", { bubbles: true } ) );

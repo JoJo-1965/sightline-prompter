@@ -1,6 +1,6 @@
 # Script directives
 
-Status: **syntax agreed** (27 October 2026): `[ ]` for the speaker, `{ }` for the app. **Built:** hiding, `{pause}`, `{pause: ns}`, `{marker}`, and section and inline `{wpm}` and `{target}` for steady scrolling. **Still to come:** the pacing indicator, talking points (`mode`), and the script checker. Parts of this are built in roadmap
+Status: **syntax agreed** (27 October 2026): `[ ]` for the speaker, `{ }` for the app. **Built:** hiding, `{pause}`, `{pause: ns}`, `{marker}`, and section and inline `{wpm}` and `{target}` for steady scrolling. Also built: the pacing light, talking points (`{mode: points}`) and the script checker (`npm run check-script`). Parts of this are built in roadmap
 items 6 (cue pause) and 8 to 10 (pacing).
 
 A script can carry two kinds of note besides the words you speak:
@@ -64,7 +64,7 @@ next line:
 | `{marker}`    | A bookmark you can jump to (`Ctrl+B` cycles through them), useful for retakes                                            |
 | `{wpm: n}`    | Changes the target pace from this point until the end of the section                                                     |
 
-## Talking points (planned, roadmap item 9)
+## Talking points
 
 For speaking off script, put `{mode: points}` in the script settings, or on a
 section heading for just that section. Each section is then shown on its own as

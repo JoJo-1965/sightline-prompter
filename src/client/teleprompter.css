@@ -1420,3 +1420,22 @@ body.edge-shadow #md {
 .summary-table tr.bad td:last-child {
 	color: #ef9a9a;
 }
+
+/* --- Talking points: only the current section shows --- */
+body.points-mode #md > *:not(.current-section) {
+	display: none;
+}
+
+body.points-mode #md > .current-section:first-of-type,
+body.points-mode #md h2.current-section {
+	margin-top: 0.4em;
+	border-top: none;
+}
+
+body.points-mode #md li {
+	margin: 0.35em 0;
+}
+
+body.points-mode #md::after {
+	height: 0;
+}

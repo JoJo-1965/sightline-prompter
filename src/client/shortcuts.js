@@ -44,6 +44,15 @@ export const SHORTCUTS = [
 		]
 	},
 	{
+		section: "Talking points",
+		keys: [
+			[ [ "Space" ], "Start / stop the talk timer" ],
+			[ [ "Page Down", "→" ], "Next point (starts the timer if it isn't running)" ],
+			[ [ "Page Up", "←" ], "Previous point" ],
+			[ [ "{mode: points}" ], "In a script: open it as talking points (or Layout > Talking points)" ]
+		]
+	},
+	{
 		section: "Script mark-up",
 		keys: [
 			[ [ "[ ]" ], "A note to you, the speaker: shown dimmed. \"Quoted words\" inside stay bright" ],
