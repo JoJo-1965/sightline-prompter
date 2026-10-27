@@ -24,7 +24,7 @@ jobs:
           - os: macos-latest
             label: macos-apple-silicon
             files: dist/*.dmg
-          - os: macos-13
+          - os: macos-15-intel
             label: macos-intel
             files: dist/*.dmg
           - os: ubuntu-latest
