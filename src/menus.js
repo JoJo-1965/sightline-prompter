@@ -231,6 +231,13 @@ export function buildMenus(
 					click: menuItem => updateSettings( { eyeLine: menuItem.checked } )
 				},
 				{
+					label: "Floating Control Pad",
+					type: "checkbox",
+					accelerator: "CmdOrCtrl+Shift+P",
+					checked: !!settings.showPad,
+					click: menuItem => updateSettings( { showPad: menuItem.checked } )
+				},
+				{
 					label: "Keep on Top",
 					type: "checkbox",
 					checked: !!settings.alwaysOnTop,

@@ -83,6 +83,7 @@ export const SHORTCUTS = [
 			],
 			[ [ "Ctrl+Shift+B" ], "Keep the control bar visible" ],
 			[ [ "Ctrl+Shift+X" ], "Click-through on / off (works from any app)" ],
+			[ [ "Ctrl+Shift+P" ], "Floating control pad: Start / Pause, Top, Previous, Next" ],
 			[ [ "Ctrl+," ], "Settings" ],
 			[ [ "F1", "?" ], "This help" ],
 			[ [ "Esc" ], "Close a panel" ],

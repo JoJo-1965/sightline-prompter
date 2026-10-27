@@ -13,6 +13,7 @@ import {
 	SCRIPT_EXTENSIONS
 } from "./utils/content.js";
 import { buildMenus } from "./menus.js";
+import { createPad } from "./pad.js";
 import { startRemoteServer, newToken } from "./remote.js";
 import {
 	serialize as serializeSettings,
@@ -58,6 +59,9 @@ const defaultSettings = {
 	takeSummary: true, // per-section summary when a take stops
 	startBeep: false, // a short beep when the countdown ends (off: it would be recorded)
 	hideFromCapture: false, // keep the window out of screen sharing and recordings
+	showPad: false, // the floating control pad (View menu, Ctrl+Shift+P)
+	padX: null, // where the pad was left
+	padY: null,
 	clickThrough: false, // clicks on the script go to the window behind
 	textAlign: "left", // "left" or "center"
 	showProgress: true,
@@ -142,6 +146,7 @@ let remoteServer = null;
 let remoteError = null;
 let rendererStatus = {};
 let onSettingsChanged = () => {};
+let controlPad = null;
 
 function addRecentFile( filePath ) {
 	recentFiles = [ filePath, ...recentFiles.filter( f => f !== filePath ) ].slice(
@@ -572,6 +577,7 @@ app.whenReady().then( async () => {
 
 	ipcMain.on( "mirrored", ( _event, value ) => {
 		currentMirrored = value;
+		controlPad?.refreshMirror();
 	} );
 
 	ipcMain.on( "autoScrollSpeed", ( _event, value ) => {
@@ -642,6 +648,7 @@ app.whenReady().then( async () => {
 		if ( "mirrored" in extra ) {
 			currentMirrored = extra.mirrored;
 			win.webContents.send( "mirrored", currentMirrored );
+			controlPad?.refreshMirror();
 		}
 		if ( "voiceResponsiveness" in extra ) {
 			currentAutoScrollSpeed = extra.voiceResponsiveness;
@@ -794,7 +801,18 @@ app.whenReady().then( async () => {
 		win.webContents.send( "remoteInfo", remoteInfo() );
 	}
 
-	onSettingsChanged = () => syncRemoteServer();
+	controlPad = createPad( {
+		dir: __dirname,
+		prompter: win,
+		getMirror: () => currentMirrored,
+		getSettings: () => settings,
+		saveSettings: partial => updateSettings( partial )
+	} );
+	controlPad.apply();
+	onSettingsChanged = () => {
+		syncRemoteServer();
+		controlPad.apply();
+	};
 	// Samples are copied into the app's folder first, so editing one never
 	// changes the original (which is read-only inside an installed app).
 	async function openSample( name ) {
@@ -828,6 +846,7 @@ app.whenReady().then( async () => {
 	} );
 	ipcMain.on( "rendererStatus", ( _event, status ) => {
 		if ( status && typeof status === "object" ) rendererStatus = status;
+		controlPad?.sendStatus( rendererStatus );
 	} );
 	syncRemoteServer();
 

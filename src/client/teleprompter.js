@@ -609,21 +609,10 @@ document.addEventListener( "keydown", ( event ) => {
 		previewManuallyScrolled = true;
 	} else if ( event.key === "ArrowRight" ) {
 		event.preventDefault();
-		// Advance to next section
-		const sections = document.getElementsByName( scriptIndex + 1 );
-		if ( sections.length > 0 ) {
-			scriptIndex++;
-			previewManuallyScrolled = true;
-			jumpToSection( scriptIndex );
-		}
+		jumpSection( 1 );
 	} else if ( event.key === "ArrowLeft" ) {
 		event.preventDefault();
-		// Go back to previous section
-		if ( scriptIndex > 0 ) {
-			scriptIndex--;
-			previewManuallyScrolled = true;
-			jumpToSection( scriptIndex );
-		}
+		jumpSection( -1 );
 	} else if (
 		( event.metaKey || event.ctrlKey )
 		&& !event.shiftKey
@@ -2545,7 +2534,8 @@ function sendStatus() {
 		section: scriptIndex,
 		scrollY: Math.round( window.scrollY ),
 		progress: progressText?.textContent ?? "",
-		editing: isEditMode
+		editing: isEditMode,
+		points: pointsMode()
 	} );
 }
 
@@ -2560,7 +2550,30 @@ window.addEventListener(
 	{ passive: true }
 );
 
+// Top of an element in the page, ignoring the mirror transform.
+function layoutTop( el ) {
+	let y = 0;
+	for ( let node = el; node; node = node.offsetParent ) y += node.offsetTop;
+	return y;
+}
+
+// The section on screen now: the last one whose start has reached the top.
+// Scrolling doesn't update scriptIndex, so work it out from the position.
+function sectionOnScreen() {
+	let index = 0;
+	for ( let i = 1; ; i++ ) {
+		const anchor = document.getElementsByName( i )[0];
+		if ( !anchor || layoutTop( anchor ) > window.scrollY + 2 ) break;
+		index = i;
+	}
+	return index;
+}
+
 function jumpSection( step ) {
+	scriptIndex = sectionOnScreen();
+	// Previous from part-way through a section goes back to its start first.
+	const anchor = document.getElementsByName( scriptIndex )[0];
+	if ( step < 0 && anchor && window.scrollY > layoutTop( anchor ) + 40 ) step = 0;
 	const next = scriptIndex + step;
 	if ( next < 0 || document.getElementsByName( next ).length === 0 ) return;
 	scriptIndex = next;
@@ -2573,10 +2586,16 @@ window.electron.onRemoteCommand( ( action, value ) => {
 	if ( action === "play" && !isScrolling() ) toggleAutoScrollSession();
 	else if ( action === "pause" && isScrolling() ) toggleAutoScrollSession();
 	else if ( action === "toggle" ) toggleAutoScrollSession();
-	else if ( action === "restart" ) goToStart();
-	else if ( action === "next-section" ) jumpSection( 1 );
-	else if ( action === "previous-section" ) jumpSection( -1 );
-	else if ( action === "faster" ) adjustAutoScrollSpeed( "up" );
+	else if ( action === "restart" ) {
+		if ( pointsMode() ) goToPoint( 0 );
+		else goToStart();
+	} else if ( action === "next-section" ) {
+		if ( pointsMode() ) goToPoint( pointsIndex + 1 );
+		else jumpSection( 1 );
+	} else if ( action === "previous-section" ) {
+		if ( pointsMode() ) goToPoint( pointsIndex - 1 );
+		else jumpSection( -1 );
+	} else if ( action === "faster" ) adjustAutoScrollSpeed( "up" );
 	else if ( action === "slower" ) adjustAutoScrollSpeed( "down" );
 	else if ( action === "reset-speed" ) adjustAutoScrollSpeed( "reset" );
 	else if ( action === "set-wpm" && Number.isFinite( Number( value ) ) ) {
