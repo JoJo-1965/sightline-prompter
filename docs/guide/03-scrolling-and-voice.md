@@ -51,6 +51,35 @@ computer and is never written to exported settings files.
 **Voice responsiveness** sets how quickly the script glides to catch up with
 you. Higher is snappier, lower is smoother.
 
+## Voice commands: "Prompter, …"
+
+Say **"Prompter"**, then a command, then stop for a moment. The command only
+counts when it ends what you're saying, so a line in your script such as "the
+prompter pauses" never sets it off. A small message confirms what was heard,
+such as *Heard: "Prompter, slower"*.
+
+| Say "Prompter, …" | What happens |
+| --- | --- |
+| **pause** (or stop, hold, wait) | Pause. In voice mode the prompter keeps listening, so you can carry on |
+| **go** (or carry on, continue, start) | Start, or carry on after a pause. While paused in voice mode, "go" on its own works too |
+| **slower** / **faster** (or slow down, speed up) | Steady scrolling: 10 words a minute slower or faster. Voice mode: less or more responsive |
+| **back** (or previous section) | Back to the start of this section, or the one before |
+| **next section** | On to the next section |
+| **from the top** (or top, reset) | Back to the start |
+| **again** (or retake) | Drops a marker where you are, then goes back to the start of the section for a retake |
+| **marker** | Drops a marker |
+| **resync** (or find me) | Voice mode: if it has lost you, keep reading and it finds your place anywhere in the script |
+| **bigger** / **smaller** | Text size |
+
+Choose when it listens on **Settings > Voice**, under **Voice commands**:
+
+- **In voice mode** (the default): commands work while voice scrolling.
+- **In voice mode and while steady scrolling**: the microphone also listens
+  for commands while the script scrolls at a steady pace. A small
+  **🎙 Prompter** label at the bottom right shows that it's listening. This
+  uses speech recognition on this computer, so nothing is sent anywhere.
+- **Off**.
+
 ## The sentence highlight
 
 The sentence you're on is lit with a soft band, so your eyes always have

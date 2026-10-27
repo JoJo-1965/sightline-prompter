@@ -59,15 +59,19 @@ function feed( samples ) {
 	while ( recognizer.isReady( stream ) ) recognizer.decode( stream );
 	const now = words( recognizer.getResult( stream ).text );
 	let out = [];
+	// `final`: the speaker has paused, so the phrase is over (voice commands
+	// only count at the end of a phrase).
+	let final = false;
 	if ( recognizer.isEndpoint( stream ) ) {
 		out = now.slice( committed );
+		final = now.length > 0;
 		committed = 0;
 		recognizer.reset( stream );
 	} else if ( now.length - HOLD_BACK > committed ) {
 		out = now.slice( committed, now.length - HOLD_BACK );
 		committed = now.length - HOLD_BACK;
 	}
-	if ( out.length ) send( { type: "words", words: out } );
+	if ( out.length || final ) send( { type: "words", words: out, final } );
 }
 
 process.parentPort.on( "message", ( { data } ) => {

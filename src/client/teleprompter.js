@@ -810,6 +810,7 @@ async function startAutoScrollSession() {
 	}
 	autoScrollStarting = true;
 	pendingDeepgramKey = null;
+	await stopCommandListening();
 	if ( usesLocalVoice() ) {
 		setIndicator( "Starting…", "connecting" );
 		beginVoice( "local", null );
@@ -843,6 +844,7 @@ let speechModel = { installed: false };
 window.electron.onSpeechModel( ( status ) => {
 	speechModel = status;
 	showSpeechModel();
+	syncCommandListening();
 } );
 window.electron.speechModelStatus();
 
@@ -891,7 +893,8 @@ async function beginVoice( engine, deepgramKey ) {
 					showTransientHint( "Saved mic unavailable — using default", 2500 );
 				}
 			},
-			onScroll: handleAutoScrollPosition
+			onScroll: handleAutoScrollPosition,
+			onCommand: settings.voiceCommands === "off" ? null : runVoiceCommand
 		} );
 		autoScrollActive = true;
 		autoScrollStarting = false;
@@ -921,6 +924,140 @@ async function stopAutoScrollSession() {
 		console.warn( "[auto-scroll] stop error", err );
 	}
 	updateSentence();
+	syncCommandListening();
+}
+
+// --- "Prompter, …" voice commands ---
+// In voice mode the voice session hears them. With "also while steady
+// scrolling" chosen, the mic listens for commands only, the rest of the time.
+
+const COMMAND_LABELS = {
+	pause: "pause",
+	go: "go",
+	slower: "slower",
+	faster: "faster",
+	back: "back",
+	next: "next section",
+	top: "from the top",
+	retake: "again",
+	marker: "marker",
+	resync: "resync",
+	bigger: "bigger",
+	smaller: "smaller"
+};
+
+let commandListening = false;
+let commandChange = Promise.resolve();
+const commandPill = document.getElementById( "command-listening" );
+
+function wantCommandListening() {
+	return (
+		settings.voiceCommands === "always"
+		&& settings.scrollMode !== "voice"
+		&& usesLocalVoice()
+		&& speechModel.installed
+		&& !isEditMode
+		&& !autoScrollActive
+		&& !autoScrollStarting
+	);
+}
+
+// Start or stop the commands-only listener to match the settings. Changes are
+// queued so a quick on-off-on can't open the mic twice.
+function syncCommandListening() {
+	commandChange = commandChange.then( async () => {
+		const want = wantCommandListening();
+		if ( want === commandListening ) return;
+		if ( want ) {
+			try {
+				await startAutoScroll( {
+					engine: "local",
+					scriptEl: md,
+					audioDeviceId,
+					followScript: false,
+					onCommand: runVoiceCommand
+				} );
+				commandListening = true;
+			} catch ( err ) {
+				console.warn( "[voice commands] couldn't start", err );
+			}
+		} else {
+			await stopAutoScroll();
+			commandListening = false;
+		}
+		commandPill?.classList.toggle( "hidden", !commandListening );
+	} );
+	return commandChange;
+}
+
+function stopCommandListening() {
+	if ( !commandListening ) return commandChange;
+	commandChange = commandChange.then( async () => {
+		if ( !commandListening ) return;
+		await stopAutoScroll();
+		commandListening = false;
+		commandPill?.classList.add( "hidden" );
+	} );
+	return commandChange;
+}
+
+// After a jump, voice scrolling picks up from the new place.
+function resyncAfterJump() {
+	if ( autoScrollActive ) setTimeout( () => autoScrollHandle?.syncToViewport(), 700 );
+}
+
+function runVoiceCommand( id ) {
+	if ( isEditMode ) return;
+	showToast( `Heard: “Prompter, ${ COMMAND_LABELS[id] ?? id }”` );
+	const voice = autoScrollActive && autoScrollHandle;
+	if ( id === "pause" ) {
+		if ( voice ) {
+			autoScrollHandle.setHold( true );
+			cancelScroll();
+			setIndicator( "Paused · say “Prompter, go”" );
+		} else if ( isScrolling() ) runRemoteAction( "pause" );
+	} else if ( id === "go" ) {
+		if ( voice ) {
+			autoScrollHandle.setHold( false );
+			setIndicator( "Listening" );
+		} else if ( !isScrolling() ) runRemoteAction( "play" );
+	} else if ( id === "slower" || id === "faster" ) {
+		const step = id === "faster" ? "faster" : "slower";
+		runRemoteAction( step );
+		// Steady pace moves 10 words a minute a time when spoken.
+		if ( settings.scrollMode !== "voice" ) runRemoteAction( step );
+	} else if ( id === "back" ) {
+		runRemoteAction( "previous-section" );
+		resyncAfterJump();
+	} else if ( id === "next" ) {
+		runRemoteAction( "next-section" );
+		resyncAfterJump();
+	} else if ( id === "top" ) {
+		runRemoteAction( "restart" );
+		resyncAfterJump();
+	} else if ( id === "retake" ) {
+		// Mark where it went wrong, then back to the start of the section.
+		dropMarker();
+		runRemoteAction( "previous-section" );
+		resyncAfterJump();
+	} else if ( id === "marker" ) {
+		runRemoteAction( "marker" );
+	} else if ( id === "resync" ) {
+		if ( voice ) {
+			autoScrollHandle.setHold( false );
+			autoScrollHandle.resync();
+			setIndicator( "Finding you… keep reading" );
+			setTimeout( () => {
+				if ( autoScrollActive && !autoScrollHandle?.isHeld() ) setIndicator( "Listening" );
+			}, 4000 );
+		} else {
+			showToast( "Resync is for voice scrolling" );
+		}
+	} else if ( id === "bigger" ) {
+		setFontSize( fontSize + FONT_SIZE_STEP );
+	} else if ( id === "smaller" ) {
+		setFontSize( fontSize - FONT_SIZE_STEP );
+	}
 }
 
 // --- Steady scroll (fixed words per minute) ---
@@ -1288,6 +1425,7 @@ function applySettings( next ) {
 	syncControls();
 	refreshControlsVisibility();
 	updateSentence();
+	syncCommandListening();
 }
 
 window.electron.onSettings( applySettings );
@@ -1331,6 +1469,7 @@ async function openSettings() {
 	field( "set-countdown" ).value = settings.countdown;
 	field( "set-voice-speed" ).value = autoScrollSpeed;
 	field( "set-voice-engine" ).value = usesLocalVoice() ? "local" : "deepgram";
+	field( "set-voice-commands" ).value = settings.voiceCommands ?? "voice";
 	showVoiceEngineFields();
 	window.electron.speechModelStatus();
 	field( "set-deepgram-key" ).value = "";
@@ -1408,6 +1547,7 @@ function saveSettingsPage() {
 	window.electron.saveSettings( {
 		scrollMode: field( "set-scroll-mode" ).value === "voice" ? "voice" : "steady",
 		voiceEngine: field( "set-voice-engine" ).value === "deepgram" ? "deepgram" : "local",
+		voiceCommands: field( "set-voice-commands" ).value,
 		steadyWpm: numberValue( "set-steady-wpm", 60, 300, settings.steadyWpm ),
 		countdown: numberValue( "set-countdown", 0, 10, settings.countdown ),
 		directions: field( "set-directions" ).value,
@@ -3034,7 +3174,7 @@ function jumpSection( step ) {
 	jumpToSection( scriptIndex );
 }
 
-window.electron.onRemoteCommand( ( action, value ) => {
+function runRemoteAction( action, value ) {
 	if ( isEditMode && action !== "help" ) return;
 	if ( action === "play" && !isScrolling() ) toggleAutoScrollSession();
 	else if ( action === "pause" && isScrolling() ) toggleAutoScrollSession();
@@ -3060,7 +3200,8 @@ window.electron.onRemoteCommand( ( action, value ) => {
 	} else if ( action === "marker" ) dropMarker();
 	else if ( action === "help" ) openHelp();
 	sendStatus();
-} );
+}
+window.electron.onRemoteCommand( runRemoteAction );
 
 window.electron.onRemoteInfo( ( info ) => {
 	const status = document.getElementById( "set-remote-status" );

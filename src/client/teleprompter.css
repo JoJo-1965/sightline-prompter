@@ -1735,3 +1735,17 @@ body.points-mode #md::after {
 	text-decoration: underline;
 	cursor: pointer;
 }
+
+/* The mic is on for "Prompter, …" commands while steady scrolling. */
+#command-listening {
+	position: fixed;
+	right: 28px;
+	bottom: 40px;
+	padding: 3px 9px;
+	border-radius: 11px;
+	background: rgba(60, 64, 74, 0.85);
+	color: #e8e8ea;
+	font: 600 11px Helvetica, Arial, sans-serif;
+	z-index: 1000;
+	pointer-events: none;
+}

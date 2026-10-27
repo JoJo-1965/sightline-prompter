@@ -1,6 +1,7 @@
 // Voice auto-scroll: capture the mic, turn speech into words (on this computer,
 // or online with Deepgram), align the words against the rendered script, and
-// smooth-scroll to the speaker's position.
+// smooth-scroll to the speaker's position. "Prompter, …" commands are picked
+// out of the words first (voice-commands.js).
 
 import {
 	buildWordIndex,
@@ -15,6 +16,7 @@ import {
 	SCROLL_SPEED_STEP
 } from "./word-index.js";
 import { createAligner } from "./aligner.js";
+import { createCommandListener } from "./voice-commands.js";
 
 const DEEPGRAM_QUERY = new URLSearchParams( {
 	model: "nova-3",
@@ -32,7 +34,7 @@ let activeCtx = null;
 // once; each session points them at its own handlers.
 let localWords = null;
 let localState = null;
-window.electron?.onSpeechWords?.( words => localWords?.( words ) );
+window.electron?.onSpeechWords?.( heard => localWords?.( heard ) );
 window.electron?.onSpeechState?.( state => localState?.( state ) );
 
 export function isActive() {
@@ -73,7 +75,7 @@ async function openLocal( stream, onWords, onStatus ) {
 	blocks.port.onmessage = event =>
 		window.electron.sendSpeechAudio( event.data );
 	source.connect( blocks ).connect( silent ).connect( audioCtx.destination );
-	localWords = words => onWords( words );
+	localWords = ( { words, final } ) => onWords( words, null, final );
 
 	return {
 		close() {
@@ -125,11 +127,9 @@ async function openDeepgram( deepgramKey, stream, onWords, onStatus ) {
 		}
 		if ( data.type !== "Results" || !data.is_final ) return;
 		const alt = data.channel?.alternatives?.[0];
-		if ( !alt?.words?.length ) return;
-		onWords(
-			alt.words.map( w => w.word ),
-			alt.transcript
-		);
+		const words = alt?.words?.map( w => w.word ) ?? [];
+		if ( !words.length && !data.speech_final ) return;
+		onWords( words, alt?.transcript, !!data.speech_final );
 	} );
 
 	dgSocket.addEventListener( "error", ( err ) => {
@@ -179,13 +179,39 @@ async function openDeepgram( deepgramKey, stream, onWords, onStatus ) {
 	};
 }
 
+async function openMic( audioDeviceId, onStatus ) {
+	const baseAudio = {
+		echoCancellation: true,
+		noiseSuppression: true
+	};
+	if ( audioDeviceId ) {
+		try {
+			return await navigator.mediaDevices.getUserMedia( {
+				audio: { ...baseAudio, deviceId: { exact: audioDeviceId } }
+			} );
+		} catch ( err ) {
+			// Saved device is gone (unplugged, USB hub removed, etc) — fall back
+			// to the system default rather than failing the whole session.
+			if ( err.name !== "OverconstrainedError" && err.name !== "NotFoundError" ) {
+				throw err;
+			}
+			onStatus?.( { type: "device-fallback", requestedDeviceId: audioDeviceId } );
+		}
+	}
+	return navigator.mediaDevices.getUserMedia( { audio: baseAudio } );
+}
+
 // engine: "local" (on this computer) or "deepgram" (online, needs deepgramKey).
+// followScript: false listens for "Prompter, …" commands only (while steady
+// scrolling). onCommand( id ) gets each command; null turns commands off.
 export async function startAutoScroll( {
 	engine = "deepgram",
 	deepgramKey,
 	scriptEl,
 	onStatus,
 	onScroll,
+	onCommand = null,
+	followScript = true,
 	audioDeviceId
 } ) {
 	if ( activeCtx ) {
@@ -201,40 +227,16 @@ export async function startAutoScroll( {
 	const wordIndex = buildWordIndex( scriptEl );
 	const aligner = createAligner( wordIndex.words );
 	aligner.setPosition( findWordAtViewport( wordIndex.ranges ) );
+	const takeCommands = onCommand ? createCommandListener( { onCommand, isPaused: () => held } ) : null;
+	let held = false; // "Prompter, pause": keep listening, stop following
 
-	const baseAudio = {
-		echoCancellation: true,
-		noiseSuppression: true
-	};
-	let stream;
-	let usedFallback = false;
-	if ( audioDeviceId ) {
-		try {
-			stream = await navigator.mediaDevices.getUserMedia( {
-				audio: { ...baseAudio, deviceId: { exact: audioDeviceId } }
-			} );
-		} catch ( err ) {
-			// Saved device is gone (unplugged, USB hub removed, etc) — fall back
-			// to the system default rather than failing the whole session.
-			if ( err.name === "OverconstrainedError" || err.name === "NotFoundError" ) {
-				usedFallback = true;
-				stream = await navigator.mediaDevices.getUserMedia( {
-					audio: baseAudio
-				} );
-			} else {
-				throw err;
-			}
-		}
-	} else {
-		stream = await navigator.mediaDevices.getUserMedia( { audio: baseAudio } );
-	}
-	if ( usedFallback ) {
-		onStatus?.( { type: "device-fallback", requestedDeviceId: audioDeviceId } );
-	}
+	const stream = await openMic( audioDeviceId, onStatus );
 
-	const onWords = ( heard, transcript ) => {
+	const onWords = ( heard, transcript, final ) => {
+		const words = takeCommands ? takeCommands( heard, final ) : heard;
+		if ( !followScript || held || !words.length ) return;
 		const prevPos = aligner.currentPosition();
-		for ( const w of heard ) {
+		for ( const w of words ) {
 			aligner.addRecognized( w );
 		}
 		const newPos = aligner.step();
@@ -245,7 +247,7 @@ export async function startAutoScroll( {
 		onStatus?.( {
 			type: "transcript",
 			wordIdx: newPos,
-			transcript: transcript ?? heard.join( " " ),
+			transcript: transcript ?? words.join( " " ),
 			moved
 		} );
 	};
@@ -264,13 +266,24 @@ export async function startAutoScroll( {
 	activeCtx = { stream, source, wordIndex };
 	onStatus?.( { type: "started", wordCount: wordIndex.words.length } );
 
+	const syncToViewport = () => {
+		aligner.setPosition( findWordAtViewport( wordIndex.ranges ) );
+		aligner.clearRecent();
+	};
 	return {
 		getPosition: () => aligner.currentPosition(),
 		// Re-anchor to the visible text after the user scrolls by hand.
-		syncToViewport: () => {
-			aligner.setPosition( findWordAtViewport( wordIndex.ranges ) );
-			aligner.clearRecent();
+		syncToViewport,
+		// "Prompter, pause" / "Prompter, go": stop and start following without
+		// letting go of the mic, so the next command is still heard.
+		setHold( value ) {
+			held = !!value;
+			if ( !held ) syncToViewport();
 		},
+		isHeld: () => held,
+		// "Prompter, resync": find the reader anywhere in the script from what
+		// they say next.
+		resync: () => aligner.relocate(),
 		wordIndex
 	};
 }

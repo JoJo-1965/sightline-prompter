@@ -39,6 +39,11 @@ model is installed.
 **Voice scrolling has lost its place.** Scroll by hand to where you are. It
 picks up from what's on screen once you stop scrolling.
 
+**A voice command isn't heard.** Say "Prompter", then the command, then stop
+for a moment: commands only count at the end of what you say. Check Voice
+commands is on in Settings > Voice. For steady scrolling, choose "In voice mode
+and while steady scrolling" and look for the 🎙 Prompter label.
+
 **The speech model download failed.** Check you're online and click
 **Try again**. It carries on from the files it already has.
 

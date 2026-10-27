@@ -42,6 +42,7 @@ function buildCounts( words ) {
 export function createAligner( scriptWords ) {
 	const recent = [];
 	let position = 0;
+	let relocating = false;
 
 	const docFreq = buildCounts( scriptWords );
 	const logN = Math.log( 1 + scriptWords.length );
@@ -94,6 +95,20 @@ export function createAligner( scriptWords ) {
 		const maxScore = recent.reduce( ( sum, w ) => sum + weight( w ), 0 );
 		if ( maxScore <= 0 ) return position;
 
+		// Asked to find the reader again: search the whole script, a little
+		// more readily than when lost on its own, and stop once found.
+		if ( relocating ) {
+			const found = search( 0, scriptWords.length, recentCounts );
+			if (
+				found.score >= maxScore * MIN_SCORE_RATIO_ADVANCE
+				&& found.content >= MIN_CONTENT_MATCHES_LOCAL
+			) {
+				position = found.pos;
+				relocating = false;
+			}
+			return position;
+		}
+
 		const local = search(
 			Math.max( 0, position - MAX_BACKWARD_JUMP ),
 			Math.min( scriptWords.length, position + FORWARD_WINDOW ),
@@ -136,13 +151,21 @@ export function createAligner( scriptWords ) {
 		recent.length = 0;
 	}
 
+	// "Prompter, resync": forget the recent words and look for the reader
+	// anywhere in the script from what they say next.
+	function relocate() {
+		recent.length = 0;
+		relocating = true;
+	}
+
 	return {
 		addRecognized,
 		step,
 		currentPosition,
 		setPosition,
 		clearRecent,
-		reset
+		reset,
+		relocate
 	};
 }
 

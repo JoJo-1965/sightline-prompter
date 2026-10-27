@@ -90,7 +90,7 @@ export function createSpeech( { dir, win } ) {
 			serviceName: "Sightline speech"
 		} );
 		worker.on( "message", ( message ) => {
-			if ( message.type === "words" ) tell( "speechWords", message.words );
+			if ( message.type === "words" ) tell( "speechWords", { words: message.words, final: message.final } );
 			else tell( "speechState", message );
 		} );
 		worker.on( "exit", () => {

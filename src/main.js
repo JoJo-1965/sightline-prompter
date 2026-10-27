@@ -40,6 +40,7 @@ ipcMain.on( "openGuide", ( _event, page ) => guide.open( page ) );
 const defaultSettings = {
 	scrollMode: "steady", // "steady" (fixed words per minute) or "voice" (follows what you say)
 	voiceEngine: "local", // "local" (on this computer) or "deepgram" (online, needs a key)
+	voiceCommands: "voice", // "Prompter, pause": "voice" (voice mode), "always" (steady too) or "off"
 	steadyWpm: 140,
 	countdown: 3,
 	directions: "dim", // "dim", "hide" or "normal" for [bracketed] directions

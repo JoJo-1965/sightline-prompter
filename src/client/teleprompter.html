@@ -500,6 +500,9 @@
       </div>
       <div id="editor"></div>
     </div>
+    <div id="command-listening" class="hidden" title="Listening for “Prompter, …” commands (Settings > Voice)">
+      🎙 Prompter
+    </div>
     <div
       id="auto-scroll-indicator"
       class="hidden"
@@ -595,6 +598,20 @@
               <button id="set-speech-model-get" type="button" class="hidden">Download speech model</button>
             </div>
           </div>
+          <label class="row"
+            >Voice commands (“Prompter, pause”)
+            <select id="set-voice-commands">
+              <option value="voice">In voice mode</option>
+              <option value="always">In voice mode and while steady scrolling</option>
+              <option value="off">Off</option>
+            </select>
+          </label>
+          <p class="field-hint">
+            Say “Prompter” then a command, and stop: pause, go, slower, faster,
+            back, next section, from the top, again, marker, resync, bigger,
+            smaller. While steady scrolling, the microphone stays on to listen
+            for them (on this computer only; nothing is sent anywhere).
+          </p>
           <label class="row"
             >Voice responsiveness
             <input
