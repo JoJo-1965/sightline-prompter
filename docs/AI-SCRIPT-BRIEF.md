@@ -51,6 +51,7 @@ Never use `{` or `}` for anything else. Never put directives inside
 | `{target: m:ss}`                           | Script settings (whole script, session mode) or a section heading | Target duration, for example `0:45`, `1:20` or `12:00`                                                            |
 | `{pause}`                                  | Inline, on its own or at the end of a sentence                    | Scrolling stops until the speaker continues. Use it at natural breath or retake points, and before a slide change |
 | `{pause: ns}`                              | Inline                                                            | Stops for n seconds (1 to 30), then continues, for example `{pause: 3s}`                                          |
+| `{mode: points}` | Script settings | For a talk spoken off script: each section is shown as large bullet points, one at a time. Write each section as 3 to 6 short bullets (`- `) and give every section a `{target: m:ss}` |
 | `{marker}`                                 | Inline                                                            | A bookmark for retakes. Put one at the start of any passage that's hard to deliver                                |
 
 Several settings can share one pair of braces, separated by commas:
