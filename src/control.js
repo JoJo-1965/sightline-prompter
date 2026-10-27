@@ -4,6 +4,7 @@
 
 import { app, BrowserWindow, ipcMain, screen } from "electron";
 import path from "node:path";
+import { fitInside } from "./utils/fit.js";
 
 const CONTROL_COMMANDS = [
 	"toggle",
@@ -29,6 +30,13 @@ function onScreen( rect ) {
 	const overlapX = overlap( rect.x, rect.width, area.x, area.width );
 	const overlapY = overlap( rect.y, rect.height, area.y, area.height );
 	return overlapX > rect.width / 2 && overlapY > 40;
+}
+
+// Where the window opens: where it was left (made to fit if the screen is
+// smaller now), or centred on the main screen.
+function startBounds( saved ) {
+	if ( !onScreen( saved ) ) return { width: 960, height: 680, center: true };
+	return fitInside( saved, screen.getDisplayMatching( saved ).workArea );
 }
 
 export function createControl( {
@@ -59,7 +67,7 @@ export function createControl( {
 		if ( control ) return;
 		const saved = getSettings().controlBounds;
 		control = new BrowserWindow( {
-			...( onScreen( saved ) ? saved : { width: 960, height: 680, center: true } ),
+			...startBounds( saved ),
 			minWidth: 520,
 			minHeight: 360,
 			title: "Sightline Control",
@@ -151,6 +159,17 @@ export function createControl( {
 		if ( event.sender === control?.webContents )
 			saveSettings( { showControl: false } );
 	} );
+
+	// A monitor unplugged or changed: bring the window back onto a screen.
+	const refit = () => {
+		if ( !control || control.isDestroyed() || control.isMinimized() ) return;
+		if ( control.isMaximized() ) return;
+		const bounds = control.getBounds();
+		if ( onScreen( bounds ) ) return;
+		control.setBounds( fitInside( bounds, screen.getDisplayMatching( bounds ).workArea ) );
+	};
+	screen.on( "display-removed", () => setTimeout( refit, 300 ) );
+	screen.on( "display-metrics-changed", refit );
 
 	prompter.on( "closed", close );
 

@@ -16,6 +16,7 @@ import { buildMenus } from "./menus.js";
 import { setSectionTargets } from "./utils/targets.js";
 import { createPad } from "./pad.js";
 import { createControl } from "./control.js";
+import { fitInside, keepTopReachable, sameRect } from "./utils/fit.js";
 import { startRemoteServer, newToken } from "./remote.js";
 import { startPhoneServer, newPhoneKey, lanAddress } from "./phone.js";
 import QRCode from "qrcode";
@@ -222,7 +223,7 @@ function applyWindowSettings( win, wasEyeLine ) {
 		}
 		win.setBounds( eyeLineBounds( win ) );
 	} else if ( wasEyeLine && normalBounds ) {
-		win.setBounds( normalBounds );
+		win.setBounds( fitInside( normalBounds, screen.getDisplayMatching( normalBounds ).workArea ) );
 		normalBounds = null;
 	}
 	win.setAlwaysOnTop( settings.eyeLine || settings.alwaysOnTop, "floating" );
@@ -345,7 +346,7 @@ const createWindow = ( state ) => {
 			if ( windowMode === target ) {
 				// Toggle back to the normal window.
 				windowMode = "normal";
-				setWindowRect( preMaxBounds );
+				setWindowRect( fitInside( preMaxBounds, screen.getDisplayMatching( preMaxBounds ).workArea ) );
 				preMaxBounds = null;
 			} else {
 				if ( settings.eyeLine ) await updateSettings( { eyeLine: false } );
@@ -387,8 +388,30 @@ const createWindow = ( state ) => {
 		refreshMenus();
 	}
 	ipcMain.on( "getDisplays", () => win.webContents.send( "displays", displayList() ) );
+	// Keep the window on screen and its control bar reachable: when it starts,
+	// when monitors change, and after it is dragged. Full: shrink and move it
+	// fully inside; otherwise only bring the top edge back into view.
+	function keepInView( full ) {
+		if ( win.isDestroyed() || win.isMinimized() || settings.eyeLine ) return;
+		const bounds = win.getBounds();
+		const display = screen.getDisplayMatching( bounds );
+		let next;
+		if ( windowMode === "fullscreen" ) next = display.bounds;
+		else if ( windowMode === "maximized" ) next = display.workArea;
+		else if ( full ) next = fitInside( bounds, display.workArea );
+		else next = keepTopReachable( bounds, display.workArea );
+		if ( !sameRect( bounds, next ) ) setWindowRect( next );
+	}
+	let dragTimer = null;
+	win.on( "move", () => {
+		clearTimeout( dragTimer );
+		dragTimer = setTimeout( () => keepInView( false ), 400 );
+	} );
+	screen.on( "display-metrics-changed", () => keepInView( true ) );
+
 	for ( const event of [ "display-added", "display-removed" ] ) {
 		screen.on( event, () => {
+			if ( event === "display-removed" ) setTimeout( () => keepInView( true ), 300 );
 			refreshMenus();
 			if ( !win.isDestroyed() ) win.webContents.send( "displays", displayList() );
 		} );
@@ -595,6 +618,7 @@ const createWindow = ( state ) => {
 	refreshMenus();
 	applyWindowSettings( win, false );
 	if ( settings.prompterDisplay != null ) placeOnDisplay();
+	else keepInView( true );
 
 	return {
 		win,
