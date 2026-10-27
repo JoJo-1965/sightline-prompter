@@ -64,6 +64,29 @@ next line:
 | `{marker}`    | A bookmark you can jump to (`Ctrl+B` cycles through them), useful for retakes                                            |
 | `{wpm: n}`    | Changes the target pace from this point until the end of the section                                                     |
 
+## Talking points (planned, roadmap item 9)
+
+For speaking off script, put `{mode: points}` in the script settings, or on a
+section heading for just that section. Each section is then shown on its own as
+large bullet points, with no scrolling, and you move on with the arrow keys,
+clicker or remote. The section timer and `{target: m:ss}` work as normal.
+
+```md
+{mode: points, pacing: section}
+
+## Why inclusion stalls {target: 2:00}
+
+- Good intentions, no habits
+- The quiet voices in meetings
+- Story: the project kick-off
+
+## Three moves {target: 3:00}
+
+- Notice
+- Make the gap
+- Hold it open
+```
+
 ## Pacing modes
 
 - **`pacing: section`** (the default) is for batch and modular recording with

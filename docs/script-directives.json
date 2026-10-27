@@ -94,6 +94,22 @@
 				"type": "none"
 			},
 			"description": "A bookmark for retakes; Ctrl+B cycles through them."
+		},
+		"mode": {
+			"scopes": [
+				"script",
+				"section"
+			],
+			"value": {
+				"type": "enum",
+				"values": [
+					"script",
+					"points"
+				]
+			},
+			"default": "script",
+			"status": "planned (roadmap item 9)",
+			"description": "script: read word for word with scrolling. points: show the section as large bullet points with no scrolling, for speaking off script; the section timer and target still apply."
 		}
 	},
 	"rules": [
