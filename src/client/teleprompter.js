@@ -2067,7 +2067,11 @@ function isMenuGroupOpen( heading ) {
 }
 
 function toggleMenuGroup( heading ) {
-	const open = { ...menuGroupsOpen(), [heading]: !isMenuGroupOpen( heading ) };
+	// Opening one group closes the others, so the menu stays short.
+	const opening = !isMenuGroupOpen( heading );
+	const open = opening
+		? Object.fromEntries( menuGroups().map( g => [ g.heading, g.heading === heading ] ) )
+		: { ...menuGroupsOpen(), [heading]: false };
 	try {
 		localStorage.setItem( MENU_GROUPS_KEY, JSON.stringify( open ) );
 	} catch {
