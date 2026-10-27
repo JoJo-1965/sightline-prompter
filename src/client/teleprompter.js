@@ -22,6 +22,7 @@ import {
 	setWpm,
 	getWpm,
 	recalculate as recalculateSteady,
+	setLocalPxPerWord,
 	WPM_STEP
 } from "./steady-scroll.js";
 import { decorateScript } from "./decorate.js";
@@ -1471,6 +1472,8 @@ function scheduleMeasure() {
 		: requestAnimationFrame;
 	later( () => {
 		measureQueued = false;
+		const mirrorTransform = md.style.transform;
+		md.style.transform = "";
 		const { ranges } = buildWordIndex( md );
 		measureDirectives( ranges );
 		if ( ranges.length < 2 ) {
@@ -1484,6 +1487,7 @@ function scheduleMeasure() {
 				words: ranges.length
 			};
 		}
+		md.style.transform = mirrorTransform;
 		updateProgress();
 	} );
 }
@@ -2646,6 +2650,24 @@ function measureDirectives( ranges ) {
 	};
 }
 
+// Pixels per word around the reading line (steady-scroll.js uses it so the
+// set words per minute holds in dense text as well as on average).
+setLocalPxPerWord( () => {
+	const tops = directivePoints.wordTops;
+	if ( tops.length < 30 ) return null;
+	const y = readingLineY();
+	let lo = 0;
+	let hi = tops.length;
+	while ( lo < hi ) {
+		const mid = Math.floor( ( lo + hi ) / 2 );
+		if ( tops[mid] < y ) lo = mid + 1;
+		else hi = mid;
+	}
+	const a = Math.max( 0, lo - 12 );
+	const b = Math.min( tops.length - 1, lo + 12 );
+	return b > a ? ( tops[b] - tops[a] ) / ( b - a ) : null;
+} );
+
 function sectionAt( y ) {
 	let found = null;
 	for ( const s of directivePoints.sections ) {
@@ -2910,16 +2932,18 @@ function startPacing() {
 		total: 0,
 		sectionIndex: null,
 		sectionTime: 0,
+		sectionStartWords: 0,
+		sessionStartWords: wordsBefore( readingLineY() ),
 		lastTick: performance.now()
 	};
 	takeLog = new Map();
 }
 
-function logSection( index, seconds ) {
+function logSection( index, seconds, startWords = 0 ) {
 	const section = directivePoints.sections[index];
 	if ( !section || seconds < 2 ) return;
 	const targetWpm = targetWpmFor( section );
-	const words = section.words;
+	const words = Math.max( 0, section.words - startWords );
 	const targetSeconds = pointsMode()
 		? section.targetSeconds
 		: sectionTargetSeconds( section );
@@ -2954,8 +2978,9 @@ function stopPacing() {
 		const end
 			= directivePoints.sections[pacing.sectionIndex + 1]?.y ?? Infinity;
 		// Only a section read to its end counts as a full pass.
-		if ( section && y >= end - 2 )
-			logSection( pacing.sectionIndex, pacing.sectionTime );
+		if ( section && y >= end - 2 ) {
+			logSection( pacing.sectionIndex, pacing.sectionTime, pacing.sectionStartWords );
+		}
 	}
 	pacing = null;
 	pacingEl?.classList.add( "hidden" );
@@ -2984,12 +3009,15 @@ function pacingTick() {
 			pacing.sectionIndex !== null
 			&& ( index > pacing.sectionIndex || pointsMode() )
 		) {
-			logSection( pacing.sectionIndex, pacing.sectionTime );
+			logSection( pacing.sectionIndex, pacing.sectionTime, pacing.sectionStartWords );
 		}
 		pacing.sectionIndex = index;
 		pacing.sectionTime = 0;
+		const entered = directivePoints.sections[index];
+		pacing.sectionStartWords = entered ? wordsBefore( y, entered.y ) : 0;
 	}
-	const moving = ( isScrolling() && !cuePaused ) || pointsRunning;
+	// Not during the countdown: timing starts when the text starts moving.
+	const moving = isSteadyRunning() || autoScrollActive || pointsRunning;
 	if ( pacing.mode === "session" || moving ) pacing.total += dt;
 	if ( moving ) pacing.sectionTime += dt;
 	renderPacing( y, index );
@@ -3012,14 +3040,14 @@ function renderPacing( y, index ) {
 		const estimate = Math.round( ( totalWords / targetWpm ) * 60 );
 		targetSeconds = scriptDirectives.script.targetSeconds ?? estimate;
 		seconds = pacing.total;
-		words = wordsBefore( y );
+		words = wordsBefore( y ) - pacing.sessionStartWords;
 		label = "Take";
 	} else {
 		const section = directivePoints.sections[index];
 		targetWpm = targetWpmFor( section );
 		targetSeconds = sectionTargetSeconds( section );
 		seconds = pacing.sectionTime;
-		words = wordsBefore( y, section.y );
+		words = wordsBefore( y, section.y ) - pacing.sectionStartWords;
 		label = `Section ${ index + 1 }`;
 	}
 	const verdict = judge( words, seconds, targetWpm, targetSeconds );
