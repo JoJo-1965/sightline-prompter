@@ -4,8 +4,7 @@ What's planned and in which order. Joanne approved every item on 27 October
 2026, apart from the one on hold. The [change log in the README](readme.md#change-log)
 records what has shipped.
 
-**How it's ordered:** first by **value**, meaning what makes recording
-academy content better, then by **effort**. Quick wins come first; long,
+**How it's ordered:** first by **value**, meaning what makes recording to camera better, then by **effort**. Quick wins come first; long,
 complex builds come later.
 
 - **Value:** ★★★ changes recording day · ★★ clearly better · ★ nice to have
