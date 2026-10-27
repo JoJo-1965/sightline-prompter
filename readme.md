@@ -27,7 +27,7 @@ A see-through desktop teleprompter for recording to camera, built with [Electron
 
 ## Usage
 
-**New to Sightline? Read the [user guide](docs/guide/README.md)**, with screenshots of every screen. It's also built into the app: Help > User Guide (Shift+F1).
+**New to Sightline? Read the [user guide](docs/guide/README.md)**, with screenshots of every screen. It's also built into the app: Help > User Guide (Shift+F1). Coming from Electron Teleprompter? See [everything Sightline adds](docs/FEATURES.md).
 
 Sightline Prompter can load any markdown and/or HTML syntax and display that as a translucent overlay on the screen. In this way you can load a script and still see your presentation, video conferencing, or any other applications through the script.
 
