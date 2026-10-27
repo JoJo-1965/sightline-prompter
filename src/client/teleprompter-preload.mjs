@@ -30,6 +30,8 @@ contextBridge.exposeInMainWorld( "electron", {
 	onRemoteInfo: callback => on( "remoteInfo", callback ),
 	openRecent: filePath => ipcRenderer.send( "openRecent", filePath ),
 	openSample: name => ipcRenderer.send( "openSample", name ),
+	setIgnoreMouse: ignore => ipcRenderer.send( "setIgnoreMouse", ignore ),
+	onToast: callback => on( "toast", callback ),
 	exportSettings: () => ipcRenderer.send( "exportSettings" ),
 	importSettings: () => ipcRenderer.send( "importSettings" ),
 	onNotice: callback => on( "notice", callback ),

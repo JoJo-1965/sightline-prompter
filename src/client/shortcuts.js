@@ -44,6 +44,19 @@ export const SHORTCUTS = [
 		]
 	},
 	{
+		section: "Script mark-up",
+		keys: [
+			[ [ "[ ]" ], "A note to you, the speaker: shown dimmed. \"Quoted words\" inside stay bright" ],
+			[ [ "{ }" ], "An instruction to the app: hidden while you read" ],
+			[ [ "{pause}" ], "Stop scrolling here until you press Space or the clicker" ],
+			[ [ "{pause: 3s}" ], "Stop for 3 seconds, then carry on" ],
+			[ [ "{marker}" ], "A bookmark for retakes (Ctrl+B jumps to it)" ],
+			[ [ "{wpm: 140}" ], "On a section heading: that section's pace" ],
+			[ [ "{target: 1:20}" ], "On a section heading: that section's target time" ],
+			[ [ "Layout" ], "Show directives: see them as small tags, with ⚠ on typos" ]
+		]
+	},
+	{
 		section: "Voice scroll sync",
 		keys: [
 			[ [ "Ctrl+Shift+V" ], "Voice panel: mode, Deepgram API key, microphone" ]
@@ -60,6 +73,7 @@ export const SHORTCUTS = [
 				"Eye-line mode: a strip at the top-centre, under the webcam"
 			],
 			[ [ "Ctrl+Shift+B" ], "Keep the control bar visible" ],
+			[ [ "Ctrl+Shift+X" ], "Click-through on / off (works from any app)" ],
 			[ [ "Ctrl+," ], "Settings" ],
 			[ [ "F1", "?" ], "This help" ],
 			[ [ "Esc" ], "Close a panel" ],

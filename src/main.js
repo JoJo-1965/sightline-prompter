@@ -1,4 +1,4 @@
-import { app, BrowserWindow, dialog, ipcMain, Menu, screen, shell } from "electron";
+import { app, BrowserWindow, dialog, globalShortcut, ipcMain, Menu, screen, shell } from "electron";
 import path from "node:path";
 import fs from "node:fs/promises";
 import { cpSync, existsSync } from "node:fs";
@@ -47,6 +47,15 @@ const defaultSettings = {
 	textBrightness: 1, // dims the script without making it see-through
 	showDirectives: false, // show {directives} as small tags for checking a script
 	followScriptPace: true, // steady scrolling uses the script's {wpm} and {target} pace
+	focusBand: false, // dim the lines away from the reading line
+	focusStrength: 0.6, // how much the far lines are dimmed (0 to 0.9)
+	textEffect: "none", // none, outline or shadow
+	theme: "default", // default, yellow, contrast or cream
+	scriptFont: "default", // default, atkinson, opendyslexic or verdana
+	onAirLight: true, // ON AIR light while scrolling
+	startBeep: false, // a short beep when the countdown ends (off: it would be recorded)
+	hideFromCapture: false, // keep the window out of screen sharing and recordings
+	clickThrough: false, // clicks on the script go to the window behind
 	textAlign: "left", // "left" or "center"
 	showProgress: true,
 	controlsPinned: false, // keep the control bar visible instead of auto-hiding it
@@ -194,6 +203,10 @@ function applyWindowSettings( win, wasEyeLine ) {
 		normalBounds = null;
 	}
 	win.setAlwaysOnTop( settings.eyeLine || settings.alwaysOnTop, "floating" );
+	win.setContentProtection( !!settings.hideFromCapture );
+	// Click-through: the renderer turns mouse events back on while the pointer
+	// is over the control bar or a panel, so the controls stay usable.
+	win.setIgnoreMouseEvents( !!settings.clickThrough, { forward: true } );
 }
 
 const emptySlotHtml = index =>
@@ -1008,6 +1021,21 @@ app.whenReady().then( async () => {
 	ipcMain.on( "getSettings", () => {
 		sendSettings();
 	} );
+
+	ipcMain.on( "setIgnoreMouse", ( _event, ignore ) => {
+		if ( settings.clickThrough ) win.setIgnoreMouseEvents( !!ignore, { forward: true } );
+	} );
+
+	// Works even when another app has focus, so click-through can always be undone.
+	globalShortcut.register( "CommandOrControl+Shift+X", async () => {
+		const on = !settings.clickThrough;
+		await updateSettings( { clickThrough: on } );
+		win.webContents.send(
+			"toast",
+			on ? "Click-through on · clicks go to the window behind · Ctrl+Shift+X to stop" : "Click-through off"
+		);
+	} );
+	app.on( "will-quit", () => globalShortcut.unregisterAll() );
 
 	ipcMain.on( "saveSettings", async ( _event, partial ) => {
 		if ( partial && typeof partial === "object" ) {

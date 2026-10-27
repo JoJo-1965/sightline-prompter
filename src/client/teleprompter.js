@@ -810,6 +810,7 @@ function startSteadySession() {
 			onFinished: () => setIndicator( null )
 		} );
 		startCueTracking();
+		startBeep();
 		setIndicator( steadyIndicatorText() );
 	};
 	let remaining = Math.max( 0, Math.round( settings.countdown ?? 0 ) );
@@ -1094,6 +1095,7 @@ function updateReadingMarker() {
 	if ( !readingMarker ) return;
 	readingMarker.style.top = `${ getReadingAnchor() * 100 }vh`;
 	readingMarker.classList.toggle( "hidden", !settings.showReadingMarker );
+	if ( settings.focusBand ) updateEdgeMask();
 }
 
 function rerenderScript() {
@@ -1129,6 +1131,7 @@ function applySettings( next ) {
 		stopAutoScrollSession();
 	}
 	if ( prev.highlightCues !== settings.highlightCues ) rerenderScript();
+	applyDisplayClasses();
 	applyLayout();
 	syncControls();
 	refreshControlsVisibility();
@@ -1325,21 +1328,52 @@ function applyLayout() {
 
 // Top and bottom margins hide the text near the window edges. The mask is one
 // window tall and follows the scroll, so it stays put on screen.
+// The script's visibility down the window, as a mask: the top and bottom
+// margins fade to nothing, and the focus band (optional) dims lines away from
+// the reading line. Both are worked out per point and combined.
+function edgeAlpha( p, top, bottom ) {
+	if ( p < top - EDGE_FADE || p > 100 - bottom + EDGE_FADE ) return 0;
+	if ( p < top ) return ( p - ( top - EDGE_FADE ) ) / EDGE_FADE;
+	if ( p > 100 - bottom ) return 1 - ( p - ( 100 - bottom ) ) / EDGE_FADE;
+	return 1;
+}
+
+function focusAlpha( p, centre, half, fade, floor ) {
+	const d = Math.abs( p - centre );
+	if ( d <= half ) return 1;
+	if ( d >= half + fade ) return floor;
+	return 1 - ( 1 - floor ) * ( ( d - half ) / fade );
+}
+
 function updateEdgeMask() {
 	const top = settings.marginTop ?? 0;
 	const bottom = settings.marginBottom ?? 0;
-	if ( !top && !bottom ) {
+	const focus = !!settings.focusBand;
+	if ( !top && !bottom && !focus ) {
 		md.style.webkitMaskImage = "";
 		return;
 	}
-	const stops = [
-		"transparent 0%",
-		`transparent ${ Math.max( 0, top - EDGE_FADE ) }%`,
-		`black ${ top }%`,
-		`black ${ 100 - bottom }%`,
-		`transparent ${ Math.min( 100, 100 - bottom + EDGE_FADE ) }%`,
-		"transparent 100%"
-	];
+	const centre = getReadingAnchor() * 100;
+	const linePx = parseFloat( getComputedStyle( md ).lineHeight ) || 60;
+	const linePct = ( linePx / window.innerHeight ) * 100;
+	const half = linePct * 0.9; // the reading line and a little either side
+	const fade = linePct * 1.5;
+	const floor = 1 - Math.min( 0.9, Math.max( 0, settings.focusStrength ?? 0.6 ) );
+	const points = new Set( [ 0, 100, top, 100 - bottom ] );
+	points.add( Math.max( 0, top - EDGE_FADE ) );
+	points.add( Math.min( 100, 100 - bottom + EDGE_FADE ) );
+	if ( focus ) {
+		for ( const p of [ centre - half - fade, centre - half, centre + half, centre + half + fade ] ) {
+			points.add( Math.min( 100, Math.max( 0, p ) ) );
+		}
+	}
+	const stops = [ ...points ]
+		.sort( ( a, b ) => a - b )
+		.map( ( p ) => {
+			let a = edgeAlpha( p, top, bottom );
+			if ( focus ) a *= focusAlpha( p, centre, half, fade, floor );
+			return `rgba(0, 0, 0, ${ a.toFixed( 3 ) }) ${ p.toFixed( 2 ) }%`;
+		} );
 	md.style.webkitMaskImage = `linear-gradient(to bottom, ${ stops.join( ", " ) })`;
 	md.style.webkitMaskRepeat = "no-repeat";
 	md.style.webkitMaskSize = "100% 100vh";
@@ -1487,6 +1521,7 @@ function isScrolling() {
 }
 
 function updatePlayButton() {
+	updateOnAir();
 	if ( !playBtn ) return;
 	const playing = isScrolling();
 	playBtn.textContent = playing ? "❚❚" : "▶";
@@ -2031,7 +2066,8 @@ const LAYOUT_FIELDS = [
 	[ "lp-margin-bottom", "marginBottom", v => `${ v }%` ],
 	[ "lp-line-height", "lineHeight", v => `${ Number( v ).toFixed( 2 ) }×` ],
 	[ "lp-text-opacity", "textOpacity", v => `${ Math.round( v * 100 ) }%` ],
-	[ "lp-text-brightness", "textBrightness", v => `${ Math.round( v * 100 ) }%` ]
+	[ "lp-text-brightness", "textBrightness", v => `${ Math.round( v * 100 ) }%` ],
+	[ "lp-focus-strength", "focusStrength", v => `${ Math.round( v * 100 ) }%` ]
 ];
 
 function readingLineKey() {
@@ -2058,6 +2094,14 @@ function syncLayoutPanel() {
 	field( "lp-pinned" ).checked = !!settings.controlsPinned;
 	field( "lp-directives" ).checked = !!settings.showDirectives;
 	field( "lp-follow-pace" ).checked = settings.followScriptPace !== false;
+	field( "lp-focus-band" ).checked = !!settings.focusBand;
+	field( "lp-text-effect" ).value = settings.textEffect ?? "none";
+	field( "lp-theme" ).value = settings.theme ?? "default";
+	field( "lp-font" ).value = settings.scriptFont ?? "default";
+	field( "lp-on-air" ).checked = settings.onAirLight !== false;
+	field( "lp-start-beep" ).checked = !!settings.startBeep;
+	field( "lp-hide-capture" ).checked = !!settings.hideFromCapture;
+	field( "lp-click-through" ).checked = !!settings.clickThrough;
 	document.body.classList.toggle( "show-directives", !!settings.showDirectives );
 }
 
@@ -2108,6 +2152,31 @@ if ( document.getElementById( "layout-panel" ) ) {
 		window.electron.saveSettings( { ...LAYOUT_DEFAULTS, readingLine: 33 } )
 	);
 	onClick( "lp-done", closePanels );
+	// Each of these saves straight away; main sends the settings back, which
+	// re-applies classes, the mask and the window flags.
+	for ( const [ id, key ] of [
+		[ "lp-focus-band", "focusBand" ],
+		[ "lp-on-air", "onAirLight" ],
+		[ "lp-start-beep", "startBeep" ],
+		[ "lp-hide-capture", "hideFromCapture" ],
+		[ "lp-click-through", "clickThrough" ]
+	] ) {
+		field( id ).addEventListener( "change", () => {
+			window.electron.saveSettings( { [key]: field( id ).checked } );
+			if ( key === "clickThrough" && field( id ).checked ) {
+				showToast( "Click-through on · Ctrl+Shift+X turns it off from anywhere" );
+			}
+		} );
+	}
+	for ( const [ id, key ] of [
+		[ "lp-text-effect", "textEffect" ],
+		[ "lp-theme", "theme" ],
+		[ "lp-font", "scriptFont" ]
+	] ) {
+		field( id ).addEventListener( "change", () =>
+			window.electron.saveSettings( { [key]: field( id ).value } )
+		);
+	}
 	field( "lp-follow-pace" ).addEventListener( "change", () => {
 		settings.followScriptPace = field( "lp-follow-pace" ).checked;
 		window.electron.saveSettings( { followScriptPace: settings.followScriptPace } );
@@ -2594,6 +2663,103 @@ function jumpToNextMarker() {
 	showToast( `Marker ${ markers.indexOf( next ) + 1 } of ${ markers.length }` );
 }
 
+// --- Reading aids and recording helpers ---
+
+const THEMES = [ "default", "yellow", "contrast", "cream" ];
+const FONTS = [ "default", "atkinson", "opendyslexic", "verdana" ];
+const EFFECTS = [ "none", "outline", "shadow" ];
+
+function applyDisplayClasses() {
+	const body = document.body;
+	for ( const t of THEMES ) body.classList.toggle( `theme-${ t }`, ( settings.theme ?? "default" ) === t );
+	for ( const f of FONTS ) body.classList.toggle( `font-${ f }`, ( settings.scriptFont ?? "default" ) === f );
+	for ( const e of EFFECTS ) body.classList.toggle( `edge-${ e }`, ( settings.textEffect ?? "none" ) === e );
+	updateOnAir();
+}
+
+// ON AIR: lit while a scrolling session is running or held at a {pause}.
+const onAirEl = document.getElementById( "on-air" );
+function updateOnAir() {
+	if ( !onAirEl ) return;
+	const live = settings.onAirLight !== false && ( isScrolling() || cuePaused );
+	onAirEl.classList.toggle( "hidden", !live );
+}
+
+let audioCtx = null;
+function startBeep() {
+	if ( !settings.startBeep ) return;
+	try {
+		audioCtx ??= new AudioContext();
+		const osc = audioCtx.createOscillator();
+		const gain = audioCtx.createGain();
+		osc.frequency.value = 880;
+		gain.gain.setValueAtTime( 0.25, audioCtx.currentTime );
+		gain.gain.exponentialRampToValueAtTime( 0.001, audioCtx.currentTime + 0.18 );
+		osc.connect( gain ).connect( audioCtx.destination );
+		osc.start();
+		osc.stop( audioCtx.currentTime + 0.2 );
+	} catch ( err ) {
+		console.warn( "[beep]", err );
+	}
+}
+
+// Click-through: mouse events pass to the window behind, except over the
+// controls. Main forwards mouse moves while ignoring, so this still runs.
+let ignoringMouse = null;
+document.addEventListener( "mousemove", ( e ) => {
+	if ( !settings.clickThrough ) {
+		ignoringMouse = null;
+		return;
+	}
+	const overControls = !!e.target.closest?.(
+		"#control-bar, .panel, #app-menu, .modal, #auto-scroll-indicator, #toast"
+	);
+	const ignore = !overControls;
+	if ( ignore !== ignoringMouse ) {
+		ignoringMouse = ignore;
+		window.electron.setIgnoreMouse( ignore );
+	}
+} );
+
+window.electron.onToast( text => showToast( text ) );
+
+// Game controllers: buttons act like the matching keys.
+const PAD_KEYS = {
+	0: { key: "PageDown" }, // A: start / pause / carry on
+	1: { key: "b" }, // B: drop a marker
+	2: { key: "b", ctrlKey: true }, // X: next marker
+	12: { key: "ArrowUp" }, // d-pad up: faster while scrolling
+	13: { key: "ArrowDown" }, // d-pad down: slower
+	14: { key: "ArrowLeft" }, // d-pad left: previous section
+	15: { key: "ArrowRight" } // d-pad right: next section
+};
+let padTimer = null;
+const padPressed = new Map();
+function pollGamepads() {
+	const pads = navigator.getGamepads?.() ?? [];
+	let any = false;
+	for ( const pad of pads ) {
+		if ( !pad ) continue;
+		any = true;
+		for ( const [ index, keyInit ] of Object.entries( PAD_KEYS ) ) {
+			const down = !!pad.buttons[index]?.pressed;
+			const id = `${ pad.index }:${ index }`;
+			if ( down && !padPressed.get( id ) ) {
+				document.dispatchEvent( new KeyboardEvent( "keydown", { ...keyInit, bubbles: true } ) );
+			}
+			padPressed.set( id, down );
+		}
+	}
+	if ( !any ) {
+		clearInterval( padTimer );
+		padTimer = null;
+	}
+}
+window.addEventListener( "gamepadconnected", () => {
+	padTimer ??= setInterval( pollGamepads, 40 );
+	showToast( "Controller connected · A starts and pauses, B adds a marker" );
+} );
+
 // --- Number boxes beside sliders ---
 // Every slider gets a number field (type a value, or use the arrow keys / the
 // up and down buttons) showing the value as a percentage or in wpm. The slider
@@ -2641,6 +2807,7 @@ const NUMBER_BOXES = {
 		word: "percent",
 		name: "Bottom margin"
 	} ),
+	"lp-focus-strength": () => ( { scale: 100, unit: "%", word: "percent", name: "Focus strength" } ),
 	"lp-text-brightness": () => ( { scale: 100, unit: "%", word: "percent", name: "Text brightness" } ),
 	"lp-bg-opacity": () => ( { scale: 100, unit: "%", word: "percent", name: "Background opacity" } ),
 	"lp-text-opacity": () => ( { scale: 100, unit: "%", word: "percent", name: "Text opacity" } ),

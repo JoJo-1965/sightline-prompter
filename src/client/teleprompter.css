@@ -1216,3 +1216,105 @@ body.show-directives .app-directive.unknown::before {
 	background: #ffd54a;
 	border-radius: 2px;
 }
+
+/* --- Colour themes for the script (the controls keep their own colours) --- */
+body.theme-yellow #md {
+	color: #ffe066;
+}
+
+body.theme-yellow #md h1,
+body.theme-yellow #md h2 {
+	color: #fff3b0;
+}
+
+body.theme-contrast #md,
+body.theme-contrast #md h1,
+body.theme-contrast #md h2,
+body.theme-contrast #md h3 {
+	color: #ffffff;
+}
+
+body.theme-contrast #md .direction .dir-text {
+	color: #c8c8c8;
+}
+
+body.theme-cream #md {
+	color: #f3e9d2;
+}
+
+body.theme-cream #md h1,
+body.theme-cream #md h2 {
+	color: #f7d9a8;
+}
+
+/* --- Script fonts --- */
+body.font-atkinson #md {
+	font-family: "Atkinson Hyperlegible", Helvetica, Arial, sans-serif;
+}
+
+body.font-opendyslexic #md {
+	font-family: "OpenDyslexic", Verdana, sans-serif;
+	line-height: calc(var(--line-height) * 1.1);
+}
+
+body.font-verdana #md {
+	font-family: Verdana, Geneva, sans-serif;
+}
+
+/* --- Text edge: keeps see-through text readable over busy backgrounds --- */
+body.edge-outline #md {
+	-webkit-text-stroke: 0.045em rgba(0, 0, 0, 0.85);
+	paint-order: stroke fill;
+}
+
+body.edge-shadow #md {
+	text-shadow:
+		0 0 0.12em rgba(0, 0, 0, 0.95),
+		0 0.04em 0.14em rgba(0, 0, 0, 0.9);
+}
+
+/* --- ON AIR light --- */
+#on-air {
+	position: fixed;
+	top: 46px;
+	right: 14px;
+	padding: 4px 12px 4px 26px;
+	font: 700 13px "Segoe UI", Helvetica, Arial, sans-serif;
+	letter-spacing: 0.12em;
+	color: #fff;
+	background: #c62828;
+	border-radius: 14px;
+	box-shadow: 0 0 14px rgba(229, 57, 53, 0.7);
+	pointer-events: none;
+	z-index: 1250;
+}
+
+#on-air::before {
+	content: "";
+	position: absolute;
+	left: 10px;
+	top: 50%;
+	width: 9px;
+	height: 9px;
+	margin-top: -4.5px;
+	background: #fff;
+	border-radius: 50%;
+	animation: on-air-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes on-air-pulse {
+	50% {
+		opacity: 0.35;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	#on-air::before {
+		animation: none;
+	}
+}
+
+#lp-theme,
+#lp-font {
+	width: 160px;
+}

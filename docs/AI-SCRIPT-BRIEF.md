@@ -73,6 +73,11 @@ Several settings can share one pair of braces, separated by commas:
 
 ## 5. Check before you hand it over
 
+If you can run commands, check the script with
+`node scripts/check-script.mjs your-script.md` (in the Sightline Prompter repo).
+It exits with 1 if anything below is broken.
+
+
 - [ ] Exactly one script settings line or front matter block, before the first
       section.
 - [ ] Every section heading ends with `{target: m:ss}` or `{wpm: n}`.

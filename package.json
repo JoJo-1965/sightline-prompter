@@ -11,7 +11,8 @@
 		"start": "electron .",
 		"prebuild": "pnpm build:editor",
 		"build": "pnpm dlx @electron/packager --overwrite ./ --out ./dist --ignore=\"/node_modules/\\.ignored\" --ignore=\"/node_modules/(electron|@electron|eslint)\"",
-		"lint": "eslint --fix"
+		"lint": "eslint --fix",
+		"check-script": "node scripts/check-script.mjs"
 	},
 	"author": "Joanne Lockwood (SEE Change Happen Ltd)",
 	"contributors": [
@@ -38,6 +39,8 @@
 		"eslint-config-reverentgeek": "^7.1.25"
 	},
 	"dependencies": {
+		"@fontsource/atkinson-hyperlegible": "^5.3.0",
+		"@fontsource/opendyslexic": "^5.3.0",
 		"chokidar": "6",
 		"js-yaml": "^5.5.0",
 		"mammoth": "^1.13.0",

@@ -14,6 +14,10 @@
     <title>Sightline Prompter</title>
     <link rel="stylesheet" type="text/css" href="teleprompter.css" />
     <link rel="stylesheet" type="text/css" href="editor.css" />
+    <link rel="stylesheet" href="../../node_modules/@fontsource/atkinson-hyperlegible/400.css" />
+    <link rel="stylesheet" href="../../node_modules/@fontsource/atkinson-hyperlegible/700.css" />
+    <link rel="stylesheet" href="../../node_modules/@fontsource/opendyslexic/400.css" />
+    <link rel="stylesheet" href="../../node_modules/@fontsource/opendyslexic/700.css" />
   </head>
 
   <body>
@@ -232,6 +236,43 @@
         ><input id="lp-progress" type="checkbox" /> Progress bar and time
         left</label
       >
+      <h5 class="lp-sub">Reading aids</h5>
+      <label class="lp-check"
+        ><input id="lp-focus-band" type="checkbox" /> Focus band
+        <span class="lp-hint-inline">dims the lines away from the reading line</span></label
+      >
+      <label class="lp-row"
+        >Focus strength <output id="lp-focus-strength-value"></output>
+        <input id="lp-focus-strength" type="range" min="0.1" max="0.9" step="0.05" />
+      </label>
+      <div class="lp-row lp-inline">
+        Text edge
+        <select id="lp-text-effect"><option value="none">None</option><option value="outline">Outline</option><option value="shadow">Shadow</option></select>
+      </div>
+      <div class="lp-row lp-inline">
+        Colours
+        <select id="lp-theme"><option value="default">Standard</option><option value="yellow">Yellow on dark</option><option value="contrast">High contrast</option><option value="cream">Soft cream</option></select>
+      </div>
+      <div class="lp-row lp-inline">
+        Font
+        <select id="lp-font"><option value="default">Standard</option><option value="atkinson">Atkinson Hyperlegible</option><option value="opendyslexic">OpenDyslexic</option><option value="verdana">Verdana</option></select>
+      </div>
+      <h5 class="lp-sub">Recording</h5>
+      <label class="lp-check"
+        ><input id="lp-on-air" type="checkbox" /> ON AIR light while scrolling</label
+      >
+      <label class="lp-check"
+        ><input id="lp-start-beep" type="checkbox" /> Beep when the countdown ends
+        <span class="lp-hint-inline">your mic may pick it up</span></label
+      >
+      <label class="lp-check"
+        ><input id="lp-hide-capture" type="checkbox" /> Hide from screen sharing and recordings</label
+      >
+      <label class="lp-check"
+        ><input id="lp-click-through" type="checkbox" /> Click-through
+        <span class="lp-hint-inline">clicks on the script reach the window behind · Ctrl+Shift+X</span></label
+      >
+      <h5 class="lp-sub">Script</h5>
       <label class="lp-check"
         ><input id="lp-follow-pace" type="checkbox" /> Follow the script's pace
         <span class="lp-hint-inline">{wpm} and {target}</span></label
@@ -358,6 +399,7 @@
     </div>
     <div id="progress-bar" class="hidden"><div id="progress-fill"></div></div>
     <div id="cb-progress-text"></div>
+    <div id="on-air" class="hidden" role="status">ON AIR</div>
     <div id="drop-overlay" class="hidden">
       Drop a script to open it in this slot
     </div>
