@@ -3496,6 +3496,10 @@ window.electron.onAppInfo( ( info ) => {
 			.join( " · " );
 } );
 
+document.getElementById( "set-remote-help" )?.addEventListener( "click", () => {
+	window.electron.openGuide( "10-setting-up-your-ai.md" );
+} );
+
 // --- Updates: a check against the latest release on GitHub ---
 
 const updateLine = document.getElementById( "settings-about-update" );

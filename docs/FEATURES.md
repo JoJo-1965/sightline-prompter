@@ -32,7 +32,7 @@ details, and the [user guide](guide/README.md) shows every screen.
 | Script formats      | Markdown and HTML, with a built-in Markdown editor                                    | Adds plain text, Word, rich text, **PDF** and **Google Docs links**                                                                                            |
 | Script instructions |                                                                                       | Stops, countdowns, markers, pace and target times in `{curly braces}`; notes in `[brackets]`                                                                   |
 | Pacing and takes | | Pacing light, section targets, take summary, rehearsal timer, and a **take log** for the edit with keeper and scrap ratings |
-| Controls            | Keyboard shortcuts; arrow keys and a clicker jump between sections; microphone choice | Control bar, ☰ menu, six-tab Settings, nine script slots, floating pad, phone remote, control window, clickers that start and pause, pedals, game controllers |
+| Controls            | Keyboard shortcuts; arrow keys and a clicker jump between sections; microphone choice | Control bar, ☰ menu, nine-tab Settings, nine script slots, floating pad, phone remote, control window, clickers that start and pause, pedals, game controllers |
 | Recording rigs      | Mirror (flip) mode                                                                    | Mirroring in any direction, prompter monitor (Elgato Prompter), eye-line mode, beam-splitter setup, hide from screen capture, click-through                    |
 | Reading aids        | Background opacity and font size                                                      | Sentence highlight, focus band, text edge, colour themes, Atkinson Hyperlegible and OpenDyslexic                                                               |
 | Help                | Readme; recently opened files                                                         | Built-in user guide with screenshots, sample scripts, shortcuts panel                                                                                          |
@@ -112,7 +112,7 @@ The whole workflow is in the guide:
   words and sentences.
 - **Skills for AI agents:** `sightline-script` and `sightline-session` for
   Claude Code and Codex, a `sightline` command for driving the app, and setup
-  steps for ChatGPT, Claude and Gemini ([AI-AGENTS.md](AI-AGENTS.md)).
+  steps for ChatGPT, Claude and Gemini ([Setting up your AI](guide/10-setting-up-your-ai.md)).
 - **Edit pack** (File > Export Edit Pack): the take log, word timings,
   sentences, edit marks (sentence starts, pauses, re-reads, skipped words)
   and captions in the script's own wording, in one folder with a brief for

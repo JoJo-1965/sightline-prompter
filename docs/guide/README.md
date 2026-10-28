@@ -22,7 +22,8 @@ steady pace or follows your voice.
 6. [Remotes and second screens](06-remotes-and-screens.md): the pad, control window, phone remote, prompter monitor
 7. [Settings](07-settings.md): every tab explained
 8. [Shortcuts and troubleshooting](08-shortcuts-and-troubleshooting.md)
-9. [Working with AI](09-working-with-ai.md): AI-written scripts, letting an AI run the prompter, the take log for the edit, and what's coming next
+9. [Working with AI](09-working-with-ai.md): AI-written scripts, letting an AI run the prompter, the take log and edit pack, and what's coming next
+10. [Setting up your AI](10-setting-up-your-ai.md): Claude Code, Codex, ChatGPT, Claude or Gemini, and the AI and remote control settings
 
 Inside the app, open this guide from **Help > User Guide** or the **?** menu.
 **F1** shows the keyboard shortcuts.

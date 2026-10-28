@@ -3,7 +3,23 @@
 ## Presenter clickers and foot pedals
 
 Most clickers and pedals send Page Down and Page Up. **Page Down** starts and
-pauses, and **Page Up** goes back a section.
+pauses, and **Page Up** goes back a section. Pedals that send the arrow keys
+work too: → and ← move between sections.
+
+## Game controllers
+
+Plug in or pair a game controller (Xbox, PlayStation or similar) and it works
+straight away:
+
+| Button | What it does |
+| --- | --- |
+| **A** (✕ on PlayStation) | Start and pause, or carry on from a stop |
+| **B** (○) | Drop a marker |
+| **X** (□) | Jump to the next marker |
+| D-pad up and down | Faster and slower, while scrolling |
+| D-pad left and right | Previous and next section |
+
+The buttons can't be changed yet; choosing your own is on the roadmap.
 
 ## The floating pad
 
@@ -46,10 +62,13 @@ networks.
 
 ## AI and remote control
 
-Also on **Settings > Remotes**, you can let an AI assistant or a script on
-this computer load scripts and control the prompter. It's off by default, and
-only programs on this computer that have the token can connect. What an AI
-can do with it is in [Working with AI](09-working-with-ai.md#2-record-let-the-ai-run-the-prompter).
+Also on **Settings > Remotes**, you can let an AI assistant (such as Claude
+Code or Codex) or a script on this computer load scripts and control the
+prompter. It's off by default, and only programs on this computer that have
+the token can connect. **How to set up your AI** on that tab opens
+[Setting up your AI](10-setting-up-your-ai.md), which explains the port, the
+token and the status line, and how to set up each AI. What an AI can do with
+it is in [Working with AI](09-working-with-ai.md#2-record-let-the-ai-run-the-prompter).
 
 ## Choosing the prompter monitor
 

@@ -21,7 +21,7 @@ can find the right take and cut it without anyone scrubbing through by ear.
 **Setting your AI up:** Claude Code and Codex can do all three, with two
 ready-made skills and a command for driving Sightline; ChatGPT, Claude or
 Gemini in a browser can write scripts and read the files you upload. How to
-set up each one is in [Setting up your AI](../AI-AGENTS.md).
+set up each one is in [Setting up your AI](10-setting-up-your-ai.md).
 
 ## 1. Write: scripts with directions in them
 
@@ -82,7 +82,9 @@ that file and sends each request with the header
 
 It's off by default. Requests from web pages are refused, the API can't
 switch itself on, and **New token** locks out anything that had the old one.
-The full list is in the [readme](../../readme.md).
+The full list is in the [readme](https://github.com/JoJo-1965/sightline-prompter#readme), and
+[Setting up your AI](10-setting-up-your-ai.md) explains each setting and how
+Claude Code and Codex use it.
 
 While you record, your voice does the rest: "Prompter, again" for a retake,
 "Prompter, keeper" or "Prompter, scrap that" to rate a take, "Prompter,
@@ -113,7 +115,7 @@ up with the recording from the first beep or flash.
 
 ## Coming next
 
-The [roadmap](../../ROADMAP.md) takes this further, in this order:
+The [roadmap](https://github.com/JoJo-1965/sightline-prompter/blob/main/ROADMAP.md) takes this further, in this order:
 
 - **Script-controlled listening** (35): `{listen: off}` before an ad-lib or a
   demo turns the microphone off, `{listen: on}` turns it back on, and
