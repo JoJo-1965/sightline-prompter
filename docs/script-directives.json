@@ -84,7 +84,7 @@
 				"maximum": 30,
 				"example": "3s"
 			},
-			"description": "With no value: the same as {stop}. With a value: stop for that many seconds, with a countdown, then carry on (say \"Prompter, go\" to carry on sooner, or \"Prompter, pause\" to wait). Works in steady and voice scrolling. In section mode the section timer stops too."
+			"description": "With no value: the same as {stop}. With a value: stop for that many seconds, with a countdown, then carry on (say \"Prompter, go\" to carry on sooner, or \"Prompter, pause\" to wait). In section mode the section timer stops too. In voice scrolling a timed pause doesn't hold, because the text only moves when the speaker does: it shows as a beat mark and the speaker takes the beat. With no value it holds in both modes."
 		},
 		"page": {
 			"scopes": [

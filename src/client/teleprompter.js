@@ -140,6 +140,7 @@ let fontSize = DEFAULT_FONT_SIZE;
 function setFontSize( size, save = true ) {
 	fontSize = Math.min( MAX_FONT_SIZE, Math.max( MIN_FONT_SIZE, size ) );
 	document.body.style.fontSize = `${ fontSize }em`;
+	document.body.style.setProperty( "--script-size", `${ fontSize }rem` );
 	requestAnimationFrame( () => updateReadingMarker() );
 	if ( isSteadyRunning() ) {
 		requestAnimationFrame( recalculateSteady );
@@ -977,12 +978,15 @@ function holdPauseCountdown() {
 	return true;
 }
 
-// The pause whose last word before it the speaker has just said, if any.
+// The stop whose last word before it the speaker has just said, if any. Timed
+// pauses don't hold in voice mode: the text only moves when the speaker does,
+// so they see {pause: 3s} in the script and take the beat themselves.
 function voicePauseCrossed( wordIdx, ranges ) {
 	const before = voiceWordIdx;
 	voiceWordIdx = wordIdx;
 	if ( before === null || wordIdx <= before || autoScrollHandle?.isHeld() ) return null;
 	return directivePoints.pauses.find( ( pause ) => {
+		if ( pause.seconds ) return false;
 		if ( pause.ranges !== ranges ) {
 			// The first word after the pause, found by halving.
 			let lo = 0;
@@ -1447,6 +1451,10 @@ function slateSection() {
 	return Math.max( 0, left <= 3 ? index + 1 : index );
 }
 
+// The slate is a sync mark other tools detect (the Academy's production
+// pipeline, slate.py). Keep these stable, or tell them first: a 1 kHz beep
+// of at least 100 ms, a full-window white flash that's gone within 0.5 s,
+// and no more than one slate a second.
 function showSlate() {
 	if ( !slateOn() || !slateEl ) return Promise.resolve();
 	const index = slateSection();
@@ -1861,6 +1869,8 @@ function applySettings( next ) {
 		stopAutoScrollSession();
 	}
 	setSentenceHighlight( settings.highlightSentence !== false );
+	// Voice mode shows timed pauses as beat marks, since it doesn't count them down.
+	document.body.classList.toggle( "voice-scroll", settings.scrollMode === "voice" );
 	if ( prev.highlightCues !== settings.highlightCues ) rerenderScript();
 	applyDisplayClasses();
 	if ( prev.pointsMode !== settings.pointsMode ) applyPointsView();

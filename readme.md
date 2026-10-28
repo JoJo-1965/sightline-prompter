@@ -207,6 +207,7 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ### Next release
 
+- **Countdowns in voice mode:** a timed pause, `{pause: 3s}`, no longer holds the prompter in voice scrolling, because the text only moves when you speak. It shows as a small blue **⏸ 3s** mark and you take the beat yourself. A `{stop}` (or `{pause}` with no time) still holds, so you can go off script without the prompter jumping ahead. Steady scrolling is unchanged. The guide, spec and AI script prompt say so
 - The "Voice control, stops and countdowns" sample has a new part, **Finding your way**, showing "what can I say", spoken section slates, back to the marker and the wake word choice
 - **Choose the wake word** (Settings > Voice > Wake word): Prompter (the default), Computer, Teleprompter or Director. The messages and the "what can I say" card use the word you chose
 - **Notes mode** (talking points, reworked): `{mode: notes}` (or `{mode: points}`, or Layout > Recording > Notes) shows the script a page at a time. A `# heading` starts a page with that title, `{page}` starts one without, and each `## heading` on it is a bullet with any lines under it smaller; a `{target}` on the `# heading` times the page. Scripts without them keep one section per page. "Prompter, next page" and "previous page" work, the pacing light says "Page 2 of 3", and each page is logged as a section. A new sample, **Notes, a page at a time**, shows it. The checker and the AI script prompt know `{page}` and `{mode: notes}` (roadmap 49)

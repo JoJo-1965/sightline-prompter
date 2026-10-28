@@ -89,8 +89,9 @@ The whole workflow is in the guide:
   marker"** to read on from the last marker.
 - **Heard log:** every word it heard, beside the script words it matched, to
   find words it keeps mishearing.
-- **Stops and countdowns honoured in voice mode:** the prompter holds at a
-  `{stop}` until you say "Prompter, go", and counts down a `{pause: 5s}`.
+- **Stops honoured in voice mode:** the prompter holds at a `{stop}` until
+  you say "Prompter, go". A countdown, `{pause: 5s}`, shows as a **⏸ 5s** mark
+  instead: you take the beat yourself.
 - **Highlights the sentence you're about to say.**
 - A live microphone level meter and a responsiveness setting.
 
@@ -106,7 +107,8 @@ The whole workflow is in the guide:
   practice times back into the script as targets.
 - **Stops and countdowns:** `{stop}` waits for "Prompter, go", Space or a
   clicker, with a yellow label; `{pause: 5s}` shows a blue countdown with a bar
-  that runs down. The mic listens for "Prompter, go" at a stop.
+  that runs down (in voice mode, a mark instead). The mic listens for
+  "Prompter, go" at a stop.
 - **Markers:** `{marker}` in the script, or press B during a take; Ctrl+B
   jumps between them. Name one, `{marker: Setup}`, and the name goes into the
   take log and edit pack. **Shift+B** goes back to the last marker to read on,

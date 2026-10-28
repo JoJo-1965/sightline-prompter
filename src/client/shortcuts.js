@@ -62,7 +62,7 @@ export const SHORTCUTS = [
 			[ [ "[ ]" ], "A note to you, the speaker: shown dimmed. \"Quoted words\" inside stay bright" ],
 			[ [ "{ }" ], "An instruction to the app: hidden while you read" ],
 			[ [ "{pause}" ], "Stop scrolling here until you press Space or the clicker" ],
-			[ [ "{pause: 3s}" ], "Stop for 3 seconds, then carry on" ],
+			[ [ "{pause: 3s}" ], "Stop for 3 seconds, then carry on (a mark in voice mode)" ],
 			[ [ "{marker}" ], "A bookmark for retakes (Ctrl+B jumps to it)" ],
 			[ [ "{wpm: 140}" ], "On a section heading: that section's pace" ],
 			[ [ "{target: 1:20}" ], "On a section heading: that section's target time" ],

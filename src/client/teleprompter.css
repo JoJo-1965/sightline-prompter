@@ -1789,6 +1789,26 @@ body.show-directives .app-directive {
 	border-radius: 4px;
 }
 
+/* Voice mode doesn't count timed pauses down, so show them as a beat to take. */
+body.voice-scroll:not(.show-directives) .app-directive[data-beat] {
+	width: auto;
+	height: auto;
+	overflow: visible;
+	font-size: 0;
+	vertical-align: middle;
+}
+
+body.voice-scroll:not(.show-directives) .app-directive[data-beat]::after {
+	content: "⏸ " attr(data-beat);
+	margin: 0 0.15em;
+	padding: 0 0.4em;
+	font: 600 calc(var(--script-size, 1rem) * 0.5)/1.6 ui-monospace, Consolas, monospace;
+	color: #9fd0ff;
+	background: rgba(70, 140, 220, 0.22);
+	border: 1px solid rgba(110, 170, 240, 0.5);
+	border-radius: 4px;
+}
+
 body.show-directives .app-directive.unknown {
 	color: #ffd2a6;
 	background: rgba(220, 120, 40, 0.25);

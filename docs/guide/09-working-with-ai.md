@@ -15,7 +15,7 @@ can find the right take and cut it without anyone scrubbing through by ear.
 | Step       | What the AI does                                                   | What Sightline does                                                                   |
 | ---------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------- |
 | **Write**  | Writes the script, with sections, target times, stops and countdowns | Gives the AI its instructions (the AI Script Prompt) and checks what comes back       |
-| **Record** | Loads the script and runs the prompter, if you let it             | Follows your voice, holds at every stop, counts down every pause, logs every take     |
+| **Record** | Loads the script and runs the prompter, if you let it             | Follows your voice, holds at every stop, marks every pause, logs every take          |
 | **Edit**   | Reads the edit pack, chooses the takes and plans the cuts          | Saves every take, the words you said and when, and builds the edit pack               |
 
 **Setting your AI up:** Claude Code and Codex can do all three, with two

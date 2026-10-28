@@ -11,13 +11,14 @@ about to say stay on the reading line. The sentence you're on is lit up.
 
 Speed up, slow down, or stop to think. It waits for you, and then it catches up.
 
-This line ends with a countdown. Watch the blue label at the bottom right. {pause: 5s}
+In voice mode, a countdown in the script shows as a small blue mark, like the one
+at the end of this line. The prompter doesn't hold there: take a beat, then
+carry on. {pause: 3s}
 
 ## Stops {target: 0:25}
 
-[The countdown is over, so carry on reading.]
-
-A countdown carries on by itself. A stop waits for you.
+A stop is different. It waits for you, so you can go off script for a demo or
+a question without the prompter jumping ahead.
 
 This line ends with a stop, so the prompter waits here until you say
 "Prompter, go". [Say: "Prompter, go".] {stop}
@@ -64,8 +65,9 @@ Stops and countdowns work when the script scrolls at a steady pace too.
 At a stop, the microphone switches on just to listen for "Prompter, go", and a
 small Prompter label shows that it's listening. {stop}
 
-A countdown can be cut short with "Prompter, go", or turned into a stop with
-"Prompter, pause". {pause: 8s}
+In steady scrolling a countdown does hold, with a blue label at the bottom
+right, then carries on by itself. "Prompter, go" cuts it short, and "Prompter,
+pause" turns it into a stop. {pause: 8s}
 
 ## Writing them into your scripts {target: 0:20}
 

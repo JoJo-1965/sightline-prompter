@@ -109,8 +109,9 @@ Choose when it listens on **Settings > Voice**, under **Voice commands**:
 
 ## Stops and timed pauses
 
-Put these in the script where you want the prompter to wait. They work in
-steady scrolling and in voice scrolling.
+Put these in the script where you want the prompter to wait. A stop works in
+steady and voice scrolling. A countdown only holds in steady scrolling (see
+[In voice scrolling](#in-voice-scrolling) below).
 
 | In the script | What happens |
 | --- | --- |
@@ -129,6 +130,18 @@ During a stop or a countdown:
   prompter waits, even if voice commands are set to voice mode only (the small
   **🎙 Prompter** label shows). Set **Voice commands** to **Off** in
   Settings > Voice to stop this.
+
+### In voice scrolling
+
+In voice mode the prompter only moves when you speak, so it already waits for
+you. A `{stop}` still holds, so you can go off script, for a demo or a
+question, without the prompter jumping ahead on a word it recognises. Say
+"Prompter, go" when you're back.
+
+A countdown, `{pause: 3s}`, doesn't hold or count down in voice mode. It shows
+as a small blue **⏸ 3s** mark in the script, and you take the beat yourself.
+Scripts can carry countdowns for steady scrolling without them getting in the
+way when you read by voice.
 
 To try it all, open ☰ > Script > **Sample scripts > Voice control, stops and
 countdowns**. It walks you through a countdown, a stop and the voice commands.

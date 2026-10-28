@@ -60,7 +60,7 @@ read.
 | Directive                     | What it does                                              |
 | ----------------------------- | --------------------------------------------------------- |
 | `{stop}` (or `{pause}`)       | Stops here until you say "Prompter, go", or press Space or the clicker |
-| `{pause: 3s}`                 | A 3-second countdown, then it carries on by itself        |
+| `{pause: 3s}`                 | A 3-second countdown, then it carries on by itself. In voice mode, a **⏸ 3s** mark: take the beat yourself |
 | `{marker}` or `{marker: Setup}` | A bookmark for retakes. **Ctrl+B** jumps to the next one. A name, such as `{marker: Setup}`, shows in the take log and the edit pack |
 | `{wpm: 140}`                  | On a section heading: that section's pace                 |
 | `{target: 1:20}`              | On a section heading: that section's target time          |
@@ -74,7 +74,8 @@ typo).
 
 ![Directives shown as tags for checking](images/directives.png)
 
-Stops and countdowns work in steady and voice scrolling: see
+Stops hold in steady and voice scrolling; countdowns only hold in steady
+scrolling. See
 [Stops and timed pauses](03-scrolling-and-voice.md#stops-and-timed-pauses).
 The full reference is in [SCRIPT-DIRECTIVES.md](../SCRIPT-DIRECTIVES.md).
 

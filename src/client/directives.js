@@ -84,8 +84,12 @@ export function readDirectives( root ) {
 			sectionSettings( current, d );
 			continue;
 		}
-		if ( "pause" in d ) pauses.push( { el, seconds: parsePauseSeconds( d.pause ) } );
-		else if ( "stop" in d ) pauses.push( { el, seconds: 0 } );
+		if ( "pause" in d ) {
+			const seconds = parsePauseSeconds( d.pause );
+			pauses.push( { el, seconds } );
+			// A timed pause: a beat mark in voice mode (see .beat in the CSS).
+			if ( seconds ) el.dataset.beat = `${ seconds }s`;
+		} else if ( "stop" in d ) pauses.push( { el, seconds: 0 } );
 		if ( "marker" in d ) markers.push( { el, label: typeof d.marker === "string" ? d.marker : null } );
 		if ( current && "wpm" in d && parseWpm( d.wpm ) ) {
 			paceChanges.push( { el, wpm: parseWpm( d.wpm ) } );

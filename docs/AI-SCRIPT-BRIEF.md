@@ -52,7 +52,7 @@ Never use `{` or `}` for anything else. Never put directives inside
 | `{wpm: n}`                                 | Script settings, a section heading, or inline                     | Target words per minute, a whole number from 80 to 220. Inline, it applies until the end of the section           |
 | `{target: m:ss}`                           | Script settings (whole script, session mode) or a section heading | Target duration, for example `0:45`, `1:20` or `12:00`                                                            |
 | `{stop}`                                   | Inline, on its own or at the end of a sentence                    | The prompter stops until the speaker carries on (they say "Prompter, go", or press Space or a clicker). Use it at the end of each section in batch recording, at retake points, and before a demo or a slide change. `{pause}` with no value means the same |
-| `{pause: ns}`                              | Inline, at the end of a sentence                                  | A countdown: the prompter waits n seconds (1 to 30), showing "Carrying on in n", then carries on by itself, for example `{pause: 3s}`. Use 2s to 5s for a breath, a beat for emphasis, or time to look at a slide |
+| `{pause: ns}`                              | Inline, at the end of a sentence                                  | A countdown: the prompter waits n seconds (1 to 30), showing "Carrying on in n", then carries on by itself, for example `{pause: 3s}`. Use 2s to 5s for a breath, a beat for emphasis, or time to look at a slide. Write them whether the speaker will use steady or voice scrolling: in voice scrolling the prompter doesn't hold, it shows the pause as a mark and the speaker takes the beat |
 | `{mode: notes}` (or `{mode: points}`) | Script settings | For a talk spoken from notes: shown a page at a time, never scrolled. A `# heading` starts a page (its title) and `{page}` starts one without a title; each `## heading` on the page is a bullet, with a short line under it if needed; put `{target: m:ss}` on the `# heading`. Without `# headings` or `{page}`, each `## section` is a page. Write each section as 3 to 6 short bullets (`- `) and give every section a `{target: m:ss}` |
 | `{marker}` or `{marker: Setup}`            | Inline                                                            | A bookmark for retakes. Put one at the start of any passage that's hard to deliver. In a long section, name one at the start of each part (`{marker: Setup}`, `{marker: Context}`), up to 40 characters, so the edit can find each part |
 
@@ -71,6 +71,9 @@ Several settings can share one pair of braces, separated by commas:
   `target`, and use `{stop}` only where a real stop is needed. Use short
   countdowns (`{pause: 2s}` to `{pause: 5s}`) for beats and breaths instead.
 - A stop or countdown goes at the end of a sentence, never in the middle of one.
+- You don't know whether the script will be read with steady or voice scrolling,
+  so write stops and countdowns the same way for both. A `{stop}` holds in
+  both; a countdown only holds in steady scrolling.
 - Speakers can control the prompter by voice with "Prompter, …" commands (go,
   pause, again, resync). Don't write instructions for these into the spoken
   text; if a reminder helps, put it in a note, for example
