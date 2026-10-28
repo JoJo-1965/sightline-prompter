@@ -4,6 +4,11 @@
 // log by matching the two soundtracks. It's a sync reference, not a
 // recording to use: WAV, 16 kHz, 16-bit, mono, written to disk as it goes
 // (main.js), so a long run never fills memory and a crash loses little.
+//
+// A contract with the Academy's production pipeline, which lines the master
+// recording up by this audio: keep the format (WAV, 16 kHz, mono, unprocessed)
+// and the take log's `audio` fields (file, startedAt, endedAt, start, end;
+// session time = file time + start), or tell them first. Add fields only.
 
 const RATE = 16000;
 const BLOCK_MS = 100; // mic-worklet.js sends 100 ms blocks
