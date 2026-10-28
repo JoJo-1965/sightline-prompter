@@ -23,7 +23,7 @@ The buttons can't be changed yet; choosing your own is on the roadmap.
 
 ## The floating pad
 
-**Ctrl+Shift+P**, or ☰ > Playback > Button pad. It's a small bar with Top,
+**Ctrl+Shift+P**, ☰ > Window > Control pad, or Settings > Remotes. It's a small bar with Top,
 Previous, Start / Pause and Next that stays on top of every other window.
 
 ![The floating pad](images/pad.png)
@@ -33,7 +33,7 @@ It reopens where you left it. Over a mirrored prompter, it flips to match.
 
 ## The control window
 
-**Ctrl+Shift+O**, or ☰ > Playback > Control window. It's an ordinary, upright
+**Ctrl+Shift+O**, ☰ > Window > Control window, or Settings > Remotes. It's an ordinary, upright
 window for a second screen or an operator. It shows a live copy of the script
 that follows the prompter, with the reading line, the pacing light, the
 section and time left, and big buttons.

@@ -207,6 +207,7 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ### Next release
 
+- **Easier to find: the control pad and the control window** are now at the top of ☰ > Window (they were at the foot of ☰ > Playback), and Settings > Remotes has a tickbox for each
 - **"Prompter, what can I say?"** (or "Prompter, help"): shows every voice command and what it does on the prompter, until your next command, a click, Esc or 15 seconds. It's in the F1 shortcuts too
 - **"Prompter" is acknowledged straight away:** as soon as Sightline hears the wake word, a message says *Listening… go · pause · again · marker*, so you know it's ready for the command; if what follows isn't a command, *Didn't catch that* shows the words it heard. *Heard: "Prompter, go"* still confirms each command
 - **Apply in Settings:** saves your changes and keeps Settings open; **Save** saves and closes. Closing with changes you haven't saved now asks first (Save, Discard or Keep editing), including when a button in Settings opens something else

@@ -1908,6 +1908,8 @@ async function openSettings() {
 	field( "set-mirrored" ).value = mirrored;
 	field( "set-always-on-top" ).checked = !!settings.alwaysOnTop;
 	field( "set-check-updates" ).checked = settings.checkUpdates !== false;
+	field( "set-show-pad" ).checked = !!settings.showPad;
+	field( "set-show-control" ).checked = !!settings.showControl;
 	window.electron.getDisplays();
 	field( "set-highlight-cues" ).checked = !!settings.highlightCues;
 	field( "set-cues-file" ).value = settings.cuesFile ?? "";
@@ -2010,6 +2012,8 @@ function saveSettingsPage( close = true ) {
 		readingLine: numberValue( "set-reading-line", 5, 80, settings.readingLine ),
 		alwaysOnTop: field( "set-always-on-top" ).checked,
 		checkUpdates: field( "set-check-updates" ).checked,
+		showPad: field( "set-show-pad" ).checked,
+		showControl: field( "set-show-control" ).checked,
 		prompterDisplay: field( "set-prompter-display" ).value
 			? Number( field( "set-prompter-display" ).value )
 			: null,
@@ -2785,20 +2789,6 @@ function menuGroups() {
 					"Ctrl+Shift+V",
 					() => togglePanel( "voice-panel" ),
 					{ checked: voice }
-				],
-				[
-					"▦",
-					"Button pad (floating)",
-					"Ctrl+Shift+P",
-					toggleSetting( "showPad" ),
-					{ checked: !!settings.showPad }
-				],
-				[
-					"▣",
-					"Control window (operator screen)",
-					"Ctrl+Shift+O",
-					toggleSetting( "showControl" ),
-					{ checked: !!settings.showControl }
 				]
 			]
 		},
@@ -2861,6 +2851,20 @@ function menuGroups() {
 		{
 			heading: "Window",
 			items: [
+				[
+					"▦",
+					"Control pad (floating buttons)",
+					"Ctrl+Shift+P",
+					toggleSetting( "showPad" ),
+					{ checked: !!settings.showPad }
+				],
+				[
+					"▣",
+					"Control window (second screen)",
+					"Ctrl+Shift+O",
+					toggleSetting( "showControl" ),
+					{ checked: !!settings.showControl }
+				],
 				[
 					"◫",
 					"Eye-line mode (under the webcam)",

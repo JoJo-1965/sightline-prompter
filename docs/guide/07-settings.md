@@ -60,7 +60,8 @@ Slide cues can be loaded here too.
 
 ![Settings > Remotes](images/settings-remotes.png)
 
-The phone remote, and AI and remote control. See
+AI and remote control, the control pad and control window, and the phone
+remote. See
 [Remotes and second screens](06-remotes-and-screens.md).
 
 ## About
