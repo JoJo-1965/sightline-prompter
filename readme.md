@@ -199,6 +199,12 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ## Change log
 
+### Next release
+
+- **Edit pack** (File > Export Edit Pack…, also ☰ > Playback): the take log turned into what an editor or an AI editing agent cuts with, in one new folder: every word you said with its start and end, every sentence of every take (with any words you missed), edit marks (sentence starts, long pauses, re-reads, skipped words, markers), and captions in your script's own wording as SRT and VTT, with a README brief for editing agents ([docs/EDIT-PACK.md](docs/EDIT-PACK.md)). The take log now also notes each re-read and keeps each take's sentences. Words and captions come from voice mode (roadmap 26)
+- **Export the take log…** in the ☰ menu, and the **Export take log…** button in the take summary, now work. Before, only File > Export Take Log did
+- **On air is the see-through one now:** off air, the prompter is an ordinary solid window (Backing 100% to start with); on air (scrolling, held at a stop, or the On air button lit) the backing goes almost clear (Background on air, 7% to start with), so you can see your slides or the call behind the words while you read. 1.0.2 had it the other way round. Levels you've already set are kept
+
 ### 1.0.2 (28 October 2026)
 
 - **On air button** on the control bar, next to ▶ (**Ctrl+Shift+A**, also ☰ > Playback): go on air by hand, for a talk to camera or to check the look. It lights red whenever you're on air, scrolling included, and the control bar slides away as quickly as it does while scrolling

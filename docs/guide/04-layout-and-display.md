@@ -16,8 +16,9 @@ the script. The same controls are on the **Layout**, **Reading** and
   They're separate, so you can have solid text on a faint background.
 - **Background on air**: the backing while you're on air (scrolling, held at
   a stop, or the **On air** button lit); **Background** is the level the rest
-  of the time. Keep it light while you set up, so you can see the room behind
-  the glass, and more solid while you record (90% to start with). The control
+  of the time. Off air the window is solid, like any other; on air the
+  backing goes almost clear (7% to start with), so you can see your slides or the
+  call behind the words while you read. The control
   bar's Backing slider changes whichever is in use: its label reads **On air**
   while you are.
 - **Margins** keep the text narrow, so your eyes stay near the camera. The top

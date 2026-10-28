@@ -20,6 +20,7 @@ import { createSpeech } from "./speech.js";
 import { createGuide } from "./guide.js";
 import { createGoogleDocs, GOOGLE_DOC_MESSAGES } from "./google-docs.js";
 import { takeLogCsv } from "./client/take-log.js";
+import { editPack } from "./client/edit-pack.js";
 import { fitInside, keepTopReachable, sameRect } from "./utils/fit.js";
 import { startRemoteServer, newToken } from "./remote.js";
 import { startPhoneServer, newPhoneKey, lanAddress } from "./phone.js";
@@ -84,7 +85,7 @@ const defaultSettings = {
 	marginBottom: 0,
 	lineHeight: 1.3,
 	textOpacity: 1, // script text only; the controls stay solid
-	backingOnAir: 0.9, // backing while on air (Backing is the level off air)
+	backingOnAir: 0.07, // backing while on air: nearly see-through (Backing is the level off air)
 	textBrightness: 1, // dims the script without making it see-through
 	showDirectives: false, // show {directives} as small tags for checking a script
 	followScriptPace: true, // steady scrolling uses the script's {wpm} and {target} pace
@@ -124,7 +125,7 @@ const defaultConfig = {
 	width: 800,
 	height: 600,
 	fontSize: 3,
-	opacity: 0.07,
+	opacity: 1, // off air: an ordinary solid window
 	mirrored: "off",
 	recentFiles: [],
 	deepgramApiKey: null,
@@ -659,6 +660,46 @@ const createWindow = ( state ) => {
 		}
 	}
 
+	// The edit pack: the take log, word timings, sentences, edit marks and
+	// captions in one new folder, with the brief for editing agents as its
+	// README (docs/EDIT-PACK.md).
+	async function exportEditPack() {
+		const toast = text => win.webContents.send( "toast", text );
+		if ( !takeLog?.takes?.length ) {
+			toast( "No takes logged yet for this script today" );
+			return;
+		}
+		const result = await dialog.showOpenDialog( win, {
+			title: "Choose where to save the edit pack",
+			buttonLabel: "Save the edit pack here",
+			properties: [ "openDirectory", "createDirectory" ]
+		} );
+		if ( result.canceled || !result.filePaths?.[0] ) return;
+		const name = `${ scriptName( currentFilePath ) } edit pack ${ takeLog.date ?? today() }`;
+		let folder = path.join( result.filePaths[0], name );
+		for ( let n = 2; existsSync( folder ); n++ ) folder = path.join( result.filePaths[0], `${ name } (${ n })` );
+		try {
+			let readme = "";
+			try {
+				readme = await fs.readFile( path.join( __dirname, "..", "docs", "EDIT-PACK.md" ), "utf-8" );
+			} catch {
+				// the pack is still useful without its brief
+			}
+			await fs.mkdir( folder, { recursive: true } );
+			for ( const [ file, contents ] of Object.entries( editPack( takeLog, readme ) ) ) {
+				await fs.writeFile( path.join( folder, file ), contents );
+			}
+			toast( `Edit pack saved: ${ path.basename( folder ) }` );
+			shell.openPath( folder );
+		} catch ( err ) {
+			console.log( "Edit pack:", err.message );
+			toast( "Couldn't save the edit pack" );
+		}
+	}
+
+	ipcMain.on( "exportTakeLog", () => exportTakeLog() );
+	ipcMain.on( "exportEditPack", () => exportEditPack() );
+
 	// Start afresh: today's log is kept under a new name with the time.
 	async function newTakeLog() {
 		if ( !currentFilePath ) return;
@@ -759,6 +800,7 @@ const createWindow = ( state ) => {
 			openGoogleDoc: () => win.webContents.send( "showGoogleDocDialog" ),
 			copyAiPrompt: () => copyAiPrompt( win ),
 			exportTakeLog: () => exportTakeLog(),
+			exportEditPack: () => exportEditPack(),
 			newTakeLog: () => newTakeLog(),
 			showTakeLogs: async () => {
 				await fs.mkdir( takeLogDir, { recursive: true } );
@@ -898,7 +940,7 @@ app.whenReady().then( async () => {
 	async function applySettingValues( values ) {
 		const extra = pickKnown( values, {
 			fontSize: 3,
-			opacity: 0.07,
+			opacity: 1,
 			mirrored: "off",
 			voiceResponsiveness: 1
 		} );

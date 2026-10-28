@@ -19,14 +19,13 @@ on 28 October).
 
 **Next, in order of value for the time:**
 
-1. **26** Word timings, edit marks and captions: the edit pack (in progress)
-2. **37** Clickable progress bar
-3. **38** Check for updates
-4. **20** Teach it your words
-5. **36** Recordings library and **39** Stream Deck plugin, which share a way for the app to tell other tools what's happening
-6. **35** Script-controlled listening and prompter commands
-7. **28** Rehearsal coach, **33** scratch audio and **29** automatic updates (after 27)
-8. **27** Code signing: needs certificates bought, so it's Joanne's call
+1. **37** Clickable progress bar
+2. **38** Check for updates
+3. **20** Teach it your words
+4. **36** Recordings library and **39** Stream Deck plugin, which share a way for the app to tell other tools what's happening
+5. **35** Script-controlled listening and prompter commands
+6. **28** Rehearsal coach, **33** scratch audio and **29** automatic updates (after 27)
+7. **27** Code signing: needs certificates bought, so it's Joanne's call
 
 Then the ★ items (30, 31, 32, 34) and **22**, Sightline in a browser.
 
@@ -99,7 +98,7 @@ Ordered by value, then size.
 | 23  | ✅ **Take log for the edit:** record each section and take as it happens (start and end times, retakes from "Prompter, again", markers) and export it when you stop, as JSON for an edit pipeline (and CSV), so the edit can pick the last good take of each section and cut false starts automatically | ★★★ | M | Recommended next, ahead of 20, so it pays off on the next module recording. Times line up with the recording by the slate (25) or the take's start |
 | 24  | ✅ **"Prompter, keeper" and "Prompter, scrap that":** rate a take as you go; the rating goes into the take log, so the edit uses your verdict rather than just the last take | ★★★ | S | Builds on 23 |
 | 25  | ✅ **Slate and sync mark:** at the start of each take, a full-screen slate ("M2 · Section 3 · Take 2") for a second, with a sharp beep and a white flash, giving the edit a sync point and a label in the footage | ★★ | S | Replaces the hand clap, which lands late when clapped straight after pressing record |
-| 26  | **Word-level timing, edit marks and captions:** in voice mode, record when each script word was spoken (from the speech engine's own word timings, about a twentieth of a second apart, not from when the screen scrolled) and save it with each take: every word, its start and end, and the sentence and section it belongs to, plus pauses and stumbles (words said twice, skipped or not in the script). Export it with the take log as JSON and CSV, as edit marks (sentence starts, long pauses, fluffs) for cutting, and as SRT or VTT captions in the script's own wording, with nothing sent anywhere; and a "script against what you said" comparison | ★★★ | M | **Part done (28 Oct):** voice mode now records each script word with the time it was said (from sherpa's token timestamps) on every take in the take log JSON, a re-read replacing the first reading. Still to do: end times, sentences, stumbles, edit marks, captions, the CSV and the edit pack. Raised from ★★ on 28 Oct (Joanne asked for word-level timing for editing marks). Export it as an **edit pack** an editing and assembly agent can use whole: the take log, word timings, edit marks and captions in one folder, with a schema and a brief for edit agents (docs/EDIT-PACK.md, like the AI script brief), so an agent can pick takes, cut to sentence boundaries and line up the recording from the slate. Steady scrolling has no word timings (nothing is listening), so this is voice mode, or steady with voice commands on |
+| 26  | ✅ **Word-level timing, edit marks and captions:** in voice mode, record when each script word was spoken (from the speech engine's own word timings, about a twentieth of a second apart, not from when the screen scrolled) and save it with each take: every word, its start and end, and the sentence and section it belongs to, plus pauses and stumbles (words said twice, skipped or not in the script). Export it with the take log as JSON and CSV, as edit marks (sentence starts, long pauses, fluffs) for cutting, and as SRT or VTT captions in the script's own wording, with nothing sent anywhere; and a "script against what you said" comparison | ★★★ | M | **Done (28 Oct):** File > Export Edit Pack writes the take log, words with start and end, sentences with any words missed, edit marks (sentence starts, pauses, re-reads, skipped words, markers) and SRT and VTT captions to one folder, with docs/EDIT-PACK.md as its README. Before that, voice mode began recording each script word with the time it was said (from sherpa's token timestamps) on every take in the take log JSON, a re-read replacing the first reading. Raised from ★★ on 28 Oct (Joanne asked for word-level timing for editing marks). Export it as an **edit pack** an editing and assembly agent can use whole: the take log, word timings, edit marks and captions in one folder, with a schema and a brief for edit agents (docs/EDIT-PACK.md, like the AI script brief), so an agent can pick takes, cut to sentence boundaries and line up the recording from the slate. Steady scrolling has no word timings (nothing is listening), so this is voice mode, or steady with voice commands on |
 | 27  | **Code signing for Windows and Mac:** no more "unknown publisher" warnings | ★★ | S | Moved up from Later. Needs a code-signing certificate and an Apple Developer account (Joanne's decision) |
 | 28  | **Rehearsal coach:** after a practice run, pace by section, lines skipped, "um"s and sentences you stumbled on, all on the computer | ★★ | M | Same speech engine as voice scrolling |
 | 29  | **Automatic updates:** new versions download and install themselves, so users get fixes without reinstalling | ★★ | M | Moved up from Later. Best done with code signing (27), which Mac updates need |

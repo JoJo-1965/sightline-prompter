@@ -45,6 +45,22 @@ export function indexSentences( rootEl ) {
 	if ( supported ) CSS.highlights.delete( NAME );
 }
 
+// The script's sentences for the take log: { s, section, from, to, text },
+// section 0-based (-1 before the first heading), from and to word indexes,
+// and text the words as written, one per index, so the edit pack can name
+// any that weren't said.
+// Headings are left out: they're titles, not lines to say.
+export function scriptSentences() {
+	return starts.flatMap( ( from, s ) => {
+		const block = blockOf( index.ranges[from] );
+		if ( /^H[1-6]$/.test( block?.tagName ?? "" ) ) return [];
+		const to = ( starts[s + 1] ?? index.ranges.length ) - 1;
+		const words = index.ranges.slice( from, to + 1 ).map( r => r.toString().trim() );
+		const section = Number( block?.closest( "[data-section]" )?.dataset.section ?? -1 );
+		return [ { s, section, from, to, text: words.join( " " ) } ];
+	} );
+}
+
 export function setSentenceHighlight( on ) {
 	enabled = !!on;
 	if ( !enabled ) clearSentence();

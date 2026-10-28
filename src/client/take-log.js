@@ -11,7 +11,9 @@ const MIN_TAKE_SECONDS = 1.5;
 
 const round = n => Math.round( n * 10 ) / 10;
 
-export function createTakeLog( { clock = () => Date.now() } = {} ) {
+// sentences: the script's sentences, [{ s, section, from, to, text }] with
+// section 0-based, so each take carries its own section's text for the edit.
+export function createTakeLog( { clock = () => Date.now(), sentences = () => [] } = {} ) {
 	let log = empty();
 	let current = null; // the take in progress
 	let version = 0; // goes up with every change worth saving
@@ -41,6 +43,7 @@ export function createTakeLog( { clock = () => Date.now() } = {} ) {
 			lastAdvance: null,
 			markers: [],
 			words: [],
+			rereads: [],
 			rating: null,
 			slate: null
 		};
@@ -79,11 +82,23 @@ export function createTakeLog( { clock = () => Date.now() } = {} ) {
 			rating: done.rating,
 			slate: done.slate,
 			markers: done.markers,
-			words: done.words
+			words: done.words,
+			rereads: done.rereads,
+			sentences: sectionSentences( done.section - 1 )
 		};
 		log.takes.push( take );
 		version++;
 		return take;
+	}
+
+	function sectionSentences( index ) {
+		try {
+			return sentences()
+				.filter( x => x.section === index )
+				.map( ( { s, from, to, text } ) => ( { s, from, to, text } ) );
+		} catch {
+			return [];
+		}
 	}
 
 	return {
@@ -121,9 +136,13 @@ export function createTakeLog( { clock = () => Date.now() } = {} ) {
 		words( list ) {
 			if ( !current || !log.startedAt ) return;
 			for ( const { i, w, at } of list ) {
-				// Read again from earlier: the new reading replaces the old one from here.
+				const t = Math.round( ( at - Date.parse( log.startedAt ) ) / 10 ) / 100;
+				// Read again from earlier: the new reading replaces the old one from
+				// here, and the re-read is kept as a fluff for the edit.
+				const last = current.words.at( -1 );
+				if ( last && last.i >= i ) current.rereads.push( { t, from: i, after: last.i } );
 				while ( current.words.at( -1 )?.i >= i ) current.words.pop();
-				current.words.push( { i, w, t: Math.round( ( at - Date.parse( log.startedAt ) ) / 10 ) / 100 } );
+				current.words.push( { i, w, t } );
 			}
 			if ( current.words.length % 10 < list.length ) version++;
 		},

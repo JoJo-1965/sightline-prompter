@@ -105,6 +105,10 @@ The whole workflow is in the guide:
   Shift+K) to rate a take; the log picks the take to use for each section.
   In voice mode it also records **when you said each word**, for cutting on
   words and sentences.
+- **Edit pack** (File > Export Edit Pack): the take log, word timings,
+  sentences, edit marks (sentence starts, pauses, re-reads, skipped words)
+  and captions in the script's own wording, in one folder with a brief for
+  AI editing agents.
 - **Talking points** for speaking off script: one section at a time as large
   bullet points, with a talk timer.
 - Progress bar, time left, an ON AIR light and an optional end-of-countdown

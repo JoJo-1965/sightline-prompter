@@ -30,6 +30,7 @@ import { readDirectives } from "./directives.js";
 import { createTakeLog } from "./take-log.js";
 import {
 	indexSentences,
+	scriptSentences,
 	setSentenceHighlight,
 	clearSentence,
 	showSentenceAt,
@@ -65,8 +66,9 @@ let takeLog = new Map(); // section index -> result
 let controlOpen = false; // the control window is showing a copy of the script
 const pacingEl = document.getElementById( "pacing" );
 const summaryModal = document.getElementById( "take-summary" );
-// Every take of every section, for the edit (File > Export Take Log).
-const recording = createTakeLog();
+// Every take of every section, for the edit (File > Export Take Log), each
+// with its section's sentences for the edit pack.
+const recording = createTakeLog( { sentences: scriptSentences } );
 let recordingSaved = 0; // the take log version last sent to be saved
 let recordingY = null; // reading line at the last tick, to see the text move on
 let pendingJumpReason = null; // "again" when a jump is a voice retake
@@ -152,7 +154,7 @@ window.electron.onFontSize( ( size ) => {
 	setFontSize( size, false );
 } );
 
-const DEFAULT_OPACITY = 0.07;
+const DEFAULT_OPACITY = 1; // off air: an ordinary solid window
 const OPACITY_STEP = 0.05;
 let opacity = DEFAULT_OPACITY;
 
@@ -1990,7 +1992,7 @@ const LAYOUT_DEFAULTS = {
 	lineHeight: 1.3,
 	textOpacity: 1,
 	textBrightness: 1,
-	backingOnAir: 0.9,
+	backingOnAir: 0.07,
 	textAlign: "left"
 };
 const EDGE_FADE = 4; // % of the window height over which text fades at a margin
@@ -2546,6 +2548,12 @@ function menuGroups() {
 					"Export the take log…",
 					"",
 					() => window.electron.exportTakeLog()
+				],
+				[
+					"✂",
+					"Export the edit pack…",
+					"",
+					() => window.electron.exportEditPack()
 				],
 				[ "⏩", "Faster", "Ctrl+]", () => adjustAutoScrollSpeed( "up" ) ],
 				[ "⏪", "Slower", "Ctrl+[", () => adjustAutoScrollSpeed( "down" ) ],

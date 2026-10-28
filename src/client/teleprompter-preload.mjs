@@ -50,6 +50,7 @@ contextBridge.exposeInMainWorld( "electron", {
 	copyAiPrompt: () => ipcRenderer.send( "copyAiPrompt" ),
 	saveTakeLog: data => ipcRenderer.send( "saveTakeLog", data ),
 	exportTakeLog: () => ipcRenderer.send( "exportTakeLog" ),
+	exportEditPack: () => ipcRenderer.send( "exportEditPack" ),
 	onTakeLog: callback => on( "takeLog", callback ),
 	onGoogleDocResult: callback => on( "googleDocResult", callback ),
 	onShowGoogleDocDialog: callback => on( "showGoogleDocDialog", callback ),

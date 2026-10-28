@@ -18,6 +18,7 @@ export function buildMenus(
 		openGoogleDoc,
 		copyAiPrompt,
 		exportTakeLog,
+		exportEditPack,
 		newTakeLog,
 		showTakeLogs,
 		reloadGoogleDoc,
@@ -68,6 +69,10 @@ export function buildMenus(
 				{
 					label: "Export Take Log…",
 					click: () => exportTakeLog?.()
+				},
+				{
+					label: "Export Edit Pack…",
+					click: () => exportEditPack?.()
 				},
 				{
 					label: "Start a New Take Log",

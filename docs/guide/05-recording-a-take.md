@@ -103,6 +103,28 @@ you go back and read a phrase again, the new reading replaces the old one. An
 editing assistant can use these to cut on a word or a sentence. Steady
 scrolling has no word timings, since nothing is listening to the script.
 
+## The edit pack
+
+**File > Export Edit Pack…** (also ☰ > Playback) turns the take log into
+everything an editor, or an AI editing agent, needs to cut the recording.
+Choose a folder and Sightline makes a new one inside it, named after the
+script and the date, holding:
+
+| File | What's in it |
+| --- | --- |
+| take-log.json, takes.csv | The take log, as above |
+| sentences.csv | Every sentence of every take: when you said it, whether you said all of it, and any words you missed |
+| words.csv | Every word you said, with its start and end |
+| edit-marks.csv, edit-marks.json | Places worth knowing about: where each sentence starts (a clean place to cut), long pauses, re-reads (where you went back and said a phrase again), skipped words and markers |
+| captions.srt, captions.vtt | Captions in your script's own wording, two lines at most |
+| README.md | A brief for whoever edits it, person or AI: how to line the pack up with the recording and how to use each file |
+
+All the times are on the take log's clock, where 0 is the first slate. Find
+the first slate's flash in your recording and every time lines up from
+there. Words, sentences and captions come from voice mode; with steady
+scrolling the pack still has the takes. Nothing is sent anywhere: the pack is
+plain files on your computer.
+
 **File > Start a New Take Log** starts again from take 1 (the old log is kept),
 and **File > Show Take Logs Folder** opens the folder where they're saved.
 
