@@ -891,6 +891,19 @@ function logSpokenWords( { from, to, start, end, ranges } ) {
 		words.push( { i, w: ranges[i]?.toString().trim() ?? "", at } );
 	}
 	recording.words( words );
+	// A {marker} is passed when the word after it is said.
+	for ( const m of directivePoints.scriptMarkers ?? [] ) {
+		const said = words.find( w => w.i === m.word );
+		if ( said ) recording.marker( { label: m.label, at: said.at, from: "script", key: m.key } );
+	}
+}
+
+// The index of the first script word after an element (a {marker}).
+function wordAfter( el, ranges ) {
+	const here = document.createRange();
+	here.setStartAfter( el );
+	const i = ranges.findIndex( r => r.compareBoundaryPoints( Range.START_TO_START, here ) >= 0 );
+	return i < 0 ? null : i;
 }
 
 function handleAutoScrollPosition( wordIdx, ranges ) {
@@ -4325,6 +4338,14 @@ function measureDirectives( ranges ) {
 		wordTops,
 		sections,
 		pauses: scriptDirectives.pauses.map( p => ( { ...p, y: pageY( p.el ) } ) ),
+		// Script markers know which word follows them, so voice mode can log the
+		// moment that word is said.
+		scriptMarkers: scriptDirectives.markers.map( ( m, key ) => ( {
+			key,
+			label: m.label,
+			y: pageY( m.el ),
+			word: wordAfter( m.el, ranges )
+		} ) ),
 		markers: [ ...scriptDirectives.markers, ...liveMarkers ]
 			.map( m => ( { ...m, y: pageY( m.el ) } ) )
 			.sort( ( a, b ) => a.y - b.y ),
@@ -4480,7 +4501,7 @@ function dropMarker() {
 	start.collapse( true );
 	start.insertNode( el );
 	liveMarkers.push( { el } );
-	recording.marker();
+	recording.marker( { from: "key" } );
 	scheduleMeasure();
 	showToast( "Marker added · Ctrl+B jumps between markers" );
 	sendPreviewContent();
@@ -4739,6 +4760,13 @@ function feedTakeLog( active ) {
 			: recordingY !== null && y > recordingY + 0.5 && left > 0,
 		atEnd: pointsMode() || left <= 3
 	} );
+	// Steady scrolling: a {marker} is passed when the reading line reaches it.
+	// (Voice mode logs it when the word after it is said.)
+	if ( active && !autoScrollActive && recordingY !== null ) {
+		for ( const m of directivePoints.scriptMarkers ?? [] ) {
+			if ( m.y > recordingY && m.y <= y ) recording.marker( { label: m.label, from: "script", key: m.key } );
+		}
+	}
 	recordingY = y;
 	if ( recording.version() !== recordingSaved ) {
 		recordingSaved = recording.version();

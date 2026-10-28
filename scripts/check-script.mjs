@@ -84,6 +84,8 @@ function check( file ) {
 					add( "error", n, `{${ name }} must look like m:ss, for example ${ v.example }` );
 				} else if ( v.type === "optional-seconds" && value && !new RegExp( v.pattern ).test( value ) ) {
 					add( "error", n, `{${ name }} takes a number of seconds, for example ${ v.example }` );
+				} else if ( v.type === "optional-text" && value && value.length > ( v.maxLength ?? 40 ) ) {
+					add( "warning", n, `{${ name }} label is long; keep it to ${ v.maxLength ?? 40 } characters` );
 				} else if ( v.type === "none" && value ) {
 					add( "error", n, `{${ name }} doesn't take a value` );
 				}

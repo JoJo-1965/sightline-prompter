@@ -118,3 +118,28 @@ const header = csvOf( { takes: [ paced ] } ).split( "\r\n" )[0].split( "," );
 assert.deepEqual( header.slice( 0, 13 ), [ "section", "title", "take", "start", "end", "duration", "status", "rating", "slate", "use", "started_at", "ended_at", "markers" ] );
 assert.deepEqual( header.slice( 13 ), [ "words", "spoken_seconds", "speaking_seconds", "speaking_wpm", "overall_wpm", "target_seconds", "vs_target_seconds" ] );
 console.log( "pace passes" );
+
+// Labelled markers (roadmap 45): {marker: Setup} carries its name; a script
+// marker passed twice in a take is logged once; B markers have no label.
+{
+	let at = Date.parse( "2026-10-28T12:00:00.000Z" );
+	const lab = createTakeLog( { clock: () => at, sentences: () => [] } );
+	lab.slate( 0 );
+	at += 500;
+	lab.tick( { active: true, index: 0, title: "One", target: 60, advanced: true } );
+	at += 2000;
+	lab.marker( { label: "Setup", from: "script", key: 0 } );
+	at += 1000;
+	lab.marker( { label: "Setup", from: "script", key: 0 } );
+	lab.marker( { from: "key" } );
+	at += 3000;
+	lab.tick( { active: true, index: 0, title: "One", target: 60, advanced: true } );
+	lab.tick( { active: false, index: 0, atEnd: true } );
+	const take = lab.data().takes[0];
+	assert.equal( take.target, 60 );
+	assert.deepEqual( take.markers, [ 2.5, 3.5 ] );
+	assert.deepEqual( take.markerList, [ { t: 2.5, label: "Setup", from: "script" }, { t: 3.5, label: null, from: "key" } ] );
+	const marks = takeMarks( take ).filter( m => m.type === "marker" );
+	assert.deepEqual( marks.map( m => m.detail ), [ "Setup", "" ] );
+	console.log( "labelled markers pass" );
+}

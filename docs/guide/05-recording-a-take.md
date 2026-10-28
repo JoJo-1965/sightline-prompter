@@ -33,6 +33,9 @@ Rehearsing? **Use these times as targets** writes each time into the script as
 - Press **B** to drop a marker at the reading line when you fluff a line.
 - **Ctrl+B** jumps to the next marker, whether you dropped it or it's a
   `{marker}` in the script.
+- Markers in the script are logged with the take as you read past them. Name
+  one, `{marker: Setup}`, and the name goes into the take log and the edit
+  pack, so a long section can be cut at each part.
 - **←** goes back to the start of the section, ready for a retake. So does
   saying **"Prompter, again"**, which drops a marker first.
 

@@ -52,6 +52,14 @@ the earlier one, and the place is marked as a **reread**.
 | `captions.srt` and `captions.vtt` | Captions for every take, on the session clock, in the script's own wording and spelling, at most two lines of about 42 characters |
 | `README.md` | This brief |
 
+## Markers
+
+`markers` on each take (and the `markers` column of `takes.csv`) lists
+every marker's time. `markerList`, added later, gives the same markers with
+`label` (the name in `{marker: Setup}`, or null) and `from` (`script` for a
+`{marker}` in the script, `key` for one dropped while recording). A script
+marker is logged once a take, the first time it's read past.
+
 ## Pace
 
 Each take read in voice mode has its pace, worked out from its word
@@ -105,7 +113,7 @@ each take.
 | `pause` | A gap of a second or more between words (`duration` in seconds) |
 | `reread` | A fluff: the reader went back and said a phrase again. Cut to the second reading |
 | `skipped` | Words of this sentence that weren't said (in `detail`) |
-| `marker` | A marker dropped during the take (B, or `{marker}` in the script) |
+| `marker` | A marker: dropped during the take (B, or "Prompter, marker"), or a `{marker}` in the script, logged as it was read past (in voice mode, when the word after it was said). A named one, `{marker: Setup}`, has its name in `detail` |
 
 ## For an editing agent
 

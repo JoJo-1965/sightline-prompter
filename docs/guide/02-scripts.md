@@ -61,7 +61,7 @@ read.
 | ----------------------------- | --------------------------------------------------------- |
 | `{stop}` (or `{pause}`)       | Stops here until you say "Prompter, go", or press Space or the clicker |
 | `{pause: 3s}`                 | A 3-second countdown, then it carries on by itself        |
-| `{marker}`                    | A bookmark for retakes. **Ctrl+B** jumps to the next one  |
+| `{marker}` or `{marker: Setup}` | A bookmark for retakes. **Ctrl+B** jumps to the next one. A name, such as `{marker: Setup}`, shows in the take log and the edit pack |
 | `{wpm: 140}`                  | On a section heading: that section's pace                 |
 | `{target: 1:20}`              | On a section heading: that section's target time          |
 | `{mode: points}`              | At the top: open the script as talking points             |

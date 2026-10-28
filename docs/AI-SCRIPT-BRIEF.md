@@ -6,7 +6,7 @@ you want. It produces scripts that Sightline Prompter can pace, stop and count
 down automatically. In the app, **Help > Copy the AI Script Prompt** (or ☰ >
 Help) puts it on the clipboard for you.
 
-Spec version: **0.2 (27 October 2026: adds `{stop}` and countdown pauses, which work in steady and voice scrolling)**. Full spec:
+Spec version: **0.3 (28 October 2026: adds named markers, `{marker: Setup}`; 0.2 added `{stop}` and countdown pauses)**. Full spec:
 [SCRIPT-DIRECTIVES.md](SCRIPT-DIRECTIVES.md). Machine-readable definition:
 [script-directives.json](script-directives.json).
 
@@ -54,7 +54,7 @@ Never use `{` or `}` for anything else. Never put directives inside
 | `{stop}`                                   | Inline, on its own or at the end of a sentence                    | The prompter stops until the speaker carries on (they say "Prompter, go", or press Space or a clicker). Use it at the end of each section in batch recording, at retake points, and before a demo or a slide change. `{pause}` with no value means the same |
 | `{pause: ns}`                              | Inline, at the end of a sentence                                  | A countdown: the prompter waits n seconds (1 to 30), showing "Carrying on in n", then carries on by itself, for example `{pause: 3s}`. Use 2s to 5s for a breath, a beat for emphasis, or time to look at a slide |
 | `{mode: points}` | Script settings | For a talk spoken off script: each section is shown as large bullet points, one at a time. Write each section as 3 to 6 short bullets (`- `) and give every section a `{target: m:ss}` |
-| `{marker}`                                 | Inline                                                            | A bookmark for retakes. Put one at the start of any passage that's hard to deliver                                |
+| `{marker}` or `{marker: Setup}`            | Inline                                                            | A bookmark for retakes. Put one at the start of any passage that's hard to deliver. In a long section, name one at the start of each part (`{marker: Setup}`, `{marker: Context}`), up to 40 characters, so the edit can find each part |
 
 Several settings can share one pair of braces, separated by commas:
 `{pacing: section, wpm: 145, target: 9:30}`.

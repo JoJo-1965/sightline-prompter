@@ -64,7 +64,7 @@ export function readDirectives( root ) {
 	const script = {};
 	const sections = []; // { heading, targetSeconds?, wpm?, mode? }
 	const pauses = []; // { el, seconds } (0 = wait for the speaker)
-	const markers = []; // { el }
+	const markers = []; // { el, label } (label: {marker: Setup}, else null)
 	const paceChanges = []; // { el, wpm }
 	let current = null;
 	for ( const el of root.querySelectorAll( "h2, .app-directive" ) ) {
@@ -85,7 +85,7 @@ export function readDirectives( root ) {
 		}
 		if ( "pause" in d ) pauses.push( { el, seconds: parsePauseSeconds( d.pause ) } );
 		else if ( "stop" in d ) pauses.push( { el, seconds: 0 } );
-		if ( "marker" in d ) markers.push( { el } );
+		if ( "marker" in d ) markers.push( { el, label: typeof d.marker === "string" ? d.marker : null } );
 		if ( current && "wpm" in d && parseWpm( d.wpm ) ) {
 			paceChanges.push( { el, wpm: parseWpm( d.wpm ) } );
 		}

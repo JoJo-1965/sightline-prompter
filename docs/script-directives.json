@@ -100,9 +100,11 @@
 				"inline"
 			],
 			"value": {
-				"type": "none"
+				"type": "optional-text",
+				"maxLength": 40,
+				"example": "Setup"
 			},
-			"description": "A bookmark for retakes; Ctrl+B cycles through them."
+			"description": "A bookmark for retakes; Ctrl+B cycles through them. An optional label, {marker: Setup}, names it in the take log and the edit pack's marks."
 		},
 		"mode": {
 			"scopes": [

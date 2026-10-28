@@ -42,6 +42,8 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [] 
 			openedAt: now,
 			lastAdvance: null,
 			markers: [],
+			markerList: [],
+			markerKeys: new Set(),
 			words: [],
 			rereads: [],
 			rating: null,
@@ -84,6 +86,9 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [] 
 			slate: done.slate,
 			target: done.target ?? null, // the section's {target} in seconds, if the script sets one
 			markers: done.markers,
+			// Every marker with its label ({marker: Setup}) and where it came from:
+			// "script" ({marker} passed while reading) or "key" (B or a command).
+			markerList: done.markerList,
 			words: done.words,
 			rereads: done.rereads,
 			sentences: sectionSentences( done.section - 1 )
@@ -149,11 +154,18 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [] 
 			if ( current.words.length % 10 < list.length ) version++;
 		},
 
-		marker() {
-			const t = log.startedAt ? since( clock() ) : null;
-			if ( t === null ) return;
-			if ( current ) current.markers.push( t );
-			event( "marker" );
+		// label: the {marker: Label} name, or null. at: when, in ms (default
+		// now). key: the same script marker is only logged once a take.
+		marker( { label = null, at = null, from = "key", key = null } = {} ) {
+			if ( !log.startedAt ) return;
+			if ( key !== null && current?.markerKeys.has( key ) ) return;
+			const t = since( at ?? clock() );
+			if ( current ) {
+				current.markers.push( t );
+				current.markerList.push( { t, label, from } );
+				if ( key !== null ) current.markerKeys.add( key );
+			}
+			event( "marker", label ? { label } : {} );
 		},
 
 		// "keeper" or "scrap": the take in progress, else the last one finished.
