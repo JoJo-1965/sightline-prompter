@@ -1313,6 +1313,14 @@ body.editing #cb-progress-text {
 	scrollbar-width: none;
 }
 
+/* The script scrolls without a scroll bar: the progress bar shows where you are. */
+html,
+body {
+	scrollbar-width: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
 .settings-content::-webkit-scrollbar,
 .panel::-webkit-scrollbar,
 .help-content::-webkit-scrollbar,

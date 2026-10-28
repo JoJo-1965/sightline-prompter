@@ -201,6 +201,7 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ### Next release
 
+- **No scroll bar on the script**, in the prompter or the control window. The progress bar and time left show where you are; the mouse wheel, arrow keys, sections and clicking a line in the control window still move it
 - **Working with AI**, a new page in the user guide (Help > User Guide): how your AI writes the script and its directions, runs the prompter through the local API, and takes the take log for the edit. The readme, feature list and Help > About now lead with it
 - Help > About lists one feature per line, and text in the menus, panels and dialogs no longer leaves a single word hanging on the last line
 - **Slate and sync mark** (Settings > Scrolling, "Slate at the start of each take"): before each take the screen flashes white and beeps, then shows the section and take number for a second. The take log records when each slate went off (the first is time 0), so every take can be lined up with the recording; no clap needed. It shows when you start scrolling, carry on from a `{stop}`, start voice scrolling, or say "Prompter, again". Choose flash and beep, flash only, or off (the default)

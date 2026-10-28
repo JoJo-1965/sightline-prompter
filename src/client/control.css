@@ -145,6 +145,12 @@ body.running #state-dot {
   cursor: pointer;
   /* Room so the first and last lines can reach the reading line. */
   scroll-padding: 0;
+  /* No scroll bar: it follows the prompter, and a click moves it. */
+  scrollbar-width: none;
+}
+
+#preview::-webkit-scrollbar {
+  display: none;
 }
 
 #md {
