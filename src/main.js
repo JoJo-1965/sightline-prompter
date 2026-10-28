@@ -144,6 +144,7 @@ const defaultSettings = {
 	showProgress: true,
 	controlsPinned: false, // keep the control bar visible instead of auto-hiding it
 	remoteControl: false, // AI / script control over http://127.0.0.1 (see remote.js)
+	streamDeck: false, // the Stream Deck plugin: buttons only, its own key (stream-deck.json)
 	remotePort: 47615,
 	remoteDeleteRecordings: false, // the local API may delete recordings (Settings > Remotes)
 	phoneRemote: false, // phone remote over the home network (Settings > Phone remote)
@@ -151,7 +152,7 @@ const defaultSettings = {
 };
 
 // Settings that a settings file or the remote API may not change.
-const PROTECTED_SETTINGS = [ "remoteControl", "remotePort", "remoteDeleteRecordings", "phoneRemote", "phonePort" ];
+const PROTECTED_SETTINGS = [ "remoteControl", "remotePort", "remoteDeleteRecordings", "streamDeck", "phoneRemote", "phonePort" ];
 
 // Take logs, one per script per day: the recordings library (recordings.js).
 const takeLogFolder = () => path.join( app.getPath( "userData" ), "take-logs" );
@@ -235,6 +236,7 @@ let hasUnsavedChanges = false;
 let isClosing = false;
 let refreshMenus = () => {};
 let remoteToken = null;
+let streamDeckToken = null; // Settings > Remotes > Stream Deck: buttons only
 let phoneKey = null;
 let phoneServer = null;
 let phoneError = null;
@@ -276,6 +278,7 @@ const saveState = async ( win ) => {
 		autoScrollSpeed: currentAutoScrollSpeed,
 		audioDeviceId: currentAudioDeviceId,
 		remoteToken,
+		streamDeckToken,
 		phoneKey,
 		settings,
 		normalBounds,
@@ -1018,6 +1021,7 @@ app.whenReady().then( async () => {
 		= state.autoScrollSpeed ?? defaultConfig.autoScrollSpeed;
 	currentAudioDeviceId = state.audioDeviceId || null;
 	remoteToken = state.remoteToken || newToken();
+	streamDeckToken = state.streamDeckToken || newToken();
 	phoneKey = state.phoneKey || newPhoneKey();
 	settings = { ...defaultSettings, ...state.settings };
 	normalBounds = state.normalBounds ?? null;
@@ -1295,9 +1299,20 @@ app.whenReady().then( async () => {
 		}
 	};
 
+	// The Stream Deck plugin's key: the state, the live stream, the commands
+	// and the slots, nothing else (no scripts, settings or recordings).
+	const STREAM_DECK_FILE = path.join( app.getPath( "userData" ), "stream-deck.json" );
+	const BUTTON_ROUTES = new Set( [ "GET /status", "POST /command", "POST /slot" ] );
+	// Close the server now: open event streams (the Stream Deck) would otherwise keep it waiting.
+	const closeServer = server => new Promise( ( r ) => {
+		server.close( r );
+		server.closeAllConnections();
+	} );
+
 	function remoteInfo() {
 		return {
 			enabled: !!settings.remoteControl,
+			streamDeck: !!settings.streamDeck,
 			running: !!remoteServer,
 			url: `http://127.0.0.1:${ settings.remotePort }`,
 			token: remoteToken,
@@ -1307,17 +1322,22 @@ app.whenReady().then( async () => {
 	}
 
 	async function syncRemoteServer() {
-		const wanted = settings.remoteControl ? settings.remotePort : null;
-		if ( remoteServer && remoteServer.teleprompterPort === wanted ) return;
+		const on = settings.remoteControl || settings.streamDeck;
+		const wanted = on ? settings.remotePort : null;
+		// Restart when the port or which keys work changes.
+		const keys = `${ wanted }|${ !!settings.remoteControl }|${ !!settings.streamDeck }`;
+		if ( remoteServer && remoteServer.teleprompterKeys === keys ) return;
 		if ( remoteServer ) {
-			await new Promise( r => remoteServer.close( r ) );
+			await closeServer( remoteServer );
 			remoteServer = null;
 		}
 		remoteError = null;
 		if ( wanted ) {
 			remoteServer = startRemoteServer( {
 				port: wanted,
-				token: remoteToken,
+				token: settings.remoteControl ? remoteToken : null,
+				buttonToken: settings.streamDeck ? streamDeckToken : null,
+				buttonRoutes: BUTTON_ROUTES,
 				routes: remoteRoutes,
 				events: remoteEvents,
 				onError: ( err ) => {
@@ -1326,12 +1346,14 @@ app.whenReady().then( async () => {
 					win.webContents.send( "remoteInfo", remoteInfo() );
 				}
 			} );
-			remoteServer.teleprompterPort = wanted;
-			// Lets a local assistant find the address and token.
-			await fs.writeFile( REMOTE_FILE, JSON.stringify( { url: remoteInfo().url, token: remoteToken }, null, 2 ) );
-		} else {
-			await fs.rm( REMOTE_FILE, { force: true } );
+			remoteServer.teleprompterKeys = keys;
 		}
+		// Lets a local assistant, or the Stream Deck plugin, find the address and its key.
+		const url = remoteInfo().url;
+		if ( wanted && settings.remoteControl ) await fs.writeFile( REMOTE_FILE, JSON.stringify( { url, token: remoteToken }, null, 2 ) );
+		else await fs.rm( REMOTE_FILE, { force: true } );
+		if ( wanted && settings.streamDeck ) await fs.writeFile( STREAM_DECK_FILE, JSON.stringify( { url, token: streamDeckToken }, null, 2 ) );
+		else await fs.rm( STREAM_DECK_FILE, { force: true } );
 		win.webContents.send( "remoteInfo", remoteInfo() );
 	}
 
@@ -1478,7 +1500,7 @@ app.whenReady().then( async () => {
 		remoteToken = newToken();
 		await saveState( win );
 		if ( remoteServer ) {
-			await new Promise( r => remoteServer.close( r ) );
+			await closeServer( remoteServer );
 			remoteServer = null;
 		}
 		await syncRemoteServer();

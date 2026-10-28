@@ -38,6 +38,7 @@ function readBody( req ) {
 }
 
 function tokenMatches( given, token ) {
+	if ( !token ) return false;
 	const a = Buffer.from( String( given ?? "" ) );
 	const b = Buffer.from( token );
 	return a.length === b.length && crypto.timingSafeEqual( a, b );
@@ -47,7 +48,10 @@ function tokenMatches( given, token ) {
 // events: { subscribe( send ) -> unsubscribe }: GET /events streams each
 // change as a server-sent event (`data: {…}`), for buttons that show state
 // such as the Stream Deck plugin.
-export function startRemoteServer( { port, token, routes, events, onError } ) {
+// token: the full key (AI assistants and scripts), or null when that's off.
+// buttonToken: a second key that may only use buttonRoutes and /events (the
+// Stream Deck plugin), or null when that's off.
+export function startRemoteServer( { port, token, buttonToken = null, buttonRoutes = new Set(), routes, events, onError } ) {
 	const server = http.createServer( async ( req, res ) => {
 		const reply = ( status, data ) => {
 			res.writeHead( status, { "Content-Type": "application/json" } );
@@ -66,10 +70,15 @@ export function startRemoteServer( { port, token, routes, events, onError } ) {
 				/^Bearer\s+/i,
 				""
 			);
-			if ( !tokenMatches( auth, token ) ) {
+			const full = tokenMatches( auth, token );
+			const buttons = !full && tokenMatches( auth, buttonToken );
+			if ( !full && !buttons ) {
 				return reply( 401, { error: "Missing or wrong token" } );
 			}
 			const url = new URL( req.url, "http://127.0.0.1" );
+			if ( buttons && url.pathname !== "/events" && !buttonRoutes.has( `${ req.method } ${ url.pathname }` ) ) {
+				return reply( 403, { error: "The Stream Deck key can only press buttons" } );
+			}
 			if ( events && req.method === "GET" && url.pathname === "/events" ) {
 				res.writeHead( 200, {
 					"Content-Type": "text/event-stream",

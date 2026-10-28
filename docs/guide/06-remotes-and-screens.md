@@ -35,14 +35,18 @@ latest news and the link are on the
 
 **Setting it up:**
 
-1. In Sightline, **Settings > Remotes**, tick **Let an AI assistant or script
-   on this computer load scripts and control the teleprompter**, and **Save**.
-   The plugin finds Sightline itself, so there's no code or token to type.
+1. In Sightline, **Settings > Remotes > Stream Deck**, tick **Let the
+   Sightline plugin for Stream Deck control the prompter**, and **Save**. The
+   plugin finds Sightline itself, so there's no code or token to type. It gets
+   its own key, for buttons only: it can play and pause, move through the
+   script, switch slots and show what's happening, but it can't load scripts,
+   change settings or touch your recordings. (That's separate from AI access,
+   which you can leave off.)
 2. Install the plugin. Stream Deck offers a ready-made **Sightline** profile
    for each Stream Deck you have: the Mini, Stream Deck, Neo, XL, +, + XL and
    the Pedal.
 3. Keep Sightline open while you record. If a key goes grey, it says why:
-   *Get Sightline* (Sightline isn't installed), *Turn on Remotes* (step 1), or
+   *Get Sightline* (Sightline isn't installed), *Turn on Stream Deck* (step 1), or
    *Not running* (Sightline is closed). Pressing a grey key opens the download
    page or these steps.
 

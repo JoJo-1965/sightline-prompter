@@ -67,8 +67,8 @@ Slide cues can be loaded here too.
 
 ![Settings > Remotes](images/settings-remotes.png)
 
-AI and remote control, the control pad and control window, and the phone
-remote. See
+AI and remote control, the Stream Deck plugin (its own setting, for buttons
+only), the control pad and control window, and the phone remote. See
 [Remotes and second screens](06-remotes-and-screens.md).
 
 ## About

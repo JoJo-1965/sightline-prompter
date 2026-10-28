@@ -2035,6 +2035,7 @@ async function openSettings() {
 	field( "set-eye-line-height" ).value = settings.eyeLineHeight;
 	field( "set-eye-line-reading" ).value = settings.eyeLineReadingLine;
 	field( "set-remote" ).checked = !!settings.remoteControl;
+	field( "set-stream-deck" ).checked = !!settings.streamDeck;
 	field( "set-remote-delete" ).checked = !!settings.remoteDeleteRecordings;
 	field( "set-remote-port" ).value = settings.remotePort ?? 47615;
 	window.electron.getRemoteInfo();
@@ -2398,6 +2399,7 @@ function saveSettingsPage( close = true ) {
 			settings.eyeLineReadingLine
 		),
 		remoteControl: field( "set-remote" ).checked,
+		streamDeck: field( "set-stream-deck" ).checked,
 		remoteDeleteRecordings: field( "set-remote-delete" ).checked,
 		phoneRemote: field( "set-phone" ).checked,
 		remotePort: numberValue(
@@ -4363,7 +4365,7 @@ window.electron.onRemoteInfo( ( info ) => {
 	if ( !status ) return;
 	field( "set-remote-token" ).value = info.token ?? "";
 	if ( info.error ) status.textContent = `Not running: ${ info.error }`;
-	else if ( info.running )
+	else if ( info.running && info.enabled )
 		status.textContent = `On at ${ info.url } (details for assistants in ${ info.file })`;
 	else status.textContent = "Off.";
 } );
