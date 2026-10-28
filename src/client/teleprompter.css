@@ -605,6 +605,20 @@ body.controls-hidden * {
 
 .cb-btn.cb-text {
 	font-size: 12px;
+	white-space: nowrap;
+}
+
+/* In a narrow bar, On air shrinks to a record dot rather than wrapping. */
+.cb-rec-dot {
+	display: none;
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background: #e53935;
+}
+
+#cb-on-air.live .cb-rec-dot {
+	background: #fff;
 }
 
 /* On air: lit red whenever you're on air (by hand or while running). */
@@ -1044,13 +1058,25 @@ body.editing #cb-progress-text {
 }
 
 /* Narrow windows (eye-line strip): drop labels, then the less-used controls. */
-@media (max-width: 1150px) {
-	.cb-slider > span {
+@media (max-width: 1470px) {
+	.cb-slider > span:not(.slider-with-box) {
 		display: none;
 	}
 }
 
-@media (max-width: 900px) {
+/* The sliders keep working without their number boxes; the panels have them. */
+@media (max-width: 1360px) {
+	.cb-slider .num-box,
+	.cb-on-air-text {
+		display: none;
+	}
+
+	.cb-rec-dot {
+		display: block;
+	}
+}
+
+@media (max-width: 1160px) {
 	#cb-edit,
 	#cb-save,
 	#cb-restart,
@@ -1067,8 +1093,17 @@ body.editing #cb-progress-text {
 	}
 }
 
-@media (max-width: 720px) {
+@media (max-width: 1020px) {
 	#cb-slots .cb-slot:not(.filled):not(.current) {
+		display: none;
+	}
+}
+
+/* Mirror (Ctrl+M) and the Reading and Recording views (Settings tabs) go last. */
+@media (max-width: 820px) {
+	#cb-reading,
+	#cb-recording,
+	#cb-mirror {
 		display: none;
 	}
 }
@@ -1300,7 +1335,7 @@ body.editing #cb-progress-text {
 	flex: none;
 }
 
-@media (max-width: 1400px) {
+@media (max-width: 1560px) {
 	.cb-slider .num-unit {
 		display: none;
 	}

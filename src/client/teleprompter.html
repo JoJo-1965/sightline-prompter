@@ -70,9 +70,10 @@
           id="cb-on-air"
           class="cb-btn cb-text"
           aria-pressed="false"
+          aria-label="On air"
           title="On air: the on-air backing and the ON AIR light, before you start or for a talk (Ctrl+Shift+A). Lit whenever you're on air"
         >
-          On air
+          <span class="cb-rec-dot" aria-hidden="true"></span><span class="cb-on-air-text">On air</span>
         </button>
         <label
           class="cb-slider"
@@ -318,8 +319,8 @@
         ><input id="lp-hide-capture" type="checkbox" /> Hide from screen sharing and recordings</label
       >
       <label class="lp-check"
-        ><input id="lp-click-through" type="checkbox" /> Click-through
-        <span class="lp-hint-inline">clicks on the script reach the window behind · Ctrl+Shift+X</span></label
+        ><input id="lp-click-through" type="checkbox" /> Click-through (Ctrl+Shift+X)
+        <span class="lp-hint-inline">clicks pass to the window behind</span></label
       >
       <h5 class="lp-sub">Script</h5>
       <label class="lp-check"

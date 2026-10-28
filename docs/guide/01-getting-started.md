@@ -36,6 +36,12 @@ From left to right:
 | **?**, **⚙**                 | Help and Settings                                                                                                        |
 | **— ▢ ⛶ ✕**                  | Minimise, maximise, full screen and close                                                                                |
 
+In a narrower window the bar makes room by dropping, in turn, the units, the
+slider labels and the number boxes (**On air** becomes a red record dot), then
+**Edit**, **Save** and **⚙**, the empty slots, and last **Reading**,
+**Recording** and **Mirror**. Everything is still on the ☰ menu, in Settings or
+on a shortcut.
+
 ## The menu
 
 ![The ☰ menu](images/menu.png)

@@ -203,6 +203,7 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 - **On air button** on the control bar, next to ▶ (**Ctrl+Shift+A**, also ☰ > Playback): go on air by hand, for a talk to camera or to check the look. It lights red whenever you're on air, scrolling included, and the control bar slides away as quickly as it does while scrolling
 - **Two backing levels, off air and on air:** Backing is the level while you set up; **Background on air** (90% to start with) takes over while scrolling, held at a stop, or with the On air button lit, so you can see the room through the glass while you set up and read easily while you record. The control bar's Backing slider and **Ctrl+Shift+↑ / ↓** adjust whichever level is in use (the slider reads **On air** while you are), and both are also in the Layout panel > Reading and Settings > Reading
+- **The control bar fits any window from about 640 pixels wide.** With the new buttons it ran off the right edge of narrower windows (in a 1280-pixel window, Help, Settings and the window buttons were cut off). Now, as the window narrows, the bar drops the units, then the slider labels, then the number boxes (On air becomes a red record dot), then Edit, Save and Settings, then the empty slots, and last Reading, Recording and Mirror. The sliders stay in every width (they used to vanish below 1150 pixels)
 - **Mirror button** on the control bar: steps through off, ↔ horizontal, ↕ vertical and ↔↕ both, and shows which is on (same as **Ctrl+M**)
 - **Reading** and **Recording** buttons on the control bar, and **Reading** and **Recording** tabs in Settings: the long Layout panel is now three shorter views, so nothing sits below the fold
 - **One Sightline at a time:** starting it again (from the Start menu, a shortcut or the command line) brings the open one to the front instead of opening a second copy, which could overwrite the first one's settings and take log
@@ -210,6 +211,7 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 - Settings stays the same height on every tab, so it no longer jumps as you switch
 - The arrows on the number boxes are drawn, not typed, so they keep their size at any Windows display scaling (the down arrow could vanish at 125% or 150%, on Settings > Layout)
 - The speed box has room for "wpm"
+- Click-through's shortcut sits beside its name in the Recording view, so the hint fits on one line
 - The reading-line arrow points at the middle of the line you're reading, in any font and size (it pointed at the top of the words)
 - Running from source shows the Sightline icon, not Electron's
 - **Word timings in the take log** (voice mode): every take now records when you said each word of the script, from the speech engine's own timings (so a word is placed when it was said, not when it was recognised a moment later), on the same clock as the take times and the slate. A phrase read again replaces the first reading. They're in the exported JSON, for an editing assistant to cut on words and sentences (roadmap 26, first part)
