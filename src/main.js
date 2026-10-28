@@ -786,7 +786,24 @@ const createWindow = ( state ) => {
 	};
 };
 
+// One Sightline at a time: starting it again brings the open one to the front.
+// (The lock belongs to the settings folder, so a copy run with its own
+// --user-data-dir, as the screenshot and test scripts do, still starts.)
+const firstInstance = app.requestSingleInstanceLock();
+let mainWindow = null;
+if ( !firstInstance ) {
+	app.quit();
+} else {
+	app.on( "second-instance", () => {
+		if ( !mainWindow || mainWindow.isDestroyed() ) return;
+		if ( mainWindow.isMinimized() ) mainWindow.restore();
+		mainWindow.show();
+		mainWindow.focus();
+	} );
+}
+
 app.whenReady().then( async () => {
+	if ( !firstInstance ) return;
 	const state = await stateManager.readAppState();
 	currentFontSize = state.fontSize || defaultConfig.fontSize;
 	currentOpacity = state.opacity ?? defaultConfig.opacity;
@@ -843,6 +860,7 @@ app.whenReady().then( async () => {
 		sendSettings,
 		sendSlots
 	} = createWindow( state );
+	mainWindow = win;
 
 	ipcMain.on( "resizeWindow", ( _event, width, height ) => {
 		win.setSize( width, height, false );

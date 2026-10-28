@@ -201,6 +201,7 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ### Next release
 
+- **One Sightline at a time:** starting it again (from the Start menu, a shortcut or the command line) brings the open one to the front instead of opening a second copy, which could overwrite the first one's settings and take log
 - **Settings > About**, a new last tab: the version, credits and links, with buttons for the full About page and the user guide. It replaces the line at the foot of every tab
 - Settings stays the same height on every tab, so it no longer jumps as you switch
 - The arrows on the number boxes are drawn, not typed, so they keep their size at any Windows display scaling (the down arrow could vanish at 125% or 150%, on Settings > Layout)
