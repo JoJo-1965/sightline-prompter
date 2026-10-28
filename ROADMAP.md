@@ -10,16 +10,36 @@ complex builds come later.
 - **Value:** ★★★ changes recording day · ★★ clearly better · ★ nice to have
 - **Size:** **S** about a day · **M** a few days · **L** a week or more
 
-## 1.0: first public release
+## Where it stands (28 October 2026)
+
+**v1.0.2 is the latest release.** Everything ticked ✅ has shipped. The stage
+names below (1.1 to 1.4) are the plan's stages, not version numbers: all of
+it so far shipped in the 1.0 releases (1.0.0 on 27 October, 1.0.1 and 1.0.2
+on 28 October).
+
+**Next, in order of value for the time:**
+
+1. **26** Word timings, edit marks and captions: the edit pack (in progress)
+2. **37** Clickable progress bar
+3. **38** Check for updates
+4. **20** Teach it your words
+5. **36** Recordings library and **39** Stream Deck plugin, which share a way for the app to tell other tools what's happening
+6. **35** Script-controlled listening and prompter commands
+7. **28** Rehearsal coach, **33** scratch audio and **29** automatic updates (after 27)
+8. **27** Code signing: needs certificates bought, so it's Joanne's call
+
+Then the ★ items (30, 31, 32, 34) and **22**, Sightline in a browser.
+
+## 1.0: first public release (shipped 27 October 2026)
 
 | Item                                                                                                | Size | Notes                                                                                                                            |
 | --------------------------------------------------------------------------------------------------- | ---- | -------------------------------------------------------------------------------------------------------------------------------- |
-| Installers for Windows (`.exe`), Mac (`.dmg`, Intel and Apple Silicon) and Linux (AppImage)         | M    | Built by GitHub Actions and attached to GitHub Releases. Not code-signed at first, so the README explains the first-run warnings |
-| Public GitHub repo `JoJo-1965/sightline-prompter`, forked from `reverentgeek/electron-teleprompter` | S    | Profile first: bio, website, profile README, private commit email (done), two-factor login                                       |
-| README with screenshots, a download section and topics                                              | S    |                                                                                                                                  |
-| Sightline page on joannelockwood.co.uk, linked from the sites that already cross-link               | S    |                                                                                                                                  |
-| A note to David Neal, offering focused pull requests                                                | S    | Joanne approves the draft before it's sent                                                                                       |
-| Built-in sample scripts: a welcome tour, batch, single take, formatting test and plain text         | S    | **Done.** Script > Sample scripts; the tour opens on first run                                                                   |
+| ✅ Installers for Windows (`.exe`), Mac (`.dmg`, Intel and Apple Silicon) and Linux (AppImage)         | M    | Built by GitHub Actions and attached to GitHub Releases. Not code-signed at first, so the README explains the first-run warnings |
+| ✅ Public GitHub repo `JoJo-1965/sightline-prompter`, forked from `reverentgeek/electron-teleprompter` | S    | Profile first: bio, website, profile README, private commit email (done), two-factor login                                       |
+| ✅ README with screenshots, a download section and topics                                              | S    |                                                                                                                                  |
+| ✅ Sightline page on joannelockwood.co.uk, linked from the sites that already cross-link               | S    |                                                                                                                                  |
+| ✅ A note to David Neal, offering focused pull requests                                                | S    | Sent 27 October, by email and as an issue on his repo                                                                                       |
+| ✅ Built-in sample scripts: a welcome tour, batch, single take, formatting test and plain text         | S    | **Done.** Script > Sample scripts; the tour opens on first run                                                                   |
 
 ## 1.1: quick wins for recording (built 27 October 2026)
 
@@ -37,7 +57,7 @@ Small builds, each with a big effect on a recording day. All built; hiding from 
 | 8   | ✅ **Colour themes,** for example yellow on black and high contrast, plus a dyslexia-friendly font option                                                                                                                                                                                                                                                                                                                                          | ★★    | S    | Saved per slot                                                                                                                                                                                                                                                                                         |
 | 9   | ✅ **Foot pedals and game controllers** for hands-free scrolling                                                                                                                                                                                                                                                                                                                                                                                   | ★     | S    | USB pedals that act as keyboards already work; this adds mapping and controller support                                                                                                                                                                                                                |
 
-## 1.2: pacing and speaking
+## 1.2: pacing and speaking (built 27 October 2026)
 
 The features you asked for around pace and speaking style. Each takes a few
 days and builds on the directives in 1.1.
