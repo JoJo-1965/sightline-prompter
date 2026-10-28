@@ -147,6 +147,8 @@ The whole workflow is in the guide:
   start, and Speed, Size and Backing, each with a number box you can type into.
 - **☰ menu** grouped into Script, Playback, Display, Window, Settings and Help,
   with shortcuts shown.
+- **Check for updates** on Settings > About, and a quiet check at start-up
+  (can be turned off). Nothing downloads by itself.
 - **Settings in nine tabs:** Scrolling, Voice, Display, Layout, Reading,
   Recording, Files, Remotes and About, all the same height. Save and load all
   settings as JSON or XML.

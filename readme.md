@@ -207,6 +207,7 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ### Next release
 
+- **Check for updates** (Settings > About): says whether there's a newer release, with a link to what's new and the download. Sightline also checks quietly when it starts and shows a small note if there is one; untick **Check for updates when Sightline starts** to stop that. Nothing downloads or installs by itself (roadmap 38)
 - **Clickable progress bar:** point at the bar along the bottom to see the section and time at that place, click to jump there, or drag along it; white ticks mark where each section starts. Clicks are ignored while the prompter runs, so pause first (roadmap 37)
 - **Sightline doesn't record your video or audio**, and now says so up front (readme, guide, feature list): it works alongside OBS, Riverside, Zoom or your camera, and gathers the timings to line up with the recording
 - **Skills for Claude Code and Codex, and a setup guide for every AI** ([docs/AI-AGENTS.md](docs/AI-AGENTS.md)): `skills/sightline-script` writes and checks scripts to the Sightline spec; `skills/sightline-session` loads scripts into slots, controls the prompter, and builds and uses the edit pack. They use a new command, `node scripts/sightline.mjs` (status, open, load, slot, command, logs, takelog, pack), which reads the API token itself and never prints it. ChatGPT, Claude and Gemini projects get steps for writing and for editing from uploaded files

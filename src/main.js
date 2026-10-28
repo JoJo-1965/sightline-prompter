@@ -22,6 +22,7 @@ import { createGoogleDocs, GOOGLE_DOC_MESSAGES } from "./google-docs.js";
 import { takeLogCsv } from "./client/take-log.js";
 import { editPack } from "./client/edit-pack.js";
 import { fitInside, keepTopReachable, sameRect } from "./utils/fit.js";
+import { isNewer } from "./utils/version.js";
 import { startRemoteServer, newToken } from "./remote.js";
 import { startPhoneServer, newPhoneKey, lanAddress } from "./phone.js";
 import QRCode from "qrcode";
@@ -40,6 +41,28 @@ const guide = createGuide( { dir: __dirname } );
 // Scripts from Google Docs links, kept in the app's folder.
 const googleDocs = createGoogleDocs( { dir: app.getPath( "userData" ) } );
 ipcMain.on( "openGuide", ( _event, page ) => guide.open( page ) );
+
+// The latest release on GitHub, compared with this version. The releases
+// page redirects to the newest release's page, which names its version; it
+// has no hourly limit, unlike GitHub's API.
+const LATEST_RELEASE = "https://github.com/JoJo-1965/sightline-prompter/releases/latest";
+
+async function latestRelease() {
+	const current = app.getVersion();
+	try {
+		const res = await fetch( LATEST_RELEASE, {
+			method: "HEAD",
+			redirect: "follow",
+			headers: { "User-Agent": `Sightline-Prompter/${ current }` },
+			signal: AbortSignal.timeout( 10000 )
+		} );
+		const latest = res.url.match( /\/tag\/v?([^/?#]+)/ )?.[1];
+		if ( !res.ok || !latest ) throw new Error( `GitHub said ${ res.status }` );
+		return { current, latest, newer: isNewer( latest, current ), url: res.url };
+	} catch ( err ) {
+		return { current, error: err.message };
+	}
+}
 
 // Help > Copy the AI script prompt: the part of docs/AI-SCRIPT-BRIEF.md below
 // the first rule, ready to paste into ChatGPT, Claude or Gemini.
@@ -74,6 +97,7 @@ const defaultSettings = {
 	highlightSentence: true, // light up the sentence you're on (the next to say, in voice mode)
 	readingLine: 33, // % from the top of the window
 	alwaysOnTop: false,
+	checkUpdates: true, // look for a newer release on GitHub when the app starts
 	highlightCues: true,
 	cuesFile: null,
 	eyeLine: false,
@@ -1237,6 +1261,19 @@ app.whenReady().then( async () => {
 			platform: process.platform
 		} )
 	);
+	// Settings > About > Check for updates, and a quiet check at start-up:
+	// asks GitHub for the latest release and says if it's newer. Nothing is
+	// downloaded, and nothing is sent but the request itself.
+	ipcMain.on( "checkForUpdates", async ( _event, { quiet = false } = {} ) => {
+		win.webContents.send( "updateInfo", { quiet, ...await latestRelease() } );
+	} );
+	setTimeout( () => {
+		if ( settings.checkUpdates === false ) return;
+		latestRelease().then( ( info ) => {
+			if ( info.newer && win && !win.isDestroyed() ) win.webContents.send( "updateInfo", { quiet: true, ...info } );
+		} );
+	}, 8000 );
+
 	ipcMain.on( "newRemoteToken", async () => {
 		remoteToken = newToken();
 		await saveState( win );

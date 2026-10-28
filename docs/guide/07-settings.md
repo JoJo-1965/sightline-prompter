@@ -64,4 +64,11 @@ source code and the website. **Full About page…** opens the complete page (als
 at the foot of the ☰ menu), with what's new, the licence and the credits, and
 **User guide** opens this guide.
 
+**Check for updates** asks GitHub for the latest release and tells you if
+there's a newer one, with a link to what's new and the download. With
+**Check for updates when Sightline starts** ticked (the default), it also
+checks quietly a few seconds after you open the app, and a small note at the
+bottom right says when a new version is out. Nothing downloads or installs by
+itself, and nothing is sent but the request to GitHub.
+
 ![About](images/about.png)

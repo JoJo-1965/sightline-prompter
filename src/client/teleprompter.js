@@ -1832,6 +1832,7 @@ async function openSettings() {
 	field( "set-sentence" ).checked = settings.highlightSentence !== false;
 	field( "set-mirrored" ).value = mirrored;
 	field( "set-always-on-top" ).checked = !!settings.alwaysOnTop;
+	field( "set-check-updates" ).checked = settings.checkUpdates !== false;
 	window.electron.getDisplays();
 	field( "set-highlight-cues" ).checked = !!settings.highlightCues;
 	field( "set-cues-file" ).value = settings.cuesFile ?? "";
@@ -1905,6 +1906,7 @@ function saveSettingsPage() {
 		highlightSentence: field( "set-sentence" ).checked,
 		readingLine: numberValue( "set-reading-line", 5, 80, settings.readingLine ),
 		alwaysOnTop: field( "set-always-on-top" ).checked,
+		checkUpdates: field( "set-check-updates" ).checked,
 		prompterDisplay: field( "set-prompter-display" ).value
 			? Number( field( "set-prompter-display" ).value )
 			: null,
@@ -3493,6 +3495,52 @@ window.electron.onAppInfo( ( info ) => {
 			.filter( Boolean )
 			.join( " · " );
 } );
+
+// --- Updates: a check against the latest release on GitHub ---
+
+const updateLine = document.getElementById( "settings-about-update" );
+document.getElementById( "settings-about-updates" )?.addEventListener( "click", () => {
+	if ( updateLine ) updateLine.textContent = "Checking…";
+	window.electron.checkForUpdates( false );
+} );
+
+function updateLink( info, text ) {
+	const link = document.createElement( "a" );
+	link.href = info.url;
+	link.target = "_blank";
+	link.textContent = text;
+	return link;
+}
+
+window.electron.onUpdateInfo( ( info ) => {
+	if ( info.quiet ) {
+		// At start-up, only a newer version is worth a word.
+		if ( info.newer ) showUpdateNote( info );
+		return;
+	}
+	if ( !updateLine ) return;
+	updateLine.textContent = "";
+	if ( info.error ) updateLine.textContent = "Couldn't check just now. Are you online?";
+	else if ( info.newer ) {
+		updateLine.append( `Version ${ info.latest } is out (you have ${ info.current }). `, updateLink( info, "What's new and download" ) );
+	} else updateLine.textContent = `You have the latest version (${ info.current }).`;
+} );
+
+// A small note at the bottom right, there until it's closed.
+function showUpdateNote( info ) {
+	if ( document.getElementById( "update-note" ) ) return;
+	const note = document.createElement( "div" );
+	note.id = "update-note";
+	note.setAttribute( "role", "status" );
+	const close = document.createElement( "button" );
+	close.type = "button";
+	close.textContent = "×";
+	close.title = "Close";
+	close.setAttribute( "aria-label", "Close" );
+	close.addEventListener( "click", () => note.remove() );
+	note.append( `Sightline ${ info.latest } is out. `, updateLink( info, "What's new and download" ), close );
+	hud.appendChild( note );
+}
 
 // --- Settings files ---
 

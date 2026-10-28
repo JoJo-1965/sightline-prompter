@@ -971,6 +971,37 @@ body.editing .panel {
 	display: none;
 }
 
+#update-note {
+	position: fixed;
+	right: 16px;
+	bottom: 48px;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 8px 8px 12px;
+	font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+	font-size: 13px;
+	color: #e8e8e8;
+	background: rgba(24, 26, 31, 0.95);
+	border: 1px solid rgba(255, 213, 74, 0.6);
+	border-radius: 8px;
+	z-index: 1300;
+}
+
+#update-note a {
+	color: #ffd54a;
+}
+
+#update-note button {
+	padding: 0 6px;
+	font-size: 16px;
+	line-height: 1;
+	color: #e8e8e8;
+	background: none;
+	border: none;
+	cursor: pointer;
+}
+
 /* --- In-app menu (☰) --- */
 
 #app-menu {
