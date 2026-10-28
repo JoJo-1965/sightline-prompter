@@ -88,8 +88,8 @@
           <span>Size</span>
           <input id="cb-font" type="range" min="1" max="8" step="0.05" />
         </label>
-        <label class="cb-slider" title="Background opacity (Ctrl+Shift+↑ / ↓)">
-          <span>Backing</span>
+        <label class="cb-slider" title="Background opacity: off air, or on air while you're on air (Ctrl+Shift+↑ / ↓)">
+          <span id="cb-backing-label">Backing</span>
           <input id="cb-opacity" type="range" min="0" max="1" step="0.01" />
         </label>
         <button
@@ -226,8 +226,8 @@
         <input id="lp-bg-opacity" type="range" min="0" max="1" step="0.01" />
       </label>
       <label class="lp-row"
-        >Background on air <output id="lp-on-air-backing-value"></output>
-        <input id="lp-on-air-backing" type="range" min="0" max="1" step="0.01" />
+        >Background on air <output id="lp-backing-on-air-value"></output>
+        <input id="lp-backing-on-air" type="range" min="0" max="1" step="0.01" />
       </label>
       <label class="lp-row"
         >Text brightness <output id="lp-text-brightness-value"></output>

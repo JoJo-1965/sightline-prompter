@@ -156,8 +156,8 @@ const DEFAULT_OPACITY = 0.07;
 const OPACITY_STEP = 0.05;
 let opacity = DEFAULT_OPACITY;
 
-// The backing: light while you set up, and more solid while the prompter
-// runs (Background on air), but never lighter than the Backing slider.
+// The backing has two levels: Backing while you set up (off air), and
+// Background on air while the prompter runs or the On air button is lit.
 // On air by hand (the On air button), or while the prompter runs.
 let manualOnAir = false;
 
@@ -173,10 +173,24 @@ function toggleOnAir() {
 
 function applyBacking() {
 	if ( isEditMode ) return;
-	const live = onAir()
-		? Math.max( opacity, settings.onAirBacking ?? LAYOUT_DEFAULTS.onAirBacking )
-		: opacity;
-	document.body.style.backgroundColor = `rgba(0, 0, 0, ${ live })`;
+	document.body.style.backgroundColor = `rgba(0, 0, 0, ${ liveBacking() })`;
+}
+
+// The level in use now.
+function liveBacking() {
+	return onAir() ? settings.backingOnAir ?? LAYOUT_DEFAULTS.backingOnAir : opacity;
+}
+
+// The bar's Backing slider and Ctrl+Shift+↑/↓ change the level in use.
+function setLiveBacking( value, save = true ) {
+	if ( !onAir() ) {
+		setOpacity( value, save );
+		return;
+	}
+	settings.backingOnAir = Math.min( 1, Math.max( 0, Math.round( value * 100 ) / 100 ) );
+	applyBacking();
+	if ( save ) window.electron.saveSettings( { backingOnAir: settings.backingOnAir } );
+	syncControls();
 }
 
 function setOpacity( value, save = true ) {
@@ -732,14 +746,14 @@ document.addEventListener( "keydown", ( event ) => {
 		&& event.key === "ArrowUp"
 	) {
 		event.preventDefault();
-		setOpacity( opacity + OPACITY_STEP );
+		setLiveBacking( liveBacking() + OPACITY_STEP );
 	} else if (
 		( event.metaKey || event.ctrlKey )
 		&& event.shiftKey
 		&& event.key === "ArrowDown"
 	) {
 		event.preventDefault();
-		setOpacity( opacity - OPACITY_STEP );
+		setLiveBacking( liveBacking() - OPACITY_STEP );
 	} else if (
 		( event.metaKey || event.ctrlKey )
 		&& event.shiftKey
@@ -1975,7 +1989,7 @@ const LAYOUT_DEFAULTS = {
 	lineHeight: 1.3,
 	textOpacity: 1,
 	textBrightness: 1,
-	onAirBacking: 0.6,
+	backingOnAir: 0.9,
 	textAlign: "left"
 };
 const EDGE_FADE = 4; // % of the window height over which text fades at a margin
@@ -2259,7 +2273,7 @@ function syncControls() {
 		? formatSpeed( autoScrollSpeed )
 		: `${ settings.steadyWpm } wpm`;
 	if ( document.activeElement !== fontInput ) fontInput.value = fontSize;
-	if ( document.activeElement !== opacityInput ) opacityInput.value = opacity;
+	if ( document.activeElement !== opacityInput ) opacityInput.value = liveBacking();
 	const bgInput = document.getElementById( "lp-bg-opacity" );
 	if ( bgInput && document.activeElement !== bgInput ) bgInput.value = opacity;
 	document.getElementById( "cb-voice" )?.classList.toggle( "active", voice );
@@ -2380,10 +2394,10 @@ fontInput?.addEventListener( "change", () =>
 	setFontSize( Number( fontInput.value ) )
 );
 opacityInput?.addEventListener( "input", () =>
-	setOpacity( Number( opacityInput.value ), false )
+	setLiveBacking( Number( opacityInput.value ), false )
 );
 opacityInput?.addEventListener( "change", () =>
-	setOpacity( Number( opacityInput.value ) )
+	setLiveBacking( Number( opacityInput.value ) )
 );
 // The Layout panel's background slider is the same setting as the bar's Backing.
 document
@@ -2886,7 +2900,7 @@ const LAYOUT_FIELDS = [
 	[ "lp-margin-bottom", "marginBottom", v => `${ v }%` ],
 	[ "lp-line-height", "lineHeight", v => `${ Number( v ).toFixed( 2 ) }×` ],
 	[ "lp-text-opacity", "textOpacity", v => `${ Math.round( v * 100 ) }%` ],
-	[ "lp-on-air-backing", "onAirBacking", v => `${ Math.round( v * 100 ) }%` ],
+	[ "lp-backing-on-air", "backingOnAir", v => `${ Math.round( v * 100 ) }%` ],
 	[ "lp-text-brightness", "textBrightness", v => `${ Math.round( v * 100 ) }%` ],
 	[ "lp-focus-strength", "focusStrength", v => `${ Math.round( v * 100 ) }%` ]
 ];
@@ -4546,6 +4560,10 @@ function applyDisplayClasses() {
 // ON AIR: lit while a scrolling session is running or held at a {pause}.
 function updateOnAir() {
 	applyBacking();
+	// The bar's Backing slider follows the level in use.
+	const label = document.getElementById( "cb-backing-label" );
+	if ( label ) label.textContent = onAir() ? "On air" : "Backing";
+	if ( opacityInput && document.activeElement !== opacityInput ) opacityInput.value = liveBacking();
 	const button = document.getElementById( "cb-on-air" );
 	button?.classList.toggle( "live", onAir() );
 	button?.setAttribute( "aria-pressed", String( manualOnAir ) );
@@ -4705,7 +4723,7 @@ const NUMBER_BOXES = {
 		word: "percent",
 		name: "Text opacity"
 	} ),
-	"lp-on-air-backing": () => ( {
+	"lp-backing-on-air": () => ( {
 		scale: 100,
 		unit: "%",
 		word: "percent",
