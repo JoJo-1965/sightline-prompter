@@ -102,6 +102,7 @@ function renderScript( html ) {
 	sendPreviewContent();
 	indexSentences( md );
 	updateSentence();
+	requestAnimationFrame( () => updateReadingMarker() );
 }
 
 // The sentence highlight (Settings > Display). Voice scrolling moves it as you
@@ -136,6 +137,7 @@ let fontSize = DEFAULT_FONT_SIZE;
 function setFontSize( size, save = true ) {
 	fontSize = Math.min( MAX_FONT_SIZE, Math.max( MIN_FONT_SIZE, size ) );
 	document.body.style.fontSize = `${ fontSize }em`;
+	requestAnimationFrame( () => updateReadingMarker() );
 	if ( isSteadyRunning() ) {
 		requestAnimationFrame( recalculateSteady );
 	}
@@ -1592,9 +1594,26 @@ window.electron.getAudioDeviceId();
 
 const readingMarker = document.getElementById( "reading-marker" );
 
+// Half the height of a line of script text, in ems of the page's text size:
+// the scroll puts the top of the text on the reading line, so the arrow sits
+// this far below it, at the middle of the words. Fonts differ (OpenDyslexic is
+// taller than Arial), so it's measured.
+function halfTextHeightEm() {
+	const p = md?.querySelector( "p, li" );
+	const px = parseFloat( getComputedStyle( document.body ).fontSize );
+	if ( !p || !px ) return 0.58;
+	const range = document.createRange();
+	range.selectNodeContents( p );
+	const line = range.getClientRects()[0];
+	return line?.height ? line.height / px / 2 : 0.58;
+}
+
+// A font that finishes loading changes the height of the text.
+document.fonts?.addEventListener( "loadingdone", () => updateReadingMarker() );
+
 function updateReadingMarker() {
 	if ( !readingMarker ) return;
-	readingMarker.style.top = `${ getReadingAnchor() * 100 }vh`;
+	readingMarker.style.top = `calc(${ getReadingAnchor() * 100 }vh + ${ halfTextHeightEm().toFixed( 3 ) }em)`;
 	readingMarker.classList.toggle( "hidden", !settings.showReadingMarker );
 	if ( settings.focusBand ) updateEdgeMask();
 }
@@ -1625,6 +1644,8 @@ function applySettings( next ) {
 		/ 100
 	);
 	updateReadingMarker();
+	// Again once the new font and size are laid out.
+	requestAnimationFrame( () => updateReadingMarker() );
 	setWpm( settings.steadyWpm );
 	if ( isSteadyRunning() ) setIndicator( steadyIndicatorText() );
 	const engineChanged = prev.voiceEngine !== settings.voiceEngine;
@@ -3295,7 +3316,13 @@ window.electron.getAppInfo();
 
 window.electron.onAppInfo( ( info ) => {
 	appInfo = info;
-	fillFooter( document.getElementById( "settings-footer" ) );
+	const brief = document.getElementById( "settings-about-version" );
+	if ( brief ) {
+		const updated = formatReleaseDate( info.releaseDate );
+		brief.textContent = [ `Version ${ info.version }`, updated && `updated ${ updated }` ]
+			.filter( Boolean )
+			.join( " · " );
+	}
 	const el = document.getElementById( "about-version" );
 	const date = formatReleaseDate( info.releaseDate );
 	if ( el )
@@ -3591,6 +3618,15 @@ const SETTINGS_TAB_KEY = "settingsTab";
 const settingsTabs = [
 	...document.querySelectorAll( ".settings-tabs [data-tab]" )
 ];
+
+// The About tab is a brief; the full page is a click away.
+document.getElementById( "settings-about-full" )?.addEventListener( "click", () => {
+	closeSettings( true );
+	openAbout();
+} );
+document.getElementById( "settings-about-guide" )?.addEventListener( "click", () => {
+	window.electron.openGuide();
+} );
 
 function showSettingsTab( name ) {
 	if ( !settingsTabs.some( t => t.dataset.tab === name ) ) name = "scrolling";
@@ -4643,13 +4679,14 @@ function attachNumberBox( range, getSpec ) {
 	steppers.className = "num-steppers";
 	const up = document.createElement( "button" );
 	const down = document.createElement( "button" );
-	for ( const [ btn, sign, glyph ] of [
-		[ up, 1, "▲" ],
-		[ down, -1, "▼" ]
+	// The arrows are drawn in CSS, so they keep their size at any display scaling.
+	for ( const [ btn, sign, label ] of [
+		[ up, 1, "Increase" ],
+		[ down, -1, "Decrease" ]
 	] ) {
 		btn.type = "button";
 		btn.tabIndex = -1;
-		btn.textContent = glyph;
+		btn.setAttribute( "aria-label", label );
 		btn.dataset.sign = sign;
 		steppers.append( btn );
 	}

@@ -572,6 +572,7 @@
           <button type="button" role="tab" data-tab="layout">Layout</button>
           <button type="button" role="tab" data-tab="files">Files</button>
           <button type="button" role="tab" data-tab="remotes">Remotes</button>
+          <button type="button" role="tab" data-tab="about">About</button>
         </div>
         </div>
 
@@ -866,8 +867,27 @@
           </p>
         </fieldset>
 
+        <fieldset data-tab="about" class="settings-about">
+          <legend>Sightline Prompter</legend>
+          <p class="settings-about-version" id="settings-about-version"></p>
+          <p>
+            The teleprompter that works with your AI. Adapted and enhanced by
+            <strong>Joanne Lockwood</strong> from <strong>SEE Change Happen Ltd</strong>,
+            based on Electron Teleprompter by <strong>David Neal</strong>.
+          </p>
+          <p class="field-hint">MIT licence · © 2022–2026</p>
+          <p class="settings-about-actions">
+            <button type="button" id="settings-about-full">Full About page…</button>
+            <button type="button" id="settings-about-guide">User guide</button>
+          </p>
+          <p class="field-hint">
+            <a href="https://github.com/JoJo-1965/sightline-prompter" target="_blank">github.com/JoJo-1965/sightline-prompter</a>
+            ·
+            <a href="https://joannelockwood.co.uk/sightline" target="_blank">joannelockwood.co.uk/sightline</a>
+          </p>
+        </fieldset>
+
         <div class="modal-actions">
-          <p class="app-footer" id="settings-footer"></p>
           <button id="settings-cancel" type="button">Cancel</button>
           <button id="settings-save" type="button" class="primary">Save</button>
         </div>

@@ -304,7 +304,9 @@ const createWindow = ( state ) => {
 			preload: path.join( __dirname, "client", "teleprompter-preload.mjs" )
 		},
 		transparent: true,
-		frame: false
+		frame: false,
+		// Installed builds take the icon from the app; running from source needs it here.
+		...( app.isPackaged ? {} : { icon: path.join( __dirname, "..", "build", "icon.png" ) } )
 	} );
 
 	win.webContents.session.setPermissionRequestHandler(

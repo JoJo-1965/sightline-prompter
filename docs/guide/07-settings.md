@@ -1,8 +1,9 @@
 # Settings
 
 Open Settings with **⚙** in the control bar, **Ctrl+,** or ☰ > Settings. The
-tabs keep everything in view. **←** and **→** switch tabs, and **Save** and
-**Cancel** are always at the bottom. The **×** at the top right closes without
+tabs keep everything in view, and the panel stays the same size on every
+tab. **←** and **→** switch tabs, and **Save** and **Cancel** are always at
+the bottom. The **×** at the top right closes without
 saving.
 
 ## Scrolling
@@ -56,7 +57,9 @@ The phone remote, and AI and remote control. See
 
 ## About
 
-The **About** link at the foot of Settings and the ☰ menu shows the version,
-what's new, the licence and the credits.
+The last tab, **About**, gives the version, the credits and links to the
+source code and the website. **Full About page…** opens the complete page (also
+at the foot of the ☰ menu), with what's new, the licence and the credits, and
+**User guide** opens this guide.
 
 ![About](images/about.png)

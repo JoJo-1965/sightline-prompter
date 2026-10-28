@@ -333,9 +333,12 @@ body.eye-line #md {
 	z-index: 1500;
 }
 
+/* One height for every tab, so the panel doesn't jump; longer tabs scroll. */
 .settings-content {
 	width: min(620px, 94vw);
-	max-height: 90vh;
+	height: min(740px, 90vh);
+	display: flex;
+	flex-direction: column;
 	overflow-y: auto;
 	font-size: 13px;
 }
@@ -359,6 +362,7 @@ body.eye-line #md {
 }
 
 .settings-content .modal-actions {
+	margin-top: auto;
 	position: sticky;
 	bottom: 0;
 	z-index: 2;
@@ -1148,6 +1152,30 @@ body.editing #cb-progress-text {
 	cursor: pointer;
 }
 
+.num-steppers button {
+	position: relative;
+	min-height: 0;
+	overflow: hidden;
+}
+
+.num-steppers button::before {
+	content: "";
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	border-left: 4px solid transparent;
+	border-right: 4px solid transparent;
+}
+
+.num-steppers button[data-sign="1"]::before {
+	border-bottom: 5px solid currentColor;
+}
+
+.num-steppers button[data-sign="-1"]::before {
+	border-top: 5px solid currentColor;
+}
+
 .num-steppers button + button {
 	border-top: 1px solid #5a5d66;
 }
@@ -1233,7 +1261,7 @@ body.editing #cb-progress-text {
 
 .num-box .num-unit {
 	box-sizing: border-box;
-	width: 1.7em;
+	width: 2.3em; /* room for "wpm" */
 	justify-content: flex-start;
 }
 
@@ -1799,6 +1827,20 @@ body.points-mode #md::after {
 
 .settings-content .modal-actions {
 	align-items: center;
+}
+
+.settings-about p {
+	margin: 0 0 0.8em;
+	line-height: 1.5;
+}
+
+.settings-about-version {
+	font-weight: bold;
+}
+
+.settings-about-actions {
+	display: flex;
+	gap: 8px;
 }
 
 .settings-content .modal-actions .app-footer {

@@ -201,6 +201,12 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ### Next release
 
+- **Settings > About**, a new last tab: the version, credits and links, with buttons for the full About page and the user guide. It replaces the line at the foot of every tab
+- Settings stays the same height on every tab, so it no longer jumps as you switch
+- The arrows on the number boxes are drawn, not typed, so they keep their size at any Windows display scaling (the down arrow could vanish at 125% or 150%, on Settings > Layout)
+- The speed box has room for "wpm"
+- The reading-line arrow points at the middle of the line you're reading, in any font and size (it pointed at the top of the words)
+- Running from source shows the Sightline icon, not Electron's
 - **Word timings in the take log** (voice mode): every take now records when you said each word of the script, from the speech engine's own timings (so a word is placed when it was said, not when it was recognised a moment later), on the same clock as the take times and the slate. A phrase read again replaces the first reading. They're in the exported JSON, for an editing assistant to cut on words and sentences (roadmap 26, first part)
 - **No scroll bar on the script**, in the prompter or the control window. The progress bar and time left show where you are; the mouse wheel, arrow keys, sections and clicking a line in the control window still move it
 - **Working with AI**, a new page in the user guide (Help > User Guide): how your AI writes the script and its directions, runs the prompter through the local API, and takes the take log for the edit. The readme, feature list and Help > About now lead with it
