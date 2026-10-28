@@ -950,9 +950,17 @@
           </p>
         </fieldset>
 
-        <div class="modal-actions">
+        <div class="modal-actions settings-actions">
+          <div id="settings-unsaved" class="settings-unsaved hidden" role="alertdialog" aria-labelledby="settings-unsaved-text">
+            <span id="settings-unsaved-text">You have changes you haven't saved.</span>
+            <button id="settings-unsaved-save" type="button" class="primary">Save</button>
+            <button id="settings-unsaved-discard" type="button">Discard</button>
+            <button id="settings-unsaved-keep" type="button">Keep editing</button>
+          </div>
+          <span id="settings-applied" class="settings-applied" aria-live="polite"></span>
           <button id="settings-cancel" type="button">Cancel</button>
-          <button id="settings-save" type="button" class="primary">Save</button>
+          <button id="settings-apply" type="button" title="Save without closing">Apply</button>
+          <button id="settings-save" type="button" class="primary" title="Save and close">Save</button>
         </div>
       </div>
     </div>

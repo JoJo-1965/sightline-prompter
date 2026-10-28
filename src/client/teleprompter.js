@@ -1808,9 +1808,25 @@ function numberValue( id, min, max, fallback ) {
 		: fallback;
 }
 
+// Changes made since Settings opened or was last applied. The Layout,
+// Reading and Recording tabs apply as you go, so they don't count.
+let settingsDirty = false;
+let afterSettingsClose = null;
+const LIVE_TABS = "#set-layout-host, #set-reading-host, #set-recording-host";
+
+function markSettingsDirty( event ) {
+	if ( !event.isTrusted || event.target.closest( LIVE_TABS ) ) return;
+	if ( !event.target.matches( "input, select, textarea" ) ) return;
+	settingsDirty = true;
+	field( "settings-applied" ).textContent = "";
+}
+
 async function openSettings() {
 	if ( !settingsModal ) return;
 	settingsSnapshot = { fontSize, opacity };
+	settingsDirty = false;
+	field( "settings-unsaved" )?.classList.add( "hidden" );
+	if ( field( "settings-applied" ) ) field( "settings-applied" ).textContent = "";
 	field( "set-scroll-mode" ).value = settings.scrollMode ?? "steady";
 	field( "set-steady-wpm" ).value = settings.steadyWpm;
 	field( "set-countdown" ).value = settings.countdown;
@@ -1883,7 +1899,34 @@ function showVoiceEngineFields() {
 field( "set-voice-engine" )?.addEventListener( "change", showVoiceEngineFields );
 field( "set-speech-model-get" )?.addEventListener( "click", () => window.electron.speechModelDownload() );
 
+// Close, but ask first when there are changes that haven't been saved.
+// then: what to do once it's closed (open the About page, a file…).
+function requestCloseSettings( then = null ) {
+	if ( settingsModal?.classList.contains( "hidden" ) ) {
+		then?.();
+		return;
+	}
+	if ( settingsDirty ) {
+		afterSettingsClose = then;
+		field( "settings-unsaved" ).classList.remove( "hidden" );
+		field( "settings-unsaved-keep" ).focus();
+		return;
+	}
+	closeSettings( true );
+	then?.();
+}
+
+function finishSettingsClose( save ) {
+	const then = afterSettingsClose;
+	afterSettingsClose = null;
+	field( "settings-unsaved" ).classList.add( "hidden" );
+	if ( save ) saveSettingsPage();
+	else closeSettings( true );
+	then?.();
+}
+
 function closeSettings( restore ) {
+	settingsDirty = false;
 	if ( restore && settingsSnapshot ) {
 		setFontSize( settingsSnapshot.fontSize, false );
 		setOpacity( settingsSnapshot.opacity, false );
@@ -1893,7 +1936,8 @@ function closeSettings( restore ) {
 	settingsModal?.classList.add( "hidden" );
 }
 
-function saveSettingsPage() {
+// Save and close (Save), or save and stay (Apply).
+function saveSettingsPage( close = true ) {
 	window.electron.saveSettings( {
 		scrollMode: field( "set-scroll-mode" ).value === "voice" ? "voice" : "steady",
 		voiceEngine: field( "set-voice-engine" ).value === "deepgram" ? "deepgram" : "local",
@@ -1955,7 +1999,15 @@ function saveSettingsPage() {
 		audioDeviceId = mic;
 		window.electron.setAudioDeviceId( mic ?? "" );
 	}
-	closeSettings( false );
+	settingsDirty = false;
+	if ( close ) {
+		closeSettings( false );
+		return;
+	}
+	// Applied: Cancel now goes back to these, not to how it was when opened.
+	settingsSnapshot = { fontSize, opacity };
+	field( "set-deepgram-key" ).value = "";
+	field( "settings-applied" ).textContent = "Saved";
 }
 
 if ( settingsModal ) {
@@ -1972,11 +2024,25 @@ if ( settingsModal ) {
 	field( "set-cues-clear" ).addEventListener( "click", () => {
 		field( "set-cues-file" ).value = "";
 	} );
-	field( "settings-save" ).addEventListener( "click", saveSettingsPage );
-	field( "settings-cancel" ).addEventListener( "click", () => closeSettings( true ) );
-	field( "settings-close" ).addEventListener( "click", () => closeSettings( true ) );
+	field( "settings-save" ).addEventListener( "click", () => saveSettingsPage( true ) );
+	field( "settings-apply" ).addEventListener( "click", () => saveSettingsPage( false ) );
+	field( "settings-cancel" ).addEventListener( "click", () => requestCloseSettings() );
+	field( "settings-close" ).addEventListener( "click", () => requestCloseSettings() );
+	field( "settings-unsaved-save" ).addEventListener( "click", () => finishSettingsClose( true ) );
+	field( "settings-unsaved-discard" ).addEventListener( "click", () => finishSettingsClose( false ) );
+	field( "settings-unsaved-keep" ).addEventListener( "click", () => {
+		afterSettingsClose = null;
+		field( "settings-unsaved" ).classList.add( "hidden" );
+	} );
+	settingsModal.addEventListener( "input", markSettingsDirty );
+	settingsModal.addEventListener( "change", markSettingsDirty );
 	settingsModal.addEventListener( "keydown", ( e ) => {
-		if ( e.key === "Escape" ) closeSettings( true );
+		if ( e.key !== "Escape" ) return;
+		if ( !field( "settings-unsaved" ).classList.contains( "hidden" ) ) {
+			field( "settings-unsaved-keep" ).click();
+			return;
+		}
+		requestCloseSettings();
 	} );
 }
 
@@ -2767,7 +2833,8 @@ function menuGroups() {
 					"Minimise",
 					"Ctrl+Shift+M",
 					() => window.electron.windowControl( "minimize" )
-				]
+				],
+				[ "⏻", "Quit Sightline", "Ctrl+W", () => quitApp() ]
 			]
 		},
 		{
@@ -2800,13 +2867,7 @@ function menuGroups() {
 					() => window.electron.copyAiPrompt()
 				],
 				[ "?", "Keyboard shortcuts", "F1", openHelp ],
-				[ "ⓘ", "About this teleprompter", "", openAbout ],
-				[
-					"✕",
-					"Close the teleprompter",
-					"Ctrl+W",
-					() => window.electron.windowControl( "close" )
-				]
+				[ "ⓘ", "About this teleprompter", "", openAbout ]
 			]
 		}
 	];
@@ -2873,6 +2934,12 @@ function toggleMenuGroup( heading ) {
 	appMenu
 		.querySelector( `.am-heading[data-group="${ CSS.escape( heading ) }"]` )
 		?.focus();
+}
+
+// Closing the prompter quits Sightline (asking first about unsaved script
+// edits, and Settings changes).
+function quitApp() {
+	requestCloseSettings( () => window.electron.windowControl( "close" ) );
 }
 
 function renderAppMenu() {
@@ -2956,6 +3023,10 @@ function renderAppMenu() {
 			groupEl.appendChild( menuButton( icon, label, key, action, opts ) );
 		}
 	}
+	// Always in view, whichever groups are folded.
+	const quit = menuButton( "⏻", "Quit Sightline", "Ctrl+W", quitApp );
+	quit.classList.add( "am-quit" );
+	appMenu.appendChild( quit );
 	const footer = document.createElement( "p" );
 	footer.className = "app-footer am-footer";
 	fillFooter( footer );
@@ -3457,10 +3528,7 @@ function fillFooter( el ) {
 	about.type = "button";
 	about.className = "footer-link";
 	about.textContent = "About";
-	about.addEventListener( "click", () => {
-		closeSettings( true );
-		openAbout();
-	} );
+	about.addEventListener( "click", () => requestCloseSettings( openAbout ) );
 	const credit = document.createElement( "span" );
 	credit.className = "footer-credit";
 	const CREDIT = [
@@ -3829,10 +3897,7 @@ const settingsTabs = [
 ];
 
 // The About tab is a brief; the full page is a click away.
-document.getElementById( "settings-about-full" )?.addEventListener( "click", () => {
-	closeSettings( true );
-	openAbout();
-} );
+document.getElementById( "settings-about-full" )?.addEventListener( "click", () => requestCloseSettings( openAbout ) );
 document.getElementById( "settings-about-guide" )?.addEventListener( "click", () => {
 	window.electron.openGuide();
 } );
@@ -4001,11 +4066,9 @@ function fillFilesTab() {
 	);
 }
 
-// Opening something closes Settings (without saving it), so you see the script.
-const closeThen = action => () => {
-	closeSettings( true );
-	action();
-};
+// Opening something closes Settings, so you see the script (asking first if
+// there are changes that haven't been saved).
+const closeThen = action => () => requestCloseSettings( action );
 onClick(
 	"set-file-open",
 	closeThen( () => window.electron.openFileDialog() )

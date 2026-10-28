@@ -56,8 +56,9 @@ click can't jump a take: pause first. Turn the bar off in the Layout panel.
 ![The ☰ menu](images/menu.png)
 
 Opening one group folds the others away, so the menu stays short. Click
-anywhere else to close it. The line at the bottom shows the version and has a
-link to **About**.
+anywhere else to close it. **Quit Sightline** is always at the bottom (also
+**Ctrl+W**, or **✕** on the control bar), and below it the line with the
+version and a link to **About**.
 
 ## Your first take
 

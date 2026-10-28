@@ -92,7 +92,7 @@ export const SHORTCUTS = [
 			[ [ "F1", "?" ], "This help" ],
 			[ [ "Shift+F1" ], "The user guide, with pictures" ],
 			[ [ "Esc" ], "Close a panel" ],
-			[ [ "Ctrl+W" ], "Close the teleprompter" ]
+			[ [ "Ctrl+W" ], "Quit Sightline (also at the foot of the ☰ menu)" ]
 		]
 	}
 ];

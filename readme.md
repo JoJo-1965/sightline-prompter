@@ -207,6 +207,8 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ### Next release
 
+- **Apply in Settings:** saves your changes and keeps Settings open; **Save** saves and closes. Closing with changes you haven't saved now asks first (Save, Discard or Keep editing), including when a button in Settings opens something else
+- **Quit Sightline** at the foot of the ☰ menu, always in view (and at the end of ☰ > Window); the old "Close the teleprompter" item in ☰ > Help is gone
 - The Voice panel's microphone hint no longer names a particular microphone
 
 ### 1.0.3 (28 October 2026)

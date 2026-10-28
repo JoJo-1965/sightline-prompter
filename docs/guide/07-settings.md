@@ -2,9 +2,15 @@
 
 Open Settings with **⚙** in the control bar, **Ctrl+,** or ☰ > Settings. The
 tabs keep everything in view, and the panel stays the same size on every
-tab. **←** and **→** switch tabs, and **Save** and **Cancel** are always at
-the bottom. The **×** at the top right closes without
-saving.
+tab. **←** and **→** switch tabs, and the buttons stay at the bottom:
+
+- **Apply** saves your changes and keeps Settings open.
+- **Save** saves and closes.
+- **Cancel**, the **×** at the top right and **Esc** close without saving.
+
+If you've changed something you haven't saved, closing asks first:
+**Save**, **Discard** or **Keep editing**. The Layout, Reading and Recording
+tabs change the prompter as you go, so they're always kept.
 
 ## Scrolling
 
