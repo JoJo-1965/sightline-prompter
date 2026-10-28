@@ -31,9 +31,14 @@ function check( file ) {
 	let sections = 0;
 	// Single takes are timed as a whole, so sections don't need their own targets.
 	const session = SESSION_REGEX.test( raw );
+	// Notes with pages (a # heading after the first ##, or {page}): the ##
+	// headings are bullets, and any target belongs to the page.
+	const firstH2 = lines.findIndex( l => /^##\s/.test( l ) );
+	const pageBreaks = /\{\s*page\s*\}/i.test( raw ) || lines.some( ( l, k ) => firstH2 >= 0 && k > firstH2 && /^#\s/.test( l ) );
+	const notesPages = /\{[^}]*\bmode\s*:\s*(notes|points)\b/i.test( raw ) && pageBreaks;
 
 	const endSection = () => {
-		if ( seenSection && !sectionHasTarget && !session ) {
+		if ( seenSection && !sectionHasTarget && !session && !notesPages ) {
 			add( "warning", sectionLine, "Section has no {target: m:ss} or {wpm: n}" );
 		}
 	};

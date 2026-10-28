@@ -1,4 +1,4 @@
-{mode: points, target: 6:00}
+{mode: notes, target: 6:00}
 
 # Sample: talking points
 

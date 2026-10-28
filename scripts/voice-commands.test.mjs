@@ -115,3 +115,6 @@ console.log( "section and reset pass" );
 assert.equal( matchCommand( [ "back", "to", "the", "marker" ] ), "back-to-marker" );
 assert.equal( matchCommand( [ "marker" ] ), "marker" );
 console.log( "back to the marker passes" );
+assert.equal( matchCommand( [ "next", "page" ] ), "next" );
+assert.equal( matchCommand( [ "previous", "page" ] ), "back" );
+console.log( "page commands pass" );

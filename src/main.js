@@ -188,7 +188,8 @@ export const SAMPLE_SCRIPTS = [
 	{ file: "voice-and-stops.md", label: "Voice control, stops and countdowns" },
 	{ file: "batch-module.md", label: "Batch recording, section by section" },
 	{ file: "single-take.md", label: "Single continuous take" },
-	{ file: "talking-points.md", label: "Talking points (speaking off script)" },
+	{ file: "notes.md", label: "Notes, a page at a time" },
+	{ file: "talking-points.md", label: "Notes, one section per page" },
 	{ file: "formatting-test.md", label: "Formatting test" },
 	{ file: "plain-text-sections.txt", label: "Plain-text sections" }
 ];

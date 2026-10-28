@@ -64,7 +64,8 @@ read.
 | `{marker}` or `{marker: Setup}` | A bookmark for retakes. **Ctrl+B** jumps to the next one. A name, such as `{marker: Setup}`, shows in the take log and the edit pack |
 | `{wpm: 140}`                  | On a section heading: that section's pace                 |
 | `{target: 1:20}`              | On a section heading: that section's target time          |
-| `{mode: points}`              | At the top: open the script as talking points             |
+| `{mode: notes}`               | At the top: open the script as notes, a page at a time (`{mode: points}` too) |
+| `{page}`                      | In notes: start a new page here, with no title (a `# heading` also starts one) |
 | `{pacing: section, wpm: 145}` | At the top: settings for the whole script                 |
 
 To check a script, tick **Show directives** in the Layout panel. Each

@@ -47,12 +47,13 @@ export const SHORTCUTS = [
 		]
 	},
 	{
-		section: "Talking points",
+		section: "Notes",
 		keys: [
 			[ [ "Space" ], "Start / stop the talk timer" ],
-			[ [ "Page Down", "→" ], "Next point (starts the timer if it isn't running)" ],
-			[ [ "Page Up", "←" ], "Previous point" ],
-			[ [ "{mode: points}" ], "In a script: open it as talking points (or Layout > Talking points)" ]
+			[ [ "Page Down", "→" ], "Next page (starts the timer if it isn't running)" ],
+			[ [ "Page Up", "←" ], "Previous page" ],
+			[ [ "{mode: notes}" ], "In a script: open it as notes, a page at a time (or Layout > Recording > Notes)" ],
+			[ [ "# Heading", "{page}" ], "In notes: start a new page; each ## heading on it is a bullet" ]
 		]
 	},
 	{

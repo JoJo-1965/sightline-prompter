@@ -26,7 +26,7 @@ import {
 	WPM_STEP
 } from "./steady-scroll.js";
 import { decorateScript } from "./decorate.js";
-import { readDirectives } from "./directives.js";
+import { readDirectives, parseDirective, parseDuration } from "./directives.js";
 import { createTakeLog } from "./take-log.js";
 import { COMMAND_HELP } from "./voice-commands.js";
 import {
@@ -4025,11 +4025,9 @@ function sectionOnScreen() {
 
 // The heading of the section on screen (or the current talking point).
 function currentSectionTitle() {
+	if ( pointsMode() ) return pointUnit( pointsIndex )?.title ?? "";
 	const headings = md?.querySelectorAll( "h2" ) ?? [];
-	const heading = pointsMode()
-		? headings[pointsIndex]
-		: headings[sectionOnScreen() - 1];
-	return heading?.textContent.replace( /\{[^}]*\}/g, "" ).trim() ?? "";
+	return cleanHeading( headings[sectionOnScreen() - 1] );
 }
 
 function jumpSection( step ) {
@@ -4561,7 +4559,8 @@ function jumpToNextMarker() {
 // if it isn't running); Page Up / ← goes back.
 
 function pointsMode() {
-	return scriptDirectives.script.mode === "points" || !!settings.pointsMode;
+	const mode = scriptDirectives.script.mode;
+	return mode === "points" || mode === "notes" || !!settings.pointsMode;
 }
 
 function tagSections() {
@@ -4570,31 +4569,90 @@ function tagSections() {
 		if ( el.tagName === "H2" ) index++;
 		el.dataset.section = String( index );
 	}
+	tagPages();
+}
+
+// --- Notes mode: pages ---
+// A page starts at an H1 (its title) or a {page} directive; each H2 on it is
+// a bullet. A script with no H1 or {page} after its title keeps one H2 per
+// page, as talking points always did, so notePages stays null.
+let notePages = null; // [{ heading, title, targetSeconds }]
+
+const cleanHeading = el => el?.textContent.replace( /\{[^}]*\}/g, "" ).trim() ?? "";
+
+function directivesIn( el ) {
+	return [ ...( el.querySelectorAll?.( ".app-directive" ) ?? [] ) ].map( d => parseDirective( d.textContent ) );
+}
+
+function tagPages() {
+	notePages = null;
+	const kids = [ ...md.children ];
+	for ( const el of kids ) delete el.dataset.page;
+	const firstH2 = kids.findIndex( el => el.tagName === "H2" );
+	const isBreak = el => el.tagName !== "H1" && directivesIn( el ).some( d => "page" in d );
+	const paged = kids.some( ( el, i ) => ( el.tagName === "H1" && firstH2 >= 0 && i > firstH2 ) || isBreak( el ) );
+	if ( !paged ) return;
+	const pages = [];
+	const targetOf = ( el ) => {
+		const d = directivesIn( el ).find( x => "target" in x );
+		return d ? parseDuration( d.target ) : null;
+	};
+	// Anything with no words before the first heading (an anchor) joins the
+	// page that follows, so it doesn't make an empty one.
+	let filled = false;
+	const start = ( page ) => {
+		if ( pages.length && !filled && !pages.at( -1 ).heading ) pages[pages.length - 1] = page;
+		else pages.push( page );
+		filled = false;
+	};
+	for ( const el of kids ) {
+		if ( el.tagName === "H1" ) start( { heading: el, title: cleanHeading( el ), targetSeconds: targetOf( el ) } );
+		else if ( isBreak( el ) || !pages.length ) start( { heading: null, title: "", targetSeconds: isBreak( el ) ? targetOf( el ) : null } );
+		// Words count; a line of {settings} doesn't.
+		if ( el.tagName !== "H1" && !isBreak( el ) && cleanHeading( el ) ) filled = true;
+		el.dataset.page = String( pages.length - 1 );
+	}
+	// A page without a heading is named after its first bullet.
+	pages.forEach( ( page, i ) => {
+		if ( page.title ) return;
+		const first = kids.find( el => el.dataset.page === String( i ) && el.tagName === "H2" );
+		page.title = cleanHeading( first ) || "Page " + ( i + 1 );
+	} );
+	notePages = pages;
+}
+
+// The pages (or, without pages, the sections) notes mode steps through.
+function pointCount() {
+	return notePages ? notePages.length : scriptDirectives.sections.length;
+}
+
+function pointUnit( i ) {
+	if ( notePages ) return notePages[i] ?? null;
+	const s = directivePoints.sections[i] ?? scriptDirectives.sections[i];
+	return s ? { ...s, title: cleanHeading( s.heading ) } : null;
 }
 
 function applyPointsView() {
-	const on = pointsMode() && scriptDirectives.sections.length > 0;
+	const on = pointsMode() && pointCount() > 0;
 	document.body.classList.toggle( "points-mode", on );
+	document.body.classList.toggle( "notes-pages", on && !!notePages );
 	if ( !on ) {
 		for ( const el of md.querySelectorAll( ".current-section" ) )
 			el.classList.remove( "current-section" );
 		return;
 	}
-	pointsIndex = Math.max(
-		0,
-		Math.min( pointsIndex, scriptDirectives.sections.length - 1 )
-	);
+	pointsIndex = Math.max( 0, Math.min( pointsIndex, pointCount() - 1 ) );
 	for ( const el of md.children ) {
 		el.classList.toggle(
 			"current-section",
-			el.dataset.section === String( pointsIndex )
+			( notePages ? el.dataset.page : el.dataset.section ) === String( pointsIndex )
 		);
 	}
 	window.scrollTo( 0, 0 );
 }
 
 function goToPoint( index ) {
-	const last = scriptDirectives.sections.length - 1;
+	const last = pointCount() - 1;
 	if ( index > last ) {
 		// Past the last section: the talk is over.
 		if ( pointsRunning ) togglePoints();
@@ -4607,7 +4665,7 @@ function goToPoint( index ) {
 
 function togglePoints() {
 	pointsRunning = !pointsRunning;
-	setIndicator( pointsRunning ? "Talking points · timing" : null );
+	setIndicator( pointsRunning ? "Notes · timing" : null );
 	updateOnAir();
 	updatePlayButton();
 }
@@ -4693,6 +4751,20 @@ function startPacing() {
 }
 
 function logSection( index, seconds, startWords = 0 ) {
+	if ( pointsMode() ) {
+		const unit = pointUnit( index );
+		if ( !unit || seconds < 2 ) return;
+		takeLog.set( index, {
+			title: unit.title,
+			seconds,
+			targetSeconds: unit.targetSeconds ?? null,
+			wpm: null,
+			targetWpm: null,
+			verdict: judgeFinished( seconds, unit.targetSeconds ?? null ),
+			partial: false
+		} );
+		return;
+	}
 	const section = directivePoints.sections[index];
 	if ( !section || seconds < 2 ) return;
 	const targetWpm = targetWpmFor( section );
@@ -4783,9 +4855,10 @@ function feedTakeLog( active ) {
 	recording.tick( {
 		active,
 		index,
-		title: section?.heading.textContent.replace( /\{[^}]*\}/g, "" ).trim() ?? "",
+		// In notes mode the page is the unit.
+		title: pointsMode() ? pointUnit( index )?.title ?? "" : cleanHeading( section?.heading ),
 		// The script's own {target} for the section, for the pace in the edit pack.
-		target: section?.targetSeconds ?? null,
+		target: ( pointsMode() ? pointUnit( index ) : section )?.targetSeconds ?? null,
 		// Moving on through words, not through the blank space after the script.
 		advanced: pointsMode()
 			? pointsRunning
@@ -4917,21 +4990,18 @@ function judgeTime( seconds, targetSeconds ) {
 
 function renderPointsPacing() {
 	if ( !pacingEl || settings.showPacing === false ) return;
-	const measured = directivePoints.sections[pointsIndex];
-	const section = measured ?? scriptDirectives.sections[pointsIndex];
-	const total = scriptDirectives.sections.length;
+	const section = pointUnit( pointsIndex );
+	const total = pointCount();
 	const target = section?.targetSeconds ?? null;
 	const verdict = judgeTime( pacing.sectionTime, target );
-	const sumOfTargets = scriptDirectives.sections.reduce(
-		( sum, s ) => sum + ( s.targetSeconds ?? 0 ),
-		0
-	);
+	let sumOfTargets = 0;
+	for ( let i = 0; i < total; i++ ) sumOfTargets += pointUnit( i )?.targetSeconds ?? 0;
 	const totalTarget = scriptDirectives.script.targetSeconds ?? sumOfTargets;
 	pacingEl.classList.remove( "hidden", "good", "warn", "bad", "wait" );
 	pacingEl.classList.add( verdict.level );
 	pacingEl.innerHTML = "";
 	const parts = [
-		[ "pc-label", `Point ${ pointsIndex + 1 } of ${ total }` ],
+		[ "pc-label", `Page ${ pointsIndex + 1 } of ${ total }` ],
 		[
 			"pc-time",
 			`${ formatClock( pacing.sectionTime ) }${ target ? ` / ${ formatClock( target ) }` : "" }`

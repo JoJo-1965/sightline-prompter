@@ -69,12 +69,18 @@ next line:
 | `{marker}`    | A bookmark you can jump to (`Ctrl+B` cycles through them), useful for retakes. Optionally named: `{marker: Setup}` (up to 40 characters) puts the name in the take log and the edit pack's marks. Each marker is logged with the take when it's read past |
 | `{wpm: n}`    | Changes the target pace from this point until the end of the section                                                     |
 
-## Talking points
+## Notes (talking points)
 
-For speaking off script, put `{mode: points}` in the script settings, or on a
-section heading for just that section. Each section is then shown on its own as
-large bullet points, with no scrolling, and you move on with the arrow keys,
-clicker or remote. The section timer and `{target: m:ss}` work as normal.
+For speaking from notes, put `{mode: notes}` (or `{mode: points}`) in the
+script settings. The script is shown a page at a time, with no scrolling, and
+you move on with the arrow keys, clicker, remote or "Prompter, next page".
+
+- A `# heading` starts a page; it's the page's title, and a `{target: m:ss}`
+  on it times the page.
+- `{page}` starts a page with no title.
+- Each `## heading` on a page is a bullet; lines under it show smaller.
+- With no `# heading` or `{page}` after the title, each `## section` is its own
+  page (as below), with its own `{target}`.
 
 ```md
 {mode: points, pacing: section}

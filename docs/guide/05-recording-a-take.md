@@ -140,13 +140,25 @@ plain files on your computer.
 **File > Start a New Take Log** starts again from take 1 (the old log is kept),
 and **File > Show Take Logs Folder** opens the folder where they're saved.
 
-## Talking points
+## Notes (talking points)
 
-For a talk rather than a word-for-word script, choose **Talking points** in the
-Layout panel, or put `{mode: points}` at the top of the script. Each section
-shows as one page of points, with no scrolling.
+For a talk from notes rather than a word-for-word script, tick **Notes** in the
+Layout panel (the Recording view), or put `{mode: notes}` at the top of the
+script (`{mode: points}` works too). The script shows a page at a time, with
+no scrolling.
+
+- A `# heading` starts a page, with that heading as its title, and `{page}`
+  starts one with no title.
+- Each `## heading` on the page is a bullet, with any lines under it smaller.
+- A `{target}` on a `# heading` times its page.
+- With no `# headings` or `{page}` after the title, each `## section` is a page
+  of its own, as talking points always were.
+
+The sample **Notes, a page at a time** (Script > Sample scripts) shows it.
 
 ![Talking points](images/talking-points.png)
 
 **Space** starts and stops the talk timer. **→** and **Page Down** go to the
-next point, and **←** and **Page Up** go back.
+next page, and **←** and **Page Up** go back. Say "Prompter, next page" or
+"Prompter, previous page" too. The pacing light shows the page's time against
+its target, and each page is logged as a section in the take log.

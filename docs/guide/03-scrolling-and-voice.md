@@ -79,8 +79,8 @@ that*, with the words it heard, so you can say it again.
 | **pause** (or stop, hold, wait) | Pause. In voice mode the prompter keeps listening, so you can carry on |
 | **go** (or carry on, continue, start) | Start, or carry on after a pause. While paused in voice mode, "go" on its own works too |
 | **slower** / **faster** (or slow down, speed up) | Steady scrolling: 10 words a minute slower or faster. Voice mode: less or more responsive |
-| **back** (or previous section) | Back to the start of this section, or the one before |
-| **next section** | On to the next section |
+| **back** (or previous section, previous page) | Back to the start of this section, or the one before. In notes, the previous page |
+| **next section** (or next page) | On to the next section. In notes, the next page |
 | **from the top** (or top, start again) | Back to the start |
 | **reset** (or restart) | Back to the start, with the speed back to normal and the pacing clock cleared, ready for a fresh run |
 | **section 3** (any number) | To the start of that section. You can say it without "Prompter" too, as your spoken slate before each section: saying the section you're in counts as a retake |

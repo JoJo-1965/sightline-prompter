@@ -86,6 +86,15 @@
 			},
 			"description": "With no value: the same as {stop}. With a value: stop for that many seconds, with a countdown, then carry on (say \"Prompter, go\" to carry on sooner, or \"Prompter, pause\" to wait). Works in steady and voice scrolling. In section mode the section timer stops too."
 		},
+		"page": {
+			"scopes": [
+				"inline"
+			],
+			"value": {
+				"type": "none"
+			},
+			"description": "Notes mode: start a new page here, without a heading. (A # heading also starts a page.)"
+		},
 		"stop": {
 			"scopes": [
 				"inline"
@@ -115,11 +124,12 @@
 				"type": "enum",
 				"values": [
 					"script",
+					"notes",
 					"points"
 				]
 			},
 			"default": "script",
-			"description": "script: read word for word with scrolling. points: show the section as large bullet points with no scrolling, for speaking off script; the section timer and target still apply."
+			"description": "script: read word for word with scrolling. notes (points is the same): show a page at a time with no scrolling, for speaking from notes. A page starts at a # heading or {page}; each ## heading on it is a bullet. With neither, each ## section is its own page. The page timer and {target} still apply."
 		}
 	},
 	"rules": [

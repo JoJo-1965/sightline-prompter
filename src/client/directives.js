@@ -45,7 +45,8 @@ function sectionSettings( into, d ) {
 		const wpm = parseWpm( d.wpm );
 		if ( wpm ) into.wpm = wpm;
 	}
-	if ( d.mode === "points" || d.mode === "script" ) into.mode = d.mode;
+	// notes and points are the same mode (notes is its newer name).
+	if ( d.mode === "points" || d.mode === "notes" || d.mode === "script" ) into.mode = d.mode;
 }
 
 // A directive counts as part of a section heading when it's on the heading

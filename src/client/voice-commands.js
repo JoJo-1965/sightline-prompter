@@ -51,10 +51,13 @@ export const COMMANDS = [
 			"go back",
 			"previous",
 			"previous section",
-			"back a section"
+			"back a section",
+			"previous page",
+			"page back",
+			"back a page"
 		]
 	},
-	{ id: "next", phrases: [ "next", "next section", "skip", "skip ahead" ] },
+	{ id: "next", phrases: [ "next", "next section", "skip", "skip ahead", "next page", "page forward" ] },
 	{
 		id: "top",
 		phrases: [

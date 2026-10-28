@@ -2055,6 +2055,33 @@ body.points-mode #md::after {
 	height: 0;
 }
 
+/* Notes mode with pages: the # heading is the page title, each ## a bullet. */
+body.notes-pages #md h1.current-section {
+	margin: 0.2em 0 0.3em;
+}
+
+body.notes-pages #md h2.current-section {
+	position: relative;
+	margin: 0.45em 0 0.1em;
+	padding-left: 1em;
+	border-top: none;
+	font-size: calc(115% * var(--heading-scale, 1));
+}
+
+body.notes-pages #md h2.current-section::before {
+	content: "•";
+	position: absolute;
+	left: 0;
+	color: #ffd54a;
+}
+
+body.notes-pages #md p.current-section,
+body.notes-pages #md ul.current-section,
+body.notes-pages #md ol.current-section {
+	margin: 0.1em 0 0.3em 1em;
+	font-size: 85%;
+}
+
 /* Phone remote (Settings) */
 .phone-connect {
   display: flex;
