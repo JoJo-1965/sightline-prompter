@@ -45,6 +45,7 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [] 
 			markerList: [],
 			markerKeys: new Set(),
 			restarts: [],
+			offScript: [],
 			words: [],
 			rereads: [],
 			rating: null,
@@ -93,6 +94,9 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [] 
 			// Went back to a marker and read on: { t, label, markerAt }. The
 			// reading from markerAt up to t is superseded by the one from t.
 			restarts: done.restarts,
+			// {listen: off} to {listen: on}: the speaker went off script (an
+			// ad-lib, a demo, questions) with the microphone off: { start, end }.
+			offScript: done.offScript.map( o => ( { start: o.start, end: o.end ?? since( end ) } ) ),
 			words: done.words,
 			rereads: done.rereads,
 			sentences: sectionSentences( done.section - 1 )
@@ -182,6 +186,16 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [] 
 			current.restarts.push( entry );
 			event( "restart", label ? { label } : {} );
 			return entry;
+		},
+
+		// {listen: off} (on = false) and {listen: on} (on = true) during a take.
+		listen( on, { at = null } = {} ) {
+			if ( !current || !log.startedAt ) return;
+			const t = since( at ?? clock() );
+			const open = current.offScript.at( -1 );
+			if ( !on && ( !open || open.end != null ) ) current.offScript.push( { start: t, end: null } );
+			else if ( on && open && open.end == null ) open.end = t;
+			event( on ? "listen-on" : "listen-off" );
 		},
 
 		// "keeper" or "scrap": the take in progress, else the last one finished.

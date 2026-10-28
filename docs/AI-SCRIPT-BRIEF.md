@@ -6,7 +6,7 @@ you want. It produces scripts that Sightline Prompter can pace, stop and count
 down automatically. In the app, **Help > Copy the AI Script Prompt** (or ☰ >
 Help) puts it on the clipboard for you.
 
-Spec version: **0.3 (28 October 2026: adds named markers, `{marker: Setup}`; 0.2 added `{stop}` and countdown pauses)**. Full spec:
+Spec version: **0.4 (28 October 2026: adds `{listen: off}`, `{listen: on}` and `{prompter: …}`; 0.3 added named markers, `{marker: Setup}`; 0.2 added `{stop}` and countdown pauses)**. Full spec:
 [SCRIPT-DIRECTIVES.md](SCRIPT-DIRECTIVES.md). Machine-readable definition:
 [script-directives.json](script-directives.json).
 
@@ -55,6 +55,8 @@ Never use `{` or `}` for anything else. Never put directives inside
 | `{pause: ns}`                              | Inline, at the end of a sentence                                  | A countdown: the prompter waits n seconds (1 to 30), showing "Carrying on in n", then carries on by itself, for example `{pause: 3s}`. Use 2s to 5s for a breath, a beat for emphasis, or time to look at a slide. Write them whether the speaker will use steady or voice scrolling: in voice scrolling the prompter doesn't hold, it shows the pause as a mark and the speaker takes the beat |
 | `{mode: notes}` (or `{mode: points}`) | Script settings | For a talk spoken from notes: shown a page at a time, never scrolled. A `# heading` starts a page (its title) and `{page}` starts one without a title; each `## heading` on the page is a bullet, with a short line under it if needed; put `{target: m:ss}` on the `# heading`. Without `# headings` or `{page}`, each `## section` is a page. Write each section as 3 to 6 short bullets (`- `) and give every section a `{target: m:ss}` |
 | `{marker}` or `{marker: Setup}`            | Inline                                                            | A bookmark for retakes. Put one at the start of any passage that's hard to deliver. In a long section, name one at the start of each part (`{marker: Setup}`, `{marker: Context}`), up to 40 characters, so the edit can find each part |
+| `{listen: off}` and `{listen: on}`        | Inline: off at the end of a sentence, on on its own line | Off script: an ad-lib, a demo or questions between them. The microphone is off and the prompter waits; the speaker carries on with Space or a clicker, from `{listen: on}` |
+| `{prompter: slower}`                       | Inline                                                            | Runs a prompter command at that point: `slower`, `faster`, `bigger`, `smaller` or `marker` |
 
 Several settings can share one pair of braces, separated by commas:
 `{pacing: section, wpm: 145, target: 9:30}`.
@@ -71,6 +73,13 @@ Several settings can share one pair of braces, separated by commas:
   `target`, and use `{stop}` only where a real stop is needed. Use short
   countdowns (`{pause: 2s}` to `{pause: 5s}`) for beats and breaths instead.
 - A stop or countdown goes at the end of a sentence, never in the middle of one.
+- For a part that isn't read from the script (an ad-lib, a demo, questions),
+  put `{listen: off}` at the end of the sentence before it, the notes for it in
+  `[square brackets]`, and `{listen: on}` on its own line before the script
+  starts again. Don't use `{stop}` for these.
+- Use `{prompter: slower}` (or `faster`, `bigger`, `smaller`, `marker`) only
+  where the speaker will want it every time, such as `{prompter: slower}`
+  before a dense passage.
 - You don't know whether the script will be read with steady or voice scrolling,
   so write stops and countdowns the same way for both. A `{stop}` holds in
   both; a countdown only holds in steady scrolling.

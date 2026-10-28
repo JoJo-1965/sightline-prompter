@@ -41,6 +41,10 @@ and say the checker couldn't be run.
 - Use only the directives the brief allows. Don't invent new ones.
 - In a long section, name a marker at the start of each part,
   `{marker: Setup}`, so the edit can find and recut each part.
+- For a demo, an ad-lib or questions, put `{listen: off}` before it and
+  `{listen: on}` where the script starts again, with the demo notes in
+  `[brackets]` between: the microphone is off and the edit keeps that part
+  whole.
 - For a talk from notes rather than a script, use `{mode: notes}`: a
   `# heading` (or `{page}`) starts each page and each `## heading` on it is a
   short bullet. See `src/samples/notes.md`.

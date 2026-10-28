@@ -1,6 +1,7 @@
 // node scripts/take-log.test.mjs
 import assert from "node:assert/strict";
 import { createTakeLog, pickTakes, takeLogCsv } from "../src/client/take-log.js";
+import { takeMarks } from "../src/client/edit-pack.js";
 
 let now = Date.parse( "2026-10-28T10:00:00.000Z" );
 const clock = () => now;
@@ -130,6 +131,35 @@ assert.equal( slated.data().events[0].type, "slate" );
 	// Nothing is logged between takes.
 	words.words( [ { i: 2, w: "Lost", at: now } ] );
 	assert.equal( words.data().takes.length, 1 );
+}
+
+// {listen: off} to {listen: on}: the time off script, on the take; one
+// still open when the take ends closes with it. The edit pack marks it.
+{
+	const off = createTakeLog( { clock } );
+	for ( let s = 0; s < 2; s += 0.5 ) {
+		off.tick( { active: true, index: 0, title: "Demo", advanced: true } );
+		wait( 0.5 );
+	}
+	off.listen( false );
+	wait( 3 );
+	off.listen( false ); // a second off while off changes nothing
+	off.listen( true );
+	off.tick( { active: true, index: 0, title: "Demo", advanced: true } );
+	wait( 1 );
+	off.listen( false );
+	wait( 2 );
+	off.tick( { active: true, index: 0, title: "Demo", advanced: true } );
+	off.tick( { active: false, index: 0, atEnd: true } );
+	const take = off.data().takes[0];
+	assert.equal( take.offScript.length, 2 );
+	assert.deepEqual( take.offScript[0], { start: 2, end: 5 } );
+	assert.equal( take.offScript[1].start, 6 );
+	assert.ok( take.offScript[1].end >= 8, "closed with the take" );
+	const marks = takeMarks( take ).filter( m => m.type === "off-script" );
+	assert.equal( marks.length, 2 );
+	assert.equal( marks[0].duration, 3 );
+	assert.deepEqual( off.data().events.map( e => e.type ).filter( t => t.startsWith( "listen" ) ), [ "listen-off", "listen-off", "listen-on", "listen-off" ] );
 }
 
 console.log( "take log tests pass" );

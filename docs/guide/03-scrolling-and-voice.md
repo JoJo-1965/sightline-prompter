@@ -175,8 +175,37 @@ as a small blue **⏸ 3s** mark in the script, and you take the beat yourself.
 Scripts can carry countdowns for steady scrolling without them getting in the
 way when you read by voice.
 
+### Off script: `{listen: off}`
+
+For a part you don't read from the script, such as an ad-lib, a demo or
+questions, put `{listen: off}` before it and `{listen: on}` where the script
+starts again:
+
+```
+… and that's the theory. {listen: off}
+
+[Demo: show the team page, then take a question.]
+
+{listen: on}
+So, back to the three habits.
+```
+
+At `{listen: off}` the microphone is muted, so nothing you say is listened to,
+and the prompter holds with **Off script · mic off · Space to carry on**. When
+you're back on script, press **Space**, the clicker, the phone remote or the
+Stream Deck: the prompter goes to `{listen: on}` and follows you again (in
+steady scrolling, it scrolls on from there). The take log notes how long you
+were off script, so the edit can keep that part whole.
+
+### Commands in the script: `{prompter: …}`
+
+`{prompter: slower}`, `faster`, `bigger`, `smaller` or `marker` runs that
+command as you reach it, as if you'd said "Prompter, slower" there: slow down
+for a hard passage, make the text bigger for a section read from further away.
+
 To try it all, open ☰ > Script > **Sample scripts > Voice control, stops and
-countdowns**. It walks you through a countdown, a stop and the voice commands.
+countdowns**. It walks you through a countdown, a stop, going off script and
+the voice commands.
 
 ## The sentence highlight
 

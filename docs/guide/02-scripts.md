@@ -62,6 +62,8 @@ read.
 | `{stop}` (or `{pause}`)       | Stops here until you say "Prompter, go", or press Space or the clicker |
 | `{pause: 3s}`                 | A 3-second countdown, then it carries on by itself. In voice mode, a **⏸ 3s** mark: take the beat yourself |
 | `{marker}` or `{marker: Setup}` | A bookmark for retakes. **Ctrl+B** jumps to the next one. A name, such as `{marker: Setup}`, shows in the take log and the edit pack |
+| `{listen: off}` … `{listen: on}` | Off script (an ad-lib, a demo, questions): the microphone is off and the prompter holds; Space carries on from `{listen: on}` |
+| `{prompter: bigger}`          | Runs a command as you reach it: `slower`, `faster`, `bigger`, `smaller` or `marker` |
 | `{wpm: 140}`                  | On a section heading: that section's pace                 |
 | `{target: 1:20}`              | On a section heading: that section's target time          |
 | `{mode: notes}`               | At the top: open the script as notes, a page at a time (`{mode: points}` too) |

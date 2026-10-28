@@ -115,6 +115,35 @@
 			},
 			"description": "A bookmark for retakes; Ctrl+B cycles through them. An optional label, {marker: Setup}, names it in the take log and the edit pack's marks."
 		},
+		"listen": {
+			"scopes": [
+				"inline"
+			],
+			"value": {
+				"type": "enum",
+				"values": [
+					"off",
+					"on"
+				]
+			},
+			"description": "off: before an ad-lib, a demo or questions. The microphone is muted (nothing is listened to) and the prompter holds, in steady and voice scrolling; Space, a clicker, the remote or the Stream Deck carries on from the next {listen: on}, where voice following picks up again. The take log and edit pack record the time off script. on: where reading from the script starts again."
+		},
+		"prompter": {
+			"scopes": [
+				"inline"
+			],
+			"value": {
+				"type": "enum",
+				"values": [
+					"slower",
+					"faster",
+					"bigger",
+					"smaller",
+					"marker"
+				]
+			},
+			"description": "Run a prompter command as the reading reaches this point: slower or faster (the steady speed), bigger or smaller (the text), or marker. In voice scrolling it runs when the word before it is said."
+		},
 		"mode": {
 			"scopes": [
 				"script",

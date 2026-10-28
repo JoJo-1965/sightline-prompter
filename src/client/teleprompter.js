@@ -48,12 +48,16 @@ let scriptDirectives = {
 	sections: [],
 	pauses: [],
 	markers: [],
-	paceChanges: []
+	paceChanges: [],
+	listenOns: [],
+	prompterCommands: []
 };
 let directivePoints = {
 	pauses: [],
 	markers: [],
 	paceChanges: [],
+	listenOns: [],
+	prompterCommands: [],
 	sections: [],
 	wordTops: []
 };
@@ -919,7 +923,14 @@ function wordAfter( el, ranges ) {
 function handleAutoScrollPosition( wordIdx, ranges ) {
 	// The words just heard end here, so the next thing to say is the word after.
 	if ( settings.highlightSentence !== false ) showSentenceAt( wordIdx + 1 );
+	const before = voiceWordIdx;
 	const pause = voicePauseCrossed( wordIdx, ranges );
+	if ( before !== null && wordIdx > before && !autoScrollHandle?.isHeld() ) {
+		for ( const c of directivePoints.prompterCommands ) {
+			const last = lastWordBefore( c, ranges );
+			if ( last > before && last <= wordIdx ) runScriptCommand( c.command );
+		}
+	}
 	if ( Date.now() - lastManualScrollTs < MANUAL_SCROLL_GRACE_MS ) return;
 	scrollToWord( wordIdx, ranges );
 	if ( pause ) pauseVoiceAt( pause );
@@ -982,6 +993,23 @@ function holdPauseCountdown() {
 	return true;
 }
 
+// The script word just before a directive (a stop, {prompter: …}), found by
+// halving and kept with it until the word index changes.
+function lastWordBefore( point, ranges ) {
+	if ( point.ranges !== ranges ) {
+		let lo = 0;
+		let hi = ranges.length;
+		while ( lo < hi ) {
+			const mid = ( lo + hi ) >> 1;
+			if ( ranges[mid].comparePoint( point.el, 0 ) < 0 ) hi = mid;
+			else lo = mid + 1;
+		}
+		point.ranges = ranges;
+		point.lastWord = lo - 1;
+	}
+	return point.lastWord;
+}
+
 // The stop whose last word before it the speaker has just said, if any. Timed
 // pauses don't hold in voice mode: the text only moves when the speaker does,
 // so they see {pause: 3s} in the script and take the beat themselves.
@@ -991,24 +1019,59 @@ function voicePauseCrossed( wordIdx, ranges ) {
 	if ( before === null || wordIdx <= before || autoScrollHandle?.isHeld() ) return null;
 	return directivePoints.pauses.find( ( pause ) => {
 		if ( pause.seconds ) return false;
-		if ( pause.ranges !== ranges ) {
-			// The first word after the pause, found by halving.
-			let lo = 0;
-			let hi = ranges.length;
-			while ( lo < hi ) {
-				const mid = ( lo + hi ) >> 1;
-				if ( ranges[mid].comparePoint( pause.el, 0 ) < 0 ) hi = mid;
-				else lo = mid + 1;
-			}
-			pause.ranges = ranges;
-			pause.lastWord = lo - 1;
-		}
-		return pause.lastWord > before && pause.lastWord <= wordIdx;
+		const last = lastWordBefore( pause, ranges );
+		return last > before && last <= wordIdx;
 	} );
+}
+
+// {prompter: slower} and the rest: run as the reading reaches them.
+const SCRIPT_COMMAND_LABELS = { slower: "slower", faster: "faster", bigger: "bigger text", smaller: "smaller text", marker: "marker" };
+function runScriptCommand( command ) {
+	runRemoteAction( command );
+	showToast( `Script: ${ SCRIPT_COMMAND_LABELS[command] ?? command }`, 1500 );
+}
+
+// {listen: off}: the microphone is muted and the prompter holds, for an ad-lib,
+// a demo or questions; Space, a clicker, the remote or the Stream Deck carries
+// on from the next {listen: on}. The take log notes the time off script.
+const OFF_SCRIPT_TEXT = "Off script · mic off · Space to carry on";
+let offScript = null; // the {listen: off} voice scrolling is holding at
+
+function goOffScript( pause ) {
+	offScript = pause;
+	autoScrollHandle?.setHold( true );
+	autoScrollHandle?.setMuted( true );
+	cancelScroll();
+	recording.listen( false );
+	setIndicator( OFF_SCRIPT_TEXT, "stopped" );
+}
+
+// The {listen: on} after a {listen: off}: the reading line goes there.
+function goToListenOn( pause ) {
+	const on = directivePoints.listenOns.find( o => o.y > pause.y + 1 );
+	if ( on ) window.scrollTo( 0, Math.max( 0, on.y - window.innerHeight * getReadingAnchor() ) );
+}
+
+function backOnScript() {
+	const pause = offScript;
+	offScript = null;
+	if ( !pause ) return;
+	goToListenOn( pause );
+	recording.listen( true );
+	if ( !autoScrollActive || !autoScrollHandle ) return;
+	autoScrollHandle.setMuted( false );
+	voiceWordIdx = null;
+	// Once the jump has settled, follow from the new place.
+	setTimeout( () => autoScrollHandle?.setHold( false ), 300 );
+	setIndicator( "Listening" );
 }
 
 function pauseVoiceAt( pause ) {
 	if ( !autoScrollHandle ) return;
+	if ( pause.listen === "off" ) {
+		goOffScript( pause );
+		return;
+	}
 	autoScrollHandle.setHold( true );
 	cancelScroll();
 	showPausePill( pause.seconds, () => {
@@ -1152,6 +1215,7 @@ async function stopAutoScrollSession() {
 	autoScrollActive = false;
 	autoScrollStarting = false;
 	autoScrollHandle = null;
+	offScript = null;
 	clearTimeout( manualScrollSyncTimer );
 	clearPausePill();
 	voiceWordIdx = null;
@@ -1195,7 +1259,7 @@ const commandPill = document.getElementById( "command-listening" );
 
 // Also at a {stop} in steady scrolling, so "Prompter, go" can carry on.
 function wantCommandListening() {
-	const wanted = settings.voiceCommands === "always" || ( cuePaused && settings.voiceCommands !== "off" );
+	const wanted = settings.voiceCommands === "always" || ( cuePaused && lastCue?.listen !== "off" && settings.voiceCommands !== "off" );
 	return (
 		wanted
 		&& settings.scrollMode !== "voice"
@@ -1568,6 +1632,10 @@ function toggleAutoScrollSession() {
 	}
 	if ( cuePaused ) {
 		resumeFromCue();
+		return;
+	}
+	if ( offScript ) {
+		backOnScript();
 		return;
 	}
 	if ( steadySessionActive() ) {
@@ -4319,7 +4387,7 @@ function jumpSection( step ) {
 
 function runRemoteAction( action, value ) {
 	if ( isEditMode && action !== "help" ) return;
-	if ( action === "play" && !isScrolling() ) toggleAutoScrollSession();
+	if ( action === "play" && ( !isScrolling() || offScript ) ) toggleAutoScrollSession();
 	else if ( action === "pause" && isScrolling() ) toggleAutoScrollSession();
 	else if ( action === "toggle" ) toggleAutoScrollSession();
 	else if ( action === "restart" ) {
@@ -4648,7 +4716,9 @@ function measureDirectives( ranges ) {
 		paceChanges: scriptDirectives.paceChanges.map( c => ( {
 			...c,
 			y: pageY( c.el )
-		} ) )
+		} ) ),
+		listenOns: ( scriptDirectives.listenOns ?? [] ).map( o => ( { ...o, y: pageY( o.el ) } ) ),
+		prompterCommands: ( scriptDirectives.prompterCommands ?? [] ).map( c => ( { ...c, y: pageY( c.el ) } ) )
 	};
 }
 
@@ -4713,6 +4783,7 @@ function followScriptPace( y ) {
 
 function startCueTracking() {
 	handledCues.clear();
+	handledCommands.clear();
 	lastCue = null;
 	lastReadingY = readingLineY();
 	appliedPace = null;
@@ -4722,6 +4793,7 @@ function startCueTracking() {
 let cueWasStop = false;
 let lastCue = null; // the pause just handled
 const handledCues = new Set(); // pauses already handled on this pass
+const handledCommands = new Set(); // {prompter: …} already run on this pass
 
 function pauseAtCue( pause ) {
 	stopSteadyScroll();
@@ -4730,6 +4802,10 @@ function pauseAtCue( pause ) {
 	lastCue = pause;
 	handledCues.add( pause );
 	showPausePill( pause.seconds, resumeFromCue );
+	if ( pause.listen === "off" ) {
+		recording.listen( false );
+		setIndicator( OFF_SCRIPT_TEXT, "stopped" );
+	}
 	updatePlayButton();
 	syncCommandListening();
 }
@@ -4738,6 +4814,11 @@ function resumeFromCue() {
 	clearPausePill();
 	cuePaused = false;
 	syncCommandListening();
+	const offScriptCue = lastCue?.listen === "off";
+	if ( offScriptCue ) {
+		goToListenOn( lastCue );
+		recording.listen( true );
+	}
 	const carryOn = () => {
 		startSteadyScroll( {
 			el: md,
@@ -4745,8 +4826,9 @@ function resumeFromCue() {
 			onFinished: () => setIndicator( null )
 		} );
 		// Just before the pause that was handled, so another pause on the same
-		// line (a countdown and then a stop) still counts.
-		lastReadingY = lastCue ? Math.min( readingLineY(), lastCue.y - 0.5 ) : readingLineY();
+		// line (a countdown and then a stop) still counts. After {listen: off},
+		// from the {listen: on} it jumped to.
+		lastReadingY = lastCue && !offScriptCue ? Math.min( readingLineY(), lastCue.y - 0.5 ) : readingLineY();
 		setIndicator( steadyIndicatorText() );
 	};
 	if ( cueWasStop ) afterSlate( carryOn );
@@ -4774,6 +4856,12 @@ window.addEventListener(
 				lastReadingY = y;
 				pauseAtCue( pause );
 				return;
+			}
+			for ( const c of handledCommands ) if ( y < c.y - 1 ) handledCommands.delete( c );
+			for ( const c of directivePoints.prompterCommands ) {
+				if ( handledCommands.has( c ) || c.y <= lastReadingY || c.y > y ) continue;
+				handledCommands.add( c );
+				runScriptCommand( c.command );
 			}
 			followScriptPace( y );
 		}

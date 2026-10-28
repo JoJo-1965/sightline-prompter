@@ -61,12 +61,17 @@ function belongsToHeading( el, heading ) {
 	return prev === heading;
 }
 
+// What {prompter: …} may do at a point in the script.
+export const PROMPTER_COMMANDS = [ "slower", "faster", "bigger", "smaller", "marker" ];
+
 export function readDirectives( root ) {
 	const script = {};
 	const sections = []; // { heading, targetSeconds?, wpm?, mode? }
 	const pauses = []; // { el, seconds } (0 = wait for the speaker)
 	const markers = []; // { el, label } (label: {marker: Setup}, else null)
 	const paceChanges = []; // { el, wpm }
+	const listenOns = []; // { el }: {listen: on}, where voice following picks up again
+	const prompterCommands = []; // { el, command }: {prompter: slower} and so on
 	let current = null;
 	for ( const el of root.querySelectorAll( "h2, .app-directive" ) ) {
 		if ( el.tagName === "H2" ) {
@@ -90,10 +95,20 @@ export function readDirectives( root ) {
 			// A timed pause: a beat mark in voice mode (see .beat in the CSS).
 			if ( seconds ) el.dataset.beat = `${ seconds }s`;
 		} else if ( "stop" in d ) pauses.push( { el, seconds: 0 } );
+		// {listen: off} is a stop with the microphone off; {listen: on} is where it carries on.
+		if ( "listen" in d ) {
+			const value = String( d.listen ).trim().toLowerCase();
+			if ( value === "off" ) pauses.push( { el, seconds: 0, listen: "off" } );
+			else if ( value === "on" ) listenOns.push( { el } );
+		}
+		if ( "prompter" in d ) {
+			const command = String( d.prompter ).trim().toLowerCase();
+			if ( PROMPTER_COMMANDS.includes( command ) ) prompterCommands.push( { el, command } );
+		}
 		if ( "marker" in d ) markers.push( { el, label: typeof d.marker === "string" ? d.marker : null } );
 		if ( current && "wpm" in d && parseWpm( d.wpm ) ) {
 			paceChanges.push( { el, wpm: parseWpm( d.wpm ) } );
 		}
 	}
-	return { script, sections, pauses, markers, paceChanges };
+	return { script, sections, pauses, markers, paceChanges, listenOns, prompterCommands };
 }

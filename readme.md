@@ -51,10 +51,8 @@ and a slate to line them all up with the recording.
 
 The whole workflow is in the guide: [Working with AI](docs/guide/09-working-with-ai.md).
 
-**Coming next** ([roadmap](ROADMAP.md)): `{listen: off}` and `{prompter: …}`
-so the script can direct the microphone and the prompter; a scratch audio
-track to line the edit up with your recording automatically; and signed
-installers.
+**Coming next** ([roadmap](ROADMAP.md)): a scratch audio track to line the
+edit up with your recording automatically, and signed installers.
 
 ## Features
 
@@ -216,6 +214,7 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ### Next release
 
+- **Off script and commands in the script:** `{listen: off}` before an ad-lib, a demo or questions mutes the microphone (nothing is listened to) and holds the prompter, in steady and voice scrolling, with *Off script · mic off · Space to carry on*; Space, a clicker, the phone remote or the Stream Deck carries on from the next `{listen: on}`, where voice following picks up. The take log records each stretch in `offScript` and the edit pack marks it `off-script` with its duration (new fields only). `{prompter: slower}`, `faster`, `bigger`, `smaller` or `marker` runs that command as the reading reaches it. The spec (0.4), the checker, the AI script prompt and the guide know them (roadmap 35)
 - **Stream Deck setting** (Settings > Remotes > Stream Deck): the Stream Deck plugin gets its own key, separate from AI access, that can only press buttons: `GET /status`, `GET /events`, `POST /command` and `POST /slot`. Anything else (loading scripts, settings, recordings) is refused. Sightline writes it to `stream-deck.json` while the setting is on and deletes it when it's off. Turning remote settings on or off no longer waits for an open event stream to close
 - **Stream Deck plugin, signposted:** Settings > Remotes has a **Stream Deck** button, and the user guide (Remotes and second screens > Stream Deck), the About box and the feature list describe the coming Sightline Prompter plugin for Stream Deck: what its keys and dials do, the sample profiles, and how to set it up (roadmap 39)
 - **The local API for buttons:** `GET /events` streams the prompter's state (playing, on air, mirror, slot, section, time left, speed, text size, backing, the open panel) each time it changes, so a button can light up to match; and `POST /command` gains `on-air`, `mirror`, `mirror-h`, `mirror-v`, `bigger`, `smaller`, `layout`, `reading`, `recording`, `eye-line`, `click-through`, `scroll` and `backing`. It's what the coming Stream Deck plugin uses (roadmap 39)

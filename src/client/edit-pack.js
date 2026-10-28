@@ -43,7 +43,8 @@ export function takeSentences( take ) {
 // Edit marks for one take, in time order: { t, type, detail, duration? }.
 // Types: take-start, slate, sentence (a clean place to cut in), pause,
 // reread (a fluff: the reader went back), skipped (words not said),
-// marker (B or {marker}), take-end.
+// marker (B or {marker}), off-script ({listen: off} to {listen: on}: an
+// ad-lib, demo or questions with the microphone off), take-end.
 export function takeMarks( take ) {
 	const marks = [ { t: take.start, type: "take-start", detail: `Section ${ take.section } take ${ take.take }` } ];
 	if ( take.slate !== null && take.slate !== undefined ) marks.push( { t: take.slate, type: "slate", detail: "sync point" } );
@@ -77,8 +78,13 @@ export function takeMarks( take ) {
 	} else {
 		for ( const t of take.markers ?? [] ) marks.push( { t, type: "marker", detail: "" } );
 	}
+	// Off script: no words or sentences here, so the edit keeps it whole or cuts it whole.
+	for ( const o of take.offScript ?? [] ) {
+		const duration = round2( o.end - o.start );
+		marks.push( { t: o.start, type: "off-script", detail: `${ duration } s off script (microphone off)`, duration } );
+	}
 	marks.push( { t: take.end, type: "take-end", detail: take.status } );
-	const order = [ "take-start", "slate", "sentence", "skipped", "restart", "reread", "pause", "marker", "take-end" ];
+	const order = [ "take-start", "slate", "sentence", "skipped", "restart", "reread", "pause", "off-script", "marker", "take-end" ];
 	return marks.sort( ( a, b ) => a.t - b.t || order.indexOf( a.type ) - order.indexOf( b.type ) );
 }
 

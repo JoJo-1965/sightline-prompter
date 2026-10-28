@@ -77,6 +77,15 @@ to `t`. With several restarts, apply them in order. Each also appears in
 the edit marks as `restart`, with `markerAt` in `edit-marks.json`. In voice
 mode the words from the second reading replace the first in `words.csv`.
 
+## Off script
+
+`{listen: off}` and `{listen: on}` in the script mark a part read off script:
+an ad-lib, a demo or questions. The microphone was off, so there are no words
+or sentences for it. Each take lists them in `offScript`: `[{ start, end }]`
+on the session clock, and each is an `off-script` edit mark with its
+`duration`. Keep an off-script part whole, or cut it whole: there's nothing
+inside it to cut on.
+
 ## Pace
 
 Each take read in voice mode has its pace, worked out from its word

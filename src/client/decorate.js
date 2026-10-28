@@ -77,7 +77,9 @@ const KNOWN_DIRECTIVES = new Set( [
 	"stop",
 	"marker",
 	"mode",
-	"page"
+	"page",
+	"listen",
+	"prompter"
 ] );
 const DIRECTIVE_REGEX = /(?<!\\)\{[^{}\n]*\}/g;
 

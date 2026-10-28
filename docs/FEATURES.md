@@ -64,8 +64,11 @@ The whole workflow is in the guide:
 - **Recordings library** (File > Recordings): every session to name, note,
   mark as edited, export as a folder or zip, or delete; an agent can list
   them and fetch any edit pack through the local API.
-- **Coming next** ([roadmap](../ROADMAP.md)): `{listen: off}` and
-  `{prompter: …}` so the script can direct the microphone and the prompter.
+- **The script directs the prompter:** `{listen: off}` before an ad-lib, a demo
+  or questions mutes the microphone and holds until you carry on from
+  `{listen: on}`, and the edit pack marks the time off script;
+  `{prompter: slower}` (or faster, bigger, smaller, marker) runs a command at
+  that point.
 
 ## Voice
 

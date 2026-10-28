@@ -56,6 +56,19 @@ start of this part, without starting the whole section again.
 If "Prompter" comes up in your scripts, choose a different wake word in
 Settings, under Voice: Computer, Teleprompter or Director. {stop}
 
+## Off script {target: 0:30}
+
+Sometimes you leave the script: a demo, a story, a question from the room.
+Put listen off before it, and the microphone switches off and the prompter
+waits for you. [Press Space when you reach the off-script part, or carry on reading.] {listen: off}
+
+[Off script: talk for a moment about anything you like. When you're ready, press Space or your clicker.]
+
+{listen: on}
+Welcome back. The prompter came here, to where the script starts again, and
+it's following you once more. {prompter: marker} It even dropped a marker
+here, because the script told it to.
+
 ## In steady scrolling too {target: 0:25}
 
 [Switch the mode to Steady, then press Space.]

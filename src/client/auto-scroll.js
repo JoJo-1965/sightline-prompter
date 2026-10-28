@@ -324,6 +324,10 @@ export async function startAutoScroll( {
 			if ( !held ) syncToViewport();
 		},
 		isHeld: () => held,
+		// {listen: off}: no sound reaches the speech engine until it's unmuted.
+		setMuted( value ) {
+			for ( const track of stream.getAudioTracks() ) track.enabled = !value;
+		},
 		// "Prompter, resync": find the reader anywhere in the script from what
 		// they say next.
 		resync: () => aligner.relocate(),

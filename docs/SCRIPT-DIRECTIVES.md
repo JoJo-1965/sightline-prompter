@@ -67,6 +67,9 @@ next line:
 | `{pause}`     | The same as `{stop}`                                                                                                     |
 | `{pause: 3s}` | Stops for 3 seconds, with a blue **Carrying on in 3** countdown, then carries on by itself. "Prompter, go" carries on sooner; "Prompter, pause" turns it into a stop. In voice scrolling it doesn't hold: the text only moves when you speak, so it shows as a small blue **⏸ 3s** mark and you take the beat yourself |
 | `{marker}`    | A bookmark you can jump to (`Ctrl+B` cycles through them), useful for retakes. Optionally named: `{marker: Setup}` (up to 40 characters) puts the name in the take log and the edit pack's marks. Each marker is logged with the take when it's read past |
+| `{listen: off}` | Off script: before an ad-lib, a demo or questions. The microphone is muted (nothing is listened to) and the prompter holds, in steady and voice scrolling, with **Off script · mic off · Space to carry on**. Space, the clicker, the remote or the Stream Deck carries on from the next `{listen: on}`, where voice following picks up again. The take log and edit pack record the time off script |
+| `{listen: on}` | Where reading from the script starts again after `{listen: off}` |
+| `{prompter: slower}` | Runs a prompter command as the reading reaches it: `slower` or `faster` (the steady speed), `bigger` or `smaller` (the text), or `marker`. In voice scrolling it runs when the word before it is said |
 | `{wpm: n}`    | Changes the target pace from this point until the end of the section                                                     |
 
 ## Notes (talking points)
