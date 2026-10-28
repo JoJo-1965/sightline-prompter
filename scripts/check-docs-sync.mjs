@@ -14,11 +14,19 @@ const root = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), "..
 const git = ( ...args ) => execFileSync( "git", args, { cwd: root, encoding: "utf8" } );
 
 // Everything not yet committed: staged, unstaged and new files.
-const changed = new Set(
+// What the commit will hold: --files=a,b (the paths a commit command names),
+// --staged (what's already staged), or else every uncommitted change.
+const filesArg = process.argv.find( arg => arg.startsWith( "--files=" ) );
+const uncommitted = () =>
 	git( "status", "--porcelain", "--untracked-files=all" )
 		.split( "\n" )
 		.filter( Boolean )
-		.map( line => line.slice( 3 ).replace( /^"|"$/g, "" ).split( " -> " ).pop() )
+		.map( line => line.slice( 3 ).replace( /^"|"$/g, "" ).split( " -> " ).pop() );
+const staged = () => git( "diff", "--cached", "--name-only" ).split( "\n" ).filter( Boolean );
+const changed = new Set(
+	filesArg
+		? filesArg.slice( "--files=".length ).split( "," ).filter( Boolean )
+		: process.argv.includes( "--staged" ) ? staged() : uncommitted()
 );
 const has = file => changed.has( file );
 const any = test => [ ...changed ].some( test );
