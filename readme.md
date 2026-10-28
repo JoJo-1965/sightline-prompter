@@ -207,6 +207,7 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ### Next release
 
+- The "Voice control, stops and countdowns" sample has a new part, **Finding your way**, showing "what can I say", spoken section slates, back to the marker and the wake word choice
 - **Choose the wake word** (Settings > Voice > Wake word): Prompter (the default), Computer, Teleprompter or Director. The messages and the "what can I say" card use the word you chose
 - **Notes mode** (talking points, reworked): `{mode: notes}` (or `{mode: points}`, or Layout > Recording > Notes) shows the script a page at a time. A `# heading` starts a page with that title, `{page}` starts one without, and each `## heading` on it is a bullet with any lines under it smaller; a `{target}` on the `# heading` times the page. Scripts without them keep one section per page. "Prompter, next page" and "previous page" work, the pacing light says "Page 2 of 3", and each page is logged as a section. A new sample, **Notes, a page at a time**, shows it. The checker and the AI script prompt know `{page}` and `{mode: notes}` (roadmap 49)
 - **Rehearsal and pace outside the app:** `node scripts/sightline.mjs pace "<script>"` (also `rehearsal`) prints each section's pace summary and every take's pace from the take log, or `--json` for an AI agent. A practice run is logged like any take, so this is the rehearsal timer's result too (roadmap 44)

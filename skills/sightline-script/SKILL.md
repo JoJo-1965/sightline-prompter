@@ -39,6 +39,11 @@ and say the checker couldn't be run.
   `{curly braces}`. Never put spoken words inside either, except quoted words
   in a note.
 - Use only the directives the brief allows. Don't invent new ones.
+- In a long section, name a marker at the start of each part,
+  `{marker: Setup}`, so the edit can find and recut each part.
+- For a talk from notes rather than a script, use `{mode: notes}`: a
+  `# heading` (or `{page}`) starts each page and each `## heading` on it is a
+  short bullet. See `src/samples/notes.md`.
 - Save as `.md`, named for the piece (for example `M2 Inclusive language.md`),
   in the folder the user is working in unless they say otherwise.
 

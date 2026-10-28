@@ -42,6 +42,19 @@ Bigger text? "Prompter, bigger". Smaller? "Prompter, smaller".
 Happy with that? Say "Prompter, keeper", and the take log marks this take as
 the one to use. Not happy? "Prompter, scrap that". [Say: "Prompter, keeper".] {stop}
 
+## Finding your way {target: 0:30}
+
+{marker: Finding your way} Forgotten a command? Say "Prompter, what can I say?" and they all
+appear on the screen. [Say: "Prompter, what can I say?"]
+
+To start a section, say its slate on its own, such as "Section two", and the
+prompter goes there. If a later line goes wrong, say "Prompter, back to the
+marker" or press Shift+B, and you read on from the last marker, here at the
+start of this part, without starting the whole section again.
+
+If "Prompter" comes up in your scripts, choose a different wake word in
+Settings, under Voice: Computer, Teleprompter or Director. {stop}
+
 ## In steady scrolling too {target: 0:25}
 
 [Switch the mode to Steady, then press Space.]

@@ -57,12 +57,12 @@ The whole workflow is in the guide:
   markers and rate takes as keeper or scrap. Off by default, token-protected
   and closed to web pages.
 - **Edit:** the take log records every take of every section, with its start
-  and end, retakes, markers, rating and (in voice mode) when each word was
-  said, and picks the take to use for each
-  section, as JSON for an editing agent and CSV for a spreadsheet.
-- **Coming next** ([roadmap](../ROADMAP.md)): an edit pack an editing agent
-  can assemble from, with edit marks and captions; `{listen: off}` and
-  `{prompter: …}` so the script can direct the microphone and the prompter;
+  and end, retakes, markers, rating, pace and (in voice mode) when each word
+  was said, and picks the take to use for each section. The **edit pack**
+  turns it into what an editing agent cuts with: words, sentences, edit marks
+  and captions.
+- **Coming next** ([roadmap](../ROADMAP.md)): `{listen: off}` and
+  `{prompter: …}` so the script can direct the microphone and the prompter,
   and a recordings library an agent can list and fetch from.
 
 ## Voice
@@ -80,6 +80,15 @@ The whole workflow is in the guide:
   end of what you say, so a script line about "the prompter" never sets one
   off. Common mishearings are matched too. Optionally, commands also work
   during steady scrolling.
+- **It answers you:** saying the wake word shows *Listening…* straight away,
+  *Didn't catch that* if what follows isn't a command, and "what can I say"
+  shows every command on the prompter. **Choose the wake word:** Prompter,
+  Computer, Teleprompter or Director.
+- **Say "Section 3"** (a spoken slate) to go to that section, **"reset"** to
+  go back to the top with the speed and clock reset, and **"back to the
+  marker"** to read on from the last marker.
+- **Heard log:** every word it heard, beside the script words it matched, to
+  find words it keeps mishearing.
 - **Stops and countdowns honoured in voice mode:** the prompter holds at a
   `{stop}` until you say "Prompter, go", and counts down a `{pause: 5s}`.
 - **Highlights the sentence you're about to say.**
@@ -99,7 +108,9 @@ The whole workflow is in the guide:
   clicker, with a yellow label; `{pause: 5s}` shows a blue countdown with a bar
   that runs down. The mic listens for "Prompter, go" at a stop.
 - **Markers:** `{marker}` in the script, or press B during a take; Ctrl+B
-  jumps between them.
+  jumps between them. Name one, `{marker: Setup}`, and the name goes into the
+  take log and edit pack. **Shift+B** goes back to the last marker to read on,
+  logged as a restart so the edit can cut to the second reading.
 - **Slate and sync mark:** a white flash and a beep at the start of each
   take, then the section and take number, so the edit can line every take up
   with the recording; no clap needed (Settings > Scrolling).
@@ -108,8 +119,9 @@ The whole workflow is in the guide:
   you go and exported as JSON and CSV (File > Export Take Log). Say
   **"Prompter, keeper"** or **"Prompter, scrap that"** (or press K or
   Shift+K) to rate a take; the log picks the take to use for each section.
-  In voice mode it also records **when you said each word**, for cutting on
-  words and sentences.
+  In voice mode it also records **when you said each word** and each take's
+  **pace** (words, speaking time, words per minute against the target), for
+  cutting on words and sentences and setting targets from a rehearsal.
 - **Skills for AI agents:** `sightline-script` and `sightline-session` for
   Claude Code and Codex, a `sightline` command for driving the app, and setup
   steps for ChatGPT, Claude and Gemini ([Setting up your AI](guide/10-setting-up-your-ai.md)).
@@ -117,8 +129,9 @@ The whole workflow is in the guide:
   sentences, edit marks (sentence starts, pauses, re-reads, skipped words)
   and captions in the script's own wording, in one folder with a brief for
   AI editing agents.
-- **Talking points** for speaking off script: one section at a time as large
-  bullet points, with a talk timer.
+- **Notes** for speaking from notes: a page at a time, never scrolled. A
+  `# heading` or `{page}` starts a page and each `## heading` is a bullet, with
+  a page timer against each page's `{target}`.
 - A progress bar you can click or drag to jump through the script, with
   section ticks and a tip showing the section and time at each point.
 - Progress bar, time left, an ON AIR light and an optional end-of-countdown
@@ -152,7 +165,11 @@ The whole workflow is in the guide:
 - **Settings in nine tabs:** Scrolling, Voice, Display, Layout, Reading,
   Recording, Files, Remotes and About, all the same height. Save and load all
   settings as JSON or XML.
-- **Layout and Voice panels** for changes while the script runs.
+- **Layout and Voice panels** for changes while the script runs. Drag them,
+  or Settings, by the title to anywhere in the window.
+- **Settings** with **Apply** (save and stay) and a prompt before closing with
+  unsaved changes; **Quit Sightline** always at the foot of the ☰ menu; and a
+  **check for updates** on Settings > About.
 - **On air** and **Mirror** buttons on the control bar, and the Layout
   panel in three views (Layout, Reading, Recording).
 - **Floating button pad** that stays on top, even over the prompter, and flips
@@ -184,7 +201,9 @@ The whole workflow is in the guide:
 - Sentence highlight, a **focus band** that dims the lines away from the
   reading line, and a **text edge** for reading over busy backgrounds.
 - **Colour themes:** standard, yellow on dark, high contrast and soft cream.
-- **Fonts** including Atkinson Hyperlegible, OpenDyslexic and Verdana.
+- **Fonts** including Atkinson Hyperlegible, OpenDyslexic and Verdana, with a
+  separate **heading font** and **heading size**, so big headings stay
+  readable with a dyslexia font.
 - Independent text opacity, background opacity and text brightness, margins
   that fade out at the edges, line spacing and alignment.
 
