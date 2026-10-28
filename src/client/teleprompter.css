@@ -1055,6 +1055,12 @@ body.editing .panel {
 	color: #b8bcc4;
 }
 
+.move-handle {
+	cursor: move;
+	user-select: none;
+	touch-action: none;
+}
+
 #update-note {
 	position: fixed;
 	right: 16px;

@@ -3174,6 +3174,80 @@ appMenu?.addEventListener( "keydown", ( e ) => {
 	}
 } );
 
+// --- Movable panels: drag Settings, the Layout panel or the Voice panel by
+// its title to anywhere in the window. Each remembers where it was left;
+// double-click the title to put it back. ---
+
+function makeMovable( box, handle, key ) {
+	if ( !box || !handle ) return;
+	const storeKey = `moved:${ key }`;
+	let at = { x: 0, y: 0 };
+	try {
+		at = { ...at, ...JSON.parse( localStorage.getItem( storeKey ) ) };
+	} catch {
+		// first time: where it normally sits
+	}
+	const place = () => {
+		box.style.translate = at.x || at.y ? `${ at.x }px ${ at.y }px` : "";
+	};
+	// Keep at least the title in the window.
+	const keepInView = () => {
+		const r = handle.getBoundingClientRect();
+		const dx = r.right < 60 ? 60 - r.right : r.left > window.innerWidth - 60 ? window.innerWidth - 60 - r.left : 0;
+		const dy = r.top < 0 ? -r.top : r.top > window.innerHeight - 30 ? window.innerHeight - 30 - r.top : 0;
+		if ( dx || dy ) {
+			const sx = mirrored === "horizontal" || mirrored === "both" ? -1 : 1;
+			const sy = mirroredVertically() ? -1 : 1;
+			at = { x: at.x + dx * sx, y: at.y + dy * sy };
+			place();
+		}
+	};
+	const save = () => {
+		try {
+			localStorage.setItem( storeKey, JSON.stringify( at ) );
+		} catch {
+			// not remembered this time
+		}
+	};
+	handle.classList.add( "move-handle" );
+	handle.title = "Drag to move · double-click to put it back";
+	let start = null;
+	handle.addEventListener( "pointerdown", ( e ) => {
+		if ( e.button !== 0 || e.target.closest( "button, input, select, a" ) ) return;
+		e.preventDefault();
+		start = { x: e.clientX, y: e.clientY, ax: at.x, ay: at.y };
+		handle.setPointerCapture( e.pointerId );
+	} );
+	handle.addEventListener( "pointermove", ( e ) => {
+		if ( !start ) return;
+		// Mirroring flips the layer the panels sit on, so it flips the drag too.
+		const sx = mirrored === "horizontal" || mirrored === "both" ? -1 : 1;
+		const sy = mirroredVertically() ? -1 : 1;
+		at = { x: start.ax + ( e.clientX - start.x ) * sx, y: start.ay + ( e.clientY - start.y ) * sy };
+		place();
+	} );
+	const end = () => {
+		if ( !start ) return;
+		start = null;
+		keepInView();
+		save();
+	};
+	handle.addEventListener( "pointerup", end );
+	handle.addEventListener( "pointercancel", end );
+	handle.addEventListener( "dblclick", ( e ) => {
+		if ( e.target.closest( "button, input, select, a" ) ) return;
+		at = { x: 0, y: 0 };
+		place();
+		save();
+	} );
+	place();
+	window.addEventListener( "resize", keepInView );
+}
+
+makeMovable( document.querySelector( "#settings-modal .settings-content" ), document.querySelector( "#settings-modal .settings-head h3" ), "settings" );
+makeMovable( document.getElementById( "layout-panel" ), document.querySelector( "#layout-panel > h4" ), "layout" );
+makeMovable( document.getElementById( "voice-panel" ), document.querySelector( "#voice-panel > h4" ), "voice" );
+
 // --- Layout panel ---
 
 const LAYOUT_FIELDS = [

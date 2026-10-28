@@ -6,7 +6,8 @@ The panel has three views, each with its own button on the control bar:
 **Layout** (**Ctrl+Shift+K**) for spacing, **Reading** for opacity and reading
 aids, and **Recording** for the recording and script options. Click the same
 button again to close it. Changes show straight away, so you can see them on
-the script. The same controls are on the **Layout**, **Reading** and
+the script. Drag the panel by its title to move it out of the way (the Voice
+panel too); double-click the title to put it back. The same controls are on the **Layout**, **Reading** and
 **Recording** tabs of Settings.
 
 ![The Layout panel](images/layout-panel.png)

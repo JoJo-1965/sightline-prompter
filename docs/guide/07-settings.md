@@ -12,6 +12,10 @@ If you've changed something you haven't saved, closing asks first:
 **Save**, **Discard** or **Keep editing**. The Layout, Reading and Recording
 tabs change the prompter as you go, so they're always kept.
 
+Drag Settings by its title to move it anywhere in the window, for example
+off the part of the script you're checking. It opens there next time;
+double-click the title to put it back in the middle.
+
 ## Scrolling
 
 ![Settings > Scrolling](images/settings-scrolling.png)
