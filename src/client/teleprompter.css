@@ -1850,3 +1850,10 @@ body.points-mode #md::after {
 	z-index: 1000;
 	pointer-events: none;
 }
+
+/* No single words hanging on the last line of a wrapped paragraph or item. */
+/* The script itself is left alone. */
+:is(.modal, .help-content, #app-menu, #layout-panel, #voice-panel)
+	:is(p, li, h3, h4, label, .field-hint) {
+	text-wrap: pretty;
+}
