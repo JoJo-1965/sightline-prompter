@@ -133,8 +133,9 @@ The whole workflow is in the guide:
   start, and Speed, Size and Backing, each with a number box you can type into.
 - **☰ menu** grouped into Script, Playback, Display, Window, Settings and Help,
   with shortcuts shown.
-- **Settings in six tabs:** Scrolling, Voice, Display, Layout, Files and
-  Remotes. Save and load all settings as JSON or XML.
+- **Settings in nine tabs:** Scrolling, Voice, Display, Layout, Reading,
+  Recording, Files, Remotes and About, all the same height. Save and load all
+  settings as JSON or XML.
 - **Layout and Voice panels** for changes while the script runs.
 - **On air** and **Mirror** buttons on the control bar, and the Layout
   panel in three views (Layout, Reading, Recording).
