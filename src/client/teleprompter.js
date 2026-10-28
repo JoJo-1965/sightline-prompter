@@ -1134,6 +1134,7 @@ const COMMAND_LABELS = {
 	smaller: "smaller",
 	keeper: "keeper",
 	scrap: "scrap that",
+	reset: "reset",
 	help: "what can I say"
 };
 
@@ -1251,15 +1252,59 @@ document.addEventListener( "keydown", ( e ) => {
 	if ( e.key === "Escape" ) hideVoiceHelp();
 } );
 
-function runVoiceCommand( id ) {
+// "Section 3", said on its own or after "Prompter": to the start of that
+// section. Said again for the section you're in, it's a retake.
+function goToSpokenSection( n, voice ) {
+	const anchor = document.getElementsByName( n )[0];
+	if ( !anchor ) {
+		showToast( `There's no section ${ n } in this script`, 2500 );
+		return;
+	}
+	if ( pointsMode() ) {
+		goToPoint( n - 1 );
+		return;
+	}
+	pendingJumpReason = sectionOnScreen() === n ? "again" : null;
+	jumpSection( n - sectionOnScreen() );
+	pendingJumpReason = null;
+	resyncAfterJump();
+	if ( voice ) {
+		clearPausePill();
+		autoScrollHandle.setHold( false );
+		setIndicator( "Listening" );
+	}
+}
+
+// "Prompter, reset": back to the top with the speed and the pacing clock
+// reset, ready for a fresh run.
+function resetPrompter() {
+	pacing = null;
+	takeLog = new Map();
+	pacingEl?.classList.add( "hidden" );
+	if ( isScrolling() && !autoScrollActive ) toggleAutoScrollSession();
+	runRemoteAction( "restart" );
+	adjustAutoScrollSpeed( "reset" );
+	resyncAfterJump();
+	showToast( "Reset: back to the top, speed and clock reset", 2500 );
+}
+
+function runVoiceCommand( id, value ) {
 	if ( isEditMode ) return;
 	hideVoiceHelp();
-	showToast( `Heard: “Prompter, ${ COMMAND_LABELS[id] ?? id }”` );
+	showToast( id === "section" ? `Heard: “Section ${ value }”` : `Heard: “Prompter, ${ COMMAND_LABELS[id] ?? id }”` );
 	if ( id === "help" ) {
 		showVoiceHelp();
 		return;
 	}
 	const voice = autoScrollActive && autoScrollHandle;
+	if ( id === "section" ) {
+		goToSpokenSection( value, voice );
+		return;
+	}
+	if ( id === "reset" ) {
+		resetPrompter();
+		return;
+	}
 	if ( id === "pause" ) {
 		if ( holdPauseCountdown() ) return;
 		if ( voice ) {

@@ -1,6 +1,6 @@
 // node scripts/voice-commands.test.mjs
 import assert from "node:assert/strict";
-import { matchCommand, createCommandListener } from "../src/client/voice-commands.js";
+import { matchCommand, createCommandListener, sectionNumber } from "../src/client/voice-commands.js";
 
 // What the on-device recogniser actually heard for each command (speech-lab/cmd).
 const heard = {
@@ -96,3 +96,19 @@ assert.equal( matchCommand( [ "what", "can", "I", "say" ] ), "help" );
 assert.equal( matchCommand( [ "help" ] ), "help" );
 assert.equal( matchCommand( [ "commands" ] ), "help" );
 console.log( "help command passes" );
+
+// "Section 3" on its own (a spoken slate), or after "Prompter".
+assert.equal( sectionNumber( [ "SECTION", "THREE" ] ), 3 );
+assert.equal( sectionNumber( [ "section", "1" ] ), 1 );
+assert.equal( sectionNumber( [ "SECTION", "TO" ] ), 2 );
+assert.equal( sectionNumber( [ "THE", "SECTION", "ONE" ] ), null );
+assert.equal( sectionNumber( [ "SECTION", "BANANA" ] ), null );
+const got5 = [];
+const take5 = createCommandListener( { onCommand: ( id, value ) => got5.push( `${ id }:${ value }` ) } );
+assert.deepEqual( take5( [ "SECTION", "ONE" ], true ), [] );
+assert.deepEqual( take5( [ "PROMPTER", "SECTION", "FOUR" ], true ), [] );
+assert.deepEqual( take5( [ "IN", "THIS", "SECTION", "ONE", "THING" ], true ), [ "IN", "THIS", "SECTION", "ONE", "THING" ] );
+assert.deepEqual( got5, [ "section:1", "section:4" ] );
+assert.equal( matchCommand( [ "reset" ] ), "reset" );
+assert.equal( matchCommand( [ "from", "the", "top" ] ), "top" );
+console.log( "section and reset pass" );

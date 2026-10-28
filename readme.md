@@ -205,6 +205,11 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ## Change log
 
+### Next release
+
+- **Say "Section 3" to go there:** a spoken slate such as "Section one" (with or without "Prompter") now takes you to the start of that section; saying the section you're already in counts as a retake. Before, the words were ignored, because the slate line is a note in the script
+- **"Prompter, reset"** goes back to the top and also puts the speed back to normal and clears the pacing clock, for a fresh run. "From the top" still just goes back to the start
+
 ### 1.0.5 (28 October 2026)
 
 - **Heading size** (Layout panel > Layout, and Settings > Layout): section headings grew with the text, so they got very big when you made the text larger. Now they have their own size, from 40% to 150% of their usual size next to the text

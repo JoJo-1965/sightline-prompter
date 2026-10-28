@@ -62,11 +62,14 @@ export const COMMANDS = [
 			"the top",
 			"from the top",
 			"back to the top",
-			"reset",
-			"restart",
 			"start again",
 			"start over"
 		]
+	},
+	{
+		// Back to the top with the speed and the pacing clock reset too.
+		id: "reset",
+		phrases: [ "reset", "restart", "reset everything", "reset all", "full reset" ]
 	},
 	{
 		id: "retake",
@@ -158,6 +161,8 @@ export const COMMAND_HELP = [
 	[ "back", "Back to the start of this section" ],
 	[ "next section", "On to the next section" ],
 	[ "from the top", "Back to the start" ],
+	[ "reset", "Back to the start, with the speed and clock reset" ],
+	[ "section 3", "Go to that section (also without “Prompter”)" ],
 	[ "again", "A retake: back to the start of this section" ],
 	[ "marker", "Drop a marker for the edit" ],
 	[ "keeper · scrap that", "Rate this take" ],
@@ -167,6 +172,22 @@ export const COMMAND_HELP = [
 ];
 
 const normalize = word => word.toLowerCase().replace( /[^\w]/g, "" );
+
+// "Section 3", "section three", or how the recogniser tends to hear it
+// ("section to", "section for"): the section number, else null.
+const NUMBER_WORDS = {
+	one: 1, won: 1, two: 2, to: 2, too: 2, three: 3, four: 4, for: 4, fore: 4,
+	five: 5, six: 6, seven: 7, eight: 8, ate: 8, nine: 9, ten: 10, eleven: 11,
+	twelve: 12, thirteen: 13, fourteen: 14, fifteen: 15, sixteen: 16,
+	seventeen: 17, eighteen: 18, nineteen: 19, twenty: 20
+};
+
+export function sectionNumber( words ) {
+	const said = words.map( normalize ).filter( Boolean );
+	if ( said.length !== 2 || said[0] !== "section" ) return null;
+	const n = /^\d+$/.test( said[1] ) ? Number( said[1] ) : NUMBER_WORDS[said[1]];
+	return n >= 1 && n <= 99 ? n : null;
+}
 
 function distance( a, b ) {
 	const row = Array.from( { length: b.length + 1 }, ( _, j ) => j );
@@ -224,6 +245,15 @@ export function createCommandListener( { onCommand, onWake = () => {}, onMiss = 
 		phrase.push( ...words );
 		const whole = phrase;
 		if ( final ) phrase = [];
+		// "Section 3" said on its own (a spoken slate): go to that section,
+		// with or without the wake word.
+		if ( final && !held ) {
+			const n = sectionNumber( whole );
+			if ( n ) {
+				onCommand( "section", n );
+				return [];
+			}
+		}
 		if ( final && !held && isPaused() ) {
 			const said = whole.map( normalize ).filter( Boolean ).join( " " );
 			const go = COMMANDS.find( c => c.id === "go" );
@@ -251,8 +281,10 @@ export function createCommandListener( { onCommand, onWake = () => {}, onMiss = 
 		if ( held && final && held.length === 1 && Date.now() - heldAt < 3000 )
 			return pass;
 		if ( held && ( final || Date.now() - heldAt > 4000 ) ) {
-			const id = final ? matchCommand( held.slice( 1 ) ) : null;
-			if ( id ) onCommand( id );
+			const n = final ? sectionNumber( held.slice( 1 ) ) : null;
+			const id = final && !n ? matchCommand( held.slice( 1 ) ) : null;
+			if ( n ) onCommand( "section", n );
+			else if ( id ) onCommand( id );
 			else {
 				// Something short after "Prompter" that isn't a command is worth a
 				// word; a script line that mentions the prompter is longer.
