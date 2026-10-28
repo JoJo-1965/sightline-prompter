@@ -156,11 +156,32 @@ const DEFAULT_OPACITY = 0.07;
 const OPACITY_STEP = 0.05;
 let opacity = DEFAULT_OPACITY;
 
+// The backing: light while you set up, and more solid while the prompter
+// runs (Background on air), but never lighter than the Backing slider.
+// On air by hand (the On air button), or while the prompter runs.
+let manualOnAir = false;
+
+function onAir() {
+	return manualOnAir || isScrolling() || cuePaused || pointsRunning;
+}
+
+function toggleOnAir() {
+	manualOnAir = !manualOnAir;
+	updateOnAir();
+	showToast( manualOnAir ? "On air" : "Off air" );
+}
+
+function applyBacking() {
+	if ( isEditMode ) return;
+	const live = onAir()
+		? Math.max( opacity, settings.onAirBacking ?? LAYOUT_DEFAULTS.onAirBacking )
+		: opacity;
+	document.body.style.backgroundColor = `rgba(0, 0, 0, ${ live })`;
+}
+
 function setOpacity( value, save = true ) {
 	opacity = Math.min( 1, Math.max( 0, Math.round( value * 100 ) / 100 ) );
-	if ( !isEditMode ) {
-		document.body.style.backgroundColor = `rgba(0, 0, 0, ${ opacity })`;
-	}
+	applyBacking();
 	if ( save ) {
 		window.electron.saveOpacity( opacity );
 	}
@@ -228,9 +249,21 @@ window.addEventListener(
 );
 window.addEventListener( "resize", applyMirror );
 
+// The Mirror button shows the state: ↔ horizontal, ↕ vertical, ↔↕ both.
+const MIRROR_BADGES = { off: "", horizontal: " ↔", vertical: " ↕", both: " ↔↕" };
+
+function showMirrorButton() {
+	const button = document.getElementById( "cb-mirror" );
+	if ( !button ) return;
+	button.textContent = `Mirror${ MIRROR_BADGES[mirrored] ?? "" }`;
+	button.classList.toggle( "on", mirrored !== "off" );
+	button.setAttribute( "aria-label", `Mirror: ${ MIRROR_LABELS[mirrored] }` );
+}
+
 function setMirrored( value, save = true ) {
 	mirrored = normalizeMirror( value );
 	applyMirror();
+	showMirrorButton();
 	updateReadingMarker();
 	if ( save ) {
 		window.electron.saveMirrored( mirrored );
@@ -401,7 +434,7 @@ function showPreview() {
 	previewContainer.classList.remove( "hidden" );
 	if ( resizeHandle ) resizeHandle.classList.remove( "hidden" );
 	document.body.classList.remove( "editing" );
-	document.body.style.backgroundColor = `rgba(0, 0, 0, ${ opacity })`;
+	applyBacking();
 	document.body.style.overflow = "";
 }
 
@@ -603,6 +636,11 @@ document.addEventListener( "keydown", ( event ) => {
 	) {
 		event.preventDefault();
 		openHelp();
+		return;
+	}
+	if ( ( event.key === "a" || event.key === "A" ) && event.ctrlKey && event.shiftKey && !event.altKey ) {
+		event.preventDefault();
+		toggleOnAir();
 		return;
 	}
 	if ( ( event.key === "k" || event.key === "K" ) && plainKey ) {
@@ -1937,11 +1975,13 @@ const LAYOUT_DEFAULTS = {
 	lineHeight: 1.3,
 	textOpacity: 1,
 	textBrightness: 1,
+	onAirBacking: 0.6,
 	textAlign: "left"
 };
 const EDGE_FADE = 4; // % of the window height over which text fades at a margin
 
 function applyLayout() {
+	applyBacking();
 	const style = document.body.style;
 	style.setProperty(
 		"--margin-x",
@@ -2297,7 +2337,11 @@ onClick( "cb-save", saveFromBar );
 onClick( "cb-edit", toggleEditMode );
 onClick( "cb-restart", goToStart );
 onClick( "cb-play", toggleAutoScrollSession );
-onClick( "cb-layout", () => togglePanel( "layout-panel" ) );
+onClick( "cb-layout", () => toggleLayoutView( "layout" ) );
+onClick( "cb-reading", () => toggleLayoutView( "reading" ) );
+onClick( "cb-recording", () => toggleLayoutView( "recording" ) );
+onClick( "cb-on-air", toggleOnAir );
+onClick( "cb-mirror", cycleMirror );
 onClick( "cb-voice", () => togglePanel( "voice-panel" ) );
 onClick( "cb-help", openHelp );
 onClick( "cb-settings", openSettings );
@@ -2415,7 +2459,7 @@ document.addEventListener( "mousedown", ( e ) => {
 } );
 window.addEventListener( "blur", closeAppMenu );
 
-window.electron.onMenuLayout( () => togglePanel( "layout-panel" ) );
+window.electron.onMenuLayout( () => toggleLayoutView( "layout" ) );
 window.electron.onMenuVoice( () => togglePanel( "voice-panel" ) );
 
 const toggleSetting = key => () =>
@@ -2478,6 +2522,7 @@ function menuGroups() {
 					toggleAutoScrollSession
 				],
 				[ "⏮", "Back to the start", "Ctrl+Home", goToStart ],
+				[ "🔴", manualOnAir ? "Go off air" : "Go on air", "Ctrl+Shift+A", toggleOnAir ],
 				[ "★", "This take's a keeper", "K", () => rateTake( "keeper" ) ],
 				[ "✗", "Scrap this take", "Shift+K", () => rateTake( "scrap" ) ],
 				[
@@ -2526,7 +2571,7 @@ function menuGroups() {
 					"▤",
 					"Layout and margins…",
 					"Ctrl+Shift+K",
-					() => togglePanel( "layout-panel" )
+					() => toggleLayoutView( "layout" )
 				],
 				[
 					"⇋",
@@ -2841,6 +2886,7 @@ const LAYOUT_FIELDS = [
 	[ "lp-margin-bottom", "marginBottom", v => `${ v }%` ],
 	[ "lp-line-height", "lineHeight", v => `${ Number( v ).toFixed( 2 ) }×` ],
 	[ "lp-text-opacity", "textOpacity", v => `${ Math.round( v * 100 ) }%` ],
+	[ "lp-on-air-backing", "onAirBacking", v => `${ Math.round( v * 100 ) }%` ],
 	[ "lp-text-brightness", "textBrightness", v => `${ Math.round( v * 100 ) }%` ],
 	[ "lp-focus-strength", "focusStrength", v => `${ Math.round( v * 100 ) }%` ]
 ];
@@ -3640,7 +3686,7 @@ function showSettingsTab( name ) {
 	for ( const set of sets ) {
 		set.classList.toggle( "hidden", set.dataset.tab !== name );
 	}
-	if ( name === "layout" ) borrowLayoutPanel();
+	if ( LAYOUT_TABS.includes( name ) ) borrowLayoutPanel();
 	settingsModal?.querySelector( ".settings-content" )?.scrollTo( 0, 0 );
 	try {
 		localStorage.setItem( SETTINGS_TAB_KEY, name );
@@ -3666,6 +3712,56 @@ for ( const tab of settingsTabs ) {
 // away), moved into Settings while it is open and put back when it closes.
 const layoutPanel = document.getElementById( "layout-panel" );
 const layoutHost = document.getElementById( "set-layout-host" );
+// Settings shows the Layout panel's groups over three tabs, so none runs
+// below the fold: spacing on Layout, opacity and reading aids on Reading,
+// recording and script options on Recording.
+const layoutHosts = {
+	layout: layoutHost,
+	reading: document.getElementById( "set-reading-host" ),
+	recording: document.getElementById( "set-recording-host" )
+};
+const LAYOUT_GROUP_TABS = {
+	Opacity: "reading",
+	Spacing: "layout",
+	"Reading aids": "reading",
+	Recording: "recording",
+	Script: "recording"
+};
+const LAYOUT_TABS = Object.keys( layoutHosts );
+const LAYOUT_TITLES = { layout: "Layout", reading: "Reading", recording: "Recording" };
+
+// The same groups make the floating panel's three views, one per control-bar
+// button. Done and Reset show in every view.
+{
+	let tab = "layout";
+	for ( const el of layoutPanel?.children ?? [] ) {
+		if ( el.tagName === "H4" ) continue;
+		if ( el.tagName === "H5" ) tab = LAYOUT_GROUP_TABS[el.textContent.trim()] ?? "layout";
+		if ( el.classList.contains( "lp-actions" ) ) continue;
+		el.dataset.view = el.classList.contains( "lp-hint" ) ? "layout" : tab;
+	}
+}
+let layoutView = "layout";
+
+function showLayoutView( view ) {
+	layoutView = view;
+	for ( const el of layoutPanel?.querySelectorAll( "[data-view]" ) ?? [] ) {
+		el.classList.toggle( "lp-off", el.dataset.view !== view );
+	}
+	const title = layoutPanel?.querySelector( "h4" );
+	if ( title ) title.textContent = LAYOUT_TITLES[view];
+}
+
+function toggleLayoutView( view ) {
+	const open = !layoutPanel?.classList.contains( "hidden" );
+	if ( open && layoutView === view ) {
+		closePanels();
+		return;
+	}
+	showLayoutView( view );
+	if ( !open ) togglePanel( "layout-panel" );
+}
+showLayoutView( "layout" );
 let layoutBorrowed = [];
 
 function borrowLayoutPanel() {
@@ -3673,7 +3769,14 @@ function borrowLayoutPanel() {
 	layoutBorrowed = [ ...layoutPanel.children ].filter(
 		el => el.tagName !== "H4"
 	);
-	layoutHost.append( ...layoutBorrowed );
+	let tab = "layout";
+	for ( const el of layoutBorrowed ) {
+		if ( el.tagName === "H5" ) tab = LAYOUT_GROUP_TABS[el.textContent.trim()] ?? "layout";
+		// The margins note and Reset layout belong with the spacing.
+		const spacing = el.classList.contains( "lp-hint" ) || el.classList.contains( "lp-actions" );
+		el.classList.remove( "lp-off" );
+		( layoutHosts[spacing ? "layout" : tab] ?? layoutHost ).append( el );
+	}
 	field( "lp-done" )?.classList.add( "hidden" );
 	syncControls();
 }
@@ -3682,6 +3785,7 @@ function returnLayoutPanel() {
 	if ( !layoutBorrowed.length ) return;
 	layoutPanel.append( ...layoutBorrowed );
 	layoutBorrowed = [];
+	showLayoutView( layoutView );
 	field( "lp-done" )?.classList.remove( "hidden" );
 }
 
@@ -3696,9 +3800,11 @@ function refreshSharedDisplayFields() {
 	if ( settingsSnapshot ) settingsSnapshot.opacity = opacity;
 }
 for ( const type of [ "input", "change", "click" ] ) {
-	layoutHost?.addEventListener( type, () =>
-		setTimeout( refreshSharedDisplayFields, 200 )
-	);
+	for ( const host of Object.values( layoutHosts ) ) {
+		host?.addEventListener( type, () =>
+			setTimeout( refreshSharedDisplayFields, 200 )
+		);
+	}
 }
 
 // --- Files tab: scripts and the settings file ---
@@ -4439,9 +4545,12 @@ function applyDisplayClasses() {
 
 // ON AIR: lit while a scrolling session is running or held at a {pause}.
 function updateOnAir() {
+	applyBacking();
+	const button = document.getElementById( "cb-on-air" );
+	button?.classList.toggle( "live", onAir() );
+	button?.setAttribute( "aria-pressed", String( manualOnAir ) );
 	if ( !onAirEl ) return;
-	const running = isScrolling() || cuePaused || pointsRunning;
-	const live = settings.onAirLight !== false && running;
+	const live = settings.onAirLight !== false && onAir();
 	onAirEl.classList.toggle( "hidden", !live );
 }
 
@@ -4595,6 +4704,12 @@ const NUMBER_BOXES = {
 		unit: "%",
 		word: "percent",
 		name: "Text opacity"
+	} ),
+	"lp-on-air-backing": () => ( {
+		scale: 100,
+		unit: "%",
+		word: "percent",
+		name: "Background on air"
 	} ),
 	"lp-line-height": () => ( {
 		scale: 100,

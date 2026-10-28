@@ -400,12 +400,12 @@ body.eye-line #md {
 }
 
 /* The Layout panel's controls, shown on the Layout tab. */
-#set-layout-host .lp-inline select {
+:is(#set-layout-host, #set-reading-host, #set-recording-host) .lp-inline select {
 	width: auto;
 	min-width: 11em;
 }
 
-#set-layout-host .lp-check input {
+:is(#set-layout-host, #set-reading-host, #set-recording-host) .lp-check input {
 	width: auto;
 	margin: 0 0.4em 0 0;
 	vertical-align: middle;
@@ -424,8 +424,13 @@ body.eye-line #md {
 	border-bottom: 1px solid #444;
 }
 
+#layout-panel .lp-off {
+	display: none;
+}
+
+/* Nine tabs on one row. */
 .settings-tabs button {
-	padding: 6px 12px;
+	padding: 6px 8px;
 	font: inherit;
 	color: #b8bcc4;
 	background: none;
@@ -602,6 +607,19 @@ body.controls-hidden * {
 	font-size: 12px;
 }
 
+/* On air: lit red whenever you're on air (by hand or while running). */
+#cb-mirror.on {
+	color: #1d1f24;
+	background: #ffd54a;
+	border-color: #ffd54a;
+}
+
+#cb-on-air.live {
+	color: #fff;
+	background: #c62828;
+	border-color: #e53935;
+}
+
 .cb-btn.cb-play {
 	min-width: 34px;
 	background: rgba(40, 167, 69, 0.75);
@@ -697,7 +715,7 @@ body.controls-hidden * {
 }
 
 .panel .lp-row,
-#set-layout-host .lp-row {
+:is(#set-layout-host, #set-reading-host, #set-recording-host) .lp-row {
 	display: flex;
 	flex-direction: column;
 	gap: 3px;
@@ -705,20 +723,20 @@ body.controls-hidden * {
 }
 
 .panel .lp-row output,
-#set-layout-host .lp-row output {
+:is(#set-layout-host, #set-reading-host, #set-recording-host) .lp-row output {
 	float: right;
 	color: #ffd54a;
 }
 
 .panel .lp-inline,
-#set-layout-host .lp-inline {
+:is(#set-layout-host, #set-reading-host, #set-recording-host) .lp-inline {
 	flex-direction: row;
 	align-items: center;
 	justify-content: space-between;
 }
 
 .panel input[type="range"],
-#set-layout-host input[type="range"] {
+:is(#set-layout-host, #set-reading-host, #set-recording-host) input[type="range"] {
 	width: 100%;
 	accent-color: #ffd54a;
 }
@@ -734,20 +752,20 @@ body.controls-hidden * {
 }
 
 .panel .lp-check,
-#set-layout-host .lp-check {
+:is(#set-layout-host, #set-reading-host, #set-recording-host) .lp-check {
 	display: block;
 	margin: 5px 0;
 }
 
 .panel .lp-hint,
-#set-layout-host .lp-hint {
+:is(#set-layout-host, #set-reading-host, #set-recording-host) .lp-hint {
 	margin: 6px 0 0;
 	font-size: 11px;
 	color: #9a9a9a;
 }
 
 .panel button,
-#set-layout-host button {
+:is(#set-layout-host, #set-reading-host, #set-recording-host) button {
 	font-size: 12px;
 	padding: 4px 10px;
 	color: #f0f0f0;
@@ -758,13 +776,13 @@ body.controls-hidden * {
 }
 
 .panel button.primary,
-#set-layout-host button.primary {
+:is(#set-layout-host, #set-reading-host, #set-recording-host) button.primary {
 	background: #007bff;
 	border-color: #007bff;
 }
 
 .panel .lp-actions,
-#set-layout-host .lp-actions {
+:is(#set-layout-host, #set-reading-host, #set-recording-host) .lp-actions {
 	display: flex;
 	justify-content: flex-end;
 	gap: 6px;
@@ -1471,7 +1489,7 @@ body::-webkit-scrollbar,
 }
 
 .panel .lp-sub,
-#set-layout-host .lp-sub {
+:is(#set-layout-host, #set-reading-host, #set-recording-host) .lp-sub {
 	margin: 12px 0 2px;
 	font-size: 11px;
 	font-weight: 600;
@@ -1485,7 +1503,7 @@ body::-webkit-scrollbar,
 }
 
 .panel .lp-preset,
-#set-layout-host .lp-preset {
+:is(#set-layout-host, #set-reading-host, #set-recording-host) .lp-preset {
 	width: 100%;
 	margin: 4px 0 2px;
 	padding: 6px 10px;
@@ -1498,7 +1516,7 @@ body::-webkit-scrollbar,
 }
 
 .panel .lp-preset:hover,
-#set-layout-host .lp-preset:hover {
+:is(#set-layout-host, #set-reading-host, #set-recording-host) .lp-preset:hover {
 	border-color: #ffd54a;
 }
 

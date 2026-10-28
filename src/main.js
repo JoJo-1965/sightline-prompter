@@ -84,6 +84,7 @@ const defaultSettings = {
 	marginBottom: 0,
 	lineHeight: 1.3,
 	textOpacity: 1, // script text only; the controls stay solid
+	onAirBacking: 0.6, // backing while the prompter runs; never lighter than Backing
 	textBrightness: 1, // dims the script without making it see-through
 	showDirectives: false, // show {directives} as small tags for checking a script
 	followScriptPace: true, // steady scrolling uses the script's {wpm} and {target} pace

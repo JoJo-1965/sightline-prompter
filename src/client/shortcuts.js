@@ -84,6 +84,7 @@ export const SHORTCUTS = [
 				"Eye-line mode: a strip at the top-centre, under the webcam"
 			],
 			[ [ "Ctrl+Shift+B" ], "Keep the control bar visible" ],
+			[ [ "Ctrl+Shift+A" ], "On air / off air: the on-air backing and the ON AIR light" ],
 			[ [ "Ctrl+Shift+X" ], "Click-through on / off (works from any app)" ],
 			[ [ "Ctrl+Shift+P" ], "Floating control pad: Start / Pause, Top, Previous, Next" ],
 			[ [ "Ctrl+Shift+O" ], "Control window: a live, upright copy of the script with the buttons, for the operator screen" ],

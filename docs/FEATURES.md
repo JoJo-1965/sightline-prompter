@@ -136,6 +136,8 @@ The whole workflow is in the guide:
 - **Settings in six tabs:** Scrolling, Voice, Display, Layout, Files and
   Remotes. Save and load all settings as JSON or XML.
 - **Layout and Voice panels** for changes while the script runs.
+- **On air** and **Mirror** buttons on the control bar, and the Layout
+  panel in three views (Layout, Reading, Recording).
 - **Floating button pad** that stays on top, even over the prompter, and flips
   with the mirror setting.
 - **Phone remote:** scan a QR code and your phone gets big buttons, over your

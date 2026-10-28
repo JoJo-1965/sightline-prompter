@@ -201,6 +201,10 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ### Next release
 
+- **On air button** on the control bar, next to ▶ (**Ctrl+Shift+A**, also ☰ > Playback): go on air by hand, for a talk to camera or to check the look. It lights red whenever you're on air, scrolling included
+- **Background on air** (Layout panel > Reading, Settings > Reading): a more solid backing while you're on air, 60% to start with, so you can see the room through the glass while you set up and read easily while you record. It's never lighter than the normal backing
+- **Mirror button** on the control bar: steps through off, ↔ horizontal, ↕ vertical and ↔↕ both, and shows which is on (same as **Ctrl+M**)
+- **Reading** and **Recording** buttons on the control bar, and **Reading** and **Recording** tabs in Settings: the long Layout panel is now three shorter views, so nothing sits below the fold
 - **One Sightline at a time:** starting it again (from the Start menu, a shortcut or the command line) brings the open one to the front instead of opening a second copy, which could overwrite the first one's settings and take log
 - **Settings > About**, a new last tab: the version, credits and links, with buttons for the full About page and the user guide. It replaces the line at the foot of every tab
 - Settings stays the same height on every tab, so it no longer jumps as you switch

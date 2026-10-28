@@ -66,6 +66,14 @@
         >
           ▶
         </button>
+        <button
+          id="cb-on-air"
+          class="cb-btn cb-text"
+          aria-pressed="false"
+          title="On air: the on-air backing and the ON AIR light, before you start or for a talk (Ctrl+Shift+A). Lit whenever you're on air"
+        >
+          On air
+        </button>
         <label
           class="cb-slider"
           title="Scroll speed (↑ / ↓ while scrolling, Ctrl+[ and Ctrl+])"
@@ -90,6 +98,27 @@
           title="Margins, line spacing, alignment (Ctrl+Shift+K)"
         >
           Layout
+        </button>
+        <button
+          id="cb-reading"
+          class="cb-btn cb-text"
+          title="Reading: opacity, colours, fonts and the focus band"
+        >
+          Reading
+        </button>
+        <button
+          id="cb-recording"
+          class="cb-btn cb-text"
+          title="Recording: ON AIR, hide from screen sharing, click-through, talking points, pacing light"
+        >
+          Recording
+        </button>
+        <button
+          id="cb-mirror"
+          class="cb-btn cb-text"
+          title="Mirror for beam-splitter glass: off, horizontal, vertical, both (Ctrl+M)"
+        >
+          Mirror
         </button>
         <button
           id="cb-voice"
@@ -195,6 +224,10 @@
       <label class="lp-row"
         >Background <output id="lp-bg-opacity-value"></output>
         <input id="lp-bg-opacity" type="range" min="0" max="1" step="0.01" />
+      </label>
+      <label class="lp-row"
+        >Background on air <output id="lp-on-air-backing-value"></output>
+        <input id="lp-on-air-backing" type="range" min="0" max="1" step="0.01" />
       </label>
       <label class="lp-row"
         >Text brightness <output id="lp-text-brightness-value"></output>
@@ -570,6 +603,8 @@
           <button type="button" role="tab" data-tab="voice">Voice</button>
           <button type="button" role="tab" data-tab="display">Display</button>
           <button type="button" role="tab" data-tab="layout">Layout</button>
+          <button type="button" role="tab" data-tab="reading">Reading</button>
+          <button type="button" role="tab" data-tab="recording">Recording</button>
           <button type="button" role="tab" data-tab="files">Files</button>
           <button type="button" role="tab" data-tab="remotes">Remotes</button>
           <button type="button" role="tab" data-tab="about">About</button>
@@ -668,6 +703,16 @@
 
         <fieldset data-tab="layout" id="set-layout-host">
           <legend>Layout</legend>
+          <p class="field-hint">Changes here show straight away, so you can see them on the script. Cancel doesn't undo them.</p>
+        </fieldset>
+
+        <fieldset data-tab="reading" id="set-reading-host">
+          <legend>Reading</legend>
+          <p class="field-hint">Changes here show straight away, so you can see them on the script. Cancel doesn't undo them.</p>
+        </fieldset>
+
+        <fieldset data-tab="recording" id="set-recording-host">
+          <legend>Recording</legend>
           <p class="field-hint">Changes here show straight away, so you can see them on the script. Cancel doesn't undo them.</p>
         </fieldset>
 

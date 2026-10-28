@@ -2,15 +2,22 @@
 
 ## The Layout panel
 
-Click **Layout** in the control bar (or press **Ctrl+Shift+K**). Changes show
-straight away, so you can see them on the script. The same controls are on
-**Settings > Layout**.
+The panel has three views, each with its own button on the control bar:
+**Layout** (**Ctrl+Shift+K**) for spacing, **Reading** for opacity and reading
+aids, and **Recording** for the recording and script options. Click the same
+button again to close it. Changes show straight away, so you can see them on
+the script. The same controls are on the **Layout**, **Reading** and
+**Recording** tabs of Settings.
 
 ![The Layout panel](images/layout-panel.png)
 
 - **Text opacity**, **Backing** and **brightness**: how see-through the words
   are, how solid the dark band behind them is, and how bright the text is.
   They're separate, so you can have solid text on a faint background.
+- **Background on air**: a more solid backing while you're on air (scrolling,
+  held at a stop, or the **On air** button), so the room behind the glass
+  shows while you set up and the words stand out while you record. It's never
+  lighter than the normal backing; 60% to start with.
 - **Margins** keep the text narrow, so your eyes stay near the camera. The top
   and bottom margins fade the text out near the edges.
 - **Line spacing**, **alignment** (left or centred) and the **reading line**:

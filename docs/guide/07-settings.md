@@ -30,14 +30,16 @@ Text size, backing, the reading line, how notes in [brackets] show, the
 reading-line marker, the sentence highlight, mirroring, always on top, the
 prompter monitor and eye-line mode.
 
-## Layout
+## Layout, Reading and Recording
 
 ![Settings > Layout](images/settings-layout.png)
 
-The same controls as the Layout panel: backing and text, margins, line
-spacing, alignment, reading aids (themes, fonts, the focus band), hiding from
-screen capture, click-through, and the options for timing and checking
-scripts. See [Layout and display](04-layout-and-display.md).
+The same controls as the Layout panel's three views, a tab each so none runs
+off the bottom: **Layout** for margins, line spacing, alignment and the
+reading line; **Reading** for text and background opacity (including the
+background on air), themes, fonts and the focus band; and **Recording** for
+the ON AIR light, hiding from screen capture, click-through, and the options
+for timing and checking scripts. See [Layout and display](04-layout-and-display.md).
 
 ## Files
 
