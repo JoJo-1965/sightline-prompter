@@ -8,14 +8,20 @@ mode, and scrolling that followed your voice through Deepgram. Thank you,
 David.
 
 Sightline keeps that heart and rebuilds almost everything around it into a
-full teleprompter for recording to camera, on Windows, macOS and Linux. This
-page lists what's new. The [change log](../readme.md#change-log) has the
+teleprompter that works with your AI, for content creators and learning and
+development teams recording to camera at a desk or in a studio, on Windows,
+macOS and Linux. Your AI writes the script and its directions, Sightline
+follows your voice through the take, and the take log goes back to your AI
+for the edit.
+
+This page lists what's new. The [change log](../readme.md#change-log) has the
 details, and the [user guide](guide/README.md) shows every screen.
 
 **At a glance**
 
 |                     | Electron Teleprompter 4.1.20                                                          | Sightline Prompter 1.0                                                                                                                                         |
 | ------------------- | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| AI                  |                                                                                       | **AI writes the script and its directions, can run the prompter, and gets the take log for the edit**                                                                                         |
 | Scrolling           | Follows your voice (Deepgram, with your own key)                                      | Follows your voice **on your own computer**, free and offline, or steady at a set pace                                                                         |
 | Voice control       |                                                                                       | "Prompter, pause", go, slower, again, resync and more                                                                                                          |
 | Script formats      | Markdown and HTML, with a built-in Markdown editor                                    | Adds plain text, Word, rich text, **PDF** and **Google Docs links**                                                                                            |
@@ -25,8 +31,33 @@ details, and the [user guide](guide/README.md) shows every screen.
 | Recording rigs      | Mirror (flip) mode                                                                    | Mirroring in any direction, prompter monitor (Elgato Prompter), eye-line mode, beam-splitter setup, hide from screen capture, click-through                    |
 | Reading aids        | Background opacity and font size                                                      | Sentence highlight, focus band, text edge, colour themes, Atkinson Hyperlegible and OpenDyslexic                                                               |
 | Help                | Readme; recently opened files                                                         | Built-in user guide with screenshots, sample scripts, shortcuts panel                                                                                          |
-| AI                  |                                                                                       | AI script prompt, script checker, optional local API for AI assistants                                                                                         |
 | Installers          | Build from source                                                                     | Windows, macOS (Apple silicon and Intel) and Linux, built on GitHub                                                                                            |
+
+## AI-assisted production
+
+The whole workflow is in the guide:
+[Working with AI](guide/09-working-with-ai.md).
+
+- **Write:** Help > Copy the AI Script Prompt puts instructions for ChatGPT,
+  Claude, Gemini or Copilot on the clipboard. The scripts they write come with
+  sections, target times, stops, countdowns, markers and notes to the speaker
+  ([AI-SCRIPT-BRIEF.md](AI-SCRIPT-BRIEF.md)). Draft in Google Docs, Word or
+  PDF and open it as it is.
+- **Check:** directives Sightline doesn't recognise are marked ⚠ on screen,
+  and the command-line checker (`npm run check-script`) reports unknown
+  directives, bad values and sections without a target, so an AI pipeline can
+  fix a script before you see it.
+- **Record:** an optional local API lets an AI agent on your own computer
+  write a script into a slot, start, pause, jump sections, change speed, drop
+  markers and rate takes as keeper or scrap. Off by default, token-protected
+  and closed to web pages.
+- **Edit:** the take log records every take of every section, with its start
+  and end, retakes, markers and rating, and picks the take to use for each
+  section, as JSON for an editing agent and CSV for a spreadsheet.
+- **Coming next** ([roadmap](../ROADMAP.md)): word-level timing and an edit
+  pack an editing agent can assemble from; `{listen: off}` and
+  `{prompter: …}` so the script can direct the microphone and the prompter;
+  and a recordings library an agent can list and fetch from.
 
 ## Voice
 
@@ -135,15 +166,6 @@ details, and the [user guide](guide/README.md) shows every screen.
 - **Fonts** including Atkinson Hyperlegible, OpenDyslexic and Verdana.
 - Independent text opacity, background opacity and text brightness, margins
   that fade out at the edges, line spacing and alignment.
-
-## AI
-
-- **Help > Copy the AI Script Prompt:** instructions for ChatGPT, Claude or
-  Gemini that produce scripts with sections, targets, stops and countdowns
-  ([AI-SCRIPT-BRIEF.md](AI-SCRIPT-BRIEF.md)).
-- **Optional local API** so an AI assistant or a script on your own computer
-  can load scripts and run the prompter. Off by default, token-protected, and
-  closed to web pages.
 
 ## Help and installers
 

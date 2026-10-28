@@ -83,4 +83,5 @@ Choose **Help > Copy the AI Script Prompt** (or ☰ > Help). It puts a set of
 instructions on the clipboard: paste it into ChatGPT, Claude or Gemini, then
 describe the script you want. The script that comes back has sections, target
 times, stops and countdowns ready for Sightline. The same instructions are in
-[AI-SCRIPT-BRIEF.md](../AI-SCRIPT-BRIEF.md).
+[AI-SCRIPT-BRIEF.md](../AI-SCRIPT-BRIEF.md). The whole AI workflow, from
+script to edit, is in [Working with AI](09-working-with-ai.md).

@@ -1,29 +1,77 @@
 # Sightline Prompter
 
-A see-through desktop teleprompter for recording to camera, built with [Electron.js](https://www.electronjs.org/).
+**The teleprompter that works with your AI.** A free, open-source, see-through
+desktop teleprompter for content creators and learning and development teams
+who record to camera at a desk or in a studio. Your AI assistant writes the
+script and its directions, Sightline follows your voice through the take, and
+the take log goes back to your AI for the edit. Speech recognition runs on
+your own computer. Windows, macOS and Linux.
+
+**[Download the latest release](https://github.com/JoJo-1965/sightline-prompter/releases/latest)** · [User guide](docs/guide/README.md) · [Working with AI](docs/guide/09-working-with-ai.md) · [Everything it adds](docs/FEATURES.md) · [joannelockwood.co.uk/sightline](https://joannelockwood.co.uk/sightline)
 
 > **About Sightline Prompter.** This is a fork of
 > [reverentgeek/electron-teleprompter](https://github.com/reverentgeek/electron-teleprompter),
 > created by [David Neal](https://reverentgeek.com) and released under the MIT
 > licence. Adapted and enhanced by Joanne Lockwood from SEE Change Happen Ltd.
-> It adds steady words-per-minute scrolling, script
-> slots, a control bar and menu, layout controls, Word and rich-text scripts,
-> settings files and an optional local API for AI assistants. Everything from
-> the original still works. See the [change log](#change-log) for the details,
-> and **Help > About** in the app for credits.
+> Everything from the original still works. See the [change log](#change-log)
+> for the details, and **Help > About** in the app for credits.
+
+## Built around AI
+
+| Step       | What your AI does                                                         | What Sightline does                                                                                        |
+| ---------- | ------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| **Write**  | Writes the script, with sections, target times, stops and countdowns      | **Help > Copy the AI Script Prompt** gives it the instructions, and a checker validates the result         |
+| **Record** | Loads the script and runs the prompter through a local API, if you let it | Follows your voice, holds at every `{stop}`, counts down every `{pause: 3s}`, takes "Prompter, …" commands |
+| **Edit**   | Reads the take log and chooses the takes                                  | Logs every take of every section, with retakes, markers and your keeper or scrap rating, as JSON and CSV   |
+
+- **Scripts that direct the prompter.** The [AI Script Prompt](docs/AI-SCRIPT-BRIEF.md)
+  works with ChatGPT, Claude, Gemini or Copilot. The script that comes back has
+  `## sections`, `{target: 1:20}` pacing, `{stop}` before a demo, `{pause: 3s}`
+  for a breath, `{marker}` for the edit and `[notes to you]`, all
+  [documented](docs/SCRIPT-DIRECTIVES.md). Draft in Google Docs, Word or PDF
+  and open it as it is.
+- **An AI that can run the prompter.** Switch on the local API (Settings >
+  Remotes) and an agent on your computer, such as Claude Code, can write a
+  script into a slot, start, pause, jump sections, change speed, drop markers
+  and rate takes. It's off by default, token-protected and closed to web
+  pages.
+- **A take log made for an editing agent.** Each take's start and end, whether
+  it was read through or retaken, its markers and rating, and the take to use
+  for each section.
+- **Private by design.** Voice recognition runs offline on your own computer,
+  so nothing you say is sent anywhere.
+
+The whole workflow is in the guide: [Working with AI](docs/guide/09-working-with-ai.md).
+
+**Coming next** ([roadmap](ROADMAP.md)): word-level timing and an "edit pack"
+an editing agent can assemble a video from; `{listen: off}` and `{prompter: …}`
+so the script can direct the microphone and the prompter; and a recordings
+library that an agent can list and fetch from.
 
 ## Features
 
-- Translucent overlay — see through the script to your presentation or video call
-- Built-in markdown editor with syntax highlighting
-- Voice-driven auto-scroll — speak your script and the prompter follows you. Recognition runs on your own computer (free, offline, private), or online with [Deepgram](https://deepgram.com/) if you prefer
-- Live reload — script automatically reloads when the file is modified externally
-- Adjustable background opacity
-- Font size is persisted across sessions
-- Mirror/flip mode — for physical teleprompter setups with beam splitters
-- Recently opened files — File > Open Recent submenu
-- Auto-loads last opened file on startup
-- Window position and size are persisted across sessions
+- **Follows your voice**, with speech recognition on your own computer (free
+  and offline), or [Deepgram](https://deepgram.com/) if you prefer. The
+  sentence you're about to say is highlighted
+- **"Prompter, …" voice commands:** pause, go, slower, again (for a retake),
+  keeper, scrap that, marker, resync and more
+- **Or a steady pace** in words per minute, with section targets, a pacing
+  light, a take summary and a rehearsal timer
+- **Stops and countdowns** written into the script, and a **take log** for the
+  edit
+- Opens **Markdown, Word, rich text, plain text, PDF and Google Docs links**,
+  with a built-in editor and live reload
+- **Nine script slots**, a control bar and menu, six tabs of settings, a
+  floating button pad, a phone remote, a control window for a second screen,
+  clickers, pedals and game controllers
+- **For real rigs:** mirroring for beam-splitter glass, full screen on a
+  prompter monitor such as the Elgato Prompter, an eye-line mode, hiding from
+  screen sharing and click-through
+- **Reading aids:** a focus band, colour themes, and fonts including Atkinson
+  Hyperlegible and OpenDyslexic
+- A **user guide** with screenshots, built into the app
+
+The full list, side by side with the original, is in [FEATURES.md](docs/FEATURES.md).
 
 ## Usage
 
@@ -153,6 +201,7 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ### Next release
 
+- **Working with AI**, a new page in the user guide (Help > User Guide): how your AI writes the script and its directions, runs the prompter through the local API, and takes the take log for the edit. The readme, feature list and Help > About now lead with it
 - **Slate and sync mark** (Settings > Scrolling, "Slate at the start of each take"): before each take the screen flashes white and beeps, then shows the section and take number for a second. The take log records when each slate went off (the first is time 0), so every take can be lined up with the recording; no clap needed. It shows when you start scrolling, carry on from a `{stop}`, start voice scrolling, or say "Prompter, again". Choose flash and beep, flash only, or off (the default)
 - Two pauses on one line, such as a countdown and then a `{stop}`, now both count. Before, the second was skipped
 - A take that ends at a `{stop}` now ends where you stopped reading, not when you carried on

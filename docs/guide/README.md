@@ -1,8 +1,14 @@
 # Sightline Prompter user guide
 
-Sightline Prompter is a see-through teleprompter for recording to camera. The
-script floats over your screen, close to the webcam, and scrolls at a steady
-pace or follows your voice.
+Sightline Prompter is a see-through teleprompter for recording to camera,
+built to work with AI. It's made for content creators and learning and
+development teams recording at a desk or in a studio: your AI assistant
+writes the script and its directions, Sightline follows your voice through
+the take, and the take log goes back to your AI for the edit. See
+[Working with AI](09-working-with-ai.md).
+
+The script floats over your screen, close to the webcam, and scrolls at a
+steady pace or follows your voice.
 
 ![The prompter with the control bar, mid-take](images/running.png)
 
@@ -16,6 +22,7 @@ pace or follows your voice.
 6. [Remotes and second screens](06-remotes-and-screens.md): the pad, control window, phone remote, prompter monitor
 7. [Settings](07-settings.md): every tab explained
 8. [Shortcuts and troubleshooting](08-shortcuts-and-troubleshooting.md)
+9. [Working with AI](09-working-with-ai.md): AI-written scripts, letting an AI run the prompter, the take log for the edit, and what's coming next
 
 Inside the app, open this guide from **Help > User Guide** or the **?** menu.
 **F1** shows the keyboard shortcuts.

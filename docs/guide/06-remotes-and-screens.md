@@ -48,7 +48,8 @@ networks.
 
 Also on **Settings > Remotes**, you can let an AI assistant or a script on
 this computer load scripts and control the prompter. It's off by default, and
-only programs on this computer that have the token can connect.
+only programs on this computer that have the token can connect. What an AI
+can do with it is in [Working with AI](09-working-with-ai.md#2-record-let-the-ai-run-the-prompter).
 
 ## Choosing the prompter monitor
 
