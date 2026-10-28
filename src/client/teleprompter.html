@@ -466,7 +466,11 @@
         </div>
       </div>
     </div>
-    <div id="progress-bar" class="hidden"><div id="progress-fill"></div></div>
+    <div id="progress-bar" class="hidden" role="slider" aria-label="Place in the script: click or drag to jump" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="-1">
+      <div id="progress-fill"></div>
+      <div id="progress-ticks"></div>
+      <div id="progress-tip" class="hidden"></div>
+    </div>
     <div id="cb-progress-text"></div>
     <div id="on-air" class="hidden" role="status">ON AIR</div>
     <div id="pacing" class="hidden" role="status" aria-live="polite"></div>

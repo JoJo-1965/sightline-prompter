@@ -882,14 +882,65 @@ kbd {
 	bottom: 0;
 	height: 4px;
 	background: rgba(255, 255, 255, 0.08);
-	pointer-events: none;
+	cursor: pointer;
 	z-index: 1100;
+	transition: height 0.15s ease;
+	touch-action: none;
+}
+
+/* A taller strip to catch the pointer than the bar shows. */
+#progress-bar::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: 14px;
+}
+
+#progress-bar:hover,
+#progress-bar.dragging {
+	height: 8px;
 }
 
 #progress-fill {
 	height: 100%;
 	width: 0;
 	background: rgba(255, 213, 74, 0.8);
+	pointer-events: none;
+}
+
+#progress-ticks {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+}
+
+.progress-tick {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 2px;
+	margin-left: -1px;
+	background: rgba(255, 255, 255, 0.55);
+}
+
+#progress-tip {
+	position: absolute;
+	bottom: 14px;
+	transform: translateX(-50%);
+	max-width: min(420px, 80vw);
+	padding: 4px 9px;
+	font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+	font-size: 12px;
+	color: #e8e8e8;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	background: rgba(24, 26, 31, 0.95);
+	border: 1px solid rgba(255, 255, 255, 0.15);
+	border-radius: 6px;
+	pointer-events: none;
 }
 
 #drop-overlay {

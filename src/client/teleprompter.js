@@ -2121,6 +2121,7 @@ function scheduleMeasure() {
 			};
 		}
 		md.style.transform = mirrorTransform;
+		drawProgressTicks();
 		updateProgress();
 	} );
 }
@@ -2150,12 +2151,98 @@ function updateProgress() {
 		)
 	);
 	progressFill.style.width = `${ fraction * 100 }%`;
+	progressBar.setAttribute( "aria-valuenow", String( Math.round( fraction * 100 ) ) );
 	const wordsLeft = textSpan.words * ( 1 - fraction );
 	const wpm = settings.steadyWpm || 140;
 	if ( progressText ) {
 		progressText.textContent = `${ Math.round( fraction * 100 ) }% · ${ formatMinutes( wordsLeft / wpm ) } left of ${ formatMinutes( textSpan.words / wpm ) }`;
 	}
 }
+
+// The progress bar is also a way to move: click or drag to jump anywhere in
+// the script, with the section and time at that point in a tip, and a tick
+// where each section starts. Ignored while the prompter runs, so a stray
+// click can't jump a take; pause first.
+const progressTicks = document.getElementById( "progress-ticks" );
+const progressTip = document.getElementById( "progress-tip" );
+let progressDragging = false;
+
+const spanHeight = () => Math.max( 1, textSpan.bottom - textSpan.top );
+
+function drawProgressTicks() {
+	if ( !progressTicks ) return;
+	progressTicks.innerHTML = "";
+	if ( !textSpan ) return;
+	for ( const s of directivePoints.sections ) {
+		const at = ( s.y - textSpan.top ) / spanHeight();
+		if ( at <= 0.005 || at >= 0.995 ) continue;
+		const tick = document.createElement( "div" );
+		tick.className = "progress-tick";
+		tick.style.left = `${ at * 100 }%`;
+		progressTicks.appendChild( tick );
+	}
+}
+
+// Where along the bar the pointer is, 0 to 1 (mirroring flips the bar).
+function progressFractionAt( event ) {
+	const rect = progressBar.getBoundingClientRect();
+	let at = ( event.clientX - rect.left ) / Math.max( 1, rect.width );
+	if ( mirrored === "horizontal" || mirrored === "both" ) at = 1 - at;
+	return Math.min( 1, Math.max( 0, at ) );
+}
+
+function showProgressTip( at ) {
+	if ( !progressTip || !textSpan ) return;
+	if ( isScrolling() ) {
+		progressTip.textContent = "Pause to jump";
+	} else {
+		const y = textSpan.top + at * spanHeight();
+		const section = directivePoints.sections[sectionIndexAt( y )];
+		const title = section?.heading.textContent.replace( /{[^}]*}/g, "" ).trim();
+		const wordsBefore = directivePoints.wordTops.filter( t => t < y ).length;
+		const wpm = settings.steadyWpm || 140;
+		const time = `${ formatMinutes( wordsBefore / wpm ) } of ${ formatMinutes( textSpan.words / wpm ) }`;
+		progressTip.textContent = title ? `${ title } · ${ time }` : time;
+	}
+	progressTip.classList.remove( "hidden" );
+	// Centred on the pointer, but kept inside the window.
+	const width = progressBar.clientWidth;
+	const half = progressTip.offsetWidth / 2 + 4;
+	progressTip.style.left = `${ Math.min( width - half, Math.max( half, at * width ) ) }px`;
+}
+
+function jumpToProgress( at ) {
+	if ( !textSpan || isScrolling() ) return;
+	const readingY = textSpan.top + at * spanHeight();
+	window.scrollTo( { top: Math.max( 0, readingY - window.innerHeight * getReadingAnchor() ), behavior: "auto" } );
+}
+
+progressBar?.addEventListener( "pointerdown", ( event ) => {
+	if ( event.button !== 0 || !textSpan || isScrolling() ) return;
+	event.preventDefault();
+	progressDragging = true;
+	progressBar.setPointerCapture( event.pointerId );
+	progressBar.classList.add( "dragging" );
+	const at = progressFractionAt( event );
+	jumpToProgress( at );
+	showProgressTip( at );
+} );
+
+progressBar?.addEventListener( "pointermove", ( event ) => {
+	const at = progressFractionAt( event );
+	if ( progressDragging ) jumpToProgress( at );
+	showProgressTip( at );
+} );
+
+function endProgressDrag() {
+	progressDragging = false;
+	progressBar?.classList.remove( "dragging" );
+}
+progressBar?.addEventListener( "pointerup", endProgressDrag );
+progressBar?.addEventListener( "pointercancel", endProgressDrag );
+progressBar?.addEventListener( "pointerleave", () => {
+	if ( !progressDragging ) progressTip?.classList.add( "hidden" );
+} );
 
 // --- Slots: up to nine scripts, each remembering its place ---
 

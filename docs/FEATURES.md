@@ -119,6 +119,8 @@ The whole workflow is in the guide:
   AI editing agents.
 - **Talking points** for speaking off script: one section at a time as large
   bullet points, with a talk timer.
+- A progress bar you can click or drag to jump through the script, with
+  section ticks and a tip showing the section and time at each point.
 - Progress bar, time left, an ON AIR light and an optional end-of-countdown
   beep.
 

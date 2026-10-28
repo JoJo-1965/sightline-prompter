@@ -42,6 +42,15 @@ slider labels and the number boxes (**On air** becomes a red record dot), then
 **Recording** and **Mirror**. Everything is still on the ☰ menu, in Settings or
 on a shortcut.
 
+## The progress bar
+
+The thin yellow bar along the bottom shows how far through the script you
+are, and the bottom left shows the time left. It's also a quick way to move:
+point at it to see the section and time at that place, then click to jump
+there, or drag along it. The white ticks mark where each section starts.
+While the prompter is running, clicks on the bar are ignored, so a stray
+click can't jump a take: pause first. Turn the bar off in the Layout panel.
+
 ## The menu
 
 ![The ☰ menu](images/menu.png)
