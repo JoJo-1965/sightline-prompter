@@ -151,6 +151,12 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ## Change log
 
+### Next release
+
+- **Slate and sync mark** (Settings > Scrolling, "Slate at the start of each take"): before each take the screen flashes white and beeps, then shows the section and take number for a second. The take log records when each slate went off (the first is time 0), so every take can be lined up with the recording; no clap needed. It shows when you start scrolling, carry on from a `{stop}`, start voice scrolling, or say "Prompter, again". Choose flash and beep, flash only, or off (the default)
+- Two pauses on one line, such as a countdown and then a `{stop}`, now both count. Before, the second was skipped
+- A take that ends at a `{stop}` now ends where you stopped reading, not when you carried on
+
 ### 1.0.1 (28 October 2026)
 
 - **Take log for the edit** (File > Export Take Log): every take of every section is logged as you record, with its start and end times, whether you read it to the end or went back for a retake ("Prompter, again" or ←), and its markers. Say **"Prompter, keeper"** or **"Prompter, scrap that"** (or press **K** or **Shift+K**) to rate the take you're on or have just finished; the log picks the take to use for each section (the last keeper, else the last complete take not scrapped). It's saved as you go, one per script per day, and exports as JSON for edit tools with a CSV beside it. The take summary shows the takes and keepers so far

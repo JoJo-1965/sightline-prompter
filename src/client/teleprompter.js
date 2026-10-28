@@ -1010,6 +1010,7 @@ async function beginVoice( engine, deepgramKey ) {
 		autoScrollStarting = false;
 		lastManualScrollTs = 0;
 		setIndicator( "Listening" );
+		showSlate();
 	} catch ( err ) {
 		autoScrollStarting = false;
 		console.error( "[auto-scroll] start failed", err );
@@ -1162,6 +1163,8 @@ function runVoiceCommand( id ) {
 		runRemoteAction( "previous-section" );
 		pendingJumpReason = null;
 		resyncAfterJump();
+		// Voice mode: a fresh slate for the retake, once the jump has settled.
+		if ( voice ) setTimeout( showSlate, 800 );
 	} else if ( id === "marker" ) {
 		runRemoteAction( "marker" );
 	} else if ( id === "keeper" || id === "scrap" ) {
@@ -1194,7 +1197,77 @@ function steadyIndicatorText() {
 }
 
 function steadySessionActive() {
-	return isSteadyRunning() || countdownTimer !== null;
+	return isSteadyRunning() || countdownTimer !== null || slating;
+}
+
+// --- The slate: a sync point for the edit at the start of each take ---
+// A white flash (and a beep, if chosen) marks the moment; then the section and
+// take number show for a second. The take log notes when it went off.
+
+const slateEl = document.getElementById( "slate" );
+let slating = false; // a slate is showing, and something waits for it
+let slateTimer = null;
+const slateOn = () => settings.slate === "beep" || settings.slate === "flash";
+
+// The section the next take will be in: the one at the reading line, or the
+// next one when this has been read to its end (carrying on from a stop);
+// -1 at the end of the script.
+function slateSection() {
+	const y = readingLineY();
+	const index = sectionIndexAt( y );
+	const next = directivePoints.sections[index + 1];
+	const left = directivePoints.wordTops.filter(
+		t => t > y + 24 && t < ( next?.y ?? Infinity )
+	).length;
+	if ( left <= 3 && !next ) return -1; // the end of the script: no take to slate
+	return Math.max( 0, left <= 3 ? index + 1 : index );
+}
+
+function showSlate() {
+	if ( !slateOn() || !slateEl ) return Promise.resolve();
+	const index = slateSection();
+	if ( index < 0 ) return Promise.resolve();
+	const section = directivePoints.sections[index];
+	const take = recording.nextTake( index );
+	slateEl.querySelector( ".slate-take" ).textContent = section
+		? `Section ${ index + 1 } · Take ${ take }`
+		: `Take ${ take }`;
+	slateEl.querySelector( ".slate-title" ).textContent
+		= section?.heading.textContent.replace( /\{[^}]*\}/g, "" ).trim() ?? "";
+	clearTimeout( slateTimer );
+	slateEl.classList.remove( "hidden" );
+	slateEl.classList.add( "flash" );
+	recording.slate( index );
+	if ( settings.slate === "beep" ) playTone( 1000, 0.25, 0.35 );
+	setTimeout( () => slateEl.classList.remove( "flash" ), 150 );
+	return new Promise( ( resolve ) => {
+		slateTimer = setTimeout( () => {
+			slateEl.classList.add( "hidden" );
+			resolve();
+		}, 1100 );
+	} );
+}
+
+function hideSlate() {
+	clearTimeout( slateTimer );
+	slating = false;
+	slateEl?.classList.add( "hidden" );
+}
+
+// Run `start` after the slate (straight away when the slate is off). Stopping
+// in the meantime cancels it.
+function afterSlate( start ) {
+	if ( !slateOn() ) {
+		start();
+		return;
+	}
+	slating = true;
+	setIndicator( settings.slate === "beep" ? "Get ready · start after the beep" : "Get ready", "connecting" );
+	showSlate().then( () => {
+		if ( !slating ) return;
+		slating = false;
+		start();
+	} );
 }
 
 function hideCountdown() {
@@ -1210,14 +1283,16 @@ function startSteadySession() {
 	}
 	const begin = () => {
 		hideCountdown();
-		startSteadyScroll( {
-			el: md,
-			wordsPerMinute: settings.steadyWpm,
-			onFinished: () => setIndicator( null )
+		afterSlate( () => {
+			startSteadyScroll( {
+				el: md,
+				wordsPerMinute: settings.steadyWpm,
+				onFinished: () => setIndicator( null )
+			} );
+			startCueTracking();
+			if ( settings.slate !== "beep" ) startBeep();
+			setIndicator( steadyIndicatorText() );
 		} );
-		startCueTracking();
-		startBeep();
-		setIndicator( steadyIndicatorText() );
 	};
 	let remaining = Math.max( 0, Math.round( settings.countdown ?? 0 ) );
 	if ( !remaining || !countdownEl ) {
@@ -1237,6 +1312,7 @@ function startSteadySession() {
 }
 
 function stopSteadySession() {
+	hideSlate();
 	clearCuePause();
 	hideCountdown();
 	stopSteadyScroll();
@@ -1647,6 +1723,7 @@ async function openSettings() {
 	field( "set-scroll-mode" ).value = settings.scrollMode ?? "steady";
 	field( "set-steady-wpm" ).value = settings.steadyWpm;
 	field( "set-countdown" ).value = settings.countdown;
+	field( "set-slate" ).value = settings.slate ?? "off";
 	field( "set-voice-speed" ).value = autoScrollSpeed;
 	field( "set-voice-engine" ).value = usesLocalVoice() ? "local" : "deepgram";
 	field( "set-voice-commands" ).value = settings.voiceCommands ?? "voice";
@@ -1731,6 +1808,7 @@ function saveSettingsPage() {
 		voiceCommands: field( "set-voice-commands" ).value,
 		steadyWpm: numberValue( "set-steady-wpm", 60, 300, settings.steadyWpm ),
 		countdown: numberValue( "set-countdown", 0, 10, settings.countdown ),
+		slate: field( "set-slate" ).value,
 		directions: field( "set-directions" ).value,
 		showReadingMarker: field( "set-reading-marker" ).checked,
 		highlightSentence: field( "set-sentence" ).checked,
@@ -3738,14 +3816,23 @@ function followScriptPace( y ) {
 }
 
 function startCueTracking() {
+	handledCues.clear();
+	lastCue = null;
 	lastReadingY = readingLineY();
 	appliedPace = null;
 	followScriptPace( lastReadingY );
 }
 
+let cueWasStop = false;
+let lastCue = null; // the pause just handled
+const handledCues = new Set(); // pauses already handled on this pass
+
 function pauseAtCue( pause ) {
 	stopSteadyScroll();
 	cuePaused = true;
+	cueWasStop = !pause.seconds;
+	lastCue = pause;
+	handledCues.add( pause );
 	showPausePill( pause.seconds, resumeFromCue );
 	updatePlayButton();
 	syncCommandListening();
@@ -3755,13 +3842,19 @@ function resumeFromCue() {
 	clearPausePill();
 	cuePaused = false;
 	syncCommandListening();
-	startSteadyScroll( {
-		el: md,
-		wordsPerMinute: settings.steadyWpm,
-		onFinished: () => setIndicator( null )
-	} );
-	lastReadingY = readingLineY();
-	setIndicator( steadyIndicatorText() );
+	const carryOn = () => {
+		startSteadyScroll( {
+			el: md,
+			wordsPerMinute: settings.steadyWpm,
+			onFinished: () => setIndicator( null )
+		} );
+		// Just before the pause that was handled, so another pause on the same
+		// line (a countdown and then a stop) still counts.
+		lastReadingY = lastCue ? Math.min( readingLineY(), lastCue.y - 0.5 ) : readingLineY();
+		setIndicator( steadyIndicatorText() );
+	};
+	if ( cueWasStop ) afterSlate( carryOn );
+	else carryOn();
 }
 
 function clearCuePause() {
@@ -3776,8 +3869,10 @@ window.addEventListener(
 	() => {
 		const y = readingLineY();
 		if ( isSteadyRunning() && lastReadingY !== null ) {
+			// Back above the last pause (a retake): it counts again.
+			for ( const p of handledCues ) if ( y < p.y - 1 ) handledCues.delete( p );
 			const pause = directivePoints.pauses.find(
-				p => p.y > lastReadingY && p.y <= y
+				p => !handledCues.has( p ) && p.y > lastReadingY && p.y <= y
 			);
 			if ( pause ) {
 				lastReadingY = y;
@@ -4301,17 +4396,20 @@ function updateOnAir() {
 
 let audioCtx = null;
 function startBeep() {
-	if ( !settings.startBeep ) return;
+	if ( settings.startBeep ) playTone( 880, 0.2, 0.25 );
+}
+
+function playTone( frequency, seconds, volume ) {
 	try {
 		audioCtx ??= new AudioContext();
 		const osc = audioCtx.createOscillator();
 		const gain = audioCtx.createGain();
-		osc.frequency.value = 880;
-		gain.gain.setValueAtTime( 0.25, audioCtx.currentTime );
-		gain.gain.exponentialRampToValueAtTime( 0.001, audioCtx.currentTime + 0.18 );
+		osc.frequency.value = frequency;
+		gain.gain.setValueAtTime( volume, audioCtx.currentTime );
+		gain.gain.exponentialRampToValueAtTime( 0.001, audioCtx.currentTime + seconds * 0.9 );
 		osc.connect( gain ).connect( audioCtx.destination );
 		osc.start();
-		osc.stop( audioCtx.currentTime + 0.2 );
+		osc.stop( audioCtx.currentTime + seconds );
 	} catch ( err ) {
 		console.warn( "[beep]", err );
 	}

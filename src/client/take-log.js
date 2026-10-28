@@ -15,6 +15,7 @@ export function createTakeLog( { clock = () => Date.now() } = {} ) {
 	let log = empty();
 	let current = null; // the take in progress
 	let version = 0; // goes up with every change worth saving
+	let slated = null; // { section, at }: the last slate, for the take that follows it
 
 	function empty() {
 		return { startedAt: null, takes: [], events: [] };
@@ -39,8 +40,14 @@ export function createTakeLog( { clock = () => Date.now() } = {} ) {
 			openedAt: now,
 			lastAdvance: null,
 			markers: [],
-			rating: null
+			rating: null,
+			slate: null
 		};
+		// The slate shown just before this take: its beep is the sync point.
+		if ( slated && slated.section === index + 1 && now - slated.at < 15000 ) {
+			current.slate = since( slated.at );
+		}
+		slated = null;
 	}
 
 	// status: complete | retake | stopped | skipped. A take ends when the text
@@ -48,7 +55,8 @@ export function createTakeLog( { clock = () => Date.now() } = {} ) {
 	// line has just moved straight on into the next section.
 	function close( status, endNow = false ) {
 		if ( !current ) return null;
-		const end = endNow ? clock() : current.lastAdvance ?? clock();
+		const moving = current.lastAdvance && clock() - current.lastAdvance < 1500;
+		const end = endNow && moving ? clock() : current.lastAdvance ?? clock();
 		const seconds = ( end - current.openedAt ) / 1000;
 		const done = current;
 		current = null;
@@ -65,6 +73,7 @@ export function createTakeLog( { clock = () => Date.now() } = {} ) {
 			endedAt: new Date( end ).toISOString(),
 			status,
 			rating: done.rating,
+			slate: done.slate,
 			markers: done.markers
 		};
 		log.takes.push( take );
@@ -122,6 +131,21 @@ export function createTakeLog( { clock = () => Date.now() } = {} ) {
 				title: target.title,
 				rating
 			};
+		},
+
+		// The take number the next take of a section will get.
+		nextTake( index ) {
+			const done = log.takes.filter( t => t.section === index + 1 ).length;
+			return done + 1 + ( current?.section === index + 1 ? 1 : 0 );
+		},
+
+		// A slate (flash and beep) for the take about to start in this section.
+		// The first slate starts the log, so its beep is time 0.
+		slate( index ) {
+			const now = clock();
+			if ( !log.startedAt ) log.startedAt = new Date( now ).toISOString();
+			slated = { section: index + 1, at: now };
+			event( "slate", { section: index + 1, take: this.nextTake( index ) } );
 		},
 
 		isRunning: () => !!current,
@@ -200,6 +224,7 @@ export function takeLogCsv( data ) {
 			"duration",
 			"status",
 			"rating",
+			"slate",
 			"use",
 			"started_at",
 			"ended_at",
@@ -216,6 +241,7 @@ export function takeLogCsv( data ) {
 			t.duration,
 			t.status,
 			t.rating ?? "",
+			t.slate ?? "",
 			picks.get( t.section ) === t.take ? "yes" : "",
 			t.startedAt,
 			t.endedAt,

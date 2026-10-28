@@ -9,8 +9,9 @@ saving.
 
 ![Settings > Scrolling](images/settings-scrolling.png)
 
-The scroll mode (steady or voice), the steady speed, and the countdown before
-scrolling starts.
+The scroll mode (steady or voice), the steady speed, the countdown before
+scrolling starts, and the [slate](05-recording-a-take.md#the-slate) at the start
+of each take.
 
 ## Voice
 

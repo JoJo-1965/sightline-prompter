@@ -36,6 +36,28 @@ Rehearsing? **Use these times as targets** writes each time into the script as
 - **←** goes back to the start of the section, ready for a retake. So does
   saying **"Prompter, again"**, which drops a marker first.
 
+## The slate
+
+The slate gives the edit a sync point at the start of every take, in place of a
+clap. Turn it on in **Settings > Scrolling**, under **Slate at the start of
+each take**:
+
+- **Flash and beep**: the screen flashes white and beeps, then shows the
+  section and take number (for example *Section 3 · Take 2*) and the section's
+  title for a second. Your microphone records the beep.
+- **Flash only**: the same without the beep. The flash lights your face, so it
+  still shows in the video.
+- **Off** (the default).
+
+A slate shows when you start scrolling, when you carry on from a `{stop}`
+(naming the section that comes next), when voice scrolling starts, and after
+"Prompter, again". Start reading after the beep. While it shows, the label at
+the bottom right says *Get ready*.
+
+The [take log](#the-take-log) notes when each slate went off (the **slate**
+column), and the first slate is time 0. In the edit, find the first beep or
+flash in the recording: every take's times line up from there.
+
 ## The take log
 
 While you record, Sightline logs every take of every section: when it
@@ -68,6 +90,7 @@ saves a JSON file for edit tools and a CSV beside it for a spreadsheet:
 | started_at, ended_at | The clock time (UTC), to line up with your recording |
 | status | **complete** (read to the end), **retake** ("Prompter, again"), **stopped** or **skipped** |
 | rating | **keeper** or **scrap**, if you rated it |
+| slate | When the take's slate went off, if the slate is on |
 | use | **yes** on the take the log picks for that section |
 | markers | Times of any markers you dropped in it |
 

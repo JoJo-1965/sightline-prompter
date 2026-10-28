@@ -63,6 +63,9 @@ details, and the [user guide](guide/README.md) shows every screen.
   that runs down. The mic listens for "Prompter, go" at a stop.
 - **Markers:** `{marker}` in the script, or press B during a take; Ctrl+B
   jumps between them.
+- **Slate and sync mark:** a white flash and a beep at the start of each
+  take, then the section and take number, so the edit can line every take up
+  with the recording; no clap needed (Settings > Scrolling).
 - **Take log for the edit:** every take of every section, with its start and
   end, whether it was read to the end or retaken, and its markers, saved as
   you go and exported as JSON and CSV (File > Export Take Log). Say

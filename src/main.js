@@ -67,6 +67,7 @@ const defaultSettings = {
 	voiceCommands: "voice", // "Prompter, pause": "voice" (voice mode), "always" (steady too) or "off"
 	steadyWpm: 140,
 	countdown: 3,
+	slate: "off", // at the start of each take: "beep" (flash and beep), "flash" or "off"
 	directions: "dim", // "dim", "hide" or "normal" for [bracketed] directions
 	showReadingMarker: true,
 	highlightSentence: true, // light up the sentence you're on (the next to say, in voice mode)

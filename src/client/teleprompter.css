@@ -281,6 +281,44 @@ body.eye-line #md {
 	text-align: center;
 }
 
+/* The slate: a white flash (the sync point), then the section and take. */
+#slate {
+	position: fixed;
+	inset: 0;
+	z-index: 2500;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(10, 12, 16, 0.95);
+	pointer-events: none;
+}
+
+#slate.flash {
+	background: #fff;
+}
+
+#slate.flash .slate-card {
+	visibility: hidden;
+}
+
+.slate-card {
+	padding: 0 5vw;
+	text-align: center;
+	font-family: Helvetica, Arial, sans-serif;
+}
+
+.slate-take {
+	font-size: clamp(28px, 7vw, 76px);
+	font-weight: 700;
+	color: #fff;
+}
+
+.slate-title {
+	margin-top: 0.4em;
+	font-size: clamp(16px, 3vw, 30px);
+	color: #c8ccd4;
+}
+
 #countdown {
 	position: fixed;
 	inset: 0;

@@ -605,6 +605,15 @@
             >Countdown before scrolling (seconds)
             <input id="set-countdown" type="range" min="0" max="10" step="1" />
           </label>
+          <label class="row"
+            >Slate at the start of each take
+            <select id="set-slate">
+              <option value="off">Off</option>
+              <option value="beep">Flash and beep</option>
+              <option value="flash">Flash only</option>
+            </select>
+          </label>
+          <p class="field-hint">A sync point for the edit. Before each take the screen flashes white and shows the section and take number for a second; with the beep, your microphone records it too. The take log notes when each slate went off, so every take can be lined up with the recording. Start reading after the beep.</p>
         </fieldset>
 
         <fieldset data-tab="voice">
@@ -872,6 +881,12 @@
       </div>
     </div>
     <div id="countdown" class="hidden"></div>
+    <div id="slate" class="hidden" aria-live="polite">
+      <div class="slate-card">
+        <div class="slate-take"></div>
+        <div class="slate-title"></div>
+      </div>
+    </div>
     <div id="reading-marker" class="hidden"></div>
     <div id="resize-handle"></div>
     <script src="./editor-bundle.js"></script>

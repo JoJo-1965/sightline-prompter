@@ -75,7 +75,7 @@ const csv = takeLogCsv( { takes: [ { ...data.takes[2], title: "Why, then?" } ], 
 const lines = csv.trim().split( "\r\n" );
 assert.equal( lines.length, 2 );
 assert.match( lines[1], /^2,"Why, then\?",2,/ );
-assert.match( lines[1], /,keeper,yes,/ );
+assert.match( lines[1], /,keeper,,yes,/ );
 
 // Reloading a saved log carries on the numbering.
 const again = createTakeLog( { clock } );
@@ -95,5 +95,21 @@ for ( let s = 0; s < 4; s += 0.5 ) {
 }
 back.jump( "back" );
 assert.equal( back.data().takes[0].status, "complete" );
+
+// A slate just before a take: the take records when its beep went off, and
+// the first slate starts the log, so that beep is time 0.
+const slated = createTakeLog( { clock } );
+assert.equal( slated.nextTake( 2 ), 1 );
+slated.slate( 2 );
+wait( 1 );
+for ( let s = 0; s < 3; s += 0.5 ) {
+	slated.tick( { active: true, index: 2, title: "Three", advanced: true } );
+	wait( 0.5 );
+}
+assert.equal( slated.nextTake( 2 ), 2, "counts the take in progress" );
+slated.tick( { active: false, index: 2, atEnd: true } );
+assert.equal( slated.data().takes[0].slate, 0 );
+assert.equal( slated.data().takes[0].start, 1 );
+assert.equal( slated.data().events[0].type, "slate" );
 
 console.log( "take log tests pass" );
