@@ -24,6 +24,7 @@ import { editPack } from "./client/edit-pack.js";
 import { fitInside, keepTopReachable, sameRect } from "./utils/fit.js";
 import { isNewer } from "./utils/version.js";
 import { startRemoteServer, newToken } from "./remote.js";
+import { deleteRecording, listRecordings, readRecording, recordingPack, updateRecording, zipFiles } from "./recordings.js";
 import { startPhoneServer, newPhoneKey, lanAddress } from "./phone.js";
 import QRCode from "qrcode";
 import {
@@ -139,12 +140,24 @@ const defaultSettings = {
 	controlsPinned: false, // keep the control bar visible instead of auto-hiding it
 	remoteControl: false, // AI / script control over http://127.0.0.1 (see remote.js)
 	remotePort: 47615,
+	remoteDeleteRecordings: false, // the local API may delete recordings (Settings > Remotes)
 	phoneRemote: false, // phone remote over the home network (Settings > Phone remote)
 	phonePort: 47616
 };
 
 // Settings that a settings file or the remote API may not change.
-const PROTECTED_SETTINGS = [ "remoteControl", "remotePort", "phoneRemote", "phonePort" ];
+const PROTECTED_SETTINGS = [ "remoteControl", "remotePort", "remoteDeleteRecordings", "phoneRemote", "phonePort" ];
+
+// Take logs, one per script per day: the recordings library (recordings.js).
+const takeLogFolder = () => path.join( app.getPath( "userData" ), "take-logs" );
+// The brief for editing agents, the edit pack's README.
+async function editPackBrief() {
+	try {
+		return await fs.readFile( path.join( __dirname, "..", "docs", "EDIT-PACK.md" ), "utf-8" );
+	} catch {
+		return ""; // the pack is still useful without its brief
+	}
+}
 
 const SLOT_COUNT = 9;
 
@@ -624,7 +637,7 @@ const createWindow = ( state ) => {
 	// --- Take log (File > Export Take Log) ---
 	// One log per script per day, saved as the takes happen, in the app's
 	// take-logs folder: "<script> <yyyy-mm-dd>.json".
-	const takeLogDir = path.join( app.getPath( "userData" ), "take-logs" );
+	const takeLogDir = takeLogFolder();
 	const today = () => new Date().toLocaleDateString( "en-CA" ); // yyyy-mm-dd
 	const scriptName = file =>
 		path.basename( file ?? "Script", path.extname( file ?? "" ) )
@@ -707,14 +720,8 @@ const createWindow = ( state ) => {
 		let folder = path.join( result.filePaths[0], name );
 		for ( let n = 2; existsSync( folder ); n++ ) folder = path.join( result.filePaths[0], `${ name } (${ n })` );
 		try {
-			let readme = "";
-			try {
-				readme = await fs.readFile( path.join( __dirname, "..", "docs", "EDIT-PACK.md" ), "utf-8" );
-			} catch {
-				// the pack is still useful without its brief
-			}
 			await fs.mkdir( folder, { recursive: true } );
-			for ( const [ file, contents ] of Object.entries( editPack( takeLog, readme ) ) ) {
+			for ( const [ file, contents ] of Object.entries( editPack( takeLog, await editPackBrief() ) ) ) {
 				await fs.writeFile( path.join( folder, file ), contents );
 			}
 			toast( `Edit pack saved: ${ path.basename( folder ) }` );
@@ -764,6 +771,84 @@ const createWindow = ( state ) => {
 		win.webContents.send( "takeLog", null );
 		win.webContents.send( "toast", "New take log started. Take numbers start again at 1" );
 	}
+
+	// --- Recordings (File > Recordings): every take log, see recordings.js ---
+	const recordingName = r => r.title ?? r.id;
+
+	async function exportRecording( id, asZip ) {
+		const files = await recordingPack( takeLogDir, id, await editPackBrief() );
+		const name = `${ ( await readRecording( takeLogDir, id ) ).title ?? id } edit pack`.replace( /[<>:"/\\|?*]/g, "" );
+		if ( asZip ) {
+			const result = await dialog.showSaveDialog( win, {
+				title: "Export the edit pack as a zip",
+				defaultPath: `${ name }.zip`,
+				filters: [ { name: "Zip", extensions: [ "zip" ] } ]
+			} );
+			if ( result.canceled || !result.filePath ) return null;
+			await fs.writeFile( result.filePath, zipFiles( files ) );
+			shell.showItemInFolder( result.filePath );
+			return path.basename( result.filePath );
+		}
+		const result = await dialog.showOpenDialog( win, {
+			title: "Choose where to save the edit pack",
+			buttonLabel: "Save the edit pack here",
+			properties: [ "openDirectory", "createDirectory" ]
+		} );
+		if ( result.canceled || !result.filePaths?.[0] ) return null;
+		let folder = path.join( result.filePaths[0], name );
+		for ( let n = 2; existsSync( folder ); n++ ) folder = path.join( result.filePaths[0], `${ name } (${ n })` );
+		await fs.mkdir( folder, { recursive: true } );
+		for ( const [ file, contents ] of Object.entries( files ) ) {
+			await fs.writeFile( path.join( folder, file ), contents );
+		}
+		shell.openPath( folder );
+		return path.basename( folder );
+	}
+
+	// The id of the log being written now, if a script is open.
+	const currentLogId = () => ( currentFilePath ? path.basename( takeLogFile( currentFilePath ), ".json" ) : null );
+
+	ipcMain.handle( "recordings", async ( _event, action, args = {} ) => {
+		switch ( action ) {
+			case "list":
+				return { list: await listRecordings( takeLogDir ), current: currentLogId() };
+			case "read": {
+				return readRecording( takeLogDir, args.id );
+			}
+			case "update":
+				return updateRecording( takeLogDir, args.id, args.changes ?? {} );
+			case "delete": {
+				const r = await readRecording( takeLogDir, args.id );
+				const { response } = await dialog.showMessageBox( win, {
+					type: "warning",
+					buttons: [ "Delete", "Cancel" ],
+					defaultId: 1,
+					cancelId: 1,
+					message: `Delete "${ recordingName( r ) }"?`,
+					detail: `Its take log (${ r.takes } take${ r.takes === 1 ? "" : "s" }) goes to the Recycle Bin, so you can get it back from there. Your video and audio recordings aren't touched.`
+				} );
+				if ( response !== 0 ) return { ok: false };
+				const current = currentLogId() === args.id;
+				await deleteRecording( takeLogDir, args.id, file => shell.trashItem( file ) );
+				if ( current ) {
+					takeLog = null;
+					win.webContents.send( "takeLog", null );
+				}
+				return { ok: true };
+			}
+			case "export":
+				return { saved: await exportRecording( args.id, !!args.zip ) };
+			case "newLog":
+				await newTakeLog();
+				return { ok: true };
+			case "folder":
+				await fs.mkdir( takeLogDir, { recursive: true } );
+				shell.openPath( takeLogDir );
+				return { ok: true };
+			default:
+				throw new Error( "Unknown action" );
+		}
+	} );
 
 	async function showEmptySlot( note = "" ) {
 		if ( watcher ) {
@@ -849,13 +934,8 @@ const createWindow = ( state ) => {
 			openSample: name => openSampleRef?.( name ),
 			openGoogleDoc: () => win.webContents.send( "showGoogleDocDialog" ),
 			copyAiPrompt: () => copyAiPrompt( win ),
-			exportTakeLog: () => exportTakeLog(),
 			exportEditPack: () => exportEditPack(),
-			newTakeLog: () => newTakeLog(),
-			showTakeLogs: async () => {
-				await fs.mkdir( takeLogDir, { recursive: true } );
-				shell.openPath( takeLogDir );
-			},
+			showRecordings: () => win.webContents.send( "showRecordings" ),
 			reloadGoogleDoc: () => refreshGoogleDoc( currentFilePath, true ),
 			openGuide: page => guide.open( page ),
 			isMaximized: windowMode === "maximized",
@@ -1114,6 +1194,30 @@ app.whenReady().then( async () => {
 			return { ok: true, slot: index + 1 };
 		},
 		"POST /settings": values => applySettingValues( values ?? {} ),
+		// The recordings library: see recordings.js and docs/EDIT-PACK.md.
+		"GET /recordings": async () => ( { recordings: await listRecordings( takeLogFolder() ) } ),
+		"GET /recording": async ( { id } ) => {
+			return readRecording( takeLogFolder(), id );
+		},
+		"GET /recording/pack": async ( { id } ) => ( {
+			id,
+			files: await recordingPack( takeLogFolder(), id, await editPackBrief() )
+		} ),
+		"POST /recording/update": ( { id, title, note, processed } ) => {
+			const changes = {};
+			if ( title !== undefined ) changes.title = title;
+			if ( note !== undefined ) changes.note = note;
+			if ( processed !== undefined ) changes.processed = processed;
+			return updateRecording( takeLogFolder(), id, changes );
+		},
+		"POST /recording/delete": async ( { id } ) => {
+			if ( !settings.remoteDeleteRecordings ) {
+				throw Object.assign( new Error( "Deleting recordings isn't allowed. In the app: Settings > Remotes > tick \"Let it delete recordings\"" ), { status: 403 } );
+			}
+			const result = await deleteRecording( takeLogFolder(), id, file => shell.trashItem( file ) );
+			win.webContents.send( "recordingsChanged", id );
+			return result;
+		},
 		"POST /window": async ( { action } ) => {
 			if ( ![ "minimize", "maximize", "fullscreen" ].includes( action ) ) {
 				throw new Error( "action must be minimize, maximize or fullscreen" );

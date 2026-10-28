@@ -58,6 +58,16 @@ Sightline logs every take of every section as it's recorded, one file per
 script per day, saved as it goes. These read the files, so they work with the
 app closed:
 
+- `recordings` (`--json` for the data): every recording session, newest
+  first, with its **id**, name, takes, keepers, length, note and whether it's
+  been edited. Start here after a session.
+- `recording <id>`: one session's takes and which take of each section the
+  edit uses.
+- `recording-pack <id> [output folder]`: that session's edit pack (as
+  `pack` below, but by id).
+- `name <id> <name>`, `note <id> <text>`, `processed <id>`,
+  `unprocessed <id>`: label a session, or mark it as edited once you've cut
+  it. Only when the user asks, or as part of an edit they asked for.
 - `logs`: every take log, with its path.
 - `pace ["<script name>"] [yyyy-mm-dd] [--json]` (also `rehearsal`): each
   section's pace summary and every take's words, spoken and speaking time,
@@ -99,8 +109,11 @@ prompter's best knowledge, not frame-accurate, so say so with any cut list.
 
 ## Don't
 
-- Don't edit, move or delete anything in Sightline's take-logs folder: read
-  it, or build a pack somewhere else.
+- Don't edit, move or delete anything in Sightline's take-logs folder
+  yourself: read it, build a pack somewhere else, and use the verbs above to
+  name or mark sessions. `delete-recording <id>` moves one to the Recycle Bin,
+  only works if the user allowed it in Settings > Remotes, and only ever on
+  the user's say-so for that session.
 - Don't send take logs, scripts or packs to any online service unless the
   user asks: they hold the user's script.
 - Don't change Sightline's settings unless the user asks.

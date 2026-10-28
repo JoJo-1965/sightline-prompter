@@ -79,6 +79,11 @@ that file and sends each request with the header
 | `POST /command`   | `play`, `pause`, `next-section`, `go-to-section`, `set-wpm`, `marker`, `keeper`, `scrap` and more |
 | `POST /slot`      | Switch to a slot `{ slot }`                                          |
 | `POST /settings`  | Change display settings                                              |
+| `GET /recordings` | Every recording session, newest first, with its id                  |
+| `GET /recording?id=…` | One session: its takes and which ones the edit uses            |
+| `GET /recording/pack?id=…` | A session's edit pack, as `{ files: { name: contents } }` |
+| `POST /recording/update` | Name it, add a note or mark it processed `{ id, title, note, processed }` |
+| `POST /recording/delete` | To the Recycle Bin `{ id }`, only if you tick **Let it delete recordings too** |
 
 It's off by default. Requests from web pages are refused, the API can't
 switch itself on, and **New token** locks out anything that had the old one.
@@ -104,9 +109,12 @@ one folder: the take log, every word with its start and end, every sentence
 (with any words you missed), edit marks (sentence starts, pauses, re-reads,
 skipped words) and captions in your script's wording, with a README that
 tells the AI how to use them. See [the edit pack](05-recording-a-take.md#the-edit-pack).
-**File > Export Take Log** saves just the log, as JSON and CSV. **File > Show Take Logs Folder** shows where the
-logs are kept, one per script per day. The columns are described in
-[Recording a take](05-recording-a-take.md#the-take-log).
+**File > Recordings…** lists every session, one per script per day, to name,
+note, export as a folder or zip, or delete; see
+[Recordings](05-recording-a-take.md#recordings). The columns are described in
+[Recording a take](05-recording-a-take.md#the-take-log). An agent can list the
+sessions and fetch any one's edit pack itself, through the API above or
+`node scripts/sightline.mjs recordings` and `recording-pack <id>`.
 
 Give the edit pack to your editing assistant with the recording and ask it
 to cut the chosen take of each section together, in script order. With the
@@ -120,6 +128,3 @@ The [roadmap](https://github.com/JoJo-1965/sightline-prompter/blob/main/ROADMAP.
 - **Script-controlled listening** (35): `{listen: off}` before an ad-lib or a
   demo turns the microphone off, `{listen: on}` turns it back on, and
   `{prompter: …}` lets the script give the prompter a command.
-- **A recordings library with agent access** (36): save, rename and delete
-  recording sessions, and let an agent list them and fetch an edit pack
-  through the same local API.

@@ -90,9 +90,9 @@ without anyone hunting for it by ear.
 
 The log is saved as you go, one per script per day, so nothing is lost if you
 close the app; open the script again the same day and the take numbers carry
-on. To get a copy for the edit, choose **File > Export Take Log…** (also in
-☰ > Playback, and the **Export take log…** button in the take summary). It
-saves a JSON file for edit tools and a CSV beside it for a spreadsheet:
+on. Every log is kept in [Recordings](#recordings). For just the log, the
+**Export take log…** button in the take summary saves a JSON file for edit
+tools and a CSV beside it for a spreadsheet:
 
 | Column | What it holds |
 | --- | --- |
@@ -137,8 +137,30 @@ there. Words, sentences and captions come from voice mode; with steady
 scrolling the pack still has the takes. Nothing is sent anywhere: the pack is
 plain files on your computer.
 
-**File > Start a New Take Log** starts again from take 1 (the old log is kept),
-and **File > Show Take Logs Folder** opens the folder where they're saved.
+## Recordings
+
+**File > Recordings…** (**Ctrl+Shift+R**, also ☰ > Playback) lists every
+recording session, newest first: one per script per day, with its date, takes,
+keepers and length. Choose one to see its takes, which take of each section
+the edit will use, and how long the edit comes to.
+
+![A recording session: its name, note, takes and which ones the edit uses](images/recordings.png)
+
+- **Name** it, such as *M2 final, camera B*, and add a **note** for yourself or
+  your editor. The take log itself isn't changed: names and notes are kept in
+  `library.json` beside the logs.
+- Tick **Edited (processed)** once it's been cut, so the list shows what's
+  still to do.
+- **Export edit pack…** saves [the edit pack](#the-edit-pack) as a folder;
+  **Export as zip…** saves it as one zip file, to send or upload.
+- **Delete…** moves its take log to the Recycle Bin, after asking. Your video
+  and audio recordings aren't touched: Sightline never had them.
+- **Start a new take log** starts again from take 1 (today's takes so far stay
+  in the list), and **Show the folder** opens the folder where the logs are
+  saved.
+
+An AI agent can do the same through the local API: see
+[Working with AI](09-working-with-ai.md).
 
 ## Notes (talking points)
 

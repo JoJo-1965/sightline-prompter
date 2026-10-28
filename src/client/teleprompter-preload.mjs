@@ -54,6 +54,10 @@ contextBridge.exposeInMainWorld( "electron", {
 	exportTakeLog: () => ipcRenderer.send( "exportTakeLog" ),
 	exportEditPack: () => ipcRenderer.send( "exportEditPack" ),
 	appendHeardLog: entry => ipcRenderer.send( "appendHeardLog", entry ),
+	// The recordings library: list, read, update, delete, export, newLog, folder
+	recordings: ( action, args ) => ipcRenderer.invoke( "recordings", action, args ),
+	onShowRecordings: callback => on( "showRecordings", callback ),
+	onRecordingsChanged: callback => on( "recordingsChanged", callback ),
 	onTakeLog: callback => on( "takeLog", callback ),
 	onGoogleDocResult: callback => on( "googleDocResult", callback ),
 	onShowGoogleDocDialog: callback => on( "showGoogleDocDialog", callback ),

@@ -1,7 +1,7 @@
 # Sightline edit pack
 
-This folder comes from Sightline Prompter (**File > Export Edit Pack…**). It
-describes one recording session of one script: every take of every section,
+This folder comes from Sightline Prompter (**File > Export Edit Pack…**, or
+**Export edit pack…** on a session in **File > Recordings**). It describes one recording session of one script: every take of every section,
 when each script word was said, the sentences, places worth cutting, and
 captions in the script's own wording. It's written for an editor, or for an
 AI editing and assembly agent, to cut the recording with.
@@ -151,3 +151,23 @@ each take.
 
 Times are the prompter's best knowledge, not frame-accurate: check each cut
 by eye and ear.
+
+## Getting a pack yourself
+
+An agent on the same computer can find a session and fetch its pack without
+the user exporting it. Every session (one per script per day) has an **id**,
+its file name, such as `M2 Intro 2026-10-28`.
+
+- **Command line** (works with the app closed): `node scripts/sightline.mjs
+  recordings` lists the sessions with their ids, `recording <id>` shows one,
+  and `recording-pack <id> [folder]` writes its pack. `processed <id>` marks
+  it as edited when you're done, and `name` and `note` label it.
+- **Local API** (the app open, with **Settings > Remotes** ticked):
+  `GET /recordings`, `GET /recording?id=…`, `GET /recording/pack?id=…`
+  (the files as `{ files: { name: contents } }`) and
+  `POST /recording/update { id, title, note, processed }`.
+  `POST /recording/delete { id }` only works if the user ticked **Let it
+  delete recordings too**; only use it when they ask.
+
+A session's name, note and processed time come back as `title`, `note` and
+`processed`; they never change the take log itself.

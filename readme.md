@@ -207,6 +207,7 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ### Next release
 
+- **Recordings** (**File > Recordings…**, **Ctrl+Shift+R**, also ☰ > Playback): every recording session in one list, newest first, with its date, takes, keepers and length. Open one to see its takes and which ones the edit will use; **name** it, add a **note**, tick **Edited** once it's cut, **export** its edit pack as a folder or a **zip**, or **delete** it (to the Recycle Bin, after asking). It replaces File > Export Take Log, Start a New Take Log and Show Take Logs Folder, which now live in the panel. An AI agent can do the same through the local API (`GET /recordings`, `GET /recording`, `GET /recording/pack`, `POST /recording/update`, and `POST /recording/delete` only if **Settings > Remotes > Let it delete recordings too** is ticked) or `node scripts/sightline.mjs recordings`, `recording`, `recording-pack`, `name`, `note`, `processed` and `delete-recording`. Names and notes are kept beside the logs, so take logs are never rewritten (roadmap 36)
 - **Countdowns in voice mode:** a timed pause, `{pause: 3s}`, no longer holds the prompter in voice scrolling, because the text only moves when you speak. It shows as a small blue **⏸ 3s** mark and you take the beat yourself. A `{stop}` (or `{pause}` with no time) still holds, so you can go off script without the prompter jumping ahead. Steady scrolling is unchanged. The guide, spec and AI script prompt say so
 - The "Voice control, stops and countdowns" sample has a new part, **Finding your way**, showing "what can I say", spoken section slates, back to the marker and the wake word choice
 - **Choose the wake word** (Settings > Voice > Wake word): Prompter (the default), Computer, Teleprompter or Director. The messages and the "what can I say" card use the word you chose
@@ -272,7 +273,7 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ### 1.0.1 (28 October 2026)
 
-- **Take log for the edit** (File > Export Take Log): every take of every section is logged as you record, with its start and end times, whether you read it to the end or went back for a retake ("Prompter, again" or ←), and its markers. Say **"Prompter, keeper"** or **"Prompter, scrap that"** (or press **K** or **Shift+K**) to rate the take you're on or have just finished; the log picks the take to use for each section (the last keeper, else the last complete take not scrapped). It's saved as you go, one per script per day, and exports as JSON for edit tools with a CSV beside it. The take summary shows the takes and keepers so far
+- **Take log for the edit** (File > Recordings): every take of every section is logged as you record, with its start and end times, whether you read it to the end or went back for a retake ("Prompter, again" or ←), and its markers. Say **"Prompter, keeper"** or **"Prompter, scrap that"** (or press **K** or **Shift+K**) to rate the take you're on or have just finished; the log picks the take to use for each section (the last keeper, else the last complete take not scrapped). It's saved as you go, one per script per day, and exports as JSON for edit tools with a CSV beside it. The take summary shows the takes and keepers so far
 - **Floating chevrons instead of scroll bars** in Settings, the Layout and Voice panels, the ☰ menu and Help, as in the About box: a small ▲ or ▼ appears at the edge only when there's more to see. In Settings they sit inside the pinned title and tabs and the Save and Cancel row
 - **What Sightline adds**, side by side with Electron Teleprompter 4.1.20: [docs/FEATURES.md](docs/FEATURES.md)
 
@@ -349,7 +350,7 @@ starts. Earlier version numbers belong to the original project.
 
 **AI and remote control** (off by default)
 
-- An optional HTTP API on `127.0.0.1` so an AI assistant or a local script can open or write scripts, switch slots, play, pause, change speed and jump sections. `node scripts/sightline.mjs` wraps it for AI agents, and [Setting up your AI](docs/guide/10-setting-up-your-ai.md) shows how to set up Claude Code, Codex, ChatGPT, Claude or Gemini
+- An optional HTTP API on `127.0.0.1` so an AI assistant or a local script can open or write scripts, switch slots, play, pause, change speed and jump sections, and list your recordings and fetch their edit packs. `node scripts/sightline.mjs` wraps it for AI agents, and [Setting up your AI](docs/guide/10-setting-up-your-ai.md) shows how to set up Claude Code, Codex, ChatGPT, Claude or Gemini
 - Each request needs a secret token. Requests from web pages are refused, and the API can't switch itself on
 - When the API is on, its address and token are written to `remote-control.json` in the app's settings folder:
   - Windows: `%APPDATA%\Sightline Prompter`

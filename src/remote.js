@@ -73,7 +73,8 @@ export function startRemoteServer( { port, token, routes, onError } ) {
 					error: "Unknown endpoint",
 					endpoints: Object.keys( routes )
 				} );
-			const body = req.method === "GET" ? {} : await readBody( req );
+			// GET takes its values from the query: /recording?id=…
+			const body = req.method === "GET" ? Object.fromEntries( url.searchParams ) : await readBody( req );
 			const result = await route( body );
 			reply( 200, result ?? { ok: true } );
 		} catch ( err ) {

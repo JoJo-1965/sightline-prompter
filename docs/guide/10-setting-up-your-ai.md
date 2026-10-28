@@ -24,7 +24,7 @@ cut the right parts of that recording.
 | [docs/SCRIPT-DIRECTIVES.md](../SCRIPT-DIRECTIVES.md) | The full `{directive}` spec |
 | [docs/EDIT-PACK.md](../EDIT-PACK.md) | What's in an edit pack and how to cut with it |
 | `scripts/check-script.mjs` | Checks a script: `node scripts/check-script.mjs script.md` |
-| `scripts/sightline.mjs` | Drives the app and fetches the take log: `node scripts/sightline.mjs status` |
+| `scripts/sightline.mjs` | Drives the app, and lists your recordings and fetches their edit packs: `node scripts/sightline.mjs status` |
 | `scripts/edit-pack.mjs` | Builds an edit pack from any take log JSON |
 
 ## Claude Code or Codex

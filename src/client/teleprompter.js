@@ -2022,6 +2022,7 @@ async function openSettings() {
 	field( "set-eye-line-height" ).value = settings.eyeLineHeight;
 	field( "set-eye-line-reading" ).value = settings.eyeLineReadingLine;
 	field( "set-remote" ).checked = !!settings.remoteControl;
+	field( "set-remote-delete" ).checked = !!settings.remoteDeleteRecordings;
 	field( "set-remote-port" ).value = settings.remotePort ?? 47615;
 	window.electron.getRemoteInfo();
 	field( "set-phone" ).checked = !!settings.phoneRemote;
@@ -2144,6 +2145,7 @@ function saveSettingsPage( close = true ) {
 			settings.eyeLineReadingLine
 		),
 		remoteControl: field( "set-remote" ).checked,
+		remoteDeleteRecordings: field( "set-remote-delete" ).checked,
 		phoneRemote: field( "set-phone" ).checked,
 		remotePort: numberValue(
 			"set-remote-port",
@@ -2871,12 +2873,7 @@ function menuGroups() {
 				[ "🔴", manualOnAir ? "Go off air" : "Go on air", "Ctrl+Shift+A", toggleOnAir ],
 				[ "★", "This take's a keeper", "K", () => rateTake( "keeper" ) ],
 				[ "✗", "Scrap this take", "Shift+K", () => rateTake( "scrap" ) ],
-				[
-					"🗒",
-					"Export the take log…",
-					"",
-					() => window.electron.exportTakeLog()
-				],
+				[ "🗒", "Recordings…", "Ctrl+Shift+R", openRecordings ],
 				[
 					"✂",
 					"Export the edit pack…",
@@ -5095,6 +5092,143 @@ summaryModal?.addEventListener( "mousedown", ( e ) => {
 	if ( e.target === summaryModal ) closeTakeSummary();
 } );
 setInterval( pacingTick, 250 );
+
+// --- Recordings (File > Recordings): every take log, see recordings.js ---
+
+const recordingsModal = document.getElementById( "recordings" );
+let openRecordingId = null;
+
+function recordingWhen( r ) {
+	const at = r.startedAt ? new Date( r.startedAt ) : null;
+	const time = at ? at.toLocaleTimeString( [], { hour: "2-digit", minute: "2-digit" } ) : "";
+	return `${ r.date ?? "" } ${ time }`.trim();
+}
+
+async function showRecordingsList() {
+	openRecordingId = null;
+	document.getElementById( "recordings-list-view" ).hidden = false;
+	document.getElementById( "recordings-detail-view" ).hidden = true;
+	document.getElementById( "recordings-title" ).textContent = "Recordings";
+	const { list, current } = await window.electron.recordings( "list" );
+	const rows = document.getElementById( "recordings-rows" );
+	rows.innerHTML = "";
+	document.getElementById( "recordings-empty" ).hidden = list.length > 0;
+	for ( const r of list ) {
+		const tr = document.createElement( "tr" );
+		tr.tabIndex = 0;
+		const name = document.createElement( "td" );
+		const title = document.createElement( "span" );
+		title.className = "rec-name";
+		title.textContent = r.title ?? r.script?.replace( /\.[^.]+$/, "" ) ?? r.id;
+		name.append( title );
+		if ( r.id === current ) name.append( Object.assign( document.createElement( "span" ), { className: "rec-tag live", textContent: "today" } ) );
+		if ( r.processed ) name.append( Object.assign( document.createElement( "span" ), { className: "rec-tag", textContent: "edited" } ) );
+		if ( r.title || r.note ) {
+			name.append( Object.assign( document.createElement( "span" ), { className: "rec-sub", textContent: r.note ?? r.script ?? "" } ) );
+		}
+		tr.append( name );
+		for ( const text of [ recordingWhen( r ), r.takes, r.keepers || "–", formatClock( r.recordedSeconds ) ] ) {
+			tr.append( Object.assign( document.createElement( "td" ), { textContent: text } ) );
+		}
+		tr.addEventListener( "click", () => showRecording( r.id ) );
+		tr.addEventListener( "keydown", ( e ) => {
+			if ( e.key === "Enter" ) showRecording( r.id );
+		} );
+		rows.append( tr );
+	}
+}
+
+async function showRecording( id ) {
+	const r = await window.electron.recordings( "read", { id } );
+	openRecordingId = id;
+	document.getElementById( "recordings-list-view" ).hidden = true;
+	document.getElementById( "recordings-detail-view" ).hidden = false;
+	document.getElementById( "recordings-title" ).textContent = r.title ?? r.id;
+	field( "recording-title" ).value = r.title ?? "";
+	field( "recording-title" ).placeholder = r.id;
+	field( "recording-note" ).value = r.note ?? "";
+	field( "recording-processed" ).checked = !!r.processed;
+	const plural = ( n, word ) => `${ n } ${ word }${ n === 1 ? "" : "s" }`;
+	document.getElementById( "recording-facts" ).textContent = [
+		`${ r.script ?? "No script" }, ${ recordingWhen( r ) }`,
+		`${ plural( r.takes, "take" ) } of ${ plural( r.sections, "section" ) }`,
+		`${ formatClock( r.recordedSeconds ) } recorded, ${ formatClock( r.editSeconds ) } in the edit`,
+		r.voice ? "word timings from voice mode" : "no word timings (steady scrolling)"
+	].join( " · " );
+	const rows = document.getElementById( "recording-takes" );
+	rows.innerHTML = "";
+	for ( const t of r.takeList ) {
+		const tr = document.createElement( "tr" );
+		const rating = { keeper: "★ Keeper", scrap: "✗ Scrapped" }[t.rating] ?? ( t.status === "complete" ? "" : "Partial" );
+		for ( const text of [ t.title, t.take, formatClock( t.duration ?? 0 ), rating, t.used ? "✓" : "" ] ) {
+			tr.append( Object.assign( document.createElement( "td" ), { textContent: text } ) );
+		}
+		rows.append( tr );
+	}
+	field( "recording-title" ).focus( { preventScroll: true } );
+}
+
+async function openRecordings() {
+	recordingsModal.classList.remove( "hidden" );
+	await showRecordingsList();
+	document.getElementById( "recordings-done" ).focus( { preventScroll: true } );
+}
+
+function closeRecordings() {
+	recordingsModal.classList.add( "hidden" );
+	openRecordingId = null;
+}
+
+async function updateOpenRecording( changes ) {
+	if ( !openRecordingId ) return;
+	const r = await window.electron.recordings( "update", { id: openRecordingId, changes } );
+	document.getElementById( "recordings-title" ).textContent = r?.title ?? openRecordingId;
+}
+
+field( "recording-title" ).addEventListener( "change", e => updateOpenRecording( { title: e.target.value } ) );
+field( "recording-note" ).addEventListener( "change", e => updateOpenRecording( { note: e.target.value } ) );
+field( "recording-processed" ).addEventListener( "change", e => updateOpenRecording( { processed: e.target.checked } ) );
+onClick( "recording-back", showRecordingsList );
+onClick( "recording-export", async () => {
+	const { saved } = await window.electron.recordings( "export", { id: openRecordingId } );
+	if ( saved ) showToast( `Edit pack saved: ${ saved }`, 2500 );
+} );
+onClick( "recording-zip", async () => {
+	const { saved } = await window.electron.recordings( "export", { id: openRecordingId, zip: true } );
+	if ( saved ) showToast( `Edit pack saved: ${ saved }`, 2500 );
+} );
+onClick( "recording-delete", async () => {
+	const { ok } = await window.electron.recordings( "delete", { id: openRecordingId } );
+	if ( ok ) {
+		showToast( "Moved to the Recycle Bin", 2000 );
+		await showRecordingsList();
+	}
+} );
+onClick( "recordings-folder", () => window.electron.recordings( "folder" ) );
+onClick( "recordings-new", async () => {
+	await window.electron.recordings( "newLog" );
+	await showRecordingsList();
+} );
+onClick( "recordings-done", closeRecordings );
+onClick( "recordings-close", closeRecordings );
+recordingsModal.addEventListener( "keydown", ( e ) => {
+	e.stopPropagation(); // typing a name mustn't drive the prompter
+	if ( e.key !== "Escape" ) return;
+	if ( openRecordingId ) {
+		// Save what's typed before going back.
+		document.activeElement?.blur();
+		showRecordingsList();
+	} else {
+		closeRecordings();
+	}
+} );
+recordingsModal.addEventListener( "mousedown", ( e ) => {
+	if ( e.target === recordingsModal ) closeRecordings();
+} );
+window.electron.onShowRecordings( openRecordings );
+window.electron.onRecordingsChanged( () => {
+	if ( !recordingsModal.classList.contains( "hidden" ) ) showRecordingsList();
+} );
 
 // --- Reading aids and recording helpers ---
 

@@ -502,6 +502,53 @@
         </div>
       </div>
     </div>
+    <div id="recordings" class="modal hidden">
+      <div class="modal-content recordings-content" role="dialog" aria-modal="true" aria-labelledby="recordings-title">
+        <button type="button" id="recordings-close" class="modal-close" title="Close (Esc)" aria-label="Close recordings">×</button>
+        <h3 id="recordings-title">Recordings</h3>
+        <div id="recordings-list-view">
+          <p class="recordings-hint">Every recording session, newest first: one per script per day, or more if you start a new take log. Choose one to name it, add a note, or export its edit pack for your editor.</p>
+          <div class="recordings-scroll">
+            <table class="summary-table recordings-table">
+              <thead>
+                <tr><th>Recording</th><th>Date</th><th>Takes</th><th>Keepers</th><th>Length</th></tr>
+              </thead>
+              <tbody id="recordings-rows"></tbody>
+            </table>
+            <p id="recordings-empty" class="recordings-hint" hidden>No recordings yet. Each take you read is logged here as you go.</p>
+          </div>
+          <div class="modal-actions">
+            <button id="recordings-folder" type="button">Show the folder</button>
+            <button id="recordings-new" type="button" title="Today's takes so far stay in the list; take numbers start again at 1">Start a new take log</button>
+            <button id="recordings-done" type="button" class="primary">Close</button>
+          </div>
+        </div>
+        <div id="recordings-detail-view" hidden>
+          <label class="recordings-field">Name
+            <input id="recording-title" type="text" maxlength="120" />
+          </label>
+          <label class="recordings-field">Note
+            <textarea id="recording-note" rows="2" maxlength="2000" placeholder="For you or your editor: which camera, what to fix…"></textarea>
+          </label>
+          <label class="recordings-check"><input id="recording-processed" type="checkbox" /> Edited (processed)</label>
+          <p id="recording-facts" class="recordings-hint"></p>
+          <div class="recordings-scroll">
+            <table class="summary-table recordings-table">
+              <thead>
+                <tr><th>Section</th><th>Take</th><th>Length</th><th>Rating</th><th>Used</th></tr>
+              </thead>
+              <tbody id="recording-takes"></tbody>
+            </table>
+          </div>
+          <div class="modal-actions">
+            <button id="recording-back" type="button">← All recordings</button>
+            <button id="recording-delete" type="button" class="danger">Delete…</button>
+            <button id="recording-zip" type="button">Export as zip…</button>
+            <button id="recording-export" type="button" class="primary">Export edit pack…</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <div id="drop-overlay" class="hidden">
       Drop a script to open it in this slot
     </div>
@@ -916,8 +963,13 @@
           </p>
           <p class="field-hint">
             Claude Code, Codex or another AI can then load scripts, run the
-            prompter and fetch the take log.
+            prompter, and list, name and export your recordings (File &gt;
+            Recordings).
           </p>
+          <label class="check"
+            ><input id="set-remote-delete" type="checkbox" /> Let it delete
+            recordings too (they go to the Recycle Bin)</label
+          >
           <p class="settings-about-actions">
             <button type="button" id="set-remote-help">How to set up your AI</button>
           </p>

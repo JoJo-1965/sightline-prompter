@@ -61,9 +61,11 @@ The whole workflow is in the guide:
   was said, and picks the take to use for each section. The **edit pack**
   turns it into what an editing agent cuts with: words, sentences, edit marks
   and captions.
+- **Recordings library** (File > Recordings): every session to name, note,
+  mark as edited, export as a folder or zip, or delete; an agent can list
+  them and fetch any edit pack through the local API.
 - **Coming next** ([roadmap](../ROADMAP.md)): `{listen: off}` and
-  `{prompter: …}` so the script can direct the microphone and the prompter,
-  and a recordings library an agent can list and fetch from.
+  `{prompter: …}` so the script can direct the microphone and the prompter.
 
 ## Voice
 
@@ -118,7 +120,7 @@ The whole workflow is in the guide:
   with the recording; no clap needed (Settings > Scrolling).
 - **Take log for the edit:** every take of every section, with its start and
   end, whether it was read to the end or retaken, and its markers, saved as
-  you go and exported as JSON and CSV (File > Export Take Log). Say
+  you go and kept in **File > Recordings**, to name, note and export. Say
   **"Prompter, keeper"** or **"Prompter, scrap that"** (or press K or
   Shift+K) to rate a take; the log picks the take to use for each section.
   In voice mode it also records **when you said each word** and each take's

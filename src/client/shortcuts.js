@@ -16,6 +16,7 @@ export const SHORTCUTS = [
 			[ [ "B" ], "Drop a marker at the reading line (for retakes)" ],
 			[ [ "K" ], "This take's a keeper (in the take log)" ],
 			[ [ "Shift+K" ], "Scrap this take" ],
+			[ [ "Ctrl+Shift+R" ], "Recordings: name, note, export or delete a session" ],
 			[ [ "Ctrl+B" ], "Jump to the next marker ({marker} or one you dropped)" ],
 			[ [ "Shift+B" ], "Back to the last marker, to read on from there (logged as a restart for the edit)" ],
 			[ [ "↑", "↓", "Wheel" ], "When stopped: scroll by hand" ]

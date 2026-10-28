@@ -16,9 +16,14 @@
 //   node scripts/sightline.mjs pack [script name] [date] [output folder]
 //   node scripts/sightline.mjs heard [script name] [date]       (what voice scrolling misheard)
 //   node scripts/sightline.mjs pace [script name] [date] [--json]  (also "rehearsal": each section's pace and every take's)
+//   node scripts/sightline.mjs recordings [--json]             (every recording session, newest first, with its id)
+//   node scripts/sightline.mjs recording <id>                  (one session: its takes and which the edit uses)
+//   node scripts/sightline.mjs recording-pack <id> [output folder]
+//   node scripts/sightline.mjs name <id> <name>                (also: note <id> <text>, processed <id>, unprocessed <id>)
+//   node scripts/sightline.mjs delete-recording <id>           (to the Recycle Bin; only if Settings > Remotes allows it)
 //
-// logs, takelog and pack read the files directly, so they work with the app
-// closed. Dates are yyyy-mm-dd; the default is today and the current script.
+// Everything but status, open, load, slot, command, window and
+// delete-recording reads the files directly, so it works with the app closed. Dates are yyyy-mm-dd; the default is today and the current script.
 
 import fs from "node:fs";
 import os from "node:os";
@@ -27,6 +32,7 @@ import { fileURLToPath } from "node:url";
 import { editPack } from "../src/client/edit-pack.js";
 import { pickTakes, takePace } from "../src/client/take-log.js";
 import { heardReport, printHeardReport } from "./heard-report.mjs";
+import { listRecordings, readRecording, recordingPack, updateRecording } from "../src/recordings.js";
 
 const here = path.dirname( fileURLToPath( import.meta.url ) );
 
@@ -176,11 +182,52 @@ try {
 			console.log( `${ folder }: ${ data.takes.length } takes` );
 			break;
 		}
+		case "recordings": {
+			const list = await listRecordings( logDir() );
+			if ( args.includes( "--json" ) ) {
+				print( list );
+				break;
+			}
+			if ( !list.length ) console.log( "No recordings yet." );
+			for ( const r of list ) {
+				const tags = [ r.processed && "edited", r.note && `note: ${ r.note }` ].filter( Boolean ).join( "; " );
+				console.log( [ r.id, r.title ?? r.script ?? "", `${ r.takes } takes, ${ r.keepers } keepers, ${ Math.round( r.recordedSeconds ) } s`, tags ].filter( Boolean ).join( "  |  " ) );
+			}
+			break;
+		}
+		case "recording":
+			if ( !args[0] ) fail( "Usage: recording <id>  (ids from: recordings)" );
+			print( await readRecording( logDir(), args[0] ) );
+			break;
+		case "recording-pack": {
+			if ( !args[0] ) fail( "Usage: recording-pack <id> [output folder]" );
+			const readme = fs.readFileSync( path.join( here, "..", "docs", "EDIT-PACK.md" ), "utf8" );
+			const files = await recordingPack( logDir(), args[0], readme );
+			const folder = args[1] ?? path.join( process.cwd(), `${ args[0] } edit pack` );
+			fs.mkdirSync( folder, { recursive: true } );
+			for ( const [ name, contents ] of Object.entries( files ) ) fs.writeFileSync( path.join( folder, name ), contents );
+			console.log( folder );
+			break;
+		}
+		case "name":
+		case "note":
+			if ( !args[0] || args[1] === undefined ) fail( `Usage: ${ verb } <id> <text>  ("" clears it)` );
+			print( await updateRecording( logDir(), args[0], { [verb === "name" ? "title" : "note"]: args.slice( 1 ).join( " " ) } ) );
+			break;
+		case "processed":
+		case "unprocessed":
+			if ( !args[0] ) fail( `Usage: ${ verb } <id>` );
+			print( await updateRecording( logDir(), args[0], { processed: verb === "processed" } ) );
+			break;
+		case "delete-recording":
+			if ( !args[0] ) fail( "Usage: delete-recording <id>" );
+			print( await api( "POST", "/recording/delete", { id: args[0] } ) );
+			break;
 		default:
 			console.log( fs.readFileSync( fileURLToPath( import.meta.url ), "utf8" ).split( "\n" ).filter( l => l.startsWith( "//" ) ).map( l => l.slice( 3 ) ).join( "\n" ) );
 	}
 } catch ( err ) {
-	if ( !( err instanceof Stop ) ) throw err;
+	if ( !( err instanceof Stop ) && !err.status ) throw err; // status: a refusal from recordings.js
 	console.error( err.message );
 	process.exitCode = 1;
 }

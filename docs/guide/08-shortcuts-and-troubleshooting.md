@@ -23,6 +23,7 @@ The ones you'll use most:
 | **Ctrl+Shift+P**         | Floating pad                                   |
 | **Ctrl+Shift+O**         | Control window                                 |
 | **Ctrl+Shift+V**         | Voice panel                                    |
+| **Ctrl+Shift+R**         | Recordings                                     |
 | **Ctrl+Shift+X**         | Click-through on / off                         |
 | **Ctrl+,**               | Settings                                       |
 
