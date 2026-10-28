@@ -772,6 +772,22 @@
           <p class="field-hint">Choose Voice as the mode on the Scrolling tab to use these.</p>
         </fieldset>
 
+        <fieldset data-tab="voice" id="set-words">
+          <legend>Your words</legend>
+          <label class="check"
+            ><input id="set-sound-alike" type="checkbox" /> Match words that sound
+            alike, such as “marsha” for “Moshe”</label
+          >
+          <p class="field-hint">Names and words it still mishears: type your word, then what it hears instead, with commas between. Each counts as your word wherever the script has it, and as itself everywhere else.</p>
+          <div id="words-list"></div>
+          <div class="button-row">
+            <button id="words-add" type="button">Add a word</button>
+            <button id="words-suggest" type="button" title="Looks through what voice scrolling has heard for words it took for others more than once">Suggest from what it heard</button>
+          </div>
+          <div id="words-suggestions" hidden></div>
+          <p class="field-hint"><strong>Teach…</strong> listens while you say the word a few times, with a pause between, and adds what it hears. Fixes apply the next time voice scrolling starts.</p>
+        </fieldset>
+
         <fieldset data-tab="layout" id="set-layout-host">
           <legend>Layout</legend>
           <p class="field-hint">Changes here show straight away, so you can see them on the script. Cancel doesn't undo them.</p>

@@ -91,6 +91,10 @@ The whole workflow is in the guide:
   marker"** to read on from the last marker.
 - **Heard log:** every word it heard, beside the script words it matched, to
   find words it keeps mishearing.
+- **Your words** (Settings > Voice): words that **sound alike** count as the
+  script word ("marsha" for "Moshe"), and a list of names and words it
+  mishears, as synonyms rather than replacements, with suggestions from the
+  heard log and **Teach…** (say the word, and it adds what it hears).
 - **Stops honoured in voice mode:** the prompter holds at a `{stop}` until
   you say "Prompter, go". A countdown, `{pause: 5s}`, shows as a **⏸ 5s** mark
   instead: you take the beat yourself.

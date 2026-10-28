@@ -10,6 +10,16 @@
 // distinctive words with what was spoken. If nothing in the local window is
 // convincing, the whole script is searched with a stricter bar so a lost
 // aligner can find the reader again instead of settling on a nearby false match.
+//
+// synonyms (Settings > Voice > Your words): Map( script word -> Set of words the
+// speech engine hears instead ). A heard synonym matches that script word as
+// well as itself.
+//
+// soundAlike: a heard word the script doesn't have that sounds like a script
+// word (sound-alike.js) matches it too, as a last resort. Short words are
+// left out: too many sound alike.
+
+import { soundKey } from "./sound-alike.js";
 
 const RECENT_WINDOW = 15;
 const FORWARD_WINDOW = 200;
@@ -26,6 +36,7 @@ const MIN_CONTENT_MATCHES_GLOBAL = 3;
 
 // Apostrophes go too, so "isn't" (heard) matches "isn’t" (typed with a curly one).
 const NORMALIZE_REGEX = /[^\w]/g;
+const SOUND_ALIKE_MIN_LENGTH = 4;
 
 function normalize( word ) {
 	return word.toLowerCase().replace( NORMALIZE_REGEX, "" );
@@ -39,7 +50,7 @@ function buildCounts( words ) {
 	return counts;
 }
 
-export function createAligner( scriptWords ) {
+export function createAligner( scriptWords, { synonyms = new Map(), soundAlike = false } = {} ) {
 	const recent = [];
 	let position = 0;
 	let relocating = false;
@@ -50,6 +61,31 @@ export function createAligner( scriptWords ) {
 		const df = docFreq.get( w );
 		return df ? Math.log( 1 + scriptWords.length / df ) / logN : 0;
 	}
+	// What a heard synonym stands for, to weigh it like the script word.
+	const standsFor = new Map();
+	for ( const [ word, heard ] of synonyms ) {
+		for ( const h of heard ) if ( !docFreq.has( h ) ) standsFor.set( h, word );
+	}
+	// Sound-alike keys for the script's longer words, and for words heard.
+	const keyOf = w => ( w.length >= SOUND_ALIKE_MIN_LENGTH && !w.includes( "_" ) ? soundKey( w ) : "" );
+	const scriptKeys = soundAlike ? scriptWords.map( w => ( keyOf( w ).length >= 2 ? keyOf( w ) : "" ) ) : [];
+	const keyWord = new Map(); // key -> a script word with it, to weigh a heard word
+	scriptKeys.forEach( ( k, i ) => k && !keyWord.has( k ) && keyWord.set( k, scriptWords[i] ) );
+	const heardKeys = new Map();
+	const heardKey = ( w ) => {
+		if ( !heardKeys.has( w ) ) heardKeys.set( w, docFreq.has( w ) ? "" : keyOf( w ) );
+		return heardKeys.get( w );
+	};
+	// Same sound, same first letter and about as long: "marsha" for "moshe",
+	// not "carry" for "grew".
+	const soundsLike = ( heard, word, key ) =>
+		heard[0] === word[0] && Math.abs( heard.length - word.length ) <= 2 && heardKey( heard ) === key;
+	const heardWeight = ( w ) => {
+		if ( docFreq.has( w ) ) return weight( w );
+		if ( standsFor.has( w ) ) return weight( standsFor.get( w ) );
+		const like = soundAlike && keyWord.get( heardKey( w ) );
+		return like && soundsLike( w, like, heardKey( w ) ) ? weight( like ) : 0;
+	};
 	function isContentWord( w ) {
 		const df = docFreq.get( w );
 		return df > 0 && df <= CONTENT_WORD_MAX_DF;
@@ -73,11 +109,30 @@ export function createAligner( scriptWords ) {
 			const remaining = new Map( recentCounts );
 			for ( let j = 0; j < windowSize; j++ ) {
 				const w = scriptWords[i + j];
-				const r = remaining.get( w ) || 0;
+				let key = w;
+				let r = remaining.get( w ) || 0;
+				if ( !r && synonyms.has( w ) ) {
+					for ( const alt of synonyms.get( w ) ) {
+						if ( ( remaining.get( alt ) || 0 ) > 0 ) {
+							key = alt;
+							r = remaining.get( alt );
+							break;
+						}
+					}
+				}
+				if ( !r && scriptKeys[i + j] ) {
+					for ( const [ heard, left ] of remaining ) {
+						if ( left > 0 && soundsLike( heard, w, scriptKeys[i + j] ) ) {
+							key = heard;
+							r = left;
+							break;
+						}
+					}
+				}
 				if ( r > 0 ) {
 					score += weight( w );
 					if ( isContentWord( w ) ) content++;
-					remaining.set( w, r - 1 );
+					remaining.set( key, r - 1 );
 				}
 			}
 			if ( score > best.score ) {
@@ -92,7 +147,7 @@ export function createAligner( scriptWords ) {
 		if ( !scriptWords.length ) return position;
 
 		const recentCounts = buildCounts( recent );
-		const maxScore = recent.reduce( ( sum, w ) => sum + weight( w ), 0 );
+		const maxScore = recent.reduce( ( sum, w ) => sum + heardWeight( w ), 0 );
 		if ( maxScore <= 0 ) return position;
 
 		// Asked to find the reader again: search the whole script, a little

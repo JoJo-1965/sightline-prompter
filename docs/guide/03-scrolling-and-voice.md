@@ -62,6 +62,33 @@ corrected. An AI assistant can read it with `node scripts/sightline.mjs heard`
 (see [Setting up your AI](10-setting-up-your-ai.md)), which lists the words
 heard in place of script words, most often first.
 
+### Your words
+
+Names and unusual words are what speech recognition gets wrong most:
+*Siobhan* heard as *shivawn*, *Sightline* as *site line*. **Settings > Voice >
+Your words** fixes them.
+
+![Settings > Voice > Your words](images/settings-words.png)
+
+- **Match words that sound alike** (on unless you turn it off): a word heard
+  that isn't in the script but sounds like a longer script word, starts with
+  the same letter and is about as long counts as that word: *marsha* for
+  *Moshe*, *abrams* for *Abrahams*. No list needed.
+- **Your list** is for the rest. Type your word, then what it hears instead,
+  with commas between. A heard form of two or three words, such as *site
+  line*, works too.
+- Each form is a **synonym**, not a replacement: it counts as your word
+  wherever the script has your word, and as itself everywhere else. So a
+  script that really says *Marsha* still matches *Marsha*.
+- **Suggest from what it heard** looks through the heard logs for words it
+  took for another more than once, with **Add** beside each.
+- **Teach…** listens for eight seconds while you say the word a few times,
+  with a pause between, and adds whatever it hears that isn't the word. It
+  needs the speech model on this computer.
+
+The fixes apply the next time voice scrolling starts, and they're kept with
+your settings, so **Export Settings** takes them to another computer.
+
 ## Voice commands: "Prompter, …"
 
 **The wake word** is "Prompter" unless you choose another on **Settings > Voice >

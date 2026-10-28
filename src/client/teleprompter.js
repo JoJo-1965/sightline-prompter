@@ -29,6 +29,7 @@ import { decorateScript } from "./decorate.js";
 import { readDirectives, parseDirective, parseDuration } from "./directives.js";
 import { createTakeLog } from "./take-log.js";
 import { COMMAND_HELP, wakeLabel } from "./voice-commands.js";
+import { heardForms, normalizeWord } from "./word-fixes.js";
 import {
 	indexSentences,
 	scriptSentences,
@@ -1119,6 +1120,8 @@ async function beginVoice( engine, deepgramKey ) {
 			onScroll: handleAutoScrollPosition,
 			onFollow: logSpokenWords,
 			onHeard: entry => window.electron.appendHeardLog( entry ),
+			wordFixes: settings.wordFixes ?? [],
+			soundAlike: settings.soundAlike !== false,
 			onCommand: settings.voiceCommands === "off" ? null : runVoiceCommand,
 			onWake: voiceWake,
 			onMiss: voiceMiss,
@@ -1197,6 +1200,7 @@ function wantCommandListening() {
 		&& !isEditMode
 		&& !autoScrollActive
 		&& !autoScrollStarting
+		&& !teachingWord
 	);
 }
 
@@ -1997,6 +2001,8 @@ async function openSettings() {
 	field( "set-voice-engine" ).value = usesLocalVoice() ? "local" : "deepgram";
 	field( "set-voice-commands" ).value = settings.voiceCommands ?? "voice";
 	field( "set-wake-word" ).value = settings.wakeWord ?? "prompter";
+	field( "set-sound-alike" ).checked = settings.soundAlike !== false;
+	fillWordRows( settings.wordFixes ?? [] );
 	showVoiceEngineFields();
 	window.electron.speechModelStatus();
 	field( "set-deepgram-key" ).value = "";
@@ -2103,12 +2109,180 @@ function closeSettings( restore ) {
 }
 
 // Save and close (Save), or save and stay (Apply).
+// --- Settings > Voice > Your words: what it mishears (word-fixes.js) ---
+
+const wordsList = field( "words-list" );
+let teachingWord = false;
+
+function wordsChanged() {
+	settingsDirty = true;
+	field( "settings-applied" ).textContent = "";
+}
+
+function addWordRow( word = "", heard = [] ) {
+	const row = document.createElement( "div" );
+	row.className = "word-row";
+	const wordInput = Object.assign( document.createElement( "input" ), {
+		type: "text", className: "wf-word", value: word, placeholder: "Your word", maxLength: 60
+	} );
+	wordInput.setAttribute( "aria-label", "Your word" );
+	const heardInput = Object.assign( document.createElement( "input" ), {
+		type: "text", className: "wf-heard", value: heardForms( heard ).join( ", " ),
+		placeholder: "What it hears, such as marsha, mosher"
+	} );
+	heardInput.setAttribute( "aria-label", "What it hears instead" );
+	const teach = Object.assign( document.createElement( "button" ), {
+		type: "button", className: "wf-teach", textContent: "Teach…",
+		title: "Say the word a few times, with a pause between, and it adds what it hears"
+	} );
+	teach.addEventListener( "click", () => teachWord( row ) );
+	const remove = Object.assign( document.createElement( "button" ), {
+		type: "button", className: "wf-remove", textContent: "×", title: "Remove"
+	} );
+	remove.setAttribute( "aria-label", "Remove this word" );
+	remove.addEventListener( "click", () => {
+		row.remove();
+		wordsChanged();
+	} );
+	row.append( wordInput, Object.assign( document.createElement( "span" ), { textContent: "heard as" } ), heardInput, teach, remove );
+	wordsList.append( row );
+	return row;
+}
+
+function fillWordRows( fixes ) {
+	wordsList.innerHTML = "";
+	for ( const fix of fixes ) addWordRow( fix.word, fix.heard );
+	field( "words-suggestions" ).hidden = true;
+}
+
+function readWordRows() {
+	return [ ...wordsList.querySelectorAll( ".word-row" ) ]
+		.map( row => ( {
+			word: row.querySelector( ".wf-word" ).value.trim(),
+			heard: heardForms( row.querySelector( ".wf-heard" ).value )
+		} ) )
+		.filter( fix => fix.word && fix.heard.length );
+}
+
+// Add heard forms to a word's row, making the row if there isn't one.
+function addHeardForms( word, forms ) {
+	const target = normalizeWord( word );
+	let row = [ ...wordsList.querySelectorAll( ".word-row" ) ]
+		.find( r => normalizeWord( r.querySelector( ".wf-word" ).value ) === target );
+	row ??= addWordRow( word );
+	const input = row.querySelector( ".wf-heard" );
+	const all = heardForms( [ ...heardForms( input.value ), ...forms ] ).filter( f => f.replace( / /g, "" ) !== target );
+	input.value = all.join( ", " );
+	wordsChanged();
+	return row;
+}
+
+field( "words-add" ).addEventListener( "click", () => addWordRow().querySelector( ".wf-word" ).focus() );
+
+field( "words-suggest" ).addEventListener( "click", async () => {
+	const box = field( "words-suggestions" );
+	box.hidden = false;
+	box.textContent = "Looking through what it heard…";
+	const { logs, suggestions } = await window.electron.heardSuggestions();
+	box.innerHTML = "";
+	if ( !logs ) {
+		box.textContent = "Nothing heard yet. Read a script in voice mode, then try again.";
+		return;
+	}
+	if ( !suggestions.length ) {
+		box.textContent = "No word misheard more than once. Nothing to fix.";
+		return;
+	}
+	for ( const { heard, word, count } of suggestions ) {
+		const line = document.createElement( "div" );
+		line.className = "suggestion";
+		line.append( Object.assign( document.createElement( "span" ), {
+			textContent: `“${ heard }” for “${ word }”, ${ count } times`
+		} ) );
+		const add = Object.assign( document.createElement( "button" ), { type: "button", textContent: "Add" } );
+		add.addEventListener( "click", () => {
+			addHeardForms( word, [ heard ] );
+			line.remove();
+			if ( !box.querySelector( ".suggestion" ) ) box.hidden = true;
+		} );
+		line.append( add );
+		box.append( line );
+	}
+} );
+
+// Teach…: listen for a few seconds while the word is said, with a pause
+// between each time, and add each phrase heard. Local speech only.
+async function teachWord( row ) {
+	const word = row.querySelector( ".wf-word" ).value.trim();
+	if ( !word ) {
+		showToast( "Type the word first", 2000 );
+		return;
+	}
+	if ( teachingWord ) return;
+	if ( autoScrollActive || autoScrollStarting ) {
+		showToast( "Stop voice scrolling first", 2500 );
+		return;
+	}
+	if ( !usesLocalVoice() || !speechModel.installed ) {
+		showToast( "Teaching needs the speech model on this computer (Speech recognition, above)", 3500 );
+		return;
+	}
+	teachingWord = true;
+	const button = row.querySelector( ".wf-teach" );
+	row.classList.add( "teaching" );
+	await stopCommandListening();
+	const phrases = [];
+	let phrase = [];
+	try {
+		await startAutoScroll( {
+			engine: "local",
+			scriptEl: md,
+			audioDeviceId,
+			followScript: false,
+			onHeard: ( { heard, final } ) => {
+				phrase.push( heard );
+				if ( final ) {
+					phrases.push( phrase.join( " " ) );
+					phrase = [];
+				}
+			}
+		} );
+		for ( let left = 8; left > 0; left-- ) {
+			button.textContent = `Say “${ word }”… ${ left }`;
+			await new Promise( r => setTimeout( r, 1000 ) );
+		}
+	} catch ( err ) {
+		console.warn( "[teach]", err );
+		showToast( "Couldn't start the microphone", 2500 );
+	} finally {
+		await stopAutoScroll();
+		if ( phrase.length ) phrases.push( phrase.join( " " ) );
+		teachingWord = false;
+		row.classList.remove( "teaching" );
+		button.textContent = "Teach…";
+		syncCommandListening();
+	}
+	const target = normalizeWord( word );
+	// Leave out anything that has the word right ("for a manager").
+	const forms = heardForms( phrases ).filter( f => f.replace( / /g, "" ) !== target && !f.split( " " ).includes( target ) );
+	if ( !phrases.length ) {
+		showToast( "Didn't hear anything. Check the microphone, then try again", 3000 );
+	} else if ( !forms.length ) {
+		showToast( `It heard “${ word }” right every time`, 3000 );
+	} else {
+		addHeardForms( word, forms );
+		showToast( `Added: ${ forms.join( ", " ) }`, 3000 );
+	}
+}
+
 function saveSettingsPage( close = true ) {
 	window.electron.saveSettings( {
 		scrollMode: field( "set-scroll-mode" ).value === "voice" ? "voice" : "steady",
 		voiceEngine: field( "set-voice-engine" ).value === "deepgram" ? "deepgram" : "local",
 		voiceCommands: field( "set-voice-commands" ).value,
 		wakeWord: field( "set-wake-word" ).value,
+		soundAlike: field( "set-sound-alike" ).checked,
+		wordFixes: readWordRows(),
 		steadyWpm: numberValue( "set-steady-wpm", 60, 300, settings.steadyWpm ),
 		countdown: numberValue( "set-countdown", 0, 10, settings.countdown ),
 		slate: field( "set-slate" ).value,

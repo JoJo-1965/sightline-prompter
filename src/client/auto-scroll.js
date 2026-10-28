@@ -16,6 +16,7 @@ import {
 	SCROLL_SPEED_STEP
 } from "./word-index.js";
 import { createAligner } from "./aligner.js";
+import { createWordFixer } from "./word-fixes.js";
 import { createCommandListener } from "./voice-commands.js";
 
 const DEEPGRAM_QUERY = new URLSearchParams( {
@@ -218,6 +219,8 @@ export async function startAutoScroll( {
 	wakeWord = "prompter", // Settings > Voice: prompter, computer, teleprompter or director
 	isPaused = null, // also counts as paused for a bare "go" (a {stop} in steady scrolling)
 	followScript = true,
+	wordFixes = [], // Settings > Voice > Your words (word-fixes.js)
+	soundAlike = true, // ...and words that sound like script words (sound-alike.js)
 	audioDeviceId
 } ) {
 	if ( activeCtx ) {
@@ -231,7 +234,9 @@ export async function startAutoScroll( {
 	}
 
 	const wordIndex = buildWordIndex( scriptEl );
-	const aligner = createAligner( wordIndex.words );
+	// Your words: heard forms count as the script word too (word-fixes.js).
+	const wordFixer = createWordFixer( wordFixes, wordIndex.words );
+	const aligner = createAligner( wordIndex.words, { synonyms: wordFixer.synonyms, soundAlike } );
 	aligner.setPosition( findWordAtViewport( wordIndex.ranges ) );
 	const takeCommands = onCommand ? createCommandListener( { onCommand, onWake, onMiss, wakeWord, isPaused: () => held || !!isPaused?.() } ) : null;
 	let held = false; // "Prompter, pause": keep listening, stop following
@@ -255,7 +260,7 @@ export async function startAutoScroll( {
 				script: wordIndex.ranges.slice( from, to + 1 ).map( r => r.toString().trim() ).join( " " )
 			} );
 		};
-		const words = takeCommands ? takeCommands( heard, final ) : heard;
+		const words = wordFixer.join( takeCommands ? takeCommands( heard, final ) : heard );
 		if ( !followScript || held || !words.length ) {
 			logHeard( before );
 			return;

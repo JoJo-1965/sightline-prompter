@@ -12,14 +12,19 @@ complex builds come later.
 
 ## Where it stands (28 October 2026)
 
-**v1.0.3 is the latest release** (28 October 2026). It added the edit pack
-(26), the clickable progress bar (37), check for updates (38), skills for
-Claude Code and Codex, and see-through backing on air.
+**v1.0.5 is the latest release** (28 October 2026). 1.0.3 to 1.0.5 added
+the edit pack (26), the clickable progress bar (37), check for updates (38),
+skills for Claude Code and Codex, see-through backing on air, Apply in
+Settings, "what can I say" and the heading size.
 
-**Next:** 47 the components list, 20
-teach it your words, 40 choose your own buttons, the sound-check meter (41)
-and loudness per take (42). The full list,
-in order, is under [To do](#to-do); everything built is under [Done](#done).
+**Built since, for the next release:** notes mode (49), pace per take (43),
+rehearsal results (44), named markers (45), restarts from a marker (46), the
+choice of wake word, the recordings library (36) and teach it your words (20).
+
+**Next:** 39 the Stream Deck plugin, 47 the components list, 40 choose your
+own buttons, the sound-check meter (41) and loudness per take (42). The full
+list, in order, is under [To do](#to-do); everything built is under
+[Done](#done).
 
 ## To do
 
@@ -29,7 +34,6 @@ In the order they'll be built: value for the time first. 27 needs certificates b
 | --- | ---- | ----- | ---- | ----- |
 | 47  | **Components list:** Settings > About lists each extra part with its status and Install, Reinstall and Remove: the speech model, and an AI agent kit (the skills, the script checker and the sightline command) installed from the app without cloning the repo, with a check for Node.js. Settings > Voice gets Reinstall and Remove beside the speech model, and the first run offers to download it | ★★ | M | Joanne asked, 28 Oct: show what's installed, with install and reinstall buttons. In the app rather than an installer tickbox, because only the Windows installer could have one |
 | 48  | **Settings in its own window:** Settings opens as an ordinary window you can drag to any screen, upright even when the prompter is mirrored, and it reopens where you left it. Changes still show on the prompter straight away. Useful when the prompter is full screen on a prompter monitor such as the Elgato, where Settings now opens inside it, mirrored | ★★ | M | Joanne asked, 28 Oct. Today Settings is a dialog inside the prompter window, so it can't leave it. The Layout and Voice panels could follow later |
-| 20  | **Teach it your words:** a log of what voice scrolling misheard (script word against what it heard, for example "Moshe" heard as "Marsha"), and a short training mode where you read out the names, jargon and commands it gets wrong. The fixes become a personal word list that biases the on-device recogniser (sherpa-onnx hotwords) and the matching | ★★★   | M    | Joanne's idea, 27 Oct. The log needs no extra model; hotwords need the model's BPE vocabulary (a small extra download) **Part done (28 Oct):** the heard log (every word heard, next to the script words it matched) and `sightline.mjs heard`, which lists the mishearings. Still to do: build the corrections in, and the training mode |
 | 40  | **Choose your own buttons:** a key map for game controllers, foot pedals, clickers and keyboard shortcuts (Settings > Remotes): pick any action (start and pause, sections, speed, markers, keeper or scrap, on air, again) for each button or key, with a "press the button now" way to set it, and a reset to the defaults | ★★ | S–M | Joanne's idea, 28 Oct. Today the controller buttons and pedal keys are fixed. The Stream Deck plugin (39) can use the same list of actions |
 | 41  | **Sound-check meter:** a level meter you can switch on and off (a button in the Voice panel, a shortcut, and an option to keep it on screen during takes): a bar in dBFS with green, amber and red zones, a peak hold, a clip light, and short-term loudness in LUFS, small enough to sit at the edge of the prompter. For checking the mic before a take and keeping an eye on it during one | ★★ | S–M | Joanne asked, 28 Oct. Today there's only the small meter beside the microphone list in the Voice panel, for picking the mic. Shares its measuring with 42 |
 | 42  | **Loudness per take:** for each take, the mean loudness (integrated LUFS) and the peak (dBFS) of the microphone Sightline listens to, with warnings for clipping or too quiet; shown in the take summary and saved in the take log and edit pack, so you know straight away whether a take's level is usable | ★★ | M | Joanne asked, 28 Oct. Sightline doesn't record, so this measures the mic as Sightline hears it, before any processing in OBS or Riverside: a reliable guide when they share the mic, not the final figure. Voice mode already has the mic open; steady scrolling needs a "measure the mic" option. Builds on 41 |
@@ -122,6 +126,7 @@ Keeping what voice scrolling knows (which word was said when, which section, eac
 | 45  | ✅ **Labelled markers:** `{marker: Setup}` as an optional form of `{marker}`, so a marker in a long section carries its name into the take log and the edit marks. Plain `{marker}` keeps working. Spec, script-directives.json, the checker and the AI script brief updated together | ★★★ | S | From the Academy authoring agent, 28 Oct (issue #66): long scenario sections (2:50 to 4:05) would have one at each label (Setup, Context, Challenges, Action plan, If nobody acts, Final thought) **Done (28 Oct):** take logs get markerList (label, from); edit marks carry the label; checker, spec 0.3 and AI brief updated |
 | 46  | ✅ **Restart from a marker, mid-section:** going back to a marker partway through a section and reading on is recorded in the edit pack, so an editor or assembler can cut to the second reading, as a re-read works today; described in docs/EDIT-PACK.md | ★★★ | S–M | From the Academy authoring agent, 28 Oct (issue #66): saves a whole new take for a late fluff. The Academy assembler will read it **Done (28 Oct):** Shift+B and "Prompter, back to the marker"; takes gain restarts { t, label, markerAt }; edit mark type restart; docs/EDIT-PACK.md > Restarts from a marker |
 | 36  | ✅ **Recordings library, and agent access to it:** a panel (File > Recordings) listing every recording session: script, date, takes, keepers and length. Open one to see its takes and words; **rename** it, add a note, **delete** it (to the Recycle Bin, with a confirmation), start a new one, and **export** its edit pack as a folder or zip. An AI agent on the same computer can do the same through the token-protected local API: list sessions, fetch a session's edit pack, rename, mark as processed or delete (only if allowed in Settings > Remotes). The edit-pack brief (docs/EDIT-PACK.md, also on the clipboard from Help) tells the agent how to ask for a session, what each file holds and how to process it: line up the recording from the slate, choose the takes, cut at sentence boundaries, assemble in script order | ★★★ | M | Joanne's idea, 28 Oct. Built 28 Oct (with 26's data); replaced File > Export Take Log, Start a New Take Log and Show Take Logs Folder. Names and notes live in library.json beside the logs, so take logs are never rewritten. The API's push channel waits for 39 |
+| 20  | ✅ **Teach it your words:** a log of what voice scrolling heard (the heard log), and fixes for what it mishears: words that sound alike count as the script word, and a list of your words (Settings > Voice > Your words) with what it hears instead, as synonyms rather than replacements, with suggestions from the heard log and a **Teach…** button that listens while you say the word | ★★★   | M    | Joanne's idea, 27 Oct; sound-alike matching and synonyms rather than replacements asked for on 28 Oct. Built 28 Oct. Not built: biasing the recogniser itself (sherpa-onnx hotwords, which needs the model's BPE vocabulary); worth it only if the matching isn't enough |
 
 ## Later
 

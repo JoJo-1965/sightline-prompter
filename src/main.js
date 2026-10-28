@@ -24,6 +24,7 @@ import { editPack } from "./client/edit-pack.js";
 import { fitInside, keepTopReachable, sameRect } from "./utils/fit.js";
 import { isNewer } from "./utils/version.js";
 import { startRemoteServer, newToken } from "./remote.js";
+import { heardReport } from "./heard-report.js";
 import { deleteRecording, listRecordings, readRecording, recordingPack, updateRecording, zipFiles } from "./recordings.js";
 import { startPhoneServer, newPhoneKey, lanAddress } from "./phone.js";
 import QRCode from "qrcode";
@@ -91,6 +92,9 @@ const defaultSettings = {
 	voiceEngine: "local", // "local" (on this computer) or "deepgram" (online, needs a key)
 	voiceCommands: "voice", // "Prompter, pause": "voice" (voice mode), "always" (steady too) or "off"
 	wakeWord: "prompter", // prompter, computer, teleprompter or director
+	// Settings > Voice > Your words: [{ word: "Moshe", heard: [ "marsha" ] }]
+	wordFixes: [],
+	soundAlike: true, // ...and words that sound like script words count as them
 	steadyWpm: 140,
 	countdown: 3,
 	slate: "off", // at the start of each take: "beep" (flash and beep), "flash" or "off"
@@ -752,6 +756,32 @@ const createWindow = ( state ) => {
 			.then( () => fs.mkdir( heardLogDir, { recursive: true } ) )
 			.then( () => fs.appendFile( file, line ) )
 			.catch( err => console.log( "Heard log:", err.message ) );
+	} );
+
+	// Settings > Voice > Your words > Suggest: what every heard log says it
+	// misheard more than once, most often first.
+	ipcMain.handle( "heardSuggestions", async () => {
+		let files;
+		try {
+			files = ( await fs.readdir( heardLogDir ) ).filter( f => f.endsWith( ".jsonl" ) );
+		} catch {
+			return { logs: 0, suggestions: [] };
+		}
+		const lines = [];
+		for ( const file of files ) {
+			lines.push( ...( await fs.readFile( path.join( heardLogDir, file ), "utf-8" ) ).split( "\n" ) );
+		}
+		const report = heardReport( lines );
+		const suggestions = report.misheard
+			.filter( m => m.count >= 2 )
+			.map( ( { pair, count } ) => {
+				const [ heard, word ] = pair.split( " → " );
+				return { heard, word, count };
+			} )
+			// Half a word ("set" for "setting") is the engine catching up, not a mishearing.
+			.filter( ( { heard, word } ) => !word.startsWith( heard ) && !heard.startsWith( word ) )
+			.slice( 0, 20 );
+		return { logs: files.length, words: report.words, suggestions };
 	} );
 
 	ipcMain.on( "exportTakeLog", () => exportTakeLog() );

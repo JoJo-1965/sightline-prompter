@@ -75,7 +75,9 @@ app closed:
   a practice run to suggest `{target}` times.
 - `heard ["<script name>"] [yyyy-mm-dd]`: what voice scrolling heard, lined
   up with the script, and the words it heard in place of script words, most
-  often first. Use it to suggest corrections for words it keeps mishearing.
+  often first. Use it to suggest corrections for words it keeps mishearing:
+  the user adds them in **Settings > Voice > Your words** (your word, then
+  what it hears instead), and words that sound alike are already matched.
 - `takelog ["<script name>"] [yyyy-mm-dd]`: the path of one log (default: the
   open script, today).
 - `pack ["<script name>"] [yyyy-mm-dd] [output folder]`: builds the **edit

@@ -58,6 +58,8 @@ contextBridge.exposeInMainWorld( "electron", {
 	recordings: ( action, args ) => ipcRenderer.invoke( "recordings", action, args ),
 	onShowRecordings: callback => on( "showRecordings", callback ),
 	onRecordingsChanged: callback => on( "recordingsChanged", callback ),
+	// Settings > Voice > Your words: mishearings from the heard logs
+	heardSuggestions: () => ipcRenderer.invoke( "heardSuggestions" ),
 	onTakeLog: callback => on( "takeLog", callback ),
 	onGoogleDocResult: callback => on( "googleDocResult", callback ),
 	onShowGoogleDocDialog: callback => on( "showGoogleDocDialog", callback ),
