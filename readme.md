@@ -205,6 +205,10 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ## Change log
 
+### Next release
+
+- **Heading size** (Layout panel > Layout, and Settings > Layout): section headings grew with the text, so they got very big when you made the text larger. Now they have their own size, from 40% to 150% of their usual size next to the text
+
 ### 1.0.4 (28 October 2026)
 
 - **Easier to find: the control pad and the control window** are now at the top of ☰ > Window (they were at the foot of ☰ > Playback), and Settings > Remotes has a tickbox for each

@@ -25,6 +25,9 @@ the script. The same controls are on the **Layout**, **Reading** and
   and bottom margins fade the text out near the edges.
 - **Line spacing**, **alignment** (left or centred) and the **reading line**:
   where the line you're reading sits. Put it just under your webcam.
+- **Heading size**: section headings grow with the text, so if they get too
+  big when you make the text larger, lower this. 100% is their usual size
+  next to the text (40% to 150%).
 - **Mirror**, the **reading-line marker**, the **sentence highlight** and the
   **progress bar**.
 - **Reading aids** (below), the **ON AIR** light and an optional start beep.

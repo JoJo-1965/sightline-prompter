@@ -2121,6 +2121,7 @@ const LAYOUT_DEFAULTS = {
 	marginTop: 0,
 	marginBottom: 0,
 	lineHeight: 1.3,
+	headingScale: 1,
 	textOpacity: 1,
 	textBrightness: 1,
 	backingOnAir: 0.07,
@@ -2139,6 +2140,10 @@ function applyLayout() {
 	style.setProperty(
 		"--line-height",
 		settings.lineHeight ?? LAYOUT_DEFAULTS.lineHeight
+	);
+	style.setProperty(
+		"--heading-scale",
+		settings.headingScale ?? LAYOUT_DEFAULTS.headingScale
 	);
 	style.setProperty(
 		"--text-opacity",
@@ -3132,6 +3137,7 @@ const LAYOUT_FIELDS = [
 	[ "lp-margin-top", "marginTop", v => `${ v }%` ],
 	[ "lp-margin-bottom", "marginBottom", v => `${ v }%` ],
 	[ "lp-line-height", "lineHeight", v => `${ Number( v ).toFixed( 2 ) }×` ],
+	[ "lp-heading-scale", "headingScale", v => `${ Math.round( v * 100 ) }%` ],
 	[ "lp-text-opacity", "textOpacity", v => `${ Math.round( v * 100 ) }%` ],
 	[ "lp-backing-on-air", "backingOnAir", v => `${ Math.round( v * 100 ) }%` ],
 	[ "lp-text-brightness", "textBrightness", v => `${ Math.round( v * 100 ) }%` ],
@@ -5003,6 +5009,12 @@ const NUMBER_BOXES = {
 		unit: "%",
 		word: "percent",
 		name: "Background on air"
+	} ),
+	"lp-heading-scale": () => ( {
+		scale: 100,
+		unit: "%",
+		word: "percent",
+		name: "Heading size"
 	} ),
 	"lp-line-height": () => ( {
 		scale: 100,
