@@ -28,7 +28,7 @@ import {
 import { decorateScript } from "./decorate.js";
 import { readDirectives, parseDirective, parseDuration } from "./directives.js";
 import { createTakeLog } from "./take-log.js";
-import { COMMAND_HELP } from "./voice-commands.js";
+import { COMMAND_HELP, wakeLabel } from "./voice-commands.js";
 import {
 	indexSentences,
 	scriptSentences,
@@ -934,9 +934,9 @@ function voiceCanResume() {
 }
 
 function stopText() {
-	if ( autoScrollActive ) return "Stopped · say “Prompter, go”";
+	if ( autoScrollActive ) return `Stopped · say “${ wakeLabel( settings.wakeWord ) }, go”`;
 	return voiceCanResume()
-		? "Stopped · say “Prompter, go” or press Space"
+		? `Stopped · say “${ wakeLabel( settings.wakeWord ) }, go” or press Space`
 		: "Stopped · Space to carry on";
 }
 
@@ -1117,7 +1117,8 @@ async function beginVoice( engine, deepgramKey ) {
 			onHeard: entry => window.electron.appendHeardLog( entry ),
 			onCommand: settings.voiceCommands === "off" ? null : runVoiceCommand,
 			onWake: voiceWake,
-			onMiss: voiceMiss
+			onMiss: voiceMiss,
+			wakeWord: settings.wakeWord ?? "prompter"
 		} );
 		autoScrollActive = true;
 		autoScrollStarting = false;
@@ -1211,6 +1212,7 @@ function syncCommandListening() {
 					onCommand: runVoiceCommand,
 					onWake: voiceWake,
 					onMiss: voiceMiss,
+					wakeWord: settings.wakeWord ?? "prompter",
 					isPaused: () => cuePaused
 				} );
 				commandListening = true;
@@ -1264,7 +1266,7 @@ function showVoiceHelp() {
 		card.setAttribute( "role", "dialog" );
 		card.setAttribute( "aria-label", "Voice commands" );
 		const title = document.createElement( "h4" );
-		title.textContent = "Say “Prompter”, then:";
+		title.id = "voice-help-title";
 		const list = document.createElement( "dl" );
 		for ( const [ say, does ] of COMMAND_HELP ) {
 			const dt = document.createElement( "dt" );
@@ -1277,6 +1279,7 @@ function showVoiceHelp() {
 		card.addEventListener( "click", hideVoiceHelp );
 		hud.appendChild( card );
 	}
+	document.getElementById( "voice-help-title" ).textContent = `Say “${ wakeLabel( settings.wakeWord ) }”, then:`;
 	card.classList.remove( "hidden" );
 	clearTimeout( showVoiceHelp.timer );
 	showVoiceHelp.timer = setTimeout( hideVoiceHelp, 15000 );
@@ -1330,7 +1333,7 @@ function resetPrompter() {
 function runVoiceCommand( id, value ) {
 	if ( isEditMode ) return;
 	hideVoiceHelp();
-	showToast( id === "section" ? `Heard: “Section ${ value }”` : `Heard: “Prompter, ${ COMMAND_LABELS[id] ?? id }”` );
+	showToast( id === "section" ? `Heard: “Section ${ value }”` : `Heard: “${ wakeLabel( settings.wakeWord ) }, ${ COMMAND_LABELS[id] ?? id }”` );
 	if ( id === "help" ) {
 		showVoiceHelp();
 		return;
@@ -1349,7 +1352,7 @@ function runVoiceCommand( id, value ) {
 		if ( voice ) {
 			autoScrollHandle.setHold( true );
 			cancelScroll();
-			setIndicator( "Paused · say “Prompter, go”" );
+			setIndicator( `Paused · say “${ wakeLabel( settings.wakeWord ) }, go”` );
 		} else if ( isScrolling() ) runRemoteAction( "pause" );
 	} else if ( id === "go" ) {
 		if ( voice ) {
@@ -1983,6 +1986,7 @@ async function openSettings() {
 	field( "set-voice-speed" ).value = autoScrollSpeed;
 	field( "set-voice-engine" ).value = usesLocalVoice() ? "local" : "deepgram";
 	field( "set-voice-commands" ).value = settings.voiceCommands ?? "voice";
+	field( "set-wake-word" ).value = settings.wakeWord ?? "prompter";
 	showVoiceEngineFields();
 	window.electron.speechModelStatus();
 	field( "set-deepgram-key" ).value = "";
@@ -2093,6 +2097,7 @@ function saveSettingsPage( close = true ) {
 		scrollMode: field( "set-scroll-mode" ).value === "voice" ? "voice" : "steady",
 		voiceEngine: field( "set-voice-engine" ).value === "deepgram" ? "deepgram" : "local",
 		voiceCommands: field( "set-voice-commands" ).value,
+		wakeWord: field( "set-wake-word" ).value,
 		steadyWpm: numberValue( "set-steady-wpm", 60, 300, settings.steadyWpm ),
 		countdown: numberValue( "set-countdown", 0, 10, settings.countdown ),
 		slate: field( "set-slate" ).value,

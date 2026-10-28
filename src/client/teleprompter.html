@@ -683,11 +683,21 @@
             </select>
           </label>
           <p class="field-hint">
-            Say “Prompter” then a command, and stop: pause, go, slower, faster,
-            back, next section, from the top, again, marker, resync, bigger,
-            smaller. While steady scrolling, the microphone stays on to listen
-            for them (on this computer only; nothing is sent anywhere).
+            Say the wake word (below) then a command, and stop: pause, go,
+            slower, faster, back, next section, from the top, again, marker,
+            resync, bigger, smaller, or what can I say. While steady scrolling,
+            the microphone stays on to listen for them (on this computer only;
+            nothing is sent anywhere).
           </p>
+          <label class="row" title="The word you say before a command. It applies the next time Sightline starts listening"
+            >Wake word
+            <select id="set-wake-word">
+              <option value="prompter">Prompter</option>
+              <option value="computer">Computer</option>
+              <option value="teleprompter">Teleprompter</option>
+              <option value="director">Director</option>
+            </select>
+          </label>
           <label class="row"
             >Voice responsiveness
             <input

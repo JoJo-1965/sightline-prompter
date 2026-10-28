@@ -8,7 +8,7 @@ records what has shipped.
 complex builds come later.
 
 - **Value:** ★★★ changes recording day · ★★ clearly better · ★ nice to have
-- **Size:** **S** about a day · **M** a few days · **L** a week or more
+- **Size:** **S** about a day · **M** a few days · **L** a week or more, for a person. Built with Claude Code, most take minutes to an hour, plus testing
 
 ## Where it stands (28 October 2026)
 

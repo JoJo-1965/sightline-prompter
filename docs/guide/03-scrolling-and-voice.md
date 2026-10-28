@@ -64,6 +64,11 @@ heard in place of script words, most often first.
 
 ## Voice commands: "Prompter, …"
 
+**The wake word** is "Prompter" unless you choose another on **Settings > Voice >
+Wake word**: Computer, Teleprompter or Director. Pick one that doesn't come up in
+your scripts. Below, read "Prompter" as whichever you chose; it takes effect the
+next time Sightline starts listening.
+
 Say **"Prompter"**, then a command, then stop for a moment. The command only
 counts when it ends what you're saying, so a line in your script such as "the
 prompter pauses" never sets it off.

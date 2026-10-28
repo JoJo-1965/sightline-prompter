@@ -29,7 +29,8 @@ of each take.
 ![Settings > Voice](images/settings-voice.png)
 
 Speech recognition (on this computer, or Deepgram), the speech model download,
-voice responsiveness and the microphone. See
+voice commands and their **wake word** (Prompter, Computer, Teleprompter or
+Director), voice responsiveness and the microphone. See
 [Scrolling and voice](03-scrolling-and-voice.md).
 
 ## Display

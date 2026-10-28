@@ -118,3 +118,11 @@ console.log( "back to the marker passes" );
 assert.equal( matchCommand( [ "next", "page" ] ), "next" );
 assert.equal( matchCommand( [ "previous", "page" ] ), "back" );
 console.log( "page commands pass" );
+
+// A different wake word (Settings > Voice): "Computer, pause".
+const got6 = [];
+const take6 = createCommandListener( { onCommand: id => got6.push( id ), wakeWord: "computer" } );
+assert.deepEqual( take6( [ "COMPUTER", "PAUSE" ], true ), [] );
+assert.deepEqual( take6( [ "PROMPTER", "PAUSE" ], true ), [ "PROMPTER", "PAUSE" ], "the old word is just a word now" );
+assert.deepEqual( got6, [ "pause" ] );
+console.log( "wake word choice passes" );

@@ -89,6 +89,7 @@ const defaultSettings = {
 	scrollMode: "steady", // "steady" (fixed words per minute) or "voice" (follows what you say)
 	voiceEngine: "local", // "local" (on this computer) or "deepgram" (online, needs a key)
 	voiceCommands: "voice", // "Prompter, pause": "voice" (voice mode), "always" (steady too) or "off"
+	wakeWord: "prompter", // prompter, computer, teleprompter or director
 	steadyWpm: 140,
 	countdown: 3,
 	slate: "off", // at the start of each take: "beep" (flash and beep), "flash" or "off"

@@ -8,7 +8,16 @@
 // "resync" as "rezinc"), so each command lists what it tends to hear, and
 // close matches count too.
 
-const WAKE = new Set( [ "prompter", "promptor", "prompters", "promoter" ] );
+// The wake word, chosen in Settings > Voice, with what the recogniser tends
+// to hear for it.
+export const WAKE_WORDS = {
+	prompter: { label: "Prompter", heard: [ "prompter", "promptor", "prompters", "promoter" ] },
+	computer: { label: "Computer", heard: [ "computer", "computers", "compuder" ] },
+	teleprompter: { label: "Teleprompter", heard: [ "teleprompter", "teleprompters", "teleprompt" ] },
+	director: { label: "Director", heard: [ "director", "directors", "directa" ] }
+};
+
+export const wakeLabel = key => ( WAKE_WORDS[key] ?? WAKE_WORDS.prompter ).label;
 
 export const COMMANDS = [
 	{
@@ -244,7 +253,8 @@ export function matchCommand( words ) {
 // onWake() fires as soon as the wake word is heard, so the speaker knows
 // it's listening; onMiss( words ) when a short phrase after it isn't a
 // command.
-export function createCommandListener( { onCommand, onWake = () => {}, onMiss = () => {}, isPaused = () => false } ) {
+export function createCommandListener( { onCommand, onWake = () => {}, onMiss = () => {}, isPaused = () => false, wakeWord = "prompter" } ) {
+	const WAKE = new Set( ( WAKE_WORDS[wakeWord] ?? WAKE_WORDS.prompter ).heard );
 	let held = null; // words from the wake word on, waiting for the phrase to end
 	let heldAt = 0;
 	let phrase = []; // every word of the phrase so far
