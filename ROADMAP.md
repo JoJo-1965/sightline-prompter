@@ -16,7 +16,7 @@ complex builds come later.
 (26), the clickable progress bar (37), check for updates (38), skills for
 Claude Code and Codex, and see-through backing on air.
 
-**Next:** 47 the components list, 20
+**Next:** 49 notes mode, then 47 the components list, 20
 teach it your words, 40 choose your own buttons, the sound-check meter (41)
 and loudness per take (42). The full list,
 in order, is under [To do](#to-do); everything built is under [Done](#done).
@@ -27,6 +27,7 @@ In the order they'll be built: value for the time first. 27 needs certificates b
 
 | #   | Item | Value | Size | Notes |
 | --- | ---- | ----- | ---- | ----- |
+| 49  | **Notes mode** (talking points, reworked): `{mode: notes}` (`{mode: points}` still works) shows the script a page at a time, never scrolled. An H1 starts a new page with that heading as its title; `{page}` starts one without a heading; each H2 on a page is a large bullet, with any text under it as smaller lines. A script with no H1s or `{page}` after its title keeps one H2 per page, as now. Page Down, →, "Prompter, next page" (or next) forward; Page Up, ←, "previous page" (or back) back. A page is the unit for timing and the take log; a `{target}` on an H1 times its page. Spec, checker, AI script prompt and guide updated together | ★★★ | M | Joanne, 28 Oct: for speaking from notes rather than a script. Builds on talking points (11), renamed Notes in the menus |
 | 47  | **Components list:** Settings > About lists each extra part with its status and Install, Reinstall and Remove: the speech model, and an AI agent kit (the skills, the script checker and the sightline command) installed from the app without cloning the repo, with a check for Node.js. Settings > Voice gets Reinstall and Remove beside the speech model, and the first run offers to download it | ★★ | M | Joanne asked, 28 Oct: show what's installed, with install and reinstall buttons. In the app rather than an installer tickbox, because only the Windows installer could have one |
 | 48  | **Settings in its own window:** Settings opens as an ordinary window you can drag to any screen, upright even when the prompter is mirrored, and it reopens where you left it. Changes still show on the prompter straight away. Useful when the prompter is full screen on a prompter monitor such as the Elgato, where Settings now opens inside it, mirrored | ★★ | M | Joanne asked, 28 Oct. Today Settings is a dialog inside the prompter window, so it can't leave it. The Layout and Voice panels could follow later |
 | 20  | **Teach it your words:** a log of what voice scrolling misheard (script word against what it heard, for example "Moshe" heard as "Marsha"), and a short training mode where you read out the names, jargon and commands it gets wrong. The fixes become a personal word list that biases the on-device recogniser (sherpa-onnx hotwords) and the matching | ★★★   | M    | Joanne's idea, 27 Oct. The log needs no extra model; hotwords need the model's BPE vocabulary (a small extra download) **Part done (28 Oct):** the heard log (every word heard, next to the script words it matched) and `sightline.mjs heard`, which lists the mishearings. Still to do: build the corrections in, and the training mode |
