@@ -60,6 +60,10 @@ contextBridge.exposeInMainWorld( "electron", {
 	onRecordingsChanged: callback => on( "recordingsChanged", callback ),
 	// Settings > Voice > Your words: mishearings from the heard logs
 	heardSuggestions: () => ipcRenderer.invoke( "heardSuggestions" ),
+	// Scratch audio for syncing: start, 16-bit samples as they come, stop
+	scratchAudioStart: options => ipcRenderer.invoke( "scratchAudioStart", options ),
+	scratchAudioData: pcm => ipcRenderer.send( "scratchAudioData", pcm ),
+	scratchAudioStop: options => ipcRenderer.invoke( "scratchAudioStop", options ),
 	onTakeLog: callback => on( "takeLog", callback ),
 	onGoogleDocResult: callback => on( "googleDocResult", callback ),
 	onShowGoogleDocDialog: callback => on( "showGoogleDocDialog", callback ),

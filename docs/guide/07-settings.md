@@ -21,8 +21,9 @@ double-click the title to put it back in the middle.
 ![Settings > Scrolling](images/settings-scrolling.png)
 
 The scroll mode (steady or voice), the steady speed, the countdown before
-scrolling starts, and the [slate](05-recording-a-take.md#the-slate) at the start
-of each take.
+scrolling starts, the [slate](05-recording-a-take.md#the-slate) at the start
+of each take, and [scratch audio](05-recording-a-take.md#scratch-audio-for-syncing)
+for syncing.
 
 ## Voice
 

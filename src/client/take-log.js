@@ -20,7 +20,7 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [] 
 	let slated = null; // { section, at }: the last slate, for the take that follows it
 
 	function empty() {
-		return { startedAt: null, takes: [], events: [] };
+		return { startedAt: null, takes: [], events: [], audio: [] };
 	}
 
 	const since = ms => round( ( ms - Date.parse( log.startedAt ) ) / 1000 );
@@ -188,6 +188,23 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [] 
 			return entry;
 		},
 
+		// Scratch audio for syncing: a file recorded while the prompter ran, with
+		// its start and end on the log's clock (start can be before 0: recording
+		// starts with the run, the clock with the first slate or take). Only kept
+		// when the run logged something.
+		audio( { file, startedAt, endedAt } ) {
+			if ( !log.startedAt ) return false;
+			log.audio.push( {
+				file,
+				startedAt: new Date( startedAt ).toISOString(),
+				endedAt: new Date( endedAt ).toISOString(),
+				start: since( startedAt ),
+				end: since( endedAt )
+			} );
+			event( "audio", { file } );
+			return true;
+		},
+
 		// {listen: off} (on = false) and {listen: on} (on = true) during a take.
 		listen( on, { at = null } = {} ) {
 			if ( !current || !log.startedAt ) return;
@@ -244,7 +261,8 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [] 
 				? {
 					startedAt: saved.startedAt,
 					takes: saved.takes ?? [],
-					events: saved.events ?? []
+					events: saved.events ?? [],
+					audio: saved.audio ?? []
 				}
 				: empty();
 		},

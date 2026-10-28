@@ -148,9 +148,30 @@ export async function updateRecording( dir, id, changes ) {
 	return ( await listRecordings( dir ) ).find( r => r.id === id );
 }
 
-// To the Recycle Bin (trash is Electron's shell.trashItem), with its name and note.
+// A session's scratch audio (take log "audio"), from the scratch-audio
+// folder beside the take logs: [{ file, path, start, end }] for those that
+// are still there.
+export async function recordingAudio( dir, id ) {
+	const log = JSON.parse( await fs.readFile( await logPath( dir, id ), "utf-8" ) );
+	const out = [];
+	for ( const a of log.audio ?? [] ) {
+		if ( typeof a.file !== "string" || /[\\/]/.test( a.file ) ) continue;
+		const file = path.join( dir, "..", "scratch-audio", a.file );
+		try {
+			await fs.access( file );
+			out.push( { file: a.file, path: file, start: a.start, end: a.end } );
+		} catch {
+			// deleted by hand
+		}
+	}
+	return out;
+}
+
+// To the Recycle Bin (trash is Electron's shell.trashItem), with its name,
+// note and scratch audio.
 export async function deleteRecording( dir, id, trash ) {
 	const file = await logPath( dir, id );
+	for ( const a of await recordingAudio( dir, id ) ) await trash( a.path );
 	await trash( file );
 	await changeLibrary( dir, ( library ) => {
 		if ( !library[id] ) return false;

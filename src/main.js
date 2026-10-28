@@ -25,7 +25,7 @@ import { fitInside, keepTopReachable, sameRect } from "./utils/fit.js";
 import { isNewer } from "./utils/version.js";
 import { startRemoteServer, newToken } from "./remote.js";
 import { heardReport } from "./heard-report.js";
-import { deleteRecording, listRecordings, readRecording, recordingPack, updateRecording, zipFiles } from "./recordings.js";
+import { deleteRecording, listRecordings, readRecording, recordingAudio, recordingPack, updateRecording, zipFiles } from "./recordings.js";
 import { startPhoneServer, newPhoneKey, lanAddress } from "./phone.js";
 import QRCode from "qrcode";
 import {
@@ -94,6 +94,7 @@ const defaultSettings = {
 	wakeWord: "prompter", // prompter, computer, teleprompter or director
 	// Settings > Voice > Your words: [{ word: "Moshe", heard: [ "marsha" ] }]
 	wordFixes: [],
+	scratchAudio: false, // Settings > Scrolling: a scratch audio track for syncing (scratch-audio.js)
 	soundAlike: true, // ...and words that sound like script words or commands count as them
 	commandWords: [], // ...and your own forms of the wake word and commands: [{ id: "wake", heard: [ … ] }]
 	steadyWpm: 140,
@@ -732,6 +733,7 @@ const createWindow = ( state ) => {
 			for ( const [ file, contents ] of Object.entries( editPack( takeLog, await editPackBrief() ) ) ) {
 				await fs.writeFile( path.join( folder, file ), contents );
 			}
+			await copyScratchAudio( takeLog, folder );
 			toast( `Edit pack saved: ${ path.basename( folder ) }` );
 			shell.openPath( folder );
 		} catch ( err ) {
@@ -761,6 +763,75 @@ const createWindow = ( state ) => {
 			.then( () => fs.appendFile( file, line ) )
 			.catch( err => console.log( "Heard log:", err.message ) );
 	} );
+
+	// Scratch audio for syncing: one file per run, in the scratch-audio folder
+	// beside the take logs, named like the take log with the time.
+	// WAV (16-bit mono PCM), written as the blocks arrive; the header's sizes
+	// are brought up to date every few seconds and at the end.
+	const scratchDir = path.join( takeLogDir, "..", "scratch-audio" );
+	let scratch = null; // { handle, file, rate, bytes, queue, sinceHeader }
+	const wavHeader = ( rate, bytes ) => {
+		const h = Buffer.alloc( 44 );
+		h.write( "RIFF", 0 );
+		h.writeUInt32LE( 36 + bytes, 4 );
+		h.write( "WAVEfmt ", 8 );
+		h.writeUInt32LE( 16, 16 );
+		h.writeUInt16LE( 1, 20 ); // PCM
+		h.writeUInt16LE( 1, 22 ); // mono
+		h.writeUInt32LE( rate, 24 );
+		h.writeUInt32LE( rate * 2, 28 );
+		h.writeUInt16LE( 2, 32 );
+		h.writeUInt16LE( 16, 34 );
+		h.write( "data", 36 );
+		h.writeUInt32LE( bytes, 40 );
+		return h;
+	};
+	ipcMain.handle( "scratchAudioStart", async ( _event, { sampleRate = 16000 } = {} ) => {
+		if ( scratch || !currentFilePath ) return null;
+		const time = new Date().toTimeString().slice( 0, 8 ).replace( /:/g, "" );
+		const file = `${ scriptName( currentFilePath ) } ${ today() } ${ time }.wav`;
+		await fs.mkdir( scratchDir, { recursive: true } );
+		const handle = await fs.open( path.join( scratchDir, file ), "w" );
+		await handle.write( wavHeader( sampleRate, 0 ), 0, 44, 0 );
+		scratch = { handle, file, rate: sampleRate, bytes: 0, queue: Promise.resolve(), sinceHeader: 0 };
+		return file;
+	} );
+	ipcMain.on( "scratchAudioData", ( _event, data ) => {
+		const s = scratch;
+		if ( !s || !( data instanceof ArrayBuffer || ArrayBuffer.isView( data ) ) ) return;
+		const chunk = Buffer.from( data instanceof ArrayBuffer ? data : data.buffer );
+		s.queue = s.queue.then( async () => {
+			await s.handle.write( chunk, 0, chunk.length, 44 + s.bytes );
+			s.bytes += chunk.length;
+			s.sinceHeader += chunk.length;
+			if ( s.sinceHeader >= s.rate * 2 * 5 ) {
+				s.sinceHeader = 0;
+				await s.handle.write( wavHeader( s.rate, s.bytes ), 0, 44, 0 );
+			}
+		} ).catch( err => console.log( "Scratch audio:", err.message ) );
+	} );
+	ipcMain.handle( "scratchAudioStop", async ( _event, { keep = true } = {} ) => {
+		const s = scratch;
+		scratch = null;
+		if ( !s ) return null;
+		await s.queue;
+		await s.handle.write( wavHeader( s.rate, s.bytes ), 0, 44, 0 );
+		await s.handle.close();
+		if ( !keep || !s.bytes ) {
+			await fs.rm( path.join( scratchDir, s.file ), { force: true } );
+			return null;
+		}
+		return { file: s.file, samples: s.bytes / 2 };
+	} );
+	// Copy a log's scratch audio into an edit pack folder.
+	async function copyScratchAudio( log, folder ) {
+		const files = ( log?.audio ?? [] ).map( a => a.file ).filter( f => typeof f === "string" && !/[\\/]/.test( f ) );
+		if ( !files.length ) return;
+		await fs.mkdir( path.join( folder, "scratch-audio" ), { recursive: true } );
+		for ( const file of files ) {
+			await fs.copyFile( path.join( scratchDir, file ), path.join( folder, "scratch-audio", file ) ).catch( () => {} );
+		}
+	}
 
 	// Settings > Voice > Your words > Suggest: what every heard log says it
 	// misheard more than once, most often first.
@@ -811,6 +882,7 @@ const createWindow = ( state ) => {
 
 	async function exportRecording( id, asZip ) {
 		const files = await recordingPack( takeLogDir, id, await editPackBrief() );
+		for ( const a of await recordingAudio( takeLogDir, id ) ) files[`scratch-audio/${ a.file }`] = await fs.readFile( a.path );
 		const name = `${ ( await readRecording( takeLogDir, id ) ).title ?? id } edit pack`.replace( /[<>:"/\\|?*]/g, "" );
 		if ( asZip ) {
 			const result = await dialog.showSaveDialog( win, {
@@ -859,7 +931,7 @@ const createWindow = ( state ) => {
 					defaultId: 1,
 					cancelId: 1,
 					message: `Delete "${ recordingName( r ) }"?`,
-					detail: `Its take log (${ r.takes } take${ r.takes === 1 ? "" : "s" }) goes to the Recycle Bin, so you can get it back from there. Your video and audio recordings aren't touched.`
+					detail: `Its take log (${ r.takes } take${ r.takes === 1 ? "" : "s" }) and any scratch audio go to the Recycle Bin, so you can get them back from there. Your own video and audio recordings aren't touched.`
 				} );
 				if ( response !== 0 ) return { ok: false };
 				const current = currentLogId() === args.id;
@@ -1273,7 +1345,9 @@ app.whenReady().then( async () => {
 		},
 		"GET /recording/pack": async ( { id } ) => ( {
 			id,
-			files: await recordingPack( takeLogFolder(), id, await editPackBrief() )
+			files: await recordingPack( takeLogFolder(), id, await editPackBrief() ),
+			// Scratch audio stays a file: where it is, and its place on the clock.
+			audio: await recordingAudio( takeLogFolder(), id )
 		} ),
 		"POST /recording/update": ( { id, title, note, processed } ) => {
 			const changes = {};

@@ -30,6 +30,7 @@ import { readDirectives, parseDirective, parseDuration } from "./directives.js";
 import { createTakeLog } from "./take-log.js";
 import { COMMAND_HELP, COMMANDS, wakeLabel } from "./voice-commands.js";
 import { heardForms, normalizeWord } from "./word-fixes.js";
+import { createScratchRecorder } from "./scratch-audio.js";
 import {
 	indexSentences,
 	scriptSentences,
@@ -1508,6 +1509,7 @@ function steadySessionActive() {
 
 const slateEl = document.getElementById( "slate" );
 let slating = false; // a slate is showing, and something waits for it
+let slateDue = false; // the slate is about to go off: the take log waits for it
 let slateTimer = null;
 const slateOn = () => settings.slate === "beep" || settings.slate === "flash";
 
@@ -1541,6 +1543,7 @@ function showSlate() {
 	slateEl.querySelector( ".slate-title" ).textContent
 		= section?.heading.textContent.replace( /\{[^}]*\}/g, "" ).trim() ?? "";
 	clearTimeout( slateTimer );
+	slateDue = false;
 	slateEl.classList.remove( "hidden" );
 	slateEl.classList.add( "flash" );
 	recording.slate( index );
@@ -1557,6 +1560,7 @@ function showSlate() {
 function hideSlate() {
 	clearTimeout( slateTimer );
 	slating = false;
+	slateDue = false;
 	slateEl?.classList.add( "hidden" );
 }
 
@@ -1569,11 +1573,17 @@ function afterSlate( start ) {
 	}
 	slating = true;
 	setIndicator( settings.slate === "beep" ? "Get ready · start after the beep" : "Get ready", "connecting" );
-	showSlate().then( () => {
-		if ( !slating ) return;
-		slating = false;
-		start();
-	} );
+	// Scratch audio starts first, so the slate's beep is on it too.
+	slateDue = true;
+	syncScratchAudio( true );
+	scratchChange
+		.then( () => scratch.recording && new Promise( r => setTimeout( r, 300 ) ) )
+		.then( () => ( slating ? showSlate() : null ) )
+		.then( () => {
+			if ( !slating ) return;
+			slating = false;
+			start();
+		} );
 }
 
 function hideCountdown() {
@@ -2075,6 +2085,7 @@ async function openSettings() {
 	field( "set-voice-engine" ).value = usesLocalVoice() ? "local" : "deepgram";
 	field( "set-voice-commands" ).value = settings.voiceCommands ?? "voice";
 	field( "set-wake-word" ).value = settings.wakeWord ?? "prompter";
+	field( "set-scratch-audio" ).checked = settings.scratchAudio === true;
 	field( "set-sound-alike" ).checked = settings.soundAlike !== false;
 	fillWordRows( settings.wordFixes ?? [] );
 	fillCommandRows( settings.commandWords ?? [] );
@@ -2428,6 +2439,7 @@ function saveSettingsPage( close = true ) {
 		voiceEngine: field( "set-voice-engine" ).value === "deepgram" ? "deepgram" : "local",
 		voiceCommands: field( "set-voice-commands" ).value,
 		wakeWord: field( "set-wake-word" ).value,
+		scratchAudio: field( "set-scratch-audio" ).checked,
 		soundAlike: field( "set-sound-alike" ).checked,
 		wordFixes: readWordRows(),
 		commandWords: readCommandRows(),
@@ -5215,7 +5227,38 @@ function formatClock( seconds ) {
 
 // What the take log needs each tick: where the reading line is, and whether
 // the text has moved on.
+// Scratch audio for syncing (Settings > Scrolling): recorded while the
+// prompter runs, saved beside the take log when it stops. Changes are queued,
+// so a quick stop and start can't open the microphone twice.
+const scratch = createScratchRecorder();
+let scratchWanted = false;
+let scratchChange = Promise.resolve();
+
+function syncScratchAudio( active ) {
+	const want = ( active || slating ) && settings.scratchAudio === true && !isEditMode;
+	if ( want === scratchWanted ) return;
+	scratchWanted = want;
+	scratchChange = scratchChange.then( async () => {
+		if ( want ) {
+			try {
+				await scratch.start( audioDeviceId );
+				showToast( "Recording scratch audio for syncing", 2000 );
+			} catch ( err ) {
+				console.warn( "[scratch audio]", err );
+				showToast( "Couldn't record scratch audio: is a microphone connected?", 3000 );
+			}
+			return;
+		}
+		// Only kept when the run logged something.
+		const result = await scratch.stop( !!recording.data().startedAt );
+		if ( result ) recording.audio( result );
+	} );
+}
+
 function feedTakeLog( active ) {
+	syncScratchAudio( active );
+	// Waiting for the slate: the take opens after it, so it gets the slate.
+	if ( slateDue ) return;
 	const y = readingLineY();
 	const index = pointsMode() ? pointsIndex : sectionIndexAt( y );
 	const section = directivePoints.sections[index];

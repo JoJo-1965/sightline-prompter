@@ -65,11 +65,31 @@ The [take log](#the-take-log) notes when each slate went off (the **slate**
 column), and the first slate is time 0. In the edit, find the first beep or
 flash in the recording: every take's times line up from there.
 
+## Scratch audio for syncing
+
+Tick **Record a scratch audio track for syncing** in **Settings > Scrolling**
+and Sightline records the microphone to a plain audio file while the prompter
+runs, from just before the first slate until you stop. It's not a recording
+to use, only a reference: an editor, or an editing tool, lines your real
+recording (Riverside, OBS, a camera) up with the take log by matching the two
+soundtracks, so it works with no slate, and the slate's beep is on it too
+when there is one.
+
+- One file per run, a WAV (16 kHz, mono), kept in the `scratch-audio` folder
+  beside the take logs. It records straight through an
+  [off-script](03-scrolling-and-voice.md#off-script) part.
+- The take log notes where each file sits on its clock, and the
+  [edit pack](#the-edit-pack) includes the files.
+- A run that logged no take keeps no file. Deleting a session in
+  [Recordings](#recordings) deletes its scratch audio too.
+- It never leaves your computer.
+
 ## The take log
 
 Sightline doesn't record your video or audio; keep recording with OBS,
 Riverside, Zoom or your camera. It logs the timings to line up with that
-recording.
+recording (and, if you choose, a [scratch audio](#scratch-audio-for-syncing)
+file to help).
 
 While you record, Sightline logs every take of every section: when it
 started and ended, whether you read it to the end or went back for another
@@ -129,6 +149,7 @@ script and the date, holding:
 | words.csv | Every word you said, with its start and end |
 | edit-marks.csv, edit-marks.json | Places worth knowing about: where each sentence starts (a clean place to cut), long pauses, re-reads (where you went back and said a phrase again), skipped words and markers |
 | captions.srt, captions.vtt | Captions in your script's own wording, two lines at most |
+| scratch-audio/ | The [scratch audio](#scratch-audio-for-syncing) files, if it was on |
 | README.md | A brief for whoever edits it, person or AI: how to line the pack up with the recording and how to use each file |
 
 All the times are on the take log's clock, where 0 is the first slate. Find
@@ -153,8 +174,9 @@ the edit will use, and how long the edit comes to.
   still to do.
 - **Export edit pack…** saves [the edit pack](#the-edit-pack) as a folder;
   **Export as zip…** saves it as one zip file, to send or upload.
-- **Delete…** moves its take log to the Recycle Bin, after asking. Your video
-  and audio recordings aren't touched: Sightline never had them.
+- **Delete…** moves its take log and any scratch audio to the Recycle Bin,
+  after asking. Your own video and audio recordings aren't touched: Sightline
+  never had them.
 - **Start a new take log** starts again from take 1 (today's takes so far stay
   in the list), and **Show the folder** opens the folder where the logs are
   saved.

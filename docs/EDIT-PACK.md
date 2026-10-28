@@ -6,9 +6,11 @@ when each script word was said, the sentences, places worth cutting, and
 captions in the script's own wording. It's written for an editor, or for an
 AI editing and assembly agent, to cut the recording with.
 
-Nothing here is audio or video: Sightline doesn't record. The recording
-comes from whatever was used (OBS, Riverside, Zoom, a camera); this pack is
-what the prompter knew while you read, with timings to line up with it.
+Sightline doesn't record the video. The recording comes from whatever was
+used (OBS, Riverside, Zoom, a camera); this pack is what the prompter knew
+while you read, with timings to line up with it. If the user turned on
+scratch audio, `scratch-audio/` holds a plain microphone recording to help
+line them up (see [Scratch audio](#scratch-audio)).
 
 ## The clock
 
@@ -25,6 +27,31 @@ stopped between takes.
 
 `startedAt` and `endedAt` in `take-log.json` are wall-clock times (UTC), for
 recordings that carry a time of day instead.
+
+## Scratch audio
+
+With **Settings > Scrolling > Record a scratch audio track for syncing** on,
+Sightline records the microphone while the prompter runs, as a sync reference
+only. `take-log.json` lists the files in `audio` (added in this version;
+older logs have none):
+
+```json
+"audio": [{ "file": "M2 Intro 2026-10-28 143012.wav",
+  "startedAt": "2026-10-28T14:30:12.018Z", "endedAt": "2026-10-28T14:34:40.218Z",
+  "start": -0.3, "end": 267.9 }]
+```
+
+- Each file is a WAV: 16 kHz, 16-bit, mono, with no echo cancellation, noise
+  suppression or gain control, so it sounds like what other microphones
+  heard. The pack has them in `scratch-audio/`.
+- `start` and `end` place the file on the session clock: **session time =
+  file time + start**. `start` is negative when the file began before the
+  first slate; recording starts about 0.3 s before the slate, so the slate's
+  beep is in the file.
+- One file per run (start to stop). It records straight through
+  `{listen: off}` parts.
+- To line up a master recording, cross-correlate its audio with the scratch
+  file to find the offset, then add `start`. This needs no slate at all.
 
 ## Word timings
 
@@ -50,6 +77,7 @@ the earlier one, and the place is marked as a **reread**.
 | `words.csv` | One row per word said: section, take, sentence, word index, the word as written, start, end |
 | `edit-marks.csv` and `edit-marks.json` | Places worth knowing about, in time order (below) |
 | `captions.srt` and `captions.vtt` | Captions for every take, on the session clock, in the script's own wording and spelling, at most two lines of about 42 characters |
+| `scratch-audio/` | Scratch audio files, if it was on (see [Scratch audio](#scratch-audio)) |
 | `README.md` | This brief |
 
 ## Markers
@@ -173,7 +201,8 @@ its file name, such as `M2 Intro 2026-10-28`.
   it as edited when you're done, and `name` and `note` label it.
 - **Local API** (the app open, with **Settings > Remotes** ticked):
   `GET /recordings`, `GET /recording?id=…`, `GET /recording/pack?id=…`
-  (the files as `{ files: { name: contents } }`) and
+  (the files as `{ files: { name: contents } }`, with any scratch audio as
+  `audio`: where each file is on this computer and its place on the clock) and
   `POST /recording/update { id, title, note, processed }`.
   `POST /recording/delete { id }` only works if the user ticked **Let it
   delete recordings too**; only use it when they ask.

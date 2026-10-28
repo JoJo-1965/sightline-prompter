@@ -141,6 +141,10 @@ The whole workflow is in the guide:
   sentences, edit marks (sentence starts, pauses, re-reads, skipped words)
   and captions in the script's own wording, in one folder with a brief for
   AI editing agents.
+- **Scratch audio for syncing** (Settings > Scrolling): a plain microphone
+  recording while the prompter runs, placed on the take log's clock, so an
+  editor can line the real recording up by matching soundtracks, with no
+  slate needed.
 - **Notes** for speaking from notes: a page at a time, never scrolled. A
   `# heading` or `{page}` starts a page and each `## heading` is a bullet, with
   a page timer against each page's `{target}`.
