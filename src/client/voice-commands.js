@@ -6,7 +6,12 @@
 //
 // The on-device recogniser mishears some short words ("pause" as "paws",
 // "resync" as "rezinc"), so each command lists what it tends to hear, and
-// close matches count too.
+// close matches count too. Settings > Voice > Your words adds your own
+// (commandWords: [{ id: "wake" or a command id, heard: [ … ] }]), and with
+// soundAlike a word that sounds like the wake word or a command counts.
+
+import { soundKey } from "./sound-alike.js";
+import { heardForms } from "./word-fixes.js";
 
 // The wake word, chosen in Settings > Voice, with what the recogniser tends
 // to hear for it.
@@ -190,6 +195,23 @@ export const COMMAND_HELP = [
 
 const normalize = word => word.toLowerCase().replace( /[^\w]/g, "" );
 
+// Sound alike: the same sound key, the same first letter and about as long,
+// and never very short words ("go", "top"), where too much sounds alike.
+function soundsLike( a, b ) {
+	const close = a[0] === b[0] && Math.abs( a.length - b.length ) <= 3;
+	return a.length >= 4 && b.length >= 4 && close && soundKey( a ) === soundKey( b );
+}
+
+// Settings > Voice > Your words > Command words, as { wake: [ … ], pause: [ … ] }.
+export function commandExtras( commandWords ) {
+	const extra = {};
+	for ( const entry of commandWords ?? [] ) {
+		if ( !entry?.id ) continue;
+		( extra[entry.id] ??= [] ).push( ...heardForms( entry.heard ) );
+	}
+	return extra;
+}
+
 // "Section 3", "section three", or how the recogniser tends to hear it
 // ("section to", "section for"): the section number, else null.
 const NUMBER_WORDS = {
@@ -227,12 +249,12 @@ function distance( a, b ) {
 // The command the words after the wake word are, or null. Exact phrases win;
 // otherwise the closest phrase if it is near enough (never for very short
 // words, where one letter changes the meaning).
-export function matchCommand( words ) {
+export function matchCommand( words, { extra = {}, soundAlike = false } = {} ) {
 	const said = words.map( normalize ).filter( Boolean ).join( " " );
 	if ( !said || words.length > 4 ) return null;
 	let best = null;
 	for ( const command of COMMANDS ) {
-		for ( const phrase of command.phrases ) {
+		for ( const phrase of [ ...command.phrases, ...( extra[command.id] ?? [] ) ] ) {
 			if ( phrase === said ) return command.id;
 			if ( phrase.length < 4 || said.length < 4 ) continue;
 			const score
@@ -241,7 +263,14 @@ export function matchCommand( words ) {
 				best = { id: command.id, score };
 		}
 	}
-	return best?.id ?? null;
+	if ( best ) return best.id;
+	if ( soundAlike ) {
+		const joined = said.replace( / /g, "" );
+		for ( const command of COMMANDS ) {
+			if ( command.phrases.some( p => soundsLike( p.replace( / /g, "" ), joined ) ) ) return command.id;
+		}
+	}
+	return null;
 }
 
 // take( words, final ) returns the words that are not part of a command, for
@@ -253,8 +282,23 @@ export function matchCommand( words ) {
 // onWake() fires as soon as the wake word is heard, so the speaker knows
 // it's listening; onMiss( words ) when a short phrase after it isn't a
 // command.
-export function createCommandListener( { onCommand, onWake = () => {}, onMiss = () => {}, isPaused = () => false, wakeWord = "prompter" } ) {
-	const WAKE = new Set( ( WAKE_WORDS[wakeWord] ?? WAKE_WORDS.prompter ).heard );
+export function createCommandListener( {
+	onCommand,
+	onWake = () => {},
+	onMiss = () => {},
+	isPaused = () => false,
+	wakeWord = "prompter",
+	commandWords = [], // Settings > Voice > Your words > Command words
+	soundAlike = false
+} ) {
+	const extra = commandExtras( commandWords );
+	const wakeKey = WAKE_WORDS[wakeWord] ? wakeWord : "prompter";
+	const WAKE = new Set( [ ...WAKE_WORDS[wakeKey].heard, ...( extra.wake ?? [] ).filter( w => !w.includes( " " ) ) ] );
+	// Your two- or three-word forms of the wake word ("prompt her").
+	const wakePhrases = ( extra.wake ?? [] ).filter( w => w.includes( " " ) );
+	const isWake = w => WAKE.has( w ) || ( soundAlike && soundsLike( w, wakeKey ) );
+	const options = { extra, soundAlike };
+	let recent = []; // the last words passed on, to spot a wake phrase
 	let held = null; // words from the wake word on, waiting for the phrase to end
 	let heldAt = 0;
 	let phrase = []; // every word of the phrase so far
@@ -275,19 +319,30 @@ export function createCommandListener( { onCommand, onWake = () => {}, onMiss = 
 		if ( final && !held && isPaused() ) {
 			const said = whole.map( normalize ).filter( Boolean ).join( " " );
 			const go = COMMANDS.find( c => c.id === "go" );
-			if ( go.phrases.includes( said ) ) {
+			if ( go.phrases.includes( said ) || extra.go?.includes( said ) ) {
 				onCommand( "go" );
 				return [];
 			}
 		}
 		const pass = [];
 		for ( const word of words ) {
+			const said = normalize( word );
+			const phraseLength = wakePhrases.length
+				? [ 3, 2 ].find( n => recent.length >= n - 1 && wakePhrases.includes( [ ...recent.slice( 1 - n ), said ].join( " " ) ) )
+				: undefined;
 			if ( held ) held.push( word );
-			else if ( WAKE.has( normalize( word ) ) ) {
+			else if ( isWake( said ) || phraseLength ) {
+				// A wake phrase's first words were passed on already: take back
+				// the ones still in this chunk.
+				for ( let n = 1; phraseLength && n < phraseLength && pass.length; n++ ) pass.pop();
 				held = [ word ];
 				heldAt = Date.now();
+				recent = [];
 				onWake();
-			} else pass.push( word );
+			} else {
+				pass.push( word );
+				recent = [ ...recent, said ].slice( -2 );
+			}
 			// A long run after the wake word isn't a command: let it go.
 			if ( held && held.length > 5 ) {
 				pass.push( ...held );
@@ -300,7 +355,7 @@ export function createCommandListener( { onCommand, onWake = () => {}, onMiss = 
 			return pass;
 		if ( held && ( final || Date.now() - heldAt > 4000 ) ) {
 			const n = final ? sectionNumber( held.slice( 1 ) ) : null;
-			const id = final && !n ? matchCommand( held.slice( 1 ) ) : null;
+			const id = final && !n ? matchCommand( held.slice( 1 ), options ) : null;
 			if ( n ) onCommand( "section", n );
 			else if ( id ) onCommand( id );
 			else {

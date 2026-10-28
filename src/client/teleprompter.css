@@ -2071,6 +2071,26 @@ body.edge-shadow #md {
 	min-width: 0;
 }
 
+/* Long lists scroll inside the tab instead of growing it. */
+#words-list,
+#command-words-list,
+#words-suggestions {
+	max-height: 168px; /* about four rows */
+	overflow-y: auto;
+	padding-right: 4px;
+}
+
+.words-heading {
+	margin: 0.9em 0 0.2em;
+	font-size: 13px;
+	font-weight: 600;
+	color: #e0e0e0;
+}
+
+.word-row select {
+	min-width: 0;
+}
+
 .word-row .wf-remove {
 	padding: 0.2em 0.6em;
 }

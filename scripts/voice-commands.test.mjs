@@ -126,3 +126,27 @@ assert.deepEqual( take6( [ "COMPUTER", "PAUSE" ], true ), [] );
 assert.deepEqual( take6( [ "PROMPTER", "PAUSE" ], true ), [ "PROMPTER", "PAUSE" ], "the old word is just a word now" );
 assert.deepEqual( got6, [ "pause" ] );
 console.log( "wake word choice passes" );
+
+// Your command words (Settings > Voice > Your words) and sound-alikes.
+const mine = [ { id: "wake", heard: [ "prompt her", "trumpeter" ] }, { id: "keeper", heard: "cheaper" }, { id: "go", heard: "gogo" } ];
+assert.equal( matchCommand( [ "cheaper" ] ), null );
+assert.equal( matchCommand( [ "cheaper" ], { extra: { keeper: [ "cheaper" ] } } ), "keeper" );
+assert.equal( matchCommand( [ "slowa" ], { soundAlike: true } ), "slower" );
+assert.equal( matchCommand( [ "banana" ], { soundAlike: true } ), null );
+const got7 = [];
+const take7 = createCommandListener( { onCommand: id => got7.push( id ), commandWords: mine } );
+assert.deepEqual( take7( [ "TRUMPETER", "CHEAPER" ], true ), [] );
+assert.deepEqual( take7( [ "PROMPT", "HER", "PAUSE" ], true ), [] );
+assert.deepEqual( take7( [ "PROMPT" ], false ), [ "PROMPT" ] );
+assert.deepEqual( take7( [ "HER", "MARKER" ], true ), [], "a wake phrase split across chunks" );
+assert.deepEqual( take7( [ "I", "PROMPT", "HER", "TO", "SPEAK", "UP", "EVERY", "DAY" ], true ).length > 0, true );
+assert.deepEqual( got7, [ "keeper", "pause", "marker" ] );
+// Sound-alike wake word: off unless asked for.
+const got8 = [];
+const take8 = createCommandListener( { onCommand: id => got8.push( id ), soundAlike: true } );
+assert.deepEqual( take8( [ "PROMPTA", "PAUSE" ], true ), [] );
+assert.deepEqual( take8( [ "THE", "PROMOTION", "WAS", "GREAT" ], true ), [ "THE", "PROMOTION", "WAS", "GREAT" ] );
+assert.deepEqual( got8, [ "pause" ] );
+const take9 = createCommandListener( { onCommand: () => assert.fail( "no sound-alike unless asked" ) } );
+take9( [ "PROMPTA", "PAUSE" ], true );
+console.log( "your command words and sound-alikes pass" );

@@ -94,7 +94,8 @@ const defaultSettings = {
 	wakeWord: "prompter", // prompter, computer, teleprompter or director
 	// Settings > Voice > Your words: [{ word: "Moshe", heard: [ "marsha" ] }]
 	wordFixes: [],
-	soundAlike: true, // ...and words that sound like script words count as them
+	soundAlike: true, // ...and words that sound like script words or commands count as them
+	commandWords: [], // ...and your own forms of the wake word and commands: [{ id: "wake", heard: [ … ] }]
 	steadyWpm: 140,
 	countdown: 3,
 	slate: "off", // at the start of each take: "beep" (flash and beep), "flash" or "off"

@@ -220,7 +220,8 @@ export async function startAutoScroll( {
 	isPaused = null, // also counts as paused for a bare "go" (a {stop} in steady scrolling)
 	followScript = true,
 	wordFixes = [], // Settings > Voice > Your words (word-fixes.js)
-	soundAlike = true, // ...and words that sound like script words (sound-alike.js)
+	soundAlike = true, // ...and words that sound like script words or commands (sound-alike.js)
+	commandWords = [], // Settings > Voice > Your words > Command words
 	audioDeviceId
 } ) {
 	if ( activeCtx ) {
@@ -238,7 +239,7 @@ export async function startAutoScroll( {
 	const wordFixer = createWordFixer( wordFixes, wordIndex.words );
 	const aligner = createAligner( wordIndex.words, { synonyms: wordFixer.synonyms, soundAlike } );
 	aligner.setPosition( findWordAtViewport( wordIndex.ranges ) );
-	const takeCommands = onCommand ? createCommandListener( { onCommand, onWake, onMiss, wakeWord, isPaused: () => held || !!isPaused?.() } ) : null;
+	const takeCommands = onCommand ? createCommandListener( { onCommand, onWake, onMiss, wakeWord, commandWords, soundAlike, isPaused: () => held || !!isPaused?.() } ) : null;
 	let held = false; // "Prompter, pause": keep listening, stop following
 
 	const stream = await openMic( audioDeviceId, onStatus );

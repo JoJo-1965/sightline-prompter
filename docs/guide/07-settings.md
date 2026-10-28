@@ -31,8 +31,8 @@ of each take.
 Speech recognition (on this computer, or Deepgram), the speech model download,
 voice commands and their **wake word** (Prompter, Computer, Teleprompter or
 Director), voice responsiveness and the microphone, and **Your words**: names
-and words it mishears, with sound-alike matching, suggestions from what it
-heard and **Teach…**. See [Scrolling and voice](03-scrolling-and-voice.md)
+and words it mishears, and your own forms of the wake word and commands,
+with sound-alike matching, suggestions from what it heard and **Teach…**. See [Scrolling and voice](03-scrolling-and-voice.md)
 and [Your words](03-scrolling-and-voice.md#your-words).
 
 ## Display

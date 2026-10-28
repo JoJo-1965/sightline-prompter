@@ -28,7 +28,7 @@ import {
 import { decorateScript } from "./decorate.js";
 import { readDirectives, parseDirective, parseDuration } from "./directives.js";
 import { createTakeLog } from "./take-log.js";
-import { COMMAND_HELP, wakeLabel } from "./voice-commands.js";
+import { COMMAND_HELP, COMMANDS, wakeLabel } from "./voice-commands.js";
 import { heardForms, normalizeWord } from "./word-fixes.js";
 import {
 	indexSentences,
@@ -1122,6 +1122,7 @@ async function beginVoice( engine, deepgramKey ) {
 			onHeard: entry => window.electron.appendHeardLog( entry ),
 			wordFixes: settings.wordFixes ?? [],
 			soundAlike: settings.soundAlike !== false,
+			commandWords: settings.commandWords ?? [],
 			onCommand: settings.voiceCommands === "off" ? null : runVoiceCommand,
 			onWake: voiceWake,
 			onMiss: voiceMiss,
@@ -1221,6 +1222,8 @@ function syncCommandListening() {
 					onWake: voiceWake,
 					onMiss: voiceMiss,
 					wakeWord: settings.wakeWord ?? "prompter",
+					commandWords: settings.commandWords ?? [],
+					soundAlike: settings.soundAlike !== false,
 					isPaused: () => cuePaused
 				} );
 				commandListening = true;
@@ -2003,6 +2006,7 @@ async function openSettings() {
 	field( "set-wake-word" ).value = settings.wakeWord ?? "prompter";
 	field( "set-sound-alike" ).checked = settings.soundAlike !== false;
 	fillWordRows( settings.wordFixes ?? [] );
+	fillCommandRows( settings.commandWords ?? [] );
 	showVoiceEngineFields();
 	window.electron.speechModelStatus();
 	field( "set-deepgram-key" ).value = "";
@@ -2177,7 +2181,11 @@ function addHeardForms( word, forms ) {
 	return row;
 }
 
-field( "words-add" ).addEventListener( "click", () => addWordRow().querySelector( ".wf-word" ).focus() );
+field( "words-add" ).addEventListener( "click", () => {
+	const row = addWordRow();
+	row.scrollIntoView( { block: "nearest" } );
+	row.querySelector( ".wf-word" ).focus();
+} );
 
 field( "words-suggest" ).addEventListener( "click", async () => {
 	const box = field( "words-suggestions" );
@@ -2213,7 +2221,7 @@ field( "words-suggest" ).addEventListener( "click", async () => {
 // Teach…: listen for a few seconds while the word is said, with a pause
 // between each time, and add each phrase heard. Local speech only.
 async function teachWord( row ) {
-	const word = row.querySelector( ".wf-word" ).value.trim();
+	const word = row.spokenWord?.() ?? row.querySelector( ".wf-word" ).value.trim();
 	if ( !word ) {
 		showToast( "Type the word first", 2000 );
 		return;
@@ -2270,10 +2278,77 @@ async function teachWord( row ) {
 	} else if ( !forms.length ) {
 		showToast( `It heard “${ word }” right every time`, 3000 );
 	} else {
-		addHeardForms( word, forms );
+		if ( row.addForms ) row.addForms( forms );
+		else addHeardForms( word, forms );
 		showToast( `Added: ${ forms.join( ", " ) }`, 3000 );
 	}
 }
+
+// Command words: your own forms of the wake word and the commands.
+const commandWordsList = field( "command-words-list" );
+// What to say for each, in the list and for Teach….
+const COMMAND_SAY = { next: "next section", top: "from the top", retake: "again", scrap: "scrap that", help: "what can I say" };
+const commandSay = id => ( id === "wake" ? wakeLabel( settings.wakeWord ) : COMMAND_SAY[id] ?? COMMANDS.find( c => c.id === id )?.phrases[0] ?? id );
+
+function addCommandRow( id = "wake", heard = [] ) {
+	const row = document.createElement( "div" );
+	row.className = "word-row";
+	const select = document.createElement( "select" );
+	select.className = "wf-command";
+	select.setAttribute( "aria-label", "Wake word or command" );
+	const group = ( label, values ) => {
+		const g = Object.assign( document.createElement( "optgroup" ), { label } );
+		for ( const value of values ) g.append( new Option( commandSay( value ), value, false, value === id ) );
+		select.append( g );
+	};
+	group( "Wake word", [ "wake" ] );
+	group( "Commands", COMMANDS.map( c => c.id ) );
+	const heardInput = Object.assign( document.createElement( "input" ), {
+		type: "text", className: "wf-heard", value: heardForms( heard ).join( ", " ),
+		placeholder: "What it hears, such as prompt her"
+	} );
+	heardInput.setAttribute( "aria-label", "What it hears instead" );
+	const teach = Object.assign( document.createElement( "button" ), {
+		type: "button", className: "wf-teach", textContent: "Teach…",
+		title: "Say it a few times, with a pause between, and it adds what it hears"
+	} );
+	teach.addEventListener( "click", () => teachWord( row ) );
+	const remove = Object.assign( document.createElement( "button" ), {
+		type: "button", className: "wf-remove", textContent: "×", title: "Remove"
+	} );
+	remove.setAttribute( "aria-label", "Remove this command word" );
+	remove.addEventListener( "click", () => {
+		row.remove();
+		wordsChanged();
+	} );
+	row.spokenWord = () => commandSay( select.value );
+	row.addForms = ( forms ) => {
+		const target = normalizeWord( commandSay( select.value ) );
+		heardInput.value = heardForms( [ ...heardForms( heardInput.value ), ...forms ] )
+			.filter( f => f.replace( / /g, "" ) !== target ).join( ", " );
+		wordsChanged();
+	};
+	row.append( select, Object.assign( document.createElement( "span" ), { textContent: "heard as" } ), heardInput, teach, remove );
+	commandWordsList.append( row );
+	return row;
+}
+
+function fillCommandRows( entries ) {
+	commandWordsList.innerHTML = "";
+	for ( const entry of entries ) addCommandRow( entry.id, entry.heard );
+}
+
+function readCommandRows() {
+	return [ ...commandWordsList.querySelectorAll( ".word-row" ) ]
+		.map( row => ( { id: row.querySelector( ".wf-command" ).value, heard: heardForms( row.querySelector( ".wf-heard" ).value ) } ) )
+		.filter( entry => entry.heard.length );
+}
+
+field( "command-words-add" ).addEventListener( "click", () => {
+	const row = addCommandRow();
+	row.scrollIntoView( { block: "nearest" } );
+	row.querySelector( "select" ).focus();
+} );
 
 function saveSettingsPage( close = true ) {
 	window.electron.saveSettings( {
@@ -2283,6 +2358,7 @@ function saveSettingsPage( close = true ) {
 		wakeWord: field( "set-wake-word" ).value,
 		soundAlike: field( "set-sound-alike" ).checked,
 		wordFixes: readWordRows(),
+		commandWords: readCommandRows(),
 		steadyWpm: numberValue( "set-steady-wpm", 60, 300, settings.steadyWpm ),
 		countdown: numberValue( "set-countdown", 0, 10, settings.countdown ),
 		slate: field( "set-slate" ).value,
