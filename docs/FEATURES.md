@@ -105,6 +105,9 @@ The whole workflow is in the guide:
   Shift+K) to rate a take; the log picks the take to use for each section.
   In voice mode it also records **when you said each word**, for cutting on
   words and sentences.
+- **Skills for AI agents:** `sightline-script` and `sightline-session` for
+  Claude Code and Codex, a `sightline` command for driving the app, and setup
+  steps for ChatGPT, Claude and Gemini ([AI-AGENTS.md](AI-AGENTS.md)).
 - **Edit pack** (File > Export Edit Pack): the take log, word timings,
   sentences, edit marks (sentence starts, pauses, re-reads, skipped words)
   and captions in the script's own wording, in one folder with a brief for

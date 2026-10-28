@@ -201,6 +201,7 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ### Next release
 
+- **Skills for Claude Code and Codex, and a setup guide for every AI** ([docs/AI-AGENTS.md](docs/AI-AGENTS.md)): `skills/sightline-script` writes and checks scripts to the Sightline spec; `skills/sightline-session` loads scripts into slots, controls the prompter, and builds and uses the edit pack. They use a new command, `node scripts/sightline.mjs` (status, open, load, slot, command, logs, takelog, pack), which reads the API token itself and never prints it. ChatGPT, Claude and Gemini projects get steps for writing and for editing from uploaded files
 - **Edit pack** (File > Export Edit Pack…, also ☰ > Playback): the take log turned into what an editor or an AI editing agent cuts with, in one new folder: every word you said with its start and end, every sentence of every take (with any words you missed), edit marks (sentence starts, long pauses, re-reads, skipped words, markers), and captions in your script's own wording as SRT and VTT, with a README brief for editing agents ([docs/EDIT-PACK.md](docs/EDIT-PACK.md)). The take log now also notes each re-read and keeps each take's sentences. Words and captions come from voice mode (roadmap 26)
 - **Export the take log…** in the ☰ menu, and the **Export take log…** button in the take summary, now work. Before, only File > Export Take Log did
 - **On air is the see-through one now:** off air, the prompter is an ordinary solid window (Backing 100% to start with); on air (scrolling, held at a stop, or the On air button lit) the backing goes almost clear (Background on air, 7% to start with), so you can see your slides or the call behind the words while you read. 1.0.2 had it the other way round. Levels you've already set are kept
@@ -307,7 +308,7 @@ starts. Earlier version numbers belong to the original project.
 
 **AI and remote control** (off by default)
 
-- An optional HTTP API on `127.0.0.1` so an AI assistant or a local script can open or write scripts, switch slots, play, pause, change speed and jump sections
+- An optional HTTP API on `127.0.0.1` so an AI assistant or a local script can open or write scripts, switch slots, play, pause, change speed and jump sections. `node scripts/sightline.mjs` wraps it for AI agents, and [docs/AI-AGENTS.md](docs/AI-AGENTS.md) shows how to set up Claude Code, Codex, ChatGPT, Claude or Gemini
 - Each request needs a secret token. Requests from web pages are refused, and the API can't switch itself on
 - When the API is on, its address and token are written to `remote-control.json` in the app's settings folder:
   - Windows: `%APPDATA%\Sightline Prompter`

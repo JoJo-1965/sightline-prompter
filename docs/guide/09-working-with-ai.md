@@ -10,7 +10,12 @@ afterwards for the edit.
 | ---------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------- |
 | **Write**  | Writes the script, with sections, target times, stops and countdowns | Gives the AI its instructions (the AI Script Prompt) and checks what comes back       |
 | **Record** | Loads the script and runs the prompter, if you let it             | Follows your voice, holds at every stop, counts down every pause, logs every take     |
-| **Edit**   | Reads the take log and chooses the takes                           | Saves each take's start and end, retakes, markers and your keeper or scrap rating    |
+| **Edit**   | Reads the edit pack, chooses the takes and plans the cuts          | Saves every take, the words you said and when, and builds the edit pack               |
+
+**Setting your AI up:** Claude Code and Codex can do all three, with two
+ready-made skills and a command for driving Sightline; ChatGPT, Claude or
+Gemini in a browser can write scripts and read the files you upload. How to
+set up each one is in [Setting up your AI](../AI-AGENTS.md).
 
 ## 1. Write: scripts with directions in them
 
@@ -86,13 +91,17 @@ markers and its rating. In voice mode it also records when you said each
 word of the script, so an editing assistant can cut on a word or a sentence. The log picks the take to use for each section (your
 last keeper, or else your last complete take).
 
-**File > Export Take Log** saves it as JSON, for an AI editor or edit tool,
-and CSV, for a spreadsheet. **File > Show Take Logs Folder** shows where the
+**File > Export Edit Pack…** saves everything an editing assistant needs in
+one folder: the take log, every word with its start and end, every sentence
+(with any words you missed), edit marks (sentence starts, pauses, re-reads,
+skipped words) and captions in your script's wording, with a README that
+tells the AI how to use them. See [the edit pack](05-recording-a-take.md#the-edit-pack).
+**File > Export Take Log** saves just the log, as JSON and CSV. **File > Show Take Logs Folder** shows where the
 logs are kept, one per script per day. The columns are described in
 [Recording a take](05-recording-a-take.md#the-take-log).
 
-Give the JSON to your editing assistant with the recording and ask it to cut
-the chosen take of each section together, in script order. With the
+Give the edit pack to your editing assistant with the recording and ask it
+to cut the chosen take of each section together, in script order. With the
 [slate](05-recording-a-take.md#the-slate) turned on, every take's times line
 up with the recording from the first beep or flash.
 
@@ -100,9 +109,6 @@ up with the recording from the first beep or flash.
 
 The [roadmap](../../ROADMAP.md) takes this further, in this order:
 
-- **An edit pack** (26): the word timings Sightline now records, turned into
-  a transcript per take, edit marks and captions, in one folder an editing
-  agent can assemble from.
 - **Script-controlled listening** (35): `{listen: off}` before an ad-lib or a
   demo turns the microphone off, `{listen: on}` turns it back on, and
   `{prompter: …}` lets the script give the prompter a command.
