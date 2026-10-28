@@ -156,7 +156,7 @@ no scrolling.
 
 The sample **Notes, a page at a time** (Script > Sample scripts) shows it.
 
-![Talking points](images/talking-points.png)
+![Notes: a page at a time](images/talking-points.png)
 
 **Space** starts and stops the talk timer. **→** and **Page Down** go to the
 next page, and **←** and **Page Up** go back. Say "Prompter, next page" or
