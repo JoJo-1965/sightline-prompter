@@ -14,7 +14,7 @@
 		"build": "pnpm dlx @electron/packager --overwrite ./ --out ./dist --ignore=\"/node_modules/\\.ignored\" --ignore=\"/node_modules/(electron|@electron|eslint)\"",
 		"lint": "eslint --fix",
 		"check-script": "node scripts/check-script.mjs",
-		"test": "node scripts/targets.test.mjs && node scripts/fit.test.mjs && node scripts/voice-commands.test.mjs && node scripts/pdf.test.mjs && node scripts/take-log.test.mjs && node scripts/edit-pack.test.mjs && node scripts/version.test.mjs",
+		"test": "node scripts/targets.test.mjs && node scripts/fit.test.mjs && node scripts/voice-commands.test.mjs && node scripts/pdf.test.mjs && node scripts/take-log.test.mjs && node scripts/edit-pack.test.mjs && node scripts/version.test.mjs && node scripts/heard-report.test.mjs",
 		"dist": "pnpm build:editor && electron-builder --publish never",
 		"check-docs": "node scripts/check-docs-sync.mjs"
 	},

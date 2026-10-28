@@ -722,6 +722,28 @@ const createWindow = ( state ) => {
 		}
 	}
 
+	// The heard log: everything voice scrolling heard, next to the script words
+	// it was matched with, one line per chunk, per script per day, in the
+	// heard-logs folder. Used to find words it keeps mishearing (roadmap 20).
+	const heardLogDir = path.join( app.getPath( "userData" ), "heard-logs" );
+	let heardQueue = Promise.resolve();
+	ipcMain.on( "appendHeardLog", ( _event, entry ) => {
+		if ( !currentFilePath || !entry || typeof entry.heard !== "string" ) return;
+		const line = JSON.stringify( {
+			t: new Date().toISOString(),
+			heard: entry.heard.slice( 0, 500 ),
+			final: !!entry.final,
+			from: entry.from,
+			to: entry.to,
+			script: String( entry.script ?? "" ).slice( 0, 500 )
+		} ) + "\n";
+		const file = path.join( heardLogDir, `${ scriptName( currentFilePath ) } ${ today() }.jsonl` );
+		heardQueue = heardQueue
+			.then( () => fs.mkdir( heardLogDir, { recursive: true } ) )
+			.then( () => fs.appendFile( file, line ) )
+			.catch( err => console.log( "Heard log:", err.message ) );
+	} );
+
 	ipcMain.on( "exportTakeLog", () => exportTakeLog() );
 	ipcMain.on( "exportEditPack", () => exportEditPack() );
 

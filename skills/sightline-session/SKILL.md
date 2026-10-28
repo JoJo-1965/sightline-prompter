@@ -59,6 +59,9 @@ script per day, saved as it goes. These read the files, so they work with the
 app closed:
 
 - `logs`: every take log, with its path.
+- `heard ["<script name>"] [yyyy-mm-dd]`: what voice scrolling heard, lined
+  up with the script, and the words it heard in place of script words, most
+  often first. Use it to suggest corrections for words it keeps mishearing.
 - `takelog ["<script name>"] [yyyy-mm-dd]`: the path of one log (default: the
   open script, today).
 - `pack ["<script name>"] [yyyy-mm-dd] [output folder]`: builds the **edit

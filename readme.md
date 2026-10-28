@@ -207,6 +207,7 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ### Next release
 
+- **Heard log** (voice scrolling): every word the speech engine hears is logged next to the script words it was matched with, one file per script per day in the `heard-logs` folder, never leaving your computer. `node scripts/sightline.mjs heard` (or `node scripts/heard-report.mjs <file>`) lists the words heard in place of script words, most often first, to find mishearings worth correcting (roadmap 20, first part)
 - **Move Settings and the panels:** drag Settings, the Layout panel or the Voice panel by its title to anywhere in the window, to see the script while you change things. Each opens where you left it; double-click the title to put it back
 - **Say "Section 3" to go there:** a spoken slate such as "Section one" (with or without "Prompter") now takes you to the start of that section; saying the section you're already in counts as a retake. Before, the words were ignored, because the slate line is a note in the script
 - **"Prompter, reset"** goes back to the top and also puts the speed back to normal and clears the pacing clock, for a fresh run. "From the top" still just goes back to the start

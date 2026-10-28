@@ -51,6 +51,17 @@ computer and is never written to exported settings files.
 **Voice responsiveness** sets how quickly the script glides to catch up with
 you. Higher is snappier, lower is smoother.
 
+### What it heard
+
+While voice scrolling listens, Sightline keeps a **heard log**: every word
+the speech engine heard, next to the script words it matched them with, one
+file per script per day in the `heard-logs` folder in Sightline's settings
+folder. It never leaves your computer. It's there to find the words voice
+scrolling keeps mishearing (a name, a technical term), so they can be
+corrected. An AI assistant can read it with `node scripts/sightline.mjs heard`
+(see [Setting up your AI](10-setting-up-your-ai.md)), which lists the words
+heard in place of script words, most often first.
+
 ## Voice commands: "Prompter, …"
 
 Say **"Prompter"**, then a command, then stop for a moment. The command only

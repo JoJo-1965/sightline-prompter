@@ -14,6 +14,7 @@
 //   node scripts/sightline.mjs logs                           (lists the take logs)
 //   node scripts/sightline.mjs takelog [script name] [date]   (prints the take log's path)
 //   node scripts/sightline.mjs pack [script name] [date] [output folder]
+//   node scripts/sightline.mjs heard [script name] [date]       (what voice scrolling misheard)
 //
 // logs, takelog and pack read the files directly, so they work with the app
 // closed. Dates are yyyy-mm-dd; the default is today and the current script.
@@ -23,6 +24,7 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { editPack } from "../src/client/edit-pack.js";
+import { heardReport, printHeardReport } from "./heard-report.mjs";
 
 const here = path.dirname( fileURLToPath( import.meta.url ) );
 
@@ -124,6 +126,20 @@ try {
 		case "takelog":
 			console.log( await findTakeLog( args[0], args[1] ) );
 			break;
+		case "heard": {
+			let script = args[0];
+			if ( !script ) {
+				const status = await api( "GET", "/status" );
+				if ( !status.file ) fail( "No script is open in Sightline. Name one: heard \"My script\"" );
+				script = path.basename( status.file, path.extname( status.file ) );
+			}
+			const day = args[1] ?? today();
+			const file = path.join( settingsFolder(), "heard-logs", `${ script.replace( /\.(md|txt|jsonl?)$/i, "" ) } ${ day }.jsonl` );
+			if ( !fs.existsSync( file ) ) fail( `No heard log for "${ script }" on ${ day }. It's written while voice scrolling listens.` );
+			console.log( file );
+			printHeardReport( heardReport( fs.readFileSync( file, "utf8" ).split( /\r?\n/ ) ) );
+			break;
+		}
 		case "pack": {
 			const file = await findTakeLog( args[0], args[1] );
 			const data = JSON.parse( fs.readFileSync( file, "utf8" ) );

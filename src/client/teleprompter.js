@@ -1077,6 +1077,7 @@ async function beginVoice( engine, deepgramKey ) {
 			},
 			onScroll: handleAutoScrollPosition,
 			onFollow: logSpokenWords,
+			onHeard: entry => window.electron.appendHeardLog( entry ),
 			onCommand: settings.voiceCommands === "off" ? null : runVoiceCommand,
 			onWake: voiceWake,
 			onMiss: voiceMiss

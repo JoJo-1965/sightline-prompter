@@ -211,6 +211,7 @@ export async function startAutoScroll( {
 	onStatus,
 	onScroll,
 	onFollow = null, // ({ from, to, start, end, ranges }): script words passed, and when they were said
+	onHeard = null, // ({ heard, final, from, to, script }): every chunk heard, for the heard log
 	onCommand = null,
 	onWake = () => {}, // the wake word was heard
 	onMiss = () => {}, // ( words ): what followed it wasn't a command
@@ -238,13 +239,32 @@ export async function startAutoScroll( {
 
 	const onWords = ( heard, transcript, final, at = null ) => {
 		const heardAt = Date.now();
+		const before = aligner.currentPosition();
+		// What was heard, with the script words around where it landed, so
+		// mishearings can be found later (the heard log).
+		const logHeard = ( after ) => {
+			if ( !onHeard || !heard.length ) return;
+			const from = Math.max( 0, Math.min( before, after ) - 2 );
+			const to = Math.min( wordIndex.ranges.length - 1, Math.max( before, after ) + 2 );
+			onHeard( {
+				heard: heard.join( " " ),
+				final,
+				from,
+				to,
+				script: wordIndex.ranges.slice( from, to + 1 ).map( r => r.toString().trim() ).join( " " )
+			} );
+		};
 		const words = takeCommands ? takeCommands( heard, final ) : heard;
-		if ( !followScript || held || !words.length ) return;
+		if ( !followScript || held || !words.length ) {
+			logHeard( before );
+			return;
+		}
 		const prevPos = aligner.currentPosition();
 		for ( const w of words ) {
 			aligner.addRecognized( w );
 		}
 		const newPos = aligner.step();
+		logHeard( newPos );
 		const moved = newPos !== prevPos;
 		if ( moved ) {
 			onScroll?.( newPos, wordIndex.ranges );
