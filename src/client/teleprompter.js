@@ -28,6 +28,7 @@ import {
 import { decorateScript } from "./decorate.js";
 import { readDirectives } from "./directives.js";
 import { createTakeLog } from "./take-log.js";
+import { COMMAND_HELP } from "./voice-commands.js";
 import {
 	indexSentences,
 	scriptSentences,
@@ -1132,7 +1133,8 @@ const COMMAND_LABELS = {
 	bigger: "bigger",
 	smaller: "smaller",
 	keeper: "keeper",
-	scrap: "scrap that"
+	scrap: "scrap that",
+	help: "what can I say"
 };
 
 let commandListening = false;
@@ -1212,9 +1214,51 @@ function voiceMiss( words ) {
 	showToast( `Didn't catch that: “${ words.join( " " ) }”`, 2500 );
 }
 
+// "Prompter, what can I say?": every command on a card, until the next
+// command, a click, Esc or 15 seconds.
+function showVoiceHelp() {
+	let card = document.getElementById( "voice-help" );
+	if ( !card ) {
+		card = document.createElement( "div" );
+		card.id = "voice-help";
+		card.setAttribute( "role", "dialog" );
+		card.setAttribute( "aria-label", "Voice commands" );
+		const title = document.createElement( "h4" );
+		title.textContent = "Say “Prompter”, then:";
+		const list = document.createElement( "dl" );
+		for ( const [ say, does ] of COMMAND_HELP ) {
+			const dt = document.createElement( "dt" );
+			dt.textContent = say;
+			const dd = document.createElement( "dd" );
+			dd.textContent = does;
+			list.append( dt, dd );
+		}
+		card.append( title, list );
+		card.addEventListener( "click", hideVoiceHelp );
+		hud.appendChild( card );
+	}
+	card.classList.remove( "hidden" );
+	clearTimeout( showVoiceHelp.timer );
+	showVoiceHelp.timer = setTimeout( hideVoiceHelp, 15000 );
+}
+
+function hideVoiceHelp() {
+	clearTimeout( showVoiceHelp.timer );
+	document.getElementById( "voice-help" )?.classList.add( "hidden" );
+}
+
+document.addEventListener( "keydown", ( e ) => {
+	if ( e.key === "Escape" ) hideVoiceHelp();
+} );
+
 function runVoiceCommand( id ) {
 	if ( isEditMode ) return;
+	hideVoiceHelp();
 	showToast( `Heard: “Prompter, ${ COMMAND_LABELS[id] ?? id }”` );
+	if ( id === "help" ) {
+		showVoiceHelp();
+		return;
+	}
 	const voice = autoScrollActive && autoScrollHandle;
 	if ( id === "pause" ) {
 		if ( holdPauseCountdown() ) return;

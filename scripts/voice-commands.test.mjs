@@ -90,3 +90,9 @@ assert.deepEqual( woke, [ "wake", "wake", "command:go" ] );
 take4( [ "THE", "PROMPTER", "SHOWS", "EVERY", "WORD", "YOU", "READ" ], true );
 assert.deepEqual( missed, [ "BANANA" ], "a long script line isn't a miss" );
 console.log( "wake and miss pass" );
+
+// "Prompter, what can I say?" asks for the list.
+assert.equal( matchCommand( [ "what", "can", "I", "say" ] ), "help" );
+assert.equal( matchCommand( [ "help" ] ), "help" );
+assert.equal( matchCommand( [ "commands" ] ), "help" );
+console.log( "help command passes" );

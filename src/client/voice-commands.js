@@ -133,7 +133,37 @@ export const COMMANDS = [
 		]
 	},
 	{ id: "bigger", phrases: [ "bigger", "larger" ] },
-	{ id: "smaller", phrases: [ "smaller" ] }
+	{ id: "smaller", phrases: [ "smaller" ] },
+	{
+		id: "help",
+		phrases: [
+			"what can i say",
+			"what can i say now",
+			"what do i say",
+			"help",
+			"commands",
+			"show commands",
+			"list commands",
+			"what are the commands"
+		]
+	}
+];
+
+// What each command does, for the "Prompter, what can I say?" card and the
+// help: [ what to say, what it does ].
+export const COMMAND_HELP = [
+	[ "pause", "Pause (stop, hold, wait)" ],
+	[ "go", "Start, or carry on (carry on, continue)" ],
+	[ "slower · faster", "Change the speed" ],
+	[ "back", "Back to the start of this section" ],
+	[ "next section", "On to the next section" ],
+	[ "from the top", "Back to the start" ],
+	[ "again", "A retake: back to the start of this section" ],
+	[ "marker", "Drop a marker for the edit" ],
+	[ "keeper · scrap that", "Rate this take" ],
+	[ "resync", "Voice mode: find your place again" ],
+	[ "bigger · smaller", "Text size" ],
+	[ "what can I say", "This list" ]
 ];
 
 const normalize = word => word.toLowerCase().replace( /[^\w]/g, "" );

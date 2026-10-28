@@ -1006,6 +1006,49 @@ body.editing .panel {
 	display: none;
 }
 
+#voice-help {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	max-width: min(560px, 92vw);
+	padding: 16px 22px;
+	font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+	font-size: 15px;
+	color: #e8e8e8;
+	background: rgba(24, 26, 31, 0.96);
+	border: 1px solid rgba(255, 213, 74, 0.6);
+	border-radius: 10px;
+	z-index: 1400;
+	cursor: pointer;
+}
+
+#voice-help.hidden {
+	display: none;
+}
+
+#voice-help h4 {
+	margin: 0 0 10px;
+	font-size: 16px;
+	color: #ffd54a;
+}
+
+#voice-help dl {
+	display: grid;
+	grid-template-columns: max-content 1fr;
+	gap: 5px 18px;
+	margin: 0;
+}
+
+#voice-help dt {
+	font-weight: 600;
+}
+
+#voice-help dd {
+	margin: 0;
+	color: #b8bcc4;
+}
+
 #update-note {
 	position: fixed;
 	right: 16px;

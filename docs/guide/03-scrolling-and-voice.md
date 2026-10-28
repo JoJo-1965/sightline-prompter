@@ -77,6 +77,7 @@ that*, with the words it heard, so you can say it again.
 | **scrap that** (or bin it, bad take) | Marks that take to be thrown away |
 | **resync** (or find me) | Voice mode: if it has lost you, keep reading and it finds your place anywhere in the script |
 | **bigger** / **smaller** | Text size |
+| **what can I say** (or help, commands) | Shows every command on the prompter, until your next command, a click, Esc or 15 seconds |
 
 Choose when it listens on **Settings > Voice**, under **Voice commands**:
 

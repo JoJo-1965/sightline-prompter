@@ -70,7 +70,8 @@ export const SHORTCUTS = [
 	{
 		section: "Voice scroll sync",
 		keys: [
-			[ [ "Ctrl+Shift+V" ], "Voice panel: mode, speech recognition, microphone" ]
+			[ [ "Ctrl+Shift+V" ], "Voice panel: mode, speech recognition, microphone" ],
+			[ [ "“Prompter, what can I say?”" ], "Shows every voice command on the prompter" ]
 		]
 	},
 	{
