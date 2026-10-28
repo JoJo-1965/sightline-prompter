@@ -441,10 +441,6 @@ body.eye-line #md {
 }
 
 /* The Layout panel's controls, shown on the Layout tab. */
-:is(#set-layout-host, #set-reading-host, #set-recording-host) .lp-inline select {
-	width: auto;
-	min-width: 11em;
-}
 
 :is(#set-layout-host, #set-reading-host, #set-recording-host) .lp-check input {
 	width: auto;
@@ -788,6 +784,14 @@ body.controls-hidden * {
 	flex-direction: row;
 	align-items: center;
 	justify-content: space-between;
+}
+
+/* Every dropdown in a row the same width, so they line up. */
+.panel .lp-inline select,
+:is(#set-layout-host, #set-reading-host, #set-recording-host) .lp-inline select {
+	box-sizing: border-box;
+	width: 14.5em;
+	min-width: 0;
 }
 
 .panel input[type="range"],
@@ -1541,11 +1545,6 @@ body.editing #cb-progress-text {
 	width: 18px;
 }
 
-/* Keep the Align list in the same column as the number boxes. */
-#lp-align {
-	width: 72px;
-}
-
 .about-content {
 	max-height: calc(100vh - 40px);
 	overflow-y: auto;
@@ -1671,10 +1670,6 @@ body::-webkit-scrollbar,
 
 #toast.visible {
 	opacity: 1;
-}
-
-#lp-mirrored {
-	width: 110px;
 }
 
 /* Window-sized layer for everything pinned to the window; see applyMirror(). */
@@ -1906,11 +1901,6 @@ body.edge-shadow #md {
 	#on-air::before {
 		animation: none;
 	}
-}
-
-#lp-theme,
-#lp-font {
-	width: 160px;
 }
 
 /* --- Pacing light --- */
