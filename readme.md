@@ -326,7 +326,7 @@ starts. Earlier version numbers belong to the original project.
 - In-app menu grouped into Script, Playback, Display, Window, Settings and Help
 - Layout panel: text opacity, background opacity and text brightness, each set independently (none affects the controls), left/right and top/bottom margins (the text fades out near the window edges), line spacing, reading line, alignment, mirror and reading-line marker
 - Eye-line mode: a small window near the camera
-- Beam-splitter setup button: a solid black background, text dimmed to 70% and mirroring on, which stops bright light from the screen making the camera image look milky
+- Mirroring in one click: four pills in the Layout panel (→ not mirrored, ↔ left to right, ↕ top to bottom, ↔↕ both), also Ctrl+M and the Mirror button. For a clear camera image through beam-splitter glass, set Background to 100% and Text brightness to about 70%
 - Mirror the script horizontally, vertically or both, for any beam-splitter or reflector rig. `Ctrl+M` steps through Off → Horizontal → Vertical → Both. The whole prompter display is mirrored, controls included, so everything reads correctly in the reflection (this also fixes the control bar scrolling away while mirrored)
 - Minimise, maximise and full screen, which work properly on a transparent window
 - Keyboard shortcuts panel (`F1` or `?`) and an About page
