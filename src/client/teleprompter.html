@@ -236,11 +236,9 @@
       </label>
       <div class="lp-row lp-mirror-row">
         Mirror for a beam splitter (Ctrl+M)
-        <div class="mirror-pills" role="radiogroup" aria-label="Mirror">
-          <button type="button" role="radio" data-mirror="off" title="Not mirrored" aria-label="Not mirrored">→</button>
-          <button type="button" role="radio" data-mirror="horizontal" aria-label="Mirrored left to right" title="Mirrored left to right (most beam splitters)">↔</button>
-          <button type="button" role="radio" data-mirror="vertical" aria-label="Mirrored top to bottom" title="Mirrored top to bottom">↕</button>
-          <button type="button" role="radio" data-mirror="both" aria-label="Mirrored both ways" title="Both ways">↔↕</button>
+        <div class="mirror-pills" role="group" aria-label="Mirror">
+          <button type="button" data-axis="h" aria-pressed="false" title="Mirror left to right (most beam splitters). Click again to turn it off">↔ Left–right</button>
+          <button type="button" data-axis="v" aria-pressed="false" title="Mirror top to bottom. Click again to turn it off">↕ Up–down</button>
         </div>
       </div>
       <h5 class="lp-sub">Spacing</h5>
@@ -277,11 +275,9 @@
       </div>
       <div class="lp-row lp-mirror-row">
         Mirror (Ctrl+M)
-        <div class="mirror-pills" role="radiogroup" aria-label="Mirror">
-          <button type="button" role="radio" data-mirror="off" title="Not mirrored" aria-label="Not mirrored">→</button>
-          <button type="button" role="radio" data-mirror="horizontal" aria-label="Mirrored left to right" title="Mirrored left to right (most beam splitters)">↔</button>
-          <button type="button" role="radio" data-mirror="vertical" aria-label="Mirrored top to bottom" title="Mirrored top to bottom">↕</button>
-          <button type="button" role="radio" data-mirror="both" aria-label="Mirrored both ways" title="Both ways">↔↕</button>
+        <div class="mirror-pills" role="group" aria-label="Mirror">
+          <button type="button" data-axis="h" aria-pressed="false" title="Mirror left to right (most beam splitters). Click again to turn it off">↔ Left–right</button>
+          <button type="button" data-axis="v" aria-pressed="false" title="Mirror top to bottom. Click again to turn it off">↕ Up–down</button>
         </div>
       </div>
       <label class="lp-check"

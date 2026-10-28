@@ -63,11 +63,11 @@ always on top, the prompter monitor and eye-line mode.
 ## Mirroring
 
 For beam-splitter rigs, where you read the screen through angled glass,
-mirror the prompter. In the Layout panel (the Layout and Reading views), four
-pills set it in one click: **→** not mirrored, **↔** left to right (most beam
-splitters), **↕** top to bottom and **↔↕** both. The one in use is lit, and the
-panel stays open. **Ctrl+M** and the **Mirror** button on the control bar step
-through the same four. The control bar, the pad and the control window stay
+mirror the prompter. In the Layout panel (the Layout and Reading views), two
+buttons do it: **↔ Left–right** (most beam splitters) and **↕ Up–down**. Each
+stays lit while it's on; click it again to turn it off. Both lit mirrors both
+ways, and the panel stays open. **Ctrl+M** and the **Mirror** button on the
+control bar step through off, ↔, ↕ and both. The control bar, the pad and the control window stay
 readable.
 
 For the clearest camera image through the glass, set **Background** to 100%

@@ -271,11 +271,13 @@ window.addEventListener( "resize", applyMirror );
 const MIRROR_BADGES = { off: "", horizontal: " ↔", vertical: " ↕", both: " ↔↕" };
 
 function showMirrorButton() {
-	// The four pills (Off, ↔, ↕, ↔↕) in the Layout and Reading views.
-	for ( const pill of document.querySelectorAll( ".mirror-pills [data-mirror]" ) ) {
-		const on = pill.dataset.mirror === mirrored;
+	// The two toggles (↔ and ↕) in the Layout and Reading views.
+	for ( const pill of document.querySelectorAll( ".mirror-pills [data-axis]" ) ) {
+		const on = pill.dataset.axis === "h"
+			? mirrored === "horizontal" || mirrored === "both"
+			: mirrored === "vertical" || mirrored === "both";
 		pill.classList.toggle( "on", on );
-		pill.setAttribute( "aria-checked", String( on ) );
+		pill.setAttribute( "aria-pressed", String( on ) );
 	}
 	const button = document.getElementById( "cb-mirror" );
 	if ( !button ) return;
@@ -284,9 +286,15 @@ function showMirrorButton() {
 	button.setAttribute( "aria-label", `Mirror: ${ MIRROR_LABELS[mirrored] }` );
 }
 
+// Each toggle stays on until clicked again; both on mirrors both ways.
 document.addEventListener( "click", ( e ) => {
-	const pill = e.target.closest( ".mirror-pills [data-mirror]" );
-	if ( pill ) setMirrored( pill.dataset.mirror );
+	const pill = e.target.closest( ".mirror-pills [data-axis]" );
+	if ( !pill ) return;
+	let h = mirrored === "horizontal" || mirrored === "both";
+	let v = mirrored === "vertical" || mirrored === "both";
+	if ( pill.dataset.axis === "h" ) h = !h;
+	else v = !v;
+	setMirrored( h && v ? "both" : h ? "horizontal" : v ? "vertical" : "off" );
 } );
 
 function setMirrored( value, save = true ) {

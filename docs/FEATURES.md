@@ -173,7 +173,7 @@ The whole workflow is in the guide:
 - **Prompter monitor:** choose a monitor (the Elgato Prompter shows up by name)
   and the prompter opens full screen there every time.
 - **Eye-line mode:** a narrow strip right under the webcam.
-- **Mirroring in one click:** four pills (→, ↔, ↕, ↔↕) in the Layout panel.
+- **Mirroring in one click:** ↔ and ↕ toggles in the Layout panel.
 - **Hide from screen sharing and recordings**, and **click-through** so clicks
   reach the app behind (Ctrl+Shift+X from anywhere).
 - Windows that stay reachable when a monitor is unplugged or the resolution

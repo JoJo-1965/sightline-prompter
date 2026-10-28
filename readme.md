@@ -207,7 +207,7 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ### Next release
 
-- **Mirror pills:** the Layout panel's Mirror dropdown and the **Beam-splitter setup** button are replaced by four pills in a row, in the Layout and Reading views: → not mirrored, ↔ left to right, ↕ top to bottom, ↔↕ both. The one in use is lit, and choosing one leaves the panel open. Beam-splitter setup only looked as if it changed the mirroring; for the same look, set Background to 100% and Text brightness to about 70%
+- **Mirror toggles:** the Layout panel's Mirror dropdown and the **Beam-splitter setup** button are replaced by two buttons, in the Layout and Reading views: **↔ Left–right** and **↕ Up–down**. Each stays lit while it's on and turns off when clicked again; both on mirrors both ways, and the panel stays open. Beam-splitter setup only looked as if it changed the mirroring; for the same look, set Background to 100% and Text brightness to about 70%
 - The dropdowns in the Layout panel and on Settings > Layout, Reading and Recording are all the same width, so they line up
 - **Heading font** (Layout panel > Reading, and Settings > Reading): section headings and titles can use a different font from the text, for example Standard headings with OpenDyslexic text. **Same as the text** is the default
 - **Heard log** (voice scrolling): every word the speech engine hears is logged next to the script words it was matched with, one file per script per day in the `heard-logs` folder, never leaving your computer. `node scripts/sightline.mjs heard` (or `node scripts/heard-report.mjs <file>`) lists the words heard in place of script words, most often first, to find mishearings worth correcting (roadmap 20, first part)
@@ -326,7 +326,7 @@ starts. Earlier version numbers belong to the original project.
 - In-app menu grouped into Script, Playback, Display, Window, Settings and Help
 - Layout panel: text opacity, background opacity and text brightness, each set independently (none affects the controls), left/right and top/bottom margins (the text fades out near the window edges), line spacing, reading line, alignment, mirror and reading-line marker
 - Eye-line mode: a small window near the camera
-- Mirroring in one click: four pills in the Layout panel (→ not mirrored, ↔ left to right, ↕ top to bottom, ↔↕ both), also Ctrl+M and the Mirror button. For a clear camera image through beam-splitter glass, set Background to 100% and Text brightness to about 70%
+- Mirroring in one click: ↔ Left–right and ↕ Up–down toggles in the Layout panel (both on mirrors both ways), also Ctrl+M and the Mirror button. For a clear camera image through beam-splitter glass, set Background to 100% and Text brightness to about 70%
 - Mirror the script horizontally, vertically or both, for any beam-splitter or reflector rig. `Ctrl+M` steps through Off → Horizontal → Vertical → Both. The whole prompter display is mirrored, controls included, so everything reads correctly in the reflection (this also fixes the control bar scrolling away while mirrored)
 - Minimise, maximise and full screen, which work properly on a transparent window
 - Keyboard shortcuts panel (`F1` or `?`) and an About page
