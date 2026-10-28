@@ -201,7 +201,7 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ### Next release
 
-- **On air button** on the control bar, next to ▶ (**Ctrl+Shift+A**, also ☰ > Playback): go on air by hand, for a talk to camera or to check the look. It lights red whenever you're on air, scrolling included
+- **On air button** on the control bar, next to ▶ (**Ctrl+Shift+A**, also ☰ > Playback): go on air by hand, for a talk to camera or to check the look. It lights red whenever you're on air, scrolling included, and the control bar slides away as quickly as it does while scrolling
 - **Two backing levels, off air and on air:** Backing is the level while you set up; **Background on air** (90% to start with) takes over while scrolling, held at a stop, or with the On air button lit, so you can see the room through the glass while you set up and read easily while you record. The control bar's Backing slider and **Ctrl+Shift+↑ / ↓** adjust whichever level is in use (the slider reads **On air** while you are), and both are also in the Layout panel > Reading and Settings > Reading
 - **Mirror button** on the control bar: steps through off, ↔ horizontal, ↕ vertical and ↔↕ both, and shows which is on (same as **Ctrl+M**)
 - **Reading** and **Recording** buttons on the control bar, and **Reading** and **Recording** tabs in Settings: the long Layout panel is now three shorter views, so nothing sits below the fold

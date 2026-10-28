@@ -168,6 +168,7 @@ function onAir() {
 function toggleOnAir() {
 	manualOnAir = !manualOnAir;
 	updateOnAir();
+	refreshControlsVisibility();
 	showToast( manualOnAir ? "On air" : "Off air" );
 }
 
@@ -2305,7 +2306,8 @@ function refreshControlsVisibility() {
 				document.body.classList.add( "controls-hidden" );
 			}
 		},
-		isScrolling() ? IDLE_MS_SCROLLING : IDLE_MS_STOPPED
+		// On air (scrolling, or the On air button) the bar gets out of the way quickly.
+		onAir() ? IDLE_MS_SCROLLING : IDLE_MS_STOPPED
 	);
 }
 
