@@ -119,6 +119,7 @@ const defaultSettings = {
 	textEffect: "none", // none, outline or shadow
 	theme: "default", // default, yellow, contrast or cream
 	scriptFont: "default", // default, atkinson, opendyslexic or verdana
+	headingFont: "same", // section headings: same as the text, or one of the fonts above
 	onAirLight: true, // ON AIR light while scrolling
 	showPacing: true, // pacing light: time and pace against the target
 	pointsMode: false, // talking points: one section at a time, no scrolling

@@ -1838,6 +1838,23 @@ body.font-verdana #md {
 	font-family: Verdana, Geneva, sans-serif;
 }
 
+/* Heading font (Reading > Heading font): headings apart from the text. */
+body.heading-font-default #md :is(h1, h2, h3, h4) {
+	font-family: Helvetica, Arial, sans-serif;
+}
+
+body.heading-font-atkinson #md :is(h1, h2, h3, h4) {
+	font-family: "Atkinson Hyperlegible", Helvetica, Arial, sans-serif;
+}
+
+body.heading-font-opendyslexic #md :is(h1, h2, h3, h4) {
+	font-family: "OpenDyslexic", Verdana, sans-serif;
+}
+
+body.heading-font-verdana #md :is(h1, h2, h3, h4) {
+	font-family: Verdana, Geneva, sans-serif;
+}
+
 /* --- Text edge: keeps see-through text readable over busy backgrounds --- */
 body.edge-outline #md {
 	-webkit-text-stroke: 0.045em rgba(0, 0, 0, 0.85);

@@ -42,6 +42,10 @@ panel too); double-click the title to put it back. The same controls are on the 
 - **Theme**: standard, yellow on dark, high contrast or soft cream.
 - **Font**: standard, Atkinson Hyperlegible, OpenDyslexic or Verdana. Some
   people find Atkinson Hyperlegible or OpenDyslexic easier to read.
+- **Heading font**: section headings and titles can have their own font, for
+  example Standard headings with OpenDyslexic text, where the dyslexia font
+  makes big headings hard to read. **Same as the text** (the default) follows
+  the Font above.
 - **Text effect**: an outline or a shadow on the text, for busy backgrounds.
 - **Focus band**: dims the lines away from the reading line, with a strength
   setting.

@@ -3293,6 +3293,7 @@ function syncLayoutPanel() {
 	field( "lp-text-effect" ).value = settings.textEffect ?? "none";
 	field( "lp-theme" ).value = settings.theme ?? "default";
 	field( "lp-font" ).value = settings.scriptFont ?? "default";
+	field( "lp-heading-font" ).value = settings.headingFont ?? "same";
 	field( "lp-on-air" ).checked = settings.onAirLight !== false;
 	field( "lp-pacing" ).checked = settings.showPacing !== false;
 	field( "lp-points" ).checked = !!settings.pointsMode;
@@ -3377,7 +3378,8 @@ if ( document.getElementById( "layout-panel" ) ) {
 	for ( const [ id, key ] of [
 		[ "lp-text-effect", "textEffect" ],
 		[ "lp-theme", "theme" ],
-		[ "lp-font", "scriptFont" ]
+		[ "lp-font", "scriptFont" ],
+		[ "lp-heading-font", "headingFont" ]
 	] ) {
 		field( id ).addEventListener( "change", () =>
 			window.electron.saveSettings( { [key]: field( id ).value } )
@@ -4953,6 +4955,9 @@ function applyDisplayClasses() {
 			`font-${ f }`,
 			( settings.scriptFont ?? "default" ) === f
 		);
+	// Headings can have their own font ("same" follows the text).
+	for ( const f of FONTS )
+		body.classList.toggle( `heading-font-${ f }`, ( settings.headingFont ?? "same" ) === f );
 	for ( const e of EFFECTS )
 		body.classList.toggle( `edge-${ e }`, ( settings.textEffect ?? "none" ) === e );
 	updateOnAir();
