@@ -207,6 +207,7 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ### Next release
 
+- **"Prompter" is acknowledged straight away:** as soon as Sightline hears the wake word, a message says *Listening… go · pause · again · marker*, so you know it's ready for the command; if what follows isn't a command, *Didn't catch that* shows the words it heard. *Heard: "Prompter, go"* still confirms each command
 - **Apply in Settings:** saves your changes and keeps Settings open; **Save** saves and closes. Closing with changes you haven't saved now asks first (Save, Discard or Keep editing), including when a button in Settings opens something else
 - **Quit Sightline** at the foot of the ☰ menu, always in view (and at the end of ☰ > Window); the old "Close the teleprompter" item in ☰ > Help is gone
 - The Voice panel's microphone hint no longer names a particular microphone

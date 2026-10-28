@@ -212,6 +212,8 @@ export async function startAutoScroll( {
 	onScroll,
 	onFollow = null, // ({ from, to, start, end, ranges }): script words passed, and when they were said
 	onCommand = null,
+	onWake = () => {}, // the wake word was heard
+	onMiss = () => {}, // ( words ): what followed it wasn't a command
 	isPaused = null, // also counts as paused for a bare "go" (a {stop} in steady scrolling)
 	followScript = true,
 	audioDeviceId
@@ -229,7 +231,7 @@ export async function startAutoScroll( {
 	const wordIndex = buildWordIndex( scriptEl );
 	const aligner = createAligner( wordIndex.words );
 	aligner.setPosition( findWordAtViewport( wordIndex.ranges ) );
-	const takeCommands = onCommand ? createCommandListener( { onCommand, isPaused: () => held || !!isPaused?.() } ) : null;
+	const takeCommands = onCommand ? createCommandListener( { onCommand, onWake, onMiss, isPaused: () => held || !!isPaused?.() } ) : null;
 	let held = false; // "Prompter, pause": keep listening, stop following
 
 	const stream = await openMic( audioDeviceId, onStatus );

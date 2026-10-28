@@ -182,7 +182,10 @@ export function matchCommand( words ) {
 // isPaused(): while voice scrolling is paused by "Prompter, pause", a phrase
 // that is only "go" (or "carry on", "continue"…) resumes it without the wake
 // word, in case the start of "Prompter" was lost after the quiet.
-export function createCommandListener( { onCommand, isPaused = () => false } ) {
+// onWake() fires as soon as the wake word is heard, so the speaker knows
+// it's listening; onMiss( words ) when a short phrase after it isn't a
+// command.
+export function createCommandListener( { onCommand, onWake = () => {}, onMiss = () => {}, isPaused = () => false } ) {
 	let held = null; // words from the wake word on, waiting for the phrase to end
 	let heldAt = 0;
 	let phrase = []; // every word of the phrase so far
@@ -205,6 +208,7 @@ export function createCommandListener( { onCommand, isPaused = () => false } ) {
 			else if ( WAKE.has( normalize( word ) ) ) {
 				held = [ word ];
 				heldAt = Date.now();
+				onWake();
 			} else pass.push( word );
 			// A long run after the wake word isn't a command: let it go.
 			if ( held && held.length > 5 ) {
@@ -219,7 +223,12 @@ export function createCommandListener( { onCommand, isPaused = () => false } ) {
 		if ( held && ( final || Date.now() - heldAt > 4000 ) ) {
 			const id = final ? matchCommand( held.slice( 1 ) ) : null;
 			if ( id ) onCommand( id );
-			else pass.push( ...held );
+			else {
+				// Something short after "Prompter" that isn't a command is worth a
+				// word; a script line that mentions the prompter is longer.
+				if ( final && held.length > 1 && held.length <= 4 ) onMiss( held.slice( 1 ) );
+				pass.push( ...held );
+			}
 			held = null;
 		}
 		return pass;

@@ -71,3 +71,22 @@ paused = false;
 assert.deepEqual( take3( [ "GO" ], true ), [ "GO" ] );
 assert.deepEqual( got3, [ "go" ] );
 console.log( "go while paused passes" );
+
+// The wake word is acknowledged at once; a short phrase after it that isn't
+// a command is reported, but a script line that mentions the prompter isn't.
+const woke = [];
+const missed = [];
+const take4 = createCommandListener( {
+	onCommand: id => woke.push( `command:${ id }` ),
+	onWake: () => woke.push( "wake" ),
+	onMiss: words => missed.push( words.join( " " ) )
+} );
+take4( [ "PROMPTER" ], false );
+assert.deepEqual( woke, [ "wake" ] );
+take4( [ "BANANA" ], true );
+assert.deepEqual( missed, [ "BANANA" ] );
+take4( [ "PROMPTER", "GO" ], true );
+assert.deepEqual( woke, [ "wake", "wake", "command:go" ] );
+take4( [ "THE", "PROMPTER", "SHOWS", "EVERY", "WORD", "YOU", "READ" ], true );
+assert.deepEqual( missed, [ "BANANA" ], "a long script line isn't a miss" );
+console.log( "wake and miss pass" );

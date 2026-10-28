@@ -55,8 +55,13 @@ you. Higher is snappier, lower is smoother.
 
 Say **"Prompter"**, then a command, then stop for a moment. The command only
 counts when it ends what you're saying, so a line in your script such as "the
-prompter pauses" never sets it off. A small message confirms what was heard,
-such as *Heard: "Prompter, slower"*.
+prompter pauses" never sets it off.
+
+As soon as it hears **"Prompter"**, a message at the bottom says
+*Listening… go · pause · again · marker*, so you know it's ready for the
+command. Another confirms what was heard, such as *Heard: "Prompter,
+slower"*, and if what followed wasn't a command it says *Didn't catch
+that*, with the words it heard, so you can say it again.
 
 | Say "Prompter, …" | What happens |
 | --- | --- |

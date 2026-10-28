@@ -296,7 +296,7 @@ function cycleMirror() {
 	showToast( `Mirror: ${ MIRROR_LABELS[next] }` );
 }
 
-function showToast( text ) {
+function showToast( text, ms = 1400 ) {
 	let toast = document.getElementById( "toast" );
 	if ( !toast ) {
 		toast = document.createElement( "div" );
@@ -307,7 +307,7 @@ function showToast( text ) {
 	toast.textContent = text;
 	toast.classList.add( "visible" );
 	clearTimeout( showToast.timer );
-	showToast.timer = setTimeout( () => toast.classList.remove( "visible" ), 1400 );
+	showToast.timer = setTimeout( () => toast.classList.remove( "visible" ), ms );
 }
 
 window.electron.onMirrored( ( value ) => {
@@ -1076,7 +1076,9 @@ async function beginVoice( engine, deepgramKey ) {
 			},
 			onScroll: handleAutoScrollPosition,
 			onFollow: logSpokenWords,
-			onCommand: settings.voiceCommands === "off" ? null : runVoiceCommand
+			onCommand: settings.voiceCommands === "off" ? null : runVoiceCommand,
+			onWake: voiceWake,
+			onMiss: voiceMiss
 		} );
 		autoScrollActive = true;
 		autoScrollStarting = false;
@@ -1165,6 +1167,8 @@ function syncCommandListening() {
 					audioDeviceId,
 					followScript: false,
 					onCommand: runVoiceCommand,
+					onWake: voiceWake,
+					onMiss: voiceMiss,
 					isPaused: () => cuePaused
 				} );
 				commandListening = true;
@@ -1195,6 +1199,17 @@ function stopCommandListening() {
 function resyncAfterJump() {
 	voiceWordIdx = null;
 	if ( autoScrollActive ) setTimeout( () => autoScrollHandle?.syncToViewport(), 700 );
+}
+
+// "Prompter": say so straight away, so you know it's listening for the rest.
+function voiceWake() {
+	if ( isEditMode ) return;
+	showToast( "Listening… go · pause · again · marker", 3000 );
+}
+
+function voiceMiss( words ) {
+	if ( isEditMode ) return;
+	showToast( `Didn't catch that: “${ words.join( " " ) }”`, 2500 );
 }
 
 function runVoiceCommand( id ) {
