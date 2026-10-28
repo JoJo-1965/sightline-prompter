@@ -14,7 +14,7 @@ steady pace or follows your voice.
 
 ## Contents
 
-1. [Getting started](01-getting-started.md): the control bar, opening a script, your first take
+1. [Getting started](01-getting-started.md): installing it (and getting past the security warnings), the control bar, opening a script, your first take
 2. [Writing scripts](02-scripts.md): file types, sections, notes to yourself and instructions to the app
 3. [Scrolling and voice](03-scrolling-and-voice.md): steady pace, voice scrolling, the sentence highlight
 4. [Layout and display](04-layout-and-display.md): text size, backing, the reading line, mirroring, reading aids

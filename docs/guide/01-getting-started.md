@@ -1,5 +1,91 @@
 # Getting started
 
+## Installing Sightline
+
+Sightline is free. Download the installer for your computer from the
+[latest release](https://github.com/JoJo-1965/sightline-prompter/releases/latest), under **Assets**:
+
+| Your computer | Download | Then |
+| --- | --- | --- |
+| Windows 10 or 11 | `Sightline-Prompter-Setup-<version>.exe` | Double-click it. It installs and opens Sightline |
+| Mac with Apple silicon (M1 and later) | `Sightline-Prompter-<version>-arm64.dmg` | Open it and drag Sightline Prompter to Applications |
+| Mac with an Intel processor | `Sightline-Prompter-<version>-x64.dmg` | The same |
+| Linux (most) | `Sightline-Prompter-<version>-x86_64.AppImage` | Make it executable (right-click > Properties, or `chmod +x`), then run it |
+| Debian or Ubuntu | `Sightline-Prompter-<version>-amd64.deb` | `sudo apt install ./Sightline-Prompter-<version>-amd64.deb` |
+
+Not sure which Mac you have? Apple menu > **About This Mac**: **Chip** means
+Apple silicon, **Processor** means Intel.
+
+### The security warnings, and how to get past them
+
+Sightline's installers aren't code-signed yet. Signing costs money every year
+and Sightline is free, so your browser and your computer can't check who made
+it, and they warn you. The warnings are about the missing signature, not
+about anything found in the file. The source is
+[public](https://github.com/JoJo-1965/sightline-prompter), and the installers
+are built from it by GitHub, so anyone can check what's in them. You only need
+to do this once; updates are the same.
+
+**Downloading (any browser)**
+
+- **Edge** may say the file *isn't commonly downloaded*. Point at the
+  download, choose **…** > **Keep**, then **Show more** > **Keep anyway**.
+- **Chrome** may say it's *suspicious* or *unverified*. Choose **Keep** (in
+  the downloads list, the **⋮** menu > **Keep**).
+- **Safari** and **Firefox** usually download it without asking.
+
+**Windows: "Windows protected your PC"**
+
+Microsoft Defender SmartScreen shows this the first time you run the
+installer. Choose **More info**, check it says *Sightline-Prompter-Setup*, then
+**Run anyway**. It won't ask again for that version.
+
+- **"Smart App Control blocked an app"** (some new Windows 11 computers): this
+  one has no Run anyway. Smart App Control only allows signed apps, so
+  Sightline can't run while it's on. You can turn it off in **Windows
+  Security > App & browser control > Smart App Control settings**, but you
+  can't turn it back on without resetting Windows, so think before you do.
+- **Your antivirus quarantines it**: restore it from the antivirus's
+  quarantine and mark it as allowed. Download it only from the link above.
+
+**Mac: "Apple could not verify Sightline Prompter"**
+
+macOS shows this the first time you open the app (older versions say it's
+*from an unidentified developer*). Choose **Done** (not **Move to Bin**), then:
+
+1. Open **System Settings > Privacy & Security**.
+2. Scroll down to **Security**. Next to *Sightline Prompter was blocked*,
+   choose **Open Anyway**, and enter your password.
+3. Open Sightline again and choose **Open Anyway**.
+
+On macOS 14 and earlier, right-clicking the app in Applications and choosing
+**Open** does the same.
+
+If the Mac says *Sightline Prompter is damaged and can't be opened*, it isn't
+damaged: macOS says this about some unsigned apps downloaded from the
+internet. Move it to Applications, open **Terminal** and paste:
+
+```
+xattr -cr "/Applications/Sightline Prompter.app"
+```
+
+Press Return, then open Sightline as usual.
+
+**Linux** doesn't warn. If the AppImage won't start, make sure it's
+executable; some distributions also need `libfuse2`.
+
+### Uninstalling
+
+- **Windows:** **Settings > Apps > Installed apps** > Sightline Prompter >
+  **Uninstall**.
+- **Mac:** drag Sightline Prompter from Applications to the Bin.
+- **Linux:** delete the AppImage, or `sudo apt remove sightline-prompter`.
+
+Your settings, take logs and speech model stay behind, in case you reinstall.
+To remove them too, delete the **Sightline Prompter** folder in
+`%APPDATA%` (Windows), `~/Library/Application Support` (Mac) or
+`~/.config` (Linux).
+
 ## The prompter window
 
 The prompter is an ordinary window that you can see through. Put it near the
