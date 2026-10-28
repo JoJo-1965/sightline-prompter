@@ -40,6 +40,7 @@ export function createTakeLog( { clock = () => Date.now() } = {} ) {
 			openedAt: now,
 			lastAdvance: null,
 			markers: [],
+			words: [],
 			rating: null,
 			slate: null
 		};
@@ -56,7 +57,10 @@ export function createTakeLog( { clock = () => Date.now() } = {} ) {
 	function close( status, endNow = false ) {
 		if ( !current ) return null;
 		const moving = current.lastAdvance && clock() - current.lastAdvance < 1500;
-		const end = endNow && moving ? clock() : current.lastAdvance ?? clock();
+		let end = endNow && moving ? clock() : current.lastAdvance ?? clock();
+		// Never before the last word said in it.
+		const lastWord = current.words.at( -1 );
+		if ( lastWord ) end = Math.min( clock(), Math.max( end, Date.parse( log.startedAt ) + lastWord.t * 1000 + 300 ) );
 		const seconds = ( end - current.openedAt ) / 1000;
 		const done = current;
 		current = null;
@@ -74,7 +78,8 @@ export function createTakeLog( { clock = () => Date.now() } = {} ) {
 			status,
 			rating: done.rating,
 			slate: done.slate,
-			markers: done.markers
+			markers: done.markers,
+			words: done.words
 		};
 		log.takes.push( take );
 		version++;
@@ -108,6 +113,19 @@ export function createTakeLog( { clock = () => Date.now() } = {} ) {
 			if ( reason === "again" ) close( "retake" );
 			else if ( current.atEnd ) close( "complete" );
 			else close( reason === "next" ? "skipped" : "stopped" );
+		},
+
+		// Voice following: script words as they're said, [{ i, w, at }] with at
+		// a wall-clock time in ms. Kept on the take as { i, w, t }, t in seconds
+		// on the log's clock (the same as the slate). Saved every few words.
+		words( list ) {
+			if ( !current || !log.startedAt ) return;
+			for ( const { i, w, at } of list ) {
+				// Read again from earlier: the new reading replaces the old one from here.
+				while ( current.words.at( -1 )?.i >= i ) current.words.pop();
+				current.words.push( { i, w, t: Math.round( ( at - Date.parse( log.startedAt ) ) / 10 ) / 100 } );
+			}
+			if ( current.words.length % 10 < list.length ) version++;
 		},
 
 		marker() {

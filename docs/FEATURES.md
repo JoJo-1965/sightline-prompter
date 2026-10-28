@@ -52,10 +52,11 @@ The whole workflow is in the guide:
   markers and rate takes as keeper or scrap. Off by default, token-protected
   and closed to web pages.
 - **Edit:** the take log records every take of every section, with its start
-  and end, retakes, markers and rating, and picks the take to use for each
+  and end, retakes, markers, rating and (in voice mode) when each word was
+  said, and picks the take to use for each
   section, as JSON for an editing agent and CSV for a spreadsheet.
-- **Coming next** ([roadmap](../ROADMAP.md)): word-level timing and an edit
-  pack an editing agent can assemble from; `{listen: off}` and
+- **Coming next** ([roadmap](../ROADMAP.md)): an edit pack an editing agent
+  can assemble from, with edit marks and captions; `{listen: off}` and
   `{prompter: …}` so the script can direct the microphone and the prompter;
   and a recordings library an agent can list and fetch from.
 
@@ -102,6 +103,8 @@ The whole workflow is in the guide:
   you go and exported as JSON and CSV (File > Export Take Log). Say
   **"Prompter, keeper"** or **"Prompter, scrap that"** (or press K or
   Shift+K) to rate a take; the log picks the take to use for each section.
+  In voice mode it also records **when you said each word**, for cutting on
+  words and sentences.
 - **Talking points** for speaking off script: one section at a time as large
   bullet points, with a talk timer.
 - Progress bar, time left, an ON AIR light and an optional end-of-countdown

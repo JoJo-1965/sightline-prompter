@@ -802,6 +802,20 @@ function setIndicator( text, variant ) {
 	if ( variant ) autoScrollIndicator.classList.add( variant );
 }
 
+// Voice following: when each script word was said, into the take log, so
+// the edit can cut on words. Words passed together share out the time between
+// the first and last word heard.
+function logSpokenWords( { from, to, start, end, ranges } ) {
+	const count = to - from;
+	const words = [];
+	for ( let i = from + 1; i <= to; i++ ) {
+		const k = i - from - 1;
+		const at = count > 1 ? start + ( ( end - start ) * k ) / ( count - 1 ) : end;
+		words.push( { i, w: ranges[i]?.toString().trim() ?? "", at } );
+	}
+	recording.words( words );
+}
+
 function handleAutoScrollPosition( wordIdx, ranges ) {
 	// The words just heard end here, so the next thing to say is the word after.
 	if ( settings.highlightSentence !== false ) showSentenceAt( wordIdx + 1 );
@@ -1004,6 +1018,7 @@ async function beginVoice( engine, deepgramKey ) {
 				}
 			},
 			onScroll: handleAutoScrollPosition,
+			onFollow: logSpokenWords,
 			onCommand: settings.voiceCommands === "off" ? null : runVoiceCommand
 		} );
 		autoScrollActive = true;

@@ -94,6 +94,15 @@ saves a JSON file for edit tools and a CSV beside it for a spreadsheet:
 | use | **yes** on the take the log picks for that section |
 | markers | Times of any markers you dropped in it |
 
+**Word timings (voice mode).** When the prompter is following your voice,
+the JSON also records when you said each word of the script, take by take:
+the word, its place in the script, and the time on the same clock as the
+columns above (and the slate). The time is when you *said* the word, from the
+speech engine's own timings, not when it was recognised a moment later. If
+you go back and read a phrase again, the new reading replaces the old one. An
+editing assistant can use these to cut on a word or a sentence. Steady
+scrolling has no word timings, since nothing is listening to the script.
+
 **File > Start a New Take Log** starts again from take 1 (the old log is kept),
 and **File > Show Take Logs Folder** opens the folder where they're saved.
 

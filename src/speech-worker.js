@@ -18,11 +18,25 @@ const HOLD_BACK = 1;
 let recognizer = null;
 let stream = null;
 let committed = 0;
+let fed = 0; // samples since the stream started
 
 const send = message => process.parentPort.postMessage( message );
 
 function words( text ) {
 	return text.trim().split( /\s+/ ).filter( Boolean );
+}
+
+// When each word in the result began, in seconds of audio since the stream
+// started: the segment's start plus the timestamp of the word's first token
+// (a token beginning with a space starts a new word).
+function wordStarts( result ) {
+	const starts = [];
+	result.tokens?.forEach( ( token, i ) => {
+		if ( i === 0 || token.startsWith( " " ) ) {
+			starts.push( ( result.start_time ?? 0 ) + ( result.timestamps?.[i] ?? 0 ) );
+		}
+	} );
+	return starts;
 }
 
 function load( dir ) {
@@ -52,12 +66,17 @@ function load( dir ) {
 function reset() {
 	stream = recognizer.createStream();
 	committed = 0;
+	fed = 0;
 }
 
 function feed( samples ) {
 	stream.acceptWaveform( { samples, sampleRate: 16000 } );
+	fed += samples.length;
 	while ( recognizer.isReady( stream ) ) recognizer.decode( stream );
-	const now = words( recognizer.getResult( stream ).text );
+	const result = recognizer.getResult( stream );
+	const now = words( result.text );
+	const starts = wordStarts( result );
+	let from = committed;
 	let out = [];
 	// `final`: the speaker has paused, so the phrase is over (voice commands
 	// only count at the end of a phrase).
@@ -71,7 +90,15 @@ function feed( samples ) {
 		out = now.slice( committed, now.length - HOLD_BACK );
 		committed = now.length - HOLD_BACK;
 	}
-	if ( out.length || final ) send( { type: "words", words: out, final } );
+	// `at`: when each word was spoken, as a wall-clock time, so the take log
+	// can place it on the recording (recognition lags speech by a little).
+	let at = null;
+	if ( out.length && starts.length === now.length ) {
+		const audioNow = fed / 16000;
+		const wall = Date.now();
+		at = starts.slice( from, from + out.length ).map( s => Math.round( wall - ( audioNow - s ) * 1000 ) );
+	}
+	if ( out.length || final ) send( { type: "words", words: out, final, at } );
 }
 
 process.parentPort.on( "message", ( { data } ) => {

@@ -75,7 +75,7 @@ async function openLocal( stream, onWords, onStatus ) {
 	blocks.port.onmessage = event =>
 		window.electron.sendSpeechAudio( event.data );
 	source.connect( blocks ).connect( silent ).connect( audioCtx.destination );
-	localWords = ( { words, final } ) => onWords( words, null, final );
+	localWords = ( { words, final, at } ) => onWords( words, null, final, at );
 
 	return {
 		close() {
@@ -210,6 +210,7 @@ export async function startAutoScroll( {
 	scriptEl,
 	onStatus,
 	onScroll,
+	onFollow = null, // ({ from, to, start, end, ranges }): script words passed, and when they were said
 	onCommand = null,
 	isPaused = null, // also counts as paused for a bare "go" (a {stop} in steady scrolling)
 	followScript = true,
@@ -233,7 +234,8 @@ export async function startAutoScroll( {
 
 	const stream = await openMic( audioDeviceId, onStatus );
 
-	const onWords = ( heard, transcript, final ) => {
+	const onWords = ( heard, transcript, final, at = null ) => {
+		const heardAt = Date.now();
 		const words = takeCommands ? takeCommands( heard, final ) : heard;
 		if ( !followScript || held || !words.length ) return;
 		const prevPos = aligner.currentPosition();
@@ -244,6 +246,17 @@ export async function startAutoScroll( {
 		const moved = newPos !== prevPos;
 		if ( moved ) {
 			onScroll?.( newPos, wordIndex.ranges );
+			// Moving on: the script words just passed were said between the first
+			// and last heard words. A long jump (a resync) only counts the last few.
+			if ( newPos > prevPos ) {
+				onFollow?.( {
+					from: Math.max( prevPos, newPos - words.length - 2 ),
+					to: newPos,
+					start: at?.[0] ?? heardAt,
+					end: at?.at( -1 ) ?? heardAt,
+					ranges: wordIndex.ranges
+				} );
+			}
 		}
 		onStatus?.( {
 			type: "transcript",

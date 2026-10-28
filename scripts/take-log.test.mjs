@@ -112,4 +112,24 @@ assert.equal( slated.data().takes[0].slate, 0 );
 assert.equal( slated.data().takes[0].start, 1 );
 assert.equal( slated.data().events[0].type, "slate" );
 
+// Words said while following the voice land on the take in progress, in
+// seconds on the log's clock to a hundredth.
+{
+	const words = createTakeLog( { clock } );
+	const start = now;
+	for ( let s = 0; s < 3; s += 0.5 ) {
+		words.tick( { active: true, index: 0, title: "Intro", advanced: true } );
+		wait( 0.5 );
+	}
+	words.words( [ { i: 0, w: "Hello", at: start + 1234 }, { i: 1, w: "there.", at: start + 1500 } ] );
+	// Reading "there." again replaces the first reading.
+	words.words( [ { i: 1, w: "there.", at: start + 2000 } ] );
+	words.tick( { active: false, index: 0, atEnd: true } );
+	assert.deepEqual( words.data().takes[0].words, [ { i: 0, w: "Hello", t: 1.23 }, { i: 1, w: "there.", t: 2 } ] );
+	// (checked below, after a re-read)
+	// Nothing is logged between takes.
+	words.words( [ { i: 2, w: "Lost", at: now } ] );
+	assert.equal( words.data().takes.length, 1 );
+}
+
 console.log( "take log tests pass" );

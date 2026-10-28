@@ -82,7 +82,8 @@ marker" for a moment to find later. See
 
 Sightline logs every take of every section as you record: when it started
 and ended, whether you read it to the end or went back for a retake, its
-markers and its rating. The log picks the take to use for each section (your
+markers and its rating. In voice mode it also records when you said each
+word of the script, so an editing assistant can cut on a word or a sentence. The log picks the take to use for each section (your
 last keeper, or else your last complete take).
 
 **File > Export Take Log** saves it as JSON, for an AI editor or edit tool,
@@ -99,8 +100,8 @@ up with the recording from the first beep or flash.
 
 The [roadmap](../../ROADMAP.md) takes this further, in this order:
 
-- **Word-level timing and an edit pack** (26): when each word was spoken, a
-  transcript per take, edit marks and captions, in one folder an editing
+- **An edit pack** (26): the word timings Sightline now records, turned into
+  a transcript per take, edit marks and captions, in one folder an editing
   agent can assemble from.
 - **Script-controlled listening** (35): `{listen: off}` before an ad-lib or a
   demo turns the microphone off, `{listen: on}` turns it back on, and
