@@ -102,6 +102,11 @@ above, for the take to use, or the last take with words when none is usable),
 `paceFrom` (which take that was) and `summary`, for example
 `S3: 2:31 spoken, 151 wpm speaking, 138 wpm overall, target 2:40 (9 s under)`.
 
+A rehearsal is logged like any recording, so a practice run's section times
+and pace are here too. Outside the app, `node scripts/sightline.mjs pace
+"<script>" [yyyy-mm-dd]` (also `rehearsal`) prints each section's summary and
+every take's pace, or `--json` for an agent.
+
 These columns and fields were added after the first edit packs; none of the
 earlier ones changed.
 

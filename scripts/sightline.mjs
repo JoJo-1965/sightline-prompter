@@ -15,6 +15,7 @@
 //   node scripts/sightline.mjs takelog [script name] [date]   (prints the take log's path)
 //   node scripts/sightline.mjs pack [script name] [date] [output folder]
 //   node scripts/sightline.mjs heard [script name] [date]       (what voice scrolling misheard)
+//   node scripts/sightline.mjs pace [script name] [date] [--json]  (also "rehearsal": each section's pace and every take's)
 //
 // logs, takelog and pack read the files directly, so they work with the app
 // closed. Dates are yyyy-mm-dd; the default is today and the current script.
@@ -24,6 +25,7 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { editPack } from "../src/client/edit-pack.js";
+import { pickTakes, takePace } from "../src/client/take-log.js";
 import { heardReport, printHeardReport } from "./heard-report.mjs";
 
 const here = path.dirname( fileURLToPath( import.meta.url ) );
@@ -121,6 +123,28 @@ try {
 			const files = fs.existsSync( logDir() ) ? fs.readdirSync( logDir() ).filter( f => f.endsWith( ".json" ) ) : [];
 			if ( !files.length ) console.log( "No take logs yet." );
 			for ( const f of files.sort() ) console.log( path.join( logDir(), f ) );
+			break;
+		}
+		// A run's pace (a rehearsal or a recording): each section's summary, then
+		// every take, from the take log's word timings (voice mode).
+		case "pace":
+		case "rehearsal": {
+			const json = args.includes( "--json" );
+			const [ name, day ] = args.filter( a => a !== "--json" );
+			const file = await findTakeLog( name, day );
+			const data = JSON.parse( fs.readFileSync( file, "utf8" ) );
+			const sections = pickTakes( data.takes ?? [] );
+			const takes = ( data.takes ?? [] ).map( t => ( { section: t.section, take: t.take, title: t.title, status: t.status, rating: t.rating, duration: t.duration, targetSeconds: t.target ?? null, ...( takePace( t ) ?? {} ) } ) );
+			if ( json ) {
+				print( { file, sections, takes } );
+				break;
+			}
+			console.log( file );
+			for ( const s of sections ) console.log( s.summary ?? `S${ s.section }: no word timings (steady scrolling)` );
+			console.log( "\nsection,take,status,rating,duration,words,spoken_seconds,speaking_seconds,speaking_wpm,overall_wpm,target_seconds,vs_target_seconds" );
+			for ( const t of takes ) {
+				console.log( [ t.section, t.take, t.status, t.rating ?? "", t.duration ?? "", t.words ?? "", t.spokenSeconds ?? "", t.speakingSeconds ?? "", t.speakingWpm ?? "", t.overallWpm ?? "", t.targetSeconds ?? "", t.vsTargetSeconds ?? "" ].join( "," ) );
+			}
 			break;
 		}
 		case "takelog":

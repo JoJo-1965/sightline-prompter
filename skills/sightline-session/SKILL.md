@@ -59,6 +59,10 @@ script per day, saved as it goes. These read the files, so they work with the
 app closed:
 
 - `logs`: every take log, with its path.
+- `pace ["<script name>"] [yyyy-mm-dd] [--json]` (also `rehearsal`): each
+  section's pace summary and every take's words, spoken and speaking time,
+  wpm and target. A rehearsal is logged like any recording, so use this after
+  a practice run to suggest `{target}` times.
 - `heard ["<script name>"] [yyyy-mm-dd]`: what voice scrolling heard, lined
   up with the script, and the words it heard in place of script words, most
   often first. Use it to suggest corrections for words it keeps mishearing.
