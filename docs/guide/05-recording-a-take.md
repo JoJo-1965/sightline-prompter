@@ -60,6 +60,10 @@ flash in the recording: every take's times line up from there.
 
 ## The take log
 
+Sightline doesn't record your video or audio; keep recording with OBS,
+Riverside, Zoom or your camera. It logs the timings to line up with that
+recording.
+
 While you record, Sightline logs every take of every section: when it
 started and ended, whether you read it to the end or went back for another
 go, and any markers. The edit can then use the right take of each section

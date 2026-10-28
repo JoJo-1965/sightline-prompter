@@ -6,6 +6,12 @@ explainers and updates at a desk or in a studio. Your AI can write the script,
 direct the prompter, run it while you record, and pick up the take log
 afterwards for the edit.
 
+Sightline doesn't record your video or audio: keep using OBS, Riverside,
+Zoom, your camera or whatever you record with. What Sightline adds is the
+accurate timings (every take, section and word, with your retakes, markers
+and ratings) and a slate to line them up with that recording, so your AI
+can find the right take and cut it without anyone scrubbing through by ear.
+
 | Step       | What the AI does                                                   | What Sightline does                                                                   |
 | ---------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------- |
 | **Write**  | Writes the script, with sections, target times, stops and countdowns | Gives the AI its instructions (the AI Script Prompt) and checks what comes back       |

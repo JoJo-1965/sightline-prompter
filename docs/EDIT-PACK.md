@@ -6,7 +6,9 @@ when each script word was said, the sentences, places worth cutting, and
 captions in the script's own wording. It's written for an editor, or for an
 AI editing and assembly agent, to cut the recording with.
 
-Nothing here is audio or video. It's what the prompter knew while you read.
+Nothing here is audio or video: Sightline doesn't record. The recording
+comes from whatever was used (OBS, Riverside, Zoom, a camera); this pack is
+what the prompter knew while you read, with timings to line up with it.
 
 ## The clock
 

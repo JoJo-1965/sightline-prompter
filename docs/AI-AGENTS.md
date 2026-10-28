@@ -4,6 +4,11 @@ Sightline is built to work with an AI at three points: **writing** the
 script, **running** the prompter while you record, and **editing** from the
 take log afterwards. How much your AI can do depends on where it runs.
 
+Sightline doesn't record video or audio: you record with OBS, Riverside,
+Zoom, your camera or anything else. Sightline gives your AI the accurate
+timings (takes, sections, words, retakes, markers, the slate) to find and
+cut the right parts of that recording.
+
 | Your AI | Write scripts | Load scripts and run the prompter | Use the take log and edit pack |
 | --- | --- | --- | --- |
 | **Claude Code** or **Codex** (on your computer) | Yes, and checks them | Yes | Yes, straight from Sightline's files |

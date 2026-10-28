@@ -7,6 +7,12 @@ script and its directions, Sightline follows your voice through the take, and
 the take log goes back to your AI for the edit. Speech recognition runs on
 your own computer. Windows, macOS and Linux.
 
+**Sightline doesn't record your video or audio.** Keep recording with the
+tools you already use (OBS, Riverside, Zoom, Teams, your camera or your
+phone). Sightline sits alongside them and gathers what they can't: accurate
+timings for every take, section and word, your retakes, markers and ratings,
+and a slate to line them all up with the recording.
+
 **[Download the latest release](https://github.com/JoJo-1965/sightline-prompter/releases/latest)** · [User guide](docs/guide/README.md) · [Working with AI](docs/guide/09-working-with-ai.md) · [Everything it adds](docs/FEATURES.md) · [joannelockwood.co.uk/sightline](https://joannelockwood.co.uk/sightline)
 
 > **About Sightline Prompter.** This is a fork of
@@ -201,6 +207,7 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ### Next release
 
+- **Sightline doesn't record your video or audio**, and now says so up front (readme, guide, feature list): it works alongside OBS, Riverside, Zoom or your camera, and gathers the timings to line up with the recording
 - **Skills for Claude Code and Codex, and a setup guide for every AI** ([docs/AI-AGENTS.md](docs/AI-AGENTS.md)): `skills/sightline-script` writes and checks scripts to the Sightline spec; `skills/sightline-session` loads scripts into slots, controls the prompter, and builds and uses the edit pack. They use a new command, `node scripts/sightline.mjs` (status, open, load, slot, command, logs, takelog, pack), which reads the API token itself and never prints it. ChatGPT, Claude and Gemini projects get steps for writing and for editing from uploaded files
 - **Edit pack** (File > Export Edit Pack…, also ☰ > Playback): the take log turned into what an editor or an AI editing agent cuts with, in one new folder: every word you said with its start and end, every sentence of every take (with any words you missed), edit marks (sentence starts, long pauses, re-reads, skipped words, markers), and captions in your script's own wording as SRT and VTT, with a README brief for editing agents ([docs/EDIT-PACK.md](docs/EDIT-PACK.md)). The take log now also notes each re-read and keeps each take's sentences. Words and captions come from voice mode (roadmap 26)
 - **Export the take log…** in the ☰ menu, and the **Export take log…** button in the take summary, now work. Before, only File > Export Take Log did

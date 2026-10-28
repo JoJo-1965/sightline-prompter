@@ -14,6 +14,11 @@ macOS and Linux. Your AI writes the script and its directions, Sightline
 follows your voice through the take, and the take log goes back to your AI
 for the edit.
 
+Sightline doesn't record video or audio, and isn't meant to replace OBS,
+Riverside, Zoom or your camera. It sits alongside them and gathers what they
+can't: accurate timings for every take, section and word, retakes, markers
+and ratings, and a slate to line them up with the recording.
+
 This page lists what's new. The [change log](../readme.md#change-log) has the
 details, and the [user guide](guide/README.md) shows every screen.
 
