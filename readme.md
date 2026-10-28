@@ -205,7 +205,7 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ## Change log
 
-### Next release
+### 1.0.4 (28 October 2026)
 
 - **Easier to find: the control pad and the control window** are now at the top of ☰ > Window (they were at the foot of ☰ > Playback), and Settings > Remotes has a tickbox for each
 - **"Prompter, what can I say?"** (or "Prompter, help"): shows every voice command and what it does on the prompter, until your next command, a click, Esc or 15 seconds. It's in the F1 shortcuts too
