@@ -27,8 +27,8 @@ and a slate to line them all up with the recording.
 | Step       | What your AI does                                                         | What Sightline does                                                                                        |
 | ---------- | ------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | **Write**  | Writes the script, with sections, target times, stops and countdowns      | **Help > Copy the AI Script Prompt** gives it the instructions, and a checker validates the result         |
-| **Record** | Loads the script and runs the prompter through a local API, if you let it | Follows your voice, holds at every `{stop}`, counts down every `{pause: 3s}`, takes "Prompter, …" commands |
-| **Edit**   | Reads the take log and chooses the takes                                  | Logs every take of every section, with retakes, markers and your keeper or scrap rating, as JSON and CSV   |
+| **Record** | Loads the script and runs the prompter through a local API, if you let it | Follows your voice, holds at every `{stop}`, takes "Prompter, …" commands, and logs every take            |
+| **Edit**   | Lists your recordings and fetches the edit pack, then chooses the takes   | Keeps every session in **File > Recordings**: each take, every word with its timing, edit marks, captions |
 
 - **Scripts that direct the prompter.** The [AI Script Prompt](docs/AI-SCRIPT-BRIEF.md)
   works with ChatGPT, Claude, Gemini or Copilot. The script that comes back has
@@ -41,18 +41,20 @@ and a slate to line them all up with the recording.
   script into a slot, start, pause, jump sections, change speed, drop markers
   and rate takes. It's off by default, token-protected and closed to web
   pages.
-- **A take log made for an editing agent.** Each take's start and end, whether
-  it was read through or retaken, its markers and rating, and the take to use
-  for each section.
+- **An edit pack made for an editing agent.** Each take's start and end,
+  whether it was read through or retaken, its markers, rating and pace, every
+  word with when you said it, sentences, edit marks and captions, and the take
+  to use for each section. Every session is kept in **File > Recordings**, and
+  an agent can list them and fetch any pack itself.
 - **Private by design.** Voice recognition runs offline on your own computer,
   so nothing you say is sent anywhere.
 
 The whole workflow is in the guide: [Working with AI](docs/guide/09-working-with-ai.md).
 
-**Coming next** ([roadmap](ROADMAP.md)): word-level timing and an "edit pack"
-an editing agent can assemble a video from; `{listen: off}` and `{prompter: …}`
-so the script can direct the microphone and the prompter; and a recordings
-library that an agent can list and fetch from.
+**Coming next** ([roadmap](ROADMAP.md)): `{listen: off}` and `{prompter: …}`
+so the script can direct the microphone and the prompter; a scratch audio
+track to line the edit up with your recording automatically; and signed
+installers.
 
 ## Features
 
@@ -60,10 +62,15 @@ library that an agent can list and fetch from.
   and offline), or [Deepgram](https://deepgram.com/) if you prefer. The
   sentence you're about to say is highlighted
 - **"Prompter, …" voice commands:** pause, go, slower, again (for a retake),
-  keeper, scrap that, marker, resync and more
+  keeper, scrap that, marker, resync, "Section 3" and more, with a choice of
+  wake word (Prompter, Computer, Teleprompter or Director)
+- **Your words:** names and words it mishears, and words that sound alike,
+  count as the script word or command, as synonyms rather than replacements;
+  it suggests fixes from what it heard and can learn a word you say
 - **Or a steady pace** in words per minute, with section targets, a pacing
   light, a take summary and a rehearsal timer
-- **Stops and countdowns** written into the script, and a **take log** for the
+- **Stops and countdowns** written into the script, **notes mode** (a page at
+  a time), and a **take log**, **edit pack** and **recordings library** for the
   edit
 - Opens **Markdown, Word, rich text, plain text, PDF and Google Docs links**,
   with a built-in editor and live reload
