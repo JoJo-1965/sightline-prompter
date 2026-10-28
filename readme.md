@@ -69,7 +69,9 @@ library that an agent can list and fetch from.
   with a built-in editor and live reload
 - **Nine script slots**, a control bar and menu, six tabs of settings, a
   floating button pad, a phone remote, a control window for a second screen,
-  clickers, pedals and game controllers
+  clickers, pedals and game controllers, and a
+  [Stream Deck plugin](docs/guide/06-remotes-and-screens.md#stream-deck) with
+  keys that light up, dials and the Pedal (coming to the Elgato Marketplace)
 - **For real rigs:** mirroring for beam-splitter glass, full screen on a
   prompter monitor such as the Elgato Prompter, an eye-line mode, hiding from
   screen sharing and click-through
@@ -207,6 +209,7 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ### Next release
 
+- **Stream Deck plugin, signposted:** Settings > Remotes has a **Stream Deck** button, and the user guide (Remotes and second screens > Stream Deck), the About box and the feature list describe the coming Sightline Prompter plugin for Stream Deck: what its keys and dials do, the sample profiles, and how to set it up (roadmap 39)
 - **The local API for buttons:** `GET /events` streams the prompter's state (playing, on air, mirror, slot, section, time left, speed, text size, backing, the open panel) each time it changes, so a button can light up to match; and `POST /command` gains `on-air`, `mirror`, `mirror-h`, `mirror-v`, `bigger`, `smaller`, `layout`, `reading`, `recording`, `eye-line`, `click-through`, `scroll` and `backing`. It's what the coming Stream Deck plugin uses (roadmap 39)
 - **Your words** (Settings > Voice): voice scrolling now copes with the names and words it mishears. **Match words that sound alike** (on by default) counts a heard word that sounds like a script word, starts with the same letter and is about as long, as that word ("marsha" for "Moshe"). **Your list** adds the rest: your word, then what it hears instead ("site line" for "Sightline" works too). Each is a synonym, not a replacement, so it counts as your word where the script has it and as itself everywhere else. **Command words** does the same for the wake word and commands ("prompt her" for Prompter, "cheaper" for keeper), and sound-alikes count there too ("prompta"), still only at the end of what you say. **Suggest from what it heard** offers the words the heard logs show it mishearing more than once, and **Teach…** listens while you say the word and adds what it hears. They're kept with your settings (roadmap 20)
 - **Recordings** (**File > Recordings…**, **Ctrl+Shift+R**, also ☰ > Playback): every recording session in one list, newest first, with its date, takes, keepers and length. Open one to see its takes and which ones the edit will use; **name** it, add a **note**, tick **Edited** once it's cut, **export** its edit pack as a folder or a **zip**, or **delete** it (to the Recycle Bin, after asking). It replaces File > Export Take Log, Start a New Take Log and Show Take Logs Folder, which now live in the panel. An AI agent can do the same through the local API (`GET /recordings`, `GET /recording`, `GET /recording/pack`, `POST /recording/update`, and `POST /recording/delete` only if **Settings > Remotes > Let it delete recordings too** is ticked) or `node scripts/sightline.mjs recordings`, `recording`, `recording-pack`, `name`, `note`, `processed` and `delete-recording`. Names and notes are kept beside the logs, so take logs are never rewritten (roadmap 36)

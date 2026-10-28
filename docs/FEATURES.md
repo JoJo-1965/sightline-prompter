@@ -32,7 +32,7 @@ details, and the [user guide](guide/README.md) shows every screen.
 | Script formats      | Markdown and HTML, with a built-in Markdown editor                                    | Adds plain text, Word, rich text, **PDF** and **Google Docs links**                                                                                            |
 | Script instructions |                                                                                       | Stops, countdowns, markers, pace and target times in `{curly braces}`; notes in `[brackets]`                                                                   |
 | Pacing and takes | | Pacing light, section targets, take summary, rehearsal timer, and a **take log** for the edit with keeper and scrap ratings |
-| Controls            | Keyboard shortcuts; arrow keys and a clicker jump between sections; microphone choice | Control bar, ☰ menu, nine-tab Settings, nine script slots, floating pad, phone remote, control window, clickers that start and pause, pedals, game controllers |
+| Controls            | Keyboard shortcuts; arrow keys and a clicker jump between sections; microphone choice | Control bar, ☰ menu, nine-tab Settings, nine script slots, floating pad, phone remote, control window, clickers that start and pause, pedals, game controllers, a Stream Deck plugin |
 | Recording rigs      | Mirror (flip) mode                                                                    | Mirroring in any direction, prompter monitor (Elgato Prompter), eye-line mode, one-click mirroring, hide from screen capture, click-through                    |
 | Reading aids        | Background opacity and font size                                                      | Sentence highlight, focus band, text edge, colour themes, Atkinson Hyperlegible and OpenDyslexic                                                               |
 | Help                | Readme; recently opened files                                                         | Built-in user guide with screenshots, sample scripts, shortcuts panel                                                                                          |
@@ -189,6 +189,11 @@ The whole workflow is in the guide:
   with big buttons. Click any line to move the prompter there.
 - **Presenter clickers that start and pause** as well as jump sections, **USB
   foot pedals** and **game controllers**.
+- **Stream Deck plugin** (coming to the Elgato Marketplace): keys that light up
+  to match the prompter (▶ or ❚❚, On air, the open slot, the time left),
+  dials on the Stream Deck + and the three-pedal Stream Deck Pedal, with a
+  sample profile for every model. See
+  [Remotes and second screens](guide/06-remotes-and-screens.md#stream-deck).
 - A keyboard shortcuts panel (F1) and an About page.
 
 ## Recording setups

@@ -4053,6 +4053,9 @@ window.electron.onAppInfo( ( info ) => {
 document.getElementById( "set-remote-help" )?.addEventListener( "click", () => {
 	window.electron.openGuide( "10-setting-up-your-ai.md" );
 } );
+document.getElementById( "set-remote-streamdeck" )?.addEventListener( "click", () => {
+	window.electron.openGuide( "06-remotes-and-screens.md#stream-deck" );
+} );
 
 // --- Updates: a check against the latest release on GitHub ---
 

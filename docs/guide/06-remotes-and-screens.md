@@ -21,6 +21,50 @@ straight away:
 
 The buttons can't be changed yet; choosing your own is on the roadmap.
 
+## Stream Deck
+
+The **Sightline Prompter plugin for Stream Deck** runs the prompter from an
+Elgato Stream Deck's keys, the Stream Deck + dials and the Stream Deck Pedal,
+and the keys show what the prompter is doing: ▶ or ❚❚, On air in red, the
+script slot that's open, the section and the time left.
+
+**Getting it:** the plugin is coming to the Elgato Marketplace, where you'll
+find it by searching for *Sightline Prompter* in the Stream Deck app. The
+latest news and the link are on the
+[Sightline page](https://joannelockwood.co.uk/sightline#stream-deck).
+
+**Setting it up:**
+
+1. In Sightline, **Settings > Remotes**, tick **Let an AI assistant or script
+   on this computer load scripts and control the teleprompter**, and **Save**.
+   The plugin finds Sightline itself, so there's no code or token to type.
+2. Install the plugin. Stream Deck offers a ready-made **Sightline** profile
+   for each Stream Deck you have: the Mini, Stream Deck, Neo, XL, +, + XL and
+   the Pedal.
+3. Keep Sightline open while you record. If a key goes grey, it says why:
+   *Get Sightline* (Sightline isn't installed), *Turn on Remotes* (step 1), or
+   *Not running* (Sightline is closed). Pressing a grey key opens the download
+   page or these steps.
+
+| Keys | What they do |
+| --- | --- |
+| Play / pause, On air, Eye-line, Click-through | Two-state keys that light up to match the prompter |
+| Back to the top, Previous and Next section | Move through the script |
+| Marker, Back to the marker, Keeper, Scrap that | The same as the keys and voice commands |
+| Script slot | Opens slot 1 to 9; lit while that slot is open |
+| Mirror | Steps through the modes, or turns ↔ or ↕ on and off |
+| Layout, Reading, Recording | Opens or closes that panel |
+| Faster, Slower, Bigger, Smaller | Speed and text size |
+| Section and time left | Shows them; press to play or pause |
+
+On the Stream Deck +, the dials turn through sections, scroll the script by
+hand, and change the speed, text size and backing, with the values on the
+touch strip. The Pedal's three pedals are previous section, play or pause, and
+next section.
+
+The plugin works with Sightline 1.0.6 or later, on Windows and macOS (Stream
+Deck doesn't run on Linux).
+
 ## The floating pad
 
 **Ctrl+Shift+P**, ☰ > Window > Control pad, or Settings > Remotes. It's a small bar with Top,
