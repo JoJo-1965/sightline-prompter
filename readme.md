@@ -205,6 +205,10 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ## Change log
 
+### Next release
+
+- The Voice panel's microphone hint no longer names a particular microphone
+
 ### 1.0.3 (28 October 2026)
 
 - **Help for the AI and remote settings:** Settings > Remotes now says what an AI can do and has a **How to set up your AI** button, which opens a new user guide page, [Setting up your AI](docs/guide/10-setting-up-your-ai.md) (Claude Code, Codex, ChatGPT, Claude and Gemini, and every AI and remote control setting). The guide also covers game controllers, and its links to the readme and roadmap open on GitHub instead of going back to the contents
