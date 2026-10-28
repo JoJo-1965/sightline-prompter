@@ -1150,8 +1150,57 @@ app.whenReady().then( async () => {
 		"keeper",
 		"scrap",
 		"back-to-marker",
-		"help"
+		"help",
+		// For buttons (the Stream Deck plugin): toggles and steps.
+		"on-air",
+		"mirror",
+		"mirror-h",
+		"mirror-v",
+		"bigger",
+		"smaller",
+		"layout",
+		"reading",
+		"recording",
+		"eye-line",
+		"click-through",
+		"scroll", // value: lines, + down or - up
+		"backing" // value: steps of 5%, + or -
 	];
+
+	// The prompter's state, for GET /status and the GET /events stream.
+	const remoteStatus = () => ( {
+		file: currentFilePath,
+		slot: activeSlot + 1,
+		slots: slots.map( ( s, i ) => ( { slot: i + 1, file: s?.path ?? null } ) ),
+		scrollMode: settings.scrollMode,
+		steadyWpm: settings.steadyWpm,
+		fontSize: currentFontSize,
+		opacity: currentOpacity,
+		mirrored: currentMirrored,
+		eyeLine: settings.eyeLine,
+		clickThrough: !!settings.clickThrough,
+		windowMode,
+		...rendererStatus,
+		commands: REMOTE_COMMANDS
+	} );
+	const remoteListeners = new Set();
+	let lastPublished = "";
+	// Tell every listener when something they can show has changed.
+	function publishRemoteState() {
+		if ( !remoteListeners.size ) return;
+		const state = remoteStatus();
+		const text = JSON.stringify( state );
+		if ( text === lastPublished ) return;
+		lastPublished = text;
+		for ( const send of remoteListeners ) send( state );
+	}
+	const remoteEvents = {
+		subscribe( send ) {
+			remoteListeners.add( send );
+			send( remoteStatus() );
+			return () => remoteListeners.delete( send );
+		}
+	};
 
 	function slotNumber( value ) {
 		if ( value == null ) return null;
@@ -1181,19 +1230,7 @@ app.whenReady().then( async () => {
 	}
 
 	const remoteRoutes = {
-		"GET /status": () => ( {
-			file: currentFilePath,
-			slot: activeSlot + 1,
-			slots: slots.map( ( s, i ) => ( { slot: i + 1, file: s?.path ?? null } ) ),
-			scrollMode: settings.scrollMode,
-			steadyWpm: settings.steadyWpm,
-			fontSize: currentFontSize,
-			opacity: currentOpacity,
-			eyeLine: settings.eyeLine,
-			windowMode,
-			...rendererStatus,
-			commands: REMOTE_COMMANDS
-		} ),
+		"GET /status": remoteStatus,
 		"POST /open": ( { path: filePath, slot } ) => {
 			if ( typeof filePath !== "string" || !path.isAbsolute( filePath ) ) {
 				throw new Error( "path must be an absolute file path" );
@@ -1282,6 +1319,7 @@ app.whenReady().then( async () => {
 				port: wanted,
 				token: remoteToken,
 				routes: remoteRoutes,
+				events: remoteEvents,
 				onError: ( err ) => {
 					remoteError = err.code === "EADDRINUSE" ? `Port ${ wanted } is already in use` : err.message;
 					remoteServer = null;
@@ -1449,6 +1487,7 @@ app.whenReady().then( async () => {
 		if ( status && typeof status === "object" ) rendererStatus = status;
 		controlPad?.sendStatus( rendererStatus );
 		controlWindow?.sendStatus( rendererStatus );
+		publishRemoteState();
 	} );
 	syncRemoteServer();
 

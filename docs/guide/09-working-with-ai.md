@@ -76,7 +76,8 @@ that file and sends each request with the header
 | `GET /status`     | The current script, slot, speed, progress and slots                  |
 | `POST /load-text` | Save a script it wrote and open it `{ text, name, slot }`            |
 | `POST /open`      | Open a script file `{ path, slot }`                                  |
-| `POST /command`   | `play`, `pause`, `next-section`, `go-to-section`, `set-wpm`, `marker`, `keeper`, `scrap` and more |
+| `POST /command`   | `play`, `pause`, `next-section`, `go-to-section`, `set-wpm`, `marker`, `keeper`, `scrap` and more; for buttons, `on-air`, `mirror`, `mirror-h`, `mirror-v`, `bigger`, `smaller`, `layout`, `reading`, `recording`, `eye-line`, `click-through`, and `scroll` or `backing` with a number of steps |
+| `GET /events`     | A live stream (server-sent events) of the state, sent again each time something changes: playing, on air, mirror, slot, section, time left, speed, backing |
 | `POST /slot`      | Switch to a slot `{ slot }`                                          |
 | `POST /settings`  | Change display settings                                              |
 | `GET /recordings` | Every recording session, newest first, with its id                  |

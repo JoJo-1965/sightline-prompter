@@ -44,7 +44,10 @@ function tokenMatches( given, token ) {
 }
 
 // routes: { "GET /status": async (body) => result, ... }
-export function startRemoteServer( { port, token, routes, onError } ) {
+// events: { subscribe( send ) -> unsubscribe }: GET /events streams each
+// change as a server-sent event (`data: {…}`), for buttons that show state
+// such as the Stream Deck plugin.
+export function startRemoteServer( { port, token, routes, events, onError } ) {
 	const server = http.createServer( async ( req, res ) => {
 		const reply = ( status, data ) => {
 			res.writeHead( status, { "Content-Type": "application/json" } );
@@ -67,6 +70,22 @@ export function startRemoteServer( { port, token, routes, onError } ) {
 				return reply( 401, { error: "Missing or wrong token" } );
 			}
 			const url = new URL( req.url, "http://127.0.0.1" );
+			if ( events && req.method === "GET" && url.pathname === "/events" ) {
+				res.writeHead( 200, {
+					"Content-Type": "text/event-stream",
+					"Cache-Control": "no-cache",
+					Connection: "keep-alive"
+				} );
+				const send = data => res.write( `data: ${ JSON.stringify( data ) }\n\n` );
+				const unsubscribe = events.subscribe( send );
+				// A comment now and then keeps idle connections open.
+				const keepAlive = setInterval( () => res.write( ": still here\n\n" ), 15000 );
+				req.on( "close", () => {
+					clearInterval( keepAlive );
+					unsubscribe();
+				} );
+				return;
+			}
 			const route = routes[`${ req.method } ${ url.pathname }`];
 			if ( !route )
 				return reply( 404, {

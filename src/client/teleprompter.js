@@ -289,14 +289,17 @@ function showMirrorButton() {
 }
 
 // Each toggle stays on until clicked again; both on mirrors both ways.
-document.addEventListener( "click", ( e ) => {
-	const pill = e.target.closest( ".mirror-pills [data-axis]" );
-	if ( !pill ) return;
+function toggleMirrorAxis( axis ) {
 	let h = mirrored === "horizontal" || mirrored === "both";
 	let v = mirrored === "vertical" || mirrored === "both";
-	if ( pill.dataset.axis === "h" ) h = !h;
+	if ( axis === "h" ) h = !h;
 	else v = !v;
 	setMirrored( h && v ? "both" : h ? "horizontal" : v ? "vertical" : "off" );
+}
+
+document.addEventListener( "click", ( e ) => {
+	const pill = e.target.closest( ".mirror-pills [data-axis]" );
+	if ( pill ) toggleMirrorAxis( pill.dataset.axis );
 } );
 
 function setMirrored( value, save = true ) {
@@ -4161,6 +4164,9 @@ let lastStatusSent = 0;
 function sendStatus() {
 	window.electron.sendRendererStatus( {
 		scrolling: isScrolling(),
+		onAir: onAir(),
+		backing: Math.round( liveBacking() * 100 ),
+		panel: layoutPanel?.classList.contains( "hidden" ) === false ? layoutView : null,
 		section: scriptIndex,
 		scrollY: Math.round( window.scrollY ),
 		progress: progressText?.textContent ?? "",
@@ -4333,6 +4339,18 @@ function runRemoteAction( action, value ) {
 	} else if ( action === "marker" ) dropMarker();
 	else if ( action === "keeper" || action === "scrap" ) rateTake( action );
 	else if ( action === "help" ) openHelp();
+	else if ( action === "on-air" ) toggleOnAir();
+	else if ( action === "mirror" ) cycleMirror();
+	else if ( action === "mirror-h" || action === "mirror-v" ) toggleMirrorAxis( action.slice( -1 ) );
+	else if ( action === "bigger" ) setFontSize( fontSize + FONT_SIZE_STEP );
+	else if ( action === "smaller" ) setFontSize( fontSize - FONT_SIZE_STEP );
+	else if ( [ "layout", "reading", "recording" ].includes( action ) ) toggleLayoutView( action );
+	else if ( action === "eye-line" ) window.electron.saveSettings( { eyeLine: !settings.eyeLine } );
+	else if ( action === "click-through" ) window.electron.saveSettings( { clickThrough: !settings.clickThrough } );
+	// Dials: value is the number of steps, + or -.
+	else if ( action === "scroll" && Number.isFinite( Number( value ) ) ) {
+		window.scrollBy( { top: Number( value ) * parseFloat( getComputedStyle( md ).lineHeight || "40" ), behavior: "smooth" } );
+	} else if ( action === "backing" && Number.isFinite( Number( value ) ) ) setLiveBacking( liveBacking() + Number( value ) * OPACITY_STEP );
 	sendStatus();
 }
 window.electron.onRemoteCommand( runRemoteAction );
