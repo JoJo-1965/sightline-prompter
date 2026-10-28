@@ -65,6 +65,12 @@ export function takeMarks( take ) {
 		const word = ( take.words ?? [] ).find( w => w.i === r.from )?.w ?? "";
 		marks.push( { t: r.t, type: "reread", detail: `went back to "${ word }"` } );
 	}
+	// Back to a marker and read on: cut to here (the second reading).
+	for ( const r of take.restarts ?? [] ) {
+		const name = r.label ? `"${ r.label }"` : "a marker";
+		const first = r.markerAt === null ? "" : ` (first read at ${ r.markerAt } s)`;
+		marks.push( { t: r.t, type: "restart", detail: `back to ${ name }${ first }: the reading from here replaces it`, markerAt: r.markerAt } );
+	}
 	// Markers with their labels where the log has them ({marker: Setup}).
 	if ( take.markerList ) {
 		for ( const m of take.markerList ) marks.push( { t: m.t, type: "marker", detail: m.label ?? "" } );
@@ -72,7 +78,7 @@ export function takeMarks( take ) {
 		for ( const t of take.markers ?? [] ) marks.push( { t, type: "marker", detail: "" } );
 	}
 	marks.push( { t: take.end, type: "take-end", detail: take.status } );
-	const order = [ "take-start", "slate", "sentence", "skipped", "reread", "pause", "marker", "take-end" ];
+	const order = [ "take-start", "slate", "sentence", "skipped", "restart", "reread", "pause", "marker", "take-end" ];
 	return marks.sort( ( a, b ) => a.t - b.t || order.indexOf( a.type ) - order.indexOf( b.type ) );
 }
 

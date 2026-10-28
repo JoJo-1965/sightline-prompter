@@ -46,7 +46,7 @@ so on) and finish with `status` to confirm.
 `command <action> [value]`, where action is one of: `play`, `pause`,
 `toggle`, `restart`, `next-section`, `previous-section`,
 `go-to-section <n>` (the n-th `##` section), `faster`, `slower`,
-`reset-speed`, `set-wpm <words a minute>`, `marker`, `keeper`, `scrap`,
+`reset-speed`, `set-wpm <words a minute>`, `marker`, `back-to-marker`, `keeper`, `scrap`,
 `help`. `window minimize|maximize|fullscreen` toggles the window.
 
 The user may be recording. **Only send `play`, `pause`, jumps, `keeper` or

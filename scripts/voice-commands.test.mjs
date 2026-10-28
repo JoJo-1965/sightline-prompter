@@ -112,3 +112,6 @@ assert.deepEqual( got5, [ "section:1", "section:4" ] );
 assert.equal( matchCommand( [ "reset" ] ), "reset" );
 assert.equal( matchCommand( [ "from", "the", "top" ] ), "top" );
 console.log( "section and reset pass" );
+assert.equal( matchCommand( [ "back", "to", "the", "marker" ] ), "back-to-marker" );
+assert.equal( matchCommand( [ "marker" ] ), "marker" );
+console.log( "back to the marker passes" );

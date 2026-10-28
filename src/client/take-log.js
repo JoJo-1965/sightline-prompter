@@ -44,6 +44,7 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [] 
 			markers: [],
 			markerList: [],
 			markerKeys: new Set(),
+			restarts: [],
 			words: [],
 			rereads: [],
 			rating: null,
@@ -88,7 +89,10 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [] 
 			markers: done.markers,
 			// Every marker with its label ({marker: Setup}) and where it came from:
 			// "script" ({marker} passed while reading) or "key" (B or a command).
-			markerList: done.markerList,
+			markerList: done.markerList.map( ( { t, label, from } ) => ( { t, label, from } ) ),
+			// Went back to a marker and read on: { t, label, markerAt }. The
+			// reading from markerAt up to t is superseded by the one from t.
+			restarts: done.restarts,
 			words: done.words,
 			rereads: done.rereads,
 			sentences: sectionSentences( done.section - 1 )
@@ -162,10 +166,22 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [] 
 			const t = since( at ?? clock() );
 			if ( current ) {
 				current.markers.push( t );
-				current.markerList.push( { t, label, from } );
+				current.markerList.push( { t, label, from, key } );
 				if ( key !== null ) current.markerKeys.add( key );
 			}
 			event( "marker", label ? { label } : {} );
+		},
+
+		// Back to a marker in the take and reading on from it (Shift+B, or
+		// "Prompter, back to the marker"). The take carries on.
+		restart( { label = null, key = null, at = null } = {} ) {
+			if ( !current || !log.startedAt ) return null;
+			const t = since( at ?? clock() );
+			const first = key === null ? null : current.markerList.find( m => m.key === key );
+			const entry = { t, label, markerAt: first?.t ?? null };
+			current.restarts.push( entry );
+			event( "restart", label ? { label } : {} );
+			return entry;
 		},
 
 		// "keeper" or "scrap": the take in progress, else the last one finished.

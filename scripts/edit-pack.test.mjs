@@ -143,3 +143,29 @@ console.log( "pace passes" );
 	assert.deepEqual( marks.map( m => m.detail ), [ "Setup", "" ] );
 	console.log( "labelled markers pass" );
 }
+
+// Restart from a marker (roadmap 46): back to a marker mid-take is logged in
+// the same take, with when that marker was first read, and marked for the edit.
+{
+	let at = Date.parse( "2026-10-28T12:00:00.000Z" );
+	const rs = createTakeLog( { clock: () => at, sentences: () => [] } );
+	rs.slate( 0 );
+	rs.tick( { active: true, index: 0, title: "Scenario", advanced: true } );
+	at += 4000;
+	rs.marker( { label: "Setup", from: "script", key: 1 } );
+	at += 6000;
+	const r = rs.restart( { label: "Setup", key: 1 } );
+	assert.deepEqual( r, { t: 10, label: "Setup", markerAt: 4 } );
+	at += 5000;
+	rs.tick( { active: true, index: 0, title: "Scenario", advanced: true } );
+	rs.tick( { active: false, index: 0, atEnd: true } );
+	const { takes } = rs.data();
+	assert.equal( takes.length, 1, "a restart doesn't start a new take" );
+	assert.deepEqual( takes[0].restarts, [ { t: 10, label: "Setup", markerAt: 4 } ] );
+	assert.deepEqual( takes[0].markerList, [ { t: 4, label: "Setup", from: "script" } ] );
+	const mark = takeMarks( takes[0] ).find( m => m.type === "restart" );
+	assert.equal( mark.t, 10 );
+	assert.equal( mark.markerAt, 4 );
+	assert.match( mark.detail, /back to "Setup" \(first read at 4 s\)/ );
+	console.log( "restart from a marker passes" );
+}

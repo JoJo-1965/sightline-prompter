@@ -83,6 +83,10 @@ export const COMMANDS = [
 		]
 	},
 	{
+		id: "back-to-marker",
+		phrases: [ "back to the marker", "from the marker", "back to marker", "last marker", "to the marker", "from the last marker" ]
+	},
+	{
 		id: "marker",
 		phrases: [
 			"marker",
@@ -165,6 +169,7 @@ export const COMMAND_HELP = [
 	[ "section 3", "Go to that section (also without “Prompter”)" ],
 	[ "again", "A retake: back to the start of this section" ],
 	[ "marker", "Drop a marker for the edit" ],
+	[ "back to the marker", "Read again from the last marker" ],
 	[ "keeper · scrap that", "Rate this take" ],
 	[ "resync", "Voice mode: find your place again" ],
 	[ "bigger · smaller", "Text size" ],

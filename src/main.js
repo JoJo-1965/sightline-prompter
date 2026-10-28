@@ -1036,6 +1036,7 @@ app.whenReady().then( async () => {
 		"marker",
 		"keeper",
 		"scrap",
+		"back-to-marker",
 		"help"
 	];
 

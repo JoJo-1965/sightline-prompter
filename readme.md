@@ -207,6 +207,7 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ### Next release
 
+- **Back to the last marker:** **Shift+B**, or "Prompter, back to the marker", goes back to the last marker so you can read on from there. The take carries on, and the take log and edit pack record it as a restart (`restarts`: when, which marker, and when it was first read), so the edit can cut to the second reading instead of needing a new take. The API has `back-to-marker` too (roadmap 46, asked for by the Academy)
 - **Named markers:** `{marker: Setup}` names a marker; plain `{marker}` still works. Every `{marker}` in the script is now logged with the take as you read past it (in voice mode, when you say the word after it), and a name goes into the take log (`markerList`) and the edit pack's marks, so long sections can be cut at each part. The script checker, the spec and the AI script prompt know the new form (roadmap 45, asked for by the Academy)
 - **Pace for each take** (voice mode): the take log and edit pack now give each take's words, spoken time (first to last word), speaking time (less pauses of a second or more), speaking and overall words per minute, and the section's `{target}` with how far over or under, as new columns at the end of takes.csv; and each section in take-log.json has a summary such as "S3: 2:31 spoken, 151 wpm speaking, 138 wpm overall, target 2:40 (9 s under)". Nothing existing was renamed or removed (roadmap 43, asked for by the Academy)
 - **Mirror toggles:** the Layout panel's Mirror dropdown and the **Beam-splitter setup** button are replaced by two buttons, in the Layout and Reading views: **↔ Left–right** and **↕ Up–down**. Each stays lit while it's on and turns off when clicked again; both on mirrors both ways, and the panel stays open. Beam-splitter setup only looked as if it changed the mirroring; for the same look, set Background to 100% and Text brightness to about 70%
@@ -357,7 +358,7 @@ starts. Earlier version numbers belong to the original project.
 | `GET /status`       | Current script, slot, speed, progress and slots           |
 | `POST /open`        | Open a script file `{ path, slot }`                       |
 | `POST /load-text`   | Save text as a script and open it `{ text, name, slot }`  |
-| `POST /command`     | `play`, `pause`, `toggle`, `restart`, `next-section`, `previous-section`, `faster`, `slower`, `reset-speed`, `set-wpm`, `go-to-section`, `marker`, `keeper`, `scrap`, `help` |
+| `POST /command`     | `play`, `pause`, `toggle`, `restart`, `next-section`, `previous-section`, `faster`, `slower`, `reset-speed`, `set-wpm`, `go-to-section`, `marker`, `back-to-marker`, `keeper`, `scrap`, `help` |
 | `POST /slot`        | Switch to a slot `{ slot }`                               |
 | `POST /settings`    | Change display settings                                   |
 | `POST /window`      | `minimize`, `maximize` or `fullscreen` (each toggles)     |

@@ -17,6 +17,7 @@ export const SHORTCUTS = [
 			[ [ "K" ], "This take's a keeper (in the take log)" ],
 			[ [ "Shift+K" ], "Scrap this take" ],
 			[ [ "Ctrl+B" ], "Jump to the next marker ({marker} or one you dropped)" ],
+			[ [ "Shift+B" ], "Back to the last marker, to read on from there (logged as a restart for the edit)" ],
 			[ [ "↑", "↓", "Wheel" ], "When stopped: scroll by hand" ]
 		]
 	},

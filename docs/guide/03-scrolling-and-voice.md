@@ -86,6 +86,7 @@ that*, with the words it heard, so you can say it again.
 | **section 3** (any number) | To the start of that section. You can say it without "Prompter" too, as your spoken slate before each section: saying the section you're in counts as a retake |
 | **again** (or retake) | Drops a marker where you are, then goes back to the start of the section for a retake |
 | **marker** | Drops a marker |
+| **back to the marker** (or from the marker, last marker) | Back to the last marker, to read on from there (Shift+B) |
 | **keeper** (or keep that, good take) | Marks the take you're on, or the one you've just finished, as a keeper in the [take log](05-recording-a-take.md#the-take-log) |
 | **scrap that** (or bin it, bad take) | Marks that take to be thrown away |
 | **resync** (or find me) | Voice mode: if it has lost you, keep reading and it finds your place anywhere in the script |

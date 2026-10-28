@@ -60,6 +60,23 @@ every marker's time. `markerList`, added later, gives the same markers with
 `{marker}` in the script, `key` for one dropped while recording). A script
 marker is logged once a take, the first time it's read past.
 
+## Restarts from a marker
+
+When the reader goes back to a marker partway through a section (Shift+B, or
+"Prompter, back to the marker") and reads on, the take carries on and the
+restart is logged in the take's `restarts`: `{ t, label, markerAt }`.
+
+- `t`: when they went back, on the session clock.
+- `label`: the marker's name (`{marker: Setup}`), or null.
+- `markerAt`: when that marker was first read in this take, or null if it
+  wasn't logged (a marker before the take started).
+
+To assemble the take, keep it from its start up to `markerAt`, then cut to
+`t` and keep the rest: the reading from `t` replaces the one from `markerAt`
+to `t`. With several restarts, apply them in order. Each also appears in
+the edit marks as `restart`, with `markerAt` in `edit-marks.json`. In voice
+mode the words from the second reading replace the first in `words.csv`.
+
 ## Pace
 
 Each take read in voice mode has its pace, worked out from its word
@@ -112,6 +129,7 @@ each take.
 | `sentence` | A sentence starts here: a clean place to cut in. Its text is in `detail` |
 | `pause` | A gap of a second or more between words (`duration` in seconds) |
 | `reread` | A fluff: the reader went back and said a phrase again. Cut to the second reading |
+| `restart` | The reader went back to a marker and read on from it (below). `markerAt` is when that marker was first read |
 | `skipped` | Words of this sentence that weren't said (in `detail`) |
 | `marker` | A marker: dropped during the take (B, or "Prompter, marker"), or a `{marker}` in the script, logged as it was read past (in voice mode, when the word after it was said). A named one, `{marker: Setup}`, has its name in `detail` |
 

@@ -690,6 +690,11 @@ document.addEventListener( "keydown", ( event ) => {
 		dropMarker();
 		return;
 	}
+	if ( ( event.key === "b" || event.key === "B" ) && event.shiftKey && !event.ctrlKey && !event.metaKey && !event.altKey ) {
+		event.preventDefault();
+		jumpToPreviousMarker();
+		return;
+	}
 	if (
 		( event.key === "b" || event.key === "B" )
 		&& ( event.ctrlKey || event.metaKey )
@@ -1168,6 +1173,7 @@ const COMMAND_LABELS = {
 	keeper: "keeper",
 	scrap: "scrap that",
 	reset: "reset",
+	"back-to-marker": "back to the marker",
 	help: "what can I say"
 };
 
@@ -1374,6 +1380,12 @@ function runVoiceCommand( id, value ) {
 		resyncAfterJump();
 		// Voice mode: a fresh slate for the retake, once the jump has settled.
 		if ( voice ) setTimeout( showSlate, 800 );
+	} else if ( id === "back-to-marker" ) {
+		jumpToPreviousMarker();
+		if ( voice ) {
+			clearPausePill();
+			autoScrollHandle.setHold( false );
+		}
 	} else if ( id === "marker" ) {
 		runRemoteAction( "marker" );
 	} else if ( id === "keeper" || id === "scrap" ) {
@@ -4051,6 +4063,7 @@ function runRemoteAction( action, value ) {
 	} else if ( action === "faster" ) adjustAutoScrollSpeed( "up" );
 	else if ( action === "slower" ) adjustAutoScrollSpeed( "down" );
 	else if ( action === "reset-speed" ) adjustAutoScrollSpeed( "reset" );
+	else if ( action === "back-to-marker" ) jumpToPreviousMarker();
 	else if ( action === "set-wpm" && Number.isFinite( Number( value ) ) ) {
 		settings.steadyWpm = setWpm( Number( value ) );
 		window.electron.saveSettings( { steadyWpm: settings.steadyWpm } );
@@ -4346,7 +4359,7 @@ function measureDirectives( ranges ) {
 			y: pageY( m.el ),
 			word: wordAfter( m.el, ranges )
 		} ) ),
-		markers: [ ...scriptDirectives.markers, ...liveMarkers ]
+		markers: [ ...scriptDirectives.markers.map( ( m, key ) => ( { ...m, key } ) ), ...liveMarkers ]
 			.map( m => ( { ...m, y: pageY( m.el ) } ) )
 			.sort( ( a, b ) => a.y - b.y ),
 		paceChanges: scriptDirectives.paceChanges.map( c => ( {
@@ -4500,11 +4513,30 @@ function dropMarker() {
 	const start = word.cloneRange();
 	start.collapse( true );
 	start.insertNode( el );
-	liveMarkers.push( { el } );
-	recording.marker( { from: "key" } );
+	const key = `b${ liveMarkers.length + 1 }`;
+	liveMarkers.push( { el, key } );
+	recording.marker( { from: "key", key } );
 	scheduleMeasure();
 	showToast( "Marker added · Ctrl+B jumps between markers" );
 	sendPreviewContent();
+}
+
+// Back to the last marker before the reading line, to read on from there
+// (Shift+B, or "Prompter, back to the marker"). Within a take it's logged as
+// a restart, so the edit can cut to the second reading.
+function jumpToPreviousMarker() {
+	const markers = directivePoints.markers;
+	const y = readingLineY();
+	const prev = markers.filter( m => m.y < y - 8 ).at( -1 );
+	if ( !prev ) {
+		showToast( "No marker before this point · press B to add one" );
+		return;
+	}
+	window.scrollTo( 0, Math.max( 0, prev.y - window.innerHeight * getReadingAnchor() ) );
+	previewManuallyScrolled = true;
+	recording.restart( { label: prev.label ?? null, key: prev.key ?? null } );
+	resyncAfterJump();
+	showToast( prev.label ? `Back to “${ prev.label }”` : "Back to the last marker" );
 }
 
 function jumpToNextMarker() {
