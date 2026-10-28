@@ -16,7 +16,7 @@ your own computer. Windows, macOS and Linux.
 > Everything from the original still works. See the [change log](#change-log)
 > for the details, and **Help > About** in the app for credits.
 
-## Built around AI
+## Built around AI for the content creators of today
 
 | Step       | What your AI does                                                         | What Sightline does                                                                                        |
 | ---------- | ------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |

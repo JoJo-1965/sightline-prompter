@@ -1,6 +1,6 @@
 # Working with AI
 
-Sightline is built for people who make video with an AI assistant at their
+**Built around AI for the content creators of today.** Sightline is made for people who make video with an AI assistant at their
 side: content creators, and learning and development teams recording courses,
 explainers and updates at a desk or in a studio. Your AI can write the script,
 direct the prompter, run it while you record, and pick up the take log
