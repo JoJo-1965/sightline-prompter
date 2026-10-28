@@ -7,29 +7,14 @@
 // slate). Plain functions of the take log JSON, so main and the tests share
 // them. See docs/EDIT-PACK.md.
 
-import { pickTakes, takeLogCsv } from "./take-log.js";
+import { pickTakes, takeLogCsv, timedWords, PAUSE } from "./take-log.js";
 
-// The speech engine gives when each word started. A word ends when the next
-// one starts, unless there's a gap; then it ends after about as long as a
-// word that size takes to say.
-const LONGEST_WORD = 0.8;
-const PAUSE = 1; // a gap of a second or more is worth a mark
+export { timedWords };
+
 const CAPTION_LINE = 42; // characters per caption line, two lines a caption
 const MIN_CUE = 0.7; // seconds a caption stays up, where there's room
 
 const round2 = n => Math.round( n * 100 ) / 100;
-const sayTime = w => Math.min( LONGEST_WORD, 0.15 + 0.06 * w.length );
-
-// [{ i, w, start, end }] for one take.
-export function timedWords( take ) {
-	const words = take.words ?? [];
-	return words.map( ( word, k ) => {
-		const next = words[k + 1];
-		const own = word.t + sayTime( word.w );
-		const end = next && next.t - word.t <= LONGEST_WORD ? next.t : own;
-		return { i: word.i, w: word.w, start: word.t, end: round2( Math.max( word.t + 0.05, end ) ) };
-	} );
-}
 
 // Each sentence of the take's section, in script order:
 // { s, text, start, end, said, of, missing: [words not said], complete }.
@@ -243,7 +228,8 @@ export function editPack( data, readme = "" ) {
 	const marks = ( data.takes ?? [] ).flatMap( take =>
 		takeMarks( take ).map( m => ( { section: take.section, take: take.take, ...m } ) ) );
 	const files = {
-		"take-log.json": JSON.stringify( data, null, 2 ),
+		// Sections worked out again, so a log saved before the pace was added has it too.
+		"take-log.json": JSON.stringify( { ...data, sections: pickTakes( data.takes ?? [] ) }, null, 2 ),
 		"takes.csv": takeLogCsv( data ),
 		"edit-marks.json": JSON.stringify( marks.sort( ( a, b ) => a.t - b.t ), null, 2 ),
 		"edit-marks.csv": marksCsv( data ),

@@ -207,6 +207,7 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ### Next release
 
+- **Pace for each take** (voice mode): the take log and edit pack now give each take's words, spoken time (first to last word), speaking time (less pauses of a second or more), speaking and overall words per minute, and the section's `{target}` with how far over or under, as new columns at the end of takes.csv; and each section in take-log.json has a summary such as "S3: 2:31 spoken, 151 wpm speaking, 138 wpm overall, target 2:40 (9 s under)". Nothing existing was renamed or removed (roadmap 43, asked for by the Academy)
 - **Mirror toggles:** the Layout panel's Mirror dropdown and the **Beam-splitter setup** button are replaced by two buttons, in the Layout and Reading views: **↔ Left–right** and **↕ Up–down**. Each stays lit while it's on and turns off when clicked again; both on mirrors both ways, and the panel stays open. Beam-splitter setup only looked as if it changed the mirroring; for the same look, set Background to 100% and Text brightness to about 70%
 - The dropdowns in the Layout panel and on Settings > Layout, Reading and Recording are all the same width, so they line up
 - **Heading font** (Layout panel > Reading, and Settings > Reading): section headings and titles can use a different font from the text, for example Standard headings with OpenDyslexic text. **Same as the text** is the default

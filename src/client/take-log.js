@@ -31,7 +31,7 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [] 
 		version++;
 	}
 
-	function open( index, title ) {
+	function open( index, title, target = null ) {
 		const now = clock();
 		if ( !log.startedAt ) log.startedAt = new Date( now ).toISOString();
 		const take = 1 + log.takes.filter( t => t.section === index + 1 ).length;
@@ -45,7 +45,8 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [] 
 			words: [],
 			rereads: [],
 			rating: null,
-			slate: null
+			slate: null,
+			target
 		};
 		// The slate shown just before this take: its beep is the sync point.
 		if ( slated && slated.section === index + 1 && now - slated.at < 15000 ) {
@@ -81,6 +82,7 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [] 
 			status,
 			rating: done.rating,
 			slate: done.slate,
+			target: done.target ?? null, // the section's {target} in seconds, if the script sets one
 			markers: done.markers,
 			words: done.words,
 			rereads: done.rereads,
@@ -106,7 +108,7 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [] 
 		// following your voice, or waiting at a stop or countdown). index: the
 		// section at the reading line (-1 before the first). advanced: the text
 		// moved on since last time. atEnd: the reading line is at the section's end.
-		tick( { active, index, title = "", advanced = false, atEnd = false } ) {
+		tick( { active, index, title = "", target = null, advanced = false, atEnd = false } ) {
 			if ( !active ) {
 				if ( current ) close( atEnd ? "complete" : "stopped" );
 				return;
@@ -115,7 +117,7 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [] 
 				const forward = index > current.section - 1;
 				close( forward ? "complete" : "stopped", forward );
 			}
-			if ( !current && index >= 0 ) open( index, title );
+			if ( !current && index >= 0 ) open( index, title, target );
 			if ( current && advanced ) current.lastAdvance = clock();
 			if ( current ) current.atEnd = atEnd;
 		},
@@ -212,8 +214,74 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [] 
 	};
 }
 
+// The speech engine gives when each word started. A word ends when the next
+// one starts, unless there's a gap; then it ends after about as long as a
+// word that size takes to say.
+const LONGEST_WORD = 0.8;
+export const PAUSE = 1; // a gap of a second or more is a pause
+const round2 = n => Math.round( n * 100 ) / 100;
+const sayTime = w => Math.min( LONGEST_WORD, 0.15 + 0.06 * w.length );
+
+// [{ i, w, start, end }] for one take (voice mode; empty otherwise).
+export function timedWords( take ) {
+	const words = take.words ?? [];
+	return words.map( ( word, k ) => {
+		const next = words[k + 1];
+		const own = word.t + sayTime( word.w );
+		const end = next && next.t - word.t <= LONGEST_WORD ? next.t : own;
+		return { i: word.i, w: word.w, start: word.t, end: round2( Math.max( word.t + 0.05, end ) ) };
+	} );
+}
+
+// A take's pace, from its word timings (voice mode), or null without them.
+// spoken: first word's start to last word's end, pauses included.
+// speaking: the same less every gap of a second or more between words.
+// The words are the rows of words.csv for the take, so the figures can be
+// worked out from that file too.
+export function takePace( take ) {
+	const words = timedWords( take );
+	if ( !words.length ) return null;
+	const spoken = words.at( -1 ).end - words[0].start;
+	let pauses = 0;
+	for ( let k = 1; k < words.length; k++ ) {
+		const gap = words[k].start - words[k - 1].end;
+		if ( gap >= PAUSE ) pauses += gap;
+	}
+	const speaking = spoken - pauses;
+	const wpm = seconds => ( seconds > 0 ? Math.round( ( words.length / seconds ) * 60 ) : null );
+	const target = take.target ?? null;
+	return {
+		words: words.length,
+		spokenSeconds: round2( spoken ),
+		speakingSeconds: round2( speaking ),
+		speakingWpm: wpm( speaking ),
+		overallWpm: wpm( spoken ),
+		targetSeconds: target,
+		vsTargetSeconds: target === null ? null : round2( spoken - target )
+	};
+}
+
+const clock = s => `${ Math.floor( s / 60 ) }:${ String( Math.round( s % 60 ) ).padStart( 2, "0" ) }`;
+
+// "S3: 2:31 spoken, 151 wpm speaking, 138 wpm overall, target 2:40 (9 s under)"
+export function paceSummary( section, pace ) {
+	if ( !pace ) return null;
+	const parts = [
+		`S${ section }: ${ clock( pace.spokenSeconds ) } spoken`,
+		`${ pace.speakingWpm } wpm speaking`,
+		`${ pace.overallWpm } wpm overall`
+	];
+	if ( pace.targetSeconds !== null ) {
+		const off = Math.round( pace.vsTargetSeconds );
+		const how = off === 0 ? "on target" : `${ Math.abs( off ) } s ${ off > 0 ? "over" : "under" }`;
+		parts.push( `target ${ clock( pace.targetSeconds ) } (${ how })` );
+	}
+	return parts.join( ", " );
+}
+
 // The take the edit should use for each section: the last keeper; otherwise
-// the last complete take that wasn't scrapped; otherwise none.
+// the last complete take that wasn't scrapped; otherwise none. Each section
+// also carries the pace of that take (voice mode).
 export function pickTakes( takes ) {
 	const bySection = new Map();
 	for ( const t of takes ) {
@@ -228,6 +296,9 @@ export function pickTakes( takes ) {
 				.filter( t => t.status === "complete" && t.rating !== "scrap" )
 				.at( -1 );
 			const pick = keeper ?? usable ?? null;
+			// Pace from the take to use, else the last take with words.
+			const paced = pick ?? list.filter( t => t.words?.length ).at( -1 ) ?? null;
+			const pace = paced ? takePace( paced ) : null;
 			return {
 				section,
 				title: list[0].title,
@@ -237,7 +308,10 @@ export function pickTakes( takes ) {
 					? "keeper"
 					: usable
 						? "last complete take"
-						: "no usable take"
+						: "no usable take",
+				pace,
+				paceFrom: pace ? paced.take : null,
+				summary: paceSummary( section, pace )
 			};
 		} );
 }
@@ -265,10 +339,19 @@ export function takeLogCsv( data ) {
 			"use",
 			"started_at",
 			"ended_at",
-			"markers"
+			"markers",
+			// Pace (voice mode), added after the original columns.
+			"words",
+			"spoken_seconds",
+			"speaking_seconds",
+			"speaking_wpm",
+			"overall_wpm",
+			"target_seconds",
+			"vs_target_seconds"
 		]
 	];
 	for ( const t of data.takes ) {
+		const pace = takePace( t ) ?? {};
 		rows.push( [
 			t.section,
 			t.title,
@@ -282,7 +365,14 @@ export function takeLogCsv( data ) {
 			picks.get( t.section ) === t.take ? "yes" : "",
 			t.startedAt,
 			t.endedAt,
-			t.markers.join( " " )
+			t.markers.join( " " ),
+			pace.words ?? "",
+			pace.spokenSeconds ?? "",
+			pace.speakingSeconds ?? "",
+			pace.speakingWpm ?? "",
+			pace.overallWpm ?? "",
+			t.target ?? "",
+			pace.vsTargetSeconds ?? ""
 		] );
 	}
 	return rows.map( r => r.map( csvCell ).join( "," ) ).join( "\r\n" ) + "\r\n";

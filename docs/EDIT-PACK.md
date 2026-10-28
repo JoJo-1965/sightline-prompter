@@ -45,12 +45,40 @@ the earlier one, and the place is marked as a **reread**.
 | File | What's in it |
 | ---- | ------------ |
 | `take-log.json` | Everything, as Sightline saved it: takes, their words, sentences, markers, ratings and slates, plus `sections` with the take to use for each |
-| `takes.csv` | One row per take: section, title, take, start, end, duration, status, rating, slate, use, wall-clock times, markers |
+| `takes.csv` | One row per take: section, title, take, start, end, duration, status, rating, slate, use, wall-clock times, markers, then its pace (below) |
 | `sentences.csv` | One row per sentence per take: when it was said, how many of its words were said, whether it's complete, any words missing, and its text |
 | `words.csv` | One row per word said: section, take, sentence, word index, the word as written, start, end |
 | `edit-marks.csv` and `edit-marks.json` | Places worth knowing about, in time order (below) |
 | `captions.srt` and `captions.vtt` | Captions for every take, on the session clock, in the script's own wording and spelling, at most two lines of about 42 characters |
 | `README.md` | This brief |
+
+## Pace
+
+Each take read in voice mode has its pace, worked out from its word
+timings, which are the rows of `words.csv` for that take, so the same figures
+can be worked out from that file:
+
+| Column in `takes.csv` | Field in `take-log.json` | What it is |
+| --- | --- | --- |
+| `words` | `words` | Words said in the take (its rows in `words.csv`) |
+| `spoken_seconds` | `spokenSeconds` | First word's start to last word's end, pauses included |
+| `speaking_seconds` | `speakingSeconds` | Spoken time less every gap of a second or more between one word's end and the next word's start |
+| `speaking_wpm` | `speakingWpm` | Words ÷ speaking time × 60, rounded |
+| `overall_wpm` | `overallWpm` | Words ÷ spoken time × 60, rounded |
+| `target_seconds` | `targetSeconds` | The section's `{target}` in the script, if it sets one |
+| `vs_target_seconds` | `vsTargetSeconds` | Spoken time minus the target: positive is over, negative under |
+
+The lead-in before the first word and the run-out after the last aren't
+counted, so spoken time is shorter than the take's `duration`. Steady
+scrolling takes leave these blank.
+
+In `take-log.json`, each entry in `sections` also has `pace` (the fields
+above, for the take to use, or the last take with words when none is usable),
+`paceFrom` (which take that was) and `summary`, for example
+`S3: 2:31 spoken, 151 wpm speaking, 138 wpm overall, target 2:40 (9 s under)`.
+
+These columns and fields were added after the first edit packs; none of the
+earlier ones changed.
 
 ## Choosing takes
 

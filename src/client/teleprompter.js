@@ -4731,6 +4731,8 @@ function feedTakeLog( active ) {
 		active,
 		index,
 		title: section?.heading.textContent.replace( /\{[^}]*\}/g, "" ).trim() ?? "",
+		// The script's own {target} for the section, for the pace in the edit pack.
+		target: section?.targetSeconds ?? null,
 		// Moving on through words, not through the blank space after the script.
 		advanced: pointsMode()
 			? pointsRunning

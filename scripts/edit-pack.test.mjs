@@ -92,3 +92,29 @@ assert.match( pack["words.csv"], /^section,take,sentence,word_index,word,start,e
 assert.match( pack["sentences.csv"], /1,1,yes,2,4\.6,[\d.]+,3,4,no,us,Most of us have\./ );
 
 console.log( "edit pack tests pass" );
+
+// Pace for each take (roadmap 43): words, spoken and speaking time, wpm, target.
+const { takePace, paceSummary, pickTakes: pick, takeLogCsv: csvOf } = await import( "../src/client/take-log.js" );
+const paced = {
+	section: 3, take: 1, start: 0, end: 20, status: "complete", rating: null, markers: [], target: 12,
+	// 20 words, 0.4 s apart, with a 3-second pause after the tenth.
+	words: Array.from( { length: 20 }, ( _, k ) => ( { i: k, w: "word", t: k * 0.4 + ( k >= 10 ? 3 : 0 ) } ) )
+};
+const pace = takePace( paced );
+assert.equal( pace.words, 20 );
+assert.ok( Math.abs( pace.spokenSeconds - ( 19 * 0.4 + 3 + 0.4 ) ) < 0.05, `spoken ${ pace.spokenSeconds }` );
+assert.ok( pace.speakingSeconds < pace.spokenSeconds - 2.5, "the pause is left out of speaking time" );
+assert.ok( pace.speakingWpm > pace.overallWpm );
+assert.equal( pace.targetSeconds, 12 );
+assert.equal( pace.vsTargetSeconds, Math.round( ( pace.spokenSeconds - 12 ) * 100 ) / 100 );
+assert.match( paceSummary( 3, pace ), /^S3: 0:11 spoken, \d+ wpm speaking, \d+ wpm overall, target 0:12 \(1 s under\)$/ );
+assert.equal( takePace( { words: [] } ), null, "steady scrolling has no pace" );
+const [ s3 ] = pick( [ paced ] );
+assert.equal( s3.use, 1 );
+assert.equal( s3.pace.words, 20 );
+assert.match( s3.summary, /^S3: / );
+// The old takes.csv columns keep their place; the pace columns come after.
+const header = csvOf( { takes: [ paced ] } ).split( "\r\n" )[0].split( "," );
+assert.deepEqual( header.slice( 0, 13 ), [ "section", "title", "take", "start", "end", "duration", "status", "rating", "slate", "use", "started_at", "ended_at", "markers" ] );
+assert.deepEqual( header.slice( 13 ), [ "words", "spoken_seconds", "speaking_seconds", "speaking_wpm", "overall_wpm", "target_seconds", "vs_target_seconds" ] );
+console.log( "pace passes" );

@@ -97,6 +97,7 @@ saves a JSON file for edit tools and a CSV beside it for a spreadsheet:
 | slate | When the take's slate went off, if the slate is on |
 | use | **yes** on the take the log picks for that section |
 | markers | Times of any markers you dropped in it |
+| words, spoken_seconds, speaking_seconds, speaking_wpm, overall_wpm, target_seconds, vs_target_seconds | Voice mode: the take's pace. How many words you said, the time from first to last word with and without pauses of a second or more, words per minute both ways, and the section's `{target}` with how far over or under you were |
 
 **Word timings (voice mode).** When the prompter is following your voice,
 the JSON also records when you said each word of the script, take by take:
