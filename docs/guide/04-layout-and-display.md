@@ -63,8 +63,15 @@ always on top, the prompter monitor and eye-line mode.
 ## Mirroring
 
 For beam-splitter rigs, where you read the screen through angled glass,
-**Ctrl+M** steps through off, horizontal, vertical and both. The control bar,
-the pad and the control window stay readable.
+mirror the prompter. In the Layout panel (the Layout and Reading views), four
+pills set it in one click: **→** not mirrored, **↔** left to right (most beam
+splitters), **↕** top to bottom and **↔↕** both. The one in use is lit, and the
+panel stays open. **Ctrl+M** and the **Mirror** button on the control bar step
+through the same four. The control bar, the pad and the control window stay
+readable.
+
+For the clearest camera image through the glass, set **Background** to 100%
+and **Text brightness** to about 70% in the Reading view.
 
 ## Eye-line mode
 

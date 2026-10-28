@@ -1704,6 +1704,37 @@ body::-webkit-scrollbar,
 	filter: var(--text-filter, none);
 }
 
+.lp-mirror-row {
+	gap: 6px;
+}
+
+.mirror-pills {
+	display: flex;
+	gap: 6px;
+}
+
+.mirror-pills button {
+	flex: 1;
+	padding: 5px 0;
+	font-size: 13px;
+	color: #f0f0f0;
+	background: #2b2e35;
+	border: 1px solid #5a5d66;
+	border-radius: 999px;
+	cursor: pointer;
+}
+
+.mirror-pills button:hover {
+	border-color: #ffd54a;
+}
+
+.mirror-pills button.on {
+	color: #1d1f24;
+	background: #ffd54a;
+	border-color: #ffd54a;
+	font-weight: 600;
+}
+
 .panel .lp-preset,
 :is(#set-layout-host, #set-reading-host, #set-recording-host) .lp-preset {
 	width: 100%;

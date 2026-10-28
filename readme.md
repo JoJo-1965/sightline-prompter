@@ -207,6 +207,7 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ### Next release
 
+- **Mirror pills:** the Layout panel's Mirror dropdown and the **Beam-splitter setup** button are replaced by four pills in a row, in the Layout and Reading views: → not mirrored, ↔ left to right, ↕ top to bottom, ↔↕ both. The one in use is lit, and choosing one leaves the panel open. Beam-splitter setup only looked as if it changed the mirroring; for the same look, set Background to 100% and Text brightness to about 70%
 - The dropdowns in the Layout panel and on Settings > Layout, Reading and Recording are all the same width, so they line up
 - **Heading font** (Layout panel > Reading, and Settings > Reading): section headings and titles can use a different font from the text, for example Standard headings with OpenDyslexic text. **Same as the text** is the default
 - **Heard log** (voice scrolling): every word the speech engine hears is logged next to the script words it was matched with, one file per script per day in the `heard-logs` folder, never leaving your computer. `node scripts/sightline.mjs heard` (or `node scripts/heard-report.mjs <file>`) lists the words heard in place of script words, most often first, to find mishearings worth correcting (roadmap 20, first part)

@@ -234,10 +234,15 @@
         >Text brightness <output id="lp-text-brightness-value"></output>
         <input id="lp-text-brightness" type="range" min="0.3" max="1" step="0.01" />
       </label>
-      <button id="lp-beam-preset" type="button" class="lp-preset"
-        title="Black background, text at 70% brightness and mirrored, so the camera image stays clear">
-        Beam-splitter setup
-      </button>
+      <div class="lp-row lp-mirror-row">
+        Mirror for a beam splitter (Ctrl+M)
+        <div class="mirror-pills" role="radiogroup" aria-label="Mirror">
+          <button type="button" role="radio" data-mirror="off" title="Not mirrored" aria-label="Not mirrored">→</button>
+          <button type="button" role="radio" data-mirror="horizontal" aria-label="Mirrored left to right" title="Mirrored left to right (most beam splitters)">↔</button>
+          <button type="button" role="radio" data-mirror="vertical" aria-label="Mirrored top to bottom" title="Mirrored top to bottom">↕</button>
+          <button type="button" role="radio" data-mirror="both" aria-label="Mirrored both ways" title="Both ways">↔↕</button>
+        </div>
+      </div>
       <h5 class="lp-sub">Spacing</h5>
       <label class="lp-row"
         >Left / right margin <output id="lp-margin-x-value"></output>
@@ -270,14 +275,14 @@
           <option value="center">Centre</option>
         </select>
       </div>
-      <div class="lp-row lp-inline">
+      <div class="lp-row lp-mirror-row">
         Mirror (Ctrl+M)
-        <select id="lp-mirrored">
-          <option value="off">Off</option>
-          <option value="horizontal">Horizontal</option>
-          <option value="vertical">Vertical</option>
-          <option value="both">Both</option>
-        </select>
+        <div class="mirror-pills" role="radiogroup" aria-label="Mirror">
+          <button type="button" role="radio" data-mirror="off" title="Not mirrored" aria-label="Not mirrored">→</button>
+          <button type="button" role="radio" data-mirror="horizontal" aria-label="Mirrored left to right" title="Mirrored left to right (most beam splitters)">↔</button>
+          <button type="button" role="radio" data-mirror="vertical" aria-label="Mirrored top to bottom" title="Mirrored top to bottom">↕</button>
+          <button type="button" role="radio" data-mirror="both" aria-label="Mirrored both ways" title="Both ways">↔↕</button>
+        </div>
       </div>
       <label class="lp-check"
         ><input id="lp-marker" type="checkbox" /> Reading-line marker</label

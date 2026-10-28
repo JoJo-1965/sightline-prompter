@@ -33,7 +33,7 @@ details, and the [user guide](guide/README.md) shows every screen.
 | Script instructions |                                                                                       | Stops, countdowns, markers, pace and target times in `{curly braces}`; notes in `[brackets]`                                                                   |
 | Pacing and takes | | Pacing light, section targets, take summary, rehearsal timer, and a **take log** for the edit with keeper and scrap ratings |
 | Controls            | Keyboard shortcuts; arrow keys and a clicker jump between sections; microphone choice | Control bar, ☰ menu, nine-tab Settings, nine script slots, floating pad, phone remote, control window, clickers that start and pause, pedals, game controllers |
-| Recording rigs      | Mirror (flip) mode                                                                    | Mirroring in any direction, prompter monitor (Elgato Prompter), eye-line mode, beam-splitter setup, hide from screen capture, click-through                    |
+| Recording rigs      | Mirror (flip) mode                                                                    | Mirroring in any direction, prompter monitor (Elgato Prompter), eye-line mode, one-click mirroring, hide from screen capture, click-through                    |
 | Reading aids        | Background opacity and font size                                                      | Sentence highlight, focus band, text edge, colour themes, Atkinson Hyperlegible and OpenDyslexic                                                               |
 | Help                | Readme; recently opened files                                                         | Built-in user guide with screenshots, sample scripts, shortcuts panel                                                                                          |
 | Installers          | Build from source                                                                     | Windows, macOS (Apple silicon and Intel) and Linux, built on GitHub                                                                                            |
@@ -173,8 +173,7 @@ The whole workflow is in the guide:
 - **Prompter monitor:** choose a monitor (the Elgato Prompter shows up by name)
   and the prompter opens full screen there every time.
 - **Eye-line mode:** a narrow strip right under the webcam.
-- **Beam-splitter setup** in one click: black background, dimmed text and
-  mirroring.
+- **Mirroring in one click:** four pills (→, ↔, ↕, ↔↕) in the Layout panel.
 - **Hide from screen sharing and recordings**, and **click-through** so clicks
   reach the app behind (Ctrl+Shift+X from anywhere).
 - Windows that stay reachable when a monitor is unplugged or the resolution

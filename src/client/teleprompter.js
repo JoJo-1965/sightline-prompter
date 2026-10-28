@@ -271,12 +271,23 @@ window.addEventListener( "resize", applyMirror );
 const MIRROR_BADGES = { off: "", horizontal: " ↔", vertical: " ↕", both: " ↔↕" };
 
 function showMirrorButton() {
+	// The four pills (Off, ↔, ↕, ↔↕) in the Layout and Reading views.
+	for ( const pill of document.querySelectorAll( ".mirror-pills [data-mirror]" ) ) {
+		const on = pill.dataset.mirror === mirrored;
+		pill.classList.toggle( "on", on );
+		pill.setAttribute( "aria-checked", String( on ) );
+	}
 	const button = document.getElementById( "cb-mirror" );
 	if ( !button ) return;
 	button.textContent = `Mirror${ MIRROR_BADGES[mirrored] ?? "" }`;
 	button.classList.toggle( "on", mirrored !== "off" );
 	button.setAttribute( "aria-label", `Mirror: ${ MIRROR_LABELS[mirrored] }` );
 }
+
+document.addEventListener( "click", ( e ) => {
+	const pill = e.target.closest( ".mirror-pills [data-mirror]" );
+	if ( pill ) setMirrored( pill.dataset.mirror );
+} );
 
 function setMirrored( value, save = true ) {
 	mirrored = normalizeMirror( value );
@@ -3282,7 +3293,6 @@ function syncLayoutPanel() {
 	field( "lp-reading-line-value" ).textContent = `${ reading }%`;
 	field( "lp-align" ).value = settings.textAlign ?? "left";
 	field( "lp-align" ).disabled = !!settings.eyeLine;
-	field( "lp-mirrored" ).value = mirrored;
 	field( "lp-marker" ).checked = !!settings.showReadingMarker;
 	field( "lp-sentence" ).checked = settings.highlightSentence !== false;
 	field( "lp-progress" ).checked = settings.showProgress !== false;
@@ -3329,9 +3339,6 @@ if ( document.getElementById( "layout-panel" ) ) {
 	field( "lp-align" ).addEventListener( "change", () => {
 		window.electron.saveSettings( { textAlign: field( "lp-align" ).value } );
 	} );
-	field( "lp-mirrored" ).addEventListener( "change", () =>
-		setMirrored( field( "lp-mirrored" ).value )
-	);
 	field( "lp-marker" ).addEventListener( "change", () =>
 		window.electron.saveSettings( {
 			showReadingMarker: field( "lp-marker" ).checked
@@ -3398,16 +3405,6 @@ if ( document.getElementById( "layout-panel" ) ) {
 	} );
 	// Beam-splitter glass reflects every bit of light from the screen into the
 	// lens, so: solid black behind the text, dimmer text, and mirrored.
-	onClick( "lp-beam-preset", () => {
-		setOpacity( 1 );
-		settings.textOpacity = 1;
-		settings.textBrightness = 0.7;
-		applyLayout();
-		window.electron.saveSettings( { textOpacity: 1, textBrightness: 0.7 } );
-		if ( mirrored === "off" ) setMirrored( "horizontal" );
-		syncLayoutPanel();
-		showToast( "Beam-splitter setup: black background, text 70%, mirrored" );
-	} );
 }
 
 // --- Voice panel: scroll mode, speech recognition, microphone with a live meter ---
