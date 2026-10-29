@@ -40,6 +40,7 @@ contextBridge.exposeInMainWorld( "electron", {
 	onSpeechState: callback => on( "speechState", callback ),
 	sendPreviewContent: html => ipcRenderer.send( "previewContent", html ),
 	sendPreviewPosition: position => ipcRenderer.send( "previewPosition", position ),
+	sendPreviewLevel: level => ipcRenderer.send( "previewLevel", level ),
 	onControlOpen: callback => on( "controlOpen", callback ),
 	getDisplays: () => ipcRenderer.send( "getDisplays" ),
 	onDisplays: callback => on( "displays", callback ),

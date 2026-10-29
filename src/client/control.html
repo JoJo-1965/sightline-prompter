@@ -103,6 +103,32 @@
         <span>Marker</span>
       </button>
     </footer>
+    <footer id="broadcast" role="toolbar" aria-label="The prompter's broadcast settings">
+      <button type="button" class="toggle on-air" data-action="on-air" id="b-on-air" title="On air or off air: the on-air backing and the ON AIR light">
+        <span class="dot" aria-hidden="true"></span>On air
+      </button>
+      <div class="stepper" role="group" aria-label="Text size on the prompter">
+        <span class="label">Text</span>
+        <button type="button" data-action="smaller" title="Smaller text on the prompter">−</button>
+        <output id="b-size">–</output>
+        <button type="button" data-action="bigger" title="Bigger text on the prompter">+</button>
+      </div>
+      <div class="stepper" role="group" aria-label="Backing behind the text">
+        <span class="label">Backing</span>
+        <button type="button" data-action="backing" data-value="-1" title="Less backing behind the text">−</button>
+        <output id="b-backing">–</output>
+        <button type="button" data-action="backing" data-value="1" title="More backing behind the text">+</button>
+      </div>
+      <button type="button" class="toggle" data-action="mirror-h" id="b-mirror-h" title="Mirror left–right, for a beam splitter">↔ Mirror</button>
+      <button type="button" class="toggle" data-action="mirror-v" id="b-mirror-v" title="Mirror up–down">↕ Mirror</button>
+      <button type="button" class="toggle" data-action="eye-line" id="b-eye-line" title="Eye-line mode: a strip at the top of the screen, under the webcam">Eye-line</button>
+      <button type="button" class="toggle" data-action="sound-check" id="b-sound-check" title="Sound check: the mic's level, loudness and the room's background noise, here and on the prompter when it isn't running (Ctrl+Shift+D)">Sound check</button>
+      <div id="b-meter" class="hidden" role="status" aria-label="Microphone level">
+        <div class="m-bar"><div class="m-fill"></div><div class="m-hold"></div></div>
+        <span class="m-clip">CLIP</span>
+        <span class="m-text"></span>
+      </div>
+    </footer>
     <script type="module" src="control.js"></script>
   </body>
 </html>

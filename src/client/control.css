@@ -323,6 +323,131 @@ body.running #toggle .icon-pause {
   display: block;
 }
 
+/* The broadcast row (on air, text size, backing, mirror, eye-line, sound check). */
+#broadcast {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  padding: 6px 10px 8px;
+  background: var(--panel);
+  font-size: 12px;
+}
+
+#broadcast button {
+  padding: 6px 10px;
+  font: inherit;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+#broadcast button:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+#broadcast button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+#broadcast .toggle.on {
+  color: #fff;
+  background: #2f6fd6;
+  border-color: #2f6fd6;
+}
+
+#broadcast .on-air .dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+}
+
+#broadcast .on-air.on {
+  background: #d32f2f;
+  border-color: #d32f2f;
+}
+
+#broadcast .on-air.on .dot {
+  background: #fff;
+}
+
+#broadcast .stepper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+#broadcast .stepper .label {
+  color: var(--muted, #9aa0aa);
+}
+
+#broadcast .stepper button {
+  width: 28px;
+  padding: 6px 0;
+}
+
+#broadcast output {
+  min-width: 36px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+#b-meter {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+#b-meter .m-bar {
+  position: relative;
+  width: 140px;
+  height: 10px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+#b-meter .m-fill {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, #2e9d4a 0 70%, #e0a800 70% 90%, #d32f2f 90% 100%);
+  background-size: 140px 100%;
+  transition: width 0.1s linear;
+}
+
+#b-meter .m-hold {
+  position: absolute;
+  top: 0;
+  width: 2px;
+  height: 100%;
+  background: #fff;
+}
+
+#b-meter .m-clip {
+  padding: 1px 5px;
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 3px;
+  color: rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+#b-meter.clipped .m-clip {
+  color: #fff;
+  background: #d32f2f;
+}
+
+#b-meter .m-text {
+  font-variant-numeric: tabular-nums;
+}
+
 #speed {
   flex: 0 0 auto;
   align-self: center;

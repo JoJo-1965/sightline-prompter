@@ -4314,8 +4314,18 @@ function sendStatus() {
 		editing: isEditMode,
 		points: pointsMode(),
 		sectionTitle: currentSectionTitle(),
-		speed: settings.scrollMode === "voice" ? "Voice" : `${ getWpm() } wpm`
+		speed: settings.scrollMode === "voice" ? "Voice" : `${ getWpm() } wpm`,
+		soundCheck: soundCheckOn()
 	} );
+}
+
+// Whether the sound check is on (it's set up further down the page).
+function soundCheckOn() {
+	try {
+		return soundCheck;
+	} catch {
+		return false;
+	}
 }
 
 // Keep the pad and phone remote in step with keys, pedals and the countdown.
@@ -4492,6 +4502,7 @@ function runRemoteAction( action, value ) {
 	else if ( action === "scroll" && Number.isFinite( Number( value ) ) ) {
 		window.scrollBy( { top: Number( value ) * parseFloat( getComputedStyle( md ).lineHeight || "40" ), behavior: "smooth" } );
 	} else if ( action === "backing" && Number.isFinite( Number( value ) ) ) setLiveBacking( liveBacking() + Number( value ) * OPACITY_STEP );
+	else if ( action === "sound-check" ) toggleSoundCheck();
 	sendStatus();
 }
 window.electron.onRemoteCommand( runRemoteAction );
@@ -5332,6 +5343,8 @@ hud.appendChild( meterEl );
 const meterPercent = db => Math.min( 100, Math.max( 0, ( ( db + 60 ) / 60 ) * 100 ) );
 
 function showLevel( { level, peak, shortTerm, room } ) {
+	// The control window shows the meter too, even while a take runs.
+	if ( controlOpen ) window.electron.sendPreviewLevel( { level, peak, shortTerm, room } );
 	if ( meterEl.classList.contains( "hidden" ) ) return;
 	const now = Date.now();
 	meterEl.querySelector( ".lm-fill" ).style.width = `${ meterPercent( level ?? -Infinity ) }%`;
@@ -5351,14 +5364,16 @@ function syncLevelMeter( active ) {
 	const measuring = active && !isEditMode && ( how === "always" || ( how === "voice" && micOnAnyway ) );
 	const show = soundCheck && !isEditMode && ( !active || settings.soundCheckDuringTakes === true );
 	meterEl.classList.toggle( "hidden", !show );
-	if ( ( show || measuring ) && !levelMeter.running ) {
+	// With the control window open, it keeps measuring for that, out of sight.
+	const forControl = soundCheck && controlOpen && !isEditMode;
+	if ( ( show || measuring || forControl ) && !levelMeter.running ) {
 		levelMeter.start( audioDeviceId ).catch( ( err ) => {
 			console.warn( "[sound check]", err );
 			soundCheck = false;
 			meterEl.classList.add( "hidden" );
 			showToast( "Couldn't open the microphone for the sound check: is one connected?", 3000 );
 		} );
-	} else if ( !show && !measuring && levelMeter.running ) levelMeter.stop();
+	} else if ( !show && !measuring && !forControl && levelMeter.running ) levelMeter.stop();
 }
 
 function toggleSoundCheck() {

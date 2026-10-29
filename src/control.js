@@ -15,7 +15,16 @@ const CONTROL_COMMANDS = [
 	"slower",
 	"marker",
 	"keeper",
-	"scrap"
+	"scrap",
+	// The broadcast row: what you'd tweak on the prompter while recording.
+	"on-air",
+	"bigger",
+	"smaller",
+	"backing", // value: steps of 5%, + or -
+	"mirror-h",
+	"mirror-v",
+	"eye-line",
+	"sound-check"
 ];
 
 // Saved bounds are kept only if most of the window is still on a display.
@@ -146,10 +155,16 @@ export function createControl( {
 		if ( event.sender !== prompter.webContents || !position ) return;
 		send( "controlPosition", position );
 	} );
-	ipcMain.on( "controlCommand", ( event, action ) => {
+	ipcMain.on( "controlCommand", ( event, action, value ) => {
 		if ( event.sender !== control?.webContents ) return;
-		if ( CONTROL_COMMANDS.includes( action ) )
-			tellPrompter( "remoteCommand", action );
+		if ( !CONTROL_COMMANDS.includes( action ) ) return;
+		if ( Number.isFinite( value ) ) tellPrompter( "remoteCommand", action, value );
+		else tellPrompter( "remoteCommand", action );
+	} );
+	// The sound-check meter's readings, ten times a second while it runs.
+	ipcMain.on( "previewLevel", ( event, level ) => {
+		if ( event.sender !== prompter.webContents || !level || typeof level !== "object" ) return;
+		send( "controlLevel", level );
 	} );
 	ipcMain.on( "controlJump", ( event, index, fraction ) => {
 		if ( event.sender !== control?.webContents ) return;

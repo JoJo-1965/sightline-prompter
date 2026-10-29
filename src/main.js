@@ -1584,7 +1584,8 @@ app.whenReady().then( async () => {
 	ipcMain.on( "rendererStatus", ( _event, status ) => {
 		if ( status && typeof status === "object" ) rendererStatus = status;
 		controlPad?.sendStatus( rendererStatus );
-		controlWindow?.sendStatus( rendererStatus );
+		// The control window shows the broadcast settings too (size, mirror…).
+		controlWindow?.sendStatus( remoteStatus() );
 		publishRemoteState();
 	} );
 	syncRemoteServer();

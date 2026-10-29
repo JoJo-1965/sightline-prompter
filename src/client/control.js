@@ -152,6 +152,7 @@ window.control.onStatus( ( s ) => {
 	document.getElementById( "prev" ).title = `Previous ${ unit } (Page Up)`;
 	document.getElementById( "next" ).title = `Next ${ unit } (Page Down)`;
 	for ( const b of buttons ) b.disabled = !!s.editing;
+	showBroadcast( s );
 } );
 
 for ( const b of buttons ) {
@@ -160,6 +161,56 @@ for ( const b of buttons ) {
 		b.blur();
 	} );
 }
+
+// --- The broadcast row: the prompter's look and the mic, from here ---
+const broadcast = document.querySelectorAll( "#broadcast button[data-action]" );
+for ( const b of broadcast ) {
+	b.addEventListener( "click", () => {
+		const value = Number( b.dataset.value );
+		window.control.command( b.dataset.action, Number.isFinite( value ) ? value : undefined );
+		b.blur();
+	} );
+}
+
+function showBroadcast( s ) {
+	const lit = ( id, on ) => {
+		const el = document.getElementById( id );
+		el.classList.toggle( "on", !!on );
+		el.setAttribute( "aria-pressed", String( !!on ) );
+	};
+	lit( "b-on-air", s.onAir );
+	lit( "b-mirror-h", s.mirrored === "horizontal" || s.mirrored === "both" );
+	lit( "b-mirror-v", s.mirrored === "vertical" || s.mirrored === "both" );
+	lit( "b-eye-line", s.eyeLine );
+	lit( "b-sound-check", s.soundCheck );
+	document.getElementById( "b-size" ).textContent = Number.isFinite( s.fontSize ) ? String( s.fontSize ) : "–";
+	document.getElementById( "b-backing" ).textContent = Number.isFinite( s.backing ) ? `${ s.backing }%` : "–";
+	for ( const b of broadcast ) b.disabled = !!s.editing;
+	if ( !s.soundCheck ) meter.classList.add( "hidden" );
+}
+
+// The meter: -60 dBFS (empty) to 0 (full), a peak line held for a second and
+// a half, CLIP for two seconds, and the loudness and the room's noise.
+const meter = document.getElementById( "b-meter" );
+const percent = db => Math.min( 100, Math.max( 0, ( ( db + 60 ) / 60 ) * 100 ) );
+let hold = { db: -Infinity, at: 0 };
+let clipAt = 0;
+let quiet = null;
+window.control.onLevel( ( { level, peak, shortTerm, room } ) => {
+	const now = Date.now();
+	meter.classList.remove( "hidden" );
+	meter.querySelector( ".m-fill" ).style.width = `${ percent( level ?? -Infinity ) }%`;
+	if ( peak !== null && ( peak >= hold.db || now - hold.at > 1500 ) ) hold = { db: peak, at: now };
+	meter.querySelector( ".m-hold" ).style.left = `${ percent( hold.db ) }%`;
+	if ( peak !== null && peak >= -1 ) clipAt = now;
+	meter.classList.toggle( "clipped", now - clipAt < 2000 );
+	const parts = [ shortTerm === null ? "… LUFS" : `${ Math.round( shortTerm ) } LUFS` ];
+	if ( room !== null ) parts.push( room < -90 ? "room below -90 dB" : `room ${ Math.round( room ) } dB` );
+	meter.querySelector( ".m-text" ).textContent = parts.join( " · " );
+	// Hidden again once the readings stop.
+	clearTimeout( quiet );
+	quiet = setTimeout( () => meter.classList.add( "hidden" ), 1500 );
+} );
 
 const KEYS = {
 	" ": "toggle",

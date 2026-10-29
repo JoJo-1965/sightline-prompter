@@ -199,7 +199,9 @@ The whole workflow is in the guide:
 - **Phone remote:** scan a QR code and your phone gets big buttons, over your
   own Wi-Fi, protected by the code in the QR.
 - **Control window** for a second screen: an upright, live copy of the script
-  with big buttons. Click any line to move the prompter there.
+  with big buttons. Click any line to move the prompter there. Its broadcast
+  row sets the prompter's on air, text size, backing, mirroring and eye-line,
+  and shows the sound-check meter, even during a take.
 - **Presenter clickers that start and pause** as well as jump sections, **USB
   foot pedals** and **game controllers**.
 - **Stream Deck plugin** (coming to the Elgato Marketplace): keys that light up

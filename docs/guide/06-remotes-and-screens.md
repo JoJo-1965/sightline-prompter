@@ -92,6 +92,20 @@ Click any line in the copy to move the prompter there. **A−** and **A+** chang
 the copy's text size. The keys work here too: Space, Page Up and Page Down,
 Home, the arrows and B.
 
+**The broadcast row**, along the bottom, changes the prompter itself, for when
+it's full screen on a prompter monitor such as the Elgato Prompter, too small
+and too far away to work Settings on:
+
+- **On air**, lit red while you're on air.
+- **Text −** and **+**: the prompter's text size, with the size now.
+- **Backing −** and **+**: how solid the backing behind the text is, on air or
+  off air, whichever is in use.
+- **↔ Mirror** and **↕ Mirror**, each lit while it's on.
+- **Eye-line** mode.
+- **Sound check**: the [sound-check meter](05-recording-a-take.md#sound-check-and-loudness)
+  shows here, on the right, and keeps going while a take runs, so you can
+  watch your mic without it showing on the prompter in front of you.
+
 ## The phone remote
 
 On **Settings > Remotes**, tick **Control the prompter from a phone on the
