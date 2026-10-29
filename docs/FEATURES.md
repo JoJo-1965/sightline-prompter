@@ -105,9 +105,10 @@ The whole workflow is in the guide:
 - **"Prompter, …" voice commands:** pause, go, slower, faster, back, next
   section, from the top, again (marker and retake), marker, resync (finds your
   place anywhere in the script), bigger and smaller. Commands only count at the
-  end of what you say, so a script line about "the prompter" never sets one
-  off. Common mishearings are matched too. Optionally, commands also work
-  during steady scrolling.
+  end of what you say. Choose a wake word your scripts don't use as an
+  instruction. Known mishearings and taught synonyms work; loose spelling
+  guesses do not. Recording and guide states require explicit phrases.
+  Optionally, commands also work during steady scrolling.
 - **It answers you:** saying the wake word shows *Listening…* straight away,
   *Didn't catch that* if what follows isn't a command, and "what can I say"
   shows every command on the prompter. **Choose the wake word:** Prompter,

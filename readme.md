@@ -222,6 +222,8 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ### Next release
 
+- **Voice commands tuned:** removed loose spelling guesses that confused “start reading” with OBS recording or “show the slide” with the head guide. Documented phrases and taught synonyms still work; ambiguous taught forms are declined. Split wake words and section commands stay out of script tracking, “what can I say now” works, and an unused wake word expires after four seconds. The on-device “tele prompter” spelling is recognised for the Teleprompter choice. See [voice commands](docs/guide/03-scrolling-and-voice.md#voice-commands-prompter-)
+
 - **Voice troubleshooting:** controlled recognition checks traced the missing ending in the synthetic-speech test to a quiet microphone capture. A diagnostic boost recovered every sentence and the existing aligner reached the last word. Microphone settings and recordings were unchanged. See the [investigation](docs/VOICE-VALIDATION.md) and [voice checks](docs/guide/03-scrolling-and-voice.md#if-ordinary-words-or-whole-lines-are-missed); live voice validation is still pending
 
 - **OBS keys for Stream Deck (development):** companion test build 0.1.7 adds Record take and Finish recording, state feedback, permission guards and optional OBS profiles for each model. The plugin stays private and the release hold remains

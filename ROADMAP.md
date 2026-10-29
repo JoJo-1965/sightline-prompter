@@ -17,6 +17,12 @@ requirements before the next release. Work stays on the OBS branch, with
 no merge, tags, publication or website deployment. The Stream Deck repository
 remains private.
 
+**Voice command tuning:** documented aliases pass across all four wake words
+and every recognition chunk boundary. Loose spelling guesses were removed;
+unused wake words expire after four seconds. Split commands stay out of script
+tracking. Direct synthetic-audio checks are documented in
+[Voice validation](docs/VOICE-VALIDATION.md); normal live speech still needs testing.
+
 | Production requirement | Current branch status |
 | --- | --- |
 | Exact recording script in the edit pack | Implemented; source-byte and snapshot regression checks pass |

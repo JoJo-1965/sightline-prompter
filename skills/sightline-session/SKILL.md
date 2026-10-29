@@ -111,6 +111,12 @@ app closed:
   often first. Use it to suggest corrections for words it keeps mishearing:
   the user adds them in **Settings > Voice > Your words** (your word, then
   what it hears instead), and words that sound alike are already matched.
+  For command checks, distinguish the wake word from the command. Leave a
+  brief beat after the wake word and finish within four seconds. Avoid broad
+  synonyms such as “prone to” for Prompter; they can occur in ordinary speech.
+  Recording and guide states require explicit phrases or taught forms;
+  conflicting taught forms are declined. Test command audio offline or in
+  an isolated profile, so it cannot control a live recording.
 - `takelog ["<script name>"] [yyyy-mm-dd]`: the path of one log (default: the
   open script, today).
 - `pack ["<script name>"] [yyyy-mm-dd] [output folder]`: builds the **edit

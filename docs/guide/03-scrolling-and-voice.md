@@ -96,7 +96,10 @@ wake word or a command. **Settings > Voice > Your words** fixes them.
 - **Command words** does the same for the wake word and the commands: choose
   one (the wake word, pause, keeper and so on), then type what it hears, such
   as *prompt her* for Prompter or *cheaper* for keeper. A command still only
-  counts at the end of what you say, so a script line can't set one off.
+  counts at the end of what you say. Give each heard form one meaning:
+  conflicting forms are declined, and built-in phrases keep their meaning.
+  Recording and guide on/off use explicit phrases or your taught synonyms;
+  similar spelling alone does not trigger them.
 - Each form is a **synonym**, not a replacement: it counts as your word
   wherever the script has your word, and as itself everywhere else. So a
   script that really says *Marsha* still matches *Marsha*.
@@ -116,9 +119,13 @@ Wake word**: Computer, Teleprompter or Director. Pick one that doesn't come up i
 your scripts. Below, read "Prompter" as whichever you chose; it takes effect the
 next time Sightline starts listening.
 
-Say **"Prompter"**, then a command, then stop for a moment. The command only
-counts when it ends what you're saying, so a line in your script such as "the
-prompter pauses" never sets it off.
+Say **"Prompter"**, leave a brief beat, say the command, then stop for a moment.
+The beat helps the recogniser separate the wake word from the command. Finish
+within four seconds of the wake acknowledgement; after that, say the wake word
+again. Commands only count at the end of a phrase. Pick a wake word your script
+doesn't use as an instruction: reading a complete command aloud can trigger it.
+For the Teleprompter choice, the recogniser's split spelling *tele prompter*
+works too. Split command words are held out of script tracking.
 
 As soon as it hears **"Prompter"**, a message at the bottom says
 *Listening… go · pause · again · marker*, so you know it's ready for the
@@ -135,7 +142,7 @@ that*, with the words it heard, so you can say it again.
 | **next section** (or next page) | On to the next section. In notes, the next page |
 | **from the top** (or top, start again) | Back to the start |
 | **reset** (or restart) | Back to the start, with the speed back to normal and the pacing clock cleared, ready for a fresh run |
-| **section 3** (any number) | To the start of that section. You can say it without "Prompter" too, as your spoken slate before each section: saying the section you're in counts as a retake |
+| **section 3** (1–99, including “section twenty one”) | To the start of that section. You can say it without "Prompter" too, as your spoken slate before each section: saying the section you're in counts as a retake |
 | **again** (or retake) | Drops a marker where you are, then goes back to the start of the section for a retake |
 | **marker** | Drops a marker |
 | **back to the marker** (or from the marker, last marker) | Back to the last marker, to read on from there (Shift+B) |

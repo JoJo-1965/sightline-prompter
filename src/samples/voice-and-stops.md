@@ -33,7 +33,7 @@ Good. You can also just say "go", or press Space or your clicker.
 
 ## Talking to it as you go {target: 0:35}
 
-[Try each command as you reach it. Say "Prompter", then the command, then stop for a moment.]
+[Try each command as you reach it. Say "Prompter", leave a brief beat, then say the command and stop. Finish within four seconds of the acknowledgement; otherwise say "Prompter" again.]
 
 If you lose your place, say "Prompter, resync" and keep reading. It finds you
 anywhere in the script. [Say: "Prompter, resync".]

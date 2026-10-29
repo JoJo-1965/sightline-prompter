@@ -89,3 +89,49 @@ microphone processing or wake-word accuracy.
 
 Live voice checks, physical Stream Deck button checks, separate clean camera
 output and the recorded picture-and-sound sync route remain outstanding.
+
+## Command tuning and direct speech-engine checks
+
+The command matcher previously chose the closest spelling with a score of
+72% or better. This caused false matches even with optional sound-alike
+matching off: `start reading` → OBS Record, `stop reading` → OBS Finish,
+`show the slide` → Guide on, `next question` → Next section, and `market` →
+Marker. These were tested after the selected wake word.
+
+The branch now uses built-in phrases, unambiguous taught forms and optional
+word-by-word phonetics. Recording and guide states require explicit phrases
+or taught forms. Built-in meanings take precedence over conflicting taught
+forms, and ambiguous forms are declined. Commands still require an ending
+pause; reading a complete valid command aloud can trigger it.
+
+The listener also expires an unused wake after four seconds, retains split
+wake/section/resume prefixes until they can be classified, accepts the
+five-word help phrase and handles repeated wakes. Section numbers support
+spoken tens and units through 99. Ordinary reading no longer accumulates an
+unbounded whole-phrase buffer. Regression tests cover all default phrases
+with all four wake choices, every two-chunk partition, taught forms,
+ambiguous matches, timeout, passthrough and negative phrases.
+
+For a separate acoustic check, Windows Microsoft Hazel generated 37 silent
+WAV fixtures: 21 Prompter commands, four commands for each other wake choice,
+and four negative phrases. Files were converted to 16 kHz mono in memory,
+fed in 100 ms blocks through the installed Zipformer model with the app's
+settings and one-word holdback, then passed to the command listener. Only
+test callbacks ran; no microphone, speakers, live app or OBS command was used.
+
+| Delivery | Intended commands recognised | Negative phrases declined |
+| --- | --- | --- |
+| Synthetic voice, wake and command run together | 4 / 33 | 4 / 4 |
+| Same voice with a 200 ms beat, before split-Teleprompter fix | 29 / 33 | 4 / 4 |
+| Same 200 ms beat, with split-Teleprompter fix | 33 / 33 | 4 / 4 |
+
+The main improvement in this synthetic test came from separating the wake
+word from the command. The engine consistently wrote `TELE PROMPTER` with
+the beat; that observed spelling now works for the Teleprompter choice.
+It also wrote `PAUS`, `MARKA`, `REZINC` and `CANSEL`, handled by explicit
+aliases or optional phonetics. Broad mishearings such as `PRONE TO` were
+deliberately not added as default wake phrases.
+
+These are synthetic file checks, not an accuracy percentage for Joanne's
+voice. A normal speaking-distance check remains necessary before release.
+No microphone settings, model configuration or saved synonyms were changed.
