@@ -240,3 +240,26 @@ its file name, such as `M2 Intro 2026-10-28`.
 
 A session's name, note and processed time come back as `title`, `note` and
 `processed`; they never change the take log itself.
+
+## OBS recording references (development branch)
+
+When optional OBS integration is enabled, `take-log.json` has an additive
+`obs` array. It is empty when no OBS recording has been observed for the
+session. Existing fields and CSV columns are unchanged.
+
+Each observation carries `recordingId` (a locally generated association,
+not an OBS file ID), `connection`, `recording` (`recording`, `paused`,
+`stopped` or null for unknown), `outputPath` (or null), `outputDuration`
+(milliseconds reported by OBS), `observedAt` (UTC), and `t` (seconds from
+the Sightline log start when the observation was noted).
+
+Repeated status polls do not add entries unless the state or file reference
+changes. An output path is normally supplied when OBS finishes recording.
+Export after that confirmation to include it. The path belongs to the OBS
+computer; the video itself is not copied into the pack. Earlier exports,
+or another script's closed session, are not automatically rewritten.
+
+Do not treat these observations as a continuous or frame-accurate timecode
+map. Connection loss can leave gaps or unknown file associations. Use the
+slate or scratch audio for precise synchronisation, and preserve uncertain
+associations rather than guessing a filename or offset.

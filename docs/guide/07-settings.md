@@ -74,6 +74,12 @@ AI and remote control, the Stream Deck plugin (its own setting, for buttons
 only), the control pad and control window, and the phone remote. See
 [Remotes and second screens](06-remotes-and-screens.md).
 
+## OBS (development branch)
+
+The separate **OBS** tab is disabled by default and works independently
+of normal prompting. See [OBS setup](11-obs.md) for status-only mode,
+recording controls, the connection test and passwords.
+
 ## About
 
 The last tab, **About**, gives the version, the credits and links to the

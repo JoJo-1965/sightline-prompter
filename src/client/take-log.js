@@ -16,14 +16,14 @@ const round = n => Math.round( n * 10 ) / 10;
 // loudness( fromMs, toMs ): the mic's loudness over a take ({ lufs, peak,
 // noise, aboveNoise, warning }, level-meter.js) or null. onTake( take ): a
 // take has just been logged.
-export function createTakeLog( { clock = () => Date.now(), sentences = () => [], loudness = () => null, onTake = () => {} } = {} ) {
+export function createTakeLog( { clock = () => Date.now(), sentences = () => [], loudness = () => null, onTake = () => {}, onOpen = () => {}, onMarker = () => {} } = {} ) {
 	let log = empty();
 	let current = null; // the take in progress
 	let version = 0; // goes up with every change worth saving
 	let slated = null; // { section, at }: the last slate, for the take that follows it
 
 	function empty() {
-		return { startedAt: null, takes: [], events: [], audio: [], soundChecks: [] };
+		return { startedAt: null, takes: [], events: [], audio: [], soundChecks: [], obs: [] };
 	}
 
 	const since = ms => round( ( ms - Date.parse( log.startedAt ) ) / 1000 );
@@ -60,6 +60,7 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [],
 			current.slate = since( slated.at );
 		}
 		slated = null;
+		onOpen( index, title, take );
 	}
 
 	// status: complete | retake | stopped | skipped. A take ends when the text
@@ -195,6 +196,19 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [],
 				if ( key !== null ) current.markerKeys.add( key );
 			}
 			event( "marker", label ? { label } : {} );
+			onMarker( label );
+		},
+
+		// Observations, not frame-accurate sync: OBS supplies the path on stop.
+		// Repeated meter/status polls do not grow the log.
+		obs( state ) {
+			const recordingId = state?.recordingId ?? log.obs.at( -1 )?.recordingId;
+			if ( !log.startedAt || !recordingId ) return;
+			const observation = { recordingId, connection: state.connection, recording: state.recording, outputPath: state.outputPath ?? null };
+			const last = log.obs.at( -1 );
+			if ( last && Object.keys( observation ).every( key => observation[key] === last[key] ) ) return;
+			log.obs.push( { ...observation, t: since( clock() ), observedAt: state.observedAt ?? new Date( clock() ).toISOString(), outputDuration: state.outputDuration ?? null } );
+			version++;
 		},
 
 		// Back to a marker in the take and reading on from it (Shift+B, or
@@ -304,7 +318,8 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [],
 					takes: saved.takes ?? [],
 					events: saved.events ?? [],
 					audio: saved.audio ?? [],
-					soundChecks: saved.soundChecks ?? []
+					soundChecks: saved.soundChecks ?? [],
+					obs: saved.obs ?? []
 				}
 				: empty();
 		},

@@ -243,6 +243,12 @@ The whole workflow is in the guide:
 
 ## Help and installers
 
+- **Optional OBS integration** (development branch): a separate settings tab,
+  off by default; status-only or recording control; Record take and Finish
+  recording from Sightline, its control window, phone and voice commands;
+  optional recording chapters and file references in the take log.
+  See [OBS setup](guide/11-obs.md). Does not change normal Play or On air.
+
 - [Privacy, terms, accessibility and voluntary support](POLICIES.md), linked
   from About and the user guide, covering Sightline and its Stream Deck plugin.
 - **User guide** with screenshots, built into the app (Shift+F1) and on GitHub.

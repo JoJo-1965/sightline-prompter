@@ -81,6 +81,7 @@
       button:disabled {
         opacity: 0.4;
       }
+      [hidden] { display: none !important; }
       button svg {
         width: 30px;
         height: 30px;
@@ -159,6 +160,9 @@
       <button data-action="marker">
         <span>Drop a marker</span>
       </button>
+      <p id="obs-status" hidden aria-live="polite"></p>
+      <button id="obs-record" data-action="obs-record" hidden>Record take</button>
+      <button id="obs-finish" data-action="obs-finish" hidden>Finish recording</button>
     </main>
     <script>
       const key = new URLSearchParams(location.search).get("k") ?? "";
@@ -189,6 +193,15 @@
         document.getElementById("next").lastElementChild.textContent =
           `Next ${unit}`;
         for (const b of buttons) b.disabled = !!s.editing;
+        const obs = s.obs;
+        document.getElementById("obs-status").hidden = !obs?.enabled;
+        document.getElementById("obs-status").textContent = obs?.connection === "connected"
+          ? `OBS ${obs.recording ?? "status unknown"}` : "OBS disconnected · recording status unknown";
+        const record = document.getElementById("obs-record");
+        const finish = document.getElementById("obs-finish");
+        record.hidden = finish.hidden = !obs?.enabled || !obs?.controls;
+        record.disabled = !!s.editing || !!s.scrolling || obs?.connection !== "connected";
+        finish.disabled = obs?.connection !== "connected" || !["recording", "paused"].includes(obs?.recording);
       }
 
       function offline() {

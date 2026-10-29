@@ -7,6 +7,8 @@ import path from "node:path";
 import { fitInside } from "./utils/fit.js";
 
 const CONTROL_COMMANDS = [
+	"obs-record",
+	"obs-finish",
 	"toggle",
 	"restart",
 	"previous-section",

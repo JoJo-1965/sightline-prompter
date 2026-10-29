@@ -132,6 +132,8 @@ that*, with the words it heard, so you can say it again.
 | **bigger** / **smaller** | Text size |
 | **what can I say** (or help, commands) | Shows every command on the prompter, until your next command, a click, Esc or 15 seconds |
 | **close** (or cancel, never mind) | Hides that list |
+| **record take** (or start recording) | Optional OBS integration: confirm recording, then start prompting. Requires enabled OBS recording controls |
+| **finish recording** (or stop recording) | Optional OBS integration: stop prompting and finish the OBS recording |
 
 Choose when it listens on **Settings > Voice**, under **Voice commands**:
 

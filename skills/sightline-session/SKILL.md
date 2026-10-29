@@ -23,6 +23,24 @@ from `remote-control.json`.
 
 ## Before: load the scripts
 
+### Optional OBS integration (development branch)
+
+The user must enable OBS integration and recording controls in Settings >
+OBS themselves. These settings are protected from the API and script files.
+Never ask for, print or copy the OBS password. No extra OBS plugin is needed.
+
+Once enabled, `command obs-record` confirms OBS is recording before it starts
+prompting; `command obs-finish` stops prompting and asks OBS to finish. The
+command route only acknowledges dispatch: inspect `status.obs` for confirmed
+state, and treat a disconnected or null recording state as unknown. Normal
+play, pause, again and On air do not control OBS. Do not stop recording
+without the user's instruction to finish that recording.
+
+The edit pack's `take-log.json` can contain OBS observations and a confirmed
+recording path after stop. Read [docs/EDIT-PACK.md](../../docs/EDIT-PACK.md)
+for fields and timing limits. The recording file is not included in the
+pack, and the observation times do not replace slate or audio sync.
+
 Controlling the app needs its local API switched on, once, by the user:
 **Settings > Remotes**, tick **Let an AI assistant or script on this computer
 load scripts and control the teleprompter**. If a command says Sightline

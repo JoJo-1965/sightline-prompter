@@ -2,6 +2,12 @@
 import assert from "node:assert/strict";
 import { matchCommand, createCommandListener, sectionNumber } from "../src/client/voice-commands.js";
 
+assert.equal( matchCommand( [ "record", "take" ] ), "obs-record" );
+assert.equal( matchCommand( [ "start", "recording" ] ), "obs-record" );
+assert.equal( matchCommand( [ "finish", "recording" ] ), "obs-finish" );
+assert.equal( matchCommand( [ "stop", "recording" ] ), "obs-finish" );
+assert.equal( matchCommand( [ "stop" ] ), "pause", "ordinary Stop still pauses prompting" );
+
 // What the on-device recogniser actually heard for each command (speech-lab/cmd).
 const heard = {
 	KEEPER: "keeper",

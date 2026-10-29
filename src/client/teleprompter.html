@@ -690,6 +690,7 @@
           <button type="button" role="tab" data-tab="recording">Recording</button>
           <button type="button" role="tab" data-tab="files">Files</button>
           <button type="button" role="tab" data-tab="remotes">Remotes</button>
+          <button type="button" role="tab" data-tab="obs">OBS</button>
           <button type="button" role="tab" data-tab="about">About</button>
         </div>
         </div>
@@ -1086,6 +1087,25 @@
             the network: allow it on private networks. New code disconnects any phone
             already connected. Turn this off when you don't need it.
           </p>
+        </fieldset>
+
+        <fieldset data-tab="obs">
+          <legend>OBS Studio</legend>
+          <label class="check"><input id="set-obs-enabled" type="checkbox" /> Enable OBS integration</label>
+          <p class="field-hint">Off by default. Disabled means no OBS connection or commands. Disabling or quitting Sightline leaves any OBS recording running. Apply saves these choices.</p>
+          <label>Address <input id="set-obs-host" type="text" value="127.0.0.1" autocomplete="off" spellcheck="false" /></label>
+          <label>Port <input id="set-obs-port" type="number" min="1" max="65535" value="4455" /></label>
+          <label>Password <input id="set-obs-password" type="password" autocomplete="new-password" placeholder="Leave blank to keep the saved password" /></label>
+          <label class="check"><input id="set-obs-clear-password" type="checkbox" /> Remove the saved OBS password</label>
+          <p id="set-obs-password-status" class="field-hint"></p>
+          <p class="field-hint">In OBS 28 or later: Tools &gt; WebSocket Server Settings. Enable its server and authentication. No additional OBS plugin is needed. Use 127.0.0.1 for OBS on this computer. Remote connections use unencrypted WebSocket: use a trusted network. The password is kept separately using your operating system's protected storage.</p>
+          <label class="check"><input id="set-obs-controls" type="checkbox" /> Allow Sightline to start and stop OBS recordings</label>
+          <p class="field-hint">Leave this off for status only. Normal Play, Pause, Again and On air do not start or stop OBS. Record take waits for OBS to confirm recording before starting the prompter.</p>
+          <label class="check"><input id="set-obs-markers" type="checkbox" /> Send section starts and named markers as OBS chapters</label>
+          <p class="field-hint">Needs recording controls and a supported OBS version and recording format, such as Hybrid MP4. Chapter failures leave prompting and recording running.</p>
+          <p id="set-obs-status" role="status" aria-live="polite">OBS disabled</p>
+          <button type="button" id="set-obs-test">Test saved connection</button>
+          <p class="field-hint">Save or Apply changes before testing. Recording status also appears beside the script and in the control window.</p>
         </fieldset>
 
         <fieldset data-tab="about" class="settings-about">

@@ -139,6 +139,18 @@ and your account agreement before sending confidential material.
 
 ## Remotes, Stream Deck and AI assistants
 
+The OBS integration under development is optional and off by default.
+When enabled, it connects to the OBS address you save and reads recording
+status. Recording controls need a separate choice. Optional chapter markers
+send section titles and marker labels to OBS; recording identifiers,
+observations and paths can be kept in the local take log and its exports.
+The integration does not send microphone audio or video to OBS. A saved
+OBS password uses separate OS-protected storage and is excluded from
+settings exports and API responses. Other local logs and files remain
+unencrypted by the app. The initial OBS connection uses unencrypted
+WebSocket; use a trusted network if OBS is on another computer.
+Disabling it closes the connection without stopping OBS's recording.
+
 The phone remote is optional. It serves a password-keyed page over ordinary
 HTTP on your local network. The pairing URL contains its access key. Use
 it on a network you trust, keep the QR code private and do not forward its

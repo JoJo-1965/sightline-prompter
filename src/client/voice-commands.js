@@ -25,6 +25,8 @@ export const WAKE_WORDS = {
 export const wakeLabel = key => ( WAKE_WORDS[key] ?? WAKE_WORDS.prompter ).label;
 
 export const COMMANDS = [
+	{ id: "obs-record", phrases: [ "record take", "start recording" ] },
+	{ id: "obs-finish", phrases: [ "finish recording", "stop recording" ] },
 	{
 		id: "pause",
 		phrases: [
@@ -177,6 +179,7 @@ export const COMMANDS = [
 // What each command does, for the "Prompter, what can I say?" card and the
 // help: [ what to say, what it does ].
 export const COMMAND_HELP = [
+	[ "record take · finish recording", "OBS only, when enabled with recording controls" ],
 	[ "pause", "Pause (stop, hold, wait)" ],
 	[ "go", "Start, or carry on (carry on, continue)" ],
 	[ "slower · faster", "Change the speed" ],

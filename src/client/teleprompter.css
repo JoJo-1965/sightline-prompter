@@ -2547,3 +2547,24 @@ body.notes-pages #md ol.current-section {
 	:is(p, li, h3, h4, label, .field-hint) {
 	text-wrap: pretty;
 }
+/* Separate from On air: this reports confirmed OBS state only. */
+#obs-status {
+	position: fixed;
+	top: 3rem;
+	right: 1rem;
+	z-index: 40;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.6rem;
+	align-items: center;
+	max-width: min( 34rem, calc( 100vw - 2rem ) );
+	padding: 0.55rem 0.8rem;
+	border-radius: 0.6rem;
+	background: #20242b;
+	color: white;
+	font: 14px/1.4 system-ui, sans-serif;
+	text-wrap: pretty;
+}
+#obs-status.hidden { display: none; }
+#obs-status.obs-recording { border-left: 4px solid #ff5252; }
+#obs-status button { font: inherit; cursor: pointer; }

@@ -1,6 +1,8 @@
 // Control window page: a live, upright copy of the script that follows the
 // prompter's reading line, the pacing light, and the prompter's buttons.
 
+import { obsStatusText } from "./obs-ui.js";
+
 const md = document.getElementById( "md" );
 const preview = document.getElementById( "preview" );
 const readingLine = document.getElementById( "reading-line" );
@@ -200,6 +202,15 @@ function showBroadcast( s ) {
 	document.getElementById( "b-size" ).textContent = Number.isFinite( s.fontSize ) ? String( s.fontSize ) : "–";
 	document.getElementById( "b-backing" ).textContent = Number.isFinite( s.backing ) ? `${ s.backing }%` : "–";
 	for ( const b of broadcast ) b.disabled = !!s.editing;
+	const obs = s.obs;
+	const obsLabel = document.getElementById( "b-obs" );
+	obsLabel.classList.toggle( "hidden", !obs?.enabled );
+	obsLabel.textContent = obsStatusText( obs );
+	const record = document.getElementById( "b-obs-record" );
+	const finish = document.getElementById( "b-obs-finish" );
+	record.hidden = finish.hidden = !obs?.enabled || !obs?.controls;
+	record.disabled = !!s.editing || !!s.scrolling || obs?.connection !== "connected";
+	finish.disabled = obs?.connection !== "connected" || ![ "recording", "paused" ].includes( obs?.recording );
 	if ( !s.soundCheck ) meter.classList.add( "hidden" );
 }
 

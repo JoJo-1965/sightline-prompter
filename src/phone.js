@@ -8,6 +8,8 @@ import os from "node:os";
 import { readFile } from "node:fs/promises";
 
 export const PHONE_COMMANDS = [
+	"obs-record",
+	"obs-finish",
 	"toggle",
 	"restart",
 	"previous-section",

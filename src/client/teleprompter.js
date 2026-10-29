@@ -33,6 +33,7 @@ import { heardForms, normalizeWord } from "./word-fixes.js";
 import { createScratchRecorder } from "./scratch-audio.js";
 import { createLevelMeter, soundCheckVerdict } from "./level-meter.js";
 import { SUPPORT_URL } from "./links.js";
+import { createObsUi } from "./obs-ui.js";
 import {
 	indexSentences,
 	scriptSentences,
@@ -80,7 +81,21 @@ const summaryModal = document.getElementById( "take-summary" );
 const recording = createTakeLog( {
 	sentences: scriptSentences,
 	loudness: ( from, to ) => levelMeter.measure( from, to ),
-	onTake: takeLogged
+	onTake: takeLogged,
+	onOpen: ( index, title, take ) => obsUi.chapter( `Section ${ index + 1 } · Take ${ take } · ${ title }` ),
+	onMarker: label => obsUi.chapter( label || "Sightline marker" )
+} );
+const obsUi = createObsUi( {
+	getSettings: () => settings,
+	canStart: () => !isEditMode && !isScrolling() && !autoScrollStarting && !slating && !pointsRunning && !!md.textContent.trim() && ( pointsMode() || settings.scrollMode !== "voice" || ( usesLocalVoice() ? speechModel.installed : settings.hasDeepgramKey ) ),
+	onStart: () => runRemoteAction( "play" ),
+	onFinish: () => {
+		stopSteadySession();
+		stopAutoScrollSession();
+		if ( pointsRunning ) togglePoints();
+	},
+	onChange: () => sendStatus(),
+	toast: text => showToast( text, 4500 )
 } );
 let recordingSaved = 0; // the take log version last sent to be saved
 let recordingY = null; // reading line at the last tick, to see the text move on
@@ -1655,6 +1670,10 @@ function resetPrompter() {
 
 function runVoiceCommand( id, value ) {
 	if ( isEditMode ) return;
+	if ( id === "obs-record" || id === "obs-finish" ) {
+		runRemoteAction( id );
+		return;
+	}
 	hideVoiceHelp();
 	showToast( id === "section" ? `Heard: “Section ${ value }”` : `Heard: “${ wakeLabel( settings.wakeWord ) }, ${ COMMAND_LABELS[id] ?? id }”` );
 	if ( id === "help" ) {
@@ -2384,6 +2403,7 @@ async function openSettings() {
 	field( "set-eye-line-height" ).value = settings.eyeLineHeight;
 	field( "set-eye-line-reading" ).value = settings.eyeLineReadingLine;
 	field( "set-remote" ).checked = !!settings.remoteControl;
+	obsUi.fill();
 	field( "set-stream-deck" ).checked = !!settings.streamDeck;
 	field( "set-remote-delete" ).checked = !!settings.remoteDeleteRecordings;
 	field( "set-remote-port" ).value = settings.remotePort ?? 47615;
@@ -2455,12 +2475,16 @@ function requestCloseSettings( then = null ) {
 	then?.();
 }
 
-function finishSettingsClose( save ) {
+async function finishSettingsClose( save ) {
 	const then = afterSettingsClose;
 	afterSettingsClose = null;
 	field( "settings-unsaved" ).classList.add( "hidden" );
-	if ( save ) saveSettingsPage();
-	else closeSettings( true );
+	if ( save ) {
+		if ( !await saveSettingsPage() ) {
+			afterSettingsClose = then;
+			return;
+		}
+	} else closeSettings( true );
 	then?.();
 }
 
@@ -2713,7 +2737,8 @@ field( "command-words-add" ).addEventListener( "click", () => {
 	row.querySelector( "select" ).focus();
 } );
 
-function saveSettingsPage( close = true ) {
+async function saveSettingsPage( close = true ) {
+	if ( !await obsUi.save() ) return false;
 	window.electron.saveSettings( {
 		scrollMode: field( "set-scroll-mode" ).value === "voice" ? "voice" : "steady",
 		voiceEngine: field( "set-voice-engine" ).value === "deepgram" ? "deepgram" : "local",
@@ -2790,12 +2815,13 @@ function saveSettingsPage( close = true ) {
 	settingsDirty = false;
 	if ( close ) {
 		closeSettings( false );
-		return;
+		return true;
 	}
 	// Applied: Cancel now goes back to these, not to how it was when opened.
 	settingsSnapshot = { fontSize, opacity };
 	field( "set-deepgram-key" ).value = "";
 	field( "settings-applied" ).textContent = "Saved";
+	return true;
 }
 
 if ( settingsModal ) {
@@ -4600,6 +4626,7 @@ let lastStatusSent = 0;
 
 function sendStatus() {
 	window.electron.sendRendererStatus( {
+		obs: obsUi.state(),
 		scrolling: isScrolling(),
 		onAir: onAir(),
 		backing: Math.round( liveBacking() * 100 ),
@@ -4779,6 +4806,14 @@ function jumpSection( step ) {
 }
 
 function runRemoteAction( action, value ) {
+	if ( action === "obs-record" ) {
+		obsUi.action( "start" );
+		return;
+	}
+	if ( action === "obs-finish" ) {
+		obsUi.action( "stop" );
+		return;
+	}
 	if ( isEditMode && action !== "help" ) return;
 	if ( action === "play" && ( !isScrolling() || offScript ) ) toggleAutoScrollSession();
 	else if ( action === "pause" && isScrolling() ) toggleAutoScrollSession();
@@ -5762,6 +5797,8 @@ function feedTakeLog( active ) {
 			if ( m.y > recordingY && m.y <= y ) recording.marker( { label: m.label, from: "script", key: m.key } );
 		}
 	}
+	recording.obs( obsUi.state() );
+	obsUi.refresh();
 	recordingY = y;
 	if ( recording.version() !== recordingSaved ) {
 		recordingSaved = recording.version();

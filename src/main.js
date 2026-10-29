@@ -1,4 +1,4 @@
-import { app, BrowserWindow, clipboard, crashReporter, dialog, globalShortcut, ipcMain, Menu, screen, shell } from "electron";
+import { app, BrowserWindow, clipboard, crashReporter, dialog, globalShortcut, ipcMain, Menu, safeStorage, screen, shell } from "electron";
 import path from "node:path";
 import fs from "node:fs/promises";
 import { cpSync, existsSync, readFileSync } from "node:fs";
@@ -28,6 +28,8 @@ import { heardReport } from "./heard-report.js";
 import { deleteRecording, listRecordings, readRecording, recordingAudio, recordingPack, updateRecording, zipFiles } from "./recordings.js";
 import { startPhoneServer, newPhoneKey, lanAddress } from "./phone.js";
 import QRCode from "qrcode";
+import { createObs, obsAddress } from "./obs.js";
+import { createObsCredentials } from "./obs-credentials.js";
 import {
 	serialize as serializeSettings,
 	parse as parseSettings,
@@ -153,12 +155,17 @@ const defaultSettings = {
 	streamDeck: false, // the Stream Deck plugin: buttons only, its own key (stream-deck.json)
 	remotePort: 47615,
 	remoteDeleteRecordings: false, // the local API may delete recordings (Settings > Remotes)
+	obsEnabled: false,
+	obsHost: "127.0.0.1",
+	obsPort: 4455,
+	obsControls: false, // status only until explicitly allowed
+	obsMarkers: false,
 	phoneRemote: false, // phone remote over the home network (Settings > Phone remote)
 	phonePort: 47616
 };
 
 // Settings that a settings file or the remote API may not change.
-const PROTECTED_SETTINGS = [ "remoteControl", "remotePort", "remoteDeleteRecordings", "streamDeck", "phoneRemote", "phonePort" ];
+const PROTECTED_SETTINGS = [ "remoteControl", "remotePort", "remoteDeleteRecordings", "streamDeck", "phoneRemote", "phonePort", "obsEnabled", "obsHost", "obsPort", "obsControls", "obsMarkers" ];
 
 // Take logs, one per script per day: the recordings library (recordings.js).
 const takeLogFolder = () => path.join( app.getPath( "userData" ), "take-logs" );
@@ -328,6 +335,12 @@ let rendererStatus = {};
 let onSettingsChanged = () => {};
 let controlPad = null;
 let controlWindow = null;
+let obs = null;
+let obsPassword = "";
+let obsCredentials = null;
+function syncObsSettings() {
+	return obs?.configure( { enabled: settings.obsEnabled, host: settings.obsHost, port: settings.obsPort, password: settings.obsEnabled ? obsPassword : "", controls: settings.obsControls, markers: settings.obsMarkers } ).catch( () => {} );
+}
 
 function addRecentFile( filePath ) {
 	recentFiles = [ filePath, ...recentFiles.filter( f => f !== filePath ) ].slice(
@@ -509,6 +522,41 @@ const createWindow = ( state ) => {
 			hasDeepgramKey: !!currentDeepgramApiKey
 		} );
 	}
+
+	obs = createObs( { onState: ( state ) => {
+		if ( !win.isDestroyed() ) win.webContents.send( "obsState", state );
+	} } );
+	win.on( "closed", () => obs.dispose() );
+	ipcMain.handle( "obs", async ( event, action, value ) => {
+		if ( event.sender !== win.webContents ) return { ok: false, error: "Use OBS from the prompter" };
+		try {
+			if ( action === "status" ) return { ok: true, state: obs.state(), hasPassword: await obsCredentials.hasSaved() };
+			return { ok: true, state: await obs.command( action, value ) };
+		} catch ( error ) {
+			return { ok: false, error: error.message, state: obs.state() };
+		}
+	} );
+	ipcMain.handle( "saveObsSettings", async ( event, options ) => {
+		if ( event.sender !== win.webContents ) return { ok: false, error: "Use OBS settings in the prompter" };
+		try {
+			if ( !options || typeof options !== "object" ) throw new Error( "Check the OBS settings" );
+			const host = String( options.host ?? "127.0.0.1" ).trim();
+			const port = Number( options.port );
+			obsAddress( host, port );
+			if ( options.password !== undefined || options.clearPassword ) {
+				const password = options.clearPassword ? "" : String( options.password );
+				if ( password.length > 4096 ) throw new Error( "OBS password is too long" );
+				await obsCredentials.write( password );
+				obsPassword = password;
+			}
+			if ( options.enabled && !obsPassword ) obsPassword = await obsCredentials.read();
+			if ( !options.enabled ) obsPassword = "";
+			await updateSettings( { obsEnabled: options.enabled === true, obsHost: host, obsPort: port, obsControls: options.controls === true, obsMarkers: options.markers === true } );
+			return { ok: true, hasPassword: await obsCredentials.hasSaved(), state: obs.state() };
+		} catch ( error ) {
+			return { ok: false, error: error.message };
+		}
+	} );
 
 	function sendSlots() {
 		win.webContents.send( "slots", {
@@ -1207,6 +1255,7 @@ app.whenReady().then( async () => {
 	}
 	if ( !firstInstance ) return;
 	const state = await stateManager.readAppState();
+	obsCredentials = createObsCredentials( app.getPath( "userData" ), safeStorage );
 	currentFontSize = state.fontSize || defaultConfig.fontSize;
 	currentOpacity = state.opacity ?? defaultConfig.opacity;
 	currentMirrored = state.mirrored || "off";
@@ -1219,6 +1268,7 @@ app.whenReady().then( async () => {
 	streamDeckToken = state.streamDeckToken || newToken();
 	phoneKey = state.phoneKey || newPhoneKey();
 	settings = { ...defaultSettings, ...state.settings };
+	if ( settings.obsEnabled ) obsPassword = await obsCredentials.read();
 	normalBounds = state.normalBounds ?? null;
 	slots = Array.from( { length: SLOT_COUNT }, ( _, i ) =>
 		state.slots?.[i]?.path ? state.slots[i] : null
@@ -1334,6 +1384,8 @@ app.whenReady().then( async () => {
 	const APP_DATA_LABEL = { win32: "%APPDATA%", darwin: "~/Library/Application Support" }[process.platform] ?? "~/.config";
 	const REMOTE_FILE_LABEL = REMOTE_FILE.replace( app.getPath( "appData" ), APP_DATA_LABEL );
 	const REMOTE_COMMANDS = [
+		"obs-record",
+		"obs-finish",
 		"play",
 		"pause",
 		"toggle",
@@ -1632,6 +1684,7 @@ app.whenReady().then( async () => {
 				key: phoneKey,
 				pagePath: path.join( __dirname, "client", "phone.html" ),
 				getStatus: () => ( {
+					obs: rendererStatus.obs ?? null,
 					scrolling: !!rendererStatus.scrolling,
 					editing: !!rendererStatus.editing,
 					points: !!rendererStatus.points,
@@ -1658,11 +1711,13 @@ app.whenReady().then( async () => {
 	syncPhoneServer();
 
 	onSettingsChanged = () => {
+		syncObsSettings();
 		syncRemoteServer();
 		syncPhoneServer();
 		controlPad.apply();
 		controlWindow.apply();
 	};
+	syncObsSettings();
 	// Samples are copied into the app's folder first, so editing one never
 	// changes the original (which is read-only inside an installed app).
 	async function openSample( name ) {
