@@ -140,6 +140,7 @@ Keeping what voice scrolling knows (which word was said when, which section, eac
 | Item                             | Notes                                                                              |
 | -------------------------------- | ---------------------------------------------------------------------------------- |
 | Start and stop OBS recording with the prompter, with markers in OBS | Parked for the longer term at Joanne's request (27 October 2026): not using OBS at the moment. Would use OBS's built-in WebSocket remote control |
+| Supporters wall and goal progress on the website | Not needed yet (Joanne, 29 October 2026): Ko-fi emails each tip and Stripe records every payment. When there are supporters to thank, a small Cloudflare Worker would take Ko-fi's webhook (Settings > API; check the verification token, kept as a Worker secret, never in a repo) and Stripe's for the tip jar link, save public tips (Ko-fi's `is_public` must be honoured) and show names, messages and goal progress (such as code signing) on joannelockwood.co.uk/sightline |
 
 ## On hold
 
