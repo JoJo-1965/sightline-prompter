@@ -3912,6 +3912,29 @@ function makeMovable( box, handle, key ) {
 	} );
 	place();
 	window.addEventListener( "resize", keepInView );
+
+	// The whole box inside the window when it opens and when the window
+	// changes size: a place it was dragged to on a bigger screen may not fit
+	// a smaller one. Where it was dragged to is kept for next time.
+	const margin = 8;
+	const fit = () => {
+		const r = box.getBoundingClientRect();
+		if ( !r.width ) return;
+		let dx = 0;
+		let dy = 0;
+		if ( r.right > window.innerWidth - margin ) dx = window.innerWidth - margin - r.right;
+		if ( r.left + dx < margin ) dx = margin - r.left;
+		if ( r.bottom > window.innerHeight - margin ) dy = window.innerHeight - margin - r.bottom;
+		if ( r.top + dy < margin ) dy = margin - r.top;
+		if ( !dx && !dy ) return;
+		const sx = mirrored === "horizontal" || mirrored === "both" ? -1 : 1;
+		const sy = mirroredVertically() ? -1 : 1;
+		at = { x: at.x + dx * sx, y: at.y + dy * sy };
+		place();
+	};
+	const shown = box.closest( ".modal" ) ?? box;
+	new MutationObserver( () => requestAnimationFrame( fit ) ).observe( shown, { attributes: true, attributeFilter: [ "class" ] } );
+	window.addEventListener( "resize", () => requestAnimationFrame( fit ) );
 }
 
 makeMovable( document.querySelector( "#settings-modal .settings-content" ), document.querySelector( "#settings-modal .settings-head h3" ), "settings" );

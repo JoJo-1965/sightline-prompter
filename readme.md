@@ -222,6 +222,8 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ### Next release
 
+- **Settings and the panels always fit the window:** a panel dragged somewhere on a big screen used to open partly off the edge of a smaller one (a prompter monitor, a laptop). They now move fully into the window when they open and when the window changes size, and remember where you put them for the bigger screen
+- **Policies published:** [privacy and data protection, terms and fair use, accessibility and voluntary support](docs/POLICIES.md), covering Sightline, its Stream Deck plugin and Joanne's tip jar. The About link opens the policy hub. Includes the England/UK base, company details, ICO registration and applicable rights elsewhere; the MIT licence is unchanged
 - **If Sightline stops responding,** it asks whether to wait or reload, instead of leaving a frozen window to be closed from Task Manager, and notes hangs, crashes and errors in `sightline.log` in its folder, to help track down the cause
 - **New users are offered voice scrolling:** the first time Sightline opens without the speech model, a small note offers the one-off 73 MB download, shows its progress, and says how to turn voice scrolling on once it's ready. Close it and it doesn't ask again; Settings > Voice and the Voice panel still have it
 
