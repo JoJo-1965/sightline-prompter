@@ -443,13 +443,10 @@ const createWindow = ( state ) => {
 	win.webContents.on( "render-process-gone", ( _event, details ) =>
 		logProblem( `The prompter's page stopped: ${ details?.reason ?? "unknown" }` )
 	);
-	win.webContents.on( "console-message", ( event, level, message, line, source ) => {
-		// Newer Electron passes one details object; older passes the parts.
-		const lv = event?.level ?? level;
-		if ( lv !== "error" && lv !== 3 ) return;
-		const text = event?.message ?? message;
-		const where = event?.sourceId ?? source;
-		logProblem( `Page error: ${ text } (${ String( where ?? "" ).split( /[\\/]/ ).pop() }:${ event?.lineNumber ?? line ?? "" })` );
+	win.webContents.on( "console-message", ( event ) => {
+		if ( event.level !== "error" ) return;
+		const file = String( event.sourceId ?? "" ).split( "/" ).pop();
+		logProblem( `Page error: ${ event.message } (${ file }:${ event.lineNumber ?? "" })` );
 	} );
 
 	win.webContents.on( "did-finish-load", () => {
