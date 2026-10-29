@@ -58,6 +58,8 @@ latest news and the link are on the
 | Script slot | Opens slot 1 to 9; lit while that slot is open |
 | Mirror | Steps through the modes, or turns ↔ or ↕ on and off |
 | Layout, Reading, Recording | Opens or closes that panel |
+| Scroll mode | Switches between steady and voice scrolling; lit in voice |
+| Control pad, Control window | Opens or closes the floating pad (**Ctrl+Shift+P**) or the control window (**Ctrl+Shift+O**); lit while open |
 | Faster, Slower, Bigger, Smaller | Speed and text size |
 | Section and time left | Shows them; press to play or pause |
 
@@ -101,6 +103,8 @@ and too far away to work Settings on:
 - **Backing −** and **+**: how solid the backing behind the text is, on air or
   off air, whichever is in use.
 - **↔ Mirror** and **↕ Mirror**, each lit while it's on.
+- **Voice scroll**, lit while the prompter follows your voice; press it for
+  steady scrolling, and again to go back.
 - **Eye-line** mode.
 - A blue **🎙** badge at the top shows when the microphone is on: following
   your voice, or listening for the wake word.

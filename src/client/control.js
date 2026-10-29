@@ -195,6 +195,7 @@ function showBroadcast( s ) {
 	lit( "b-mirror-h", s.mirrored === "horizontal" || s.mirrored === "both" );
 	lit( "b-mirror-v", s.mirrored === "vertical" || s.mirrored === "both" );
 	lit( "b-eye-line", s.eyeLine );
+	lit( "b-voice", s.scrollMode === "voice" );
 	lit( "b-sound-check", s.soundCheck );
 	document.getElementById( "b-size" ).textContent = Number.isFinite( s.fontSize ) ? String( s.fontSize ) : "–";
 	document.getElementById( "b-backing" ).textContent = Number.isFinite( s.backing ) ? `${ s.backing }%` : "–";

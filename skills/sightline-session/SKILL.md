@@ -48,7 +48,8 @@ so on) and finish with `status` to confirm.
 `go-to-section <n>` (the n-th `##` section), `faster`, `slower`,
 `reset-speed`, `set-wpm <words a minute>`, `marker`, `back-to-marker`, `keeper`, `scrap`,
 `sound-check` (the sound-check meter on or off: the mic's level, loudness and
-the room's noise), `help`. `window minimize|maximize|fullscreen` toggles the window.
+the room's noise), `scroll-mode` (steady or voice scrolling), `pad` and
+`control` (the floating pad and the control window open or closed), `help`. `window minimize|maximize|fullscreen` toggles the window.
 
 The user may be recording. **Only send `play`, `pause`, jumps, `keeper` or
 `scrap` when the user asks**, and never as a test. `status` is always safe.

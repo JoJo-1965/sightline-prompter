@@ -4818,6 +4818,9 @@ function runRemoteAction( action, value ) {
 		window.scrollBy( { top: Number( value ) * parseFloat( getComputedStyle( md ).lineHeight || "40" ), behavior: "smooth" } );
 	} else if ( action === "backing" && Number.isFinite( Number( value ) ) ) setLiveBacking( liveBacking() + Number( value ) * OPACITY_STEP );
 	else if ( action === "sound-check" ) toggleSoundCheck();
+	else if ( action === "scroll-mode" ) window.electron.saveSettings( { scrollMode: settings.scrollMode === "voice" ? "steady" : "voice" } );
+	else if ( action === "pad" ) window.electron.saveSettings( { showPad: !settings.showPad } );
+	else if ( action === "control" ) window.electron.saveSettings( { showControl: !settings.showControl } );
 	sendStatus();
 }
 window.electron.onRemoteCommand( runRemoteAction );

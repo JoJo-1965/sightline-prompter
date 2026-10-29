@@ -204,12 +204,13 @@ The whole workflow is in the guide:
   own Wi-Fi, protected by the code in the QR.
 - **Control window** for a second screen: an upright, live copy of the script
   with big buttons. Click any line to move the prompter there. Its broadcast
-  row sets the prompter's on air, text size, backing, mirroring and eye-line,
-  and shows the sound-check meter, even during a take.
+  row sets the prompter's on air, text size, backing, mirroring, eye-line and
+  voice or steady scrolling, and shows the sound-check meter, even during a take.
 - **Presenter clickers that start and pause** as well as jump sections, **USB
   foot pedals** and **game controllers**.
 - **Stream Deck plugin** (coming to the Elgato Marketplace): keys that light up
-  to match the prompter (▶ or ❚❚, On air, the open slot, the time left),
+  to match the prompter (▶ or ❚❚, On air, the open slot, the time left), keys for scroll mode, the
+  pad and the control window, every key ready for an AI on Stream Deck's MCP,
   dials on the Stream Deck + and the three-pedal Stream Deck Pedal, with a
   sample profile for every model. See
   [Remotes and second screens](guide/06-remotes-and-screens.md#stream-deck).

@@ -1364,7 +1364,10 @@ app.whenReady().then( async () => {
 		"click-through",
 		"scroll", // value: lines, + down or - up
 		"backing", // value: steps of 5%, + or -
-		"sound-check" // the sound-check meter on or off
+		"sound-check", // the sound-check meter on or off
+		"scroll-mode", // steady or voice scrolling
+		"pad", // the floating control pad open or closed
+		"control" // the control window open or closed
 	];
 
 	// The prompter's state, for GET /status and the GET /events stream.
@@ -1379,6 +1382,8 @@ app.whenReady().then( async () => {
 		mirrored: currentMirrored,
 		eyeLine: settings.eyeLine,
 		clickThrough: !!settings.clickThrough,
+		showPad: !!settings.showPad,
+		showControl: !!settings.showControl,
 		windowMode,
 		...rendererStatus,
 		commands: REMOTE_COMMANDS
