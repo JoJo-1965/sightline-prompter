@@ -134,10 +134,12 @@ that*, with the words it heard, so you can say it again.
 Choose when it listens on **Settings > Voice**, under **Voice commands**:
 
 - **In voice mode** (the default): commands work while voice scrolling.
-- **In voice mode and while steady scrolling**: the microphone also listens
-  for commands while the script scrolls at a steady pace. A small
-  **🎙 Prompter** label at the bottom right shows that it's listening. This
-  uses speech recognition on this computer, so nothing is sent anywhere.
+- **Always, even when stopped**: the microphone listens for the wake word
+  whenever Sightline is open, running or stopped, in voice or steady
+  scrolling, so **"Prompter, go"** starts it hands-free and commands work
+  while it scrolls at a steady pace. A small **🎙 Prompter** label at the
+  bottom right shows that it's listening. This uses speech recognition on
+  this computer, so nothing is sent anywhere, but the mic stays on.
 - **Off**.
 
 ## Stops and timed pauses

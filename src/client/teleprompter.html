@@ -751,16 +751,17 @@
             >Voice commands (“Prompter, pause”)
             <select id="set-voice-commands">
               <option value="voice">In voice mode</option>
-              <option value="always">In voice mode and while steady scrolling</option>
+              <option value="always">Always, even when stopped (the mic stays on)</option>
               <option value="off">Off</option>
             </select>
           </label>
           <p class="field-hint">
             Say the wake word (below) then a command, and stop: pause, go,
             slower, faster, back, next section, from the top, again, marker,
-            resync, bigger, smaller, or what can I say. While steady scrolling,
-            the microphone stays on to listen for them (on this computer only;
-            nothing is sent anywhere).
+            resync, bigger, smaller, or what can I say. With Always, the
+            microphone listens for the wake word whenever Sightline is open,
+            so "Prompter, go" starts it hands-free, in voice or steady
+            scrolling (on this computer only; nothing is sent anywhere).
           </p>
           <label class="row" title="The word you say before a command. It applies the next time Sightline starts listening"
             >Wake word

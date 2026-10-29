@@ -1418,11 +1418,16 @@ let commandChange = Promise.resolve();
 const commandPill = document.getElementById( "command-listening" );
 
 // Also at a {stop} in steady scrolling, so "Prompter, go" can carry on.
+// Always (Settings > Voice > Voice commands) listens for the wake word
+// whenever Sightline is open, stopped or running, in either mode: in voice
+// mode until you start, when the voice session takes over, so "Prompter, go"
+// starts it hands-free.
 function wantCommandListening() {
-	const wanted = settings.voiceCommands === "always" || ( cuePaused && lastCue?.listen !== "off" && settings.voiceCommands !== "off" );
+	const always = settings.voiceCommands === "always";
+	const wanted = always || ( cuePaused && lastCue?.listen !== "off" && settings.voiceCommands !== "off" );
 	return (
 		wanted
-		&& settings.scrollMode !== "voice"
+		&& ( settings.scrollMode !== "voice" || always )
 		&& usesLocalVoice()
 		&& speechModel.installed
 		&& !isEditMode
