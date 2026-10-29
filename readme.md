@@ -198,7 +198,7 @@ A few notes:
 ## Support Sightline
 
 Sightline is free, and always will be. If it helps you, you can say thanks
-with a coffee: **[☕ Joanne's tip jar](https://buy.stripe.com/4gMeVd5GLgmZdx9btV5ZC01?utm_source=sightline&utm_medium=github)**. It helps pay for
+with a coffee: **[☕ Joanne's tip jar](https://buy.stripe.com/4gMeVd5GLgmZdx9btV5ZC01?utm_source=sightline&utm_medium=github)**, or [leave a message on Ko-fi](https://ko-fi.com/joannelockwood). It helps pay for
 the things a free app still costs, like code signing. There are no perks: Sightline is the same for everyone, whether you give or not.
 
 ## More from Joanne Lockwood
