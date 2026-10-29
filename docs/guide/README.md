@@ -27,3 +27,7 @@ steady pace or follows your voice.
 
 Inside the app, open this guide from **Help > User Guide** or the **?** menu.
 **F1** shows the keyboard shortcuts.
+
+[Privacy, terms, accessibility and voluntary support](../POLICIES.md)
+explain the microphone and local files, online services, your rights and
+Joanne's tip jar. The same policies are linked from **Settings > About**.

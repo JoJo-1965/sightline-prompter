@@ -146,9 +146,10 @@ Choose when it listens on **Settings > Voice**, under **Voice commands**:
 
 ### What the microphone does, and doesn't
 
-- **It isn't recording you.** Speech recognition runs on this computer: what
-  you say isn't kept or sent anywhere. Only the words it recognised go in the
-  [heard log](#what-it-heard), as text, to help with words it mishears.
+- **Local recognition processes audio on this computer.** Voice following
+  saves recognised words in the [heard log](#what-it-heard), as text, to help
+  with words it mishears. The commands-only listener does not itself write
+  a heard log. Other enabled microphone features work independently.
 - **You can see when it's on.** While it follows your voice the prompter says
   **Listening**; while it only listens for the wake word, **🎙 Listening for
   “Prompter”** shows at the bottom right, and the
@@ -161,6 +162,10 @@ Choose when it listens on **Settings > Voice**, under **Voice commands**:
 
 [Privacy, licence and policies](../POLICIES.md) has the full picture,
 including when Sightline goes online.
+It also links to the terms and MIT licence, accessibility statement and
+voluntary-support policy, with the company's privacy contact and ICO
+registration. Setting voice commands to Off does not stop voice following,
+scratch audio or a sound check; quit the app to stop all microphone use.
 
 ## Stops and timed pauses
 

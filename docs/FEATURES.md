@@ -242,6 +242,8 @@ The whole workflow is in the guide:
 
 ## Help and installers
 
+- [Privacy, terms, accessibility and voluntary support](POLICIES.md), linked
+  from About and the user guide, covering Sightline and its Stream Deck plugin.
 - **User guide** with screenshots, built into the app (Shift+F1) and on GitHub.
 - **Installers** for Windows, macOS (Apple silicon and Intel) and Linux
   (AppImage and .deb), built on GitHub for every release.
