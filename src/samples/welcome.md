@@ -60,13 +60,17 @@ to count down and carry on by itself.
 
 To check them, tick Show directives in the Layout panel. {pause}
 
-## Recording setups {target: 0:20}
+## Recording setups {target: 0:35}
 
-For a beam-splitter rig, press Control and M to mirror the whole display:
-horizontally, vertically, or both.
+For a beam-splitter rig, press Control and M to mirror the whole display, or
+use the left–right and up–down buttons in the Layout panel.
 
-The Beam-splitter setup button, in the Layout panel, gives a solid black
-background and dimmer text, so your camera picture stays clear.
+On a prompter monitor, such as the Elgato Prompter, open the control window
+on your main screen, with Control, Shift and O, to change the size, the
+backing and the mirroring from there.
+
+Before you record, press Control, Shift and D for a sound check: your mic's
+level, and how noisy the room is.
 
 F11 goes full screen. {pause}
 

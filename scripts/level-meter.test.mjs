@@ -1,6 +1,6 @@
 // node scripts/level-meter.test.mjs
 import assert from "node:assert/strict";
-import { integratedLoudness, kWeighting, levelWarning, lufs, measure, noiseFloor } from "../src/client/level-meter.js";
+import { integratedLoudness, kWeighting, levelWarning, lufs, measure, noiseFloor, soundCheckVerdict } from "../src/client/level-meter.js";
 
 const near = ( actual, expected, tolerance, what ) =>
 	assert.ok( Math.abs( actual - expected ) <= tolerance, `${ what }: ${ actual } (expected ${ expected })` );
@@ -84,4 +84,15 @@ assert.equal( levelWarning( { lufs: -20, peak: -6, noise: -40 } ), "noisy" );
 assert.equal( levelWarning( { lufs: -20, peak: -6, noise: -60 } ), null );
 assert.equal( levelWarning( { lufs: null, peak: null, noise: null } ), null );
 
+// {soundcheck}: what each check found, and how far to turn the gain.
+assert.equal( soundCheckVerdict( "room", { noise: -62 } ).verdict, "quiet" );
+assert.equal( soundCheckVerdict( "room", { noise: -50 } ).verdict, "ok" );
+assert.equal( soundCheckVerdict( "room", { noise: -40 } ).verdict, "noisy" );
+assert.equal( soundCheckVerdict( "room", null ).verdict, "unknown" );
+assert.equal( soundCheckVerdict( "voice", { lufs: -24, peak: -8 } ).verdict, "good" );
+assert.match( soundCheckVerdict( "voice", { lufs: -40, peak: -20 } ).advice, /up about 16 dB/ );
+assert.equal( soundCheckVerdict( "voice", { lufs: -40, peak: -20 } ).verdict, "too-quiet" );
+assert.match( soundCheckVerdict( "voice", { lufs: -18, peak: -0.2 } ).advice, /down about 6 dB/ );
+assert.equal( soundCheckVerdict( "voice", { lufs: -12, peak: -3 } ).verdict, "loud" );
+assert.equal( soundCheckVerdict( "voice", { lufs: null, peak: null } ).verdict, "silent" );
 console.log( "level meter tests pass" );

@@ -144,6 +144,10 @@ The whole workflow is in the guide:
 - **Sound-check meter** (Ctrl+Shift+D, or Sound check in the Voice panel):
   the mic's level, peak, clip light, loudness in LUFS and the room's
   background noise, at the edge of the prompter.
+- **Sound checks in the script:** `{soundcheck: room}` and
+  `{soundcheck: voice}` check the room's background noise and your level
+  before you start, say how far to turn the gain, and keep the results with
+  the session.
 - **Loudness for each take** (Settings > Scrolling): each take's loudness,
   peak and background noise in the take log and edit pack, with a warning as
   it ends if it clipped, was very quiet or had a noisy room.

@@ -200,3 +200,20 @@ console.log( "take log tests pass" );
 	assert.equal( plain.data().takes[0].loudness, null );
 	console.log( "loudness per take passes" );
 }
+
+// {soundcheck} results go in soundChecks, and one before any take starts the log.
+{
+	let now = Date.parse( "2026-10-29T10:00:00Z" );
+	const log = createTakeLog( { clock: () => now } );
+	log.soundCheck( { kind: "room", noise: -58.2, verdict: "quiet" }, -1 );
+	now += 8000;
+	log.soundCheck( { kind: "voice", lufs: -40, peak: -20, verdict: "too-quiet", advice: "Turn the mic gain up about 16 dB, or move closer." }, 0 );
+	const data = log.data();
+	assert.equal( data.startedAt, "2026-10-29T10:00:00.000Z" );
+	assert.deepEqual( data.soundChecks.map( c => [ c.t, c.kind, c.section, c.verdict ] ), [ [ 0, "room", null, "quiet" ], [ 8, "voice", 1, "too-quiet" ] ] );
+	assert.equal( data.soundChecks[1].lufs, -40 );
+	// Saved logs from before keep working.
+	log.load( { startedAt: data.startedAt, takes: [], events: [] } );
+	assert.deepEqual( log.data().soundChecks, [] );
+	console.log( "sound checks pass" );
+}

@@ -115,7 +115,9 @@ When a take ends with a problem, a message says so, such as *Section 2, take
 - **noisy**: background noise above -45 dB.
 
 The take summary lists the last few takes' levels, and the take log and edit
-pack keep them. It's measured in voice scrolling (when the mic is on anyway)
+pack keep them. A script can also ask for a room and a voice check before you
+start, with [`{soundcheck: …}`](03-scrolling-and-voice.md#sound-checks-in-the-script-soundcheck-);
+those results are kept with the session too. It's measured in voice scrolling (when the mic is on anyway)
 unless you choose **Always** or **Off**. It's the mic as Sightline hears it,
 before OBS or Riverside process it, so treat it as a guide, not the final
 figure.

@@ -2,6 +2,12 @@
 
 # Voice control, stops and countdowns
 
+[First, two sound checks. Stay quiet for the room, then read the card for your voice. Space carries on after each.]
+
+{soundcheck: room}
+
+{soundcheck: voice}
+
 ## Talk to the prompter {target: 0:25}
 
 [A sample to try with your voice. In the Voice panel, choose Voice as the mode, then press Space and start reading.]

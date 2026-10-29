@@ -76,7 +76,7 @@ that file and sends each request with the header
 | `GET /status`     | The current script, slot, speed, progress and slots                  |
 | `POST /load-text` | Save a script it wrote and open it `{ text, name, slot }`            |
 | `POST /open`      | Open a script file `{ path, slot }`                                  |
-| `POST /command`   | `play`, `pause`, `next-section`, `go-to-section`, `set-wpm`, `marker`, `keeper`, `scrap` and more; for buttons, `on-air`, `mirror`, `mirror-h`, `mirror-v`, `bigger`, `smaller`, `layout`, `reading`, `recording`, `eye-line`, `click-through`, and `scroll` or `backing` with a number of steps |
+| `POST /command`   | `play`, `pause`, `next-section`, `go-to-section`, `set-wpm`, `marker`, `keeper`, `scrap` and more; for buttons, `on-air`, `mirror`, `mirror-h`, `mirror-v`, `bigger`, `smaller`, `layout`, `reading`, `recording`, `eye-line`, `click-through`, `sound-check`, and `scroll` or `backing` with a number of steps |
 | `GET /events`     | A live stream (server-sent events) of the state, sent again each time something changes: playing, on air, mirror, slot, section, time left, speed, backing |
 | `POST /slot`      | Switch to a slot `{ slot }`                                          |
 | `POST /settings`  | Change display settings                                              |
@@ -126,6 +126,12 @@ up with the recording from the first beep or flash.
 
 The [roadmap](https://github.com/JoJo-1965/sightline-prompter/blob/main/ROADMAP.md) takes this further, in this order:
 
-- **Script-controlled listening** (35): `{listen: off}` before an ad-lib or a
-  demo turns the microphone off, `{listen: on}` turns it back on, and
-  `{prompter: …}` lets the script give the prompter a command.
+- **Settings in its own window** (48), regrouped into more tabs, for
+  prompter monitors and second screens.
+- **Code signing** (27), so the installers don't trigger security warnings.
+- **Choose your own buttons** (40) for clickers, pedals and game controllers.
+
+Already built: script lines that switch the microphone off for a demo
+(`{listen: off}`), commands in the script (`{prompter: …}`), and sound checks
+(`{soundcheck: room}`, `{soundcheck: voice}`); see
+[Writing scripts](02-scripts.md).

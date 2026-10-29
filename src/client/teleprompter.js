@@ -31,7 +31,7 @@ import { createTakeLog } from "./take-log.js";
 import { COMMAND_HELP, COMMANDS, wakeLabel } from "./voice-commands.js";
 import { heardForms, normalizeWord } from "./word-fixes.js";
 import { createScratchRecorder } from "./scratch-audio.js";
-import { createLevelMeter } from "./level-meter.js";
+import { createLevelMeter, soundCheckVerdict } from "./level-meter.js";
 import { SUPPORT_URL } from "./links.js";
 import {
 	indexSentences,
@@ -966,6 +966,8 @@ function stopText() {
 function clearPausePill() {
 	clearInterval( pauseTicker );
 	pauseTicker = null;
+	// Moving on from a stop closes a sound check held there.
+	endScriptSoundCheck();
 }
 
 // seconds = 0: a stop. Otherwise count down, then onDone().
@@ -1038,6 +1040,134 @@ function runScriptCommand( command ) {
 	showToast( `Script: ${ SCRIPT_COMMAND_LABELS[command] ?? command }`, 1500 );
 }
 
+// --- {soundcheck: room} and {soundcheck: voice}: checks the script asks for ---
+// A stop that measures the mic first (level-meter.js): the room's background
+// noise while you stay quiet, or your voice while you read a line. The result,
+// and what to turn up or down, show on a card and go in the take log
+// (soundChecks). "Prompter, again" or Check again measures again; carrying on
+// (Space, "Prompter, go") closes it. Sightline can't set the mic's gain: the
+// recording isn't its own, so it says how far to turn it instead.
+const VOICE_CHECK_LINE = "Testing, one, two, three. This is my normal speaking voice, at the level I'll use for the recording.";
+const CHECK_SECONDS = { room: 5, voice: 7 };
+let scriptCheck = null; // { kind, pause, timer, done }
+const checkCard = document.createElement( "div" );
+checkCard.id = "soundcheck-card";
+checkCard.className = "hidden";
+checkCard.setAttribute( "role", "status" );
+hud.appendChild( checkCard );
+
+function drawCheckCard( { title, line = "", count = null, result = null, done = false } ) {
+	checkCard.textContent = "";
+	const add = ( tag, cls, text ) => {
+		const el = document.createElement( tag );
+		el.className = cls;
+		el.textContent = text;
+		checkCard.appendChild( el );
+		return el;
+	};
+	add( "div", "sc-title", title );
+	if ( line ) add( "div", "sc-line", line );
+	if ( count !== null ) add( "div", "sc-count", String( count ) );
+	if ( result ) {
+		add( "div", `sc-result ${ result.verdict }`, result.text );
+		if ( result.advice ) add( "div", "sc-advice", result.advice );
+	}
+	if ( done ) {
+		const wake = wakeLabel( settings.wakeWord );
+		add( "div", "sc-hint", autoScrollActive
+			? `Space or “${ wake }, go” to carry on · “${ wake }, again” to check again`
+			: "Space to carry on" );
+		const again = add( "button", "sc-again", "Check again" );
+		again.type = "button";
+		again.addEventListener( "click", () => startScriptSoundCheck( scriptCheck?.kind ?? "voice", scriptCheck?.pause ) );
+	}
+	checkCard.classList.remove( "hidden" );
+}
+
+async function startScriptSoundCheck( kind, pause = null ) {
+	endScriptSoundCheck();
+	const run = { kind, pause, timer: null, done: false };
+	scriptCheck = run;
+	const title = kind === "room" ? "Room check: stay quiet" : "Voice check: read this at your normal level";
+	const line = kind === "voice" ? VOICE_CHECK_LINE : "";
+	drawCheckCard( { title, line, count: "…" } );
+	setIndicator( kind === "room" ? "Room check · stay quiet" : "Voice check · read the card", "stopped" );
+	syncLevelMeter( isScrolling() || cuePaused || pointsRunning );
+	// A moment for the microphone to open, then count.
+	await new Promise( r => setTimeout( r, 700 ) );
+	if ( scriptCheck !== run ) return;
+	const from = Date.now();
+	let left = CHECK_SECONDS[kind];
+	drawCheckCard( { title, line, count: left } );
+	await new Promise( ( resolve ) => {
+		run.timer = setInterval( () => {
+			left--;
+			if ( scriptCheck !== run || left <= 0 ) {
+				clearInterval( run.timer );
+				resolve();
+				return;
+			}
+			const count = checkCard.querySelector( ".sc-count" );
+			if ( count ) count.textContent = String( left );
+		}, 1000 );
+	} );
+	if ( scriptCheck !== run ) return;
+	const measured = levelMeter.measure( from, Date.now() );
+	const result = soundCheckVerdict( kind, measured );
+	recording.soundCheck( {
+		kind,
+		lufs: measured?.lufs ?? null,
+		peak: measured?.peak ?? null,
+		noise: measured?.noise ?? null,
+		verdict: result.verdict,
+		advice: result.advice ?? ""
+	}, sectionIndexAt( readingLineY() ) );
+	run.done = true;
+	drawCheckCard( { title: kind === "room" ? "Room check" : "Voice check", result, done: true } );
+	setIndicator( stopText(), "stopped" );
+	syncLevelMeter( isScrolling() || cuePaused || pointsRunning );
+}
+
+// The sound check straight after this one, with nothing to read between them
+// (room, then voice): carrying on from one goes to the next.
+function nextSoundCheck( pause ) {
+	const list = directivePoints.pauses;
+	const next = list[list.indexOf( pause ) + 1];
+	if ( !pause || !next?.soundcheck ) return null;
+	return directivePoints.wordTops.some( t => t > pause.y + 1 && t < next.y - 1 ) ? null : next;
+}
+
+// The sound check a script opens with: starting from the top, it's already
+// above the reading line, so it would never be passed. It runs straight away.
+function openingSoundCheck() {
+	if ( window.scrollY > 4 ) return null;
+	const first = directivePoints.pauses[0];
+	return first?.soundcheck && first.y <= readingLineY() + 1 ? first : null;
+}
+
+// Voice scrolling, carrying on from a sound check: the next check, or back to
+// following the script.
+function carryOnFromVoiceCheck() {
+	const next = nextSoundCheck( scriptCheck?.pause );
+	if ( next ) {
+		pauseVoiceAt( next );
+		return;
+	}
+	clearPausePill();
+	autoScrollHandle?.setHold( false );
+	setIndicator( "Listening" );
+	// The take starts now: the slate it skipped at the start.
+	showSlate();
+}
+
+function endScriptSoundCheck() {
+	if ( !scriptCheck ) return;
+	clearInterval( scriptCheck.timer );
+	scriptCheck = null;
+	checkCard.classList.add( "hidden" );
+	syncLevelMeter( isScrolling() || cuePaused || pointsRunning );
+}
+
 // {listen: off}: the microphone is muted and the prompter holds, for an ad-lib,
 // a demo or questions; Space, a clicker, the remote or the Stream Deck carries
 // on from the next {listen: on}. The take log notes the time off script.
@@ -1077,6 +1207,13 @@ function pauseVoiceAt( pause ) {
 	if ( !autoScrollHandle ) return;
 	if ( pause.listen === "off" ) {
 		goOffScript( pause );
+		return;
+	}
+	if ( pause.soundcheck ) {
+		autoScrollHandle.setHold( true );
+		cancelScroll();
+		showPausePill( 0 );
+		startScriptSoundCheck( pause.soundcheck, pause );
 		return;
 	}
 	autoScrollHandle.setHold( true );
@@ -1205,7 +1342,9 @@ async function beginVoice( engine, deepgramKey ) {
 		autoScrollStarting = false;
 		lastManualScrollTs = 0;
 		setIndicator( "Listening" );
-		showSlate();
+		const opening = openingSoundCheck();
+		if ( opening ) pauseVoiceAt( opening );
+		else showSlate();
 	} catch ( err ) {
 		autoScrollStarting = false;
 		console.error( "[auto-scroll] start failed", err );
@@ -1440,7 +1579,8 @@ function runVoiceCommand( id, value ) {
 			setIndicator( `Paused · say “${ wakeLabel( settings.wakeWord ) }, go”` );
 		} else if ( isScrolling() ) runRemoteAction( "pause" );
 	} else if ( id === "go" ) {
-		if ( voice ) {
+		if ( voice && scriptCheck ) carryOnFromVoiceCheck();
+		else if ( voice ) {
 			clearPausePill();
 			autoScrollHandle.setHold( false );
 			setIndicator( "Listening" );
@@ -1459,6 +1599,9 @@ function runVoiceCommand( id, value ) {
 	} else if ( id === "top" ) {
 		runRemoteAction( "restart" );
 		resyncAfterJump();
+	} else if ( id === "retake" && scriptCheck ) {
+		// Held at a sound check: check again.
+		startScriptSoundCheck( scriptCheck.kind, scriptCheck.pause );
 	} else if ( id === "retake" ) {
 		// Mark where it went wrong, then back to the start of the section.
 		dropMarker();
@@ -1652,6 +1795,10 @@ function toggleAutoScrollSession() {
 	}
 	if ( offScript ) {
 		backOnScript();
+		return;
+	}
+	if ( autoScrollActive && scriptCheck ) {
+		carryOnFromVoiceCheck();
 		return;
 	}
 	if ( steadySessionActive() ) {
@@ -4869,6 +5016,8 @@ function startCueTracking() {
 	lastReadingY = readingLineY();
 	appliedPace = null;
 	followScriptPace( lastReadingY );
+	const opening = openingSoundCheck();
+	if ( opening ) pauseAtCue( opening );
 }
 
 let cueWasStop = false;
@@ -4883,6 +5032,7 @@ function pauseAtCue( pause ) {
 	lastCue = pause;
 	handledCues.add( pause );
 	showPausePill( pause.seconds, resumeFromCue );
+	if ( pause.soundcheck ) startScriptSoundCheck( pause.soundcheck, pause );
 	if ( pause.listen === "off" ) {
 		recording.listen( false );
 		setIndicator( OFF_SCRIPT_TEXT, "stopped" );
@@ -4892,6 +5042,12 @@ function pauseAtCue( pause ) {
 }
 
 function resumeFromCue() {
+	// Room then voice: straight on to the next check.
+	const nextCheck = lastCue?.soundcheck ? nextSoundCheck( lastCue ) : null;
+	if ( nextCheck ) {
+		pauseAtCue( nextCheck );
+		return;
+	}
 	clearPausePill();
 	cuePaused = false;
 	syncCommandListening();
@@ -5366,14 +5522,16 @@ function syncLevelMeter( active ) {
 	meterEl.classList.toggle( "hidden", !show );
 	// With the control window open, it keeps measuring for that, out of sight.
 	const forControl = soundCheck && controlOpen && !isEditMode;
-	if ( ( show || measuring || forControl ) && !levelMeter.running ) {
+	// A {soundcheck} in the script, while it measures.
+	const forScript = !!scriptCheck && !scriptCheck.done;
+	if ( ( show || measuring || forControl || forScript ) && !levelMeter.running ) {
 		levelMeter.start( audioDeviceId ).catch( ( err ) => {
 			console.warn( "[sound check]", err );
 			soundCheck = false;
 			meterEl.classList.add( "hidden" );
 			showToast( "Couldn't open the microphone for the sound check: is one connected?", 3000 );
 		} );
-	} else if ( !show && !measuring && !forControl && levelMeter.running ) levelMeter.stop();
+	} else if ( !show && !measuring && !forControl && !forScript && levelMeter.running ) levelMeter.stop();
 }
 
 function toggleSoundCheck() {

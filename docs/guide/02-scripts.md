@@ -63,6 +63,7 @@ read.
 | `{pause: 3s}`                 | A 3-second countdown, then it carries on by itself. In voice mode, a **⏸ 3s** mark: take the beat yourself |
 | `{marker}` or `{marker: Setup}` | A bookmark for retakes. **Ctrl+B** jumps to the next one. A name, such as `{marker: Setup}`, shows in the take log and the edit pack |
 | `{listen: off}` … `{listen: on}` | Off script (an ad-lib, a demo, questions): the microphone is off and the prompter holds; Space carries on from `{listen: on}` |
+| `{soundcheck: room}`, `{soundcheck: voice}` | A [sound check](03-scrolling-and-voice.md#sound-checks-in-the-script-soundcheck-) before you start: the room's background noise, or your voice's level, with what to adjust |
 | `{prompter: bigger}`          | Runs a command as you reach it: `slower`, `faster`, `bigger`, `smaller` or `marker` |
 | `{wpm: 140}`                  | On a section heading: that section's pace                 |
 | `{target: 1:20}`              | On a section heading: that section's target time          |

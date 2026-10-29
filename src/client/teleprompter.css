@@ -1734,6 +1734,71 @@ body::-webkit-scrollbar,
 	font-variant-numeric: tabular-nums;
 }
 
+/* A {soundcheck} in the script: what to do, a countdown, then the result. */
+#soundcheck-card {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	width: min(560px, 86vw);
+	padding: 20px 24px;
+	font: 18px "Segoe UI", Helvetica, Arial, sans-serif;
+	text-align: center;
+	color: #f0f0f0;
+	background: rgba(18, 20, 26, 0.95);
+	border: 1px solid rgba(255, 255, 255, 0.15);
+	border-radius: 14px;
+	box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+	text-wrap: pretty;
+}
+#soundcheck-card .sc-title {
+	font-size: 22px;
+	font-weight: 700;
+}
+#soundcheck-card .sc-line {
+	margin-top: 12px;
+	font-size: 24px;
+	line-height: 1.4;
+	color: #ffd54a;
+}
+#soundcheck-card .sc-count {
+	margin-top: 12px;
+	font-size: 44px;
+	font-weight: 700;
+	font-variant-numeric: tabular-nums;
+}
+#soundcheck-card .sc-result {
+	margin-top: 12px;
+	font-size: 24px;
+	font-weight: 700;
+	color: #ffd54a;
+}
+#soundcheck-card .sc-result:is(.quiet, .good) {
+	color: #66d07e;
+}
+#soundcheck-card .sc-result:is(.noisy, .clipping, .silent, .unknown) {
+	color: #ff6b6b;
+}
+#soundcheck-card .sc-advice {
+	margin-top: 6px;
+}
+#soundcheck-card .sc-hint {
+	margin-top: 14px;
+	font-size: 14px;
+	color: #a7b2c2;
+}
+#soundcheck-card .sc-again {
+	margin-top: 10px;
+	padding: 6px 14px;
+	font: inherit;
+	font-size: 14px;
+	color: #f0f0f0;
+	background: rgba(255, 255, 255, 0.1);
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	border-radius: 8px;
+	cursor: pointer;
+}
+
 /* Window-sized layer for everything pinned to the window; see applyMirror(). */
 #hud {
 	position: fixed;

@@ -5,6 +5,13 @@
 [A sample for practising one continuous recording. Try to finish close to
 two and a half minutes overall. Individual sections don't need to be exact.]
 
+[Sound checks before you start: stay quiet for the room, then read the card
+for your voice. Space carries on after each.]
+
+{soundcheck: room}
+
+{soundcheck: voice}
+
 ## Opening
 
 Good morning, and thank you for joining me.

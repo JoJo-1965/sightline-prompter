@@ -197,6 +197,34 @@ Stream Deck: the prompter goes to `{listen: on}` and follows you again (in
 steady scrolling, it scrolls on from there). The take log notes how long you
 were off script, so the edit can keep that part whole.
 
+### Sound checks in the script: `{soundcheck: …}`
+
+A script can start with a sound check, so every session begins with the room
+and the mic checked:
+
+```
+{soundcheck: room}
+{soundcheck: voice}
+```
+
+At each one the prompter stops and shows a card:
+
+- **Room check: stay quiet.** It measures the room's background noise for 5
+  seconds, then says **Quiet room ✓**, **OK** (a little background noise) or
+  **Noisy ✗** (a fan, traffic or hum).
+- **Voice check: read this at your normal level.** Read the line on the card
+  for 7 seconds, and it says **Good level ✓**, **Too quiet**, **Loud**,
+  **Clipping ✗** or **Didn't hear you**, with how far to turn your mic's gain,
+  such as *Turn the mic gain up about 8 dB*. Sightline can't change the gain
+  for you: it doesn't make the recording, so turn the knob (or the level in
+  Riverside or OBS) yourself.
+
+Say **"Prompter, again"** (or click **Check again**) to measure again after
+you've changed something, and press **Space** or say **"Prompter, go"** to
+carry on. Both work in steady and voice scrolling. Each result is kept with
+the session, in the [take log](05-recording-a-take.md#the-take-log) and the
+edit pack. The AI script prompt puts them at the top of recording scripts.
+
 ### Commands in the script: `{prompter: …}`
 
 `{prompter: slower}`, `faster`, `bigger`, `smaller` or `marker` runs that

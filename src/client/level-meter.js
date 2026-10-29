@@ -13,7 +13,8 @@
 const BLOCK_SECONDS = 0.1;
 const KEEP_BLOCKS = 4 * 60 * 60 * 10; // four hours of blocks
 
-const db = x => ( x > 0 ? 10 * Math.log10( x ) : -Infinity );
+// Levels stop at -120 dB: below that is digital silence, not a reading.
+const db = x => ( x > 0 ? Math.max( -120, 10 * Math.log10( x ) ) : -120 );
 const round1 = n => ( Number.isFinite( n ) ? Math.round( n * 10 ) / 10 : null );
 
 // The K-weighting filter (BS.1770) for any sample rate: a high shelf, then a
@@ -169,4 +170,26 @@ export function createLevelMeter( { onLevel } = {} ) {
 			return measure( blocks.filter( b => b.t > from && b.t <= to + 50 ) );
 		}
 	};
+}
+
+// What a {soundcheck} in the script found ({ lufs, peak, noise } from
+// measure()), in words: { verdict, text, advice }. Sightline can't set the
+// mic's gain (the recording isn't its own), so the advice says how far to turn
+// it. Verdicts: room quiet | ok | noisy; voice good | too-quiet | loud |
+// clipping | silent; unknown when nothing was measured.
+export function soundCheckVerdict( kind, m ) {
+	if ( kind === "room" ) {
+		const noise = m?.noise ?? null;
+		if ( noise === null ) return { verdict: "unknown", text: "Couldn't measure the room", advice: "Is a microphone connected?" };
+		if ( noise < -55 ) return { verdict: "quiet", text: `Quiet room ✓ (background ${ Math.round( noise ) } dB)`, advice: "" };
+		if ( noise <= -45 ) return { verdict: "ok", text: `OK: a little background noise (${ Math.round( noise ) } dB)`, advice: "Fine for most recordings; quieter is better if you can." };
+		return { verdict: "noisy", text: `Noisy ✗ (background ${ Math.round( noise ) } dB)`, advice: "A fan, traffic or hum? Check again once it's quieter." };
+	}
+	const lufs = m?.lufs ?? null;
+	const peak = m?.peak ?? null;
+	if ( lufs === null || lufs < -50 ) return { verdict: "silent", text: "Didn't hear you", advice: "Is the right microphone chosen (Voice panel), and is it unmuted?" };
+	if ( peak !== null && peak >= -1 ) return { verdict: "clipping", text: `Clipping ✗ (peak ${ peak } dBFS)`, advice: `Turn the mic gain down about ${ Math.max( 3, Math.ceil( peak + 6 ) ) } dB.` };
+	if ( lufs < -36 ) return { verdict: "too-quiet", text: `Too quiet (${ Math.round( lufs ) } LUFS)`, advice: `Turn the mic gain up about ${ Math.round( -24 - lufs ) } dB, or move closer.` };
+	if ( lufs > -14 ) return { verdict: "loud", text: `Loud (${ Math.round( lufs ) } LUFS)`, advice: `Turn the mic gain down about ${ Math.round( lufs + 20 ) } dB.` };
+	return { verdict: "good", text: `Good level ✓ (${ Math.round( lufs ) } LUFS, peak ${ Math.round( peak ) } dBFS)`, advice: "" };
 }

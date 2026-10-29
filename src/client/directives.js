@@ -61,13 +61,16 @@ function belongsToHeading( el, heading ) {
 	return prev === heading;
 }
 
+// What {soundcheck: …} may check: the room's background noise, or your voice.
+export const SOUND_CHECKS = [ "room", "voice" ];
+
 // What {prompter: …} may do at a point in the script.
 export const PROMPTER_COMMANDS = [ "slower", "faster", "bigger", "smaller", "marker" ];
 
 export function readDirectives( root ) {
 	const script = {};
 	const sections = []; // { heading, targetSeconds?, wpm?, mode? }
-	const pauses = []; // { el, seconds } (0 = wait for the speaker)
+	const pauses = []; // { el, seconds } (0 = wait for the speaker), with listen or soundcheck
 	const markers = []; // { el, label } (label: {marker: Setup}, else null)
 	const paceChanges = []; // { el, wpm }
 	const listenOns = []; // { el }: {listen: on}, where voice following picks up again
@@ -100,6 +103,11 @@ export function readDirectives( root ) {
 			const value = String( d.listen ).trim().toLowerCase();
 			if ( value === "off" ) pauses.push( { el, seconds: 0, listen: "off" } );
 			else if ( value === "on" ) listenOns.push( { el } );
+		}
+		// {soundcheck: room} or {soundcheck: voice}: a stop that checks the mic first.
+		if ( "soundcheck" in d ) {
+			const kind = String( d.soundcheck ).trim().toLowerCase();
+			if ( SOUND_CHECKS.includes( kind ) ) pauses.push( { el, seconds: 0, soundcheck: kind } );
 		}
 		if ( "prompter" in d ) {
 			const command = String( d.prompter ).trim().toLowerCase();

@@ -1242,7 +1242,8 @@ app.whenReady().then( async () => {
 		"eye-line",
 		"click-through",
 		"scroll", // value: lines, + down or - up
-		"backing" // value: steps of 5%, + or -
+		"backing", // value: steps of 5%, + or -
+		"sound-check" // the sound-check meter on or off
 	];
 
 	// The prompter's state, for GET /status and the GET /events stream.

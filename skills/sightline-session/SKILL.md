@@ -47,7 +47,8 @@ so on) and finish with `status` to confirm.
 `toggle`, `restart`, `next-section`, `previous-section`,
 `go-to-section <n>` (the n-th `##` section), `faster`, `slower`,
 `reset-speed`, `set-wpm <words a minute>`, `marker`, `back-to-marker`, `keeper`, `scrap`,
-`help`. `window minimize|maximize|fullscreen` toggles the window.
+`sound-check` (the sound-check meter on or off: the mic's level, loudness and
+the room's noise), `help`. `window minimize|maximize|fullscreen` toggles the window.
 
 The user may be recording. **Only send `play`, `pause`, jumps, `keeper` or
 `scrap` when the user asks**, and never as a test. `status` is always safe.
@@ -84,6 +85,13 @@ app closed:
   pack** from it: `take-log.json`, `takes.csv`, `sentences.csv`, `words.csv`,
   `edit-marks.csv`/`.json`, `captions.srt`/`.vtt` and a `README.md`. The user
   can also make one in the app with **File > Export Edit Pack…**.
+
+Each take also has `loudness` (its loudness, peak, background noise and a
+`clipping`, `quiet` or `noisy` warning) when it was measured, and
+`take-log.json` has `soundChecks`: the room and voice checks a
+`{soundcheck: …}` in the script ran before recording, with a verdict each.
+Mention a `noisy` room, a `clipping` voice or warned takes when you report
+on a session.
 
 **Read the pack's `README.md` (or `<sightline>/docs/EDIT-PACK.md`) before
 using it.** It explains the session clock (0 is the first slate), how to line

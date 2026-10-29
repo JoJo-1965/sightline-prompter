@@ -41,6 +41,9 @@ and say the checker couldn't be run.
 - Use only the directives the brief allows. Don't invent new ones.
 - In a long section, name a marker at the start of each part,
   `{marker: Setup}`, so the edit can find and recut each part.
+- For a recording session, start with `{soundcheck: room}` and
+  `{soundcheck: voice}`, each on its own line before the first section, so the
+  room and the mic are checked and the results kept with the session.
 - For a demo, an ad-lib or questions, put `{listen: off}` before it and
   `{listen: on}` where the script starts again, with the demo notes in
   `[brackets]` between: the microphone is off and the edit keeps that part

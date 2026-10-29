@@ -128,6 +128,19 @@
 			},
 			"description": "off: before an ad-lib, a demo or questions. The microphone is muted (nothing is listened to) and the prompter holds, in steady and voice scrolling; Space, a clicker, the remote or the Stream Deck carries on from the next {listen: on}, where voice following picks up again. The take log and edit pack record the time off script. on: where reading from the script starts again."
 		},
+		"soundcheck": {
+			"scopes": [
+				"inline"
+			],
+			"value": {
+				"type": "enum",
+				"values": [
+					"room",
+					"voice"
+				]
+			},
+			"description": "A stop that checks the microphone first, in steady and voice scrolling. room: the room's background noise, measured for 5 seconds while the speaker stays quiet; quiet (below -55 dB), ok, or noisy (above -45 dB). voice: the speaker reads a line on the card at their normal level for 7 seconds; good, too quiet, loud or clipping, with how far to turn the mic's gain. The result shows on a card; \"Prompter, again\" or Check again measures again, and Space or \"Prompter, go\" carries on. Each result goes in the take log (soundChecks) and the edit pack. Put {soundcheck: room} then {soundcheck: voice} at the top of a recording script, on their own lines."
+		},
 		"prompter": {
 			"scopes": [
 				"inline"

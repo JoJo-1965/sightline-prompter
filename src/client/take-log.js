@@ -23,7 +23,7 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [],
 	let slated = null; // { section, at }: the last slate, for the take that follows it
 
 	function empty() {
-		return { startedAt: null, takes: [], events: [], audio: [] };
+		return { startedAt: null, takes: [], events: [], audio: [], soundChecks: [] };
 	}
 
 	const since = ms => round( ( ms - Date.parse( log.startedAt ) ) / 1000 );
@@ -226,6 +226,26 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [],
 			return true;
 		},
 
+		// A sound check the script asked for ({soundcheck: room} or {soundcheck:
+		// voice}): { kind, lufs, peak, noise, verdict, advice }, on the log's
+		// clock with the section it was in. Like the slate, it can start the log.
+		soundCheck( { kind, lufs = null, peak = null, noise = null, verdict, advice = "" }, index = -1 ) {
+			const now = clock();
+			if ( !log.startedAt ) log.startedAt = new Date( now ).toISOString();
+			log.soundChecks.push( {
+				t: since( now ),
+				at: new Date( now ).toISOString(),
+				section: index + 1 || null,
+				kind,
+				lufs,
+				peak,
+				noise,
+				verdict,
+				advice
+			} );
+			event( "soundcheck", { kind, verdict } );
+		},
+
 		// {listen: off} (on = false) and {listen: on} (on = true) during a take.
 		listen( on, { at = null } = {} ) {
 			if ( !current || !log.startedAt ) return;
@@ -283,7 +303,8 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [],
 					startedAt: saved.startedAt,
 					takes: saved.takes ?? [],
 					events: saved.events ?? [],
-					audio: saved.audio ?? []
+					audio: saved.audio ?? [],
+					soundChecks: saved.soundChecks ?? []
 				}
 				: empty();
 		},

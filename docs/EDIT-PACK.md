@@ -167,6 +167,17 @@ same mic or level as the master recording. Use it to spot takes worth
 checking, not as the final loudness: a `clipping` take may be distorted in
 the recording too.
 
+## Sound checks
+
+When the script had `{soundcheck: room}` or `{soundcheck: voice}`,
+`take-log.json` has `soundChecks` (added in this version; empty otherwise):
+`[{ t, at, section, kind, lufs, peak, noise, verdict, advice }]`. `t` is on the
+session clock, `at` the wall-clock time, `kind` `room` or `voice`, and
+`verdict` one of `quiet`, `ok` or `noisy` (room) or `good`, `too-quiet`,
+`loud`, `clipping` or `silent` (voice). A check can be repeated, so the last
+of each kind is the one the speaker carried on from. A `noisy` room or a
+`clipping` voice is worth listening for in the recording.
+
 ## Choosing takes
 
 - **status**: `complete` (read to the end of the section), `retake` (the reader
