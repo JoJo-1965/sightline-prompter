@@ -117,7 +117,10 @@ a livestream or changes recording settings.
 Before release, all five production checks still need to pass. A real
 synthetic-speech test verified 3840×2160 video, 48 kHz/24-bit PCM stereo,
 chapter creation and WAV extraction with unchanged samples. Recognition
-of the microphone capture was partial. Separate clean-camera output and
+of the original quiet microphone capture was partial. Controlled analysis
+later recovered every sentence with a level boost and the existing aligner
+reached the last word; [investigation details](../VOICE-VALIDATION.md).
+No microphone settings or master audio were changed. Separate clean-camera output and
 the recorded sync route remain unvalidated. An OBS dock and scene changes
 are follow-up work.
 

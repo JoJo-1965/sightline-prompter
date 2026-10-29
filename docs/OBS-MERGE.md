@@ -102,6 +102,11 @@ from Play/Pause and On air. They are built and tested but not publicly released.
 The workstation's real OBS test confirmed 4K/30 fps, 48 kHz/24-bit PCM,
 chapter creation and WAV extraction with identical audio sample hashes.
 Synthetic speech reached the RODE input, but its recognition was partial.
+The follow-up [recognition investigation](VOICE-VALIDATION.md) reproduced the
+missing ending with the quiet capture, then recovered every sentence after
+a boost applied only to an analysis copy. Source audio and boosted capture
+both reached the last script word in an aligner replay. No production gain,
+model or recording changes were made. Normal live voice validation remains.
 The live test also exposed asynchronous start acknowledgement: the service
 now polls until the output confirms the requested state, covered by delayed
 start/stop regression tests. Remaining production checks are still held.

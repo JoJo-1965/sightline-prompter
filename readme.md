@@ -222,6 +222,8 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ### Next release
 
+- **Voice troubleshooting:** controlled recognition checks traced the missing ending in the synthetic-speech test to a quiet microphone capture. A diagnostic boost recovered every sentence and the existing aligner reached the last word. Microphone settings and recordings were unchanged. See the [investigation](docs/VOICE-VALIDATION.md) and [voice checks](docs/guide/03-scrolling-and-voice.md#if-ordinary-words-or-whole-lines-are-missed); live voice validation is still pending
+
 - **OBS keys for Stream Deck (development):** companion test build 0.1.7 adds Record take and Finish recording, state feedback, permission guards and optional OBS profiles for each model. The plugin stays private and the release hold remains
 - **OBS confirmation timing:** wait for the actual recording state after OBS acknowledges start or stop. Disabled and status-only Finish requests leave ordinary prompting running. A real TTS/microphone recording verified 4K video, 48 kHz/24-bit PCM, chapters and sample-identical WAV extraction; recognition was partial, and the remaining production requirements are still pending
 

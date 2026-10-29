@@ -51,6 +51,12 @@ model is installed.
 **Voice scrolling has lost its place.** Scroll by hand to where you are. It
 picks up from what's on screen once you stop scrolling.
 
+**Ordinary words or whole lines are missing.** Pick the intended mic and run
+the room and voice checks at your normal speaking distance. Check the input
+feeding Sightline, since a recording fader in another app may not affect it.
+Use Your words for repeated names or phonetic forms after checking level.
+See [voice input checks](03-scrolling-and-voice.md#if-ordinary-words-or-whole-lines-are-missed).
+
 **Sightline stops responding.** It asks whether to **Wait** or **Reload**;
 reloading keeps your scripts and settings, but loses unsaved changes in the
 editor. Hangs, crashes and errors are noted in `sightline.log` in Sightline's

@@ -53,6 +53,19 @@ computer and is never written to exported settings files.
 **Voice responsiveness** sets how quickly the script glides to catch up with
 you. Higher is snappier, lower is smoother.
 
+### If ordinary words or whole lines are missed
+
+Check that Sightline is using your intended microphone, then run the room
+and voice sound checks at your normal speaking distance and level. A meter
+can move even when the input is too quiet for reliable recognition. Adjust
+the input level that actually feeds Sightline and check again; an OBS or
+Riverside recording fader may affect only that app's recording.
+
+Once the level is suitable, use **Your words** for recurring names or
+phonetic forms. Playing synthetic speech through speakers is useful for
+development checks, but it adds a different speaker/room/mic path. Check
+normal speech before changing a working recording setup.
+
 ### What it heard
 
 While voice scrolling listens, Sightline keeps a **heard log**: every word
@@ -246,9 +259,10 @@ At each one the prompter stops and shows a card:
 - **Voice check: read this at your normal level.** Read the line on the card
   for 7 seconds, and it says **Good level ✓**, **Too quiet**, **Loud**,
   **Clipping ✗** or **Didn't hear you**, with how far to turn your mic's gain,
-  such as *Turn the mic gain up about 8 dB*. Sightline can't change the gain
-  for you: it doesn't make the recording, so turn the knob (or the level in
-  Riverside or OBS) yourself.
+  such as *Turn the mic gain up about 8 dB*. Adjust the input level that
+  actually feeds Sightline, then check again. A separate recording fader in
+  Riverside or OBS may affect only that app and leave Sightline's input
+  unchanged. Sightline does not change your microphone gain for you.
 
 Say **"Prompter, again"** (or click **Check again**) to measure again after
 you've changed something, and press **Space** or say **"Prompter, go"** to

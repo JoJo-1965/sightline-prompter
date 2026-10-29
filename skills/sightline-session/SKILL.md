@@ -162,6 +162,14 @@ Publication remains held until all five production requirements are validated.
 
 ## Don't
 
+For recognition diagnosis, compare the original source with the captured
+microphone and check input level before teaching aliases for missing lines.
+The [quiet synthetic-capture investigation](../../docs/VOICE-VALIDATION.md)
+recovered every sentence using gain on an analysis copy; microphone and
+master recordings were unchanged. That replay is not a live voice pass.
+Use normal speech at the usual mic distance for the next calibration, and
+distinguish Sightline's input from another app's recording fader.
+
 - Don't edit, move or delete anything in Sightline's take-logs folder
   yourself: read it, build a pack somewhere else, and use the verbs above to
   name or mark sessions. `delete-recording <id>` moves one to the Recycle Bin,
