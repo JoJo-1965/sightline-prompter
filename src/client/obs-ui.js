@@ -7,6 +7,19 @@ export function obsStatusText( state ) {
 	return { recording: "OBS recording", paused: "OBS recording paused", stopped: "OBS stopped" }[state.recording];
 }
 
+export function obsActionBlock( state, name, { busy = false, canStart = true } = {} ) {
+	if ( name !== "start" && name !== "stop" ) return null;
+	if ( !state?.enabled ) return "OBS integration is disabled";
+	if ( !state.controls ) return "OBS is in status-only mode";
+	if ( state.connection !== "connected" ) return "OBS is not connected; recording status is unknown";
+	if ( busy ) return "An OBS command is still waiting for confirmation";
+	if ( ![ "stopped", "recording", "paused" ].includes( state.recording ) ) return "OBS recording status is unknown";
+	if ( name === "start" && state.recording === "paused" ) return "OBS recording is paused; resume it in OBS first";
+	if ( name === "start" && !canStart ) return "Stop the prompter, exit the editor and check voice setup before Record take";
+	if ( name === "stop" && state.recording === "stopped" ) return "OBS is already stopped";
+	return null;
+}
+
 export function createObsUi( { getSettings, canStart, onStart, onFinish, onChange, toast } ) {
 	const field = id => document.getElementById( `set-obs-${ id }` );
 	let state = { enabled: false, connection: "disabled" };
@@ -41,13 +54,15 @@ export function createObsUi( { getSettings, canStart, onStart, onFinish, onChang
 		onChange( state );
 	}
 	async function action( name ) {
-		if ( busy ) return;
-		if ( name === "start" && !canStart() ) {
-			toast( "Stop the prompter, exit the editor and check voice setup before Record take" );
+		const blocked = obsActionBlock( state, name, { busy, canStart: name !== "start" || canStart() } );
+		if ( blocked ) {
+			toast( blocked );
 			return;
 		}
+		if ( busy ) return;
 		busy = true;
 		paint();
+		onChange( state );
 		try {
 			if ( name === "stop" ) onFinish();
 			const result = await window.electron.obs( name );
@@ -61,6 +76,7 @@ export function createObsUi( { getSettings, canStart, onStart, onFinish, onChang
 		} finally {
 			busy = false;
 			paint();
+			onChange( state );
 		}
 	}
 	start.addEventListener( "click", () => action( "start" ) );
@@ -71,7 +87,11 @@ export function createObsUi( { getSettings, canStart, onStart, onFinish, onChang
 		if ( result.state ) receive( result.state );
 	} ).catch( () => {} );
 	return {
-		state: () => state,
+		state: () => ( {
+			...state, controlBusy: busy,
+			canRecord: !obsActionBlock( state, "start", { busy, canStart: state.enabled && state.controls && canStart() } ),
+			canFinish: !obsActionBlock( state, "stop", { busy } )
+		} ),
 		refresh: paint,
 		action,
 		fill() {

@@ -100,6 +100,19 @@ The buttons can't be changed yet; choosing your own is on the roadmap.
 
 ## Stream Deck
 
+On the OBS development branch, private companion test build **0.1.7** adds
+**Record take (OBS)** and **Finish recording (OBS)**. Enable OBS and allow
+recording controls in Sightline first. The keys show confirmed recording
+state; a disconnected state stays unknown. Play/Pause, section stops and
+retakes keep the same OBS recording running.
+
+Use **Use the OBS recording profile** in the key's settings to choose a
+separate recording layout for that model, including Mobile and Pedal.
+The Pedal recording layout is Record take, Play/Pause, Finish recording;
+the last pedal finishes the whole file. Standard profiles remain available.
+These additions require the OBS-enabled development app and are not in
+the published 1.0.6 release or on the Marketplace yet.
+
 The **Sightline Prompter plugin for Stream Deck** runs the prompter from an
 Elgato Stream Deck's keys, the Stream Deck + dials and the Stream Deck Pedal,
 and the keys show what the prompter is doing: ▶ or ❚❚, On air in red, the

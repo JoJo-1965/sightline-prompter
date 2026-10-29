@@ -209,20 +209,30 @@ export function createObs( { onState = () => {}, WebSocketClass = globalThis.Web
 			const stillAllowed = () => {
 				if ( current !== generation || !config.enabled || !config.controls ) throw new Error( "OBS settings changed; the prompter has not started" );
 			};
+			const waitForRecording = async ( desired ) => {
+				const deadline = Date.now() + timeoutMs;
+				do {
+					await refresh();
+					stillAllowed();
+					if ( state.recording === desired ) return;
+					if ( desired === "recording" && state.recording === "paused" ) throw new Error( "OBS recording is paused; resume it in OBS first" );
+					await new Promise( resolve => setTimeout( resolve, Math.max( 1, Math.min( 100, timeoutMs / 4 ) ) ) );
+				} while ( Date.now() < deadline );
+				publish( { recording: null, error: "OBS did not confirm the requested recording state" } );
+				throw new Error( "OBS did not confirm the recording state; check OBS before trying again" );
+			};
 			try {
 				if ( action === "start" ) {
 					await refresh();
 					stillAllowed();
 					if ( state.recording === "paused" ) throw new Error( "OBS recording is paused; resume it in OBS first" );
 					if ( state.recording !== "recording" ) await request( "StartRecord" );
-					await refresh();
-					stillAllowed();
-					if ( state.recording !== "recording" ) throw new Error( "OBS did not confirm recording; the prompter has not started" );
+					await waitForRecording( "recording" );
 				} else {
 					const result = await request( "StopRecord" );
 					stillAllowed();
-					recordStatus( { outputActive: false } );
 					publish( { outputPath: result.outputPath ?? state.outputPath } );
+					await waitForRecording( "stopped" );
 				}
 				return snapshot();
 			} finally {

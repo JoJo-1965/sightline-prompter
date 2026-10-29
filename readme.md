@@ -222,6 +222,9 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ### Next release
 
+- **OBS keys for Stream Deck (development):** companion test build 0.1.7 adds Record take and Finish recording, state feedback, permission guards and optional OBS profiles for each model. The plugin stays private and the release hold remains
+- **OBS confirmation timing:** wait for the actual recording state after OBS acknowledges start or stop. Disabled and status-only Finish requests leave ordinary prompting running. A real TTS/microphone recording verified 4K video, 48 kHz/24-bit PCM, chapters and sample-identical WAV extraction; recognition was partial, and the remaining production requirements are still pending
+
 - **Manual framing reference (development):** separate labelled **Ideal position** and **Actual position** outlines. Drag, nudge and scale the actual outline, save an ideal reference, or return to it. Centre and Beside panel retain separate window placements; both outlines persist across scripts and are included in new edit packs. No automatic face tracking
 - **Grouped help (development):** F1 and “what can I say” use tabs. Help follows enabled modes, including OBS permissions. “Prompter, guide on” and “guide off” explicitly show or hide the guide
 - **Production records (development):** edit packs retain the script snapshot read for each take, guide metadata and estimated OBS clock references. A recording ledger can attach the final OBS filename to scripts used earlier in the same app session. **Publication remains held pending validation of all five Academy production requirements**, including separate clean tracks and a recorded sync route

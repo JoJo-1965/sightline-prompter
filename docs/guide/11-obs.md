@@ -63,8 +63,16 @@ They do not enable the integration themselves.
 The local API accepts `obs-record` and `obs-finish` as command actions,
 subject to the same saved permissions. Request acceptance means the action
 was dispatched, not that OBS has confirmed it: inspect `status.obs`.
-The existing Stream Deck plugin can gain matching actions later; this
-branch does not change that separate plugin's buttons or profiles.
+The private companion Stream Deck test build **0.1.7** adds **Record take
+(OBS)** and **Finish recording (OBS)** keys. They use these same permissions
+and show stopped, recording, paused, confirming or unknown. Unsupported,
+disabled and status-only app states block recording requests. These keys
+are separate from ordinary Play/Pause and On air.
+
+Each model has a separate sample profile ending in **OBS**, selected
+explicitly with **Use the OBS recording profile** on a key's settings page.
+Standard layouts keep their assignments. This is development code, not a
+public Marketplace release. See [Stream Deck setup](06-remotes-and-screens.md#stream-deck).
 
 ## Chapters, file links and editing
 
@@ -106,9 +114,17 @@ and the address, port and password match. Sightline retries an enabled
 connection. It never automatically stops OBS, changes its scenes, starts
 a livestream or changes recording settings.
 
-Before release, the branch needs a real OBS recording test in addition
-to the simulated-server tests. An OBS dock, scene changes and dedicated
-Stream Deck actions are follow-up work, not controls promised by this build.
+Before release, all five production checks still need to pass. A real
+synthetic-speech test verified 3840×2160 video, 48 kHz/24-bit PCM stereo,
+chapter creation and WAV extraction with unchanged samples. Recognition
+of the microphone capture was partial. Separate clean-camera output and
+the recorded sync route remain unvalidated. An OBS dock and scene changes
+are follow-up work.
+
+OBS may acknowledge a recording command before its output changes state.
+Sightline waits for confirmed status before starting prompting or reporting
+that recording finished. A timeout leaves the result unknown. Disabled,
+status-only and disconnected Finish commands leave ordinary prompting alone.
 
 See [OBS's connection guide](https://obsproject.com/kb/remote-control-guide)
 and [recording chapter support](https://obsproject.com/kb/hybrid-mp4).

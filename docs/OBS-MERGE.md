@@ -93,9 +93,18 @@ written to temporary folders, reported on completion.
 
 ## Separate follow-up work
 
-The Stream Deck repository needs two new actions, Record take and Finish
-recording, with state feedback and updated profiles. Keep these distinct
-from raw OBS actions because they coordinate OBS with Sightline prompting.
+The private Stream Deck development branch now includes Record take and
+Finish recording, confirmed-state feedback, permission guards and optional
+OBS profiles for each model (test build 0.1.7). The normal layouts remain
+unchanged. These coordinate OBS with Sightline prompting and are separate
+from Play/Pause and On air. They are built and tested but not publicly released.
+
+The workstation's real OBS test confirmed 4K/30 fps, 48 kHz/24-bit PCM,
+chapter creation and WAV extraction with identical audio sample hashes.
+Synthetic speech reached the RODE input, but its recognition was partial.
+The live test also exposed asynchronous start acknowledgement: the service
+now polls until the output confirms the requested state, covered by delayed
+start/stop regression tests. Remaining production checks are still held.
 
 An OBS dock is optional, after testing whether the existing control window
 is enough. It could reuse a limited local-control surface for section/take,

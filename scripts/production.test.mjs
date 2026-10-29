@@ -32,6 +32,11 @@ assert.equal( voiceHelpTabs( { obsEnabled: true, obsControls: false } ).some( t 
 assert.equal( voiceHelpTabs( { obsEnabled: true, obsControls: true } ).some( t => t.label === "OBS" ), true );
 assert.equal( helpTabs( { voiceCommands: "off" } ).some( t => t.label === "Voice" ), false );
 assert.ok( helpTabs( { obsEnabled: false } ).some( t => t.label === "Head guide" ) );
+const helpKeys = settings => helpTabs( settings ).flatMap( t => t.sections.flatMap( s => s.keys.map( ( [ keys ] ) => keys[0] ) ) );
+assert.equal( helpKeys( { obsEnabled: true, obsControls: true, streamDeck: false } ).includes( "Stream Deck" ), false );
+assert.equal( helpKeys( { obsEnabled: true, obsControls: true, streamDeck: true } ).includes( "Stream Deck" ), true );
+assert.equal( helpKeys( { obsEnabled: true, obsControls: false, obsMarkers: true } ).includes( "Chapters" ), false );
+assert.equal( helpKeys( { obsEnabled: true, obsControls: true, obsMarkers: true } ).includes( "Chapters" ), true );
 
 const dir = await fs.mkdtemp( path.join( os.tmpdir(), "sightline-snapshot-" ) );
 const file = path.join( dir, "module.md" );

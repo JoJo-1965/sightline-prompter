@@ -7,8 +7,21 @@ import { createObs, obsAddress, obsAuthentication } from "../src/obs.js";
 import { createObsCredentials } from "../src/obs-credentials.js";
 import { createTakeLog } from "../src/client/take-log.js";
 import { editPack } from "../src/client/edit-pack.js";
+import { obsActionBlock } from "../src/client/obs-ui.js";
 
-const server = { active: false, paused: false, requests: [], ignore: null, reject: null, auth: null, chapters: true };
+const readyObs = { enabled: true, controls: true, connection: "connected", recording: "recording" };
+assert.equal( obsActionBlock( readyObs, "stop" ), null );
+assert.match( obsActionBlock( { ...readyObs, enabled: false }, "stop" ), /disabled/ );
+assert.match( obsActionBlock( { ...readyObs, controls: false }, "stop" ), /status-only/ );
+assert.match( obsActionBlock( { ...readyObs, connection: "disconnected" }, "stop" ), /unknown/ );
+assert.match( obsActionBlock( { ...readyObs, recording: null }, "stop" ), /unknown/ );
+assert.match( obsActionBlock( { ...readyObs, recording: "stopped" }, "stop" ), /already stopped/ );
+assert.match( obsActionBlock( readyObs, "start", { busy: true } ), /waiting/ );
+assert.match( obsActionBlock( readyObs, "start", { canStart: false } ), /Stop the prompter/ );
+assert.match( obsActionBlock( { ...readyObs, recording: "paused" }, "start" ), /resume it in OBS/ );
+assert.equal( obsActionBlock( { ...readyObs, recording: "paused" }, "stop" ), null );
+
+const server = { active: false, paused: false, requests: [], ignore: null, reject: null, auth: null, chapters: true, startDelayPolls: 0, stopDelayPolls: 0, starting: 0, stopping: 0 };
 class FakeSocket extends EventTarget {
 	static instances = [];
 	constructor( url ) {
@@ -39,12 +52,20 @@ class FakeSocket extends EventTarget {
 		const result = server.reject !== d.requestType;
 		let responseData = {};
 		if ( d.requestType === "GetVersion" ) responseData = { availableRequests: server.chapters ? [ "CreateRecordChapter" ] : [] };
-		if ( result && d.requestType === "StartRecord" ) server.active = true;
+		if ( result && d.requestType === "StartRecord" ) {
+			server.starting = server.startDelayPolls;
+			if ( !server.starting ) server.active = true;
+		}
 		if ( result && d.requestType === "StopRecord" ) {
-			server.active = false;
+			server.stopping = server.stopDelayPolls;
+			if ( !server.stopping ) server.active = false;
 			responseData = { outputPath: "/recordings/test.mp4" };
 		}
-		if ( d.requestType === "GetRecordStatus" ) responseData = { outputActive: server.active, outputPaused: server.paused, outputDuration: 1234 };
+		if ( d.requestType === "GetRecordStatus" ) {
+			if ( server.starting > 0 && --server.starting === 0 ) server.active = true;
+			if ( server.stopping > 0 && --server.stopping === 0 ) server.active = false;
+			responseData = { outputActive: server.active, outputPaused: server.paused, outputDuration: 1234 };
+		}
 		queueMicrotask( () => this.message( { op: 7, d: { requestId: d.requestId, requestType: d.requestType, requestStatus: { result }, responseData } } ) );
 	}
 }
@@ -57,7 +78,7 @@ const hash = text => createHash( "sha256" ).update( text ).digest( "base64" );
 assert.equal( obsAuthentication( "private", "salt", "challenge" ), hash( hash( "privatesalt" ) + "challenge" ) );
 
 const states = [];
-const obs = createObs( { WebSocketClass: FakeSocket, timeoutMs: 40, reconnectMs: 60000, pollMs: 60000, onState: s => states.push( s ) } );
+const obs = createObs( { WebSocketClass: FakeSocket, timeoutMs: 100, reconnectMs: 60000, pollMs: 60000, onState: s => states.push( s ) } );
 try {
 	await obs.configure( { enabled: false } );
 	assert.equal( FakeSocket.instances.length, 0, "disabled must not open a socket" );
@@ -70,7 +91,9 @@ try {
 	const count = FakeSocket.instances.length;
 	await obs.configure( { enabled: true, controls: true, markers: true } );
 	assert.equal( FakeSocket.instances.length, count, "permissions should not reconnect" );
+	server.startDelayPolls = 2;
 	await obs.command( "start" );
+	assert.equal( server.starting, 0, "start acknowledgement must wait for an active output" );
 	const id = obs.state().recordingId;
 	assert.ok( id );
 	assert.equal( obs.state().recording, "recording" );
@@ -96,7 +119,9 @@ try {
 	server.paused = true;
 	await assert.rejects( obs.command( "start" ), /paused/ );
 	server.paused = false;
+	server.stopDelayPolls = 2;
 	await obs.command( "stop" );
+	assert.equal( server.stopping, 0, "stop acknowledgement must wait for a stopped output" );
 	assert.equal( obs.state().outputPath, "/recordings/test.mp4" );
 	assert.equal( obs.state().recording, "stopped" );
 	server.ignore = "GetRecordStatus";

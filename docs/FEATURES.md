@@ -1,5 +1,11 @@
 # Sightline Prompter: what it adds to Electron Teleprompter
 
+The private Stream Deck companion test build **0.1.7** adds OBS Record take
+and Finish recording keys, confirmed-state feedback and optional recording
+layouts for each model. The OBS development app enforces saved permissions
+and waits for actual recording state changes. These additions are unreleased;
+all five production requirements remain the publication gate.
+
 On the development branch, the head guide also has labelled **Ideal position**
 and **Actual position** outlines. Drag, nudge or scale the actual outline
 against a saved ideal, and recall Centre or Beside panel window placements.

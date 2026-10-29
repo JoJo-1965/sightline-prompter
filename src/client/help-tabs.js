@@ -40,7 +40,6 @@ export function helpTabs( settings, notes = false ) {
 		const rows = [
 			[ "Settings > OBS", "Saved address, port and protected password; Apply, then Test saved connection" ],
 			[ "Status only", "Read recording status without starting or stopping OBS" ],
-			[ "Chapters", "Optional section/marker chapters, where the OBS format supports them" ],
 			[ "Edit pack", "Confirmed recording paths and observations stay in the take log" ],
 			[ "Disable OBS", "Disconnects Sightline; leaves an existing OBS recording running" ]
 		];
@@ -48,6 +47,8 @@ export function helpTabs( settings, notes = false ) {
 			[ "Record take", "Confirm OBS recording before starting the prompter's normal slate/countdown" ],
 			[ "Finish recording", "Pause prompting, stop OBS and retain its confirmed file path" ],
 			[ "Phone / control window", "The same dedicated recording actions; ordinary Play and On air stay independent" ] );
+		if ( settings.obsControls && settings.obsMarkers ) rows.push( [ "Chapters", "Optional section/marker chapters, where the OBS format supports them" ] );
+		if ( settings.obsControls && settings.streamDeck ) rows.push( [ "Stream Deck", "Record take / Finish recording keys and optional OBS layouts in companion test build 0.1.7" ] );
 		recording.push( section( "OBS recording", rows ) );
 	}
 	const tabs = [
@@ -55,7 +56,7 @@ export function helpTabs( settings, notes = false ) {
 		{ label: "Scripts", sections: [ get( "Scripts and slots" ), get( "Script mark-up" ) ] },
 		{ label: "Display", sections: [ get( "Text and layout" ), display ] },
 		{ label: "Recording", sections: recording },
-		{ label: "Head guide", sections: [ section( "Camera framing", guideRows ) ] }
+		{ label: "Head guide", sections: [ section( "Camera framing", guideRows.filter( ( [ label ] ) => label !== "Stream Deck" || settings.streamDeck ) ) ] }
 	];
 	if ( settings.voiceCommands !== "off" ) tabs.push( { label: "Voice", sections: voiceHelpTabs( settings ).flatMap( t => t.sections ) } );
 	return tabs;
