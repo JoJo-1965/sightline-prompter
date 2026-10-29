@@ -10,27 +10,25 @@ complex builds come later.
 - **Value:** ★★★ changes recording day · ★★ clearly better · ★ nice to have
 - **Size:** **S** about a day · **M** a few days · **L** a week or more, for a person. Built with Claude Code, most take minutes to an hour, plus testing
 
-## Where it stands (28 October 2026)
+## Where it stands (29 October 2026)
 
-**v1.0.5 is the latest release** (28 October 2026). 1.0.3 to 1.0.5 added
-the edit pack (26), the clickable progress bar (37), check for updates (38),
-skills for Claude Code and Codex, see-through backing on air, Apply in
-Settings, "what can I say" and the heading size.
-
-**Built since, for the next release:** notes mode (49), pace per take (43),
-rehearsal results (44), named markers (45), restarts from a marker (46), the
-choice of wake word, the recordings library (36), teach it your words (20)
-with command words and sound-alikes, countdowns as beat marks in voice mode,
-and the local API for buttons with a Stream Deck setting of its own;
-off script and commands in the script (35), scratch audio (33), the
-sound-check meter (41) and loudness per take (42); and Joanne's tip jar.
+**v1.0.6 is the latest release** (29 October 2026): notes mode (49), pace per
+take (43), rehearsal results (44), named markers (45), restarts from a marker
+(46), the choice of wake word, the recordings library (36), teach it your words
+(20), countdowns as beat marks in voice mode, off script and commands in the
+script (35), scratch audio (33), the sound-check meter (41), loudness per take
+(42), sound checks in the script (50), the control window's broadcast row, the
+local API for buttons with a Stream Deck setting, always-listen for the wake
+word, and Joanne's tip jar. 1.0.3 to 1.0.5 added the edit pack (26), the
+clickable progress bar (37), check for updates (38) and skills for Claude Code
+and Codex.
 
 **The Stream Deck plugin (39)** is built as its own project and waits for
 Joanne's test on her Stream Decks and the Marketplace listing. Its GitHub repo
 (JoJo-1965/sightline-streamdeck) is set up, private until launch.
 
-**Next (29 Oct):** close off 1.0.6. Then, for 1.0.7, Settings in its own
-window (48), built like the pad. After that: code signing (27, which needs Joanne's accounts), 47 the
+**Next, for 1.0.7:** Settings in its own window (48), built like the pad and
+regrouped, and the policies (51). After that: code signing (27, which needs Joanne's accounts), 47 the
 components list and 40 choose your own buttons. The full list, in order, is under
 [To do](#to-do); everything built is under [Done](#done).
 

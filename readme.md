@@ -220,7 +220,7 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ## Change log
 
-### Next release
+### 1.0.6 (29 October 2026)
 
 - **You can see when the microphone is on:** while Sightline listens for the wake word, the label says **🎙 Listening for “Prompter”** (your wake word), with a note that nothing is recorded or sent; the control window shows a 🎙 badge too, also while following your voice. The guide has a new **What the microphone does, and doesn't** section, and the About page links to [Privacy, licence and policies](docs/POLICIES.md): what Sightline does with your mic and data, when it goes online, and the MIT licence and warranty. Full policies will follow
 - **Always listen for the wake word** (Settings > Voice > Voice commands > **Always, even when stopped**): the microphone listens for "Prompter" whenever Sightline is open, running or stopped, in voice scrolling too, so **"Prompter, go"** starts it hands-free. It was "In voice mode and while steady scrolling", which in voice scrolling only listened once you'd started
