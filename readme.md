@@ -196,7 +196,7 @@ A few notes:
 ## Support Sightline
 
 Sightline is free, and always will be. If it helps you, you can say thanks
-with a coffee: **[☕ Support Sightline on Ko-fi](https://ko-fi.com/joannelockwood)**. It helps pay for
+with a coffee: **[☕ Joanne's tip jar](https://buy.stripe.com/4gMeVd5GLgmZdx9btV5ZC01?utm_source=sightline&utm_medium=github)**. It helps pay for
 the things a free app still costs, like code signing. There are no perks: Sightline is the same for everyone, whether you give or not.
 
 ## More from Joanne Lockwood
@@ -220,7 +220,7 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ### Next release
 
-- **Support Sightline:** Sightline stays free; if it helps you, you can say thanks with a coffee on [Ko-fi](https://ko-fi.com/joannelockwood). It's in **Help > Support Sightline on Ko-fi…**, the ☰ menu, Settings > About and the About page. After Sightline has been opened ten times, a small note asks once, and never again; it never shows while you're reading or on air. There are no perks: Sightline is the same for everyone, whether you give or not
+- **Support Sightline:** Sightline stays free; if it helps you, you can say thanks with a coffee in [Joanne's tip jar](https://buy.stripe.com/4gMeVd5GLgmZdx9btV5ZC01?utm_source=sightline&utm_medium=github), a Stripe payment page where you choose the amount. It's in **Help > Support Sightline (Joanne's Tip Jar)…**, the ☰ menu, Settings > About and the About page. After Sightline has been opened ten times, a small note asks once, and never again; it never shows while you're reading or on air. There are no perks: Sightline is the same for everyone, whether you give or not
 - **Installing, and getting past the security warnings:** the user guide (Getting started > Installing Sightline), the readme and joannelockwood.co.uk/sightline now say which file to download for each computer, and step by step how to get past the browser's download warning, Windows SmartScreen (and what to do about Smart App Control), and the Mac's *Apple could not verify* and *damaged* messages, with how to uninstall
 - **Scratch audio for syncing** (Settings > Scrolling > **Record a scratch audio track for syncing**): while the prompter runs, Sightline records the microphone to a plain WAV file (16 kHz, mono) beside the take logs, starting just before the first slate so its beep is on it. The take log places each file on its clock (`audio`: file, start and end, a new field), the edit pack and Recordings exports include the files, and deleting a session deletes them too. An editor or an AI editing agent can line the real recording up with the take log by matching the two soundtracks, with no slate needed. It never leaves your computer (roadmap 33)
 - **Off script and commands in the script:** `{listen: off}` before an ad-lib, a demo or questions mutes the microphone (nothing is listened to) and holds the prompter, in steady and voice scrolling, with *Off script · mic off · Space to carry on*; Space, a clicker, the phone remote or the Stream Deck carries on from the next `{listen: on}`, where voice following picks up. The take log records each stretch in `offScript` and the edit pack marks it `off-script` with its duration (new fields only). `{prompter: slower}`, `faster`, `bigger`, `smaller` or `marker` runs that command as the reading reaches it. The spec (0.4), the checker, the AI script prompt and the guide know them (roadmap 35)

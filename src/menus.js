@@ -343,7 +343,7 @@ export function buildMenus(
 					click: () => send( "menuHelp" )
 				},
 				{
-					label: "Support Sightline on Ko-fi…",
+					label: "Support Sightline (Joanne's Tip Jar)…",
 					click: () => shell.openExternal( SUPPORT_URL )
 				},
 				{ type: "separator" },
