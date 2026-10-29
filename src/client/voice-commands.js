@@ -158,6 +158,7 @@ export const COMMANDS = [
 	},
 	{ id: "bigger", phrases: [ "bigger", "larger" ] },
 	{ id: "smaller", phrases: [ "smaller" ] },
+	{ id: "close", phrases: [ "close", "cancel", "close that", "close it", "hide", "dismiss", "never mind" ] },
 	{
 		id: "help",
 		phrases: [
@@ -190,7 +191,8 @@ export const COMMAND_HELP = [
 	[ "keeper · scrap that", "Rate this take" ],
 	[ "resync", "Voice mode: find your place again" ],
 	[ "bigger · smaller", "Text size" ],
-	[ "what can I say", "This list" ]
+	[ "what can I say", "This list" ],
+	[ "close", "Hide this list (cancel)" ]
 ];
 
 const normalize = word => word.toLowerCase().replace( /[^\w]/g, "" );

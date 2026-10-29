@@ -30,7 +30,10 @@ const heard = {
 	"CARRY ON": "go",
 	CARRION: "go",
 	BIGGER: "bigger",
-	"START AGAIN": "top"
+	"START AGAIN": "top",
+	CLOSE: "close",
+	CANCEL: "close",
+	"NEVER MIND": "close"
 };
 for ( const [ text, id ] of Object.entries( heard ) ) {
 	assert.equal( matchCommand( text.split( " " ) ), id, text );

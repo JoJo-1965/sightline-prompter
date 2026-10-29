@@ -350,10 +350,24 @@ window.electron.onMirrored( ( value ) => {
 	setMirrored( value, false );
 } );
 
+// Where a section starts: its first line after the heading at the reading
+// line, where following your voice puts the line you're on, so the reading
+// arrow points at the middle of it. The start of the script is the top.
+function sectionStartScroll( index ) {
+	if ( index <= 0 ) return 0;
+	const anchor = document.getElementsByName( index )[0];
+	if ( !anchor ) return null;
+	let el = anchor.nextElementSibling;
+	if ( el?.tagName === "H2" && el.nextElementSibling ) el = el.nextElementSibling;
+	// Past anything not shown (a settings line, a hidden note).
+	while ( el && !el.offsetHeight && el.nextElementSibling ) el = el.nextElementSibling;
+	const top = layoutTop( el ?? anchor );
+	return Math.max( 0, top - window.innerHeight * getReadingAnchor() );
+}
+
 function jumpToSection( index ) {
-	const url = location.href;
-	location.href = "#" + index;
-	history.replaceState( null, null, url );
+	const y = sectionStartScroll( index );
+	if ( y !== null ) window.scrollTo( 0, y );
 }
 
 // --- Editor mode state ---
@@ -1562,6 +1576,8 @@ function runVoiceCommand( id, value ) {
 		showVoiceHelp();
 		return;
 	}
+	// "Prompter, close" (or cancel): hides the card, which any command does.
+	if ( id === "close" ) return;
 	const voice = autoScrollActive && autoScrollHandle;
 	if ( id === "section" ) {
 		goToSpokenSection( value, voice );
@@ -2054,14 +2070,13 @@ const readingMarker = document.getElementById( "reading-marker" );
 // the scroll puts the top of the text on the reading line, so the arrow sits
 // this far below it, at the middle of the words. Fonts differ (OpenDyslexic is
 // taller than Arial), so it's measured.
+// Half the spacing of a line of text, from the first paragraph that shows
+// (not a hidden settings line), in em of the script's size.
 function halfTextHeightEm() {
-	const p = md?.querySelector( "p, li" );
 	const px = parseFloat( getComputedStyle( document.body ).fontSize );
-	if ( !p || !px ) return 0.58;
-	const range = document.createRange();
-	range.selectNodeContents( p );
-	const line = range.getClientRects()[0];
-	return line?.height ? line.height / px / 2 : 0.58;
+	const p = [ ...( md?.querySelectorAll( "p, li" ) ?? [] ) ].find( el => el.offsetHeight );
+	const lineHeight = p ? parseFloat( getComputedStyle( p ).lineHeight ) : NaN;
+	return px && lineHeight > 0 ? lineHeight / px / 2 : 0.65;
 }
 
 // A font that finishes loading changes the height of the text.
@@ -4497,8 +4512,10 @@ function sendPreviewContent() {
 	if ( controlOpen && md ) window.electron.sendPreviewContent( md.innerHTML );
 }
 
+// Measured from the middle of the line being read (where the reading arrow
+// points), not its top edge, so rounding can't tip it into the block above.
 function previewPosition() {
-	const y = readingLineY();
+	const y = readingLineY() + halfTextHeightEm() * parseFloat( getComputedStyle( document.body ).fontSize );
 	let index = 0;
 	let fraction = 0;
 	const blocks = md?.children ?? [];
@@ -4561,7 +4578,9 @@ window.electron.onPreviewJump( ( index, fraction ) => {
 		if ( section >= 0 ) goToPoint( section );
 	} else {
 		const y = layoutTop( block ) + fraction * block.offsetHeight;
-		const top = y - window.innerHeight * getReadingAnchor();
+		// The clicked point goes on the reading arrow, half a line below the reading point.
+		const half = halfTextHeightEm() * parseFloat( getComputedStyle( document.body ).fontSize );
+		const top = y - window.innerHeight * getReadingAnchor() - half;
 		window.scrollTo( 0, Math.max( 0, top ) );
 		previewManuallyScrolled = true;
 		scriptIndex = sectionOnScreen();
@@ -4577,13 +4596,15 @@ function layoutTop( el ) {
 	return y;
 }
 
-// The section on screen now: the last one whose start has reached the top.
-// Scrolling doesn't update scriptIndex, so work it out from the position.
+// The section on screen now: the last one whose heading has reached the
+// reading line. Scrolling doesn't update scriptIndex, so work it out from
+// the position.
 function sectionOnScreen() {
+	const y = readingLineY();
 	let index = 0;
 	for ( let i = 1; ; i++ ) {
 		const anchor = document.getElementsByName( i )[0];
-		if ( !anchor || layoutTop( anchor ) > window.scrollY + 2 ) break;
+		if ( !anchor || layoutTop( anchor ) > y + 2 ) break;
 		index = i;
 	}
 	return index;
@@ -4600,7 +4621,8 @@ function jumpSection( step ) {
 	scriptIndex = sectionOnScreen();
 	// Previous from part-way through a section goes back to its start first.
 	const anchor = document.getElementsByName( scriptIndex )[0];
-	if ( step < 0 && anchor && window.scrollY > layoutTop( anchor ) + 40 ) step = 0;
+	const start = sectionStartScroll( scriptIndex );
+	if ( step < 0 && anchor && start !== null && window.scrollY > start + 40 ) step = 0;
 	const next = scriptIndex + step;
 	if ( next < 0 || document.getElementsByName( next ).length === 0 ) return;
 	recording.jump( pendingJumpReason ?? ( step > 0 ? "next" : "back" ) );

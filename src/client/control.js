@@ -36,6 +36,8 @@ function setPreviewSize( size ) {
 	} catch {
 		// not remembered this time
 	}
+	// Half a line of the new size.
+	if ( readingLine.style.top ) placeReadingLine();
 }
 setPreviewSize( previewSize );
 document
@@ -45,9 +47,16 @@ document
 	.getElementById( "size-up" )
 	.addEventListener( "click", () => setPreviewSize( previewSize + 2 ) );
 
+// The prompter sends the middle of the line being read; it goes on the line
+// drawn here, half a line below the reading point, as the prompter's arrow is.
+function halfLine() {
+	const style = getComputedStyle( md );
+	return ( parseFloat( style.lineHeight ) || parseFloat( style.fontSize ) * 1.3 || 0 ) / 2;
+}
+
 function placeReadingLine() {
 	const box = preview.getBoundingClientRect();
-	readingLine.style.top = `${ Math.round( box.top + box.height * anchor ) }px`;
+	readingLine.style.top = `${ Math.round( box.top + box.height * anchor + halfLine() ) }px`;
 }
 window.addEventListener( "resize", placeReadingLine );
 
@@ -74,7 +83,7 @@ window.control.onPosition( ( p ) => {
 	const block = md.children[p.index];
 	if ( block ) {
 		const at = block.offsetTop + p.fraction * block.offsetHeight;
-		target = at - preview.clientHeight * anchor;
+		target = at - preview.clientHeight * anchor - halfLine();
 	}
 	showPacing( p.pacing );
 } );
