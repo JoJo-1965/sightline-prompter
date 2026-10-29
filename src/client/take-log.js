@@ -13,7 +13,10 @@ const round = n => Math.round( n * 10 ) / 10;
 
 // sentences: the script's sentences, [{ s, section, from, to, text }] with
 // section 0-based, so each take carries its own section's text for the edit.
-export function createTakeLog( { clock = () => Date.now(), sentences = () => [] } = {} ) {
+// loudness( fromMs, toMs ): the mic's loudness over a take ({ lufs, peak,
+// noise, aboveNoise, warning }, level-meter.js) or null. onTake( take ): a
+// take has just been logged.
+export function createTakeLog( { clock = () => Date.now(), sentences = () => [], loudness = () => null, onTake = () => {} } = {} ) {
 	let log = empty();
 	let current = null; // the take in progress
 	let version = 0; // goes up with every change worth saving
@@ -99,11 +102,29 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [] 
 			offScript: done.offScript.map( o => ( { start: o.start, end: o.end ?? since( end ) } ) ),
 			words: done.words,
 			rereads: done.rereads,
-			sentences: sectionSentences( done.section - 1 )
+			sentences: sectionSentences( done.section - 1 ),
+			// The microphone's level over the take, as Sightline heard it:
+			// loudness (LUFS), peak (dBFS), background noise (dBFS), how far
+			// the voice sits above it (dB), and a warning (clipping, quiet or
+			// noisy). Null when it wasn't measured.
+			loudness: measureLoudness( done.openedAt, end )
 		};
 		log.takes.push( take );
 		version++;
+		try {
+			onTake( take );
+		} catch {
+			// a listener's problem isn't the log's
+		}
 		return take;
+	}
+
+	function measureLoudness( from, to ) {
+		try {
+			return loudness( from, to ) ?? null;
+		} catch {
+			return null;
+		}
 	}
 
 	function sectionSentences( index ) {
@@ -407,7 +428,13 @@ export function takeLogCsv( data ) {
 			"speaking_wpm",
 			"overall_wpm",
 			"target_seconds",
-			"vs_target_seconds"
+			"vs_target_seconds",
+			// The mic's level (when measured), added after the pace.
+			"loudness_lufs",
+			"peak_dbfs",
+			"noise_dbfs",
+			"above_noise_db",
+			"level_warning"
 		]
 	];
 	for ( const t of data.takes ) {
@@ -432,7 +459,12 @@ export function takeLogCsv( data ) {
 			pace.speakingWpm ?? "",
 			pace.overallWpm ?? "",
 			t.target ?? "",
-			pace.vsTargetSeconds ?? ""
+			pace.vsTargetSeconds ?? "",
+			t.loudness?.lufs ?? "",
+			t.loudness?.peak ?? "",
+			t.loudness?.noise ?? "",
+			t.loudness?.aboveNoise ?? "",
+			t.loudness?.warning ?? ""
 		] );
 	}
 	return rows.map( r => r.map( csvCell ).join( "," ) ).join( "\r\n" ) + "\r\n";

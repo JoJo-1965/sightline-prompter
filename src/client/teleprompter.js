@@ -31,6 +31,7 @@ import { createTakeLog } from "./take-log.js";
 import { COMMAND_HELP, COMMANDS, wakeLabel } from "./voice-commands.js";
 import { heardForms, normalizeWord } from "./word-fixes.js";
 import { createScratchRecorder } from "./scratch-audio.js";
+import { createLevelMeter } from "./level-meter.js";
 import { SUPPORT_URL } from "./links.js";
 import {
 	indexSentences,
@@ -76,7 +77,11 @@ const pacingEl = document.getElementById( "pacing" );
 const summaryModal = document.getElementById( "take-summary" );
 // Every take of every section, for the edit (File > Export Take Log), each
 // with its section's sentences for the edit pack.
-const recording = createTakeLog( { sentences: scriptSentences } );
+const recording = createTakeLog( {
+	sentences: scriptSentences,
+	loudness: ( from, to ) => levelMeter.measure( from, to ),
+	onTake: takeLogged
+} );
 let recordingSaved = 0; // the take log version last sent to be saved
 let recordingY = null; // reading line at the last tick, to see the text move on
 let pendingJumpReason = null; // "again" when a jump is a voice retake
@@ -2087,6 +2092,8 @@ async function openSettings() {
 	field( "set-voice-commands" ).value = settings.voiceCommands ?? "voice";
 	field( "set-wake-word" ).value = settings.wakeWord ?? "prompter";
 	field( "set-scratch-audio" ).checked = settings.scratchAudio === true;
+	field( "set-take-loudness" ).value = settings.takeLoudness ?? "voice";
+	field( "set-sound-check-takes" ).checked = settings.soundCheckDuringTakes === true;
 	field( "set-sound-alike" ).checked = settings.soundAlike !== false;
 	fillWordRows( settings.wordFixes ?? [] );
 	fillCommandRows( settings.commandWords ?? [] );
@@ -2441,6 +2448,8 @@ function saveSettingsPage( close = true ) {
 		voiceCommands: field( "set-voice-commands" ).value,
 		wakeWord: field( "set-wake-word" ).value,
 		scratchAudio: field( "set-scratch-audio" ).checked,
+		takeLoudness: field( "set-take-loudness" ).value,
+		soundCheckDuringTakes: field( "set-sound-check-takes" ).checked,
 		soundAlike: field( "set-sound-alike" ).checked,
 		wordFixes: readWordRows(),
 		commandWords: readCommandRows(),
@@ -3145,6 +3154,7 @@ window.addEventListener( "blur", closeAppMenu );
 
 window.electron.onMenuLayout( () => toggleLayoutView( "layout" ) );
 window.electron.onMenuVoice( () => togglePanel( "voice-panel" ) );
+window.electron.onMenuSoundCheck( () => toggleSoundCheck() );
 
 const toggleSetting = key => () =>
 	window.electron.saveSettings( { [key]: !settings[key] } );
@@ -3207,6 +3217,7 @@ function menuGroups() {
 				],
 				[ "⏮", "Back to the start", "Ctrl+Home", goToStart ],
 				[ "🔴", manualOnAir ? "Go off air" : "Go on air", "Ctrl+Shift+A", toggleOnAir ],
+				[ "🎚", soundCheck ? "Hide the sound check" : "Sound check", "Ctrl+Shift+D", toggleSoundCheck ],
 				[ "★", "This take's a keeper", "K", () => rateTake( "keeper" ) ],
 				[ "✗", "Scrap this take", "Shift+K", () => rateTake( "scrap" ) ],
 				[ "🗒", "Recordings…", "Ctrl+Shift+R", openRecordings ],
@@ -3893,6 +3904,7 @@ if ( document.getElementById( "voice-panel" ) ) {
 	field( "vp-key" ).addEventListener( "keydown", ( e ) => {
 		if ( e.key === "Enter" ) saveKey();
 	} );
+	onClick( "vp-sound-check", toggleSoundCheck );
 	onClick( "vp-key-clear", () => {
 		window.electron.setDeepgramKey( "" );
 		showTransientHint( "Deepgram key removed", 2000 );
@@ -5301,8 +5313,79 @@ function syncScratchAudio( active ) {
 	} );
 }
 
+// --- The sound-check meter and loudness per take (roadmap 41 and 42) ---
+// One measurement of the mic (level-meter.js) serves both: the meter at the
+// edge of the prompter, and each take's loudness in the take log. It runs
+// while the meter shows or a take is being measured, and not otherwise.
+let soundCheck = false;
+let peakHold = { db: -Infinity, at: 0 };
+let clipAt = 0;
+const levelMeter = createLevelMeter( { onLevel: showLevel } );
+const meterEl = document.createElement( "div" );
+meterEl.id = "level-meter";
+meterEl.className = "hidden";
+meterEl.setAttribute( "aria-label", "Sound check" );
+meterEl.innerHTML = "<div class=\"lm-bar\"><div class=\"lm-fill\"></div><div class=\"lm-hold\"></div></div><span class=\"lm-clip\" title=\"The mic hit full scale\">CLIP</span><span class=\"lm-text\">Listening…</span>";
+hud.appendChild( meterEl );
+
+// -60 dBFS (empty) to 0 dBFS (full)
+const meterPercent = db => Math.min( 100, Math.max( 0, ( ( db + 60 ) / 60 ) * 100 ) );
+
+function showLevel( { level, peak, shortTerm, room } ) {
+	if ( meterEl.classList.contains( "hidden" ) ) return;
+	const now = Date.now();
+	meterEl.querySelector( ".lm-fill" ).style.width = `${ meterPercent( level ?? -Infinity ) }%`;
+	// The peak line holds for a second and a half.
+	if ( peak !== null && ( peak >= peakHold.db || now - peakHold.at > 1500 ) ) peakHold = { db: peak, at: now };
+	meterEl.querySelector( ".lm-hold" ).style.left = `${ meterPercent( peakHold.db ) }%`;
+	if ( peak !== null && peak >= -1 ) clipAt = now;
+	meterEl.classList.toggle( "clipped", now - clipAt < 2000 );
+	const parts = [ shortTerm === null ? "… LUFS" : `${ Math.round( shortTerm ) } LUFS` ];
+	if ( room !== null ) parts.push( room < -90 ? "room below -90 dB" : `room ${ Math.round( room ) } dB` );
+	meterEl.querySelector( ".lm-text" ).textContent = parts.join( " · " );
+}
+
+function syncLevelMeter( active ) {
+	const how = settings.takeLoudness ?? "voice";
+	const micOnAnyway = autoScrollActive || settings.scratchAudio === true;
+	const measuring = active && !isEditMode && ( how === "always" || ( how === "voice" && micOnAnyway ) );
+	const show = soundCheck && !isEditMode && ( !active || settings.soundCheckDuringTakes === true );
+	meterEl.classList.toggle( "hidden", !show );
+	if ( ( show || measuring ) && !levelMeter.running ) {
+		levelMeter.start( audioDeviceId ).catch( ( err ) => {
+			console.warn( "[sound check]", err );
+			soundCheck = false;
+			meterEl.classList.add( "hidden" );
+			showToast( "Couldn't open the microphone for the sound check: is one connected?", 3000 );
+		} );
+	} else if ( !show && !measuring && levelMeter.running ) levelMeter.stop();
+}
+
+function toggleSoundCheck() {
+	soundCheck = !soundCheck;
+	const active = isScrolling() || cuePaused || pointsRunning;
+	syncLevelMeter( active );
+	if ( !soundCheck ) showToast( "Sound check off", 1500 );
+	else if ( active && settings.soundCheckDuringTakes !== true )
+		showToast( "Sound check: it shows when you stop (Settings > Voice can keep it on during takes)", 3500 );
+	else showToast( "Sound check on · speak normally, then stay quiet for the room · Ctrl+Shift+D hides it", 3500 );
+}
+
+// A take that clipped, was very quiet or had a noisy room says so as it ends.
+function takeLogged( take ) {
+	const l = take.loudness;
+	if ( !l?.warning ) return;
+	const what = {
+		clipping: `the mic clipped (peak ${ l.peak } dBFS)`,
+		quiet: `very quiet (${ l.lufs } LUFS)`,
+		noisy: `a noisy room (background ${ l.noise } dBFS)`
+	}[l.warning];
+	showToast( `Section ${ take.section }, take ${ take.take }: ${ what }`, 5000 );
+}
+
 function feedTakeLog( active ) {
 	syncScratchAudio( active );
+	syncLevelMeter( active );
 	// Waiting for the slate: the take opens after it, so it gets the slate.
 	if ( slateDue ) return;
 	const y = readingLineY();
@@ -5508,6 +5591,13 @@ function showTakeSummary() {
 	if ( logLine ) {
 		logLine.textContent = logged.takes.length
 			? `Take log so far: ${ logged.takes.length } take${ logged.takes.length === 1 ? "" : "s" } of ${ logged.sections.length } section${ logged.sections.length === 1 ? "" : "s" }${ keepers ? `, ${ keepers } keeper${ keepers === 1 ? "" : "s" }` : "" }. Say “Prompter, keeper” or press K to mark a good take.`
+			: "";
+	}
+	const levelsLine = document.getElementById( "take-summary-levels" );
+	if ( levelsLine ) {
+		const measured = logged.takes.filter( t => t.loudness ).slice( -6 );
+		levelsLine.textContent = measured.length
+			? `Mic levels: ${ measured.map( t => `S${ t.section } take ${ t.take } ${ t.loudness.lufs ?? "–" } LUFS${ t.loudness.warning ? ` (${ t.loudness.warning })` : "" }` ).join( " · " ) }`
 			: "";
 	}
 	const full = [ ...takeLog.values() ].some( r => !r.partial );

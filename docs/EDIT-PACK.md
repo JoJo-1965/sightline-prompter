@@ -147,6 +147,26 @@ every take's pace, or `--json` for an agent.
 These columns and fields were added after the first edit packs; none of the
 earlier ones changed.
 
+## Loudness
+
+With **Settings > Scrolling > Loudness for each take** on (in voice scrolling
+by default), each take has `loudness` in `take-log.json` (added in this
+version; null when it wasn't measured), and the same in the last columns of
+`takes.csv`:
+
+| Column in `takes.csv` | Field in `loudness` | What it is |
+| --- | --- | --- |
+| `loudness_lufs` | `lufs` | Integrated loudness over the take (ITU-R BS.1770, gated), LUFS |
+| `peak_dbfs` | `peak` | The loudest sample, dBFS |
+| `noise_dbfs` | `noise` | The room's background noise: the 10th percentile of the 100 ms levels, so the gaps between words set it, dBFS |
+| `above_noise_db` | `aboveNoise` | Loudness minus background noise: roughly how far the voice sits above the room |
+| `level_warning` | `warning` | `clipping` (peak at -1 dBFS or above), `quiet` (below -36 LUFS), `noisy` (noise above -45 dBFS), or empty |
+
+It's the microphone as Sightline heard it, unprocessed, which may not be the
+same mic or level as the master recording. Use it to spot takes worth
+checking, not as the final loudness: a `clipping` take may be distorted in
+the recording too.
+
 ## Choosing takes
 
 - **status**: `complete` (read to the end of the section), `retake` (the reader

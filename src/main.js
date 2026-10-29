@@ -95,6 +95,8 @@ const defaultSettings = {
 	// Settings > Voice > Your words: [{ word: "Moshe", heard: [ "marsha" ] }]
 	wordFixes: [],
 	scratchAudio: false, // Settings > Scrolling: a scratch audio track for syncing (scratch-audio.js)
+	takeLoudness: "voice", // Settings > Scrolling: measure each take's loudness: voice (when the mic is on anyway), always or off (level-meter.js)
+	soundCheckDuringTakes: false, // Settings > Voice: keep the sound-check meter on screen while a take runs
 	soundAlike: true, // ...and words that sound like script words or commands count as them
 	commandWords: [], // ...and your own forms of the wake word and commands: [{ id: "wake", heard: [ … ] }]
 	steadyWpm: 140,

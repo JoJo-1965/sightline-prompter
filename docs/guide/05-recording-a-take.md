@@ -84,6 +84,42 @@ when there is one.
   [Recordings](#recordings) deletes its scratch audio too.
 - It never leaves your computer.
 
+## Sound check and loudness
+
+**The sound-check meter** shows your microphone at the bottom left of the
+prompter, to check it before a take. Turn it on and off with **Sound check**
+in the Voice panel, **Ctrl+Shift+D**, or ☰ > Playback.
+
+- **The bar** is the level, from -60 dBFS (empty) to 0 (full): green for
+  speech, amber when it's getting loud (from -18 dBFS), red near the top (from
+  -6). The white line holds the loudest moment for a second and a half.
+- **CLIP** lights red for two seconds when the mic hits full scale. Turn the
+  mic's gain down, or move back a little.
+- **LUFS** is the loudness of the last three seconds, the way broadcasters
+  measure it. Speaking normally, a good mic usually reads about -30 to -20.
+- **Room** is the background noise: hum, fans, traffic. Stay quiet for a few
+  seconds to see it. Below about -55 dB is a quiet room; above -45 you'll hear
+  it under your voice.
+
+The meter hides while a take runs, so it doesn't distract you; tick
+**Settings > Voice > Keep the sound-check meter on screen during takes** to
+keep it.
+
+**Loudness for each take** (Settings > Scrolling) measures the mic through
+every take: its loudness, its loudest peak and the room's background noise.
+When a take ends with a problem, a message says so, such as *Section 2, take
+1: the mic clipped (peak -0.3 dBFS)*. The problems are:
+
+- **clipping**: a peak within 1 dB of full scale, so it has probably distorted;
+- **quiet**: quieter than -36 LUFS;
+- **noisy**: background noise above -45 dB.
+
+The take summary lists the last few takes' levels, and the take log and edit
+pack keep them. It's measured in voice scrolling (when the mic is on anyway)
+unless you choose **Always** or **Off**. It's the mic as Sightline hears it,
+before OBS or Riverside process it, so treat it as a guide, not the final
+figure.
+
 ## The take log
 
 Sightline doesn't record your video or audio; keep recording with OBS,
@@ -124,6 +160,7 @@ tools and a CSV beside it for a spreadsheet:
 | slate | When the take's slate went off, if the slate is on |
 | use | **yes** on the take the log picks for that section |
 | markers | Times of any markers you dropped in it |
+| loudness_lufs, peak_dbfs, noise_dbfs, above_noise_db, level_warning | The mic's [loudness](#sound-check-and-loudness) through the take, its loudest peak, the room's background noise, how far your voice sat above it, and **clipping**, **quiet** or **noisy** if there was a problem |
 | words, spoken_seconds, speaking_seconds, speaking_wpm, overall_wpm, target_seconds, vs_target_seconds | Voice mode: the take's pace. How many words you said, the time from first to last word with and without pauses of a second or more, words per minute both ways, and the section's `{target}` with how far over or under you were |
 
 **Word timings (voice mode).** When the prompter is following your voice,

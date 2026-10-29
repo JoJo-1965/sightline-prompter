@@ -199,6 +199,7 @@
         <div id="vp-meter" title="Live level from the chosen microphone">
           <div id="vp-meter-fill"></div>
         </div>
+        <button id="vp-sound-check" type="button" title="Show the sound-check meter on the prompter (Ctrl+Shift+D)">Sound check</button>
         <span id="vp-mic-status" class="lp-hint"></span>
       </div>
       <label class="lp-row"
@@ -504,6 +505,7 @@
         </table>
         <p class="field-hint">Only sections you read to the end are listed. Turn this summary off in the Layout panel.</p>
         <p class="field-hint" id="take-summary-log"></p>
+        <p class="field-hint" id="take-summary-levels"></p>
         <p class="field-hint" id="take-summary-targets-hint">Rehearsing? <strong>Use these times as targets</strong> writes each time into the script as <code>{target: m:ss}</code> (to the nearest 5 seconds), replacing any target that section had. Sections you started part-way through are left alone.</p>
         <div class="modal-actions">
           <button id="take-summary-export" type="button">Export take log…</button>
@@ -719,6 +721,15 @@
             track for syncing</label
           >
           <p class="field-hint">While the prompter runs, Sightline records the microphone to a plain audio file beside the take log, even off script. An editor can line your real recording up with the take log by matching the two soundtracks, with no slate needed. It stays on this computer, and goes into the edit pack when you export one.</p>
+          <label class="row"
+            >Loudness for each take
+            <select id="set-take-loudness">
+              <option value="voice">In voice scrolling (the mic's on anyway)</option>
+              <option value="always">Always (opens the mic when scrolling)</option>
+              <option value="off">Off</option>
+            </select>
+          </label>
+          <p class="field-hint">Measures your microphone through each take: its loudness, its loudest peak and the room's background noise. A take that clipped, was very quiet or had a noisy room gets a warning as it ends, in the take summary and in the take log and edit pack. It's the mic as Sightline hears it, before OBS or Riverside process it, so treat it as a guide.</p>
         </fieldset>
 
         <fieldset data-tab="voice">
@@ -736,6 +747,11 @@
               <button id="set-speech-model-get" type="button" class="hidden">Download speech model</button>
             </div>
           </div>
+          <label class="check"
+            ><input id="set-sound-check-takes" type="checkbox" /> Keep the sound-check
+            meter on screen during takes</label
+          >
+          <p class="field-hint">The sound-check meter (<strong>Sound check</strong> in the Voice panel, or Ctrl+Shift+D) shows your mic's level, loudness and the room's background noise at the edge of the prompter. It hides while a take runs unless this is ticked.</p>
           <label class="row"
             >Voice commands (“Prompter, pause”)
             <select id="set-voice-commands">

@@ -25,6 +25,7 @@ The ones you'll use most:
 | **Ctrl+Shift+V**         | Voice panel                                    |
 | **Ctrl+Shift+R**         | Recordings                                     |
 | **Ctrl+Shift+X**         | Click-through on / off                         |
+| **Ctrl+Shift+D**         | Sound-check meter on / off                     |
 | **Ctrl+,**               | Settings                                       |
 
 ## Troubleshooting

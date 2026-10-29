@@ -163,3 +163,40 @@ assert.equal( slated.data().events[0].type, "slate" );
 }
 
 console.log( "take log tests pass" );
+
+// Loudness per take (roadmap 42): measured over the take's own time, and
+// handed to onTake as the take is logged.
+{
+	let now = 1000;
+	const seen = [];
+	const asked = [];
+	const log = createTakeLog( {
+		clock: () => now,
+		loudness: ( from, to ) => {
+			asked.push( [ from, to ] );
+			return { lufs: -21.5, peak: -0.4, noise: -58, aboveNoise: 36.5, warning: "clipping" };
+		},
+		onTake: take => seen.push( take )
+	} );
+	log.tick( { active: true, index: 0, title: "One" } );
+	now = 2000;
+	log.tick( { active: true, index: 0, title: "One", advanced: true } );
+	now = 5000;
+	log.tick( { active: true, index: 0, title: "One", advanced: true } );
+	now = 5200;
+	log.tick( { active: false, index: 0, atEnd: true } );
+	const [ take ] = log.data().takes;
+	assert.deepEqual( take.loudness, { lufs: -21.5, peak: -0.4, noise: -58, aboveNoise: 36.5, warning: "clipping" } );
+	assert.deepEqual( asked, [ [ 1000, 5000 ] ] );
+	assert.equal( seen.length, 1 );
+	// A log without a meter gives null, and a meter that throws doesn't stop it.
+	const plain = createTakeLog( { clock: () => now, loudness: () => {
+		throw new Error( "no mic" );
+	} } );
+	plain.tick( { active: true, index: 0, title: "One" } );
+	now = 9000;
+	plain.tick( { active: true, index: 0, advanced: true } );
+	plain.tick( { active: false, index: 0 } );
+	assert.equal( plain.data().takes[0].loudness, null );
+	console.log( "loudness per take passes" );
+}

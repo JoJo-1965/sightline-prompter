@@ -22,8 +22,8 @@ double-click the title to put it back in the middle.
 
 The scroll mode (steady or voice), the steady speed, the countdown before
 scrolling starts, the [slate](05-recording-a-take.md#the-slate) at the start
-of each take, and [scratch audio](05-recording-a-take.md#scratch-audio-for-syncing)
-for syncing.
+of each take, [scratch audio](05-recording-a-take.md#scratch-audio-for-syncing)
+for syncing, and [loudness for each take](05-recording-a-take.md#sound-check-and-loudness).
 
 ## Voice
 
@@ -33,7 +33,9 @@ Speech recognition (on this computer, or Deepgram), the speech model download,
 voice commands and their **wake word** (Prompter, Computer, Teleprompter or
 Director), voice responsiveness and the microphone, and **Your words**: names
 and words it mishears, and your own forms of the wake word and commands,
-with sound-alike matching, suggestions from what it heard and **Teach…**. See [Scrolling and voice](03-scrolling-and-voice.md)
+with sound-alike matching, suggestions from what it heard and **Teach…**, and
+whether the [sound-check meter](05-recording-a-take.md#sound-check-and-loudness)
+stays on screen during takes. See [Scrolling and voice](03-scrolling-and-voice.md)
 and [Your words](03-scrolling-and-voice.md#your-words).
 
 ## Display

@@ -1675,6 +1675,65 @@ body::-webkit-scrollbar,
 	opacity: 1;
 }
 
+/* The sound-check meter (roadmap 41): the mic's level against green, amber
+   and red zones (-60 to 0 dBFS), a peak hold, a clip light, and the
+   short-term loudness and the room's background noise. */
+#level-meter {
+	position: absolute;
+	left: 12px;
+	bottom: 40px;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 6px 10px;
+	font: 12px "Segoe UI", Helvetica, Arial, sans-serif;
+	color: #e8e8e8;
+	background: rgba(18, 20, 26, 0.88);
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	border-radius: 8px;
+	pointer-events: none;
+}
+#level-meter .lm-bar {
+	position: relative;
+	width: 180px;
+	height: 10px;
+	border-radius: 3px;
+	background: rgba(255, 255, 255, 0.08);
+	overflow: hidden;
+}
+#level-meter .lm-fill {
+	height: 100%;
+	width: 0;
+	/* The zones stay put as the fill grows: -18 dBFS at 70%, -6 at 90%. */
+	background: linear-gradient(90deg, #2e9d4a 0 70%, #e0a800 70% 90%, #d32f2f 90% 100%);
+	background-size: 180px 100%;
+	transition: width 0.1s linear;
+}
+#level-meter .lm-hold {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 2px;
+	height: 100%;
+	background: #ffffff;
+}
+#level-meter .lm-clip {
+	padding: 1px 5px;
+	font-size: 10px;
+	font-weight: 700;
+	border-radius: 3px;
+	color: rgba(255, 255, 255, 0.35);
+	background: rgba(255, 255, 255, 0.08);
+}
+#level-meter.clipped .lm-clip {
+	color: #fff;
+	background: #d32f2f;
+}
+#level-meter .lm-text {
+	min-width: 150px;
+	font-variant-numeric: tabular-nums;
+}
+
 /* Window-sized layer for everything pinned to the window; see applyMirror(). */
 #hud {
 	position: fixed;

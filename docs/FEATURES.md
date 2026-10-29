@@ -141,6 +141,12 @@ The whole workflow is in the guide:
   sentences, edit marks (sentence starts, pauses, re-reads, skipped words)
   and captions in the script's own wording, in one folder with a brief for
   AI editing agents.
+- **Sound-check meter** (Ctrl+Shift+D, or Sound check in the Voice panel):
+  the mic's level, peak, clip light, loudness in LUFS and the room's
+  background noise, at the edge of the prompter.
+- **Loudness for each take** (Settings > Scrolling): each take's loudness,
+  peak and background noise in the take log and edit pack, with a warning as
+  it ends if it clipped, was very quiet or had a noisy room.
 - **Scratch audio for syncing** (Settings > Scrolling): a plain microphone
   recording while the prompter runs, placed on the take log's clock, so an
   editor can line the real recording up by matching soundtracks, with no

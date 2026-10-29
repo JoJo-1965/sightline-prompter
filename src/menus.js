@@ -205,6 +205,11 @@ export function buildMenus(
 					click: () => send( "menuVoice" )
 				},
 				{
+					label: "Sound Check Meter",
+					accelerator: "CmdOrCtrl+Shift+D",
+					click: () => send( "menuSoundCheck" )
+				},
+				{
 					label: "Select Microphone…",
 					click: () => send( "menuSelectMicrophone" )
 				},
