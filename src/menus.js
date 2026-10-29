@@ -22,6 +22,7 @@ export function buildMenus(
 		showRecordings,
 		reloadGoogleDoc,
 		openGuide,
+		toggleHeadGuide,
 		displays = []
 	}
 ) {
@@ -274,6 +275,12 @@ export function buildMenus(
 					accelerator: "CmdOrCtrl+Shift+O",
 					checked: !!settings.showControl,
 					click: menuItem => updateSettings( { showControl: menuItem.checked } )
+				},
+				{
+					label: "Head-position Guide / Unlock (Ctrl+Shift+H)",
+					type: "checkbox",
+					checked: !!settings.showHeadGuide,
+					click: () => toggleHeadGuide?.()
 				},
 				{
 					label: "Keep on Top",

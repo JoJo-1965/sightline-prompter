@@ -1,5 +1,9 @@
 # Settings
 
+The optional **head-position guide** opens from the Window menu or global
+Ctrl+Shift+H hotkey (Cmd+Shift+H on Mac). Adjust its appearance on the overlay;
+placement and appearance are saved. See [the guide controls](06-remotes-and-screens.md#head-position-guide-development).
+
 Open Settings with **⚙** in the control bar, **Ctrl+,** or ☰ > Settings. The
 tabs keep everything in view, and the panel stays the same size on every
 tab. **←** and **→** switch tabs, and the buttons stay at the bottom:

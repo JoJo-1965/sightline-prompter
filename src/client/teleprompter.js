@@ -3604,6 +3604,7 @@ function menuGroups() {
 		{
 			heading: "Window",
 			items: [
+				[ "◎", "Head-position guide / unlock", "Ctrl+Shift+H", () => window.electron.headGuide(), { checked: !!settings.showHeadGuide } ],
 				[
 					"▦",
 					"Control pad (floating buttons)",
@@ -4856,6 +4857,7 @@ function runRemoteAction( action, value ) {
 	else if ( action === "scroll-mode" ) window.electron.saveSettings( { scrollMode: settings.scrollMode === "voice" ? "steady" : "voice" } );
 	else if ( action === "pad" ) window.electron.saveSettings( { showPad: !settings.showPad } );
 	else if ( action === "control" ) window.electron.saveSettings( { showControl: !settings.showControl } );
+	else if ( action === "head-guide" ) window.electron.headGuide();
 	sendStatus();
 }
 window.electron.onRemoteCommand( runRemoteAction );

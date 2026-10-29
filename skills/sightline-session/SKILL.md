@@ -61,6 +61,13 @@ so on) and finish with `status` to confirm.
 
 ## During: control the prompter
 
+The OBS development branch also supports `command head-guide` independently
+of OBS: show the framing overlay, unlock it if locked, otherwise hide it.
+Check `/status` for `showHeadGuide`, `headGuideLocked`, and `commands`
+containing `head-guide`. The global shortcut is Ctrl+Shift+H (Cmd on Mac).
+It is not an OBS source; do not promise exclusion from every display-capture
+method without checking. No script directive or video/audio capture is added.
+
 `command <action> [value]`, where action is one of: `play`, `pause`,
 `toggle`, `restart`, `next-section`, `previous-section`,
 `go-to-section <n>` (the n-th `##` section), `faster`, `slower`,

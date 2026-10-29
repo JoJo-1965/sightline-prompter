@@ -9,6 +9,7 @@ contextBridge.exposeInMainWorld( "electron", {
 	saveSupportLog: () => ipcRenderer.invoke( "saveSupportLog" ),
 	// Control bar, slots and window IPC
 	windowControl: action => ipcRenderer.send( "windowControl", action ),
+	headGuide: () => ipcRenderer.send( "headGuideAction", "toggle" ),
 	onWindowState: callback => on( "windowState", callback ),
 	onMenuWindowControl: callback => on( "menuWindowControl", callback ),
 	popupMenu: ( x, y ) => ipcRenderer.send( "popupMenu", x, y ),

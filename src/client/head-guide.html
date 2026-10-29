@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'">
+<title>Sightline Head Guide</title>
+<link rel="stylesheet" href="head-guide.css">
+</head>
+<body>
+<header>
+<strong>Head-position guide</strong>
+<button id="smaller" title="Smaller head outline">−</button>
+<button id="bigger" title="Larger head outline">+</button>
+<input id="opacity" aria-label="Guide opacity" title="Guide opacity" type="range" min="20" max="100" value="75">
+<button id="colour" title="Switch guide colour">Colour</button>
+<button id="lock" title="Click-through. Ctrl+Shift+H to show and unlock">Lock</button>
+<button id="close" aria-label="Close guide">×</button>
+</header>
+<div id="stage">
+<svg viewBox="0 0 1000 562.5" preserveAspectRatio="none" aria-label="Camera framing guide">
+<rect class="line quiet dashed" x="50" y="28" width="900" height="506.5" rx="3"/>
+<path class="line quiet dashed" d="M500 28V534"/>
+<path class="line dashed" d="M95 155H905"/>
+<text class="label" x="105" y="144">Eyes</text>
+<g id="head">
+<ellipse class="line" cx="500" cy="187" rx="86" ry="121"/>
+<path class="line" d="M460 298 L455 329 Q424 345 368 367 Q322 384 297 459 M540 298 L545 329 Q576 345 632 367 Q678 384 703 459"/>
+<path class="line quiet" d="M436 155h28m72 0h28"/>
+</g>
+<text class="label" x="610" y="72">Headroom</text>
+<path class="line quiet" d="M603 66H590M590 40V66M583 40H597"/>
+</svg>
+</div>
+<footer>Drag the bar and resize to match your 16:9 camera preview · Ctrl+Shift+H show/unlock or hide · also in Sightline’s Window menu</footer>
+<div id="resize" title="Drag to resize"></div>
+<script type="module" src="head-guide.js"></script>
+</body>
+</html>

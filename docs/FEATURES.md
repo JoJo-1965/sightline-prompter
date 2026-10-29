@@ -1,5 +1,10 @@
 # Sightline Prompter: what it adds to Electron Teleprompter
 
+**In development:** a floating head-position guide for camera framing, with
+an eye line, head/shoulder outline, adjustable size/opacity/colour, saved
+placement, click-through lock, global Ctrl+Shift+H hotkey and Stream Deck
+OFF/ON/LOCK action. Separate from OBS scenes; capture protection stays on.
+
 Sightline Prompter began as a fork of David Neal's
 [Electron Teleprompter](https://github.com/reverentgeek/electron-teleprompter)
 (version 4.1.20): a see-through, always-on-top teleprompter with a built-in

@@ -2,6 +2,11 @@
 
 ## Keyboard shortcuts
 
+**Ctrl+Shift+H** (Cmd+Shift+H on Mac) works globally for the head-position
+guide: show, unlock if locked, or hide if already unlocked. If another app
+owns that shortcut, use **☰ > Window > Head-position guide / unlock** or its
+Stream Deck action. See [camera framing](06-remotes-and-screens.md#head-position-guide-development).
+
 Press **F1** (or **?**) for the full list inside the app.
 
 ![Keyboard shortcuts](images/shortcuts.png)

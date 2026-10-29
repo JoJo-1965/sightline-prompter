@@ -1,5 +1,33 @@
 # Remotes and second screens
 
+## Head-position guide (development)
+
+Use **☰ > Window > Head-position guide / unlock**, or **Ctrl+Shift+H** from
+any app (**Cmd+Shift+H** on Mac). The same action appears in the native View
+menu. It opens over your camera preview without requiring an OBS connection.
+Drag its title bar and bottom-right resize handle to fit the outer dotted
+rectangle to your 16:9 preview. Adjust the head outline with +/−, change
+opacity or colour, then **Lock** to pass clicks through to the preview.
+
+The hotkey, menu and Stream Deck key all behave alike: show if closed, unlock
+if locked, otherwise hide. The next opening is unlocked. If another app has
+claimed the hotkey, a toast explains how to recover through the menu or key.
+The guide remembers its position, size and appearance; it stays upright when
+the prompter is mirrored. **×** closes it. Closing Sightline closes it too.
+
+The companion Stream Deck development branch adds a **Head-position guide**
+action you can drag onto any key. It shows **OFF**, **ON** or **LOCK**, using
+Sightline's status feed. Older app versions flash an alert instead of sending
+an unsupported command. Existing sample-profile key assignments are unchanged.
+
+This is a separate desktop window, not an OBS scene source. Camera-only OBS
+recordings do not include it. It always requests capture protection, even if
+the prompter's Hide from capture setting is off. Protection for full-display
+recording depends on the capture method and platform: verify a short recording
+first. It does not track your face, access the camera or record audio/video.
+
+![The head-position guide](images/head-guide.png)
+
 ## Presenter clickers and foot pedals
 
 Most clickers and pedals send Page Down and Page Up. **Page Down** starts and

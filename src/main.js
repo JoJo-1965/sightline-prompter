@@ -16,6 +16,7 @@ import { buildMenus } from "./menus.js";
 import { setSectionTargets } from "./utils/targets.js";
 import { createPad } from "./pad.js";
 import { createControl } from "./control.js";
+import { createHeadGuide } from "./head-guide.js";
 import { createSpeech } from "./speech.js";
 import { createGuide } from "./guide.js";
 import { createGoogleDocs, GOOGLE_DOC_MESSAGES } from "./google-docs.js";
@@ -142,6 +143,11 @@ const defaultSettings = {
 	startBeep: false, // a short beep when the countdown ends (off: it would be recorded)
 	hideFromCapture: false, // keep the window out of screen sharing and recordings
 	showPad: false, // the floating control pad (View menu, Ctrl+Shift+P)
+	showHeadGuide: false,
+	headGuideBounds: null,
+	headGuideScale: 1,
+	headGuideOpacity: 0.75,
+	headGuideColour: "mint",
 	showControl: false, // the control window for the operator screen (Ctrl+Shift+O)
 	controlBounds: null, // where the control window was left
 	prompterDisplay: null, // monitor id: open the prompter full screen there
@@ -335,6 +341,7 @@ let rendererStatus = {};
 let onSettingsChanged = () => {};
 let controlPad = null;
 let controlWindow = null;
+let framingGuide = null;
 let obs = null;
 let obsPassword = "";
 let obsCredentials = null;
@@ -1206,6 +1213,7 @@ const createWindow = ( state ) => {
 			showRecordings: () => win.webContents.send( "showRecordings" ),
 			reloadGoogleDoc: () => refreshGoogleDoc( currentFilePath, true ),
 			openGuide: page => guide.open( page ),
+			toggleHeadGuide: () => framingGuide?.toggle(),
 			isMaximized: windowMode === "maximized",
 			displays: displayList()
 		} );
@@ -1419,7 +1427,8 @@ app.whenReady().then( async () => {
 		"sound-check", // the sound-check meter on or off
 		"scroll-mode", // steady or voice scrolling
 		"pad", // the floating control pad open or closed
-		"control" // the control window open or closed
+		"control", // the control window open or closed
+		"head-guide" // show/unlock or hide the framing overlay
 	];
 
 	// The prompter's state, for GET /status and the GET /events stream.
@@ -1436,6 +1445,8 @@ app.whenReady().then( async () => {
 		clickThrough: !!settings.clickThrough,
 		showPad: !!settings.showPad,
 		showControl: !!settings.showControl,
+		showHeadGuide: !!settings.showHeadGuide,
+		headGuideLocked: framingGuide?.isLocked() ?? false,
 		windowMode,
 		...rendererStatus,
 		commands: REMOTE_COMMANDS
@@ -1620,6 +1631,17 @@ app.whenReady().then( async () => {
 		saveSettings: partial => updateSettings( partial )
 	} );
 	controlPad.apply();
+	framingGuide = createHeadGuide( {
+		dir: __dirname, prompter: win, getSettings: () => settings,
+		saveSettings: partial => updateSettings( partial ),
+		saveBounds: ( bounds ) => {
+			settings.headGuideBounds = bounds;
+			if ( !win.isDestroyed() ) saveState( win );
+		},
+		onChange: () => publishRemoteState()
+	} );
+	framingGuide.apply();
+	win.on( "closed", () => framingGuide.dispose() );
 	createSpeech( { dir: __dirname, win } );
 	ipcMain.on( "copyAiPrompt", () => copyAiPrompt( win ) );
 
@@ -1716,6 +1738,7 @@ app.whenReady().then( async () => {
 		syncPhoneServer();
 		controlPad.apply();
 		controlWindow.apply();
+		framingGuide.apply();
 	};
 	syncObsSettings();
 	// Samples are copied into the app's folder first, so editing one never

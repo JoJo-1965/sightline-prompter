@@ -6,6 +6,12 @@ branch until the recording workflow has been reviewed.
 
 ## Included
 
+- Floating head-position guide (55), independent of OBS: move/resize,
+  size/opacity/colour, saved placement, click-through lock and global
+  Ctrl+Shift+H show/unlock/hide hotkey. Menu recovery if the hotkey is in use.
+  Always capture-protected, with no camera/mic access or OBS source.
+  The separate Stream Deck `codex/head-position-guide` branch adds its key.
+
 - Settings > OBS, disabled by default, authenticated WebSocket v5 connection,
   saved connection test and reconnection while enabled.
 - Status-only mode, then separately permitted recording controls.
@@ -33,6 +39,11 @@ stopping the simulated recording. It does not establish compatibility with
 every OBS output configuration or real camera/audio setup.
 
 ## Before merge and release
+
+Check the framing guide on the real preview and chosen screen-capture method,
+hotkey registration, moved/unplugged displays and Stream Deck hardware. An
+isolated Electron run verified popup/preferences, lock/unlock/hide/reopen,
+saved placement and the Stream Deck button-token API route.
 
 1. Review against current main. Settings and related help may have moved
    while this worktree was isolated; resolve those changes deliberately.
