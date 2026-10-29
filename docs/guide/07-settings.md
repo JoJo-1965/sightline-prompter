@@ -88,6 +88,12 @@ checks quietly a few seconds after you open the app, and a small note at the
 bottom right says when a new version is out. Nothing downloads or installs by
 itself, and nothing is sent but the request to GitHub.
 
+**Debug mode** (on at first) adds a step-by-step trail to the small log Sightline always
+keeps of hangs, crashes and errors, so a problem can be traced. **Save a log
+for support…** puts the log in one file, with your version, system and which
+features are on (never your scripts, keys or audio), to attach to a GitHub
+issue or an email. Nothing is sent by itself.
+
 **☕ Support Sightline** opens Joanne's tip jar, where you can say thanks
 with a coffee (also **Help > Support Sightline (Joanne's Tip Jar)…** and the ☰
 menu). It's a Stripe payment page: you choose the amount, and nothing else is

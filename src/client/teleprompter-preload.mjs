@@ -5,6 +5,8 @@ const on = ( channel, callback ) => ipcRenderer.on( channel, ( _event, ...args )
 contextBridge.exposeInMainWorld( "electron", {
 	// A line in sightline.log, for tracking down a freeze.
 	debugLog: text => ipcRenderer.send( "debugLog", String( text ) ),
+	// Settings > About > Save a log for support: the file it saved, or null.
+	saveSupportLog: () => ipcRenderer.invoke( "saveSupportLog" ),
 	// Control bar, slots and window IPC
 	windowControl: action => ipcRenderer.send( "windowControl", action ),
 	onWindowState: callback => on( "windowState", callback ),

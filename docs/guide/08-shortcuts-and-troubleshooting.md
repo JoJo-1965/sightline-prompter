@@ -45,8 +45,9 @@ picks up from what's on screen once you stop scrolling.
 **Sightline stops responding.** It asks whether to **Wait** or **Reload**;
 reloading keeps your scripts and settings, but loses unsaved changes in the
 editor. Hangs, crashes and errors are noted in `sightline.log` in Sightline's
-folder (`%APPDATA%\Sightline Prompter` on Windows); attach it if you report
-the problem.
+folder (`%APPDATA%\Sightline Prompter` on Windows). To report it, turn on
+**Settings > About > Debug mode**, make it happen again, then use **Save a log
+for support…** and attach the file.
 
 **A voice command isn't heard.** Say "Prompter", then the command, then stop
 for a moment: commands only count at the end of what you say. Check Voice

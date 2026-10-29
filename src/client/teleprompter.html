@@ -434,9 +434,9 @@
     <section>
       <h4>Privacy and policies</h4>
       <p>
-        Sightline doesn't record you or send what you say anywhere: speech
-        recognition runs on this computer, and a label shows whenever the
-        microphone is on. No accounts, no analytics, no tracking.
+        Local speech recognition stays on this computer. Voice following
+        saves recognised text; optional scratch audio records the microphone.
+        Deepgram sends audio online when you choose it. No usage analytics.
         <a href="https://github.com/JoJo-1965/sightline-prompter/blob/main/docs/POLICIES.md" target="_blank">What it does with your microphone and data, the licence and warranty</a>.
       </p>
     </section>
@@ -1109,6 +1109,14 @@
             ><input id="set-check-updates" type="checkbox" /> Check for updates when
             Sightline starts (asks GitHub; nothing downloads by itself)</label
           >
+          <label class="check"
+            ><input id="set-debug-mode" type="checkbox" /> Debug mode: a step-by-step
+            log, for tracking down a problem</label
+          >
+          <p class="field-hint">Sightline always notes hangs, crashes and errors in a small log on this computer. Debug mode adds each step it takes, such as opening Settings, so a problem can be traced. <strong>Save a log for support</strong> puts it in one file to attach to a GitHub issue or an email, with your version, system and which features are on; never your scripts, keys or audio. Nothing is sent by itself.</p>
+          <p class="settings-about-actions">
+            <button type="button" id="settings-save-log">Save a log for support…</button>
+          </p>
           <p class="field-hint">
             <a href="https://github.com/JoJo-1965/sightline-prompter" target="_blank">github.com/JoJo-1965/sightline-prompter</a>
             ·

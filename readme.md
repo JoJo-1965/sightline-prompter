@@ -15,7 +15,7 @@ phone). Sightline sits alongside them and gathers what they can't: accurate
 timings for every take, section and word, your retakes, markers and ratings,
 and a slate to line them all up with the recording.
 
-**[Download the latest release](https://github.com/JoJo-1965/sightline-prompter/releases/latest)** · [Installing it, and the security warnings](docs/guide/01-getting-started.md#installing-sightline) · [Privacy and licence](docs/POLICIES.md) · [User guide](docs/guide/README.md) · [Working with AI](docs/guide/09-working-with-ai.md) · [Everything it adds](docs/FEATURES.md) · [joannelockwood.co.uk/sightline](https://joannelockwood.co.uk/sightline)
+**[Download the latest release](https://github.com/JoJo-1965/sightline-prompter/releases/latest)** · [Installing it, and the security warnings](docs/guide/01-getting-started.md#installing-sightline) · [Privacy, terms and accessibility](docs/POLICIES.md) · [User guide](docs/guide/README.md) · [Working with AI](docs/guide/09-working-with-ai.md) · [Everything it adds](docs/FEATURES.md) · [joannelockwood.co.uk/sightline](https://joannelockwood.co.uk/sightline)
 
 > **About Sightline Prompter.** This is a fork of
 > [reverentgeek/electron-teleprompter](https://github.com/reverentgeek/electron-teleprompter),
@@ -222,6 +222,7 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ### Next release
 
+- **Debug mode and a support log** (Settings > About): Sightline always keeps a small log of hangs, crashes and errors (`sightline.log`, on this computer only). **Debug mode** (on by default for now) adds a step-by-step trail; **Save a log for support…** saves it in one file with your version, system, monitors and which features are on (never scripts, keys or audio), to attach to a GitHub issue or an email
 - **Settings and the panels always fit the window:** a panel dragged somewhere on a big screen used to open partly off the edge of a smaller one (a prompter monitor, a laptop). They now move fully into the window when they open and when the window changes size, and remember where you put them for the bigger screen
 - **Policies published:** [privacy and data protection, terms and fair use, accessibility and voluntary support](docs/POLICIES.md), covering Sightline, its Stream Deck plugin and Joanne's tip jar. The About link opens the policy hub. Includes the England/UK base, company details, ICO registration and applicable rights elsewhere; the MIT licence is unchanged
 - **If Sightline stops responding,** it asks whether to wait or reload, instead of leaving a frozen window to be closed from Task Manager, and notes hangs, crashes and errors in `sightline.log` in its folder, to help track down the cause

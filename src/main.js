@@ -108,6 +108,9 @@ const defaultSettings = {
 	readingLine: 33, // % from the top of the window
 	alwaysOnTop: false,
 	checkUpdates: true, // look for a newer release on GitHub when the app starts
+	// Settings > About: a step-by-step trail in sightline.log, for tracking down a
+	// problem. On by default for now (Joanne, 29 Oct), until there's telemetry.
+	debugMode: true,
 	highlightCues: true,
 	cuesFile: null,
 	eyeLine: false,
@@ -215,9 +218,46 @@ app.on( "child-process-gone", ( _event, details ) =>
 	logProblem( `Helper process stopped: ${ details.type } ${ details.reason } (exit ${ details.exitCode })${ details.name ? ` ${ details.name }` : "" }` )
 );
 
-// The page's own trail (debugLog in the preload), for tracking down a freeze.
+// The page's own trail (debugLog in the preload): its errors always, the
+// step-by-step trail only in debug mode (Settings > About).
 ipcMain.on( "debugLog", ( _event, text ) => {
-	if ( typeof text === "string" ) logProblem( `page: ${ text.slice( 0, 500 ) }` );
+	if ( typeof text !== "string" ) return;
+	const problem = /^(error|unhandled rejection)\b/.test( text );
+	if ( problem || settings.debugMode ) logProblem( `page: ${ text.slice( 0, 500 ) }` );
+} );
+
+// Settings > About > Save a log for support: the log, with what this computer
+// and Sightline look like, in one file to attach to an issue or an email. No
+// scripts, keys, word lists or audio; nothing is sent by itself.
+ipcMain.handle( "saveSupportLog", async ( event ) => {
+	const win = BrowserWindow.fromWebContents( event.sender );
+	const date = new Date().toISOString().slice( 0, 10 );
+	const { canceled, filePath } = await dialog.showSaveDialog( win, {
+		title: "Save a log for support",
+		defaultPath: path.join( app.getPath( "documents" ), `Sightline support log ${ date }.txt` ),
+		filters: [ { name: "Text", extensions: [ "txt" ] } ]
+	} );
+	if ( canceled || !filePath ) return null;
+	await problemLog;
+	const log = await fs.readFile( path.join( app.getPath( "userData" ), "sightline.log" ), "utf8" ).catch( () => "(no problems logged yet)\n" );
+	const displays = screen.getAllDisplays().map( d => `${ d.size.width }x${ d.size.height }@${ d.scaleFactor } at ${ d.bounds.x },${ d.bounds.y }${ d.label ? ` (${ d.label })` : "" }` );
+	const gpu = app.getGPUFeatureStatus();
+	// Which features are on, never their keys, paths or word lists.
+	const shown = [ "scrollMode", "voiceEngine", "voiceCommands", "wakeWord", "slate", "scratchAudio", "takeLoudness", "remoteControl", "streamDeck", "phoneRemote", "hideFromCapture", "clickThrough", "eyeLine", "alwaysOnTop", "showControl", "showPad", "prompterDisplay", "debugMode" ];
+	const header = [
+		"Sightline Prompter support log",
+		`Saved ${ new Date().toISOString() }`,
+		`Sightline ${ app.getVersion() }${ app.isPackaged ? "" : " (running from source)" }, Electron ${ process.versions.electron }, ${ process.platform } ${ process.getSystemVersion() } ${ process.arch }`,
+		`Displays: ${ displays.join( "; " ) }`,
+		`Graphics: compositing ${ gpu.gpu_compositing }, rasterization ${ gpu.rasterization }`,
+		`Settings: ${ shown.map( k => `${ k }=${ JSON.stringify( settings[k] ?? null ) }` ).join( ", " ) }`,
+		"",
+		"Log (newest last):",
+		""
+	].join( "\n" );
+	await fs.writeFile( filePath, header + log );
+	shell.showItemInFolder( filePath );
+	return filePath;
 } );
 
 process.on( "uncaughtException", ( err ) => {

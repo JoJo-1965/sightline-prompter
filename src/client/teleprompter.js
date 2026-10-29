@@ -2326,7 +2326,13 @@ function markSettingsDirty( event ) {
 
 // Each step of opening Settings goes in sightline.log, so if it freezes, the
 // last line says where. (Looking into a freeze on Joanne's computer.)
+// (main.js only keeps them in debug mode, Settings > About.)
 const settingsTrail = step => window.electron.debugLog?.( `settings: ${ step }` );
+
+document.getElementById( "settings-save-log" )?.addEventListener( "click", async () => {
+	const saved = await window.electron.saveSupportLog();
+	if ( saved ) showToast( "Log saved: attach it to your GitHub issue or email", 3500 );
+} );
 
 async function openSettings() {
 	if ( !settingsModal ) return;
@@ -2366,6 +2372,7 @@ async function openSettings() {
 	field( "set-mirrored" ).value = mirrored;
 	field( "set-always-on-top" ).checked = !!settings.alwaysOnTop;
 	field( "set-check-updates" ).checked = settings.checkUpdates !== false;
+	field( "set-debug-mode" ).checked = settings.debugMode !== false;
 	field( "set-show-pad" ).checked = !!settings.showPad;
 	field( "set-show-control" ).checked = !!settings.showControl;
 	settingsTrail( "display fields filled; asking for monitors" );
@@ -2727,6 +2734,7 @@ function saveSettingsPage( close = true ) {
 		readingLine: numberValue( "set-reading-line", 5, 80, settings.readingLine ),
 		alwaysOnTop: field( "set-always-on-top" ).checked,
 		checkUpdates: field( "set-check-updates" ).checked,
+		debugMode: field( "set-debug-mode" ).checked,
 		showPad: field( "set-show-pad" ).checked,
 		showControl: field( "set-show-control" ).checked,
 		prompterDisplay: field( "set-prompter-display" ).value
