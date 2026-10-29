@@ -15,7 +15,7 @@ phone). Sightline sits alongside them and gathers what they can't: accurate
 timings for every take, section and word, your retakes, markers and ratings,
 and a slate to line them all up with the recording.
 
-**[Download the latest release](https://github.com/JoJo-1965/sightline-prompter/releases/latest)** · [Installing it, and the security warnings](docs/guide/01-getting-started.md#installing-sightline) · [User guide](docs/guide/README.md) · [Working with AI](docs/guide/09-working-with-ai.md) · [Everything it adds](docs/FEATURES.md) · [joannelockwood.co.uk/sightline](https://joannelockwood.co.uk/sightline)
+**[Download the latest release](https://github.com/JoJo-1965/sightline-prompter/releases/latest)** · [Installing it, and the security warnings](docs/guide/01-getting-started.md#installing-sightline) · [Privacy and licence](docs/POLICIES.md) · [User guide](docs/guide/README.md) · [Working with AI](docs/guide/09-working-with-ai.md) · [Everything it adds](docs/FEATURES.md) · [joannelockwood.co.uk/sightline](https://joannelockwood.co.uk/sightline)
 
 > **About Sightline Prompter.** This is a fork of
 > [reverentgeek/electron-teleprompter](https://github.com/reverentgeek/electron-teleprompter),
@@ -222,6 +222,7 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ### Next release
 
+- **You can see when the microphone is on:** while Sightline listens for the wake word, the label says **🎙 Listening for “Prompter”** (your wake word), with a note that nothing is recorded or sent; the control window shows a 🎙 badge too, also while following your voice. The guide has a new **What the microphone does, and doesn't** section, and the About page links to [Privacy, licence and policies](docs/POLICIES.md): what Sightline does with your mic and data, when it goes online, and the MIT licence and warranty. Full policies will follow
 - **Always listen for the wake word** (Settings > Voice > Voice commands > **Always, even when stopped**): the microphone listens for "Prompter" whenever Sightline is open, running or stopped, in voice scrolling too, so **"Prompter, go"** starts it hands-free. It was "In voice mode and while steady scrolling", which in voice scrolling only listened once you'd started
 - **Section jumps land where reading does:** going to a section ("Prompter, section three", the arrow keys, the control window, the Stream Deck) now puts its first line at the reading line, so the reading arrow points at the middle of it, as it does while you read. Before, a jump left the line half a line high. Which section you're in is now judged at the reading line, not the top of the window. The arrow measures the real line spacing, and the control window's reading line points at the middle of the line too
 - **"Prompter, close"** (or cancel, never mind) hides the "what can I say" list

@@ -142,6 +142,24 @@ Choose when it listens on **Settings > Voice**, under **Voice commands**:
   this computer, so nothing is sent anywhere, but the mic stays on.
 - **Off**.
 
+### What the microphone does, and doesn't
+
+- **It isn't recording you.** Speech recognition runs on this computer: what
+  you say isn't kept or sent anywhere. Only the words it recognised go in the
+  [heard log](#what-it-heard), as text, to help with words it mishears.
+- **You can see when it's on.** While it follows your voice the prompter says
+  **Listening**; while it only listens for the wake word, **🎙 Listening for
+  “Prompter”** shows at the bottom right, and the
+  [control window](06-remotes-and-screens.md#the-control-window) shows the same.
+- **Deepgram is the one exception:** choose it, with your own key, and your
+  audio goes to Deepgram while voice scrolling runs.
+- **Scratch audio** (Settings > Scrolling) is the only time Sightline keeps a
+  recording of your microphone, and only if you turn it on; it stays on this
+  computer.
+
+[Privacy, licence and policies](../POLICIES.md) has the full picture,
+including when Sightline goes online.
+
 ## Stops and timed pauses
 
 Put these in the script where you want the prompter to wait. A stop works in

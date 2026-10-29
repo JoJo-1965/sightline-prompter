@@ -162,6 +162,10 @@ window.control.onStatus( ( s ) => {
 	document.getElementById( "next" ).title = `Next ${ unit } (Page Down)`;
 	for ( const b of buttons ) b.disabled = !!s.editing;
 	showBroadcast( s );
+	// The microphone, so you always know when it's on.
+	const mic = document.getElementById( "mic-badge" );
+	mic.textContent = s.listening === "voice" ? "🎙 Following your voice" : `🎙 Listening for “${ s.wakeWord ?? "Prompter" }”`;
+	mic.classList.toggle( "hidden", !s.listening );
 } );
 
 for ( const b of buttons ) {

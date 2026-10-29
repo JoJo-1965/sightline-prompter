@@ -102,6 +102,8 @@ and too far away to work Settings on:
   off air, whichever is in use.
 - **↔ Mirror** and **↕ Mirror**, each lit while it's on.
 - **Eye-line** mode.
+- A blue **🎙** badge at the top shows when the microphone is on: following
+  your voice, or listening for the wake word.
 - **Sound check**: the [sound-check meter](05-recording-a-take.md#sound-check-and-loudness)
   shows here, on the right, and keeps going while a take runs, so you can
   watch your mic without it showing on the prompter in front of you.

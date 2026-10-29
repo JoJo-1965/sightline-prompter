@@ -1466,7 +1466,9 @@ function syncCommandListening() {
 			await stopAutoScroll();
 			commandListening = false;
 		}
+		if ( commandPill ) commandPill.textContent = `🎙 Listening for “${ wakeLabel( settings.wakeWord ) }”`;
 		commandPill?.classList.toggle( "hidden", !commandListening );
+		sendStatus();
 	} );
 	return commandChange;
 }
@@ -4482,8 +4484,20 @@ function sendStatus() {
 		points: pointsMode(),
 		sectionTitle: currentSectionTitle(),
 		speed: settings.scrollMode === "voice" ? "Voice" : `${ getWpm() } wpm`,
-		soundCheck: soundCheckOn()
+		soundCheck: soundCheckOn(),
+		// The microphone is on: following your voice, or listening for the wake word.
+		listening: autoScrollActive ? "voice" : commandListeningOn() ? "wake" : null,
+		wakeWord: wakeLabel( settings.wakeWord )
 	} );
+}
+
+// Whether it's listening for the wake word (set up further up the page).
+function commandListeningOn() {
+	try {
+		return commandListening;
+	} catch {
+		return false;
+	}
 }
 
 // Whether the sound check is on (it's set up further down the page).
