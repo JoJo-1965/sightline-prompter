@@ -31,6 +31,7 @@ import { createTakeLog } from "./take-log.js";
 import { COMMAND_HELP, COMMANDS, wakeLabel } from "./voice-commands.js";
 import { heardForms, normalizeWord } from "./word-fixes.js";
 import { createScratchRecorder } from "./scratch-audio.js";
+import { SUPPORT_URL } from "./links.js";
 import {
 	indexSentences,
 	scriptSentences,
@@ -3372,6 +3373,7 @@ function menuGroups() {
 					() => window.electron.copyAiPrompt()
 				],
 				[ "?", "Keyboard shortcuts", "F1", openHelp ],
+				[ "☕", "Support Sightline", "", () => window.open( SUPPORT_URL ) ],
 				[ "ⓘ", "About this teleprompter", "", openAbout ]
 			]
 		}
@@ -4185,6 +4187,48 @@ function showUpdateNote( info ) {
 	hud.appendChild( note );
 }
 
+// Sightline is free. Once it's been opened ten times, a small note asks
+// once, never again, and never while you're reading or on air.
+const SUPPORT_LAUNCHES = "sightline.launches";
+const SUPPORT_ASKED = "sightline.supportAsked";
+
+function maybeAskForSupport() {
+	try {
+		if ( localStorage.getItem( SUPPORT_ASKED ) ) return;
+		const launches = Number( localStorage.getItem( SUPPORT_LAUNCHES ) ?? 0 ) + 1;
+		localStorage.setItem( SUPPORT_LAUNCHES, String( launches ) );
+		if ( launches < 10 ) return;
+	} catch {
+		return;
+	}
+	setTimeout( () => {
+		const busy = steadySessionActive() || autoScrollActive || onAir() || !settingsModal?.classList.contains( "hidden" );
+		if ( busy || document.getElementById( "support-note" ) ) return;
+		try {
+			localStorage.setItem( SUPPORT_ASKED, new Date().toISOString() );
+		} catch {
+			// it may ask again next time; that's all
+		}
+		const note = document.createElement( "div" );
+		note.id = "support-note";
+		note.setAttribute( "role", "status" );
+		const link = document.createElement( "a" );
+		link.href = SUPPORT_URL;
+		link.target = "_blank";
+		link.textContent = "☕ Buy Joanne a coffee";
+		link.addEventListener( "click", () => note.remove() );
+		const close = document.createElement( "button" );
+		close.type = "button";
+		close.textContent = "×";
+		close.title = "No thanks";
+		close.setAttribute( "aria-label", "No thanks" );
+		close.addEventListener( "click", () => note.remove() );
+		note.append( "Glad Sightline helps? It's free. If you'd like to say thanks: ", link, close );
+		hud.appendChild( note );
+	}, 30000 );
+}
+maybeAskForSupport();
+
 // --- Settings files ---
 
 window.electron.onMenuExportSettings( () => window.electron.exportSettings() );
@@ -4486,6 +4530,8 @@ document.getElementById( "settings-about-full" )?.addEventListener( "click", () 
 document.getElementById( "settings-about-guide" )?.addEventListener( "click", () => {
 	window.electron.openGuide();
 } );
+document.getElementById( "settings-about-support" )?.addEventListener( "click", () => window.open( SUPPORT_URL ) );
+for ( const link of document.querySelectorAll( "a.support-link" ) ) link.href = SUPPORT_URL;
 
 function showSettingsTab( name ) {
 	if ( !settingsTabs.some( t => t.dataset.tab === name ) ) name = "scrolling";

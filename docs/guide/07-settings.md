@@ -86,4 +86,10 @@ checks quietly a few seconds after you open the app, and a small note at the
 bottom right says when a new version is out. Nothing downloads or installs by
 itself, and nothing is sent but the request to GitHub.
 
+**☕ Support Sightline** opens Joanne's Ko-fi page, where you can say thanks
+with a coffee (also **Help > Support Sightline on Ko-fi…** and the ☰ menu).
+Sightline is free and stays free. Once you've opened it ten times, a small
+note at the bottom right asks, once; close it and it never asks again. It
+never shows while you're reading or on air.
+
 ![About](images/about.png)

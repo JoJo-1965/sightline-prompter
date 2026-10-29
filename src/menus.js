@@ -1,5 +1,6 @@
-import { Menu } from "electron";
+import { Menu, shell } from "electron";
 import path from "node:path";
+import { SUPPORT_URL } from "./client/links.js";
 
 export function buildMenus(
 	browserWindow,
@@ -340,6 +341,10 @@ export function buildMenus(
 					label: "Keyboard Shortcuts",
 					accelerator: "F1",
 					click: () => send( "menuHelp" )
+				},
+				{
+					label: "Support Sightline on Ko-fi…",
+					click: () => shell.openExternal( SUPPORT_URL )
 				},
 				{ type: "separator" },
 				{

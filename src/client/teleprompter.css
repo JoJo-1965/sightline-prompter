@@ -1065,7 +1065,8 @@ body.editing .panel {
 	touch-action: none;
 }
 
-#update-note {
+#update-note,
+#support-note {
 	position: fixed;
 	right: 16px;
 	bottom: 48px;
@@ -1082,11 +1083,13 @@ body.editing .panel {
 	z-index: 1300;
 }
 
-#update-note a {
+#update-note a,
+#support-note a {
 	color: #ffd54a;
 }
 
-#update-note button {
+#update-note button,
+#support-note button {
 	padding: 0 6px;
 	font-size: 16px;
 	line-height: 1;
