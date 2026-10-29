@@ -223,6 +223,8 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ### Next release
 
+- **Production handover guide (development):** [From recording to the editor](docs/guide/12-production-handover.md), also in **Help > User Guide**, walks through OBS setup, framing, a short sync test, retakes, keeper choices and the files to send to Production. It distinguishes the digital slate from physical camera/mic synchronisation and records where manual checks remain
+
 - **Recorded OBS slate (development):** optional **Settings > OBS > Include the slate in the OBS recording**, then Apply and **Prepare recorded slate** with OBS stopped. A separate source puts the flash and tone into the current scene on audio track 1. Acknowledgements and estimated file-clock references are exported in `recorded-sync.json`; the head guide remains separate. Preparation does not change profiles or start recording. The cached source stays transparent when Sightline closes
 - **Safer module changes:** finish the current take and scratch WAV before loading another script, and retain pending recorded-slate acknowledgements with the original module. A real two-module rehearsal retained three takes, exact scripts, guide poses, scratch audio and one confirmed OBS filename. Separate 4K camera/48 kHz PCM recording and sample-identical WAV extraction also passed; normal voice and a physical clap still need checking
 - **Stable OBS file references:** starting/stopping are treated as transitions. A late status poll cannot overwrite a newer recording event or create a second identity for the same finishing file. Finish recording closes the take before sending Stop to OBS; uncertain positions stay unknown

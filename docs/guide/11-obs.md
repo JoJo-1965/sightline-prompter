@@ -7,6 +7,9 @@ Sightline connects to OBS Studio's built-in WebSocket interface. OBS handles
 the audio and video recording; Sightline handles the script, takes and edit
 information. You do not need a separate OBS plugin, Stream Deck or MCP server.
 
+For the session checklist and which files to send to Production, follow
+[From recording to the editor](12-production-handover.md).
+
 ![The OBS settings tab](images/settings-obs.png)
 
 ## Connect once

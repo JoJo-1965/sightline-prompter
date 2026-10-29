@@ -1,5 +1,8 @@
 # Recording a take
 
+For the development OBS workflow, see [From recording to the editor](12-production-handover.md):
+setup, a short test, retakes, keeper choices and the complete handover.
+
 ## The pacing light
 
 While the script scrolls, a light at the bottom shows how you're doing against

@@ -1,5 +1,10 @@
 # Sightline Prompter: what it adds to Electron Teleprompter
 
+The development guide includes [From recording to the editor](guide/12-production-handover.md):
+an illustrated session checklist covering setup, framing, a short test,
+retakes, keeper choices and collecting the master files alongside each edit
+pack. It is available offline through **Help > User Guide**.
+
 The private Stream Deck companion test build **0.1.7** adds OBS Record take
 and Finish recording keys, confirmed-state feedback and optional recording
 layouts for each model. The OBS development app enforces saved permissions

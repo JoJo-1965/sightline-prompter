@@ -12,6 +12,10 @@ while you read, with timings to line up with it. If the user turned on
 scratch audio, `scratch-audio/` holds a plain microphone recording to help
 line them up (see [Scratch audio](#scratch-audio)).
 
+For the development OBS workflow, [From recording to the editor](https://github.com/JoJo-1965/sightline-prompter/blob/codex/obs-integration/docs/guide/12-production-handover.md)
+is the illustrated checklist for setup, retakes, keeper choices and collecting
+the master recordings alongside each module's pack.
+
 ## The clock
 
 Every time is in **seconds on the session clock**. Time 0 is the first
