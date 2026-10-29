@@ -32,6 +32,8 @@ import QRCode from "qrcode";
 import { createObs, obsAddress } from "./obs.js";
 import { createObsCredentials } from "./obs-credentials.js";
 import { createObsLedger } from "./obs-ledger.js";
+import { createRecordedSlate } from "./recorded-slate.js";
+import { obsPosition } from "./client/obs-position.js";
 import {
 	serialize as serializeSettings,
 	parse as parseSettings,
@@ -186,12 +188,13 @@ const defaultSettings = {
 	obsPort: 4455,
 	obsControls: false, // status only until explicitly allowed
 	obsMarkers: false,
+	obsRecordedSlate: false,
 	phoneRemote: false, // phone remote over the home network (Settings > Phone remote)
 	phonePort: 47616
 };
 
 // Settings that a settings file or the remote API may not change.
-const PROTECTED_SETTINGS = [ "remoteControl", "remotePort", "remoteDeleteRecordings", "streamDeck", "phoneRemote", "phonePort", "obsEnabled", "obsHost", "obsPort", "obsControls", "obsMarkers" ];
+const PROTECTED_SETTINGS = [ "remoteControl", "remotePort", "remoteDeleteRecordings", "streamDeck", "phoneRemote", "phonePort", "obsEnabled", "obsHost", "obsPort", "obsControls", "obsMarkers", "obsRecordedSlate" ];
 
 // Take logs, one per script per day: the recordings library (recordings.js).
 const takeLogFolder = () => path.join( app.getPath( "userData" ), "take-logs" );
@@ -365,8 +368,14 @@ let framingGuide = null;
 let obs = null;
 let obsPassword = "";
 let obsCredentials = null;
+let recordedSlate = null;
+let recordedSlateUrl = null;
 function syncObsSettings() {
-	return obs?.configure( { enabled: settings.obsEnabled, host: settings.obsHost, port: settings.obsPort, password: settings.obsEnabled ? obsPassword : "", controls: settings.obsControls, markers: settings.obsMarkers } ).catch( () => {} );
+	if ( !settings.obsEnabled || !settings.obsControls || !settings.obsRecordedSlate ) {
+		recordedSlate?.close();
+		recordedSlateUrl = null;
+	}
+	return obs?.configure( { enabled: settings.obsEnabled, host: settings.obsHost, port: settings.obsPort, password: settings.obsEnabled ? obsPassword : "", controls: settings.obsControls, markers: settings.obsMarkers, recordedSlate: settings.obsRecordedSlate } ).catch( () => {} );
 }
 
 function addRecentFile( filePath ) {
@@ -551,18 +560,46 @@ const createWindow = ( state ) => {
 		} );
 	}
 
+	const obsSnapshot = () => ( { ...obs.state(), recordedSlate: recordedSlate.state() } );
+	recordedSlate = createRecordedSlate( { onState: () => {
+		if ( obs && !win.isDestroyed() ) win.webContents.send( "obsState", obsSnapshot() );
+	} } );
 	obs = createObs( { onState: ( state ) => {
-		if ( !win.isDestroyed() ) win.webContents.send( "obsState", state );
+		if ( !win.isDestroyed() ) win.webContents.send( "obsState", { ...state, recordedSlate: recordedSlate.state() } );
 		recordObsHistory( state );
 	} } );
-	win.on( "closed", () => obs.dispose() );
+	win.on( "closed", () => {
+		obs.dispose();
+		recordedSlate.close();
+	} );
 	ipcMain.handle( "obs", async ( event, action, value ) => {
 		if ( event.sender !== win.webContents ) return { ok: false, error: "Use OBS from the prompter" };
 		try {
-			if ( action === "status" ) return { ok: true, state: obs.state(), hasPassword: await obsCredentials.hasSaved() };
-			return { ok: true, state: await obs.command( action, value ) };
+			if ( action === "status" ) return { ok: true, state: obsSnapshot(), hasPassword: await obsCredentials.hasSaved() };
+			if ( action === "slate-prepare" || action === "slate" ) {
+				if ( !settings.obsEnabled || !settings.obsControls || !settings.obsRecordedSlate ) throw new Error( "Enable OBS recording controls and the recorded slate, then Apply" );
+				if ( ![ "127.0.0.1", "localhost", "::1", "[::1]" ].includes( settings.obsHost.toLowerCase() ) ) throw new Error( "Recorded slate needs OBS on this computer" );
+				if ( action === "slate-prepare" ) {
+					recordedSlateUrl = await recordedSlate.preparePage( path.join( app.getPath( "userData" ), "obs-recorded-sync.html" ) );
+					const route = await obs.slateRoute( recordedSlateUrl, true );
+					const deadline = Date.now() + 5000;
+					while ( !recordedSlate.state().ready && Date.now() < deadline ) await new Promise( r => setTimeout( r, 100 ) );
+					if ( !recordedSlate.state().ready ) throw new Error( "The OBS browser source is not ready; check its visibility and audio, then prepare again" );
+					return { ok: true, route, state: obsSnapshot() };
+				}
+				if ( !recordedSlateUrl ) throw new Error( "Prepare the recorded slate in Settings > OBS first" );
+				const route = await obs.slateRoute( recordedSlateUrl );
+				await obs.command( "test" );
+				const before = obs.state();
+				const slate = await recordedSlate.play( value );
+				await obs.slateRoute( recordedSlateUrl );
+				if ( obs.state().recordingId !== before.recordingId ) throw new Error( "The OBS recording changed during the slate; check the recorded file" );
+				return { ok: true, slate: { ...slate, ...route, recordingId: before.recordingId, outputPath: before.outputPath, observedAt: before.durationObservedAt, outputDuration: before.outputDuration, obs: obsPosition( before, Date.parse( slate.renderedAt ) ) }, state: obsSnapshot() };
+			}
+			await obs.command( action, value );
+			return { ok: true, state: obsSnapshot() };
 		} catch ( error ) {
-			return { ok: false, error: error.message, state: obs.state() };
+			return { ok: false, error: error.message, state: obsSnapshot() };
 		}
 	} );
 	ipcMain.handle( "saveObsSettings", async ( event, options ) => {
@@ -580,8 +617,8 @@ const createWindow = ( state ) => {
 			}
 			if ( options.enabled && !obsPassword ) obsPassword = await obsCredentials.read();
 			if ( !options.enabled ) obsPassword = "";
-			await updateSettings( { obsEnabled: options.enabled === true, obsHost: host, obsPort: port, obsControls: options.controls === true, obsMarkers: options.markers === true } );
-			return { ok: true, hasPassword: await obsCredentials.hasSaved(), state: obs.state() };
+			await updateSettings( { obsEnabled: options.enabled === true, obsHost: host, obsPort: port, obsControls: options.controls === true, obsMarkers: options.markers === true, obsRecordedSlate: options.recordedSlate === true } );
+			return { ok: true, hasPassword: await obsCredentials.hasSaved(), state: obsSnapshot() };
 		} catch ( error ) {
 			return { ok: false, error: error.message };
 		}
@@ -793,6 +830,7 @@ const createWindow = ( state ) => {
 
 		const md = await readAndConvertScript( scriptFile );
 		if ( md ) {
+			if ( !( await flushRecordingBeforeScriptChange() ) ) return undefined;
 			currentFilePath = scriptFile;
 			slots[activeSlot] = {
 				path: scriptFile,
@@ -848,6 +886,29 @@ const createWindow = ( state ) => {
 	const obsLedger = createObsLedger();
 	const sessionLogFiles = new Set();
 	let takeLogQueue = Promise.resolve();
+	let scriptChangeId = 0;
+	let scriptChange = null;
+	ipcMain.on( "scriptChangeReady", ( event, id, error ) => {
+		if ( event.sender === win.webContents && scriptChange?.id === id ) scriptChange.done( error );
+	} );
+	async function flushRecordingBeforeScriptChange() {
+		if ( !currentFilePath ) return true;
+		if ( scriptChange ) return false;
+		const id = ++scriptChangeId;
+		const ready = new Promise( ( resolve ) => {
+			const timer = setTimeout( () => scriptChange?.done( "The current recording did not finish saving; try opening the script again" ), 8000 );
+			scriptChange = { id, done: ( error ) => {
+				clearTimeout( timer );
+				scriptChange = null;
+				if ( error && !win.isDestroyed() ) win.webContents.send( "toast", error );
+				resolve( !error );
+			} };
+		} );
+		win.webContents.send( "prepareScriptChange", id );
+		if ( !( await ready ) ) return false;
+		await takeLogQueue;
+		return true;
+	}
 	function recordObsHistory( state ) {
 		if ( !obsLedger.observe( state ) ) return;
 		takeLogQueue = takeLogQueue.then( async () => {
@@ -1167,12 +1228,16 @@ const createWindow = ( state ) => {
 	} );
 
 	async function showEmptySlot( note = "" ) {
+		if ( !( await flushRecordingBeforeScriptChange() ) ) return false;
 		if ( watcher ) {
 			await watcher.close();
 			watcher = null;
 		}
 		currentFilePath = null;
+		takeLog = null;
 		sendScriptContent( win, emptySlotHtml( activeSlot ) + note );
+		win.webContents.send( "takeLog", null );
+		return true;
 	}
 
 	async function switchSlot( index, position ) {
@@ -1184,6 +1249,7 @@ const createWindow = ( state ) => {
 		if ( slots[activeSlot] && position ) {
 			slots[activeSlot] = { ...slots[activeSlot], ...position };
 		}
+		const previousSlot = activeSlot;
 		activeSlot = index;
 		const slot = slots[index];
 		if ( slot?.path ) {
@@ -1191,6 +1257,10 @@ const createWindow = ( state ) => {
 				scrollY: slot.scrollY ?? 0,
 				section: slot.section ?? 0
 			} );
+			if ( md === undefined ) {
+				activeSlot = previousSlot;
+				return;
+			}
 			if ( !md ) {
 				slots[index] = null;
 				await showEmptySlot(
@@ -1198,7 +1268,10 @@ const createWindow = ( state ) => {
 				);
 			}
 		} else {
-			await showEmptySlot();
+			if ( !( await showEmptySlot() ) ) {
+				activeSlot = previousSlot;
+				return;
+			}
 		}
 		sendSlots();
 		refreshMenus();
@@ -1209,8 +1282,12 @@ const createWindow = ( state ) => {
 		if ( !( await confirmLeave( "Save your changes before clearing this slot?" ) ) ) {
 			return;
 		}
+		const previous = slots[activeSlot];
 		slots[activeSlot] = null;
-		await showEmptySlot();
+		if ( !( await showEmptySlot() ) ) {
+			slots[activeSlot] = previous;
+			return;
+		}
 		sendSlots();
 		refreshMenus();
 		await saveState( win );

@@ -47,6 +47,8 @@ export function createObsUi( { getSettings, canStart, onStart, onFinish, onChang
 		start.disabled = !ready || !canStart();
 		finish.disabled = !ready || ![ "recording", "paused" ].includes( state.recording );
 		start.hidden = finish.hidden = !state.controls;
+		field( "prepare-slate" ).disabled = !ready || !getSettings().obsRecordedSlate || state.recording !== "stopped";
+		field( "slate-status" ).textContent = !getSettings().obsRecordedSlate ? "Recorded slate off" : getSettings().slate === "off" ? "Choose Flash or Flash and beep in Settings > Scrolling > Slate" : state.recordedSlate?.ready ? "Recorded slate source ready · verify the recorded file before a session" : "Prepare the source in this OBS scene before recording";
 	}
 	function receive( next ) {
 		state = next;
@@ -71,6 +73,7 @@ export function createObsUi( { getSettings, canStart, onStart, onFinish, onChang
 			if ( name === "start" && state.enabled && state.connection === "connected" && state.recording === "recording" ) onStart();
 			if ( name === "stop" ) toast( "OBS recording finished" );
 			if ( name === "test" ) toast( "OBS connection confirmed" );
+			if ( name === "slate-prepare" ) toast( "Recorded slate prepared in the current OBS scene" );
 		} catch ( error ) {
 			toast( error.message || "OBS could not confirm the request" );
 		} finally {
@@ -82,6 +85,7 @@ export function createObsUi( { getSettings, canStart, onStart, onFinish, onChang
 	start.addEventListener( "click", () => action( "start" ) );
 	finish.addEventListener( "click", () => action( "stop" ) );
 	field( "test" ).addEventListener( "click", () => action( "test" ) );
+	field( "prepare-slate" ).addEventListener( "click", () => action( "slate-prepare" ) );
 	window.electron.onObsState( receive );
 	window.electron.obs( "status" ).then( ( result ) => {
 		if ( result.state ) receive( result.state );
@@ -101,6 +105,7 @@ export function createObsUi( { getSettings, canStart, onStart, onFinish, onChang
 			field( "port" ).value = settings.obsPort ?? 4455;
 			field( "controls" ).checked = settings.obsControls === true;
 			field( "markers" ).checked = settings.obsMarkers === true;
+			field( "recorded-slate" ).checked = settings.obsRecordedSlate === true;
 			field( "password" ).value = "";
 			field( "clear-password" ).checked = false;
 			window.electron.obs( "status" ).then( ( result ) => {
@@ -116,6 +121,7 @@ export function createObsUi( { getSettings, canStart, onStart, onFinish, onChang
 				port: Number( field( "port" ).value ),
 				controls: field( "controls" ).checked,
 				markers: field( "markers" ).checked,
+				recordedSlate: field( "recorded-slate" ).checked,
 				...( password ? { password } : {} ),
 				clearPassword: field( "clear-password" ).checked
 			} );
@@ -127,6 +133,17 @@ export function createObsUi( { getSettings, canStart, onStart, onFinish, onChang
 			field( "clear-password" ).checked = false;
 			field( "password-status" ).textContent = result.hasPassword ? "An OS-protected password is saved." : "No OBS password saved.";
 			return true;
+		},
+		async recordedSlate( info ) {
+			if ( !getSettings().obsRecordedSlate || !state.enabled || !state.controls || state.recording !== "recording" ) return null;
+			try {
+				const result = await window.electron.obs( "slate", info );
+				if ( !result.ok ) throw new Error( result.error );
+				return result.slate;
+			} catch ( error ) {
+				toast( error.message );
+				return { status: "failed", requestedAt: new Date().toISOString(), ...info, error: error.message, route: "obs-browser-source" };
+			}
 		},
 		chapter( text ) {
 			if ( !state.enabled || !state.controls || !state.markers || !state.chapters || state.recording !== "recording" ) return;

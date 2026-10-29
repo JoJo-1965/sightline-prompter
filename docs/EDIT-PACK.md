@@ -269,6 +269,29 @@ state transitions. Stale or disconnected clocks, and unverified offsets
 after automatic file splitting, have null positions. They are not exact
 edit points. Reopening Sightline does not recover a missing association.
 
+## Recorded OBS sync references (development branch)
+
+When enabled and prepared in Settings > OBS, a dedicated browser source puts
+the slate's flash and optional 1 kHz/250 ms tone into the current recorded
+scene. It is independent of the protected head guide and the local prompter
+slate. `recordedSync` in `take-log.json`, and the optional `recorded-sync.json`,
+retain each reference's ID, section/take, requested/rendered/completed UTC
+times, log-clock `t`, route, source, scene and canvas, audio track, recording
+identifier and recent estimated OBS clock position. The standalone manifest
+resolves the main output path from the recording ledger after OBS stops.
+Failed requests remain `status: failed`; a successful browser response is
+`browser-acknowledged`, not a claim that the file was verified. No audio or
+video is embedded in this manifest.
+
+Match the reference to its flash in the actual file. If its log time is `t`
+and the flash is at file time `f`, use `file time = log time + (f - t)` for
+that module, checking additional references for drift. The observed OBS
+clock can differ from file presentation time; do not silently treat it as
+exact. The recorded flash and browser tone need not arrive simultaneously,
+and neither measures physical camera lip sync. Use the microphone soundtrack
+and a visible clap for that check. Separate Source Record camera/WAV files
+have their own clock and filenames, which this manifest does not discover.
+
 ## Recording-script snapshots (development branch)
 
 Each take's `scriptSnapshotId` identifies the version present when it began.

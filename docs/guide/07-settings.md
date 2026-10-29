@@ -82,7 +82,9 @@ only), the control pad and control window, and the phone remote. See
 
 The separate **OBS** tab is disabled by default and works independently
 of normal prompting. See [OBS setup](11-obs.md) for status-only mode,
-recording controls, the connection test and passwords.
+recording controls, the connection test and passwords. **Include the slate in
+the OBS recording** is a separate opt-in; Apply, then **Prepare recorded slate**
+with OBS stopped. It adds its own flash/tone source to the current scene.
 
 ## About
 

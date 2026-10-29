@@ -6,6 +6,14 @@ layouts for each model. The OBS development app enforces saved permissions
 and waits for actual recording state changes. These additions are unreleased;
 all five production requirements remain the publication gate.
 
+The development app also has an optional recorded OBS slate: Prepare adds a
+dedicated flash/tone source to the current scene, with acknowledgements and
+estimated file-clock references in the edit pack. A cached transparent page
+keeps the source blank after Sightline closes. Module changes flush the old
+take and scratch WAV before loading the new script. A real two-module test
+retained three takes under one OBS recording. Separate clean 4K camera and
+PCM/WAV outputs passed; physical camera lip sync remains unvalidated.
+
 On the development branch, the head guide also has labelled **Ideal position**
 and **Actual position** outlines. Drag, nudge or scale the actual outline
 against a saved ideal, and recall Centre or Beside panel window placements.
@@ -21,7 +29,8 @@ OFF/ON/LOCK action. Separate from OBS scenes; capture protection stays on.
 It also fills its monitor as a borderless overlay, with hidden controls and
 window-size restore (Ctrl+Alt+H or the fullscreen Stream Deck action). Intended
 order: OBS projector, head guide, then prompter text. Actual projector stacking
-and capture exclusion still need a real recording check.
+and other screen-capture methods remain to be checked; the camera-source
+recording route excluded the guide in the workstation test.
 
 Sightline Prompter began as a fork of David Neal's
 [Electron Teleprompter](https://github.com/reverentgeek/electron-teleprompter)

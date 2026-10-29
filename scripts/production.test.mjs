@@ -21,6 +21,7 @@ assert.equal( obsPosition( live, now + 1200 ).seconds, 11.2 );
 assert.equal( obsPosition( live, now - 1000 ).seconds, 9 );
 assert.equal( obsPosition( live, now + 6000 ).seconds, null );
 assert.equal( obsPosition( { ...live, connection: "disconnected" }, now ).seconds, null );
+assert.equal( obsPosition( { ...live, recording: null }, now ).seconds, null, "a starting/stopping transition does not expose a precise position" );
 assert.equal( obsPosition( { ...live, recording: "paused" }, now + 1200 ).seconds, 10 );
 assert.equal( obsPosition( null, now ), null );
 assert.equal( obsPosition( { ...live, fileClockUnknown: true }, now ).seconds, null );

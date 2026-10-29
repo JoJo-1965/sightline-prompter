@@ -1104,6 +1104,10 @@
           <p class="field-hint">Leave this off for status only. Normal Play, Pause, Again and On air do not start or stop OBS. Record take waits for OBS to confirm recording before starting the prompter.</p>
           <label class="check"><input id="set-obs-markers" type="checkbox" /> Send section starts and named markers as OBS chapters</label>
           <p class="field-hint">Needs recording controls and a supported OBS version and recording format, such as Hybrid MP4. Chapter failures leave prompting and recording running.</p>
+            <label class="check" title="Choose Flash or Flash and beep in Settings > Scrolling > Slate, then prepare this source"><input id="set-obs-recorded-slate" type="checkbox" /> Include the slate in the OBS recording</label>
+            <p class="field-hint">Optional, on this computer only. With OBS stopped, Apply then Prepare adds a dedicated source above this scene. It records a flash and 1 kHz tone on audio track 1; include that track in your recording. Prepare again after restarting Sightline or changing scenes. The head guide stays separate.</p>
+            <button type="button" id="set-obs-prepare-slate">Prepare recorded slate</button>
+            <p id="set-obs-slate-status" class="field-hint" role="status">Recorded slate off</p>
           <p id="set-obs-status" role="status" aria-live="polite">OBS disabled</p>
           <button type="button" id="set-obs-test">Test saved connection</button>
           <p class="field-hint">Save or Apply changes before testing. Recording status also appears beside the script and in the control window.</p>

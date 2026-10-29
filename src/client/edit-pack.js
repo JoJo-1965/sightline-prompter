@@ -274,5 +274,6 @@ export function editPack( data, readme = "" ) {
 		}
 	}
 	if ( data.guideSnapshots?.length ) files["head-guide.json"] = JSON.stringify( data.guideSnapshots, null, 2 );
+	if ( data.recordedSync?.length ) files["recorded-sync.json"] = JSON.stringify( data.recordedSync.map( reference => ( { ...reference, outputPath: data.obsRecordings?.find( r => r.recordingId === reference.recordingId )?.outputPath ?? reference.outputPath ?? null } ) ), null, 2 );
 	return files;
 }

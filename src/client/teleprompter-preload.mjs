@@ -92,6 +92,8 @@ contextBridge.exposeInMainWorld( "electron", {
 	onMenuGoToStart: callback => on( "menuGoToStart", callback ),
 
 	onContent: callback => ipcRenderer.on( "content", ( _event, content, snapshot ) => callback( content, snapshot ) ),
+	onPrepareScriptChange: callback => on( "prepareScriptChange", callback ),
+	scriptChangeReady: ( id, error = null ) => ipcRenderer.send( "scriptChangeReady", id, error ),
 	onFontSize: callback => ipcRenderer.on( "fontSize", ( _event, size ) => callback( size ) ),
 	saveFontSize: size => ipcRenderer.send( "fontSize", size ),
 	onMirrored: callback => ipcRenderer.on( "mirrored", ( _event, value ) => callback( value ) ),

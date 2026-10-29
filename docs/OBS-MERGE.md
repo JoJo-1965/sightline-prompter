@@ -77,8 +77,11 @@ exact recording-script snapshots; confirmed filenames and estimated OBS
 clock positions on takes/markers; session guide metadata and capture
 exclusion; separate clean camera and unprocessed microphone; a known
 recorded picture-and-sound sync route. Unit and isolated-app checks cover
-the snapshot, ledger, help and manual guide features. Clean-track and
-recorded-sync validation remain pending. No tags or releases while held.
+the snapshot, ledger, help and manual guide features. The later
+[recorded workflow check](RECORDED-SYNC-VALIDATION.md) validated the dedicated
+digital reference, separate clean camera/mic route and a real two-module
+edit-pack rehearsal. Normal speech, a physical camera clap and the Stream
+Deck hardware remain. No tags or releases while held.
 
 The guide now has independent Ideal position and Actual position outlines,
 manual drag/nudge/scale, saved Centre/Beside placements and per-take metadata.
@@ -110,6 +113,11 @@ model or recording changes were made. Normal live voice validation remains.
 The live test also exposed asynchronous start acknowledgement: the service
 now polls until the output confirms the requested state, covered by delayed
 start/stop regression tests. Remaining production checks are still held.
+
+The recorded-source rehearsal also exposed a late-poll/stop-event race.
+Recording event revisions now invalidate older polls, transitional states
+preserve identity, and Finish closes the take before stopping OBS. Regression
+and real two-module checks verify stable start/end file associations.
 
 An OBS dock is optional, after testing whether the existing control window
 is enough. It could reuse a limited local-control surface for section/take,

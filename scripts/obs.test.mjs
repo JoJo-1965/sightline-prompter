@@ -151,6 +151,49 @@ try {
 	obs.dispose();
 }
 
+// Events supersede status requests sent earlier. Starting/stopping events are
+// transitions, not proof of a finished output or a new recording identity.
+server.active = false;
+server.paused = false;
+server.startDelayPolls = server.stopDelayPolls = 0;
+const ordered = createObs( { WebSocketClass: FakeSocket, timeoutMs: 500, pollMs: 60000 } );
+try {
+	await ordered.configure( { enabled: true, controls: true } );
+	await ordered.command( "start" );
+	const firstId = ordered.state().recordingId;
+	const socket = FakeSocket.instances.at( -1 );
+	server.ignore = "GetRecordStatus";
+	const oldPoll = ordered.command( "test" );
+	const held = server.lastRequest;
+	socket.message( { op: 5, d: { eventType: "RecordStateChanged", eventData: { outputState: "OBS_WEBSOCKET_OUTPUT_STOPPING", outputActive: false } } } );
+	assert.equal( ordered.state().recording, null );
+	socket.message( { op: 7, d: { requestId: held.requestId, requestType: "GetRecordStatus", requestStatus: { result: true }, responseData: { outputActive: true, outputDuration: 2000 } } } );
+	await oldPoll;
+	assert.equal( ordered.state().recording, null, "a stale active poll must not undo stopping" );
+	assert.equal( ordered.state().recordingId, firstId );
+	server.ignore = null;
+	await ordered.command( "test" );
+	assert.equal( ordered.state().recording, null, "an active output draining during STOPPING is not a new recording" );
+	socket.message( { op: 5, d: { eventType: "RecordStateChanged", eventData: { outputState: "OBS_WEBSOCKET_OUTPUT_STOPPED", outputActive: false, outputPath: "same-file.mov" } } } );
+	assert.equal( ordered.state().recordingId, firstId );
+	assert.equal( ordered.state().recording, "stopped" );
+	server.active = false;
+	await ordered.command( "test" );
+	assert.equal( ordered.state().recordingId, firstId );
+	socket.message( { op: 5, d: { eventType: "RecordStateChanged", eventData: { outputState: "OBS_WEBSOCKET_OUTPUT_STARTING", outputActive: false } } } );
+	await ordered.command( "test" );
+	assert.equal( ordered.state().recording, null, "starting is not a confirmed stop" );
+	server.active = true;
+	await ordered.command( "test" );
+	const nextId = ordered.state().recordingId;
+	assert.notEqual( nextId, firstId, "a real next recording needs its own identity" );
+	socket.message( { op: 5, d: { eventType: "RecordStateChanged", eventData: { outputState: "OBS_WEBSOCKET_OUTPUT_STARTED", outputActive: true } } } );
+	assert.equal( ordered.state().recordingId, nextId, "confirmation must not duplicate an identity established by polling" );
+} finally {
+	ordered.dispose();
+	server.active = false;
+}
+
 // Credentials use OS protection and do not fall back to plaintext on Linux.
 const dir = await fs.mkdtemp( path.join( os.tmpdir(), "sightline-obs-" ) );
 const safe = {

@@ -74,6 +74,68 @@ explicitly with **Use the OBS recording profile** on a key's settings page.
 Standard layouts keep their assignments. This is development code, not a
 public Marketplace release. See [Stream Deck setup](06-remotes-and-screens.md#stream-deck).
 
+## Put the slate into the recording
+
+This is optional and needs OBS on the same computer, with recording controls
+enabled. It uses OBS's included Browser source, not the protected head guide.
+
+1. Stop recording and streaming in OBS.
+2. In **Settings > Scrolling > Slate**, choose **Flash and beep** or **Flash**.
+3. In **Settings > OBS**, tick **Include the slate in the OBS recording**,
+   then **Apply** and **Prepare recorded slate**.
+4. Preparation adds or updates only **Sightline recorded sync** above the
+   current scene. It leaves your camera, microphone, profile and scene choice
+   alone. The source is transparent between slates. Its audio goes directly
+   to OBS track 1, without speaker monitoring; include track 1 in the recording.
+5. Use **Record take**. Keep the normal scratch audio enabled for an independent
+   microphone reference. Check a short recording before the full session.
+
+Prepare again after restarting Sightline or changing scenes. The status line
+shows whether the source is ready. Hidden, moved, cropped or muted sources
+are declined. If the requested recorded slate fails, prompting holds while
+OBS stays recording, so you can inspect the setup. No slate is sent while
+OBS streams. Turning the option off closes its loopback service. The cached
+source remains transparent if Sightline closes or it is reloaded offline.
+
+The edit pack includes `recorded-sync.json`: section, take, reference ID,
+render acknowledgement, recording identifier and an estimated OBS position.
+Export after stopping to resolve the main recording's final filename.
+**Ready and acknowledged do not mean the recorded file has been verified.**
+Locate the flash and tone in that file before relying on their timing.
+
+The recorded reference is digital. Camera video and microphone audio take
+different paths, and the browser tone can reach the file after its flash.
+It does not measure camera lip sync. Make a visible hand clap in front of
+the camera, with the microphone in its normal position, to check that.
+
+## Separate clean camera and microphone
+
+The ordinary OBS connection needs no extra plugin. A second camera file
+alongside the composed recording can use the optional
+[Source Record filter](https://github.com/exeldro/obs-source-record).
+This is configured in OBS; Sightline does not install or enable it for you.
+
+Add Source Record to the camera source, with **Record mode: Recording**, a
+separate output folder, full camera resolution and PCM audio where supported.
+For the independent microphone, enable **Different audio**, choose the RØDE
+source and set **Audio track: None**. In Source Record this selects the named
+source instead of a numbered mixed OBS track. Choosing track 1 would include
+the composed mix, even with a microphone selected. Keep microphone filters
+off if Production needs audio before OBS processing.
+
+The workstation check produced separate 3840×2160/30 fps camera and composed
+files with 48 kHz/24-bit PCM. Extracting each PCM stream to WAV preserved its
+samples exactly. The clean camera excludes the digital slate; the clean mic
+still hears room sounds, including the local prompter beep. Keep those files
+with the edit pack. Sightline resolves the main OBS file automatically, not
+Source Record's separate filename or start offset. Use scratch audio or the
+physical clap to align that recording; do not assume the two files start
+together. See the [recorded workflow check](../RECORDED-SYNC-VALIDATION.md).
+
+PCM is stored inside the MOV recording here. Your editing workflow can copy
+that audio stream to a standalone WAV without re-encoding; the workstation
+check used FFmpeg. Sightline does not automatically extract master WAVs.
+
 ## Chapters, file links and editing
 
 Enable **Send section starts and named markers as OBS chapters** if wanted.
@@ -120,9 +182,10 @@ chapter creation and WAV extraction with unchanged samples. Recognition
 of the original quiet microphone capture was partial. Controlled analysis
 later recovered every sentence with a level boost and the existing aligner
 reached the last word; [investigation details](../VOICE-VALIDATION.md).
-No microphone settings or master audio were changed. Separate clean-camera output and
-the recorded sync route remain unvalidated. An OBS dock and scene changes
-are follow-up work.
+No microphone gain or master audio was changed. The later recorded-source
+and clean-camera checks passed on the workstation; normal speech, physical
+camera lip sync and Stream Deck hardware still need checking. An OBS dock
+and scene switching are follow-up work.
 
 OBS may acknowledge a recording command before its output changes state.
 Sightline waits for confirmed status before starting prompting or reporting

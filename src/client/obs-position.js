@@ -3,7 +3,7 @@ export function obsPosition( state, now = Date.now() ) {
 	if ( !state?.recordingId ) return null;
 	const sampleAt = Date.parse( state.durationObservedAt );
 	const ageMs = Number.isFinite( sampleAt ) ? now - sampleAt : null;
-	const usable = state.connection === "connected" && state.fileClockUnknown !== true && Number.isFinite( state.outputDuration ) && ageMs !== null && Math.abs( ageMs ) <= 5000;
+	const usable = state.connection === "connected" && [ "recording", "paused", "stopped" ].includes( state.recording ) && state.fileClockUnknown !== true && Number.isFinite( state.outputDuration ) && ageMs !== null && Math.abs( ageMs ) <= 5000;
 	return {
 		recordingId: state.recordingId, outputPath: state.outputPath ?? null,
 		recording: state.recording, observedAt: new Date( now ).toISOString(),

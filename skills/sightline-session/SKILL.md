@@ -41,6 +41,15 @@ recording path after stop. Read [docs/EDIT-PACK.md](../../docs/EDIT-PACK.md)
 for fields and timing limits. The recording file is not included in the
 pack, and the observation times do not replace slate or audio sync.
 
+Optional recorded slates need a prepared source in **Settings > OBS** and
+track 1 in the OBS recording. `recorded-sync.json` links browser acknowledgements
+to a section/take, the recording identifier, UTC times and log-clock `t`.
+Locate the actual flash in the file and map it to `t`; do not use the OBS
+poll as an exact edit point. A digital flash/tone does not establish physical
+camera lip sync. A clean Source Record file has its own start offset and is
+not discovered by this manifest. Preserve it and the independent scratch WAV.
+Module changes flush the old take/audio before loading another script.
+
 Controlling the app needs its local API switched on, once, by the user:
 **Settings > Remotes**, tick **Let an AI assistant or script on this computer
 load scripts and control the teleprompter**. If a command says Sightline

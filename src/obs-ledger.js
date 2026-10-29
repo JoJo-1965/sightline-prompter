@@ -22,7 +22,7 @@ export function createObsLedger() {
 			return changed;
 		},
 		attach( log ) {
-			const ids = new Set( [ ...( log.obs ?? [] ).map( e => e.recordingId ), ...( log.takes ?? [] ).flatMap( t => [ t.obsStart?.recordingId, t.obsEnd?.recordingId ] ), ...( log.events ?? [] ).map( e => e.obs?.recordingId ) ].filter( Boolean ) );
+			const ids = new Set( [ ...( log.obs ?? [] ).map( e => e.recordingId ), ...( log.takes ?? [] ).flatMap( t => [ t.obsStart?.recordingId, t.obsEnd?.recordingId ] ), ...( log.events ?? [] ).map( e => e.obs?.recordingId ), ...( log.recordedSync ?? [] ).map( e => e.recordingId ) ].filter( Boolean ) );
 			const merged = new Map( ( log.obsRecordings ?? [] ).map( r => [ r.recordingId, r ] ) );
 			for ( const id of ids ) if ( recordings.has( id ) ) merged.set( id, recordings.get( id ) );
 			return { ...log, obsRecordings: [ ...merged.values() ] };

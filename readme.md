@@ -53,8 +53,9 @@ and a slate to line them all up with the recording.
 
 The whole workflow is in the guide: [Working with AI](docs/guide/09-working-with-ai.md).
 
-**Coming next** ([roadmap](ROADMAP.md)): a scratch audio track to line the
-edit up with your recording automatically, and signed installers.
+**In development** ([roadmap](ROADMAP.md)): optional OBS recording controls,
+a recorded slate and a separate head-position guide. Signed installers are
+also on the roadmap.
 
 ## Features
 
@@ -221,6 +222,10 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 ## Change log
 
 ### Next release
+
+- **Recorded OBS slate (development):** optional **Settings > OBS > Include the slate in the OBS recording**, then Apply and **Prepare recorded slate** with OBS stopped. A separate source puts the flash and tone into the current scene on audio track 1. Acknowledgements and estimated file-clock references are exported in `recorded-sync.json`; the head guide remains separate. Preparation does not change profiles or start recording. The cached source stays transparent when Sightline closes
+- **Safer module changes:** finish the current take and scratch WAV before loading another script, and retain pending recorded-slate acknowledgements with the original module. A real two-module rehearsal retained three takes, exact scripts, guide poses, scratch audio and one confirmed OBS filename. Separate 4K camera/48 kHz PCM recording and sample-identical WAV extraction also passed; normal voice and a physical clap still need checking
+- **Stable OBS file references:** starting/stopping are treated as transitions. A late status poll cannot overwrite a newer recording event or create a second identity for the same finishing file. Finish recording closes the take before sending Stop to OBS; uncertain positions stay unknown
 
 - **Voice commands tuned:** removed loose spelling guesses that confused “start reading” with OBS recording or “show the slide” with the head guide. Documented phrases and taught synonyms still work; ambiguous taught forms are declined. Split wake words and section commands stay out of script tracking, “what can I say now” works, and an unused wake word expires after four seconds. The on-device “tele prompter” spelling is recognised for the Teleprompter choice. See [voice commands](docs/guide/03-scrolling-and-voice.md#voice-commands-prompter-)
 

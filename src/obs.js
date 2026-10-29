@@ -1,6 +1,7 @@
 // OBS WebSocket v5, in main only. Disabled means no socket, timers or commands.
 // Never stream, change scenes, pause or stop an output as a side effect.
 import { createHash, randomUUID } from "node:crypto";
+import { recordedSlateRoute } from "./obs-slate-route.js";
 
 export function obsAddress( host = "127.0.0.1", port = 4455 ) {
 	if ( typeof host !== "string" || !host.trim() || /[\s/@?#\\]/.test( host.trim() ) ) throw new Error( "Enter an OBS hostname or IP address, without a URL or path" );
@@ -28,6 +29,8 @@ export function createObs( { onState = () => {}, WebSocketClass = globalThis.Web
 	let changingScenes = false;
 	let counter = 0;
 	let recordingBusy = false;
+	let recordRevision = 0;
+	let recordTransition = null;
 	const pending = new Map();
 	const snapshot = () => ( { ...state, controls: config.controls, markers: config.markers } );
 	const publish = ( partial ) => {
@@ -52,6 +55,8 @@ export function createObs( { onState = () => {}, WebSocketClass = globalThis.Web
 		old?.close();
 		polling = null;
 		changingScenes = false;
+		recordTransition = null;
+		recordRevision++;
 	}
 	function request( type, data = {} ) {
 		if ( state.connection !== "connected" || !socket ) return Promise.reject( new Error( "OBS is not connected" ) );
@@ -74,8 +79,13 @@ export function createObs( { onState = () => {}, WebSocketClass = globalThis.Web
 	}
 	function recordStatus( data ) {
 		if ( typeof data.outputActive !== "boolean" ) throw new Error( "OBS did not return a recording status" );
+		if ( ( recordTransition === "stopping" && data.outputActive ) || ( recordTransition === "starting" && !data.outputActive ) ) {
+			publish( { recording: null } );
+			return;
+		}
 		const recording = !data.outputActive ? "stopped" : data.outputPaused ? "paused" : "recording";
-		const fresh = data.outputActive && ( !state.recordingId || state.recording === "stopped" );
+		const fresh = data.outputActive && ( !state.recordingId || state.recording === "stopped" || recordTransition === "starting" );
+		recordTransition = null;
 		publish( {
 			recording,
 			...( fresh ? { recordingId: randomUUID(), outputPath: null, fileClockUnknown: false } : {} ),
@@ -88,11 +98,12 @@ export function createObs( { onState = () => {}, WebSocketClass = globalThis.Web
 		if ( changingScenes ) return Promise.reject( new Error( "OBS is changing scene collections; wait for it to finish" ) );
 		if ( polling ) return polling;
 		const current = generation;
+		const revision = recordRevision;
 		polling = request( "GetRecordStatus" ).then( ( data ) => {
-			if ( current === generation ) recordStatus( data );
+			if ( current === generation && revision === recordRevision ) recordStatus( data );
 			return snapshot();
 		} ).catch( ( error ) => {
-			if ( current === generation ) {
+			if ( current === generation && revision === recordRevision ) {
 				publish( { recording: null, error: error.message } );
 			}
 			throw error;
@@ -158,10 +169,15 @@ export function createObs( { onState = () => {}, WebSocketClass = globalThis.Web
 						if ( d.eventType === "ExitStarted" ) return lost( "OBS closed; recording status is unknown" );
 						if ( d.eventType === "RecordStateChanged" ) {
 							const record = d.eventData;
-							recordStatus( { outputActive: record.outputActive, outputPaused: record.outputState === "OBS_WEBSOCKET_OUTPUT_PAUSED" } );
+							recordRevision++;
+							if ( [ "OBS_WEBSOCKET_OUTPUT_STARTING", "OBS_WEBSOCKET_OUTPUT_STOPPING" ].includes( record.outputState ) ) {
+								recordTransition = record.outputState === "OBS_WEBSOCKET_OUTPUT_STARTING" ? "starting" : "stopping";
+								publish( { recording: null } );
+							} else recordStatus( { outputActive: record.outputActive, outputPaused: record.outputState === "OBS_WEBSOCKET_OUTPUT_PAUSED" } );
 							if ( record.outputPath ) publish( { outputPath: record.outputPath } );
 						}
 						if ( d.eventType === "RecordFileChanged" ) {
+							recordRevision++;
 							if ( d.eventData.oldOutputPath ) publish( { outputPath: d.eventData.oldOutputPath } );
 							publish( { outputPath: d.eventData.newOutputPath, recordingId: randomUUID(), fileClockUnknown: true } );
 						}
@@ -180,6 +196,14 @@ export function createObs( { onState = () => {}, WebSocketClass = globalThis.Web
 	}
 	return {
 		state: snapshot,
+		async slateRoute( url, prepare = false ) {
+			const current = generation;
+			const guarded = ( type, data ) => {
+				if ( current !== generation || !config.enabled || !config.controls || !config.recordedSlate || changingScenes ) throw new Error( "Enable OBS recording controls and the recorded slate before preparing it" );
+				return request( type, data );
+			};
+			return recordedSlateRoute( guarded, url, prepare );
+		},
 		async configure( options ) {
 			obsAddress( options.host ?? "127.0.0.1", options.port ?? 4455 );
 			const next = { ...config, ...options, enabled: options.enabled === true, controls: options.controls === true, markers: options.markers === true };

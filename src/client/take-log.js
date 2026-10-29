@@ -24,7 +24,7 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [],
 	let slated = null; // { section, at }: the last slate, for the take that follows it
 
 	function empty() {
-		return { startedAt: null, takes: [], events: [], audio: [], soundChecks: [], obs: [], obsRecordings: [], scriptSnapshots: [], guideSnapshots: [] };
+		return { startedAt: null, takes: [], events: [], audio: [], soundChecks: [], obs: [], obsRecordings: [], scriptSnapshots: [], guideSnapshots: [], recordedSync: [] };
 	}
 
 	const since = ms => round( ( ms - Date.parse( log.startedAt ) ) / 1000 );
@@ -224,6 +224,12 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [],
 			version++;
 		},
 
+		recordedSync( reference ) {
+			if ( !log.startedAt ) return;
+			log.recordedSync.push( { ...reference, t: ( Date.parse( reference.renderedAt ?? reference.requestedAt ) - Date.parse( log.startedAt ) ) / 1000 } );
+			version++;
+		},
+
 		// Back to a marker in the take and reading on from it (Shift+B, or
 		// "Prompter, back to the marker"). The take carries on.
 		restart( { label = null, key = null, at = null } = {} ) {
@@ -335,7 +341,8 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [],
 					obs: saved.obs ?? [],
 					obsRecordings: saved.obsRecordings ?? [],
 					scriptSnapshots: saved.scriptSnapshots ?? [],
-					guideSnapshots: saved.guideSnapshots ?? []
+					guideSnapshots: saved.guideSnapshots ?? [],
+					recordedSync: saved.recordedSync ?? []
 				}
 				: empty();
 		},

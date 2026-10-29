@@ -25,11 +25,11 @@ tracking. Direct synthetic-audio checks are documented in
 
 | Production requirement | Current branch status |
 | --- | --- |
-| Exact recording script in the edit pack | Implemented; source-byte and snapshot regression checks pass |
-| OBS filename and recording-clock references per take | Implemented with explicit estimated/unknown timing; final-path ledger covers scripts used during the same app session; real-recording validation pending |
-| Session head guide and edit-pack metadata | Manual Ideal/Actual outlines, separate Centre/Beside placements and live bounds implemented; isolated app checks pass; capture-route verification pending |
-| Separate clean camera and unprocessed microphone | Real OBS test verified 4K/30 fps and 48 kHz/24-bit PCM, with sample-identical WAV extraction. A separate clean camera file alongside the composed output is still unvalidated; Source Record is installed |
-| Recorded picture-and-sound sync reference | Known OBS recording route and physical camera sync validation still pending |
+| Exact recording script in the edit pack | Validated in unit checks and a real two-module rehearsal; each module retained its own source snapshot |
+| OBS filename and recording-clock references per take | Three takes across two modules retained one confirmed main file. Positions remain estimates; the recorded reference test measured an OBS-clock/file offset |
+| Session head guide and edit-pack metadata | Guide settings and snapshots carried across modules; excluded from the tested camera-source scene. Other capture methods and projector stacking remain unchecked |
+| Separate clean camera and unprocessed microphone | Separate 4K/30 fps camera/composed files and 48 kHz/24-bit PCM validated with Source Record. Independent RØDE route and sample-identical WAV extraction checked; clean-file clock/filename are separate |
+| Recorded picture-and-sound sync reference | Prepared OBS source, additive manifest and real three-reference file check pass. Physical clap/camera lip sync remains unvalidated |
 
 The guide's actual outline is a manual reference, with movement and scaling;
 it does not detect or track a face. F1 and voice help now use grouped tabs
@@ -52,8 +52,10 @@ Joanne's test on her Stream Decks and the Marketplace listing. Its GitHub repo
 
 **OBS integration (52)** is being developed separately on
 `codex/obs-integration`, after Joanne's request on 29 October. It is not
-merged or released. Connection and isolated app tests use a simulated OBS
-server; a real OBS recording test is still required before release.
+merged or released. Simulated and real recording checks now cover the prepared
+slate, independent camera/mic route and two-module edit packs. Normal speech,
+physical camera lip sync and Stream Deck hardware remain before release.
+See [recorded workflow validation](docs/RECORDED-SYNC-VALIDATION.md).
 
 The head-position guide (55) also supports borderless fullscreen/chromeless
 mode for the OBS projector → guide → prompter-text stack. Ctrl+Alt+H and a

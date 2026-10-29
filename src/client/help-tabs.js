@@ -48,6 +48,7 @@ export function helpTabs( settings, notes = false ) {
 			[ "Finish recording", "Pause prompting, stop OBS and retain its confirmed file path" ],
 			[ "Phone / control window", "The same dedicated recording actions; ordinary Play and On air stay independent" ] );
 		if ( settings.obsControls && settings.obsMarkers ) rows.push( [ "Chapters", "Optional section/marker chapters, where the OBS format supports them" ] );
+		if ( settings.obsControls && settings.obsRecordedSlate ) rows.push( [ "Recorded slate", "With OBS stopped: Apply, then Prepare recorded slate. Records its flash/tone on track 1; the guide stays separate" ] );
 		if ( settings.obsControls && settings.streamDeck ) rows.push( [ "Stream Deck", "Record take / Finish recording keys and optional OBS layouts in companion test build 0.1.7" ] );
 		recording.push( section( "OBS recording", rows ) );
 	}

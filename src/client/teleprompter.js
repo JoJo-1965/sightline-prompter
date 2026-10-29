@@ -108,6 +108,7 @@ const obsUi = createObsUi( {
 		stopSteadySession();
 		stopAutoScrollSession();
 		if ( pointsRunning ) togglePoints();
+		feedTakeLog( false );
 	},
 	onChange: () => sendStatus(),
 	toast: text => showToast( text, 4500 )
@@ -1852,14 +1853,28 @@ function showSlate() {
 	slateEl.classList.remove( "hidden" );
 	slateEl.classList.add( "flash" );
 	recording.slate( index );
+	const slateLog = recording.data().startedAt;
+	const recorded = obsUi.recordedSlate( { section: index + 1, take, title: slateEl.querySelector( ".slate-title" ).textContent, mode: settings.slate } ).then( ( result ) => {
+		if ( result && recording.data().startedAt === slateLog ) recording.recordedSync( result );
+		if ( result?.status === "failed" ) {
+			stopSteadySession();
+			stopAutoScrollSession();
+			setIndicator( "Recorded slate failed · check OBS", "error" );
+			return false;
+		}
+		return true;
+	} );
+	pendingRecordedSlates.add( recorded );
+	recorded.then( () => pendingRecordedSlates.delete( recorded ), () => pendingRecordedSlates.delete( recorded ) );
 	if ( settings.slate === "beep" ) playTone( 1000, 0.25, 0.35 );
 	setTimeout( () => slateEl.classList.remove( "flash" ), 150 );
-	return new Promise( ( resolve ) => {
+	const local = new Promise( ( resolve ) => {
 		slateTimer = setTimeout( () => {
 			slateEl.classList.add( "hidden" );
 			resolve();
 		}, 1100 );
 	} );
+	return Promise.all( [ local, recorded ] ).then( ( [ , ok ] ) => ok );
 }
 
 function hideSlate() {
@@ -1884,9 +1899,10 @@ function afterSlate( start ) {
 	scratchChange
 		.then( () => scratch.recording && new Promise( r => setTimeout( r, 300 ) ) )
 		.then( () => ( slating ? showSlate() : null ) )
-		.then( () => {
+		.then( ( ok ) => {
 			if ( !slating ) return;
 			slating = false;
+			if ( ok === false ) return;
 			start();
 		} );
 }
@@ -1911,6 +1927,7 @@ function startSteadySession() {
 				onFinished: () => setIndicator( null )
 			} );
 			startCueTracking();
+			feedTakeLog( true );
 			if ( settings.slate !== "beep" ) startBeep();
 			setIndicator( steadyIndicatorText() );
 		} );
@@ -5686,6 +5703,24 @@ function formatClock( seconds ) {
 const scratch = createScratchRecorder();
 let scratchWanted = false;
 let scratchChange = Promise.resolve();
+let changingRecordingScript = false;
+const pendingRecordedSlates = new Set();
+
+window.electron.onPrepareScriptChange( async ( id ) => {
+	try {
+		stopSteadySession();
+		await stopAutoScrollSession();
+		if ( pointsRunning ) togglePoints();
+		await Promise.all( [ ...pendingRecordedSlates ] );
+		feedTakeLog( false );
+		await scratchChange;
+		feedTakeLog( false );
+		changingRecordingScript = true;
+		window.electron.scriptChangeReady( id );
+	} catch {
+		window.electron.scriptChangeReady( id, "The recording could not finish saving; keep this script open and try again" );
+	}
+} );
 
 function syncScratchAudio( active ) {
 	const want = ( active || slating ) && settings.scratchAudio === true && !isEditMode;
@@ -5785,10 +5820,11 @@ function takeLogged( take ) {
 }
 
 function feedTakeLog( active ) {
+	if ( changingRecordingScript ) return;
 	syncScratchAudio( active );
 	syncLevelMeter( active );
 	// Waiting for the slate: the take opens after it, so it gets the slate.
-	if ( slateDue ) return;
+	if ( slateDue || slating ) return;
 	const y = readingLineY();
 	const index = pointsMode() ? pointsIndex : sectionIndexAt( y );
 	const section = directivePoints.sections[index];
@@ -6019,6 +6055,7 @@ onClick( "take-summary-export", () => window.electron.exportTakeLog() );
 // The saved log for this script and day, so take numbers carry on.
 window.electron.onTakeLog( ( saved ) => {
 	recording.load( saved );
+	changingRecordingScript = false;
 	recordingSaved = recording.version();
 	recordingY = null;
 } );

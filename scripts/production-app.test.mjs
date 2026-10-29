@@ -49,7 +49,7 @@ await fs.writeFile( testScript, `# Recording check\n\n## Welcome\n\n${ "A short 
 await fs.writeFile( path.join( profile, "app-state.json" ), JSON.stringify( {
 	width: 1100, height: 900, fontSize: 2, opacity: 1,
 	recentFiles: [ testScript ],
-	settings: { scrollMode: "steady", countdown: 0, slate: "off", voiceCommands: "off", checkUpdates: false, scratchAudio: false, takeLoudness: "off", debugMode: false, streamDeck: true, remotePort: 47717 }
+	settings: { scrollMode: "steady", countdown: 0, slate: "off", voiceCommands: "off", checkUpdates: false, scratchAudio: false, takeLoudness: "off", debugMode: false, streamDeck: true, remoteControl: true, remotePort: 47717 }
 } ) );
 const env = { ...process.env };
 delete env.ELECTRON_RUN_AS_NODE;
@@ -296,7 +296,11 @@ try {
 	await until( "window.electron.obs('status').then(r=>r.state.controls)" );
 	const shot = await send( "Page.captureScreenshot", { format: "png" } );
 	await fs.writeFile( screenshot, Buffer.from( shot.result.data, "base64" ) );
-	await evaluate( "document.getElementById('settings-close').click();document.querySelector('#obs-status button').click()" );
+	await evaluate( "document.getElementById('settings-close').click()" );
+	await command( "restart" );
+	await pause( 500 );
+	await until( "window.electron.obs('status').then(r=>r.state.controls && r.state.markers && r.state.chapters)" );
+	await evaluate( "document.querySelector('#obs-status button').click()" );
 	await until( "window.electron.obs('status').then(r=>r.state.recording==='recording')" );
 	await pause( 3300 );
 	await evaluate( "document.querySelector('#obs-status button:last-child').click()" );
@@ -307,6 +311,17 @@ try {
 	assert.ok( log.takes.length > 0, "prompter must log a take" );
 	assert.ok( log.obs.some( e => e.outputPath === "/recordings/sightline-smoke.mp4" ), "take log must link the confirmed recording path" );
 	assert.ok( requests.includes( "CreateRecordChapter" ), "section starts must send a chapter" );
+	const secondScript = path.join( profile, "next-module.md" );
+	await fs.writeFile( secondScript, `# Next module\n\n## Module two\n\n${ "This module has its own script snapshot and take log. ".repeat( 60 ) }` );
+	const automation = JSON.parse( await fs.readFile( path.join( profile, "remote-control.json" ), "utf8" ) );
+	const openNext = await fetch( automation.url + "/open", { method: "POST", headers: { Authorization: `Bearer ${ automation.token }`, "Content-Type": "application/json" }, body: JSON.stringify( { path: secondScript } ) } );
+	assert.equal( openNext.ok, true );
+	await until( "document.getElementById('md').textContent.includes('Module two')" );
+	await pause( 400 );
+	const savedFirst = JSON.parse( await fs.readFile( path.join( profile, "take-logs", files.find( n => n.endsWith( ".json" ) ) ), "utf8" ) );
+	assert.equal( savedFirst.script, "recording-check.md" );
+	assert.equal( savedFirst.takes.length, log.takes.length );
+	console.log( "PASS: module handover flushes the old recording before loading the new script." );
 	await evaluate( "window.electron.obs('start')" );
 	assert.ok( active );
 	const stops = requests.filter( r => r === "StopRecord" ).length;
@@ -321,7 +336,7 @@ try {
 	await pause( 500 );
 	console.log( JSON.stringify( { pass: true, authOK, connections, requests, takes: log.takes.length, obsObservations: log.obs.length, exceptions, screenshot, profile } ) );
 } catch ( error ) {
-	console.error( error.message );
+	console.error( error.stack );
 	console.error( errors.slice( -2400 ) );
 	process.exitCode = 1;
 } finally {
