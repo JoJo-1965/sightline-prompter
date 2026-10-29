@@ -43,11 +43,34 @@ function onScreen( rect ) {
 	return overlapX > rect.width / 2 && overlapY > 40;
 }
 
+// The screen the prompter fills, if it fills one (full screen on a prompter
+// monitor such as the Elgato Prompter), or null.
+function prompterScreen( prompter ) {
+	if ( prompter.isDestroyed() ) return null;
+	const b = prompter.getBounds();
+	const d = screen.getDisplayMatching( b );
+	const fills = prompter.isFullScreen() || ( b.width >= d.bounds.width - 2 && b.height >= d.bounds.height - 2 );
+	return fills ? d : null;
+}
+
 // Where the window opens: where it was left (made to fit if the screen is
-// smaller now), or centred on the main screen.
-function startBounds( saved ) {
-	if ( !onScreen( saved ) ) return { width: 960, height: 680, center: true };
-	return fitInside( saved, screen.getDisplayMatching( saved ).workArea );
+// smaller now), or centred on the main screen. Never on the screen the
+// prompter fills, where it would be hidden behind it, if there's another.
+function startBounds( saved, avoid ) {
+	const others = screen.getAllDisplays().filter( d => d.id !== avoid?.id );
+	const blocked = avoid && others.length && onScreen( saved ) && screen.getDisplayMatching( saved ).id === avoid.id;
+	if ( onScreen( saved ) && !blocked ) return fitInside( saved, screen.getDisplayMatching( saved ).workArea );
+	const primary = screen.getPrimaryDisplay();
+	const d = others.find( x => x.id === primary.id ) ?? others[0] ?? primary;
+	const area = d.workArea;
+	const width = Math.min( 960, area.width );
+	const height = Math.min( 680, area.height );
+	return {
+		width,
+		height,
+		x: area.x + Math.round( ( area.width - width ) / 2 ),
+		y: area.y + Math.round( ( area.height - height ) / 2 )
+	};
 }
 
 export function createControl( {
@@ -78,7 +101,7 @@ export function createControl( {
 		if ( control ) return;
 		const saved = getSettings().controlBounds;
 		control = new BrowserWindow( {
-			...startBounds( saved ),
+			...startBounds( saved, prompterScreen( prompter ) ),
 			minWidth: 520,
 			minHeight: 360,
 			title: "Sightline Control",
@@ -94,7 +117,16 @@ export function createControl( {
 		control.removeMenu();
 		control.setContentProtection( !!getSettings().hideFromCapture );
 		control.loadFile( path.join( dir, "client", "control.html" ) );
-		control.once( "ready-to-show", () => control?.show() );
+		control.once( "ready-to-show", () => {
+			if ( !control ) return;
+			// On the prompter's screen anyway (the only screen): keep it in front.
+			const covering = prompterScreen( prompter );
+			if ( covering && screen.getDisplayMatching( control.getBounds() ).id === covering.id && prompter.isAlwaysOnTop() )
+				control.setAlwaysOnTop( true, "pop-up-menu" );
+			control.show();
+			control.moveTop();
+			control.focus();
+		} );
 		control.webContents.on( "will-navigate", e => e.preventDefault() );
 		control.webContents.setWindowOpenHandler( () => ( { action: "deny" } ) );
 		control.webContents.on( "did-finish-load", () => {
