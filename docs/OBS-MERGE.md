@@ -1,6 +1,6 @@
 # OBS integration: review and merge notes
 
-Developed on `codex/obs-integration`, starting at `c0554e2`. The original
+Developed on `codex/obs-integration`, rebased onto main at `4e00136`. The original
 checkout and installed app are separate. Do not release or merge this
 branch until the recording workflow has been reviewed.
 
