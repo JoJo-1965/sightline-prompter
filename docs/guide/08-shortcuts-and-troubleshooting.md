@@ -42,6 +42,12 @@ model is installed.
 **Voice scrolling has lost its place.** Scroll by hand to where you are. It
 picks up from what's on screen once you stop scrolling.
 
+**Sightline stops responding.** It asks whether to **Wait** or **Reload**;
+reloading keeps your scripts and settings, but loses unsaved changes in the
+editor. Hangs, crashes and errors are noted in `sightline.log` in Sightline's
+folder (`%APPDATA%\Sightline Prompter` on Windows); attach it if you report
+the problem.
+
 **A voice command isn't heard.** Say "Prompter", then the command, then stop
 for a moment: commands only count at the end of what you say. Check Voice
 commands is on in Settings > Voice. To use them while steady scrolling, or to

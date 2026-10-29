@@ -1,4 +1,4 @@
-import { app, BrowserWindow, clipboard, dialog, globalShortcut, ipcMain, Menu, screen, shell } from "electron";
+import { app, BrowserWindow, clipboard, crashReporter, dialog, globalShortcut, ipcMain, Menu, screen, shell } from "electron";
 import path from "node:path";
 import fs from "node:fs/promises";
 import { cpSync, existsSync, readFileSync } from "node:fs";
@@ -185,6 +185,45 @@ const defaultConfig = {
 	slots: [], // script slots: { path, scrollY, section } or null
 	activeSlot: 0
 };
+
+// A short log of problems (hangs, crashes, page errors), kept to the last
+// 200 kB, for looking into a freeze afterwards. Nothing leaves the computer.
+let problemLog = Promise.resolve();
+function logProblem( text ) {
+	const file = path.join( app.getPath( "userData" ), "sightline.log" );
+	const line = `${ new Date().toISOString() } ${ app.getVersion() } ${ text }\n`;
+	problemLog = problemLog.then( async () => {
+		try {
+			const size = ( await fs.stat( file ).catch( () => null ) )?.size ?? 0;
+			if ( size > 200000 ) {
+				const kept = ( await fs.readFile( file, "utf8" ) ).slice( -100000 );
+				await fs.writeFile( file, kept.slice( kept.indexOf( "\n" ) + 1 ) );
+			}
+			await fs.appendFile( file, line );
+		} catch {
+			// a log that can't be written mustn't cause trouble of its own
+		}
+	} );
+}
+// Crash dumps stay on this computer (Crashpad in Sightline's folder), for
+// looking into a crash; nothing is uploaded.
+crashReporter.start( { uploadToServer: false } );
+
+// Any of Electron's helper processes stopping (the GPU, audio or network
+// service): a freeze with no error is often the GPU process going down.
+app.on( "child-process-gone", ( _event, details ) =>
+	logProblem( `Helper process stopped: ${ details.type } ${ details.reason } (exit ${ details.exitCode })${ details.name ? ` ${ details.name }` : "" }` )
+);
+
+// The page's own trail (debugLog in the preload), for tracking down a freeze.
+ipcMain.on( "debugLog", ( _event, text ) => {
+	if ( typeof text === "string" ) logProblem( `page: ${ text.slice( 0, 500 ) }` );
+} );
+
+process.on( "uncaughtException", ( err ) => {
+	console.error( err );
+	logProblem( `Main process error: ${ err?.stack ?? err }` );
+} );
 
 // The app was renamed from Electron Teleprompter: on first launch, bring the
 // old settings, slots and saved scripts across so nothing is lost.
@@ -376,6 +415,42 @@ const createWindow = ( state ) => {
 		return { action: "deny" };
 	} );
 	win.webContents.on( "will-navigate", e => e.preventDefault() );
+
+	// If the prompter stops responding, say so and offer to reload it, rather
+	// than leave a frozen window to be killed. Hangs, crashes and the page's
+	// own errors go in a small log (sightline.log in Sightline's folder), so a
+	// freeze can be looked into afterwards.
+	let askingAboutHang = false;
+	win.on( "unresponsive", async () => {
+		logProblem( "The prompter stopped responding" );
+		if ( askingAboutHang ) return;
+		askingAboutHang = true;
+		const { response } = await dialog.showMessageBox( win, {
+			type: "warning",
+			buttons: [ "Wait", "Reload" ],
+			defaultId: 0,
+			cancelId: 0,
+			message: "Sightline isn't responding",
+			detail: "Wait a moment, or reload the prompter. Reloading keeps your scripts and settings, but loses changes in the editor that haven't been saved."
+		} );
+		askingAboutHang = false;
+		if ( response === 1 && !win.isDestroyed() ) {
+			logProblem( "Reloaded after a hang" );
+			win.webContents.reload();
+		}
+	} );
+	win.on( "responsive", () => logProblem( "The prompter is responding again" ) );
+	win.webContents.on( "render-process-gone", ( _event, details ) =>
+		logProblem( `The prompter's page stopped: ${ details?.reason ?? "unknown" }` )
+	);
+	win.webContents.on( "console-message", ( event, level, message, line, source ) => {
+		// Newer Electron passes one details object; older passes the parts.
+		const lv = event?.level ?? level;
+		if ( lv !== "error" && lv !== 3 ) return;
+		const text = event?.message ?? message;
+		const where = event?.sourceId ?? source;
+		logProblem( `Page error: ${ text } (${ String( where ?? "" ).split( /[\\/]/ ).pop() }:${ event?.lineNumber ?? line ?? "" })` );
+	} );
 
 	win.webContents.on( "did-finish-load", () => {
 		win.webContents.send( "fontSize", state.fontSize || defaultConfig.fontSize );
@@ -1084,6 +1159,15 @@ if ( !firstInstance ) {
 }
 
 app.whenReady().then( async () => {
+	// What this computer looks like, for reading the log afterwards.
+	try {
+		const displays = screen.getAllDisplays().map( d => `${ d.size.width }x${ d.size.height }@${ d.scaleFactor } at ${ d.bounds.x },${ d.bounds.y }` ).join( "; " );
+		logProblem( `Started ${ app.getVersion() }, Electron ${ process.versions.electron }, ${ process.platform } ${ process.getSystemVersion() }; displays: ${ displays }` );
+		const gpu = app.getGPUFeatureStatus();
+		logProblem( `GPU: compositing ${ gpu.gpu_compositing }, rasterization ${ gpu.rasterization }, webgl ${ gpu.webgl }` );
+	} catch ( err ) {
+		logProblem( `Start-up details failed: ${ err.message }` );
+	}
 	if ( !firstInstance ) return;
 	const state = await stateManager.readAppState();
 	currentFontSize = state.fontSize || defaultConfig.fontSize;

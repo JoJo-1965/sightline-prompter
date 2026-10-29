@@ -3,6 +3,8 @@ import { contextBridge, ipcRenderer, webUtils } from "electron";
 const on = ( channel, callback ) => ipcRenderer.on( channel, ( _event, ...args ) => callback( ...args ) );
 
 contextBridge.exposeInMainWorld( "electron", {
+	// A line in sightline.log, for tracking down a freeze.
+	debugLog: text => ipcRenderer.send( "debugLog", String( text ) ),
 	// Control bar, slots and window IPC
 	windowControl: action => ipcRenderer.send( "windowControl", action ),
 	onWindowState: callback => on( "windowState", callback ),

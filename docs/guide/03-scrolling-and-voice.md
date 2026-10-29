@@ -24,7 +24,9 @@ waits for you and then catches up.
 Speech is turned into words **on your own computer**. You don't need an
 account or a key, it works offline, and nothing you say leaves the PC.
 
-The first time, open **Settings > Voice** and click **Download speech model**.
+The first time you open Sightline, a small note at the bottom right offers it:
+choose **Download**. Or open **Settings > Voice** (or the Voice panel) and
+click **Download speech model**.
 It's a one-off download of about 73 MB, and progress is shown as it goes.
 After that, voice scrolling works with no internet connection at all.
 

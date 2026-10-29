@@ -1066,7 +1066,8 @@ body.editing .panel {
 }
 
 #update-note,
-#support-note {
+#support-note,
+#voice-offer {
 	position: fixed;
 	right: 16px;
 	bottom: 48px;
@@ -1084,12 +1085,14 @@ body.editing .panel {
 }
 
 #update-note a,
-#support-note a {
+#support-note a,
+#voice-offer a {
 	color: #ffd54a;
 }
 
 #update-note button,
-#support-note button {
+#support-note button,
+#voice-offer button {
 	padding: 0 6px;
 	font-size: 16px;
 	line-height: 1;
@@ -1097,6 +1100,21 @@ body.editing .panel {
 	background: none;
 	border: none;
 	cursor: pointer;
+}
+
+/* The offer of the speech model: narrower, and its Download button stands out. */
+#voice-offer {
+	max-width: 440px;
+	text-wrap: pretty;
+}
+#voice-offer .vo-get {
+	padding: 4px 10px;
+	font-size: 13px;
+	font-weight: 600;
+	color: #16171b;
+	background: #ffd54a;
+	border-radius: 6px;
+	white-space: nowrap;
 }
 
 /* --- In-app menu (☰) --- */

@@ -1293,7 +1293,85 @@ window.electron.onSpeechModel( ( status ) => {
 	speechModel = status;
 	showSpeechModel();
 	syncCommandListening();
+	offerSpeechModel();
 } );
+
+// A new user doesn't know voice scrolling needs a download: offer it once, in
+// a small note at the bottom right, and show its progress there. "Not now"
+// doesn't ask again; Settings > Voice and the Voice panel still have it.
+const VOICE_OFFERED = "sightline.voiceOffered";
+let voiceOffer = null;
+
+function offerSpeechModel() {
+	if ( !usesLocalVoice() ) return;
+	if ( voiceOffer ) {
+		updateVoiceOffer();
+		return;
+	}
+	if ( speechModel.installed || speechModel.downloading ) return;
+	try {
+		if ( localStorage.getItem( VOICE_OFFERED ) ) return;
+	} catch {
+		return;
+	}
+	voiceOffer = document.createElement( "div" );
+	voiceOffer.id = "voice-offer";
+	voiceOffer.setAttribute( "role", "status" );
+	const text = document.createElement( "span" );
+	text.className = "vo-text";
+	// Non-breaking spaces and hyphen keep "one-off 73 MB download" together.
+	text.textContent = "Voice scrolling follows what you say, with speech recognition on this computer. It's a one‑off 73 MB download.";
+	const get = document.createElement( "button" );
+	get.type = "button";
+	get.className = "vo-get";
+	get.textContent = "Download";
+	get.addEventListener( "click", () => {
+		rememberVoiceOffer();
+		window.electron.speechModelDownload();
+	} );
+	const close = document.createElement( "button" );
+	close.type = "button";
+	close.textContent = "×";
+	close.title = "Not now (Settings > Voice has it)";
+	close.setAttribute( "aria-label", "Not now" );
+	close.addEventListener( "click", () => {
+		rememberVoiceOffer();
+		voiceOffer?.remove();
+		voiceOffer = null;
+	} );
+	voiceOffer.append( text, get, close );
+	hud.appendChild( voiceOffer );
+}
+
+function rememberVoiceOffer() {
+	try {
+		localStorage.setItem( VOICE_OFFERED, new Date().toISOString() );
+	} catch {
+		// it may offer again next time; that's all
+	}
+}
+
+function updateVoiceOffer() {
+	const text = voiceOffer.querySelector( ".vo-text" );
+	const get = voiceOffer.querySelector( ".vo-get" );
+	if ( speechModel.downloading ) {
+		const pct = Math.floor( ( 100 * speechModel.received ) / ( speechModel.total || 1 ) );
+		text.textContent = `Downloading the speech model… ${ pct }%. You can carry on meanwhile.`;
+		get.classList.add( "hidden" );
+	} else if ( speechModel.installed ) {
+		text.textContent = "Voice scrolling is ready: choose Voice in the Voice panel (Ctrl+Shift+V), then press Space and read.";
+		get.classList.add( "hidden" );
+		const done = voiceOffer;
+		setTimeout( () => {
+			done.remove();
+			if ( voiceOffer === done ) voiceOffer = null;
+		}, 12000 );
+	} else if ( speechModel.error ) {
+		text.textContent = "The download didn't finish. Check you're online and try again.";
+		get.classList.remove( "hidden" );
+		get.textContent = "Try again";
+	}
+}
 window.electron.speechModelStatus();
 
 // The model line on Settings > Voice: installed, downloading (with progress) or not yet.
@@ -2246,8 +2324,13 @@ function markSettingsDirty( event ) {
 	field( "settings-applied" ).textContent = "";
 }
 
+// Each step of opening Settings goes in sightline.log, so if it freezes, the
+// last line says where. (Looking into a freeze on Joanne's computer.)
+const settingsTrail = step => window.electron.debugLog?.( `settings: ${ step }` );
+
 async function openSettings() {
 	if ( !settingsModal ) return;
+	settingsTrail( "opening" );
 	settingsSnapshot = { fontSize, opacity };
 	settingsDirty = false;
 	field( "settings-unsaved" )?.classList.add( "hidden" );
@@ -2264,8 +2347,10 @@ async function openSettings() {
 	field( "set-take-loudness" ).value = settings.takeLoudness ?? "voice";
 	field( "set-sound-check-takes" ).checked = settings.soundCheckDuringTakes === true;
 	field( "set-sound-alike" ).checked = settings.soundAlike !== false;
+	settingsTrail( "scrolling and voice fields filled" );
 	fillWordRows( settings.wordFixes ?? [] );
 	fillCommandRows( settings.commandWords ?? [] );
+	settingsTrail( "your words filled" );
 	showVoiceEngineFields();
 	window.electron.speechModelStatus();
 	field( "set-deepgram-key" ).value = "";
@@ -2283,6 +2368,7 @@ async function openSettings() {
 	field( "set-check-updates" ).checked = settings.checkUpdates !== false;
 	field( "set-show-pad" ).checked = !!settings.showPad;
 	field( "set-show-control" ).checked = !!settings.showControl;
+	settingsTrail( "display fields filled; asking for monitors" );
 	window.electron.getDisplays();
 	field( "set-highlight-cues" ).checked = !!settings.highlightCues;
 	field( "set-cues-file" ).value = settings.cuesFile ?? "";
@@ -2297,14 +2383,24 @@ async function openSettings() {
 	window.electron.getRemoteInfo();
 	field( "set-phone" ).checked = !!settings.phoneRemote;
 	window.electron.getPhoneInfo();
+	settingsTrail( "remotes filled; files tab next" );
 	fillFilesTab();
+	settingsTrail( `showing tab ${ lastSettingsTab() }` );
 	showSettingsTab( lastSettingsTab() );
 	settingsModal.classList.remove( "hidden" );
+	settingsTrail( "visible" );
+	requestAnimationFrame( () => requestAnimationFrame( () => settingsTrail( "painted" ) ) );
 	requestAnimationFrame( () => updateSettingsChevrons() );
+	settingsTrail( "listing microphones" );
 	await populateMicSelect();
 	field( "set-microphone" ).innerHTML = micSelect.innerHTML;
 	field( "set-microphone" ).value = audioDeviceId ?? "";
+	settingsTrail( "done" );
 }
+
+// Errors in the page go in sightline.log too.
+window.addEventListener( "error", e => window.electron.debugLog?.( `error: ${ e.message } (${ String( e.filename ).split( "/" ).pop() }:${ e.lineno })` ) );
+window.addEventListener( "unhandledrejection", e => window.electron.debugLog?.( `unhandled rejection: ${ e.reason?.stack ?? e.reason }` ) );
 
 window.electron.onDisplays( ( displays ) => {
 	const select = field( "set-prompter-display" );
@@ -4745,6 +4841,7 @@ document.getElementById( "settings-about-support" )?.addEventListener( "click", 
 for ( const link of document.querySelectorAll( "a.support-link" ) ) link.href = SUPPORT_URL;
 
 function showSettingsTab( name ) {
+	settingsTrail( `tab ${ name }` );
 	if ( !settingsTabs.some( t => t.dataset.tab === name ) ) name = "scrolling";
 	for ( const tab of settingsTabs ) {
 		const on = tab.dataset.tab === name;

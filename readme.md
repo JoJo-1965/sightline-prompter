@@ -220,6 +220,11 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ## Change log
 
+### Next release
+
+- **If Sightline stops responding,** it asks whether to wait or reload, instead of leaving a frozen window to be closed from Task Manager, and notes hangs, crashes and errors in `sightline.log` in its folder, to help track down the cause
+- **New users are offered voice scrolling:** the first time Sightline opens without the speech model, a small note offers the one-off 73 MB download, shows its progress, and says how to turn voice scrolling on once it's ready. Close it and it doesn't ask again; Settings > Voice and the Voice panel still have it
+
 ### 1.0.6 (29 October 2026)
 
 - **You can see when the microphone is on:** while Sightline listens for the wake word, the label says **🎙 Listening for “Prompter”** (your wake word), with a note that nothing is recorded or sent; the control window shows a 🎙 badge too, also while following your voice. The guide has a new **What the microphone does, and doesn't** section, and the About page links to [Privacy, licence and policies](docs/POLICIES.md): what Sightline does with your mic and data, when it goes online, and the MIT licence and warranty. Full policies will follow
