@@ -1,5 +1,7 @@
 # Sightline Prompter
 
+![Sightline Prompter, the free, open-source teleprompter that works with your AI: a prompter window highlights the sentence being read and says: Stopped, say Prompter, go. For Windows, Mac and Linux, and works offline.](docs/images/hero.png)
+
 **The teleprompter that works with your AI.** A free, open-source, see-through
 desktop teleprompter for content creators and learning and development teams
 who record to camera at a desk or in a studio. Your AI assistant writes the
