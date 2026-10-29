@@ -32,6 +32,12 @@ Joanne's test on her Stream Decks and the Marketplace listing. Its GitHub repo
 merged or released. Connection and isolated app tests use a simulated OBS
 server; a real OBS recording test is still required before release.
 
+The head-position guide (55) also supports borderless fullscreen/chromeless
+mode for the OBS projector → guide → prompter-text stack. Ctrl+Alt+H and a
+separate Stream Deck action toggle screen-fill and the saved window size;
+Ctrl+Shift+H reveals controls without leaving fullscreen. Real projector
+stacking and multiple-display checks remain before release.
+
 **Next, for 1.0.7:** Settings in its own window (48), built like the pad and
 regrouped. The policies (51) were approved for publication on 29 October.
 After that: code signing (27, which needs Joanne's accounts), 47 the

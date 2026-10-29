@@ -2,6 +2,10 @@
 
 ## Keyboard shortcuts
 
+**Ctrl+Alt+H** (Cmd+Alt+H on Mac) toggles the head guide between borderless
+fullscreen on its current monitor and its saved window size. Fullscreen
+hides its controls; Ctrl+Shift+H reveals them without leaving fullscreen.
+
 **Ctrl+Shift+H** (Cmd+Shift+H on Mac) works globally for the head-position
 guide: show, unlock if locked, or hide if already unlocked. If another app
 owns that shortcut, use **☰ > Window > Head-position guide / unlock** or its

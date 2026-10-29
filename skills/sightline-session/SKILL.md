@@ -68,6 +68,12 @@ containing `head-guide`. The global shortcut is Ctrl+Shift+H (Cmd on Mac).
 It is not an OBS source; do not promise exclusion from every display-capture
 method without checking. No script directive or video/audio capture is added.
 
+`command head-guide-fullscreen` opens/toggles borderless screen-fill on the
+guide's current display, with a window-size restore. Check advertised command
+support first. Status adds `headGuideFullscreen` and `headGuideChromeless`;
+Ctrl+Alt+H is the matching global shortcut. `head-guide` reveals controls
+without leaving fullscreen when the guide is locked or chromeless.
+
 `command <action> [value]`, where action is one of: `play`, `pause`,
 `toggle`, `restart`, `next-section`, `previous-section`,
 `go-to-section <n>` (the n-th `##` section), `faster`, `slower`,

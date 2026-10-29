@@ -222,6 +222,8 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ### Next release
 
+- **Head guide for an OBS projector stack (development):** borderless fullscreen on its current monitor, Clean to hide controls, and restoration of its windowed size. Global **Ctrl+Alt+H** and a second Stream Deck action toggle fullscreen; **Ctrl+Shift+H** reveals controls without leaving it. The guide stays above the projector with prompter text above the guide; the app restores the prompter's Keep on top preference when it closes. Check against a real OBS projector, especially its own Always on top option
+
 - **Floating head-position guide (development):** a transparent overlay with eye line, head and shoulder outline, size, opacity and colour controls. Open from **☰ > Window** or global **Ctrl+Shift+H** (Cmd+Shift+H on Mac). Show/unlock, then hide on the next press; Lock makes clicks pass through. Position and preferences are remembered. A matching Stream Deck action shows OFF, ON or LOCK. No OBS connection is required. It is not an OBS source; capture protection stays enabled independently of the prompter. Whole-screen capture needs a short recording check. On the OBS branch, awaiting merge and release
 
 - **Scroll mode, the pad and the control window from a remote:** the local API and the Stream Deck plugin (0.1.5) gain `scroll-mode` (steady or voice scrolling), `pad` (the floating control pad) and `control` (the control window, **Ctrl+Shift+O**), and the control window's broadcast row gains **Voice scroll**, lit while the prompter follows your voice. The keys light to match, so an AI on your Stream Deck's MCP profile can switch them too

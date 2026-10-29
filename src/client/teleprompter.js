@@ -3605,6 +3605,7 @@ function menuGroups() {
 			heading: "Window",
 			items: [
 				[ "◎", "Head-position guide / unlock", "Ctrl+Shift+H", () => window.electron.headGuide(), { checked: !!settings.showHeadGuide } ],
+				[ "⛶", "Head guide fullscreen / restore", "Ctrl+Alt+H", () => window.electron.headGuide( "fullscreen" ), { checked: !!settings.showHeadGuide && !!settings.headGuideFullscreen } ],
 				[
 					"▦",
 					"Control pad (floating buttons)",
@@ -4815,6 +4816,10 @@ function runRemoteAction( action, value ) {
 		obsUi.action( "stop" );
 		return;
 	}
+	if ( action === "head-guide" || action === "head-guide-fullscreen" ) {
+		window.electron.headGuide( action === "head-guide" ? "toggle" : "fullscreen" );
+		return;
+	}
 	if ( isEditMode && action !== "help" ) return;
 	if ( action === "play" && ( !isScrolling() || offScript ) ) toggleAutoScrollSession();
 	else if ( action === "pause" && isScrolling() ) toggleAutoScrollSession();
@@ -4857,7 +4862,6 @@ function runRemoteAction( action, value ) {
 	else if ( action === "scroll-mode" ) window.electron.saveSettings( { scrollMode: settings.scrollMode === "voice" ? "steady" : "voice" } );
 	else if ( action === "pad" ) window.electron.saveSettings( { showPad: !settings.showPad } );
 	else if ( action === "control" ) window.electron.saveSettings( { showControl: !settings.showControl } );
-	else if ( action === "head-guide" ) window.electron.headGuide();
 	sendStatus();
 }
 window.electron.onRemoteCommand( runRemoteAction );

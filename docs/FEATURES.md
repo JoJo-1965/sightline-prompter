@@ -5,6 +5,11 @@ an eye line, head/shoulder outline, adjustable size/opacity/colour, saved
 placement, click-through lock, global Ctrl+Shift+H hotkey and Stream Deck
 OFF/ON/LOCK action. Separate from OBS scenes; capture protection stays on.
 
+It also fills its monitor as a borderless overlay, with hidden controls and
+window-size restore (Ctrl+Alt+H or the fullscreen Stream Deck action). Intended
+order: OBS projector, head guide, then prompter text. Actual projector stacking
+and capture exclusion still need a real recording check.
+
 Sightline Prompter began as a fork of David Neal's
 [Electron Teleprompter](https://github.com/reverentgeek/electron-teleprompter)
 (version 4.1.20): a see-through, always-on-top teleprompter with a built-in

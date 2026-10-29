@@ -1,41 +1,73 @@
 // A framing aid above the camera preview, never an OBS scene source.
 import { BrowserWindow, globalShortcut, ipcMain, screen } from "electron";
 import path from "node:path";
+import { fitInside } from "./utils/fit.js";
 
 const HOTKEY = "CommandOrControl+Shift+H";
-export function createHeadGuide( { dir, prompter, getSettings, saveSettings, saveBounds, onChange } ) {
+const FULLSCREEN_HOTKEY = "CommandOrControl+Alt+H";
+export function createHeadGuide( { dir, prompter, getSettings, saveSettings, saveBounds, onChange, restoreStack } ) {
 	let overlay = null;
 	let locked = false;
 	let resizing = null;
 	let saveTimer;
+	let fullscreen = false;
+	let normalBounds = null;
 	const state = () => {
 		const s = getSettings();
-		return { locked, scale: Math.max( 0.7, Math.min( 1.4, Number( s.headGuideScale ) || 1 ) ), opacity: Math.max( 0.2, Math.min( 1, Number( s.headGuideOpacity ) || 0.75 ) ), colour: s.headGuideColour === "gold" ? "gold" : "mint" };
+		return { locked, fullscreen, chromeless: s.headGuideChromeless === true, scale: Math.max( 0.7, Math.min( 1.4, Number( s.headGuideScale ) || 1 ) ), opacity: Math.max( 0.2, Math.min( 1, Number( s.headGuideOpacity ) || 0.75 ) ), colour: s.headGuideColour === "gold" ? "gold" : "mint" };
 	};
 	const send = () => overlay?.webContents.send( "headGuideState", state() );
 	function remember() {
 		clearTimeout( saveTimer );
 		saveTimer = setTimeout( () => {
-			if ( overlay ) saveBounds( overlay.getBounds() );
+			if ( overlay && !fullscreen ) saveBounds( overlay.getBounds() );
 		}, 200 );
 	}
 	function unlock() {
 		if ( !overlay ) return;
 		locked = false;
+		saveSettings( { headGuideChromeless: false } );
 		overlay.setIgnoreMouseEvents( false );
-		overlay.show();
+		overlay.showInactive();
+		restack();
 		send();
 		onChange();
 	}
 	function close() {
 		clearTimeout( saveTimer );
 		if ( overlay ) {
-			saveBounds( overlay.getBounds() );
+			saveBounds( fullscreen ? normalBounds : overlay.getBounds() );
 			overlay.destroy();
 		}
 		overlay = null;
 		locked = false;
 		resizing = null;
+		fullscreen = false;
+		normalBounds = null;
+		if ( !prompter.isDestroyed() ) restoreStack();
+	}
+	function restack() {
+		if ( !overlay || prompter.isDestroyed() ) return;
+		overlay.setAlwaysOnTop( true, "floating" );
+		overlay.moveTop();
+		prompter.setAlwaysOnTop( true, "screen-saver" );
+		prompter.moveTop();
+	}
+	function fitMode() {
+		if ( !overlay ) return;
+		const wanted = getSettings().headGuideFullscreen === true;
+		if ( wanted && !fullscreen ) normalBounds = overlay.getBounds();
+		if ( wanted ) {
+			fullscreen = true;
+			overlay.setBounds( screen.getDisplayMatching( overlay.getBounds() ).bounds );
+		} else if ( fullscreen ) {
+			fullscreen = false;
+			overlay.setBounds( fitInside( normalBounds, screen.getDisplayMatching( normalBounds ).workArea ) );
+		}
+	}
+	function toggleFullscreen() {
+		const next = !overlay || !getSettings().headGuideFullscreen;
+		saveSettings( { showHeadGuide: true, headGuideFullscreen: next, headGuideChromeless: next } );
 	}
 	function apply() {
 		if ( !getSettings().showHeadGuide ) {
@@ -54,7 +86,11 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 			// Independent of the prompter's Hide from capture preference.
 			overlay.setContentProtection( true );
 			overlay.loadFile( path.join( dir, "client", "head-guide.html" ) );
-			overlay.once( "ready-to-show", () => overlay?.show() );
+			overlay.once( "ready-to-show", () => {
+				overlay?.showInactive();
+				restack();
+			} );
+			overlay.on( "focus", restack );
 			overlay.on( "move", remember );
 			overlay.on( "close", ( event ) => {
 				event.preventDefault();
@@ -63,10 +99,12 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 			overlay.webContents.on( "will-navigate", event => event.preventDefault() );
 			overlay.webContents.setWindowOpenHandler( () => ( { action: "deny" } ) );
 		}
+		fitMode();
+		restack();
 		send();
 	}
 	function toggle() {
-		if ( overlay && locked ) unlock();
+		if ( overlay && ( locked || getSettings().headGuideChromeless ) ) unlock();
 		else saveSettings( { showHeadGuide: !getSettings().showHeadGuide } );
 	}
 	function action( event, name, value ) {
@@ -76,12 +114,17 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 			toggle();
 			return;
 		}
+		if ( name === "fullscreen" ) {
+			toggleFullscreen();
+			return;
+		}
 		if ( !fromOverlay ) return;
 		if ( name === "ready" ) {
 			send();
-			if ( !hotkeyRegistered ) prompter.webContents.send( "toast", "Head guide hotkey is in use. Use the Window menu or Stream Deck to unlock or hide it." );
+			if ( !hotkeyRegistered || !fullscreenHotkeyRegistered ) prompter.webContents.send( "toast", "A head guide hotkey is in use. Use the Window menu or Stream Deck for the guide controls." );
 		}
 		if ( name === "hide" ) saveSettings( { showHeadGuide: false } );
+		if ( name === "chrome" ) saveSettings( { headGuideChromeless: !getSettings().headGuideChromeless } );
 		if ( name === "lock" ) {
 			locked = true;
 			send();
@@ -95,7 +138,7 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 			if ( Object.keys( patch ).length ) saveSettings( patch );
 		}
 		if ( name === "colour" ) saveSettings( { headGuideColour: state().colour === "mint" ? "gold" : "mint" } );
-		if ( name === "resize-start" ) resizing = { cursor: screen.getCursorScreenPoint(), bounds: overlay.getBounds() };
+		if ( name === "resize-start" && !fullscreen ) resizing = { cursor: screen.getCursorScreenPoint(), bounds: overlay.getBounds() };
 		if ( name === "resize-end" ) {
 			resizing = null;
 			remember();
@@ -108,12 +151,27 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 	}
 	ipcMain.on( "headGuideAction", action );
 	const hotkeyRegistered = globalShortcut.register( HOTKEY, toggle );
+	const fullscreenHotkeyRegistered = globalShortcut.register( FULLSCREEN_HOTKEY, toggleFullscreen );
+	const displaysChanged = () => {
+		if ( !overlay ) return;
+		if ( fullscreen ) fitMode();
+		else overlay.setBounds( fitInside( overlay.getBounds(), screen.getDisplayMatching( overlay.getBounds() ).workArea ) );
+		send();
+		restack();
+	};
+	screen.on( "display-removed", displaysChanged );
+	screen.on( "display-metrics-changed", displaysChanged );
+	prompter.on( "focus", restack );
 	return {
-		apply, toggle, isLocked: () => locked,
+		apply, toggle, toggleFullscreen, restack, isLocked: () => locked,
 		dispose() {
 			close();
 			ipcMain.removeListener( "headGuideAction", action );
 			if ( hotkeyRegistered ) globalShortcut.unregister( HOTKEY );
+			if ( fullscreenHotkeyRegistered ) globalShortcut.unregister( FULLSCREEN_HOTKEY );
+			screen.removeListener( "display-removed", displaysChanged );
+			screen.removeListener( "display-metrics-changed", displaysChanged );
+			prompter.removeListener( "focus", restack );
 		}
 	};
 }

@@ -23,6 +23,7 @@ export function buildMenus(
 		reloadGoogleDoc,
 		openGuide,
 		toggleHeadGuide,
+		toggleHeadGuideFullscreen,
 		displays = []
 	}
 ) {
@@ -281,6 +282,12 @@ export function buildMenus(
 					type: "checkbox",
 					checked: !!settings.showHeadGuide,
 					click: () => toggleHeadGuide?.()
+				},
+				{
+					label: "Head Guide Fullscreen / Restore (Ctrl+Alt+H)",
+					type: "checkbox",
+					checked: !!settings.showHeadGuide && !!settings.headGuideFullscreen,
+					click: () => toggleHeadGuideFullscreen?.()
 				},
 				{
 					label: "Keep on Top",

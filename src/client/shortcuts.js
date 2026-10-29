@@ -93,6 +93,7 @@ export const SHORTCUTS = [
 			[ [ "Ctrl+Shift+X" ], "Click-through on / off (works from any app)" ],
 			[ [ "Ctrl+Shift+P" ], "Floating control pad: Start / Pause, Top, Previous, Next" ],
 			[ [ "Ctrl+Shift+H" ], "Head-position guide: show and unlock, or hide (works from any app)" ],
+			[ [ "Ctrl+Alt+H" ], "Head guide fullscreen on this screen / restore (works from any app)" ],
 			[ [ "Ctrl+Shift+O" ], "Control window: a live, upright copy of the script with the buttons, for the operator screen" ],
 			[ [ "Ctrl+," ], "Settings" ],
 			[ [ "F1", "?" ], "This help" ],

@@ -148,6 +148,8 @@ const defaultSettings = {
 	headGuideScale: 1,
 	headGuideOpacity: 0.75,
 	headGuideColour: "mint",
+	headGuideFullscreen: false,
+	headGuideChromeless: false,
 	showControl: false, // the control window for the operator screen (Ctrl+Shift+O)
 	controlBounds: null, // where the control window was left
 	prompterDisplay: null, // monitor id: open the prompter full screen there
@@ -419,6 +421,7 @@ function applyWindowSettings( win, wasEyeLine ) {
 	// Click-through: the renderer turns mouse events back on while the pointer
 	// is over the control bar or a panel, so the controls stay usable.
 	win.setIgnoreMouseEvents( !!settings.clickThrough, { forward: true } );
+	framingGuide?.restack();
 }
 
 const emptySlotHtml = index =>
@@ -1214,6 +1217,7 @@ const createWindow = ( state ) => {
 			reloadGoogleDoc: () => refreshGoogleDoc( currentFilePath, true ),
 			openGuide: page => guide.open( page ),
 			toggleHeadGuide: () => framingGuide?.toggle(),
+			toggleHeadGuideFullscreen: () => framingGuide?.toggleFullscreen(),
 			isMaximized: windowMode === "maximized",
 			displays: displayList()
 		} );
@@ -1428,7 +1432,8 @@ app.whenReady().then( async () => {
 		"scroll-mode", // steady or voice scrolling
 		"pad", // the floating control pad open or closed
 		"control", // the control window open or closed
-		"head-guide" // show/unlock or hide the framing overlay
+		"head-guide", // show/unlock or hide the framing overlay
+		"head-guide-fullscreen" // fullscreen framing overlay / restore
 	];
 
 	// The prompter's state, for GET /status and the GET /events stream.
@@ -1447,6 +1452,8 @@ app.whenReady().then( async () => {
 		showControl: !!settings.showControl,
 		showHeadGuide: !!settings.showHeadGuide,
 		headGuideLocked: framingGuide?.isLocked() ?? false,
+		headGuideFullscreen: !!settings.headGuideFullscreen,
+		headGuideChromeless: !!settings.headGuideChromeless,
 		windowMode,
 		...rendererStatus,
 		commands: REMOTE_COMMANDS
@@ -1638,7 +1645,8 @@ app.whenReady().then( async () => {
 			settings.headGuideBounds = bounds;
 			if ( !win.isDestroyed() ) saveState( win );
 		},
-		onChange: () => publishRemoteState()
+		onChange: () => publishRemoteState(),
+		restoreStack: () => win.setAlwaysOnTop( windowMode === "fullscreen" || settings.eyeLine || settings.alwaysOnTop, windowMode === "fullscreen" ? "screen-saver" : "floating" )
 	} );
 	framingGuide.apply();
 	win.on( "closed", () => framingGuide.dispose() );

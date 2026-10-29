@@ -40,6 +40,13 @@ every OBS output configuration or real camera/audio setup.
 
 ## Before merge and release
 
+The guide now supports borderless screen-fill/chromeless mode and restores
+its windowed bounds. Ctrl+Alt+H and a separate Stream Deck action toggle this;
+Ctrl+Shift+H reveals controls without exiting fullscreen. The prompter is
+temporarily placed above the guide while it is open; its Keep on top setting
+is restored on close. Verify the real OBS projector's own Always on top setting
+does not compete, and verify placement across multiple displays.
+
 Check the framing guide on the real preview and chosen screen-capture method,
 hotkey registration, moved/unplugged displays and Stream Deck hardware. An
 isolated Electron run verified popup/preferences, lock/unlock/hide/reopen,

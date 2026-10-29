@@ -15,10 +15,33 @@ claimed the hotkey, a toast explains how to recover through the menu or key.
 The guide remembers its position, size and appearance; it stays upright when
 the prompter is mirrored. **×** closes it. Closing Sightline closes it too.
 
+For the projector setup, put the **OBS Preview Projector at the bottom**, the
+**head guide in the middle**, and **Sightline text above**. While the guide is
+open, Sightline temporarily keeps the prompter above it, then restores your
+Keep on top preference when the guide closes. The prompter needs a transparent
+background to see the camera; the guide does not change that opacity for you.
+Check this order with your real projector, particularly if OBS's projector
+is itself set Always on top; turn that OBS option off if it competes.
+
+**Fullscreen** on the guide, **Ctrl+Alt+H** globally (Cmd+Alt+H on Mac), or the
+**Head guide fullscreen** Stream Deck action fills the guide's current monitor
+and hides its toolbar. It uses a borderless screen-sized window so the three
+layers can remain together. On a non-16:9 display, the guide keeps its shape
+with the same centered fit as a 16:9 camera projector. The next fullscreen
+press restores the saved window size and shows controls. It does not change
+OBS's projector mode or the prompter's own fullscreen setting.
+
+**Clean** hides the guide's toolbar/footer without resizing the window. The
+regular guide hotkey/key reveals controls or unlocks it without leaving
+fullscreen. **Lock** additionally passes clicks through. Windowed and
+fullscreen choices are remembered, as is the original window position.
+
 The companion Stream Deck development branch adds a **Head-position guide**
 action you can drag onto any key. It shows **OFF**, **ON** or **LOCK**, using
 Sightline's status feed. Older app versions flash an alert instead of sending
 an unsupported command. Existing sample-profile key assignments are unchanged.
+
+The separate **Head guide fullscreen** action shows **FULL** or **WIN**.
 
 This is a separate desktop window, not an OBS scene source. Camera-only OBS
 recordings do not include it. It always requests capture protection, even if

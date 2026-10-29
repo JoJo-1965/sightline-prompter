@@ -4,8 +4,13 @@ let scale = 1;
 let resize = false;
 document.querySelector( "#close" ).onclick = () => guide.action( "hide" );
 document.querySelector( "#lock" ).onclick = () => guide.action( "lock" );
+document.querySelector( "#fullscreen" ).onclick = () => guide.action( "fullscreen" );
+document.querySelector( "#chrome" ).onclick = () => guide.action( "chrome" );
 guide.onState( ( value ) => {
 	document.body.classList.toggle( "locked", value.locked );
+	document.body.classList.toggle( "fullscreen", value.fullscreen );
+	document.body.classList.toggle( "chromeless", value.chromeless );
+	document.querySelector( "#fullscreen" ).textContent = value.fullscreen ? "Restore" : "Fullscreen";
 	scale = value.scale;
 	document.querySelector( "#head" ).setAttribute( "transform", `translate(500 155) scale(${ scale }) translate(-500 -155)` );
 	document.querySelector( "#opacity" ).value = value.opacity * 100;
