@@ -2,6 +2,7 @@
 import { BrowserWindow, globalShortcut, ipcMain, screen } from "electron";
 import path from "node:path";
 import { fitInside } from "./utils/fit.js";
+import { guidePose } from "./client/guide-pose.js";
 
 const HOTKEY = "CommandOrControl+Shift+H";
 const FULLSCREEN_HOTKEY = "CommandOrControl+Alt+H";
@@ -14,13 +15,19 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 	let normalBounds = null;
 	const state = () => {
 		const s = getSettings();
-		return { locked, fullscreen, chromeless: s.headGuideChromeless === true, scale: Math.max( 0.7, Math.min( 1.4, Number( s.headGuideScale ) || 1 ) ), opacity: Math.max( 0.2, Math.min( 1, Number( s.headGuideOpacity ) || 0.75 ) ), colour: s.headGuideColour === "gold" ? "gold" : "mint" };
+		return { locked, fullscreen, chromeless: s.headGuideChromeless === true, ...guidePose( { x: s.headGuideX, y: s.headGuideY, scale: s.headGuideScale } ), ideal: guidePose( s.headGuideIdeal ), showIdeal: s.headGuideShowIdeal !== false, opacity: Math.max( 0.2, Math.min( 1, Number( s.headGuideOpacity ) || 0.75 ) ), colour: s.headGuideColour === "gold" ? "gold" : "mint" };
 	};
-	const send = () => overlay?.webContents.send( "headGuideState", state() );
+	const snapshot = () => ( { ...state(), shown: !!overlay, bounds: overlay?.getBounds() ?? getSettings().headGuideBounds ?? null, windowedBounds: normalBounds ?? getSettings().headGuideBounds ?? null, placement: getSettings().headGuidePlacement ?? "centre", placements: getSettings().headGuidePlacements ?? {}, displayId: overlay ? screen.getDisplayMatching( overlay.getBounds() ).id : null, captureStatus: "Protected separate overlay; OBS capture route not verified" } );
+	const send = () => {
+		const value = snapshot();
+		overlay?.webContents.send( "headGuideState", value );
+		if ( !prompter.isDestroyed() ) prompter.webContents.send( "headGuideState", value );
+	};
 	function remember() {
 		clearTimeout( saveTimer );
 		saveTimer = setTimeout( () => {
 			if ( overlay && !fullscreen ) saveBounds( overlay.getBounds() );
+			send();
 		}, 200 );
 	}
 	function unlock() {
@@ -45,6 +52,7 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 		fullscreen = false;
 		normalBounds = null;
 		if ( !prompter.isDestroyed() ) restoreStack();
+		send();
 	}
 	function restack() {
 		if ( !overlay || prompter.isDestroyed() ) return;
@@ -118,13 +126,34 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 			toggleFullscreen();
 			return;
 		}
+		if ( name === "show" ) {
+			saveSettings( { showHeadGuide: true } );
+			return;
+		}
+		if ( name === "hide" ) {
+			saveSettings( { showHeadGuide: false } );
+			return;
+		}
 		if ( !fromOverlay ) return;
 		if ( name === "ready" ) {
 			send();
 			if ( !hotkeyRegistered || !fullscreenHotkeyRegistered ) prompter.webContents.send( "toast", "A head guide hotkey is in use. Use the Window menu or Stream Deck for the guide controls." );
 		}
-		if ( name === "hide" ) saveSettings( { showHeadGuide: false } );
 		if ( name === "chrome" ) saveSettings( { headGuideChromeless: !getSettings().headGuideChromeless } );
+		if ( name === "place" && [ "centre", "beside" ].includes( value ) ) {
+			// Leave fullscreen before applying a saved window placement.
+			if ( !fullscreen ) saveBounds( overlay.getBounds() );
+			saveSettings( { headGuideFullscreen: false, headGuideChromeless: false } );
+			const area = screen.getDisplayMatching( prompter.getBounds() ).workArea;
+			const bounds = overlay.getBounds();
+			const panel = prompter.getBounds();
+			const saved = getSettings().headGuidePlacements?.[value];
+			const target = saved ?? { ...bounds, x: value === "centre" ? Math.round( area.x + ( area.width - bounds.width ) / 2 ) : panel.x + panel.width + 12, y: value === "centre" ? Math.round( area.y + ( area.height - bounds.height ) / 2 ) : panel.y };
+			saveSettings( { headGuidePlacement: value } );
+			overlay.setBounds( fitInside( target, area ) );
+			saveBounds( overlay.getBounds() );
+			send();
+		}
 		if ( name === "lock" ) {
 			locked = true;
 			send();
@@ -133,9 +162,20 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 		}
 		if ( name === "preferences" ) {
 			const patch = {};
-			if ( Number.isFinite( value?.scale ) ) patch.headGuideScale = Math.max( 0.7, Math.min( 1.4, value.scale ) );
+			if ( Number.isFinite( value?.scale ) ) patch.headGuideScale = Math.max( 0.4, Math.min( 2, value.scale ) );
+			if ( Number.isFinite( value?.x ) ) patch.headGuideX = Math.max( -45, Math.min( 45, value.x ) );
+			if ( Number.isFinite( value?.y ) ) patch.headGuideY = Math.max( -45, Math.min( 45, value.y ) );
 			if ( Number.isFinite( value?.opacity ) ) patch.headGuideOpacity = Math.max( 0.2, Math.min( 1, value.opacity ) );
 			if ( Object.keys( patch ).length ) saveSettings( patch );
+		}
+		if ( name === "save-ideal" ) {
+			const pose = state();
+			saveSettings( { headGuideIdeal: { x: pose.x, y: pose.y, scale: pose.scale }, headGuideShowIdeal: true } );
+		}
+		if ( name === "ideal-visible" ) saveSettings( { headGuideShowIdeal: !state().showIdeal } );
+		if ( name === "reset-pose" ) {
+			const ideal = state().ideal;
+			saveSettings( { headGuideX: ideal.x, headGuideY: ideal.y, headGuideScale: ideal.scale } );
 		}
 		if ( name === "colour" ) saveSettings( { headGuideColour: state().colour === "mint" ? "gold" : "mint" } );
 		if ( name === "resize-start" && !fullscreen ) resizing = { cursor: screen.getCursorScreenPoint(), bounds: overlay.getBounds() };

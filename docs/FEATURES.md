@@ -1,5 +1,12 @@
 # Sightline Prompter: what it adds to Electron Teleprompter
 
+On the development branch, the head guide also has labelled **Ideal position**
+and **Actual position** outlines. Drag, nudge or scale the actual outline
+against a saved ideal, and recall Centre or Beside panel window placements.
+This is a manual reference check. Both poses persist between scripts and
+are saved with new takes. Help uses tabs and follows enabled modes; voice
+commands **guide on** and **guide off** set the guide's visibility explicitly.
+
 **In development:** a floating head-position guide for camera framing, with
 an eye line, head/shoulder outline, adjustable size/opacity/colour, saved
 placement, click-through lock, global Ctrl+Shift+H hotkey and Stream Deck

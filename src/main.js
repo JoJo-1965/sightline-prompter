@@ -6,7 +6,6 @@ import chokidar from "chokidar";
 import stateFactory from "./utils/state.js";
 import {
 	convertMarkdown,
-	readAndConvertScript,
 	readRawMarkdown,
 	readCuePhrases,
 	isRichFile,
@@ -17,6 +16,7 @@ import { setSectionTargets } from "./utils/targets.js";
 import { createPad } from "./pad.js";
 import { createControl } from "./control.js";
 import { createHeadGuide } from "./head-guide.js";
+import { readScriptSnapshot } from "./script-snapshot.js";
 import { createSpeech } from "./speech.js";
 import { createGuide } from "./guide.js";
 import { createGoogleDocs, GOOGLE_DOC_MESSAGES } from "./google-docs.js";
@@ -31,6 +31,7 @@ import { startPhoneServer, newPhoneKey, lanAddress } from "./phone.js";
 import QRCode from "qrcode";
 import { createObs, obsAddress } from "./obs.js";
 import { createObsCredentials } from "./obs-credentials.js";
+import { createObsLedger } from "./obs-ledger.js";
 import {
 	serialize as serializeSettings,
 	parse as parseSettings,
@@ -40,6 +41,17 @@ import {
 const __dirname = import.meta.dirname; // eslint-disable-line n/no-unsupported-features/node-builtins
 
 const MAX_RECENT_FILES = 10;
+const scriptSnapshots = new Map();
+function sendScriptContent( win, html ) {
+	win.webContents.send( "content", html, scriptSnapshots.get( html ) ?? null );
+}
+async function readAndConvertScript( file ) {
+	const snapshot = await readScriptSnapshot( file );
+	if ( !snapshot ) return null;
+	scriptSnapshots.set( snapshot.html, snapshot );
+	if ( scriptSnapshots.size > 20 ) scriptSnapshots.delete( scriptSnapshots.keys().next().value );
+	return snapshot.html;
+}
 
 // Help > User Guide: the pages in docs/guide, in their own window.
 const guide = createGuide( { dir: __dirname } );
@@ -150,6 +162,12 @@ const defaultSettings = {
 	headGuideColour: "mint",
 	headGuideFullscreen: false,
 	headGuideChromeless: false,
+	headGuideX: 0,
+	headGuideY: 0,
+	headGuideIdeal: { x: 0, y: 0, scale: 1 },
+	headGuideShowIdeal: true,
+	headGuidePlacement: "centre",
+	headGuidePlacements: {},
 	showControl: false, // the control window for the operator screen (Ctrl+Shift+O)
 	controlBounds: null, // where the control window was left
 	prompterDisplay: null, // monitor id: open the prompter full screen there
@@ -535,6 +553,7 @@ const createWindow = ( state ) => {
 
 	obs = createObs( { onState: ( state ) => {
 		if ( !win.isDestroyed() ) win.webContents.send( "obsState", state );
+		recordObsHistory( state );
 	} } );
 	win.on( "closed", () => obs.dispose() );
 	ipcMain.handle( "obs", async ( event, action, value ) => {
@@ -736,7 +755,7 @@ const createWindow = ( state ) => {
 		watcher.on( "change", async () => {
 			if ( watcherPaused ) return;
 			const md = await readAndConvertScript( scriptFile );
-			win.webContents.send( "content", md );
+			sendScriptContent( win, md );
 		} );
 	}
 
@@ -781,7 +800,7 @@ const createWindow = ( state ) => {
 				section: restore?.section ?? 0
 			};
 			if ( restore ) win.webContents.send( "restorePosition", restore );
-			win.webContents.send( "content", md );
+			sendScriptContent( win, md );
 			addRecentFile( scriptFile );
 			watchScriptFile( scriptFile );
 			refreshGoogleDoc( scriptFile );
@@ -805,7 +824,7 @@ const createWindow = ( state ) => {
 		try {
 			const changed = await googleDocs.refresh( file, announce );
 			if ( changed && currentFilePath === file ) {
-				win.webContents.send( "content", await readAndConvertScript( file ) );
+				sendScriptContent( win, await readAndConvertScript( file ) );
 				toast( "Updated from Google Docs" );
 			} else if ( announce ) {
 				toast( "Already up to date with Google Docs" );
@@ -826,6 +845,22 @@ const createWindow = ( state ) => {
 			.trim() || "Script";
 	const takeLogFile = file => path.join( takeLogDir, `${ scriptName( file ) } ${ today() }.json` );
 	let takeLog = null; // the current script's log, as last saved
+	const obsLedger = createObsLedger();
+	const sessionLogFiles = new Set();
+	let takeLogQueue = Promise.resolve();
+	function recordObsHistory( state ) {
+		if ( !obsLedger.observe( state ) ) return;
+		takeLogQueue = takeLogQueue.then( async () => {
+			for ( const file of sessionLogFiles ) {
+				try {
+					const saved = JSON.parse( await fs.readFile( file, "utf8" ) );
+					const next = obsLedger.attach( saved );
+					await fs.writeFile( file, JSON.stringify( next, null, 2 ) );
+					if ( currentFilePath && file === takeLogFile( currentFilePath ) ) takeLog = next;
+				} catch { /* A deleted session must not be recreated. */ }
+			}
+		} ).catch( error => logProblem( `OBS recording references: ${ error.message }` ) );
+	}
 
 	async function sendTakeLog( file ) {
 		try {
@@ -846,15 +881,18 @@ const createWindow = ( state ) => {
 		};
 	}
 
-	ipcMain.on( "saveTakeLog", async ( _event, data ) => {
+	ipcMain.on( "saveTakeLog", ( event, data ) => {
+		if ( event.sender !== win.webContents ) return;
 		if ( !currentFilePath || !data?.startedAt ) return;
-		try {
-			takeLog = withHeader( data );
+		const file = takeLogFile( currentFilePath );
+		const headed = withHeader( data );
+		sessionLogFiles.add( file );
+		takeLogQueue = takeLogQueue.then( async () => {
+			const next = obsLedger.attach( headed );
+			if ( currentFilePath && file === takeLogFile( currentFilePath ) ) takeLog = next;
 			await fs.mkdir( takeLogDir, { recursive: true } );
-			await fs.writeFile( takeLogFile( currentFilePath ), JSON.stringify( takeLog, null, 2 ) );
-		} catch ( err ) {
-			console.log( "Take log:", err.message );
-		}
+			await fs.writeFile( file, JSON.stringify( next, null, 2 ) );
+		} ).catch( error => logProblem( `Take log: ${ error.message }` ) );
 	} );
 
 	// Save the take log where you choose, as JSON and a CSV beside it.
@@ -1134,7 +1172,7 @@ const createWindow = ( state ) => {
 			watcher = null;
 		}
 		currentFilePath = null;
-		win.webContents.send( "content", emptySlotHtml( activeSlot ) + note );
+		sendScriptContent( win, emptySlotHtml( activeSlot ) + note );
 	}
 
 	async function switchSlot( index, position ) {
@@ -1643,6 +1681,7 @@ app.whenReady().then( async () => {
 		saveSettings: partial => updateSettings( partial ),
 		saveBounds: ( bounds ) => {
 			settings.headGuideBounds = bounds;
+			settings.headGuidePlacements = { ...settings.headGuidePlacements, [settings.headGuidePlacement ?? "centre"]: bounds };
 			if ( !win.isDestroyed() ) saveState( win );
 		},
 		onChange: () => publishRemoteState(),
@@ -1905,7 +1944,7 @@ app.whenReady().then( async () => {
 				slots[activeSlot] = { path: result.filePath, scrollY: 0, section: 0 };
 				refreshMenus();
 				const md = await readAndConvertScript( result.filePath );
-				win.webContents.send( "content", md );
+				sendScriptContent( win, md );
 				win.webContents.send( "saveResult", true, result.filePath );
 				sendSlots();
 				await saveState( win );
@@ -1922,7 +1961,7 @@ app.whenReady().then( async () => {
 				await fs.writeFile( currentFilePath, content, { encoding: "utf-8" } );
 				hasUnsavedChanges = false;
 				const md = await readAndConvertScript( currentFilePath );
-				win.webContents.send( "content", md );
+				sendScriptContent( win, md );
 				win.webContents.send( "saveResult", true, currentFilePath );
 			} catch ( err ) {
 				console.log( "Save error:", err );
@@ -1946,7 +1985,7 @@ app.whenReady().then( async () => {
 			const { text, changed } = setSectionTargets( raw, targets ?? {} );
 			if ( !changed ) return toast( "No sections to update" );
 			await fs.writeFile( currentFilePath, text, "utf-8" );
-			win.webContents.send( "content", await readAndConvertScript( currentFilePath ) );
+			sendScriptContent( win, await readAndConvertScript( currentFilePath ) );
 			toast( `Targets saved for ${ changed } section${ changed === 1 ? "" : "s" }` );
 		} catch ( err ) {
 			console.log( "Targets error:", err );
@@ -1972,14 +2011,14 @@ app.whenReady().then( async () => {
 
 	ipcMain.on( "previewMarkdown", async ( _event, markdown ) => {
 		const html = await convertMarkdown( markdown );
-		win.webContents.send( "content", html );
+		win.webContents.send( "content", html, scriptSnapshots.get( html ) ?? null );
 	} );
 
 	ipcMain.on( "reloadContent", async () => {
 		if ( currentFilePath ) {
 			const md = await readAndConvertScript( currentFilePath );
 			if ( md ) {
-				win.webContents.send( "content", md );
+				sendScriptContent( win, md );
 			}
 		}
 	} );
@@ -2069,10 +2108,10 @@ app.whenReady().then( async () => {
 			} );
 			if ( !md ) {
 				slots[activeSlot] = null;
-				win.webContents.send( "content", emptySlotHtml( activeSlot ) );
+				sendScriptContent( win, emptySlotHtml( activeSlot ) );
 			}
 		} else if ( slots.some( Boolean ) ) {
-			win.webContents.send( "content", emptySlotHtml( activeSlot ) );
+			sendScriptContent( win, emptySlotHtml( activeSlot ) );
 		}
 	} );
 } );

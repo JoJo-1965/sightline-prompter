@@ -14,7 +14,7 @@ import {
 	getReadingAnchor,
 	buildWordIndex
 } from "./word-index.js";
-import { SHORTCUTS } from "./shortcuts.js";
+import { helpTabs, voiceHelpTabs, renderHelpTabs } from "./help-tabs.js";
 import {
 	startSteadyScroll,
 	stopSteadyScroll,
@@ -28,7 +28,7 @@ import {
 import { decorateScript } from "./decorate.js";
 import { readDirectives, parseDirective, parseDuration } from "./directives.js";
 import { createTakeLog } from "./take-log.js";
-import { COMMAND_HELP, COMMANDS, wakeLabel } from "./voice-commands.js";
+import { COMMANDS, wakeLabel } from "./voice-commands.js";
 import { heardForms, normalizeWord } from "./word-fixes.js";
 import { createScratchRecorder } from "./scratch-audio.js";
 import { createLevelMeter, soundCheckVerdict } from "./level-meter.js";
@@ -76,12 +76,27 @@ let takeLog = new Map(); // section index -> result
 let controlOpen = false; // the control window is showing a copy of the script
 const pacingEl = document.getElementById( "pacing" );
 const summaryModal = document.getElementById( "take-summary" );
+let headGuideState = null;
+window.electron.onHeadGuideState( ( value ) => {
+	headGuideState = value;
+} );
 // Every take of every section, for the edit (File > Export Take Log), each
 // with its section's sentences for the edit pack.
 const recording = createTakeLog( {
 	sentences: scriptSentences,
 	loudness: ( from, to ) => levelMeter.measure( from, to ),
 	onTake: takeLogged,
+	snapshot: () => recordingScriptSnapshot(),
+	obsState: () => obsUi.state(),
+	guideState: () => headGuideState
+		? { ...headGuideState, pose: { x: headGuideState.x, y: headGuideState.y, scale: headGuideState.scale } }
+		: ( {
+			shown: !!settings.showHeadGuide, fullscreen: !!settings.headGuideFullscreen,
+			chromeless: !!settings.headGuideChromeless, bounds: settings.headGuideBounds,
+			pose: { x: settings.headGuideX, y: settings.headGuideY, scale: settings.headGuideScale },
+			ideal: settings.headGuideIdeal, showIdeal: settings.headGuideShowIdeal !== false,
+			captureStatus: "Separate protected overlay; actual OBS capture route requires verification"
+		} ),
 	onOpen: ( index, title, take ) => obsUi.chapter( `Section ${ index + 1 } · Take ${ take } · ${ title }` ),
 	onMarker: label => obsUi.chapter( label || "Sightline marker" )
 } );
@@ -121,6 +136,16 @@ let settings = {
 };
 let cuePhrases = [];
 let lastScriptHtml = null;
+let sourceSnapshot = null;
+let recordingSnapshotCache = null;
+function recordingScriptSnapshot() {
+	const sections = [ ...md.querySelectorAll( "h2" ) ].map( ( el, i ) => ( { section: i + 1, id: el.id || String( i + 1 ), title: el.textContent } ) );
+	const key = JSON.stringify( { source: sourceSnapshot?.id, html: lastScriptHtml, cues: cuePhrases, sections } );
+	if ( recordingSnapshotCache?.key === key ) return recordingSnapshotCache.value;
+	const value = { ...sourceSnapshot, id: crypto.randomUUID(), html: lastScriptHtml ?? "", renderedHtml: md.innerHTML, capturedAt: new Date().toISOString(), sections, cuePhrases: [ ...cuePhrases ] };
+	recordingSnapshotCache = { key, value };
+	return value;
+}
 
 function renderScript( html ) {
 	md.innerHTML = html;
@@ -698,6 +723,7 @@ document.addEventListener( "keydown", ( event ) => {
 	if ( isEditMode ) return;
 	// Leave keys alone while a dialog (Settings, API key, mic) is open.
 	if ( document.querySelector( ".modal:not(.hidden)" ) ) return;
+	if ( event.target.closest?.( "#voice-help" ) ) return;
 
 	const plainKey = !event.metaKey && !event.ctrlKey && !event.altKey;
 	if ( event.key === "Escape" && closePanels() ) {
@@ -863,7 +889,9 @@ if ( resizeHandle ) {
 }
 
 // Handle content loaded from main process
-window.electron.onContent( ( content ) => {
+window.electron.onContent( ( content, snapshot ) => {
+	sourceSnapshot = snapshot ?? null;
+	recordingSnapshotCache = null;
 	if ( md ) {
 		lastScriptHtml = content;
 		renderScript( content );
@@ -1487,6 +1515,8 @@ async function stopAutoScrollSession() {
 // scrolling" chosen, the mic listens for commands only, the rest of the time.
 
 const COMMAND_LABELS = {
+	"guide-on": "guide on",
+	"guide-off": "guide off",
 	pause: "pause",
 	go: "go",
 	slower: "slower",
@@ -1595,7 +1625,7 @@ function voiceMiss( words ) {
 }
 
 // "Prompter, what can I say?": every command on a card, until the next
-// command, a click, Esc or 15 seconds.
+// command, Close or Esc. Tabs stay open while the speaker reads them.
 function showVoiceHelp() {
 	let card = document.getElementById( "voice-help" );
 	if ( !card ) {
@@ -1605,22 +1635,22 @@ function showVoiceHelp() {
 		card.setAttribute( "aria-label", "Voice commands" );
 		const title = document.createElement( "h4" );
 		title.id = "voice-help-title";
-		const list = document.createElement( "dl" );
-		for ( const [ say, does ] of COMMAND_HELP ) {
-			const dt = document.createElement( "dt" );
-			dt.textContent = say;
-			const dd = document.createElement( "dd" );
-			dd.textContent = does;
-			list.append( dt, dd );
-		}
-		card.append( title, list );
-		card.addEventListener( "click", hideVoiceHelp );
+		const list = document.createElement( "div" );
+		list.id = "voice-help-list";
+		const close = document.createElement( "button" );
+		close.type = "button";
+		close.textContent = "Close";
+		close.addEventListener( "click", hideVoiceHelp );
+		card.append( title, list, close );
+		card.addEventListener( "keydown", ( event ) => {
+			if ( event.key === "Escape" ) hideVoiceHelp();
+		} );
 		hud.appendChild( card );
 	}
 	document.getElementById( "voice-help-title" ).textContent = `Say “${ wakeLabel( settings.wakeWord ) }”, then:`;
+	renderHelpTabs( document.getElementById( "voice-help-list" ), voiceHelpTabs( settings ), "voice-help" );
 	card.classList.remove( "hidden" );
 	clearTimeout( showVoiceHelp.timer );
-	showVoiceHelp.timer = setTimeout( hideVoiceHelp, 15000 );
 }
 
 function hideVoiceHelp() {
@@ -1672,6 +1702,12 @@ function runVoiceCommand( id, value ) {
 	if ( isEditMode ) return;
 	if ( id === "obs-record" || id === "obs-finish" ) {
 		runRemoteAction( id );
+		return;
+	}
+	if ( id === "guide-on" || id === "guide-off" ) {
+		hideVoiceHelp();
+		window.electron.headGuide( id === "guide-on" ? "show" : "hide" );
+		showToast( id === "guide-on" ? "Head guide on" : "Head guide off" );
 		return;
 	}
 	hideVoiceHelp();
@@ -4254,28 +4290,7 @@ const helpModal = document.getElementById( "help-modal" );
 
 function renderHelp() {
 	const list = document.getElementById( "help-list" );
-	if ( !list || list.childElementCount ) return;
-	for ( const { section, keys } of SHORTCUTS ) {
-		const sectionEl = document.createElement( "div" );
-		sectionEl.className = "help-section";
-		const heading = document.createElement( "h5" );
-		heading.textContent = section;
-		const dl = document.createElement( "dl" );
-		for ( const [ combos, description ] of keys ) {
-			const dt = document.createElement( "dt" );
-			combos.forEach( ( combo, i ) => {
-				if ( i ) dt.append( " " );
-				const kbd = document.createElement( "kbd" );
-				kbd.textContent = combo;
-				dt.appendChild( kbd );
-			} );
-			const dd = document.createElement( "dd" );
-			dd.textContent = description;
-			dl.append( dt, dd );
-		}
-		sectionEl.append( heading, dl );
-		list.appendChild( sectionEl );
-	}
+	if ( list ) renderHelpTabs( list, helpTabs( settings, document.body.classList.contains( "points-mode" ) ), "help" );
 }
 
 document.getElementById( "help-guide" )?.addEventListener( "click", () => {

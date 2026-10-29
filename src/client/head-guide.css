@@ -24,3 +24,15 @@ body.fullscreen #stage { inset: 0; border: 0; }
 body.fullscreen header, body.fullscreen footer { z-index: 2; }
 body.fullscreen header { -webkit-app-region: no-drag; }
 body.fullscreen #resize { display: none; }
+.ideal .line { stroke: #fff; stroke-dasharray: 5 9; opacity: .55; }
+.ideal { pointer-events: none; }
+.ideal .pose-label { fill: #fff; }
+#head { cursor: move; touch-action: none; }
+#head ellipse { pointer-events: all; }
+#adjust-panel { position: absolute; z-index: 4; left: 8px; top: 38px; width: min(360px, 94vw); padding: 12px; border-radius: 8px; background: #15222bf5; border: 1px solid #657282; text-wrap: pretty; }
+#adjust-panel[hidden] { display: none; }
+#adjust-panel p { font-size: 12px; line-height: 1.5; }
+#adjust-panel hr { border: 0; border-top: 1px solid #657282; margin: 10px 0; }
+.placements button[aria-pressed="true"] { border-color: #72efce; background: #34535c; }
+.pose-arrows { display: flex; gap: 7px; margin-top: 9px; }
+body.chromeless #adjust-panel, body.locked #adjust-panel { visibility: hidden; }

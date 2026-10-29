@@ -3,6 +3,10 @@ import assert from "node:assert/strict";
 import { matchCommand, createCommandListener, sectionNumber } from "../src/client/voice-commands.js";
 
 assert.equal( matchCommand( [ "record", "take" ] ), "obs-record" );
+assert.equal( matchCommand( [ "guide", "on" ] ), "guide-on" );
+assert.equal( matchCommand( [ "guide", "off" ] ), "guide-off" );
+assert.equal( matchCommand( [ "show", "the", "guide" ] ), "guide-on" );
+assert.equal( matchCommand( [ "hide", "the", "guide" ] ), "guide-off" );
 assert.equal( matchCommand( [ "start", "recording" ] ), "obs-record" );
 assert.equal( matchCommand( [ "finish", "recording" ] ), "obs-finish" );
 assert.equal( matchCommand( [ "stop", "recording" ] ), "obs-finish" );

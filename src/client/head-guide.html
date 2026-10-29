@@ -9,15 +9,36 @@
 <body>
 <header>
 <strong>Head-position guide</strong>
-<button id="smaller" title="Smaller head outline">−</button>
-<button id="bigger" title="Larger head outline">+</button>
+<button id="smaller" title="Smaller actual position outline" aria-label="Smaller actual position outline">−</button>
+<button id="bigger" title="Larger actual position outline" aria-label="Larger actual position outline">+</button>
 <input id="opacity" aria-label="Guide opacity" title="Guide opacity" type="range" min="20" max="100" value="75">
 <button id="colour" title="Switch guide colour">Colour</button>
+<button id="adjust" title="Move the outline and save an ideal reference" aria-expanded="false">Adjust</button>
 <button id="fullscreen" title="Fill this screen / restore · Ctrl+Alt+H">Fullscreen</button>
 <button id="chrome" title="Hide controls · Ctrl+Shift+H to restore">Clean</button>
 <button id="lock" title="Click-through. Ctrl+Shift+H to show and unlock">Lock</button>
 <button id="close" aria-label="Close guide">×</button>
 </header>
+<div id="adjust-panel" hidden>
+<div class="placements" aria-label="Saved overlay placements">
+<button type="button" data-place="centre">Centre</button>
+<button type="button" data-place="beside">Beside panel</button>
+</div>
+<hr>
+<strong>Actual position (manual)</strong>
+<div class="pose-arrows">
+<button type="button" data-y="-1" aria-label="Move outline up">↑</button>
+<button type="button" data-x="-1" aria-label="Move outline left">←</button>
+<button type="button" data-x="1" aria-label="Move outline right">→</button>
+<button type="button" data-y="1" aria-label="Move outline down">↓</button>
+</div>
+<p id="pose-value"></p>
+<button type="button" id="save-ideal">Save as ideal</button>
+<button type="button" id="reset-pose">Back to ideal</button>
+<button type="button" id="ideal-visible">Show ideal</button>
+<p>Drag the solid outline to match your head in the preview, or use the arrows and size buttons. The dashed outline marks your saved ideal position.</p>
+<p>This is a manual reference check; it does not track your face.</p>
+</div>
 <div id="stage">
 <svg viewBox="0 0 1000 562.5" preserveAspectRatio="xMidYMid meet" aria-label="Camera framing guide">
 <rect class="line quiet dashed" x="50" y="28" width="900" height="506.5" rx="3"/>
@@ -28,6 +49,7 @@
 <ellipse class="line" cx="500" cy="187" rx="86" ry="121"/>
 <path class="line" d="M460 298 L455 329 Q424 345 368 367 Q322 384 297 459 M540 298 L545 329 Q576 345 632 367 Q678 384 703 459"/>
 <path class="line quiet" d="M436 155h28m72 0h28"/>
+<text class="label pose-label" x="605" y="215">Actual position</text>
 </g>
 <text class="label" x="610" y="72">Headroom</text>
 <path class="line quiet" d="M603 66H590M590 40V66M583 40H597"/>

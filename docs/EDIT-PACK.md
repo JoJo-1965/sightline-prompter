@@ -257,7 +257,33 @@ Repeated status polls do not add entries unless the state or file reference
 changes. An output path is normally supplied when OBS finishes recording.
 Export after that confirmation to include it. The path belongs to the OBS
 computer; the video itself is not copied into the pack. Earlier exports,
-or another script's closed session, are not automatically rewritten.
+are not automatically rewritten. Within the same app session, the recording
+ledger also updates saved logs for earlier scripts that referenced the same
+recording. A deleted log is not recreated.
+
+New takes add `obsStart` and `obsEnd`; markers and take-start/end events add
+an `obs` reference. Each includes `recordingId`, estimated `seconds` into the
+recording, the sample time and age, and a timing-quality description.
+`obsRecordings` links that identifier to the confirmed filename and observed
+state transitions. Stale or disconnected clocks, and unverified offsets
+after automatic file splitting, have null positions. They are not exact
+edit points. Reopening Sightline does not recover a missing association.
+
+## Recording-script snapshots (development branch)
+
+Each take's `scriptSnapshotId` identifies the version present when it began.
+The pack includes `script-snapshots.json` and numbered rendered HTML copies,
+with section IDs and slide-cue phrases. Verified original bytes are stored
+as base64 with SHA-256; UTF-8 Markdown, text and HTML originals are also
+exported as readable files. Binary source documents remain recoverable from
+the base64 bytes. A source changed during conversion is not marked verified.
+Later edits to the original file do not replace the snapshot already read.
+
+`head-guide.json` contains per-take snapshots of the separate guide: actual
+and ideal head poses, visibility, window bounds, fullscreen state and saved
+Centre/Beside placements. Capture-route status is explicitly unverified
+until the actual OBS output has been checked. The guide is not added as an
+OBS source. No video or camera frames are embedded in these snapshots.
 
 Do not treat these observations as a continuous or frame-accurate timecode
 map. Connection loss can leave gaps or unknown file associations. Use the

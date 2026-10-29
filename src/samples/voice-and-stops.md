@@ -51,6 +51,8 @@ the one to use. Not happy? "Prompter, scrap that". [Say: "Prompter, keeper".] {s
 
 ## Finding your way {target: 0:30}
 
+[Optional camera framing: say Prompter guide on. In Adjust, move and scale Actual position to match your preview, then Save as ideal. The dashed Ideal position stays fixed while you check a new position. Say Prompter guide off to hide the guide. This is a manual check, without face tracking.]
+
 {marker: Finding your way} Forgotten a command? Say "Prompter, what can I say?" and they all
 appear on the screen. [Say: "Prompter, what can I say?"]
 

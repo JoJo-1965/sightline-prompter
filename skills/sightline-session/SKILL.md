@@ -149,6 +149,17 @@ Word timings, sentences and captions exist only for takes read in **voice
 mode**; steady-scrolling takes have their times but no words. Times are the
 prompter's best knowledge, not frame-accurate, so say so with any cut list.
 
+## Production references on the development branch
+
+On the OBS development branch, prefer each take's `scriptSnapshotId` and
+the pack's `script-snapshots.json` over reopening a source file that may
+have changed. `obsStart`, `obsEnd` and event `obs` fields are estimated
+recording-clock positions; resolve `recordingId` through `obsRecordings`.
+Null/stale/split-file positions are unknown, not zero. Guide snapshots
+include manual Ideal/Actual poses, live bounds and capture-status wording;
+they do not establish face tracking or verified recording exclusion.
+Publication remains held until all five production requirements are validated.
+
 ## Don't
 
 - Don't edit, move or delete anything in Sightline's take-logs folder

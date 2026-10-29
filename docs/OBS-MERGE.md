@@ -66,9 +66,30 @@ saved placement and the Stream Deck button-token API route.
    includes this integration until it has actually shipped. Publish amended
    privacy wording alongside that release.
 
-Recording references currently update the active script's log. Earlier
-exports, logs for scripts closed before OBS finishes, and reconnect gaps
-may lack the final file association. OBS files are never copied or deleted.
+Recording references update saved logs for all scripts associated with that
+recording during the same app session. Earlier exports and reconnect/restart
+gaps may lack the final association. OBS files are never copied or deleted.
+
+## Mandatory production validation before publication
+
+Joanne has explicitly held publication until all five are validated:
+exact recording-script snapshots; confirmed filenames and estimated OBS
+clock positions on takes/markers; session guide metadata and capture
+exclusion; separate clean camera and unprocessed microphone; a known
+recorded picture-and-sound sync route. Unit and isolated-app checks cover
+the snapshot, ledger, help and manual guide features. Clean-track and
+recorded-sync validation remain pending. No tags or releases while held.
+
+The guide now has independent Ideal position and Actual position outlines,
+manual drag/nudge/scale, saved Centre/Beside placements and per-take metadata.
+It performs no face tracking. A real camera test must check the guide stays
+out of the recorded picture and assess physical lip sync separately.
+
+Run `npm test` for unit checks and `npm run test:production-app` for the
+isolated Electron checks. The latter uses a temporary profile, a simulated
+authenticated OBS server and disabled microphone features; it does not
+connect to the user's OBS. Port 9335 must be free. Screenshots and logs are
+written to temporary folders, reported on completion.
 
 ## Separate follow-up work
 

@@ -12,6 +12,23 @@ complex builds come later.
 
 ## Where it stands (29 October 2026)
 
+**Publication hold:** Joanne asked to validate all five Academy production
+requirements before the next release. Work stays on the OBS branch, with
+no merge, tags, publication or website deployment. The Stream Deck repository
+remains private.
+
+| Production requirement | Current branch status |
+| --- | --- |
+| Exact recording script in the edit pack | Implemented; source-byte and snapshot regression checks pass |
+| OBS filename and recording-clock references per take | Implemented with explicit estimated/unknown timing; final-path ledger covers scripts used during the same app session; real-recording validation pending |
+| Session head guide and edit-pack metadata | Manual Ideal/Actual outlines, separate Centre/Beside placements and live bounds implemented; isolated app checks pass; capture-route verification pending |
+| Separate clean camera and unprocessed microphone | Source Record is installed on the test machine; recording and extraction still require validation |
+| Recorded picture-and-sound sync reference | Known OBS recording route and physical camera sync validation still pending |
+
+The guide's actual outline is a manual reference, with movement and scaling;
+it does not detect or track a face. F1 and voice help now use grouped tabs
+and hide commands for disabled modes. Guide on/off are explicit voice commands.
+
 **v1.0.6 is the latest release** (29 October 2026): notes mode (49), pace per
 take (43), rehearsal results (44), named markers (45), restarts from a marker
 (46), the choice of wake word, the recordings library (36), teach it your words

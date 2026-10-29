@@ -78,8 +78,9 @@ export function createObs( { onState = () => {}, WebSocketClass = globalThis.Web
 		const fresh = data.outputActive && ( !state.recordingId || state.recording === "stopped" );
 		publish( {
 			recording,
-			...( fresh ? { recordingId: randomUUID(), outputPath: null } : {} ),
-			outputDuration: Number.isFinite( data.outputDuration ) ? data.outputDuration : state.outputDuration,
+			...( fresh ? { recordingId: randomUUID(), outputPath: null, fileClockUnknown: false } : {} ),
+			outputDuration: Number.isFinite( data.outputDuration ) ? data.outputDuration : fresh ? null : state.outputDuration,
+			durationObservedAt: Number.isFinite( data.outputDuration ) ? new Date().toISOString() : fresh ? null : state.durationObservedAt,
 			error: null
 		} );
 	}
@@ -160,7 +161,10 @@ export function createObs( { onState = () => {}, WebSocketClass = globalThis.Web
 							recordStatus( { outputActive: record.outputActive, outputPaused: record.outputState === "OBS_WEBSOCKET_OUTPUT_PAUSED" } );
 							if ( record.outputPath ) publish( { outputPath: record.outputPath } );
 						}
-						if ( d.eventType === "RecordFileChanged" ) publish( { outputPath: d.eventData.newOutputPath, recordingId: randomUUID() } );
+						if ( d.eventType === "RecordFileChanged" ) {
+							if ( d.eventData.oldOutputPath ) publish( { outputPath: d.eventData.oldOutputPath } );
+							publish( { outputPath: d.eventData.newOutputPath, recordingId: randomUUID(), fileClockUnknown: true } );
+						}
 					}
 				} catch {
 					if ( current === generation ) lost( "OBS connection could not be confirmed; check its version and password" );

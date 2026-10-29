@@ -10,6 +10,7 @@ contextBridge.exposeInMainWorld( "electron", {
 	// Control bar, slots and window IPC
 	windowControl: action => ipcRenderer.send( "windowControl", action ),
 	headGuide: ( action = "toggle" ) => ipcRenderer.send( "headGuideAction", action ),
+	onHeadGuideState: callback => on( "headGuideState", callback ),
 	onWindowState: callback => on( "windowState", callback ),
 	onMenuWindowControl: callback => on( "menuWindowControl", callback ),
 	popupMenu: ( x, y ) => ipcRenderer.send( "popupMenu", x, y ),
@@ -90,7 +91,7 @@ contextBridge.exposeInMainWorld( "electron", {
 	onMenuImportSettings: callback => on( "menuImportSettings", callback ),
 	onMenuGoToStart: callback => on( "menuGoToStart", callback ),
 
-	onContent: callback => ipcRenderer.on( "content", ( _event, content ) => callback( content ) ),
+	onContent: callback => ipcRenderer.on( "content", ( _event, content, snapshot ) => callback( content, snapshot ) ),
 	onFontSize: callback => ipcRenderer.on( "fontSize", ( _event, size ) => callback( size ) ),
 	saveFontSize: size => ipcRenderer.send( "fontSize", size ),
 	onMirrored: callback => ipcRenderer.on( "mirrored", ( _event, value ) => callback( value ) ),

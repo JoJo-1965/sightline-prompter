@@ -222,6 +222,10 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ### Next release
 
+- **Manual framing reference (development):** separate labelled **Ideal position** and **Actual position** outlines. Drag, nudge and scale the actual outline, save an ideal reference, or return to it. Centre and Beside panel retain separate window placements; both outlines persist across scripts and are included in new edit packs. No automatic face tracking
+- **Grouped help (development):** F1 and “what can I say” use tabs. Help follows enabled modes, including OBS permissions. “Prompter, guide on” and “guide off” explicitly show or hide the guide
+- **Production records (development):** edit packs retain the script snapshot read for each take, guide metadata and estimated OBS clock references. A recording ledger can attach the final OBS filename to scripts used earlier in the same app session. **Publication remains held pending validation of all five Academy production requirements**, including separate clean tracks and a recorded sync route
+
 - **Head guide for an OBS projector stack (development):** borderless fullscreen on its current monitor, Clean to hide controls, and restoration of its windowed size. Global **Ctrl+Alt+H** and a second Stream Deck action toggle fullscreen; **Ctrl+Shift+H** reveals controls without leaving it. The guide stays above the projector with prompter text above the guide; the app restores the prompter's Keep on top preference when it closes. Check against a real OBS projector, especially its own Always on top option
 
 - **Floating head-position guide (development):** a transparent overlay with eye line, head and shoulder outline, size, opacity and colour controls. Open from **☰ > Window** or global **Ctrl+Shift+H** (Cmd+Shift+H on Mac). Show/unlock, then hide on the next press; Lock makes clicks pass through. Position and preferences are remembered. A matching Stream Deck action shows OFF, ON or LOCK. No OBS connection is required. It is not an OBS source; capture protection stays enabled independently of the prompter. Whole-screen capture needs a short recording check. On the OBS branch, awaiting merge and release

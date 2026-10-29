@@ -875,7 +875,26 @@ body.controls-hidden * {
 
 /* --- Help --- */
 
+.help-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 12px; }
+.help-tabs button { padding: 7px 12px; border: 1px solid #657282; border-radius: 6px; background: #26313c; color: #edf3fa; text-wrap: balance; }
+.help-tabs button[aria-selected="true"] { background: #315b79; border-color: #8fd3ff; }
+.help-tabs button:focus-visible { outline: 2px solid #ffd54a; outline-offset: 2px; }
+.help-pages { min-height: 0; overflow-y: auto; padding-right: 8px; }
+.help-page[hidden] { display: none !important; }
+.help-page:focus-visible { outline: 1px solid #8fd3ff; }
+#help-list, #voice-help-list { display: flex; flex-direction: column; min-height: 0; overflow: hidden; columns: auto !important; }
+#help-list { flex: 0 1 auto; }
+#voice-help-list { max-height: 58vh; margin-bottom: 12px; }
+.help-page .help-section dl, #voice-help .help-page dl { grid-template-columns: minmax(115px, .4fr) minmax(0, 1fr); }
+.help-page .help-section dt { white-space: normal; overflow-wrap: anywhere; }
+.help-page dd, .help-page h5 { text-wrap: pretty; }
+.help-page kbd { white-space: normal; }
+.help-page .help-section { margin-bottom: 18px; }
+
 .help-content {
+	display: flex;
+	flex-direction: column;
+	height: auto;
 	width: min(980px, 94vw);
 	max-height: 88vh;
 	overflow-y: auto;
@@ -1017,11 +1036,15 @@ body.editing .panel {
 }
 
 #voice-help {
+	width: min(760px, 92vw);
+	max-height: 86vh;
+	display: flex;
+	flex-direction: column;
 	position: fixed;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	max-width: min(560px, 92vw);
+	max-width: min(760px, 92vw);
 	padding: 16px 22px;
 	font-family: "Segoe UI", Helvetica, Arial, sans-serif;
 	font-size: 15px;
@@ -1030,7 +1053,7 @@ body.editing .panel {
 	border: 1px solid rgba(255, 213, 74, 0.6);
 	border-radius: 10px;
 	z-index: 1400;
-	cursor: pointer;
+	cursor: default;
 }
 
 #voice-help.hidden {

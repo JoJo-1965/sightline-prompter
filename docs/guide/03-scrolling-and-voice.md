@@ -130,7 +130,8 @@ that*, with the words it heard, so you can say it again.
 | **scrap that** (or bin it, bad take) | Marks that take to be thrown away |
 | **resync** (or find me) | Voice mode: if it has lost you, keep reading and it finds your place anywhere in the script |
 | **bigger** / **smaller** | Text size |
-| **what can I say** (or help, commands) | Shows every command on the prompter, until your next command, a click, Esc or 15 seconds |
+| **what can I say** (or help, commands) | Opens commands in grouped tabs; stays until your next command, Close or Esc. OBS commands appear only with OBS recording controls enabled |
+| **guide on · guide off** | Shows or hides the separate head-position guide; repeats keep the requested state |
 | **close** (or cancel, never mind) | Hides that list |
 | **record take** (or start recording) | Optional OBS integration: confirm recording, then start prompting. Requires enabled OBS recording controls |
 | **finish recording** (or stop recording) | Optional OBS integration: stop prompting and finish the OBS recording |

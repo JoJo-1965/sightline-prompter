@@ -9,6 +9,32 @@ Drag its title bar and bottom-right resize handle to fit the outer dotted
 rectangle to your 16:9 preview. Adjust the head outline with +/−, change
 opacity or colour, then **Lock** to pass clicks through to the preview.
 
+**Adjust** opens the manual framing check. The solid **Actual position**
+outline can be dragged to match your head in the preview, nudged up, down,
+left or right, and resized with **+ / −**. **Save as ideal** copies that
+position and size to the dashed **Ideal position** outline. Then move the
+actual outline independently to compare your current framing with the
+reference. **Back to ideal** restores it; **Hide ideal** hides the reference.
+This is a manual check, without face detection or automatic tracking.
+
+![Separate ideal and actual head-position outlines](images/head-guide.png)
+
+**Centre** and **Beside panel** recall separate overlay placements. Move or
+resize the window after choosing one to save that placement for next time.
+These controls position the overlay window; **Actual position** adjusts the
+head shape inside it. The ideal, actual and window settings stay in place
+when you change scripts. New edit packs retain the guide snapshot per take,
+including the live window bounds, fullscreen state and both outlines.
+
+With voice commands enabled and listening, **“Prompter, guide on”** shows
+the guide and **“Prompter, guide off”** hides it. Repeating either command
+keeps the requested state. Use your selected wake word if different.
+
+F1 help has a **Head guide** tab for these controls. The other tabs follow
+enabled modes, so disabled OBS recording controls do not crowd the help.
+
+![Grouped help with the Head guide tab selected](images/help-tabs.png)
+
 The hotkey, menu and Stream Deck key all behave alike: show if closed, unlock
 if locked, otherwise hide. The next opening is unlocked. If another app has
 claimed the hotkey, a toast explains how to recover through the menu or key.

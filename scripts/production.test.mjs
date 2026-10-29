@@ -1,0 +1,81 @@
+import assert from "node:assert/strict";
+import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
+import { readScriptSnapshot } from "../src/script-snapshot.js";
+import { createTakeLog } from "../src/client/take-log.js";
+import { editPack } from "../src/client/edit-pack.js";
+import { obsPosition } from "../src/client/obs-position.js";
+import { createObsLedger } from "../src/obs-ledger.js";
+import { helpTabs, voiceHelpTabs } from "../src/client/help-tabs.js";
+import { guidePose } from "../src/client/guide-pose.js";
+
+assert.deepEqual( guidePose( { x: -90, y: 85, scale: 8 } ), { x: -45, y: 45, scale: 2 } );
+assert.deepEqual( guidePose( { x: NaN, y: null, scale: Infinity } ), { x: 0, y: 0, scale: 1 } );
+assert.deepEqual( guidePose( null ), { x: 0, y: 0, scale: 1 } );
+assert.deepEqual( guidePose( { x: 0, y: 0, scale: 0.4 } ), { x: 0, y: 0, scale: 0.4 } );
+
+const now = Date.parse( "2026-10-29T12:00:00Z" );
+const live = { connection: "connected", recording: "recording", recordingId: "recording-A", outputDuration: 10000, durationObservedAt: new Date( now ).toISOString() };
+assert.equal( obsPosition( live, now + 1200 ).seconds, 11.2 );
+assert.equal( obsPosition( live, now - 1000 ).seconds, 9 );
+assert.equal( obsPosition( live, now + 6000 ).seconds, null );
+assert.equal( obsPosition( { ...live, connection: "disconnected" }, now ).seconds, null );
+assert.equal( obsPosition( { ...live, recording: "paused" }, now + 1200 ).seconds, 10 );
+assert.equal( obsPosition( null, now ), null );
+assert.equal( obsPosition( { ...live, fileClockUnknown: true }, now ).seconds, null );
+
+const containsObs = tabs => tabs.some( t => t.sections.some( s => /OBS/.test( s.section ) ) );
+assert.equal( containsObs( helpTabs( { obsEnabled: false, voiceCommands: "off" } ) ), false );
+assert.equal( voiceHelpTabs( { obsEnabled: false } ).some( t => t.label === "OBS" ), false );
+assert.equal( voiceHelpTabs( { obsEnabled: true, obsControls: false } ).some( t => t.label === "OBS" ), false );
+assert.equal( voiceHelpTabs( { obsEnabled: true, obsControls: true } ).some( t => t.label === "OBS" ), true );
+assert.equal( helpTabs( { voiceCommands: "off" } ).some( t => t.label === "Voice" ), false );
+assert.ok( helpTabs( { obsEnabled: false } ).some( t => t.label === "Head guide" ) );
+
+const dir = await fs.mkdtemp( path.join( os.tmpdir(), "sightline-snapshot-" ) );
+const file = path.join( dir, "module.md" );
+try {
+	assert.equal( await readScriptSnapshot( file ), null, "a missing recent file must not break startup" );
+	const original = "# Course\n\n## Section one {target: 0:30}\n\n[smile] These are the original words.\n{marker: Start}\n";
+	await fs.writeFile( file, original );
+	const snapshot = await readScriptSnapshot( file );
+	await fs.writeFile( file, "## Edited later\n\nDifferent words." );
+	let time = now;
+	const ledger = createObsLedger();
+	ledger.observe( { ...live, observedAt: new Date( now ).toISOString() } );
+	const log = createTakeLog( { clock: () => time, snapshot: () => snapshot, obsState: () => ( { ...live, durationObservedAt: new Date( time ).toISOString(), outputDuration: 10000 + time - now } ), guideState: () => ( { shown: true, pose: { x: 2, y: -3, scale: 1.1 } } ) } );
+	log.tick( { active: true, index: 0, title: "Section one", advanced: true } );
+	time += 2000;
+	log.marker( { label: "Keep this" } );
+	log.tick( { active: true, index: 0, advanced: true } );
+	log.jump( "again" );
+	log.tick( { active: true, index: 0, title: "Section one" } );
+	time += 2000;
+	log.tick( { active: false, index: 0 } );
+	const data = log.data();
+	assert.equal( data.takes[0].scriptSnapshotId, snapshot.id );
+	assert.equal( data.takes[0].obsStart.seconds, 10 );
+	assert.equal( data.takes[0].obsEnd.seconds, 12 );
+	assert.equal( data.takes[1].obsStart.recordingId, "recording-A" );
+	assert.equal( data.events.find( e => e.type === "marker" ).obs.seconds, 12 );
+	ledger.observe( { ...live, recording: "paused", observedAt: new Date( time ).toISOString() } );
+	ledger.observe( { ...live, recording: "recording", observedAt: new Date( time ).toISOString() } );
+	ledger.observe( { ...live, recording: "stopped", outputPath: "D:/Production/Sightline-Academy/recording-A.mov", observedAt: new Date( time ).toISOString() } );
+	const linked = ledger.attach( data );
+	assert.equal( linked.obsRecordings[0].outputPath, "D:/Production/Sightline-Academy/recording-A.mov" );
+	assert.equal( linked.obsRecordings[0].events.length, 4 );
+	const pack = editPack( linked );
+	assert.equal( pack["script-001-recording-script.md"], original );
+	assert.ok( pack["script-001.html"].includes( "original words" ) );
+	assert.ok( pack["head-guide.json"].includes( "\"y\": -3" ) );
+	assert.ok( Object.values( pack ).every( value => typeof value === "string" ), "pack API remains text files" );
+	const restored = createTakeLog();
+	restored.load( linked );
+	assert.equal( restored.data().obsRecordings[0].outputPath, linked.obsRecordings[0].outputPath );
+	assert.equal( restored.data().scriptSnapshots[0].source.sha256, snapshot.source.sha256 );
+} finally {
+	await fs.unlink( file );
+	await fs.rmdir( dir );
+}
+console.log( "production snapshots, OBS clock mapping, cross-module references and mode-aware help pass" );

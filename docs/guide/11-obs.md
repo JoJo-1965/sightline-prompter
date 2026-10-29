@@ -84,8 +84,20 @@ These observations are control-message timing, not frame-accurate sync.
 Keep the slate or scratch-audio synchronisation when accuracy matters.
 Save or export the active script's edit pack after recording has finished
 to include its confirmed file reference. Earlier exports are not rewritten.
-After a connection break, or when a script was closed before recording
-finished, a file reference may be unknown; do not guess the association.
+The same-session recording ledger also links the final path to saved logs
+for scripts used earlier in that recording. A connection break or app restart
+can leave a file reference unknown; do not guess the association.
+
+New takes and markers retain estimated positions against recent OBS clock
+samples, with their age and uncertainty. Stale clocks and unverified split-file
+offsets are left unknown. The edit pack also freezes the script version
+actually read and the guide's ideal/actual poses and live window bounds.
+See the [edit-pack contract](../EDIT-PACK.md#recording-script-snapshots-development-branch).
+
+Publication is held until the exact script, recording-to-take references,
+guide exclusion, separate clean camera/microphone tracks and recorded
+picture-and-sound sync route have all been validated. A protected preview
+overlay alone does not establish physical camera lip sync.
 
 ## If the connection fails
 

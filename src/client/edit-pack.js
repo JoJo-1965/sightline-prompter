@@ -256,5 +256,23 @@ export function editPack( data, readme = "" ) {
 		"captions.vtt": captions( data, "vtt" )
 	};
 	if ( readme ) files["README.md"] = readme;
+	if ( data.scriptSnapshots?.length ) {
+		files["script-snapshots.json"] = JSON.stringify( data.scriptSnapshots, null, 2 );
+		for ( const [ i, snapshot ] of data.scriptSnapshots.entries() ) {
+			const prefix = `script-${ String( i + 1 ).padStart( 3, "0" ) }`;
+			files[`${ prefix }.html`] = snapshot.renderedHtml ?? snapshot.html ?? "";
+			if ( snapshot.source?.encoding === "base64" && /^[\w.-]+$/.test( snapshot.source.name ) ) {
+				// Keep the text-file API contract; binary originals remain exactly
+				// recoverable from their base64 bytes and SHA-256 in the manifest.
+				files[`${ prefix }-${ snapshot.source.name }.base64`] = snapshot.source.content;
+				if ( /\.(md|markdown|txt|html|htm)$/i.test( snapshot.source.name ) ) {
+					try {
+						files[`${ prefix }-${ snapshot.source.name }`] = new TextDecoder( "utf-8", { fatal: true, ignoreBOM: true } ).decode( Uint8Array.from( atob( snapshot.source.content ), c => c.charCodeAt( 0 ) ) );
+					} catch { /* The exact bytes are retained in the base64 file. */ }
+				}
+			}
+		}
+	}
+	if ( data.guideSnapshots?.length ) files["head-guide.json"] = JSON.stringify( data.guideSnapshots, null, 2 );
 	return files;
 }

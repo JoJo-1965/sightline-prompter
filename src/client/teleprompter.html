@@ -478,12 +478,13 @@
   </div>
 </div>
 
-    <div id="help-modal" class="modal hidden">
+    <div id="help-modal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Help and shortcuts">
       <div class="modal-content help-content">
-        <h3>Keyboard shortcuts</h3>
+        <h3>Help and shortcuts</h3>
         <p class="field-hint">
           New here? <button type="button" id="help-guide" class="link-button">Open the user guide</button>
           (Shift+F1): every feature, with pictures.
+          Choose a topic below. Help follows the modes you have enabled.
         </p>
         <div id="help-list"></div>
         <p class="field-hint">
@@ -1124,6 +1125,7 @@
             <button type="button" id="settings-about-support">☕ Support Sightline</button>
           </p>
           <p class="field-hint">Sightline is free. If it helps you, you can say thanks with a coffee in Joanne's tip jar.</p>
+          <p class="field-hint">Optional OBS controls work alongside your camera preview. The floating guide compares a saved ideal head position with a manually adjusted actual position. Find setup and grouped shortcuts in Help and the user guide.</p>
           <p class="field-hint" id="settings-about-update" aria-live="polite"></p>
           <label class="check"
             ><input id="set-check-updates" type="checkbox" /> Check for updates when
