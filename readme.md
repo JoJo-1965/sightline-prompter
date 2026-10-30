@@ -234,6 +234,15 @@ RC2 refreshed its bundled help and added the reusable acceptance samples.
 published app remains **1.0.6**. No tag, merge, Marketplace publication or
 website deployment is part of this candidate.
 
+- **Safer script slots:** Clear this slot asks for confirmation, naming the slot
+  and script, with Cancel selected. The saved script stays on disk.
+- **Samples in the editor:** Edit script opens sample source in a labelled
+  read-only view. Save is disabled; **Save a copy…** creates your editable version
+  in another folder. Changing scripts also clears stale editor contents.
+- **Mirroring on the toolbar:** separate left/right and top/bottom icons toggle
+  each axis independently, with the same state as the quick panels and remotes.
+- **Stable help panels:** keyboard and voice help keep their dimensions across
+  topic changes. **Files (☰) > Settings…** provides a labelled preferences entry.
 - **Stream Deck compatibility:** **Settings > Controls > Stream Deck > Check compatibility**
   shows both reported versions, the required/recommended plugin and any update
   needed. Plugin **Test connection** checks the pairing automatically on opening

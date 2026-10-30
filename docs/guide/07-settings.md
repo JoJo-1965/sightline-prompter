@@ -145,7 +145,9 @@ Their keyboard shortcuts, voice commands and Stream Deck actions still work.
 **Files (☰)** holds New/Open, Google Docs, recent and sample scripts,
 Edit/Save/Save as, Clear slot, Recordings, the edit-pack export, settings-file
 import/export and Quit. It does not repeat playback, appearance, voice or
-window tools. The top bar keeps slots, playback, speed, size, backing and
+window tools. **Settings…** is always visible near the menu's foot, above Quit,
+even when its groups are folded. The top bar keeps slots, playback, speed,
+size, backing, independent mirror axes and
 mode switching; on narrow windows, Tools and Settings provide the additional adjustments.
 
 ![The compact Files menu](images/menu.png)
@@ -155,6 +157,9 @@ The native application menu keeps standard keyboard/platform access through
 Detailed preferences remain in Settings. **F1** opens grouped shortcuts;
 **Shift+F1** opens the illustrated guide. On Mac the usual application menu
 also remains available.
+
+Keyboard and voice help keep a consistent frame size as you switch topics.
+Longer topic contents stay inside that frame; the tabs and Close stay in place.
 
 **Copy the AI script prompt** is available in F1 Help as well as the native
 Help menu, without enabling remote control.

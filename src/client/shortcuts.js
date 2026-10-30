@@ -30,6 +30,7 @@ export const SHORTCUTS = [
 			[ [ "Ctrl+Shift+↑", "Ctrl+Shift+↓" ], "More / less background backing" ],
 			[ [ "Ctrl+Shift+0" ], "Reset the backing" ],
 			[ [ "Ctrl+M" ], "Mirror: off → horizontal → vertical → both" ],
+			[ [ "Toolbar mirror icons" ], "Toggle left/right and top/bottom independently; lit means on" ],
 			[ [ "Ctrl+Shift+K" ], "Layout: margins, line spacing, alignment" ]
 		]
 	},
@@ -43,7 +44,8 @@ export const SHORTCUTS = [
 			],
 			[ [ "Drop a file" ], "Open it into this slot" ],
 			[ [ "Ctrl+N" ], "New script" ],
-			[ [ "Ctrl+E" ], "Edit the script (Markdown and text files)" ],
+			[ [ "Ctrl+E" ], "Edit Markdown/text, or view sample source read-only; Save a copy makes it editable" ],
+			[ [ "Clear this slot" ], "Confirm removal from the slot; the saved script file stays intact" ],
 			[ [ "Ctrl+S", "Ctrl+Shift+S" ], "Save / Save as" ]
 		]
 	},

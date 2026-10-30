@@ -28,6 +28,9 @@ live helpers. The Settings panel is stable across topics; pages replace
 scrolling. Approved mini help pills, explicit labels, draft/save feedback and
 validation are included. F1 and voice help use grouped tabs and follow enabled
 modes. The approved screenshots are in the offline guide and website preview.
+RC3 also fixes help-frame resizing, adds independent toolbar mirrors and a
+labelled Files > Settings entry, confirms slot clearing, and protects sample
+source with a read-only editor and Save a copy.
 This completes the grouping part of 48, not the separate-window work.
 
 The [acceptance walkthrough](docs/guide/14-acceptance-test.md) and two bundled
@@ -76,6 +79,7 @@ waits for the signing arrangements and Joanne's accounts; it is not in this RC.
 | 47  | **Components list:** Settings > About lists each extra part with its status and Install, Reinstall and Remove: the speech model, and an AI agent kit (the skills, the script checker and the sightline command) installed from the app without cloning the repo, with a check for Node.js. Settings > Prompting > Voice gets Reinstall and Remove beside the speech model, and the first run offers to download it | ★★ | M | Joanne asked, 28 Oct: show what's installed, with install and reinstall buttons. In the app rather than an installer tickbox, because only the Windows installer could have one |
 | 48 | **Settings in its own window:** an independent upright window, movable to another screen with saved geometry and live changes sent through main, like the pad/control window | ★★ | M | **Window still to build after this candidate.** Regrouping, stable size, paged topics and contextual help are already included in the RC, but Settings remains inside the prompter. Separate-window work is not a blocker for this release |
 | 40  | **Choose your own buttons:** a key map for game controllers, foot pedals, clickers and keyboard shortcuts (Settings > Controls): pick any action (start and pause, sections, speed, markers, keeper or scrap, on air, again) for each button or key, with a "press the button now" way to set it, and a reset to the defaults | ★★ | S–M | Joanne's idea, 28 Oct. Today the controller buttons and pedal keys are fixed. The Stream Deck plugin (39) can use the same list of actions |
+| 56 | **Customisable virtual control pad:** choose functions and add selectable buttons, then drag and drop to reorder the layout, like a virtual Stream Deck | ★★ | M | Joanne requested, 30 Oct. Save the layout and offer a reset; reuse the existing action list. Planned after the current candidate; not built |
 | 28  | **Rehearsal coach:** after a practice run, pace by section, lines skipped, "um"s and sentences you stumbled on, all on the computer | ★★ | M | Same speech engine as voice scrolling |
 | 29  | **Automatic updates:** new versions download and install themselves, so users get fixes without reinstalling | ★★ | M | Moved up from Later. Best done with code signing (27), which Mac updates need |
 | 53 | **Optional Zoom controls:** investigate microphone, camera and bringing the meeting forward from Sightline, with phone, voice and control-window actions | ★ | To assess | Joanne requested, 29 Oct. Feasibility first: Zoom's [Plugin SDK](https://developers.zoom.us/docs/plugin-sdk/) connects native Windows/macOS companion apps to the installed Zoom Workplace client. Assess permissions, distribution and dependable state feedback before implementation. Off by default; independent of normal prompting. Not built or scheduled for release |

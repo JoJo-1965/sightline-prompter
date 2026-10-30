@@ -922,7 +922,7 @@ body.controls-hidden * {
 }
 
 /* On air: lit red whenever you're on air (by hand or while running). */
-#cb-mirror.on {
+.cb-mirror-axis.on {
 	color: #1d1f24;
 	background: #ffd54a;
 	border-color: #ffd54a;
@@ -1138,16 +1138,18 @@ body.controls-hidden * {
 
 /* --- Help --- */
 
-.help-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 12px; }
+.cb-mirror-axis svg { display: block; width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linejoin: round; }
+.help-tabs { display: flex; flex: 0 0 auto; flex-wrap: wrap; gap: 6px; margin: 8px 0 12px; }
 .help-tabs button { padding: 7px 12px; border: 1px solid #657282; border-radius: 6px; background: #26313c; color: #edf3fa; text-wrap: balance; }
 .help-tabs button[aria-selected="true"] { background: #315b79; border-color: #8fd3ff; }
 .help-tabs button:focus-visible { outline: 2px solid #ffd54a; outline-offset: 2px; }
-.help-pages { min-height: 0; overflow-y: auto; padding-right: 8px; }
+.help-pages { flex: 1 1 0; min-height: 0; overflow-y: auto; padding-right: 8px; }
 .help-page[hidden] { display: none !important; }
 .help-page:focus-visible { outline: 1px solid #8fd3ff; }
 #help-list, #voice-help-list { display: flex; flex-direction: column; min-height: 0; overflow: hidden; columns: auto !important; }
-#help-list { flex: 0 1 auto; }
-#voice-help-list { max-height: 58vh; margin-bottom: 12px; }
+#help-list, #voice-help-list { flex: 1 1 0; }
+#voice-help-list { margin-bottom: 12px; }
+.help-content > :not(#help-list), #voice-help > :not(#voice-help-list) { flex-shrink: 0; }
 .help-page .help-section dl, #voice-help .help-page dl { grid-template-columns: minmax(115px, .4fr) minmax(0, 1fr); }
 .help-page .help-section dt { white-space: normal; overflow-wrap: anywhere; }
 .help-page dd, .help-page h5 { text-wrap: pretty; }
@@ -1157,10 +1159,11 @@ body.controls-hidden * {
 .help-content {
 	display: flex;
 	flex-direction: column;
-	height: auto;
+	height: min(640px, 88vh);
 	width: min(980px, 94vw);
+	box-sizing: border-box;
 	max-height: 88vh;
-	overflow-y: auto;
+	overflow: hidden;
 	font-size: 13px;
 }
 
@@ -1294,12 +1297,15 @@ kbd {
 
 body.editing #progress-bar,
 body.editing #control-bar,
+body.editing #obs-status,
 body.editing .panel {
 	display: none;
 }
 
 #voice-help {
 	width: min(760px, 92vw);
+	height: min(600px, 86vh);
+	box-sizing: border-box;
 	max-height: 86vh;
 	display: flex;
 	flex-direction: column;

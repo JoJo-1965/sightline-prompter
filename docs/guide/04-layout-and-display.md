@@ -2,6 +2,13 @@
 
 ## The Layout panel
 
+The top toolbar has separate **left/right** and **top/bottom** mirror icons.
+Each stays lit while its axis is on; click again to turn it off. Both can be
+on together. The Layout and Reading toggles, keyboard and remote controls
+stay in step with these buttons.
+
+![Toolbar with independent left/right and top/bottom mirror icons](images/control-bar.png)
+
 The **Tools** button opens quick adjustments: **Spacing and mirror**
 (**Ctrl+Shift+K**), **Text and colour**, **Take display**, and **Voice and
 microphone**. Changes show straight away. Drag a panel by its title to move

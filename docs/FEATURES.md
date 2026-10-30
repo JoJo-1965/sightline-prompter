@@ -246,11 +246,16 @@ The whole workflow is in the guide:
 ## Controls
 
 - **Control bar** that hides while you read: nine slots, restart, play/pause,
-  On air, speed, size, backing and explicit Steady/Voice switching. Tools,
+  On air, speed, size, backing, independent mirror-axis icons and explicit Steady/Voice switching. Tools,
   Settings and Help stay reachable on narrow windows.
 - **Files menu (☰)** for scripts, recordings, edit packs, settings-file
-  import/export and Quit, with shortcuts shown. Recording helpers and quick
+  import/export, a labelled Settings entry and Quit, with shortcuts shown. Recording helpers and quick
   adjustments live under Tools.
+- **Protected sample scripts:** inspect and copy their read-only source; Save a
+  copy makes an editable version. Clearing any loaded slot asks for confirmation
+  and leaves the saved script intact.
+- **Stable keyboard and voice help:** grouped topics share a fixed frame;
+  disabled-feature help stays hidden.
 - **Check for updates** on Settings > About, and a quiet check at start-up
   (can be turned off). Nothing downloads by itself.
 - **Settings in five groups:** Prompting, Appearance, Recording, Controls and

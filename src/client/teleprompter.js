@@ -323,23 +323,15 @@ window.addEventListener(
 );
 window.addEventListener( "resize", applyMirror );
 
-// The Mirror button shows the state: ↔ horizontal, ↕ vertical, ↔↕ both.
-const MIRROR_BADGES = { off: "", horizontal: " ↔", vertical: " ↕", both: " ↔↕" };
-
 function showMirrorButton() {
-	// The two toggles (↔ and ↕) in the Layout and Reading views.
-	for ( const pill of document.querySelectorAll( ".mirror-pills [data-axis]" ) ) {
+	// Keep toolbar, Layout and Reading toggles in step.
+	for ( const pill of document.querySelectorAll( ".mirror-pills [data-axis], .cb-mirror-axis" ) ) {
 		const on = pill.dataset.axis === "h"
 			? mirrored === "horizontal" || mirrored === "both"
 			: mirrored === "vertical" || mirrored === "both";
 		pill.classList.toggle( "on", on );
 		pill.setAttribute( "aria-pressed", String( on ) );
 	}
-	const button = document.getElementById( "cb-mirror" );
-	if ( !button ) return;
-	button.textContent = `Mirror${ MIRROR_BADGES[mirrored] ?? "" }`;
-	button.classList.toggle( "on", mirrored !== "off" );
-	button.setAttribute( "aria-label", `Mirror: ${ MIRROR_LABELS[mirrored] }` );
 }
 
 // Each toggle stays on until clicked again; both on mirrors both ways.
@@ -352,7 +344,7 @@ function toggleMirrorAxis( axis ) {
 }
 
 document.addEventListener( "click", ( e ) => {
-	const pill = e.target.closest( ".mirror-pills [data-axis]" );
+	const pill = e.target.closest( ".mirror-pills [data-axis], .cb-mirror-axis" );
 	if ( pill ) toggleMirrorAxis( pill.dataset.axis );
 } );
 
@@ -420,6 +412,7 @@ let isLoadingContent = false;
 let isNewFile = false;
 let isSaving = false;
 let editorView = null;
+let editorReadOnly = false;
 let previewManuallyScrolled = false;
 let pendingScrollToCursor = false;
 let savedScrollY = 0;
@@ -560,14 +553,18 @@ function enterEditMode() {
 	window.electron.requestRawMarkdown();
 }
 
-function loadEditorContent( content, filePath ) {
+function loadEditorContent( content, filePath, access = {} ) {
 	const rawContent = content ?? "";
+	editorReadOnly = access.readOnly === true;
+	btnSave.disabled = editorReadOnly;
+	btnSaveAs.textContent = editorReadOnly ? "Save a copy…" : "Save As";
+	btnCancel.textContent = editorReadOnly ? "Back to prompter" : "Cancel";
 
 	showEditor();
 
 	if ( toolbarFilename ) {
 		toolbarFilename.textContent = filePath
-			? filePath.split( "/" ).pop()
+			? `${ filePath.split( /[\\/]/ ).pop() }${ editorReadOnly ? " · Sample · read-only" : "" }`
 			: "New file";
 	}
 	setDirty( false );
@@ -575,20 +572,21 @@ function loadEditorContent( content, filePath ) {
 	isLoadingContent = true;
 	if ( editorView ) {
 		window.EditorModule.setEditorContent( editorView, rawContent );
+		window.EditorModule.setEditorReadOnly( editorView, editorReadOnly );
 	} else {
 		editorView = window.EditorModule.createEditor( editorDiv, rawContent, () => {
 			if ( !isDirty && !isLoadingContent ) {
 				setDirty( true );
 			}
-		} );
+		}, editorReadOnly );
 	}
 	isLoadingContent = false;
 	editorView.focus();
 }
 
-window.electron.onRawMarkdown( ( content, filePath ) => {
+window.electron.onRawMarkdown( ( content, filePath, access ) => {
 	if ( !isEditMode ) return;
-	loadEditorContent( content, filePath );
+	loadEditorContent( content, filePath, access );
 } );
 
 function discardAndExitEditor() {
@@ -630,7 +628,7 @@ function toggleEditMode() {
 }
 
 function saveEditorContent() {
-	if ( !editorView ) return;
+	if ( !editorView || editorReadOnly ) return;
 	isSaving = true;
 	const content = window.EditorModule.getEditorContent( editorView );
 	if ( isNewFile ) {
@@ -654,6 +652,11 @@ let pendingSaveAndClose = false;
 window.electron.onSaveResult( ( success, filePath ) => {
 	isSaving = false;
 	if ( success ) {
+		editorReadOnly = false;
+		btnSave.disabled = false;
+		btnSaveAs.textContent = "Save As";
+		btnCancel.textContent = "Cancel";
+		if ( editorView ) window.EditorModule.setEditorReadOnly( editorView, false );
 		setDirty( false );
 		isNewFile = false;
 		if ( filePath && toolbarFilename ) {
@@ -896,6 +899,11 @@ if ( resizeHandle ) {
 
 // Handle content loaded from main process
 window.electron.onContent( ( content, snapshot ) => {
+	// A different script must not reopen the previous script's cached editor.
+	if ( snapshot && !isEditMode && !isSaving && !isDirty && editorView ) {
+		editorView.destroy();
+		editorView = null;
+	}
 	sourceSnapshot = snapshot ?? null;
 	recordingSnapshotCache = null;
 	if ( md ) {
@@ -3803,6 +3811,7 @@ function renderAppMenu() {
 		}
 	}
 	// Always in view, whichever groups are folded.
+	appMenu.appendChild( menuButton( "⚙", "Settings…", "Ctrl+,", openSettings ) );
 	const quit = menuButton( "⏻", "Quit Sightline", "Ctrl+W", quitApp );
 	quit.classList.add( "am-quit" );
 	appMenu.appendChild( quit );

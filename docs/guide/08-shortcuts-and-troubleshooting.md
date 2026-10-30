@@ -13,6 +13,9 @@ Stream Deck action. See [camera framing](06-remotes-and-screens.md#head-position
 
 Press **F1** (or **?**) for the full list inside the app.
 
+Both help panels keep the same dimensions across their tabs. Use **Files (☰)
+> Settings…** or **Ctrl+,** if you cannot find the toolbar's gear icon.
+
 ![Keyboard shortcuts](images/shortcuts.png)
 
 The ones you'll use most:

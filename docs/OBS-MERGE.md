@@ -8,6 +8,8 @@ branch until the recording workflow has been reviewed.
 OBS integration, head guide, production records and Settings/help updates.
 RC1 is the feature baseline; RC2 refreshes documentation and adds the two
 acceptance samples. The matching private Stream Deck build is 0.1.9.
+RC3 adds compatibility reporting, stable help frames, toolbar mirror axes,
+Files > Settings, safe slot clearing and protected sample-source viewing.
 Use the [acceptance walkthrough](guide/14-acceptance-test.md); no merge, tag,
 public release or website deployment is part of this preparation.
 

@@ -2,7 +2,10 @@ import { EditorView, basicSetup } from "codemirror";
 import { markdown } from "@codemirror/lang-markdown";
 import { languages } from "@codemirror/language-data";
 import { oneDark } from "@codemirror/theme-one-dark";
-import { EditorState } from "@codemirror/state";
+import { Compartment, EditorState } from "@codemirror/state";
+
+const access = new Compartment();
+const editorAccess = readOnly => [ EditorState.readOnly.of( readOnly ), EditorView.editable.of( !readOnly ), EditorView.contentAttributes.of( { "aria-readonly": String( readOnly ) } ) ];
 
 const editorTheme = EditorView.theme( {
 	"&": {
@@ -21,12 +24,13 @@ const editorTheme = EditorView.theme( {
 	}
 } );
 
-export function createEditor( parent, content, onChange ) {
+export function createEditor( parent, content, onChange, readOnly = false ) {
 	const view = new EditorView( {
 		state: EditorState.create( {
 			doc: content,
 			extensions: [
 				basicSetup,
+				access.of( editorAccess( readOnly ) ),
 				markdown( { codeLanguages: languages } ),
 				oneDark,
 				editorTheme,
@@ -41,6 +45,10 @@ export function createEditor( parent, content, onChange ) {
 		parent
 	} );
 	return view;
+}
+
+export function setEditorReadOnly( view, readOnly ) {
+	view.dispatch( { effects: access.reconfigure( editorAccess( readOnly ) ) } );
 }
 
 export function setEditorContent( view, content ) {

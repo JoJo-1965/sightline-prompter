@@ -106,7 +106,7 @@ contextBridge.exposeInMainWorld( "electron", {
 
 	// Editor IPC
 	requestRawMarkdown: () => ipcRenderer.send( "requestRawMarkdown" ),
-	onRawMarkdown: callback => ipcRenderer.on( "rawMarkdown", ( _event, content, filePath ) => callback( content, filePath ) ),
+	onRawMarkdown: callback => ipcRenderer.on( "rawMarkdown", ( _event, content, filePath, access ) => callback( content, filePath, access ) ),
 	saveFile: content => ipcRenderer.send( "saveFile", content ),
 	saveFileAs: content => ipcRenderer.send( "saveFileAs", content ),
 	onSaveResult: callback => ipcRenderer.on( "saveResult", ( _event, success, filePath ) => callback( success, filePath ) ),

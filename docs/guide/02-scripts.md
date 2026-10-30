@@ -2,6 +2,22 @@
 
 ## File types
 
+### Samples and safe copies
+
+Open a sample from **Files (☰) > Sample scripts**. **Edit script** or **Ctrl+E**
+shows its source with a **Sample · read-only** label. You can select and copy
+the text; typing, Save and rehearsal-target updates cannot change a sample.
+Choose **Save a copy…**, select another folder, then edit and save your copy
+normally. Clearing a slot removes its reference; it does not delete the file.
+
+**Clear this slot** always asks **Clear slot N?**, names the script and defaults
+to **Cancel**. Cancel or Escape keeps it. To reopen a cleared script, use
+**Files > Open recent**, **Open script**, or **Sample scripts** for a sample.
+
+![Sample source in the read-only editor, with Save a copy](images/sample-read-only.png)
+
+### Supported formats
+
 Sightline opens Markdown (`.md`, `.markdown`), plain text (`.txt`), Word
 (`.docx`), rich text (`.rtf`), PDF (`.pdf`) and web pages (`.html`, `.htm`).
 Markdown and plain text can be edited inside the app (**Edit** or **Ctrl+E**).

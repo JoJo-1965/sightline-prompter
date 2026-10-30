@@ -76,6 +76,12 @@
           <input id="cb-opacity" type="range" min="0" max="1" step="0.01" />
         </label>
         <button id="cb-mode" class="cb-btn cb-text" title="Switch between steady and voice scrolling" aria-label="Voice scrolling" aria-pressed="false">Steady</button>
+        <button id="cb-mirror-h" class="cb-btn cb-mirror-axis" data-axis="h" aria-label="Mirror left to right" aria-pressed="false" title="Mirror left to right: click again to turn off">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M9 7 3 17h6ZM15 7l6 10h-6Z" /></svg>
+        </button>
+        <button id="cb-mirror-v" class="cb-btn cb-mirror-axis" data-axis="v" aria-label="Mirror top to bottom" aria-pressed="false" title="Mirror top to bottom: click again to turn off">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h18M7 9l10-6v6ZM7 15l10 6v-6Z" /></svg>
+        </button>
         <button id="cb-tools" class="cb-btn cb-text" title="Recording tools, framing and quick adjustments" aria-expanded="false" aria-controls="tools-panel">Tools</button>
       </div>
       <div class="cb-spacer"></div>
@@ -441,7 +447,7 @@
           for your writing assistant.
           Choose a topic below. Help follows the modes you have enabled.
           Files (☰) opens scripts and exports; Tools opens recording helpers;
-          ⚙ opens preferences.
+          Files > Settings or ⚙ opens preferences.
         </p>
         <div id="help-list"></div>
         <p class="field-hint">

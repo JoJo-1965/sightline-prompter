@@ -12,6 +12,7 @@ import {
 	SCRIPT_EXTENSIONS
 } from "./utils/content.js";
 import { buildMenus } from "./menus.js";
+import { createSlotClearAction } from "./clear-slot.js";
 import { setSectionTargets } from "./utils/targets.js";
 import { createPad } from "./pad.js";
 import { createControl } from "./control.js";
@@ -1281,20 +1282,21 @@ const createWindow = ( state ) => {
 		await saveState( win );
 	}
 
-	async function clearSlot() {
-		if ( !( await confirmLeave( "Save your changes before clearing this slot?" ) ) ) {
-			return;
+	const clearSlot = createSlotClearAction( {
+		current: () => ( { index: activeSlot, slot: slots[activeSlot], name: slots[activeSlot] ? path.basename( slots[activeSlot].path ) : "" } ),
+		ask: options => dialog.showMessageBox( win, options ),
+		leave: () => confirmLeave( "Save your changes before clearing this slot?" ),
+		clear: async ( { index, slot } ) => {
+			slots[index] = null;
+			if ( !( await showEmptySlot() ) ) {
+				slots[index] = slot;
+				return;
+			}
+			sendSlots();
+			refreshMenus();
+			await saveState( win );
 		}
-		const previous = slots[activeSlot];
-		slots[activeSlot] = null;
-		if ( !( await showEmptySlot() ) ) {
-			slots[activeSlot] = previous;
-			return;
-		}
-		sendSlots();
-		refreshMenus();
-		await saveState( win );
-	}
+	} );
 
 	async function showOpenScriptDialog() {
 		const results = await dialog.showOpenDialog( win, {
@@ -1886,8 +1888,13 @@ app.whenReady().then( async () => {
 		framingGuide.apply();
 	};
 	syncObsSettings();
-	// Samples are copied into the app's folder first, so editing one never
-	// changes the original (which is read-only inside an installed app).
+	// Samples stay viewable in the editor; only Save a copy can create an editable file.
+	function isSampleFile( file ) {
+		if ( !file ) return false;
+		const folder = path.dirname( path.resolve( file ) );
+		return [ path.join( app.getPath( "userData" ), "samples" ), path.join( __dirname, "samples" ) ]
+			.some( dir => path.relative( dir, folder ) === "" );
+	}
 	async function openSample( name ) {
 		const sample = SAMPLE_SCRIPTS.find( s => s.file === name );
 		if ( !sample ) return null;
@@ -2016,24 +2023,31 @@ app.whenReady().then( async () => {
 			win.webContents.send( "editorUnavailable", path.basename( currentFilePath ), kind );
 		} else if ( currentFilePath ) {
 			const raw = await readRawMarkdown( currentFilePath );
-			win.webContents.send( "rawMarkdown", raw, currentFilePath );
+			win.webContents.send( "rawMarkdown", raw, currentFilePath, { readOnly: isSampleFile( currentFilePath ) } );
 		} else {
 			win.webContents.send( "rawMarkdown", "", null );
 		}
 	} );
 
 	async function saveFileAs( content ) {
+		const sample = isSampleFile( currentFilePath );
+		const defaultPath = sample
+			? path.join( app.getPath( "documents" ), `${ path.basename( currentFilePath, path.extname( currentFilePath ) ) } - my copy.md` )
+			: currentFilePath && !isRichFile( currentFilePath ) ? currentFilePath : "untitled.md";
 		const result = await dialog.showSaveDialog( win, {
-			defaultPath:
-				currentFilePath && !isRichFile( currentFilePath )
-					? currentFilePath
-					: "untitled.md",
+			title: sample ? "Save an editable copy of this sample" : "Save script as",
+			defaultPath,
 			filters: [
 				{ name: "Markdown", extensions: [ "md", "txt" ] },
 				{ name: "All Files", extensions: [ "*" ] }
 			]
 		} );
 		if ( !result.canceled && result.filePath ) {
+			if ( isSampleFile( result.filePath ) ) {
+				win.webContents.send( "toast", "Samples are read-only. Choose another folder for your copy." );
+				win.webContents.send( "saveResult", false, null );
+				return;
+			}
 			try {
 				await fs.writeFile( result.filePath, content, { encoding: "utf-8" } );
 				currentFilePath = result.filePath;
@@ -2050,10 +2064,15 @@ app.whenReady().then( async () => {
 				console.log( "Save As error:", err );
 				win.webContents.send( "saveResult", false, null );
 			}
-		}
+		} else win.webContents.send( "saveResult", false, null );
 	}
 
 	ipcMain.on( "saveFile", async ( _event, content ) => {
+		if ( isSampleFile( currentFilePath ) ) {
+			win.webContents.send( "toast", "Sample scripts are read-only. Use Save a copy to make your own version." );
+			win.webContents.send( "saveResult", false, null );
+			return;
+		}
 		if ( currentFilePath ) {
 			try {
 				await fs.writeFile( currentFilePath, content, { encoding: "utf-8" } );
@@ -2074,6 +2093,7 @@ app.whenReady().then( async () => {
 	ipcMain.on( "applySectionTargets", async ( _event, targets ) => {
 		const toast = text => win.webContents.send( "toast", text );
 		if ( !currentFilePath ) return toast( "Save the script first, then try again" );
+		if ( isSampleFile( currentFilePath ) ) return toast( "Save an editable copy before applying rehearsal targets" );
 		if ( isRichFile( currentFilePath ) ) {
 			return toast( "Targets can only be written into .md and .txt scripts" );
 		}

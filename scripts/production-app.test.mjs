@@ -144,9 +144,19 @@ try {
 	await evaluate( "document.getElementById('cb-menu').click()" );
 	const fileMenu = await evaluate( "document.getElementById('app-menu').textContent" );
 	assert.ok( fileMenu.includes( "Open script" ) && fileMenu.includes( "Export the edit pack" ) );
+	assert.ok( fileMenu.includes( "Settings…" ) );
 	assert.equal( /Sound check|Head.position|Control pad|Voice scroll|All settings|Faster/.test( fileMenu ), false );
 	await evaluate( "document.getElementById('app-menu').dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}))" );
 	assert.equal( await evaluate( "document.activeElement.id" ), "cb-menu" );
+	await evaluate( "document.getElementById('cb-menu').click();document.querySelector('#app-menu [data-menu-label=\"Settings…\"]').click()" );
+	await until( "!document.getElementById('settings-modal').classList.contains('hidden')" );
+	await evaluate( "document.getElementById('settings-close').click()" );
+	for ( const [ axis, h, v ] of [ [ "h", true, false ], [ "v", true, true ], [ "h", false, true ], [ "v", false, false ] ] ) {
+		await evaluate( `document.getElementById('cb-mirror-${ axis }').click()` );
+		await until( `document.getElementById('cb-mirror-h').getAttribute('aria-pressed')==='${ h }' && document.getElementById('cb-mirror-v').getAttribute('aria-pressed')==='${ v }'` );
+		assert.equal( await evaluate( `[...document.querySelectorAll('.mirror-pills [data-axis=h]')].every(b=>b.getAttribute('aria-pressed')==='${ h }') && [...document.querySelectorAll('.mirror-pills [data-axis=v]')].every(b=>b.getAttribute('aria-pressed')==='${ v }')` ), true );
+	}
+	console.log( "PASS: labelled Files > Settings and independent toolbar mirrors, including both axes and synced panel controls." );
 	await evaluate( "document.getElementById('cb-tools').focus()" );
 	await send( "Input.dispatchKeyEvent", { type: "keyDown", key: " ", code: "Space", windowsVirtualKeyCode: 32 } );
 	await send( "Input.dispatchKeyEvent", { type: "keyUp", key: " ", code: "Space", windowsVirtualKeyCode: 32 } );
@@ -296,9 +306,9 @@ try {
 	assert.equal( await evaluate( "document.activeElement.id" ), "cb-settings" );
 	await pictureOf( "#control-bar", "control-bar.png" );
 	await send( "Emulation.setDeviceMetricsOverride", { width: 700, height: 760, deviceScaleFactor: 1, mobile: false } );
-	assert.equal( await evaluate( "['cb-menu','cb-tools','cb-settings','cb-help'].every(id=>{const r=document.getElementById(id).getBoundingClientRect();return r.width>0&&r.left>=0&&r.right<=innerWidth;})" ), true );
+	assert.equal( await evaluate( "['cb-menu','cb-tools','cb-settings','cb-help','cb-mirror-h','cb-mirror-v'].every(id=>{const r=document.getElementById(id).getBoundingClientRect();return r.width>0&&r.left>=0&&r.right<=innerWidth;})" ), true );
 	await send( "Emulation.setDeviceMetricsOverride", { width: 560, height: 760, deviceScaleFactor: 1, mobile: false } );
-	assert.equal( await evaluate( "['cb-menu','cb-tools','cb-settings','cb-help'].every(id=>{const r=document.getElementById(id).getBoundingClientRect();return r.width>0&&r.left>=0&&r.right<=innerWidth;})" ), true );
+	assert.equal( await evaluate( "['cb-menu','cb-tools','cb-settings','cb-help','cb-mirror-h','cb-mirror-v'].every(id=>{const r=document.getElementById(id).getBoundingClientRect();return r.width>0&&r.left>=0&&r.right<=innerWidth;})" ), true );
 	await send( "Emulation.clearDeviceMetricsOverride" );
 	for ( const [ label, file ] of [ [ "Spacing and mirror…", "layout-panel.png" ], [ "Text and colour…", "reading-panel.png" ], [ "Take display…", "recording-panel.png" ] ] ) {
 		await evaluate( `document.getElementById('cb-tools').click();[...document.querySelectorAll('#tools-panel button')].find(b=>b.textContent.includes(${ JSON.stringify( label ) })).click()` );
@@ -318,10 +328,18 @@ try {
 	await evaluate( "document.querySelector('#help-list [role=tab]').dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true}))" );
 	assert.equal( await evaluate( "document.querySelector('#help-list [aria-selected=true]').textContent" ), "Scripts" );
 	assert.equal( await evaluate( "document.activeElement.textContent" ), "Scripts" );
+	for ( const [ width, height ] of [ [ 1100, 900 ], [ 560, 500 ] ] ) {
+		await send( "Emulation.setDeviceMetricsOverride", { width, height, deviceScaleFactor: 1, mobile: false } );
+		const sizes = await evaluate( "(()=>{const box=document.querySelector('.help-content');return [...document.querySelectorAll('#help-list [role=tab]')].map(b=>{b.click();const r=box.getBoundingClientRect();return {width:r.width,height:r.height,top:r.top,bottom:r.bottom};});})()" );
+		assert.ok( sizes.every( s => s.width === sizes[0].width && s.height === sizes[0].height && s.top >= 0 && s.bottom <= height ), `Help must stay stable within ${ width }×${ height }` );
+	}
+	await send( "Emulation.clearDeviceMetricsOverride" );
 	await evaluate( "[...document.querySelectorAll('#help-list [role=tab]')].find(t=>t.textContent==='Head guide').click()" );
 	const shotHelp = await send( "Page.captureScreenshot", { format: "png" } );
 	await fs.writeFile( path.join( path.dirname( screenshot ), "help-tabs.png" ), Buffer.from( shotHelp.result.data, "base64" ) );
 	await evaluate( "document.getElementById('help-close').click()" );
+	const voiceSizes = await evaluate( "(async()=>{const {renderHelpTabs,voiceHelpTabs}=await import('./help-tabs.js');const card=document.createElement('div');card.id='voice-help';card.innerHTML='<h4>What can I say?</h4><div id=voice-help-list></div><button>Close</button>';document.body.append(card);const list=card.querySelector('#voice-help-list');renderHelpTabs(list,voiceHelpTabs({voiceCommands:'always',wakeWord:'prompter',obsEnabled:true,obsControls:true,streamDeck:true}),'voice-geometry');const result=[...list.querySelectorAll('[role=tab]')].map(b=>{b.click();const r=card.getBoundingClientRect();return {width:r.width,height:r.height,top:r.top,bottom:r.bottom};});card.remove();return result;})()" );
+	assert.ok( voiceSizes.length > 1 && voiceSizes.every( s => s.width === voiceSizes[0].width && s.height === voiceSizes[0].height && s.top >= 0 && s.bottom <= 900 ), "Voice help CSS keeps the same frame across topics" );
 	console.log( "PASS: actual F1 tabs, hidden disabled modes, one visible panel and keyboard tab navigation." );
 
 	// Exercise the actual app popup and the button-token route used by Stream Deck.
@@ -513,6 +531,34 @@ try {
 	assert.equal( savedFirst.script, "recording-check.md" );
 	assert.equal( savedFirst.takes.length, log.takes.length );
 	console.log( "PASS: module handover flushes the old recording before loading the new script." );
+	await evaluate( "window.electron.openSample('voice-and-stops.md')" );
+	await until( "document.getElementById('md').textContent.includes('Voice')" );
+	await evaluate( "document.getElementById('cb-menu').click();document.querySelector('#app-menu [data-menu-label=\"Edit script\"]').click()" );
+	await until( "document.querySelector('#editor .cm-content')?.getAttribute('aria-readonly')==='true'" );
+	assert.equal( await evaluate( "document.getElementById('btn-save').disabled" ), true );
+	assert.equal( await evaluate( "document.getElementById('btn-save-as').textContent" ), "Save a copy…" );
+	const sampleFile = path.join( profile, "samples", "voice-and-stops.md" );
+	const originalSample = await fs.readFile( sampleFile, "utf8" );
+	await send( "Input.insertText", { text: "MUST NOT CHANGE A SAMPLE" } );
+	await evaluate( "window.electron.saveFile('MUST NOT OVERWRITE SAMPLE');window.electron.applySectionTargets({1:99})" );
+	await pause( 300 );
+	assert.equal( await fs.readFile( sampleFile, "utf8" ), originalSample );
+	assert.equal( await evaluate( "document.querySelector('#editor .cm-content').textContent.includes('MUST NOT CHANGE')" ), false );
+	await pause( 2900 );
+	await pictureOf( "#editor-container", "sample-read-only.png" );
+	await evaluate( "document.getElementById('btn-cancel').click()" );
+	await until( "!document.body.classList.contains('editing')" );
+	await fetch( automation.url + "/open", { method: "POST", headers: { Authorization: `Bearer ${ automation.token }`, "Content-Type": "application/json" }, body: JSON.stringify( { path: secondScript } ) } );
+	await until( "document.getElementById('md').textContent.includes('Module two')" );
+	await evaluate( "document.getElementById('cb-menu').click();document.querySelector('#app-menu [data-menu-label=\"Edit script\"]').click()" );
+	await until( "document.querySelector('#editor .cm-content')?.getAttribute('aria-readonly')==='false'" );
+	await send( "Input.insertText", { text: "An editable original script" } );
+	assert.equal( await evaluate( "document.querySelector('#editor .cm-content').textContent.includes('An editable original script')" ), true );
+	await evaluate( "document.getElementById('btn-save').click()" );
+	await until( "document.getElementById('toolbar-dirty').classList.contains('hidden')" );
+	await evaluate( "document.getElementById('btn-cancel').click()" );
+	await until( "!document.body.classList.contains('editing')" );
+	console.log( "PASS: samples open read-only, typing and direct saves cannot alter them, and personal scripts remain editable." );
 	await evaluate( "window.electron.obs('start')" );
 	assert.ok( active );
 	const stops = requests.filter( r => r === "StopRecord" ).length;

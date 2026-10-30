@@ -8,6 +8,8 @@
 
 [A00. Before recording, choose Check compatibility in Settings > Controls > Stream Deck. Confirm Sightline RC3 and plugin 0.1.9 are reported as compatible. In Stream Deck, open a key's settings and check its connection result.]
 
+[A00b. Before recording, open Settings from Files, then close it. Check both toolbar mirror icons independently and return them off. Switch Help tabs: the frame should stay still. In a spare slot, open a sample and choose Edit script: its source is read-only with Save a copy. Try Clear this slot, then Cancel: the sample should remain. Return to this acceptance script.]
+
 [Use the Stream Deck Record take key to begin. Wait for confirmation and the slate. For the room check stay quiet; for the voice check read the card. After each result use Play / Pause to carry on.]
 
 [Throughout this test, Next section changes your place. If the prompter is still held afterwards, press Play / Pause once to begin reading that section. OBS must keep recording.]
