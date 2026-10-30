@@ -274,7 +274,7 @@ edit points. Reopening Sightline does not recover a missing association.
 
 ## Recorded OBS sync references (development branch)
 
-When enabled and prepared in Settings > Recording > OBS recording, a dedicated browser source puts
+When enabled and prepared in Settings > Controls > OBS recording, a dedicated browser source puts
 the slate's flash and optional 1 kHz/250 ms tone into the current recorded
 scene. It is independent of the protected head guide and the local prompter
 slate. `recordedSync` in `take-log.json`, and the optional `recorded-sync.json`,
