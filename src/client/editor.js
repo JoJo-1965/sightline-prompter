@@ -5,7 +5,7 @@ import { oneDark } from "@codemirror/theme-one-dark";
 import { Compartment, EditorState } from "@codemirror/state";
 
 const access = new Compartment();
-const editorAccess = readOnly => [ EditorState.readOnly.of( readOnly ), EditorView.editable.of( !readOnly ), EditorView.contentAttributes.of( { "aria-readonly": String( readOnly ) } ) ];
+const editorAccess = readOnly => [ EditorState.readOnly.of( readOnly ), EditorView.editable.of( !readOnly ), EditorView.contentAttributes.of( { "aria-readonly": String( readOnly ), tabindex: "0" } ) ];
 
 const editorTheme = EditorView.theme( {
 	"&": {

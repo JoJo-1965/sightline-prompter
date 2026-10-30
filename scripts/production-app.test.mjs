@@ -535,6 +535,7 @@ try {
 	await until( "document.getElementById('md').textContent.includes('Voice')" );
 	await evaluate( "document.getElementById('cb-menu').click();document.querySelector('#app-menu [data-menu-label=\"Edit script\"]').click()" );
 	await until( "document.querySelector('#editor .cm-content')?.getAttribute('aria-readonly')==='true'" );
+	assert.equal( await evaluate( "document.activeElement === document.querySelector('#editor .cm-content')" ), true, "read-only source stays keyboard-focusable for selection and copying" );
 	assert.equal( await evaluate( "document.getElementById('btn-save').disabled" ), true );
 	assert.equal( await evaluate( "document.getElementById('btn-save-as').textContent" ), "Save a copy…" );
 	const sampleFile = path.join( profile, "samples", "voice-and-stops.md" );
