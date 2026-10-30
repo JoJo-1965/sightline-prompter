@@ -222,7 +222,7 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ### Next release
 
-- **Clearer navigation (development):** Settings has five groups with focused subtabs: Prompting, Appearance, Recording, Controls and About. Files (☰) handles scripts, recordings and import/export; Tools holds recording tools and quick adjustments. The top bar keeps live controls, with explicit Steady/Voice switching. Duplicate file buttons and Display preferences have been removed; native menus retain keyboard access. Tabs support arrows and Home/End, Settings keeps focus inside, and Escape returns focus to the opener
+- **Clearer navigation (development):** Settings has five groups with focused subtabs: Prompting, Appearance, Recording, Controls and About. Short pages fit their content; longer topics and word lists use Previous/Next instead of scrolling. Contextual (?) help works with hover, keyboard focus and a tap or click. Files (☰) handles scripts, recordings and import/export; Tools holds recording tools and quick adjustments. The top bar keeps live controls, with explicit Steady/Voice switching. Duplicate file buttons and Display preferences have been removed; native menus retain keyboard access. Tabs support arrows and Home/End, Settings keeps focus inside, and Escape returns focus to the opener
 
 - **Production handover guide (development):** [From recording to the editor](docs/guide/12-production-handover.md), also in **Help > User Guide**, walks through OBS setup, framing, a short sync test, retakes, keeper choices and the files to send to Production. It distinguishes the digital slate from physical camera/mic synchronisation and records where manual checks remain
 

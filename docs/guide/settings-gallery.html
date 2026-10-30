@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sightline Settings — development preview</title>
+<style>
+*{box-sizing:border-box}body{margin:0;padding:24px;background:#141922;color:#edf5ff;font:16px/1.5 system-ui,sans-serif;text-wrap:pretty}main{max-width:1360px;margin:auto}h1,h2,h3{text-wrap:balance}h1{margin:0;font-size:30px}p{color:#becddd;margin:6px 0 20px}nav{display:flex;flex-wrap:wrap;gap:12px;margin:16px 0 24px}a{color:#a5dfff}section{margin:24px 0}section[hidden]{display:none}h2{font-size:24px;margin:0 0 16px}.screens{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;align-items:start}figure{margin:0;background:#202731;padding:12px;border-radius:12px;break-inside:avoid}figcaption{font-size:18px;font-weight:600;margin-bottom:10px}img{display:block;width:100%;height:auto;border-radius:8px}@media(max-width:760px){body{padding:16px}.screens{grid-template-columns:1fr}}
+</style>
+<main>
+<h1>Sightline Settings</h1>
+<p>Development preview · Compact pages, no scrolling in Settings, and question-mark help beside the choices that need it.</p>
+<nav aria-label="Settings screenshot groups"><a href="?group=Prompting">Prompting</a><a href="?group=Appearance">Appearance</a><a href="?group=Recording">Recording</a><a href="?group=Controls">Controls</a><a href="?group=About">About</a><a href="?">All screenshots</a></nav>
+<div id="gallery"></div>
+</main>
+<script>
+document.querySelector('nav').style.display = new URLSearchParams(location.search).has('group') ? 'none' : '';
+const groups = {
+ Prompting: [ ['Scrolling','scrolling'], ['Voice recognition and microphone','voice'], ['Command listening and wake word','commands'], ['Question-mark help, opened','commands-help'], ['Script and command synonyms','words'], ['Script behaviour — page 1','script'], ['Script behaviour — page 2','script-page-2'] ],
+ Appearance: [ ['Text and colour — opacity','reading'], ['Text and colour — reading aids','reading-page-2'], ['Text and colour — text size','reading-page-3'], ['Spacing — page 1','layout'], ['Spacing — page 2','layout-page-2'], ['Spacing — page 3','layout-page-3'], ['Screens and eye-line strip','display'] ],
+ Recording: [ ['Slate and take display','recording'], ['Scratch audio, loudness and sound check','audio'], ['OBS connection, with the prompter behind it','obs'], ['OBS recording permissions and sync','obs-recording'] ],
+ Controls: [ ['Phone remote','phone'], ['Stream Deck connection','streamdeck'], ['AI and local automation','remotes'] ],
+ About: [ ['Version, support, updates and diagnostic logs','about'] ]
+};
+const selected = new URLSearchParams(location.search).get('group');
+if(selected && groups[selected]) document.querySelector('nav').hidden=true;
+for(const [name,screens] of Object.entries(groups)){
+ const section=document.createElement('section');
+ section.hidden=!!selected && !!groups[selected] && selected!==name;
+ const title=document.createElement('h2');title.textContent=name;
+ const grid=document.createElement('div');grid.className='screens';
+ for(const [label,file] of screens){
+  const figure=document.createElement('figure');
+  const caption=document.createElement('figcaption');caption.textContent=label;
+  const image=document.createElement('img');image.src=`images/settings-${file}.png`;image.alt=label;
+  figure.append(caption,image);grid.append(figure);
+ }
+ section.append(title,grid);document.getElementById('gallery').append(section);
+}
+</script>
+</html>

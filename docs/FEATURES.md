@@ -5,7 +5,10 @@ menu for input/output and a Tools menu for live recording and operator tools.
 Duplicate file operations and Display preferences have been removed from
 Settings. The top bar keeps live controls and Steady/Voice switching; native
 menus retain standard platform access. Keyboard tab navigation, visible focus,
-modal focus containment and focus return are covered by app checks. See the
+modal focus containment and focus return are covered by app checks. Settings
+fits each page without scrolling: longer topics and word lists use labelled
+Previous/Next pages. Contextual (?) explanations support hover, keyboard and
+touch, with Escape to dismiss. See the
 [Settings map](guide/07-settings.md).
 
 The development guide includes [From recording to the editor](guide/12-production-handover.md):
@@ -13,7 +16,7 @@ an illustrated session checklist covering setup, framing, a short test,
 retakes, keeper choices and collecting the master files alongside each edit
 pack. It is available offline through **Help > User Guide**.
 
-The private Stream Deck companion test build **0.1.7** adds OBS Record take
+The private Stream Deck companion test build **0.1.8** adds OBS Record take
 and Finish recording keys, confirmed-state feedback and optional recording
 layouts for each model. The OBS development app enforces saved permissions
 and waits for actual recording state changes. These additions are unreleased;

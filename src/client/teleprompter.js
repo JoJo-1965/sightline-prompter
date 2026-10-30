@@ -35,6 +35,7 @@ import { createLevelMeter, soundCheckVerdict } from "./level-meter.js";
 import { SUPPORT_URL } from "./links.js";
 import { createObsUi } from "./obs-ui.js";
 import { createSettingsNavigation } from "./settings-navigation.js";
+import { addSettingsHelp, createSettingsPages } from "./settings-pages.js";
 import {
 	indexSentences,
 	scriptSentences,
@@ -2469,7 +2470,7 @@ async function openSettings() {
 	settingsNavigation.focus();
 	settingsTrail( "visible" );
 	requestAnimationFrame( () => requestAnimationFrame( () => settingsTrail( "painted" ) ) );
-	requestAnimationFrame( () => updateSettingsChevrons() );
+	requestAnimationFrame( () => settingsPages.layout() );
 	settingsTrail( "listing microphones" );
 	await populateMicSelect();
 	field( "set-microphone" ).innerHTML = micSelect.innerHTML;
@@ -3934,6 +3935,7 @@ function makeMovable( box, handle, key ) {
 	const shown = box.closest( ".modal" ) ?? box;
 	new MutationObserver( () => requestAnimationFrame( fit ) ).observe( shown, { attributes: true, attributeFilter: [ "class" ] } );
 	window.addEventListener( "resize", () => requestAnimationFrame( fit ) );
+	new ResizeObserver( () => requestAnimationFrame( fit ) ).observe( box );
 }
 
 makeMovable( document.querySelector( "#settings-modal .settings-content" ), document.querySelector( "#settings-modal .settings-head h3" ), "settings" );
@@ -4313,10 +4315,6 @@ const updateAboutChevrons = scrollChevrons(
 	aboutModal?.querySelector( ".about-content" )
 );
 const settingsBox = document.querySelector( ".settings-content" );
-const updateSettingsChevrons = scrollChevrons( settingsBox, {
-	after: settingsBox?.querySelector( ".settings-head" ),
-	before: settingsBox?.querySelector( ".modal-actions" )
-} );
 for ( const box of [
 	document.getElementById( "layout-panel" ),
 	document.getElementById( "voice-panel" ),
@@ -4838,6 +4836,8 @@ const settingsNavigation = createSettingsNavigation( settingsModal, { onShow: ( 
 	if ( LAYOUT_TABS.includes( name ) ) borrowLayoutPanel();
 	settingsBox?.scrollTo( 0, 0 );
 } } );
+addSettingsHelp( settingsModal );
+const settingsPages = createSettingsPages( settingsModal );
 
 // The About tab is a brief; the full page is a click away.
 document.getElementById( "settings-about-full" )?.addEventListener( "click", () => requestCloseSettings( openAbout ) );

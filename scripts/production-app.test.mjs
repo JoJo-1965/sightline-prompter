@@ -162,7 +162,58 @@ try {
 	const visited = await evaluate( "(()=>{const results=[];for(const group of document.querySelectorAll('.settings-tabs button')){group.click();for(const topic of [...document.querySelectorAll('.settings-subtabs button')].filter(b=>!b.hidden)){topic.click();const page=document.getElementById(topic.getAttribute('aria-controls'));results.push({name:topic.dataset.tab,visible:page.getClientRects().length>0,fields:page.querySelectorAll('fieldset').length,one:[...document.querySelectorAll('[data-settings-page]')].filter(p=>p.getClientRects().length).length===1});}}return results;})()" );
 	assert.equal( visited.length, 16 );
 	assert.ok( visited.every( page => page.visible && page.fields && page.one ), JSON.stringify( visited ) );
-	await evaluate( "document.getElementById('settings-topic-layout').click();document.getElementById('lp-reading-line').focus()" );
+	async function checkSettingsFit( width, height ) {
+		await send( "Emulation.setDeviceMetricsOverride", { width, height, deviceScaleFactor: 1, mobile: false } );
+		for ( const entry of visited ) {
+			await evaluate( `document.getElementById('settings-topic-${ entry.name }').click()` );
+			for ( let n = 0; n < 30; n++ ) {
+				await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
+				const fit = await evaluate( "(()=>{const b=document.querySelector('.settings-content'),r=b.getBoundingClientRect(),f=b.querySelector('.settings-actions').getBoundingClientRect(),p=b.querySelector('[data-settings-page]:not([hidden])');return {height:r.height,top:r.top,bottom:r.bottom,overflow:b.scrollHeight-b.clientHeight,footer:f.bottom<=r.bottom+1,topic:p.dataset.settingsPage,page:b.querySelector('.settings-pagination [role=status]').textContent,next:b.querySelector('.settings-pagination').getClientRects().length&&!b.querySelector('.settings-pagination button:last-child').disabled};})()" );
+				assert.ok( fit.height <= 560 && fit.top >= 0 && fit.bottom <= height && fit.overflow <= 1 && fit.footer, JSON.stringify( { width, height, ...fit } ) );
+				if ( !fit.next ) break;
+				assert.ok( n < 29, "Settings pages must end" );
+				await evaluate( "document.querySelector('.settings-pagination button:last-child').click()" );
+			}
+		}
+	}
+	await checkSettingsFit( 1100, 900 );
+	await checkSettingsFit( 560, 500 );
+	await send( "Emulation.clearDeviceMetricsOverride" );
+	await evaluate( "document.getElementById('settings-topic-words').click();for(let n=0;n<18;n++){document.getElementById('words-add').click();document.querySelector('#words-list .word-row:last-child .wf-word').value='Example '+n;}document.getElementById('settings-topic-scrolling').click();document.getElementById('settings-topic-words').click()" );
+	const seenWords = new Set();
+	for ( let n = 0; n < 30; n++ ) {
+		await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
+		for ( const word of await evaluate( "[...document.querySelectorAll('#words-list .wf-word')].filter(e=>e.getClientRects().length).map(e=>e.value)" ) ) seenWords.add( word );
+		assert.equal( await evaluate( "document.querySelector('.settings-content').scrollHeight<=document.querySelector('.settings-content').clientHeight+1" ), true );
+		if ( !await evaluate( "document.querySelector('.settings-pagination').getClientRects().length&&!document.querySelector('.settings-pagination button:last-child').disabled" ) ) break;
+		await evaluate( "document.querySelector('.settings-pagination button:last-child').click()" );
+	}
+	assert.equal( seenWords.size, 18, "Every saved word must remain reachable without a scrolling list" );
+	await evaluate( "document.getElementById('words-list').replaceChildren()" );
+	await evaluate( "document.getElementById('settings-topic-commands').click()" );
+	await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
+	assert.ok( await evaluate( "document.querySelector('.settings-content').getBoundingClientRect().height<400" ), "Short topics should not leave an oversized empty panel" );
+	await evaluate( "document.querySelector('#settings-page-commands .settings-help-button').focus()" );
+	assert.equal( await evaluate( "document.querySelectorAll('.settings-explanation:popover-open').length" ), 1 );
+	await send( "Input.dispatchKeyEvent", { type: "keyDown", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 } );
+	await send( "Input.dispatchKeyEvent", { type: "keyUp", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 } );
+	assert.equal( await evaluate( "document.querySelectorAll('.settings-explanation:popover-open').length" ), 0 );
+	assert.equal( await evaluate( "document.getElementById('settings-modal').classList.contains('hidden')" ), false );
+	await evaluate( "document.querySelector('#settings-page-commands .settings-help-button').click()" );
+	assert.equal( await evaluate( "document.querySelectorAll('.settings-explanation:popover-open').length" ), 1 );
+	const helpClip = await evaluate( "(()=>{const b=document.querySelector('.settings-content').getBoundingClientRect(),p=document.querySelector('.settings-explanation:popover-open').getBoundingClientRect();return {x:Math.min(b.x,p.x),y:Math.min(b.y,p.y),width:Math.max(b.right,p.right)-Math.min(b.x,p.x),height:Math.max(b.bottom,p.bottom)-Math.min(b.y,p.y),scale:1};})()" );
+	const helpShot = await send( "Page.captureScreenshot", { format: "png", clip: helpClip } );
+	await fs.writeFile( path.join( artifacts, "settings-commands-help.png" ), Buffer.from( helpShot.result.data, "base64" ) );
+	await evaluate( "document.querySelector('#settings-page-commands .settings-help-button').click()" );
+	assert.equal( await evaluate( "document.querySelectorAll('.settings-explanation:popover-open').length" ), 0 );
+	console.log( "PASS: all Settings topics fit without scrolling at desktop and 560×500, short pages stay compact, and contextual help supports keyboard focus and Escape." );
+	await evaluate( "document.getElementById('settings-topic-layout').click()" );
+	for ( let n = 0; n < 10; n++ ) {
+		await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
+		if ( await evaluate( "document.getElementById('lp-reading-line').getClientRects().length>0" ) ) break;
+		await evaluate( "document.querySelector('.settings-pagination button:last-child').click()" );
+	}
+	await evaluate( "document.getElementById('lp-reading-line').focus()" );
 	const lineBefore = await evaluate( "Number(document.getElementById('lp-reading-line').value)" );
 	await send( "Input.dispatchKeyEvent", { type: "keyDown", key: "ArrowRight", code: "ArrowRight", windowsVirtualKeyCode: 39 } );
 	await send( "Input.dispatchKeyEvent", { type: "keyUp", key: "ArrowRight", code: "ArrowRight", windowsVirtualKeyCode: 39 } );
@@ -175,8 +226,18 @@ try {
 	await evaluate( "document.querySelector('[data-settings-group=prompting]').click();document.getElementById('settings-topic-scrolling').click();document.getElementById('set-countdown').value='0'" );
 	for ( const topic of [ "scrolling", "voice", "commands", "words", "script", "reading", "layout", "display", "recording", "audio", "phone", "streamdeck", "remotes", "obs-recording" ] ) {
 		await evaluate( `document.getElementById('settings-topic-${ topic }').click()` );
+		await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
 		await pictureOf( ".settings-content", `settings-${ topic }.png` );
+		for ( let n = 1; n < 30; n++ ) {
+			if ( !await evaluate( "document.querySelector('.settings-pagination').getClientRects().length&&!document.querySelector('.settings-pagination button:last-child').disabled" ) ) break;
+			await evaluate( "document.querySelector('.settings-pagination button:last-child').click();document.querySelector('.settings-pagination button:last-child').blur()" );
+			await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
+			await pictureOf( ".settings-content", `settings-${ topic }-page-${ n + 1 }.png` );
+		}
 	}
+	await evaluate( "document.getElementById('settings-topic-about').click()" );
+	await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
+	await pictureOf( ".settings-content", "settings-about.png" );
 	await evaluate( "document.getElementById('settings-close').click()" );
 	assert.equal( await evaluate( "document.activeElement.id" ), "cb-settings" );
 	await pictureOf( "#control-bar", "control-bar.png" );

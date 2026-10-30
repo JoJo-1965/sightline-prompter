@@ -24,6 +24,11 @@ input/output; Tools holds recording helpers and quick adjustments. Keyboard
 access and a 700-pixel layout pass the isolated app check. This completes the
 grouping part of item 48; the separate Settings window is still outstanding.
 
+**Compact Settings pages:** short topics now fit their content; longer topics
+and growing word lists use labelled Previous/Next pages instead of scrolling.
+Contextual (?) help supports hover, keyboard focus and touch. App checks cover
+every topic at 1100×900 and 560×500, paged word lists and help dismissal.
+
 **Production handover:** the illustrated [session guide](docs/guide/12-production-handover.md)
 now covers setup, framing, a short test, retakes, keeper choices and master-file
 collection. Companion Stream Deck test build **0.1.8** refreshes the key, dial,

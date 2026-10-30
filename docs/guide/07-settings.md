@@ -8,6 +8,17 @@ There are five groups, with a second row of focused topics. Each setting has
 one home. Script files, recordings and settings import/export are in the
 **Files menu (☰)**; live tools are under **Tools** on the top bar.
 
+Settings keeps the same width and fits its height to the current page. There
+is no scrolling. Longer topics use **Previous / Next**, with the current
+section and page number shown between them. Smaller windows use more pages;
+your draft stays intact as you move between them. Word lists use pages too.
+
+Hover over **(?)**, focus it with the keyboard, or tap/click it for an
+explanation of the nearby choice. Click again, click elsewhere, or press
+**Esc** to dismiss it. When an explanation is open, the first Esc closes
+that explanation and leaves Settings open. The explanation can be hovered
+without disappearing as you move the pointer onto it.
+
 ![Prompting settings, with Scrolling selected and the other topics alongside](images/settings-scrolling.png)
 
 ## Find a setting
@@ -65,6 +76,8 @@ to use. **Prompting > Commands** chooses when the wake word is heard, including
 Always listening while stopped. **Your words** holds training and synonyms.
 
 ![Command listening and the wake-word choice on their own topic](images/settings-commands.png)
+
+![The question-mark button explains command listening without adding permanent text to the form](images/settings-commands-help.png)
 
 See [Scrolling and voice](03-scrolling-and-voice.md) for the modes and commands.
 Sound checks and loudness are in **Recording > Audio**, with a live meter
