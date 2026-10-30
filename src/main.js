@@ -142,6 +142,8 @@ const defaultSettings = {
 	marginBottom: 0,
 	lineHeight: 1.3,
 	headingScale: 1, // section headings, as a share of their usual size next to the text
+	directionScale: 1, // delivery comments, independently of headings
+	directionColour: "", // empty follows the theme and direction visibility choice
 	textOpacity: 1, // script text only; the controls stay solid
 	backingOnAir: 0.07, // backing while on air: nearly see-through (Backing is the level off air)
 	textBrightness: 1, // dims the script without making it see-through

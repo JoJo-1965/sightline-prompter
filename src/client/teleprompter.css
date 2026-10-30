@@ -272,8 +272,8 @@ h2 {
 }
 
 .direction .dir-text {
-	color: rgba(255, 255, 255, 0.4);
-	font-size: 80%;
+	color: var(--direction-colour, rgba(255, 255, 255, 0.4));
+	font-size: calc(var(--script-size, 1rem) * 0.8 * var(--direction-scale, 1));
 }
 
 .direction .say {
@@ -282,8 +282,30 @@ h2 {
 }
 
 body.directions-normal .direction .dir-text {
-	color: inherit;
-	font-size: inherit;
+	color: var(--direction-colour, inherit);
+	font-size: calc(var(--script-size, 1rem) * var(--direction-scale, 1));
+}
+
+.direction-colour-controls {
+	display: inline-flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 8px;
+}
+
+.direction-colour-controls input[type="color"] {
+	width: 48px;
+	height: 30px;
+	padding: 2px;
+	border: 1px solid #8391a5;
+	border-radius: 4px;
+	background: #272c34;
+	cursor: pointer;
+}
+
+#lp-direction-theme[aria-pressed="true"] {
+	border-color: #8fd3ff;
+	color: #8fd3ff;
 }
 
 body.directions-hide .direction .dir-text {
@@ -2342,7 +2364,7 @@ body.theme-contrast #md h3 {
 }
 
 body.theme-contrast #md .direction .dir-text {
-	color: #c8c8c8;
+	color: var(--direction-colour, #c8c8c8);
 }
 
 body.theme-cream #md {
@@ -2369,19 +2391,19 @@ body.font-verdana #md {
 }
 
 /* Heading font (Reading > Heading font): headings apart from the text. */
-body.heading-font-default #md :is(h1, h2, h3, h4) {
+body.heading-font-default #md :is(h1, h2, h3, h4, .dir-text) {
 	font-family: Helvetica, Arial, sans-serif;
 }
 
-body.heading-font-atkinson #md :is(h1, h2, h3, h4) {
+body.heading-font-atkinson #md :is(h1, h2, h3, h4, .dir-text) {
 	font-family: "Atkinson Hyperlegible", Helvetica, Arial, sans-serif;
 }
 
-body.heading-font-opendyslexic #md :is(h1, h2, h3, h4) {
+body.heading-font-opendyslexic #md :is(h1, h2, h3, h4, .dir-text) {
 	font-family: "OpenDyslexic", Verdana, sans-serif;
 }
 
-body.heading-font-verdana #md :is(h1, h2, h3, h4) {
+body.heading-font-verdana #md :is(h1, h2, h3, h4, .dir-text) {
 	font-family: Verdana, Geneva, sans-serif;
 }
 

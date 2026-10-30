@@ -70,6 +70,13 @@ Fonts are in **Appearance > Text**, and colour themes are in **Appearance > Back
   example Standard headings with OpenDyslexic text, where the dyslexia font
   makes big headings hard to read. **Same as the text** (the default) follows
   the Font above.
+- **Comment size and Comment colour**: adjust `[square-bracket directions]`
+  independently of headings. Their font follows **Heading font**. Size is
+  40–150% of the usual comment size: at 100%, Dimmed comments remain smaller
+  than the script, while Normal comments match it. Choose a colour with the
+  swatch; **Theme** restores the usual colour. Quoted words you read aloud
+  keep their script style. Visibility remains in **Prompting > Script**;
+  notes such as `[smile]` stay outside word counts, speech tracking and timing.
 - **Text effect**: an outline or a shadow on the text, for busy backgrounds.
 - **Focus band**: dims the lines away from the reading line, with a strength
   setting.

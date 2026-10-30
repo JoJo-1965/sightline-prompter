@@ -45,7 +45,7 @@ without disappearing as you move the pointer onto it.
 | | Commands | When to listen for commands and which wake word to use |
 | | Your words | Script synonyms, command synonyms, sound-alike matching, suggestions and Teach |
 | | Script | Notes mode, pacing, script directions, slide cues and directive display |
-| **Appearance** | Text | Body and heading fonts, heading size and text-size preview |
+| **Appearance** | Text | Body and heading fonts, heading size, comment size/colour and text-size preview |
 | | Background | Text opacity, backing on/off air, brightness and colour theme |
 | | Reading aids | Focus band, text edge, reading-line marker, sentence highlight and progress bar |
 | | Spacing | Margins, line spacing, reading line and alignment |
@@ -68,11 +68,15 @@ permissions you have enabled. The head guide is independent of OBS.
 
 ## Fonts, backing and reading aids
 
-Open **Appearance > Text** for the body font, heading font, heading size and
-text-size preview. The visible notes distinguish changes saved immediately
+Open **Appearance > Text** for the body font, heading font, heading size,
+comment size/colour and text-size preview. Square-bracket comments follow
+Heading font, with independent size and colour. **Theme** resets their colour;
+the visibility choice remains in **Prompting > Script**. Quoted spoken words
+keep their script style. These appearance changes save immediately.
+The visible notes distinguish changes saved immediately
 from the text-size preview saved with Apply or Save & close.
 
-![Body and heading fonts alongside the text-size preview](images/settings-reading.png)
+![Script fonts, heading size and independent comment size and colour](images/settings-reading.png)
 
 **Appearance > Background** holds visibility, brightness and colour choices.
 Use Background for the off-air level and Background on air for the level used

@@ -90,6 +90,7 @@ async function until( expression ) {
 	throw new Error( `Timed out waiting for ${ expression }` );
 }
 async function pictureOf( selector, file ) {
+	await evaluate( "new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))" );
 	const clip = await evaluate( `(()=>{const r=document.querySelector(${ JSON.stringify( selector ) }).getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height,scale:1};})()` );
 	const picture = await send( "Page.captureScreenshot", { format: "png", clip } );
 	await fs.writeFile( path.join( artifacts, file ), Buffer.from( picture.result.data, "base64" ) );

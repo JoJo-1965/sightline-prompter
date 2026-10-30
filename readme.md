@@ -241,9 +241,15 @@ separate guide-background opacity;
 **1.0.7-rc.10** fixes the phone QR image, makes voice help movable, puts
 mirroring under Screens and honours capture preferences for helper windows;
 **1.0.7-rc.11** improves OBS button contrast and keeps Settings above the prompter.
+**1.0.7-rc.12** adds independent size and colour for square-bracket comments.
 The latest published app remains **1.0.6**. No tag, merge, Marketplace publication or
 website deployment is part of this candidate.
 
+- **Comment appearance:** **Settings > Appearance > Text** has independent
+  Comment size and Comment colour controls for `[delivery directions]`.
+  Comments follow Heading font; Theme restores the usual colour. Quoted
+  spoken words keep their script style, and delivery notes stay outside
+  speech tracking, word counts and timing.
 - **Settings opens above prompting:** native ownership keeps Settings and both
   help windows above the prompter, including when reopening in fullscreen.
 - **Readable OBS controls:** Record take and Finish recording have dark

@@ -345,6 +345,10 @@ The whole workflow is in the guide:
 - **Fonts** including Atkinson Hyperlegible, OpenDyslexic and Verdana, with a
   separate **heading font** and **heading size**, so big headings stay
   readable with a dyslexia font.
+- **Delivery-comment styling:** square-bracket notes have independent size
+  and colour in **Settings > Appearance > Text**, and follow Heading font.
+  A Theme button restores their usual colour. Spoken quotations keep the
+  script style; delivery notes remain outside tracking, word counts and timing.
 - Independent text opacity, background opacity and text brightness, margins
   that fade out at the edges, line spacing and alignment.
 

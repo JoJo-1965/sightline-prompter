@@ -18,6 +18,8 @@ and Getting Started. The matching Stream Deck plugin remains 0.1.9.
 RC10 fixes the phone QR image, gives voice help a movable native window,
 moves mirroring to Screens and honours Hide from capture for helper windows.
 RC11 keeps Settings above the fullscreen prompter and improves OBS button contrast.
+RC12 adds Comment size and Comment colour under Appearance > Text. Comments
+follow Heading font, independently of heading size; Theme restores their colour.
 
 The public app remains **1.0.6**. The candidate and plugin are private test builds.
 

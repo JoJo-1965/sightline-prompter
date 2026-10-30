@@ -224,6 +224,10 @@
         <input id="lp-heading-scale" type="range" min="0.4" max="1.5" step="0.05" />
       </label>
       <label class="lp-row"
+        >Comment size <output id="lp-direction-scale-value"></output>
+        <input id="lp-direction-scale" type="range" min="0.4" max="1.5" step="0.05" />
+      </label>
+      <label class="lp-row"
         >Reading line <output id="lp-reading-line-value"></output>
         <input id="lp-reading-line" type="range" min="5" max="80" step="1" />
       </label>
@@ -269,6 +273,13 @@
       <div class="lp-row lp-inline" title="Section headings and titles can use a different font from the text you read">
         Heading font
         <select id="lp-heading-font"><option value="same">Same as the text</option><option value="default">Standard</option><option value="atkinson">Atkinson Hyperlegible</option><option value="opendyslexic">OpenDyslexic</option><option value="verdana">Verdana</option></select>
+      </div>
+      <div class="lp-row lp-inline" data-settings-control="lp-direction-colour">
+        <span class="settings-option-name"><label for="lp-direction-colour">Comment colour</label></span>
+        <span class="direction-colour-controls">
+          <input id="lp-direction-colour" type="color" value="#c8c8c8" />
+          <button type="button" id="lp-direction-theme" aria-pressed="true" title="Use the theme's comment colour">Theme</button>
+        </span>
       </div>
       <h5 class="lp-sub">Recording</h5>
       <label class="lp-check"
@@ -809,7 +820,7 @@
         </fieldset>
 
         <fieldset data-tab="reading" id="set-reading-host">
-          <legend>Fonts and headings</legend>
+          <legend>Script appearance</legend>
           <p class="settings-live-note">Saved immediately as you adjust.</p>
         </fieldset>
 

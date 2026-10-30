@@ -2977,6 +2977,8 @@ const LAYOUT_DEFAULTS = {
 	marginBottom: 0,
 	lineHeight: 1.3,
 	headingScale: 1,
+	directionScale: 1,
+	directionColour: "",
 	textOpacity: 1,
 	textBrightness: 1,
 	backingOnAir: 0.07,
@@ -3000,6 +3002,9 @@ function applyLayout() {
 		"--heading-scale",
 		settings.headingScale ?? LAYOUT_DEFAULTS.headingScale
 	);
+	style.setProperty( "--direction-scale", settings.directionScale ?? LAYOUT_DEFAULTS.directionScale );
+	if ( /^#[\da-f]{6}$/i.test( settings.directionColour ?? "" ) ) style.setProperty( "--direction-colour", settings.directionColour );
+	else style.removeProperty( "--direction-colour" );
 	style.setProperty(
 		"--text-opacity",
 		settings.textOpacity ?? LAYOUT_DEFAULTS.textOpacity
@@ -4034,6 +4039,7 @@ const LAYOUT_FIELDS = [
 	[ "lp-margin-bottom", "marginBottom", v => `${ v }%` ],
 	[ "lp-line-height", "lineHeight", v => `${ Number( v ).toFixed( 2 ) }×` ],
 	[ "lp-heading-scale", "headingScale", v => `${ Math.round( v * 100 ) }%` ],
+	[ "lp-direction-scale", "directionScale", v => `${ Math.round( v * 100 ) }%` ],
 	[ "lp-text-opacity", "textOpacity", v => `${ Math.round( v * 100 ) }%` ],
 	[ "lp-backing-on-air", "backingOnAir", v => `${ Math.round( v * 100 ) }%` ],
 	[ "lp-text-brightness", "textBrightness", v => `${ Math.round( v * 100 ) }%` ],
@@ -4069,6 +4075,8 @@ function syncLayoutPanel() {
 	field( "lp-theme" ).value = settings.theme ?? "default";
 	field( "lp-font" ).value = settings.scriptFont ?? "default";
 	field( "lp-heading-font" ).value = settings.headingFont ?? "same";
+	field( "lp-direction-colour" ).value = settings.directionColour || "#c8c8c8";
+	field( "lp-direction-theme" ).setAttribute( "aria-pressed", String( !settings.directionColour ) );
 	field( "lp-on-air" ).checked = settings.onAirLight !== false;
 	field( "lp-pacing" ).checked = settings.showPacing !== false;
 	field( "lp-points" ).checked = !!settings.pointsMode;
@@ -4080,6 +4088,13 @@ function syncLayoutPanel() {
 }
 
 if ( uiElement( "layout-panel" ) ) {
+	field( "lp-direction-colour" ).addEventListener( "input", () => {
+		settings.directionColour = field( "lp-direction-colour" ).value;
+		applyLayout();
+		syncLayoutPanel();
+	} );
+	field( "lp-direction-colour" ).addEventListener( "change", () => window.electron.saveSettings( { directionColour: field( "lp-direction-colour" ).value } ) );
+	onClick( "lp-direction-theme", () => window.electron.saveSettings( { directionColour: "" } ) );
 	for ( const [ id, key ] of LAYOUT_FIELDS ) {
 		field( id ).addEventListener( "input", () => {
 			settings[key] = Number( field( id ).value );
@@ -5009,10 +5024,10 @@ function borrowLayoutPanel() {
 			continue;
 		}
 		const id = el.dataset.settingsControl ?? el.querySelector( "input[id], select[id]" )?.id;
-		const destination = [ "lp-font", "lp-heading-font", "lp-heading-scale" ].includes( id ) ? "reading" : id === "lp-theme" ? "background" : [ "lp-marker", "lp-sentence", "lp-progress" ].includes( id ) ? "aids" : id === "lp-pinned" ? "display" : id === "lp-summary" ? "recording" : spacing ? "layout" : tab;
+		const destination = [ "lp-font", "lp-heading-font", "lp-heading-scale", "lp-direction-scale", "lp-direction-colour" ].includes( id ) ? "reading" : id === "lp-theme" ? "background" : [ "lp-marker", "lp-sentence", "lp-progress" ].includes( id ) ? "aids" : id === "lp-pinned" ? "display" : id === "lp-summary" ? "recording" : spacing ? "layout" : tab;
 		( layoutHosts[destination] ?? layoutHost ).append( el );
 	}
-	for ( const id of [ "lp-font", "lp-heading-font", "lp-heading-scale" ] ) {
+	for ( const id of [ "lp-font", "lp-heading-font", "lp-heading-scale", "lp-direction-scale", "lp-direction-colour" ] ) {
 		layoutHosts.reading.append( field( id ).closest( "[data-settings-control]" ) );
 	}
 	field( "lp-done" )?.classList.add( "hidden" );
@@ -6121,7 +6136,7 @@ function applyDisplayClasses() {
 			`font-${ f }`,
 			( settings.scriptFont ?? "default" ) === f
 		);
-	// Headings can have their own font ("same" follows the text).
+	// Headings and delivery comments share a font ("same" follows the text).
 	for ( const f of FONTS )
 		body.classList.toggle( `heading-font-${ f }`, ( settings.headingFont ?? "same" ) === f );
 	for ( const e of EFFECTS )
@@ -6306,6 +6321,12 @@ const NUMBER_BOXES = {
 		unit: "%",
 		word: "percent",
 		name: "Heading size"
+	} ),
+	"lp-direction-scale": () => ( {
+		scale: 100,
+		unit: "%",
+		word: "percent",
+		name: "Comment size"
 	} ),
 	"lp-line-height": () => ( {
 		scale: 100,

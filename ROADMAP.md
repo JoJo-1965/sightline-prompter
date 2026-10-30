@@ -52,6 +52,8 @@ Both OBS topics now sit together under Controls. Recorded-slate setup explains
 blocked prerequisites and reports its progress and errors in Settings.
 RC11 improves contrast on the OBS status buttons and gives Settings and both
 help windows native ownership so they stay above the fullscreen prompter.
+RC12 adds independent size and colour for square-bracket delivery comments
+under Appearance > Text, following Heading font while retaining speech exclusions.
 
 The [acceptance walkthrough](docs/guide/14-acceptance-test.md) and two bundled
 sample scripts cover natural voice, physical Stream Deck controls, stops,
