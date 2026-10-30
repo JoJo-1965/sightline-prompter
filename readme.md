@@ -244,6 +244,9 @@ mirroring under Screens and honours capture preferences for helper windows;
 **1.0.7-rc.12** adds independent size and colour for square-bracket comments.
 **1.0.7-rc.13** adds custom pad/phone layouts and listening recovery.
 **1.0.7-rc.14** gives troubleshooting controls their own **About > Debug** topic.
+**Next candidate work, not yet packaged:** compact phone landscape controls
+use four or six columns, with all 12 Studio buttons in two rows. Portrait
+keeps its large controls, and footer spacing accounts for browser controls.
 The latest published app remains **1.0.6**. No tag, merge, Marketplace publication or
 website deployment is part of this candidate.
 

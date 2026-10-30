@@ -1,5 +1,11 @@
 # TODO
 
+## Built for the next candidate, not yet packaged
+
+- [x] Compact phone landscape layout: preserve button order, use four or six
+  columns, fit Studio in two rows and add browser-safe footer spacing.
+  Portrait/landscape previews checked; real iPhone acceptance follows RC15.
+
 ## Pending fixes for the next candidate batch
 
 - [ ] Accept and validate shared `padLayout` objects through the existing

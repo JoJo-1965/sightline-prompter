@@ -239,7 +239,9 @@ pages. Remove a button to hide it. Changes save immediately.
 The pad and phone share this selection and order, with the Stream Deck
 artwork and equivalent actions. Stream Deck profiles keep their own key
 assignments. Choose 2, 3, 4 or 6 pad columns; narrow phones use two columns
-for larger touch targets. Buttons reflect the current state. Empty slots
+for larger touch targets. Short landscape screens use four columns, or six
+for layouts with nine or more selected buttons. Order stays the same.
+Buttons reflect the current state. Empty slots
 are disabled; OBS controls appear only when OBS and recording permission
 are enabled, and require a connection. Long pads can scroll within the screen.
 
@@ -293,6 +295,14 @@ The code appears after **Apply** or **Save & close**; reopen Settings if needed.
 It also works in the separate movable Settings window (fixed in RC10).
 
 ![The phone remote](images/phone-remote.png)
+
+In the next candidate, rotating to landscape uses the available width and
+shorter buttons: the 12-button Studio layout fits in two rows on typical
+phone screens. Portrait keeps its large touch targets. The footer has extra
+space above browser controls, and long layouts remain scrollable. This is
+development work for RC15; the installed RC14 still has the earlier layout.
+
+![Compact landscape layout with all twelve Studio buttons](images/phone-landscape.png)
 
 Only a phone with the code in the QR code can connect. **New code**
 disconnects any phone already connected. The first time, Windows may ask

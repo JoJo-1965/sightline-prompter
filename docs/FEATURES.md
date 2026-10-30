@@ -306,6 +306,8 @@ The whole workflow is in the guide:
   own Wi-Fi, protected by the code in the QR. It follows the pad's button
   selection and order with larger touch targets. Both reuse Stream Deck
   artwork and actions; hardware profiles stay independent.
+  Development for RC15 adds a compact landscape layout: four or six columns
+  with the same order, two rows for Studio, and browser-safe footer spacing.
 - **Listening recovery:** health checks restart interrupted capture or speech
   processing without moving the script or changing its hold. Silence and
   intentional listening-off do not cause restarts. Retries are bounded, with
