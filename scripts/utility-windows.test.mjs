@@ -248,6 +248,32 @@ try {
 	await settings.evaluate( "document.getElementById('settings-unsaved-keep').click()" );
 	assert.equal( await main.evaluate( "!!document.getElementById('cb-settings')" ), true, "Keeping the Settings draft cancels app exit" );
 	console.log( "PASS: separate stable Help window, mode-aware live help, independent Close and Settings guard on app exit." );
+	// Emulate only this isolated app's OBS IPC. Never connect to the workstation's
+	// OBS or record real media while checking preparation progress and failures.
+	await main.evaluate( "window.electron.saveSettings({obsRecordedSlate:true,slate:'both'})" );
+	await pause( 150 );
+	await native.evaluate( `(()=>{
+		const electron=process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron');
+		globalThis.slateUiTest={fail:true,state:{enabled:true,controls:true,connection:'connected',recording:'stopped',recordedSlate:{ready:false}}};
+		electron.ipcMain.removeHandler('obs');
+		electron.ipcMain.handle('obs',async()=>{
+			await new Promise(resolve=>setTimeout(resolve,350));
+			const test=globalThis.slateUiTest;
+			if(test.fail)return {ok:false,error:'The test scene has no browser source',state:test.state};
+			return {ok:true,state:{...test.state,recordedSlate:{ready:true}}};
+		});
+		electron.BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().includes('teleprompter.html')).webContents.send('obsState',globalThis.slateUiTest.state);
+		return true;
+	})()` );
+	await settings.evaluate( "document.getElementById('settings-topic-obs-recording').click();for(const id of ['enabled','controls','recorded-slate']){const el=document.getElementById('set-obs-'+id);el.checked=true;el.dispatchEvent(new Event('change',{bubbles:true}));}" );
+	await settings.until( "!document.getElementById('set-obs-prepare-slate').disabled" );
+	await settings.evaluate( "document.getElementById('set-obs-prepare-slate').click()" );
+	await settings.until( "document.getElementById('set-obs-slate-status').textContent.includes('Preparing the recorded slate')" );
+	await settings.until( "document.getElementById('set-obs-slate-status').textContent.includes('Could not prepare the recorded slate: The test scene has no browser source')" );
+	await native.evaluate( "globalThis.slateUiTest.fail=false" );
+	await settings.evaluate( "document.getElementById('set-obs-prepare-slate').click()" );
+	await settings.until( "document.getElementById('set-obs-slate-status').textContent.includes('Recorded slate source ready')" );
+	console.log( "PASS: recorded-slate progress, inline failure, retry and readiness through isolated simulated OBS responses." );
 	assert.deepEqual( errors, [] );
 	native.socket.close();
 	await pause( 100 );
