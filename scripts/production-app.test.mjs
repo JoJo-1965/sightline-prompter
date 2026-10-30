@@ -164,12 +164,15 @@ try {
 	assert.ok( visited.every( page => page.visible && page.fields && page.one ), JSON.stringify( visited ) );
 	async function checkSettingsFit( width, height ) {
 		await send( "Emulation.setDeviceMetricsOverride", { width, height, deviceScaleFactor: 1, mobile: false } );
+		await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
+		const frame = await evaluate( "(()=>{const r=document.querySelector('.settings-content').getBoundingClientRect();return {width:r.width,height:r.height};})()" );
 		for ( const entry of visited ) {
 			await evaluate( `document.getElementById('settings-topic-${ entry.name }').click()` );
 			for ( let n = 0; n < 30; n++ ) {
 				await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
-				const fit = await evaluate( "(()=>{const b=document.querySelector('.settings-content'),r=b.getBoundingClientRect(),f=b.querySelector('.settings-actions').getBoundingClientRect(),p=b.querySelector('[data-settings-page]:not([hidden])');return {height:r.height,top:r.top,bottom:r.bottom,overflow:b.scrollHeight-b.clientHeight,footer:f.bottom<=r.bottom+1,topic:p.dataset.settingsPage,page:b.querySelector('.settings-pagination [role=status]').textContent,next:b.querySelector('.settings-pagination').getClientRects().length&&!b.querySelector('.settings-pagination button:last-child').disabled};})()" );
+				const fit = await evaluate( "(()=>{const b=document.querySelector('.settings-content'),r=b.getBoundingClientRect(),f=b.querySelector('.settings-actions').getBoundingClientRect(),p=b.querySelector('[data-settings-page]:not([hidden])');return {width:r.width,height:r.height,top:r.top,bottom:r.bottom,overflow:b.scrollHeight-b.clientHeight,footer:Math.abs(f.bottom-r.bottom)<=1,topic:p.dataset.settingsPage,page:b.querySelector('.settings-pagination [role=status]').textContent,next:b.querySelector('.settings-pagination').getClientRects().length&&!b.querySelector('.settings-pagination button:last-child').disabled};})()" );
 				assert.ok( fit.height <= 560 && fit.top >= 0 && fit.bottom <= height && fit.overflow <= 1 && fit.footer, JSON.stringify( { width, height, ...fit } ) );
+				assert.ok( Math.abs( fit.width - frame.width ) <= 1 && Math.abs( fit.height - frame.height ) <= 1, `Settings must keep the same size across every topic and page: ${ JSON.stringify( { frame, fit } ) }` );
 				if ( !fit.next ) break;
 				assert.ok( n < 29, "Settings pages must end" );
 				await evaluate( "document.querySelector('.settings-pagination button:last-child').click()" );
@@ -192,7 +195,7 @@ try {
 	await evaluate( "document.getElementById('words-list').replaceChildren()" );
 	await evaluate( "document.getElementById('settings-topic-commands').click()" );
 	await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
-	assert.ok( await evaluate( "document.querySelector('.settings-content').getBoundingClientRect().height<400" ), "Short topics should not leave an oversized empty panel" );
+	assert.equal( await evaluate( "document.querySelector('.settings-content').getBoundingClientRect().height" ), 560, "Short topics keep the same panel height as longer topics" );
 	await evaluate( "document.querySelector('#settings-page-commands .settings-help-button').focus()" );
 	assert.equal( await evaluate( "document.querySelectorAll('.settings-explanation:popover-open').length" ), 1 );
 	await send( "Input.dispatchKeyEvent", { type: "keyDown", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 } );
@@ -206,7 +209,7 @@ try {
 	await fs.writeFile( path.join( artifacts, "settings-commands-help.png" ), Buffer.from( helpShot.result.data, "base64" ) );
 	await evaluate( "document.querySelector('#settings-page-commands .settings-help-button').click()" );
 	assert.equal( await evaluate( "document.querySelectorAll('.settings-explanation:popover-open').length" ), 0 );
-	console.log( "PASS: all Settings topics fit without scrolling at desktop and 560×500, short pages stay compact, and contextual help supports keyboard focus and Escape." );
+	console.log( "PASS: Settings keeps the same size and footer position across every topic and page without scrolling at desktop and 560×500; contextual help supports keyboard focus and Escape." );
 	await evaluate( "document.getElementById('settings-topic-layout').click()" );
 	for ( let n = 0; n < 10; n++ ) {
 		await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );

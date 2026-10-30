@@ -6,7 +6,7 @@ Duplicate file operations and Display preferences have been removed from
 Settings. The top bar keeps live controls and Steady/Voice switching; native
 menus retain standard platform access. Keyboard tab navigation, visible focus,
 modal focus containment and focus return are covered by app checks. Settings
-fits each page without scrolling: longer topics and word lists use labelled
+keeps a consistent width and height without scrolling: longer topics and word lists use labelled
 Previous/Next pages. Contextual (?) explanations support hover, keyboard and
 touch, with Escape to dismiss. See the
 [Settings map](guide/07-settings.md).

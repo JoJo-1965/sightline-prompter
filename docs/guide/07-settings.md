@@ -8,8 +8,9 @@ There are five groups, with a second row of focused topics. Each setting has
 one home. Script files, recordings and settings import/export are in the
 **Files menu (☰)**; live tools are under **Tools** on the top bar.
 
-Settings keeps the same width and fits its height to the current page. There
-is no scrolling. Longer topics use **Previous / Next**, with the current
+Settings keeps the same width and height across every tab and page. It only
+reduces its size when the prompter window is too small for the standard panel.
+There is no scrolling. Longer topics use **Previous / Next**, with the current
 section and page number shown between them. Smaller windows use more pages;
 your draft stays intact as you move between them. Word lists use pages too.
 

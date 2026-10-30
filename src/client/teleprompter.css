@@ -374,13 +374,12 @@ body.eye-line #md {
 	z-index: 1500;
 }
 
-/* A consistent width, with short pages that fit without scrolling. */
+/* One stable size across topics; longer pages fit without scrolling. */
 .settings-content {
 	box-sizing: border-box;
 	width: min(660px, 94vw);
 	min-width: 0;
-	height: auto;
-	max-height: min(560px, calc(100dvh - 32px));
+	height: min(560px, calc(100dvh - 32px));
 	display: flex;
 	flex-direction: column;
 	overflow: clip;
@@ -396,6 +395,7 @@ body.eye-line #md {
 }
 
 .settings-pagination {
+	margin-top: auto;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
@@ -484,11 +484,15 @@ body.eye-line #md {
 }
 
 .settings-content .modal-actions {
-	margin-top: 0;
+	margin-top: auto;
 	position: relative;
 	z-index: 2;
 	padding: 0.75em 0 1em;
 	background: #2a2d34;
+}
+
+.settings-pagination:not([data-settings-overflow="hidden"]) + .settings-actions {
+	margin-top: 0;
 }
 
 .modal-close {
