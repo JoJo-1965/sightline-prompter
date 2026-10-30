@@ -87,10 +87,15 @@ async function until( expression ) {
 	}
 	throw new Error( `Timed out waiting for ${ expression }` );
 }
+async function pictureOf( selector, file ) {
+	const clip = await evaluate( `(()=>{const r=document.querySelector(${ JSON.stringify( selector ) }).getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height,scale:1};})()` );
+	const picture = await send( "Page.captureScreenshot", { format: "png", clip } );
+	await fs.writeFile( path.join( artifacts, file ), Buffer.from( picture.result.data, "base64" ) );
+}
 async function openSettings() {
-	await evaluate( "document.getElementById('cb-settings').click()" );
+	await evaluate( "document.getElementById('cb-settings').focus();document.getElementById('cb-settings').click()" );
 	await until( "!document.getElementById('settings-modal').classList.contains('hidden')" );
-	await evaluate( "document.querySelector('.settings-tabs [data-tab=obs]').click()" );
+	await evaluate( "document.querySelector('[data-settings-group=recording]').click();document.querySelector('.settings-subtabs [data-tab=obs]').click()" );
 }
 try {
 	let target;
@@ -114,12 +119,83 @@ try {
 	} );
 	await send( "Runtime.enable" );
 	await until( "document.getElementById('obs-status') && document.getElementById('md').textContent.trim().length > 100" );
+	await evaluate( "document.querySelector('#voice-offer button:last-child')?.click()" );
 	const directions = await evaluate( "(async()=>{const {decorateScript}=await import('./decorate.js');const {buildWordIndex}=await import('./word-index.js');const {indexSentences,scriptSentences}=await import('./sentence-highlight.js');const root=document.createElement('div');root.innerHTML='<p>[smile] Hello [shrug] there. [think] More [point] words.</p>';decorateScript(root);const words=buildWordIndex(root).words;indexSentences(root);const sentences=scriptSentences();indexSentences(document.getElementById('md'));return {words,text:root.textContent,directions:root.querySelectorAll('.dir-text').length,sentences:sentences.map(s=>s.text)};})()" );
 	assert.deepEqual( directions.words, [ "hello", "there", "more", "words" ] );
 	assert.equal( directions.directions, 4 );
 	assert.ok( directions.text.includes( "smile" ) && directions.text.includes( "point" ) );
 	assert.equal( directions.sentences.join( " " ), "Hello there. More words." );
 	console.log( "PASS: delivery notes remain visible but stay out of speech alignment, counts and exported sentences." );
+
+	// Exercise the visible navigation rather than only testing its configuration.
+	await evaluate( "document.getElementById('cb-menu').click()" );
+	const fileMenu = await evaluate( "document.getElementById('app-menu').textContent" );
+	assert.ok( fileMenu.includes( "Open script" ) && fileMenu.includes( "Export the edit pack" ) );
+	assert.equal( /Sound check|Head.position|Control pad|Voice scroll|All settings|Faster/.test( fileMenu ), false );
+	await evaluate( "document.getElementById('app-menu').dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}))" );
+	assert.equal( await evaluate( "document.activeElement.id" ), "cb-menu" );
+	await evaluate( "document.getElementById('cb-tools').focus()" );
+	await send( "Input.dispatchKeyEvent", { type: "keyDown", key: " ", code: "Space", windowsVirtualKeyCode: 32 } );
+	await send( "Input.dispatchKeyEvent", { type: "keyUp", key: " ", code: "Space", windowsVirtualKeyCode: 32 } );
+	await until( "!document.getElementById('tools-panel').classList.contains('hidden')" );
+	assert.equal( await evaluate( "document.getElementById('cb-play').classList.contains('playing')" ), false );
+	assert.ok( await evaluate( "document.getElementById('tools-panel').textContent.includes('Head guide / unlock')" ) );
+	await evaluate( "document.activeElement.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowDown',bubbles:true}))" );
+	assert.ok( await evaluate( "document.activeElement.textContent.includes('Head guide')" ) );
+	await evaluate( "document.getElementById('tools-panel').dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}))" );
+	assert.equal( await evaluate( "document.activeElement.id" ), "cb-tools" );
+	await evaluate( "document.getElementById('cb-settings').focus();document.getElementById('cb-settings').click()" );
+	assert.deepEqual( await evaluate( "[...document.querySelectorAll('.settings-tabs button')].map(b=>b.textContent)" ), [ "Prompting", "Appearance", "Recording", "Controls", "About" ] );
+	assert.equal( await evaluate( "document.querySelectorAll('#settings-modal fieldset:not([data-tab])').length" ), 0 );
+	assert.equal( await evaluate( "[...document.querySelectorAll('#settings-modal fieldset')].every(f=>f.closest('[data-settings-page]'))" ), true );
+	assert.equal( await evaluate( "['set-opacity','set-reading-line','set-reading-marker','set-sentence','set-mirrored','set-file-open','set-file-save'].some(id=>document.getElementById(id))" ), false );
+	await evaluate( "document.getElementById('set-countdown').value='2';document.querySelector('[data-settings-group=appearance]').click();document.querySelector('[data-settings-group=prompting]').click()" );
+	assert.equal( await evaluate( "document.getElementById('set-countdown').value" ), "2" );
+	await evaluate( "document.getElementById('settings-group-prompting').dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true}))" );
+	assert.equal( await evaluate( "document.activeElement.textContent" ), "Appearance" );
+	await evaluate( "document.getElementById('settings-topic-reading').dispatchEvent(new KeyboardEvent('keydown',{key:'End',bubbles:true}))" );
+	assert.equal( await evaluate( "document.activeElement.textContent" ), "Screens" );
+	await evaluate( "document.getElementById('settings-close').focus();document.activeElement.dispatchEvent(new KeyboardEvent('keydown',{key:'Tab',shiftKey:true,bubbles:true}))" );
+	assert.equal( await evaluate( "document.activeElement.id" ), "settings-save" );
+	await evaluate( "document.activeElement.dispatchEvent(new KeyboardEvent('keydown',{key:'Tab',bubbles:true}))" );
+	assert.equal( await evaluate( "document.activeElement.id" ), "settings-close" );
+	const visited = await evaluate( "(()=>{const results=[];for(const group of document.querySelectorAll('.settings-tabs button')){group.click();for(const topic of [...document.querySelectorAll('.settings-subtabs button')].filter(b=>!b.hidden)){topic.click();const page=document.getElementById(topic.getAttribute('aria-controls'));results.push({name:topic.dataset.tab,visible:page.getClientRects().length>0,fields:page.querySelectorAll('fieldset').length,one:[...document.querySelectorAll('[data-settings-page]')].filter(p=>p.getClientRects().length).length===1});}}return results;})()" );
+	assert.equal( visited.length, 16 );
+	assert.ok( visited.every( page => page.visible && page.fields && page.one ), JSON.stringify( visited ) );
+	await evaluate( "document.getElementById('settings-topic-layout').click();document.getElementById('lp-reading-line').focus()" );
+	const lineBefore = await evaluate( "Number(document.getElementById('lp-reading-line').value)" );
+	await send( "Input.dispatchKeyEvent", { type: "keyDown", key: "ArrowRight", code: "ArrowRight", windowsVirtualKeyCode: 39 } );
+	await send( "Input.dispatchKeyEvent", { type: "keyUp", key: "ArrowRight", code: "ArrowRight", windowsVirtualKeyCode: 39 } );
+	assert.equal( await evaluate( "Number(document.getElementById('lp-reading-line').value)" ), lineBefore + 1 );
+	await evaluate( "document.querySelector('[data-settings-group=prompting]').click();document.getElementById('set-countdown').value='0';document.getElementById('settings-apply').click()" );
+	await until( "document.getElementById('settings-applied').textContent==='Saved'" );
+	await pause( 300 );
+	const navigationSaved = JSON.parse( await fs.readFile( path.join( profile, "app-state.json" ), "utf8" ) );
+	assert.equal( navigationSaved.settings.readingLine, lineBefore + 1, "Apply must not overwrite the shared live reading line with an old duplicate" );
+	await evaluate( "document.querySelector('[data-settings-group=prompting]').click();document.getElementById('settings-topic-scrolling').click();document.getElementById('set-countdown').value='0'" );
+	for ( const topic of [ "scrolling", "voice", "commands", "words", "script", "reading", "layout", "display", "recording", "audio", "phone", "streamdeck", "remotes", "obs-recording" ] ) {
+		await evaluate( `document.getElementById('settings-topic-${ topic }').click()` );
+		await pictureOf( ".settings-content", `settings-${ topic }.png` );
+	}
+	await evaluate( "document.getElementById('settings-close').click()" );
+	assert.equal( await evaluate( "document.activeElement.id" ), "cb-settings" );
+	await pictureOf( "#control-bar", "control-bar.png" );
+	await send( "Emulation.setDeviceMetricsOverride", { width: 700, height: 760, deviceScaleFactor: 1, mobile: false } );
+	assert.equal( await evaluate( "['cb-menu','cb-tools','cb-settings','cb-help'].every(id=>{const r=document.getElementById(id).getBoundingClientRect();return r.width>0&&r.left>=0&&r.right<=innerWidth;})" ), true );
+	await send( "Emulation.setDeviceMetricsOverride", { width: 560, height: 760, deviceScaleFactor: 1, mobile: false } );
+	assert.equal( await evaluate( "['cb-menu','cb-tools','cb-settings','cb-help'].every(id=>{const r=document.getElementById(id).getBoundingClientRect();return r.width>0&&r.left>=0&&r.right<=innerWidth;})" ), true );
+	await send( "Emulation.clearDeviceMetricsOverride" );
+	for ( const [ label, file ] of [ [ "Spacing and mirror…", "layout-panel.png" ], [ "Text and colour…", "reading-panel.png" ], [ "Take display…", "recording-panel.png" ] ] ) {
+		await evaluate( `document.getElementById('cb-tools').click();[...document.querySelectorAll('#tools-panel button')].find(b=>b.textContent.includes(${ JSON.stringify( label ) })).click()` );
+		await pictureOf( "#layout-panel", file );
+		await evaluate( "document.getElementById('lp-done').click()" );
+	}
+	await evaluate( "document.getElementById('cb-tools').click()" );
+	await pictureOf( "#tools-panel", "tools-menu.png" );
+	await evaluate( "document.getElementById('tools-panel').dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));document.getElementById('cb-menu').click()" );
+	await pictureOf( "#app-menu", "files-menu.png" );
+	await evaluate( "document.getElementById('app-menu').dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}))" );
+	console.log( "PASS: grouped Settings, all topics reachable, draft retained, file-only hamburger, Tools, keyboard focus and 700px access." );
 	await evaluate( "document.body.dispatchEvent(new KeyboardEvent('keydown',{key:'F1',bubbles:true}))" );
 	assert.equal( await evaluate( "document.querySelectorAll('#help-list [role=tab]').length" ), 5 );
 	assert.equal( await evaluate( "/OBS recording|Record take|Finish recording/.test(document.querySelector('#help-list').textContent)" ), false );

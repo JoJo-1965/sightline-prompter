@@ -10,12 +10,13 @@ Open the right script and check its section names and slide cues. Keep delivery
 directions such as `[smile]` or `[point]` in square brackets: they stay visible
 without counting as spoken words. No extra OBS directives are required.
 
-In **Settings > Scrolling**, enable scratch audio and choose **Flash and beep**
-for the slate. Scratch audio is an independent microphone reference, not your
+In **Settings > Recording > Audio**, enable scratch audio; choose **Flash and beep**
+under **Recording > Takes > Slate**. Scratch audio is an independent microphone reference, not your
 production master. Choose steady or voice scrolling for the session. In voice
 mode, take your own beat at timed pauses; `{stop}` still holds the prompter.
 
-In **Settings > OBS**, connect to OBS and allow recording controls. With OBS
+In **Settings > Recording > OBS connection**, connect to OBS; allow controls in
+**Recording > OBS recording**. With OBS
 stopped, enable **Include the slate in the OBS recording**, **Apply**, then
 **Prepare recorded slate**. Prepare again after restarting Sightline or changing
 the OBS scene. Include OBS audio track 1 so the recorded tone reaches the file.
@@ -31,8 +32,8 @@ Source Record filter.
 
 ## 2. Frame yourself and make a short test
 
-Show the head guide with **Ctrl+Shift+H**, its Stream Deck key, or **☰ > Window >
-Head-position guide / unlock**. Use your saved ideal outline, then move and scale the
+Show the head guide with **Ctrl+Shift+H**, its Stream Deck key, or **Tools >
+Head guide / unlock**. Use your saved ideal outline, then move and scale the
 actual outline to match your head in the camera preview. These are manual
 reference shapes; the app does not detect your face.
 

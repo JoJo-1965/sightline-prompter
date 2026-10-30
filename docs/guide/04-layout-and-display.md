@@ -2,13 +2,14 @@
 
 ## The Layout panel
 
-The panel has three views, each with its own button on the control bar:
-**Layout** (**Ctrl+Shift+K**) for spacing, **Reading** for opacity and reading
-aids, and **Recording** for the recording and script options. Click the same
-button again to close it. Changes show straight away, so you can see them on
-the script. Drag the panel by its title to move it out of the way (the Voice
-panel too); double-click the title to put it back. The same controls are on the **Layout**, **Reading** and
-**Recording** tabs of Settings.
+The **Tools** button opens quick adjustments: **Spacing and mirror**
+(**Ctrl+Shift+K**), **Text and colour**, **Take display**, and **Voice and
+microphone**. Changes show straight away. Drag a panel by its title to move
+it out of the way; double-click the title to recentre it.
+
+Settings reuses these controls under **Appearance > Spacing**, **Appearance >
+Text & colour**, **Recording > Takes** and **Prompting > Script**. There is
+one copy of each control; closing Settings returns it to the quick panel.
 
 ![The Layout panel](images/layout-panel.png)
 
@@ -52,22 +53,23 @@ panel too); double-click the title to put it back. The same controls are on the 
 - **Sentence highlight**: lights the sentence you're on (see
   [Scrolling and voice](03-scrolling-and-voice.md)).
 
-## Settings > Display
+## Settings > Appearance > Screens
 
-![Settings > Display](images/settings-display.png)
+![Window, monitor and eye-line settings under Appearance > Screens](images/settings-display.png)
 
-Text size, backing, the reading line, how notes in [brackets] show (dimmed,
-hidden or normal), the reading-line marker, the sentence highlight, mirroring,
-always on top, the prompter monitor and eye-line mode.
+Window and monitor placement, Keep on top and the eye-line strip. Text and
+backing are in **Appearance > Text & colour**; the reading line, highlights
+and mirroring are in **Appearance > Spacing**. Delivery directions are in
+**Prompting > Script**.
 
 ## Mirroring
 
 For beam-splitter rigs, where you read the screen through angled glass,
-mirror the prompter. In the Layout panel (the Layout and Reading views), two
+mirror the prompter. In **Tools > Spacing and mirror**, two
 buttons do it: **↔ Left–right** (most beam splitters) and **↕ Up–down**. Each
 stays lit while it's on; click it again to turn it off. Both lit mirrors both
-ways, and the panel stays open. **Ctrl+M** and the **Mirror** button on the
-control bar step through off, ↔, ↕ and both. The control bar, the pad and the control window stay
+ways, and the panel stays open. **Ctrl+M** steps through off, ↔, ↕ and both.
+The control bar, the pad and the control window stay
 readable.
 
 For the clearest camera image through the glass, set **Background** to 100%
@@ -77,7 +79,7 @@ and **Text brightness** to about 70% in the Reading view.
 
 **Ctrl+L** shrinks the prompter to a strip at the top centre of the screen,
 right under the webcam. Its width, height and reading line are set separately
-on **Settings > Display**.
+on **Settings > Appearance > Screens**.
 
 ## Keeping the prompter off recordings
 

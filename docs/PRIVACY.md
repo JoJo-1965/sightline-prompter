@@ -56,8 +56,7 @@ said the wake word. It is not listening only after you say "Prompter".
 The commands-only listener does not itself write a heard log; voice
 following does. Other enabled microphone features work independently.
 
-Choose Voice commands **Off**, **In voice mode** or **Always** in Settings
-> Voice. Always requires local recognition and an installed speech model.
+Choose Voice commands **Off**, **In voice mode** or **Always** in Settings > Prompting > Voice. Always requires local recognition and an installed speech model.
 The commands-only listener pauses during editing and word teaching; the
 voice-following session takes over when you start voice scrolling.
 

@@ -23,28 +23,7 @@
   <body>
     <div id="control-bar">
       <div class="cb-group">
-        <button id="cb-menu" class="cb-btn" title="Menu">☰</button>
-        <button
-          id="cb-open"
-          class="cb-btn cb-text"
-          title="Open a script into this slot (Ctrl+O)"
-        >
-          Open
-        </button>
-        <button
-          id="cb-save"
-          class="cb-btn cb-text"
-          title="Save edits (Ctrl+S) — opens Save As if the script isn't a text or Markdown file"
-        >
-          Save
-        </button>
-        <button
-          id="cb-edit"
-          class="cb-btn cb-text"
-          title="Edit the script (Ctrl+E)"
-        >
-          Edit
-        </button>
+        <button id="cb-menu" class="cb-btn" title="Files: scripts, recordings, import and export" aria-label="Files menu" aria-expanded="false" aria-controls="app-menu">☰</button>
       </div>
       <div
         class="cb-group"
@@ -55,6 +34,7 @@
         <button
           id="cb-restart"
           class="cb-btn"
+          aria-label="Back to the start"
           title="Back to the start (Ctrl+Home)"
         >
           ⏮
@@ -62,6 +42,8 @@
         <button
           id="cb-play"
           class="cb-btn cb-play"
+          aria-label="Start scrolling"
+          aria-pressed="false"
           title="Start / pause scrolling (Space)"
         >
           ▶
@@ -93,71 +75,41 @@
           <span id="cb-backing-label">Backing</span>
           <input id="cb-opacity" type="range" min="0" max="1" step="0.01" />
         </label>
-        <button
-          id="cb-layout"
-          class="cb-btn cb-text"
-          title="Margins, line spacing, alignment (Ctrl+Shift+K)"
-        >
-          Layout
-        </button>
-        <button
-          id="cb-reading"
-          class="cb-btn cb-text"
-          title="Reading: opacity, colours, fonts and the focus band"
-        >
-          Reading
-        </button>
-        <button
-          id="cb-recording"
-          class="cb-btn cb-text"
-          title="Recording: ON AIR, hide from screen sharing, click-through, notes, pacing light"
-        >
-          Recording
-        </button>
-        <button
-          id="cb-mirror"
-          class="cb-btn cb-text"
-          title="Mirror for beam-splitter glass: off, horizontal, vertical, both (Ctrl+M)"
-        >
-          Mirror
-        </button>
-        <button
-          id="cb-voice"
-          class="cb-btn cb-text"
-          title="Voice scroll sync: mode, Deepgram API key, microphone (Ctrl+Shift+V)"
-        >
-          Voice
-        </button>
+        <button id="cb-mode" class="cb-btn cb-text" title="Switch between steady and voice scrolling" aria-label="Voice scrolling" aria-pressed="false">Steady</button>
+        <button id="cb-tools" class="cb-btn cb-text" title="Recording tools, framing and quick adjustments" aria-expanded="false" aria-controls="tools-panel">Tools</button>
       </div>
       <div class="cb-spacer"></div>
       <div class="cb-group">
         <button
           id="cb-help"
           class="cb-btn"
+          aria-label="Help and shortcuts"
           title="Keyboard shortcuts (F1 or ?)"
         >
           ?
         </button>
-        <button id="cb-settings" class="cb-btn" title="Settings (Ctrl+,)">
+        <button id="cb-settings" class="cb-btn" title="Settings (Ctrl+,)" aria-label="Settings">
           ⚙
         </button>
-        <button id="cb-min" class="cb-btn" title="Minimise (Ctrl+Shift+M)">
+        <button id="cb-min" class="cb-btn" title="Minimise (Ctrl+Shift+M)" aria-label="Minimise">
           —
         </button>
         <button
           id="cb-max"
           class="cb-btn"
+          aria-label="Maximise or restore"
           title="Maximise / restore (Shift+F11)"
         >
           ▢
         </button>
-        <button id="cb-full" class="cb-btn" title="Full screen (F11)">⛶</button>
-        <button id="cb-close" class="cb-btn cb-close" title="Close (Ctrl+W)">
+        <button id="cb-full" class="cb-btn" title="Full screen (F11)" aria-label="Full screen" aria-pressed="false">⛶</button>
+        <button id="cb-close" class="cb-btn cb-close" title="Close (Ctrl+W)" aria-label="Close Sightline">
           ✕
         </button>
       </div>
     </div>
-    <nav id="app-menu" class="hidden" aria-label="Teleprompter menu"></nav>
+    <nav id="app-menu" class="hidden" aria-label="Files menu"></nav>
+    <div id="tools-panel" class="panel hidden" role="region" aria-label="Recording tools"></div>
     <div id="voice-panel" class="panel hidden">
       <h4>Voice scroll sync</h4>
       <div class="lp-row lp-inline">
@@ -404,7 +356,8 @@
         <li>Built for AI: an AI script prompt and a script checker</li>
         <li>A local API for AI agents, and a take log for the edit</li>
         <li>Steady scrolling, a countdown, and a progress bar</li>
-        <li>A control bar and menu, with a number box by each slider</li>
+        <li>A live control bar, a Files menu and grouped recording Tools</li>
+        <li>Settings groups and subtabs, with keyboard navigation and visible focus</li>
         <li>Nine script slots that each remember their place</li>
         <li>Layout controls: margins, spacing, reading line, eye-line</li>
         <li>Word, PDF, Google Docs, rich and plain-text scripts</li>
@@ -484,7 +437,11 @@
         <p class="field-hint">
           New here? <button type="button" id="help-guide" class="link-button">Open the user guide</button>
           (Shift+F1): every feature, with pictures.
+          <button type="button" id="help-ai-prompt" class="link-button">Copy the AI script prompt</button>
+          for your writing assistant.
           Choose a topic below. Help follows the modes you have enabled.
+          Files (☰) opens scripts and exports; Tools opens recording helpers;
+          ⚙ opens preferences.
         </p>
         <div id="help-list"></div>
         <p class="field-hint">
@@ -612,7 +569,7 @@
       </div>
       <div id="editor"></div>
     </div>
-    <div id="command-listening" class="hidden" title="Listening for the wake word, on this computer only. Nothing is recorded or sent anywhere. Settings > Voice > Voice commands turns it off.">
+    <div id="command-listening" class="hidden" title="Listening for the wake word on this computer. Settings > Prompting > Commands chooses when to listen.">
       🎙 Listening for “Prompter”
     </div>
     <div
@@ -677,23 +634,13 @@
         </div>
       </div>
     </div>
-    <div id="settings-modal" class="modal hidden">
+    <div id="settings-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="settings-title">
       <div class="modal-content settings-content">
         <div class="settings-head">
-        <h3>Settings</h3>
+        <h3 id="settings-title">Settings</h3>
         <button type="button" id="settings-close" class="modal-close" title="Close without saving (Esc)" aria-label="Close settings">×</button>
-        <div class="settings-tabs" role="tablist" aria-label="Settings sections">
-          <button type="button" role="tab" data-tab="scrolling">Scrolling</button>
-          <button type="button" role="tab" data-tab="voice">Voice</button>
-          <button type="button" role="tab" data-tab="display">Display</button>
-          <button type="button" role="tab" data-tab="layout">Layout</button>
-          <button type="button" role="tab" data-tab="reading">Reading</button>
-          <button type="button" role="tab" data-tab="recording">Recording</button>
-          <button type="button" role="tab" data-tab="files">Files</button>
-          <button type="button" role="tab" data-tab="remotes">Remotes</button>
-          <button type="button" role="tab" data-tab="obs">OBS</button>
-          <button type="button" role="tab" data-tab="about">About</button>
-        </div>
+        <div class="settings-tabs" role="tablist" aria-label="Settings groups"></div>
+        <div class="settings-subtabs" role="tablist" aria-label="Settings topics"></div>
         </div>
 
         <fieldset data-tab="scrolling">
@@ -719,6 +666,9 @@
             >Countdown before scrolling (seconds)
             <input id="set-countdown" type="range" min="0" max="10" step="1" />
           </label>
+        </fieldset>
+        <fieldset data-tab="recording">
+          <legend>Slate</legend>
           <label class="row"
             >Slate at the start of each take
             <select id="set-slate">
@@ -728,6 +678,9 @@
             </select>
           </label>
           <p class="field-hint">A sync point for the edit. Before each take the screen flashes white and shows the section and take number for a second; with the beep, your microphone records it too. The take log notes when each slate went off, so every take can be lined up with the recording. Start reading after the beep.</p>
+        </fieldset>
+        <fieldset data-tab="audio">
+          <legend>Audio references and levels</legend>
           <label class="check"
             ><input id="set-scratch-audio" type="checkbox" /> Record a scratch audio
             track for syncing</label
@@ -759,8 +712,11 @@
               <button id="set-speech-model-get" type="button" class="hidden">Download speech model</button>
             </div>
           </div>
+        </fieldset>
+        <fieldset data-tab="commands">
+          <legend>Voice commands</legend>
           <label class="row"
-            >Voice commands (“Prompter, pause”)
+            >Listen for commands
             <select id="set-voice-commands">
               <option value="voice">In voice mode</option>
               <option value="always">Always, even when stopped (the mic stays on)</option>
@@ -784,6 +740,9 @@
               <option value="director">Director</option>
             </select>
           </label>
+        </fieldset>
+        <fieldset data-tab="voice">
+          <legend>Recognition and microphone</legend>
           <label class="row"
             >Voice responsiveness
             <input
@@ -808,7 +767,10 @@
             >Microphone (voice mode)
             <select id="set-microphone"></select>
           </label>
-          <p class="field-hint">Choose Voice as the mode on the Scrolling tab to use these.</p>
+          <p class="field-hint">Choose Voice on the top bar or in Prompting > Scrolling to follow your speech.</p>
+        </fieldset>
+        <fieldset data-tab="audio">
+          <legend>Sound-check display</legend>
           <label class="check"
             ><input id="set-sound-check-takes" type="checkbox" /> Keep the sound-check
             meter on screen during takes</label
@@ -816,7 +778,7 @@
           <p class="field-hint">The sound-check meter (<strong>Sound check</strong> in the Voice panel, or Ctrl+Shift+D) shows your mic's level, loudness and the room's background noise at the edge of the prompter. It hides while a take runs unless this is ticked.</p>
         </fieldset>
 
-        <fieldset data-tab="voice" id="set-words">
+        <fieldset data-tab="words" id="set-words">
           <legend>Your words</legend>
           <label class="check"
             ><input id="set-sound-alike" type="checkbox" /> Match words that sound
@@ -853,37 +815,13 @@
           <legend>Recording</legend>
           <p class="field-hint">Changes here show straight away, so you can see them on the script. Cancel doesn't undo them.</p>
         </fieldset>
-
-        <fieldset data-tab="files">
-          <legend>Scripts</legend>
-          <div class="button-row">
-            <button id="set-file-open" type="button">Open script…</button>
-            <button id="set-file-edit" type="button">Edit script</button>
-            <button id="set-file-save" type="button">Save</button>
-            <button id="set-file-save-as" type="button">Save as…</button>
-          </div>
-          <label class="row"
-            >Open a recent script
-            <select id="set-file-recent"></select>
-          </label>
-          <label class="row"
-            >Open a sample script
-            <select id="set-file-sample"></select>
-          </label>
-          <p class="field-hint">Scripts can be Markdown, plain text, Word (.docx), rich text (.rtf) or web pages (.html).</p>
+        <fieldset data-tab="script" id="set-script-host">
+          <legend>Script behaviour</legend>
+          <p class="field-hint">Changes here show straight away. Open, edit and save scripts from the Files menu (☰).</p>
         </fieldset>
 
-        <fieldset data-tab="files">
-          <legend>Settings file</legend>
-          <div class="button-row">
-            <button id="set-file-load-settings" type="button">Load settings from file…</button>
-            <button id="set-file-save-settings" type="button">Save settings to file…</button>
-          </div>
-          <p class="field-hint">JSON or XML. Useful for moving your set-up to another computer.</p>
-        </fieldset>
-
-        <fieldset data-tab="display">
-          <legend>Display</legend>
+        <fieldset data-tab="reading">
+          <legend>Text size</legend>
           <label class="row"
             >Text size
             <input
@@ -894,20 +832,9 @@
               step="0.05"
             />
           </label>
-          <label class="row"
-            >Background darkness
-            <input id="set-opacity" type="range" min="0" max="1" step="0.01" />
-          </label>
-          <label class="row"
-            >Reading line (% from top)
-            <input
-              id="set-reading-line"
-              type="range"
-              min="5"
-              max="80"
-              step="1"
-            />
-          </label>
+        </fieldset>
+        <fieldset data-tab="script">
+          <legend>Delivery directions</legend>
           <label class="row"
             >[Directions]
             <select id="set-directions">
@@ -916,23 +843,9 @@
               <option value="normal">Normal</option>
             </select>
           </label>
-          <label class="check"
-            ><input id="set-reading-marker" type="checkbox" /> Show reading-line
-            marker</label
-          >
-          <label class="check"
-            ><input id="set-sentence" type="checkbox" /> Highlight the sentence
-            you're on (in voice mode, the one you're about to say)</label
-          >
-          <label class="row"
-            >Mirror text (beam-splitter rigs)
-            <select id="set-mirrored">
-              <option value="off">Off</option>
-              <option value="horizontal">Horizontal</option>
-              <option value="vertical">Vertical</option>
-              <option value="both">Both</option>
-            </select>
-          </label>
+        </fieldset>
+        <fieldset data-tab="display">
+          <legend>Window and monitor</legend>
           <label class="check"
             ><input id="set-always-on-top" type="checkbox" /> Keep window on
             top</label
@@ -948,7 +861,7 @@
           </p>
         </fieldset>
 
-        <fieldset data-tab="files">
+        <fieldset data-tab="script">
           <legend>Slide cues</legend>
           <label class="check"
             ><input id="set-highlight-cues" type="checkbox" /> Highlight cue
@@ -1042,7 +955,7 @@
           </p>
         </fieldset>
 
-        <fieldset data-tab="remotes">
+        <fieldset data-tab="streamdeck">
           <legend>Stream Deck</legend>
           <label class="check"
             ><input id="set-stream-deck" type="checkbox" /> Let the Sightline plugin for
@@ -1058,19 +971,7 @@
           </p>
         </fieldset>
 
-        <fieldset data-tab="remotes">
-          <legend>Control pad and control window</legend>
-          <label class="check"
-            ><input id="set-show-pad" type="checkbox" /> Control pad: a small bar of
-            buttons that floats over every window (Ctrl+Shift+P)</label
-          >
-          <label class="check"
-            ><input id="set-show-control" type="checkbox" /> Control window: a copy
-            of the script with big buttons, for a second screen (Ctrl+Shift+O)</label
-          >
-          <p class="field-hint">Both are also in ☰ > Window.</p>
-        </fieldset>
-        <fieldset id="set-phone-fieldset" data-tab="remotes">
+        <fieldset id="set-phone-fieldset" data-tab="phone">
           <legend>Phone remote</legend>
           <label class="check"><input id="set-phone" type="checkbox" /> Control the prompter from a phone on the same Wi-Fi</label>
           <div id="set-phone-connect" class="phone-connect hidden">
@@ -1100,17 +1001,21 @@
           <label class="check"><input id="set-obs-clear-password" type="checkbox" /> Remove the saved OBS password</label>
           <p id="set-obs-password-status" class="field-hint"></p>
           <p class="field-hint">In OBS 28 or later: Tools &gt; WebSocket Server Settings. Enable its server and authentication. No additional OBS plugin is needed. Use 127.0.0.1 for OBS on this computer. Remote connections use unencrypted WebSocket: use a trusted network. The password is kept separately using your operating system's protected storage.</p>
+          <p id="set-obs-status" role="status" aria-live="polite">OBS disabled</p>
+          <button type="button" id="set-obs-test">Test saved connection</button>
+          <p class="field-hint">Apply changes before testing. Recording permissions and the recorded slate are in Recording > OBS recording.</p>
+        </fieldset>
+        <fieldset data-tab="obs-recording">
+          <legend>OBS recording and sync</legend>
+          <p class="field-hint">Connect OBS in Recording > OBS connection first. These permissions apply when OBS integration is enabled.</p>
           <label class="check"><input id="set-obs-controls" type="checkbox" /> Allow Sightline to start and stop OBS recordings</label>
           <p class="field-hint">Leave this off for status only. Normal Play, Pause, Again and On air do not start or stop OBS. Record take waits for OBS to confirm recording before starting the prompter.</p>
           <label class="check"><input id="set-obs-markers" type="checkbox" /> Send section starts and named markers as OBS chapters</label>
           <p class="field-hint">Needs recording controls and a supported OBS version and recording format, such as Hybrid MP4. Chapter failures leave prompting and recording running.</p>
-            <label class="check" title="Choose Flash or Flash and beep in Settings > Scrolling > Slate, then prepare this source"><input id="set-obs-recorded-slate" type="checkbox" /> Include the slate in the OBS recording</label>
+            <label class="check" title="Choose Flash or Flash and beep in Settings > Recording > Takes, then prepare this source"><input id="set-obs-recorded-slate" type="checkbox" /> Include the slate in the OBS recording</label>
             <p class="field-hint">Optional, on this computer only. With OBS stopped, Apply then Prepare adds a dedicated source above this scene. It records a flash and 1 kHz tone on audio track 1; include that track in your recording. Prepare again after restarting Sightline or changing scenes. The head guide stays separate.</p>
             <button type="button" id="set-obs-prepare-slate">Prepare recorded slate</button>
             <p id="set-obs-slate-status" class="field-hint" role="status">Recorded slate off</p>
-          <p id="set-obs-status" role="status" aria-live="polite">OBS disabled</p>
-          <button type="button" id="set-obs-test">Test saved connection</button>
-          <p class="field-hint">Save or Apply changes before testing. Recording status also appears beside the script and in the control window.</p>
         </fieldset>
 
         <fieldset data-tab="about" class="settings-about">

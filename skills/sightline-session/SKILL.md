@@ -41,7 +41,7 @@ recording path after stop. Read [docs/EDIT-PACK.md](../../docs/EDIT-PACK.md)
 for fields and timing limits. The recording file is not included in the
 pack, and the observation times do not replace slate or audio sync.
 
-Optional recorded slates need a prepared source in **Settings > OBS** and
+Optional recorded slates need a prepared source in **Settings > Recording > OBS recording** and
 track 1 in the OBS recording. `recorded-sync.json` links browser acknowledgements
 to a section/take, the recording identifier, UTC times and log-clock `t`.
 Locate the actual flash in the file and map it to `t`; do not use the OBS
@@ -51,7 +51,7 @@ not discovered by this manifest. Preserve it and the independent scratch WAV.
 Module changes flush the old take/audio before loading another script.
 
 Controlling the app needs its local API switched on, once, by the user:
-**Settings > Remotes**, tick **Let an AI assistant or script on this computer
+**Settings > Controls > AI & API**, tick **Let an AI assistant or script on this computer
 load scripts and control the teleprompter**. If a command says Sightline
 can't be reached, ask the user to open Sightline and tick that box. Don't
 try to switch it on any other way.
@@ -118,7 +118,7 @@ app closed:
 - `heard ["<script name>"] [yyyy-mm-dd]`: what voice scrolling heard, lined
   up with the script, and the words it heard in place of script words, most
   often first. Use it to suggest corrections for words it keeps mishearing:
-  the user adds them in **Settings > Voice > Your words** (your word, then
+  the user adds them in **Settings > Prompting > Your words** (your word, then
   what it hears instead), and words that sound alike are already matched.
   For command checks, distinguish the wake word from the command. Leave a
   brief beat after the wake word and finish within four seconds. Avoid broad
@@ -188,7 +188,7 @@ distinguish Sightline's input from another app's recording fader.
 - Don't edit, move or delete anything in Sightline's take-logs folder
   yourself: read it, build a pack somewhere else, and use the verbs above to
   name or mark sessions. `delete-recording <id>` moves one to the Recycle Bin,
-  only works if the user allowed it in Settings > Remotes, and only ever on
+  only works if the user allowed it in Settings > Controls > AI & API, and only ever on
   the user's say-so for that session.
 - Don't send take logs, scripts or packs to any online service unless the
   user asks: they hold the user's script.

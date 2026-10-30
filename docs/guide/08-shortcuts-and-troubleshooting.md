@@ -8,7 +8,7 @@ hides its controls; Ctrl+Shift+H reveals them without leaving fullscreen.
 
 **Ctrl+Shift+H** (Cmd+Shift+H on Mac) works globally for the head-position
 guide: show, unlock if locked, or hide if already unlocked. If another app
-owns that shortcut, use **☰ > Window > Head-position guide / unlock** or its
+owns that shortcut, use **Tools > Head-position guide / unlock** or its
 Stream Deck action. See [camera framing](06-remotes-and-screens.md#head-position-guide-development).
 
 Press **F1** (or **?**) for the full list inside the app.
@@ -45,7 +45,7 @@ and restore it.
 
 **Voice scrolling doesn't move.** Check the scroll mode is **Voice**, the
 **Listening** label is showing, and the meter in the Voice panel moves when you
-speak. If you use "On this computer", check Settings > Voice says the speech
+speak. If you use "On this computer", check Settings > Prompting > Voice says the speech
 model is installed.
 
 **Voice scrolling has lost its place.** Scroll by hand to where you are. It
@@ -66,7 +66,7 @@ for support…** and attach the file.
 
 **A voice command isn't heard.** Say "Prompter", then the command, then stop
 for a moment: commands only count at the end of what you say. Check Voice
-commands is on in Settings > Voice. To use them while steady scrolling, or to
+commands is on in Settings > Prompting > Voice. To use them while steady scrolling, or to
 start with "Prompter, go", choose "Always, even when stopped" and look for the
 🎙 Prompter label.
 

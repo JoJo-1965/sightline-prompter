@@ -19,8 +19,7 @@ the master recordings alongside each module's pack.
 ## The clock
 
 Every time is in **seconds on the session clock**. Time 0 is the first
-**slate**: the white flash and beep at the start of the first take (Settings >
-Scrolling > Slate). If no slate was used, 0 is when the first take started.
+**slate**: the white flash and beep at the start of the first take (Settings > Recording > Takes > Slate). If no slate was used, 0 is when the first take started.
 
 To line the pack up with a recording, find the first slate's flash or beep in
 the video (a white frame and a short tone), and subtract that time:
@@ -34,7 +33,7 @@ recordings that carry a time of day instead.
 
 ## Scratch audio
 
-With **Settings > Scrolling > Record a scratch audio track for syncing** on,
+With **Settings > Recording > Audio > Record a scratch audio track for syncing** on,
 Sightline records the microphone while the prompter runs, as a sync reference
 only. `take-log.json` lists the files in `audio` (added in this version;
 older logs have none):
@@ -153,7 +152,7 @@ earlier ones changed.
 
 ## Loudness
 
-With **Settings > Scrolling > Loudness for each take** on (in voice scrolling
+With **Settings > Recording > Audio > Loudness for each take** on (in voice scrolling
 by default), each take has `loudness` in `take-log.json` (added in this
 version; null when it wasn't measured), and the same in the last columns of
 `takes.csv`:
@@ -234,7 +233,7 @@ its file name, such as `M2 Intro 2026-10-28`.
   recordings` lists the sessions with their ids, `recording <id>` shows one,
   and `recording-pack <id> [folder]` writes its pack. `processed <id>` marks
   it as edited when you're done, and `name` and `note` label it.
-- **Local API** (the app open, with **Settings > Remotes** ticked):
+- **Local API** (the app open, with automation enabled in **Settings > Controls > AI & API**):
   `GET /recordings`, `GET /recording?id=…`, `GET /recording/pack?id=…`
   (the files as `{ files: { name: contents } }`, with any scratch audio as
   `audio`: where each file is on this computer and its place on the clock) and

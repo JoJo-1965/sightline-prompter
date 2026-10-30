@@ -10,12 +10,19 @@ complex builds come later.
 - **Value:** ★★★ changes recording day · ★★ clearly better · ★ nice to have
 - **Size:** **S** about a day · **M** a few days · **L** a week or more, for a person. Built with Claude Code, most take minutes to an hour, plus testing
 
-## Where it stands (29 October 2026)
+## Where it stands (30 October 2026)
 
 **Publication hold:** Joanne asked to validate all five Academy production
 requirements before the next release. Work stays on the OBS branch, with
 no merge, tags, publication or website deployment. The Stream Deck repository
 remains private.
+
+**Navigation grouping built on the test branch:** Settings now has Prompting,
+Appearance, Recording, Controls and About, with focused subtabs. Duplicate
+file operations and Display preferences have been removed. Files (☰) covers
+input/output; Tools holds recording helpers and quick adjustments. Keyboard
+access and a 700-pixel layout pass the isolated app check. This completes the
+grouping part of item 48; the separate Settings window is still outstanding.
 
 **Production handover:** the illustrated [session guide](docs/guide/12-production-handover.md)
 now covers setup, framing, a short test, retakes, keeper choices and master-file

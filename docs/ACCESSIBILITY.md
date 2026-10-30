@@ -29,7 +29,7 @@ page at a time instead of continuously scrolling it.
 ## Flash, sound and movement
 
 The optional slate can show a bright full-window flash and play a beep.
-Set **Settings > Scrolling > Slate** to **Off** if either is unsuitable;
+Set **Settings > Recording > Takes > Slate** to **Off** if either is unsuitable;
 the flash-only option still flashes. Do not enable a slate merely because
 a sample script or recording workflow suggests one.
 

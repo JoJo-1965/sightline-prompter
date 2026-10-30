@@ -2,8 +2,8 @@
 
 ## Head-position guide (development)
 
-Use **☰ > Window > Head-position guide / unlock**, or **Ctrl+Shift+H** from
-any app (**Cmd+Shift+H** on Mac). The same action appears in the native View
+Use **Tools > Head guide / unlock**, or **Ctrl+Shift+H** from
+any app (**Cmd+Shift+H** on Mac). The same action appears in the native Tools
 menu. It opens over your camera preview without requiring an OBS connection.
 Drag its title bar and bottom-right resize handle to fit the outer dotted
 rectangle to your 16:9 preview. Adjust the head outline with +/−, change
@@ -125,7 +125,7 @@ latest news and the link are on the
 
 **Setting it up:**
 
-1. In Sightline, **Settings > Remotes > Stream Deck**, tick **Let the
+1. In Sightline, **Settings > Controls > Stream Deck**, tick **Let the
    Sightline plugin for Stream Deck control the prompter**, and **Save**. The
    plugin finds Sightline itself, so there's no code or token to type. It gets
    its own key, for buttons only: it can play and pause, move through the
@@ -163,7 +163,7 @@ Deck doesn't run on Linux).
 
 ## The floating pad
 
-**Ctrl+Shift+P**, ☰ > Window > Control pad, or Settings > Remotes. It's a small bar with Top,
+**Ctrl+Shift+P** or **Tools > Control pad** opens a small bar with Top,
 Previous, Start / Pause and Next that stays on top of every other window.
 
 ![The floating pad](images/pad.png)
@@ -173,7 +173,7 @@ It reopens where you left it. Over a mirrored prompter, it flips to match.
 
 ## The control window
 
-**Ctrl+Shift+O**, ☰ > Window > Control window, or Settings > Remotes. It's an ordinary, upright
+**Ctrl+Shift+O** or **Tools > Control window** opens an ordinary, upright
 window for a second screen or an operator. It shows a live copy of the script
 that follows the prompter, with the reading line, the pacing light, the
 section and time left, and big buttons.
@@ -204,7 +204,7 @@ and too far away to work Settings on:
 
 ## The phone remote
 
-On **Settings > Remotes**, tick **Control the prompter from a phone on the
+On **Settings > Controls > Phone**, tick **Control the prompter from a phone on the
 same Wi-Fi** and save. Scan the QR code with your phone to get big buttons for
 Start / Pause, Previous, Next, Top, Slower, Faster and Drop a marker, with the
 current section showing.
@@ -216,11 +216,11 @@ disconnects any phone already connected. The first time, Windows may ask
 whether to let Sightline Prompter use the network. Allow it on private
 networks.
 
-![Settings > Remotes](images/settings-remotes.png)
+![Settings > Controls](images/settings-remotes.png)
 
 ## AI and remote control
 
-Also on **Settings > Remotes**, you can let an AI assistant (such as Claude
+On **Settings > Controls > AI & API**, you can let an AI assistant (such as Claude
 Code or Codex) or a script on this computer load scripts and control the
 prompter. It's off by default, and only programs on this computer that have
 the token can connect. **How to set up your AI** on that tab opens
@@ -230,7 +230,7 @@ it is in [Working with AI](09-working-with-ai.md#2-record-let-the-ai-run-the-pro
 
 ## Choosing the prompter monitor
 
-On **Settings > Display** (or Window > Prompter Monitor), pick a monitor and
+On **Settings > Appearance > Screens** (or Window > Prompter monitor), pick a monitor and
 the prompter opens full screen there, now and each time the app starts. A
 dedicated prompter screen such as the Elgato Prompter shows up by name.
 **F11** gives a normal window again.

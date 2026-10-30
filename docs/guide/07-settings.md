@@ -1,117 +1,112 @@
 # Settings
 
-The optional **head-position guide** opens from the Window menu or global
-Ctrl+Shift+H hotkey (Cmd+Shift+H on Mac). Adjust its appearance on the overlay;
-placement and appearance are saved. See [the guide controls](06-remotes-and-screens.md#head-position-guide-development).
+**Development branch:** this regrouping is not yet released. For the published
+1.0.6 layout, use the guide bundled with that app.
 
-Open Settings with **⚙** in the control bar, **Ctrl+,** or ☰ > Settings. The
-tabs keep everything in view, and the panel stays the same size on every
-tab. **←** and **→** switch tabs, and the buttons stay at the bottom:
+Open **⚙ Settings** on the top bar or press **Ctrl+,** (**Cmd+,** on Mac).
+There are five groups, with a second row of focused topics. Each setting has
+one home. Script files, recordings and settings import/export are in the
+**Files menu (☰)**; live tools are under **Tools** on the top bar.
+
+![Prompting settings, with Scrolling selected and the other topics alongside](images/settings-scrolling.png)
+
+## Find a setting
+
+| Group | Topic | What belongs here |
+| --- | --- | --- |
+| **Prompting** | Scrolling | Steady or voice mode, steady speed and the opening countdown |
+| | Voice | Speech engine, model download, responsiveness, Deepgram key and microphone |
+| | Commands | When to listen for commands and which wake word to use |
+| | Your words | Script synonyms, command synonyms, sound-alike matching, suggestions and Teach |
+| | Script | Notes mode, pacing, script directions, slide cues and directive display |
+| **Appearance** | Text & colour | Text size, backing on/off air, opacity, brightness, fonts, themes and reading aids |
+| | Spacing | Margins, line spacing, heading size, reading line, alignment and mirror axes |
+| | Screens | Prompter monitor, Keep on top and the eye-line strip |
+| **Recording** | Takes | Slate, ON AIR display, countdown beep, capture protection and click-through |
+| | Audio | Scratch audio, loudness per take and keeping the sound-check meter visible |
+| | OBS connection | Enable OBS, address, port, protected password and the saved-connection test |
+| | OBS recording | Start/stop permission, chapters and preparing the recorded slate |
+| **Controls** | Phone | Enable the phone remote, scan its QR code or replace its code |
+| | Stream Deck | Enable the companion plugin's buttons-only connection and open its guide |
+| | AI & API | Enable local automation, port, token, recording-delete permission and AI setup help |
+| **About** | About | Version, credits, updates, support, debug logging and the support-log export |
+
+OBS settings stay discoverable while disabled so you can configure them.
+Recording commands in Help and the live recording controls still follow the
+permissions you have enabled. The head guide is independent of OBS.
+
+## Apply, Save and Cancel
 
 - **Apply** saves your changes and keeps Settings open.
 - **Save** saves and closes.
-- **Cancel**, the **×** at the top right and **Esc** close without saving.
+- **Cancel**, **×** and **Esc** close without saving the pending draft.
 
-If you've changed something you haven't saved, closing asks first:
-**Save**, **Discard** or **Keep editing**. The Layout, Reading and Recording
-tabs change the prompter as you go, so they're always kept.
+If there are unsaved changes, closing offers **Save**, **Discard** or
+**Keep editing**. Shared live controls in Spacing, Text & colour, Takes and
+Script say that changes apply straight away; cancelling the draft keeps
+those live changes. Text-size preview is restored when cancelled.
 
-Drag Settings by its title to move it anywhere in the window, for example
-off the part of the script you're checking. It opens there next time;
-double-click the title to put it back in the middle.
+Changing group or topic never applies or discards the draft. Settings remembers
+the last topic used, and returning to a group recalls its last topic during
+that session. Older saved tab choices are carried across where possible.
 
-## Scrolling
+Use **Tab** to move between the selected group, selected topic and controls.
+Within either tab row, **← / →** changes selection; **Home / End** goes to its
+first or last tab. Hidden topics stay out of keyboard navigation. Focus stays
+inside Settings until you close it, then returns to the control that opened it.
 
-![Settings > Scrolling](images/settings-scrolling.png)
+Drag the title to move Settings within the prompter window. Double-click it
+to recentre. A separate Settings window remains on the roadmap.
 
-The scroll mode (steady or voice), the steady speed, the countdown before
-scrolling starts, the [slate](05-recording-a-take.md#the-slate) at the start
-of each take, [scratch audio](05-recording-a-take.md#scratch-audio-for-syncing)
-for syncing, and [loudness for each take](05-recording-a-take.md#sound-check-and-loudness).
+## Voice and commands are separate
 
-## Voice
+**Prompting > Voice** chooses how speech is recognised and which microphone
+to use. **Prompting > Commands** chooses when the wake word is heard, including
+Always listening while stopped. **Your words** holds training and synonyms.
 
-![Settings > Voice](images/settings-voice.png)
+![Command listening and the wake-word choice on their own topic](images/settings-commands.png)
 
-Speech recognition (on this computer, or Deepgram), the speech model download,
-voice commands and their **wake word** (Prompter, Computer, Teleprompter or
-Director), voice responsiveness and the microphone, and **Your words**: names
-and words it mishears, and your own forms of the wake word and commands,
-with sound-alike matching, suggestions from what it heard and **Teach…**, and
-whether the [sound-check meter](05-recording-a-take.md#sound-check-and-loudness)
-stays on screen during takes. See [Scrolling and voice](03-scrolling-and-voice.md)
-and [Your words](03-scrolling-and-voice.md#your-words).
+See [Scrolling and voice](03-scrolling-and-voice.md) for the modes and commands.
+Sound checks and loudness are in **Recording > Audio**, with a live meter
+available from **Tools > Sound check** or **Ctrl+Shift+D**.
 
-## Display
+![Recording audio settings for scratch audio, loudness and the sound-check display](images/settings-audio.png)
 
-![Settings > Display](images/settings-display.png)
+## Tools and Files
 
-Text size, backing, the reading line, how notes in [brackets] show, the
-reading-line marker, the sentence highlight, mirroring, always on top, the
-prompter monitor and eye-line mode.
+**Tools** holds Sound check, the head guide and fullscreen/restore, Keeper,
+Scrap, quick display/voice panels, the control pad and the control window.
+Quick panels reuse the existing live controls rather than separate copies.
+Their keyboard shortcuts, voice commands and Stream Deck actions still work.
 
-## Layout, Reading and Recording
+![Tools grouped into recording tools, quick adjustments and operator windows](images/tools-menu.png)
 
-![Settings > Layout](images/settings-layout.png)
+**Files (☰)** holds New/Open, Google Docs, recent and sample scripts,
+Edit/Save/Save as, Clear slot, Recordings, the edit-pack export, settings-file
+import/export and Quit. It does not repeat playback, appearance, voice or
+window tools. The top bar keeps slots, playback, speed, size, backing and
+mode switching; on narrow windows, Tools and Settings provide the additional adjustments.
 
-The same controls as the Layout panel's three views, a tab each so none runs
-off the bottom: **Layout** for margins, line spacing, heading size,
-alignment and the reading line; **Reading** for text and background opacity (including the
-background on air), themes, fonts and the focus band; and **Recording** for
-the ON AIR light, hiding from screen capture, click-through, and the options
-for timing and checking scripts. See [Layout and display](04-layout-and-display.md).
+![The compact Files menu](images/menu.png)
 
-## Files
+The native application menu keeps standard keyboard/platform access through
+**File, Edit, Playback, Tools, Window and Help**. Script slots are under File.
+Detailed preferences remain in Settings. **F1** opens grouped shortcuts;
+**Shift+F1** opens the illustrated guide. On Mac the usual application menu
+also remains available.
 
-![Settings > Files](images/settings-files.png)
+**Copy the AI script prompt** is available in F1 Help as well as the native
+Help menu, without enabling remote control.
 
-Open, edit and save scripts, open a recent script or a sample, and save or
-load all your settings as a file (JSON or XML) to move them to another
-computer. Your Deepgram key and microphone are never written to that file.
-Slide cues can be loaded here too.
+## About, updates and support
 
-## Remotes
+**About** gives the version, attribution and full About page, the user guide,
+Joanne's tip jar and **Check for updates**. Update checks ask GitHub; nothing
+downloads or installs automatically.
 
-![Settings > Remotes](images/settings-remotes.png)
+**Debug mode** adds detail to the local support log. **Save a log for support…**
+creates a file containing the version, system and enabled features, excluding
+scripts, keys and audio. It sends nothing itself.
 
-AI and remote control, the Stream Deck plugin (its own setting, for buttons
-only), the control pad and control window, and the phone remote. See
-[Remotes and second screens](06-remotes-and-screens.md).
-
-## OBS (development branch)
-
-The separate **OBS** tab is disabled by default and works independently
-of normal prompting. See [OBS setup](11-obs.md) for status-only mode,
-recording controls, the connection test and passwords. **Include the slate in
-the OBS recording** is a separate opt-in; Apply, then **Prepare recorded slate**
-with OBS stopped. It adds its own flash/tone source to the current scene.
-
-## About
-
-The last tab, **About**, gives the version, the credits and links to the
-source code and the website. **Full About page…** opens the complete page (also
-at the foot of the ☰ menu), with what's new, the licence and the credits, and
-**User guide** opens this guide.
-
-**Check for updates** asks GitHub for the latest release and tells you if
-there's a newer one, with a link to what's new and the download. With
-**Check for updates when Sightline starts** ticked (the default), it also
-checks quietly a few seconds after you open the app, and a small note at the
-bottom right says when a new version is out. Nothing downloads or installs by
-itself, and nothing is sent but the request to GitHub.
-
-**Debug mode** (on at first) adds a step-by-step trail to the small log Sightline always
-keeps of hangs, crashes and errors, so a problem can be traced. **Save a log
-for support…** puts the log in one file, with your version, system and which
-features are on (never your scripts, keys or audio), to attach to a GitHub
-issue or an email. Nothing is sent by itself.
-
-**☕ Support Sightline** opens Joanne's tip jar, where you can say thanks
-with a coffee (also **Help > Support Sightline (Joanne's Tip Jar)…** and the ☰
-menu). It's a Stripe payment page: you choose the amount, and nothing else is
-asked for but your card and an email for the receipt.
-Sightline is free and stays free. Once you've opened it ten times, a small
-note at the bottom right asks, once; close it and it never asks again. It
-never shows while you're reading or on air.
-
-![About](images/about.png)
+Sightline is free and stays free. Support is voluntary and gives no extra
+features. See [privacy, terms and support](../POLICIES.md).

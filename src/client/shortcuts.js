@@ -53,7 +53,7 @@ export const SHORTCUTS = [
 			[ [ "Space" ], "Start / stop the talk timer" ],
 			[ [ "Page Down", "→" ], "Next page (starts the timer if it isn't running)" ],
 			[ [ "Page Up", "←" ], "Previous page" ],
-			[ [ "{mode: notes}" ], "In a script: open it as notes, a page at a time (or Layout > Recording > Notes)" ],
+			[ [ "{mode: notes}" ], "In a script: notes, a page at a time (or Settings > Prompting > Script > Notes)" ],
 			[ [ "# Heading", "{page}" ], "In notes: start a new page; each ## heading on it is a bullet" ]
 		]
 	},
@@ -67,7 +67,7 @@ export const SHORTCUTS = [
 			[ [ "{marker}" ], "A bookmark for retakes (Ctrl+B jumps to it)" ],
 			[ [ "{wpm: 140}" ], "On a section heading: that section's pace" ],
 			[ [ "{target: 1:20}" ], "On a section heading: that section's target time" ],
-			[ [ "Layout" ], "Show directives: see them as small tags, with ⚠ on typos" ]
+			[ [ "Prompting > Script" ], "Show directives: see them as small tags, with ⚠ on typos" ]
 		]
 	},
 	{

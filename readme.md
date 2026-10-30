@@ -38,8 +38,7 @@ and a slate to line them all up with the recording.
   for a breath, `{marker}` for the edit and `[notes to you]`, all
   [documented](docs/SCRIPT-DIRECTIVES.md). Draft in Google Docs, Word or PDF
   and open it as it is.
-- **An AI that can run the prompter.** Switch on the local API (Settings >
-  Remotes) and an agent on your computer, such as Claude Code, can write a
+- **An AI that can run the prompter.** Switch on the local API (Settings > Controls) and an agent on your computer, such as Claude Code, can write a
   script into a slot, start, pause, jump sections, change speed, drop markers
   and rate takes. It's off by default, token-protected and closed to web
   pages.
@@ -75,7 +74,7 @@ also on the roadmap.
   edit
 - Opens **Markdown, Word, rich text, plain text, PDF and Google Docs links**,
   with a built-in editor and live reload
-- **Nine script slots**, a control bar and menu, six tabs of settings, a
+- **Nine script slots**, live controls, Files and Tools menus, grouped settings, a
   floating button pad, a phone remote, a control window for a second screen,
   clickers, pedals and game controllers, and a
   [Stream Deck plugin](docs/guide/06-remotes-and-screens.md#stream-deck) with
@@ -124,13 +123,13 @@ Speech recognition runs **on this computer** by default, with the [sherpa-onnx](
 
 #### Setup
 
-1. Open **Settings > Voice** (or click **Voice** in the control bar). With "On this computer" chosen, click **Download speech model**. It's a one-off download of about 73 MB.
+1. Open **Settings > Prompting > Voice**, or **Tools > Voice and microphone**. With "On this computer" chosen, click **Download speech model**. It's a one-off download of about 73 MB.
 2. To use Deepgram instead, choose it there and paste in a key from [console.deepgram.com](https://console.deepgram.com/). The key is stored locally in the app's state file and is never written to exported settings files.
 3. Choose **Voice** as the scroll mode, and grant microphone access the first time you start.
 
 #### Auto-Scroll Usage
 
-- Press `Cmd/Ctrl+Shift+L` (or `Script > Toggle Auto-scroll`) to start listening. A green "Listening" pill appears in the top-right corner.
+- Press `Cmd/Ctrl+Shift+L` (or `Playback > Start / pause`) to start listening. A green "Listening" pill appears in the top-right corner.
 - Start reading your script. As you speak, the prompter smoothly scrolls to keep your current word about a third of the way down the screen.
 - If you scroll manually (trackpad, arrow keys, page keys), auto-scroll yields to you for a few seconds before resuming.
 - Press `Cmd/Ctrl+Shift+L` again, or click the indicator pill, to stop listening.
@@ -149,7 +148,7 @@ The speed is persisted across sessions. Speed range is 0.25× to 4× in 0.1 step
 
 #### Selecting a microphone
 
-By default, auto-scroll uses your system's default audio input. To pick a specific microphone (e.g. a USB lavalier or a podcasting mic), open `Script > Select Microphone…` and choose one from the list. The selection is saved and reused on every subsequent auto-scroll session.
+By default, auto-scroll uses your system's default audio input. To pick a specific microphone (e.g. a USB lavalier or a podcasting mic), open `Settings > Prompting > Voice` and choose one from the list. The selection is saved and reused on every subsequent auto-scroll session.
 
 A few notes:
 
@@ -222,6 +221,8 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 ## Change log
 
 ### Next release
+
+- **Clearer navigation (development):** Settings has five groups with focused subtabs: Prompting, Appearance, Recording, Controls and About. Files (☰) handles scripts, recordings and import/export; Tools holds recording tools and quick adjustments. The top bar keeps live controls, with explicit Steady/Voice switching. Duplicate file buttons and Display preferences have been removed; native menus retain keyboard access. Tabs support arrows and Home/End, Settings keeps focus inside, and Escape returns focus to the opener
 
 - **Production handover guide (development):** [From recording to the editor](docs/guide/12-production-handover.md), also in **Help > User Guide**, walks through OBS setup, framing, a short sync test, retakes, keeper choices and the files to send to Production. It distinguishes the digital slate from physical camera/mic synchronisation and records where manual checks remain
 

@@ -1,5 +1,13 @@
 # Sightline Prompter: what it adds to Electron Teleprompter
 
+**Development navigation:** five Settings groups with focused subtabs, a Files
+menu for input/output and a Tools menu for live recording and operator tools.
+Duplicate file operations and Display preferences have been removed from
+Settings. The top bar keeps live controls and Steady/Voice switching; native
+menus retain standard platform access. Keyboard tab navigation, visible focus,
+modal focus containment and focus return are covered by app checks. See the
+[Settings map](guide/07-settings.md).
+
 The development guide includes [From recording to the editor](guide/12-production-handover.md):
 an illustrated session checklist covering setup, framing, a short test,
 retakes, keeper choices and collecting the master files alongside each edit
@@ -69,7 +77,7 @@ details, and the [user guide](guide/README.md) shows every screen.
 | Script formats      | Markdown and HTML, with a built-in Markdown editor                                    | Adds plain text, Word, rich text, **PDF** and **Google Docs links**                                                                                            |
 | Script instructions |                                                                                       | Stops, countdowns, markers, pace and target times in `{curly braces}`; notes in `[brackets]`                                                                   |
 | Pacing and takes | | Pacing light, section targets, take summary, rehearsal timer, and a **take log** for the edit with keeper and scrap ratings |
-| Controls            | Keyboard shortcuts; arrow keys and a clicker jump between sections; microphone choice | Control bar, ☰ menu, nine-tab Settings, nine script slots, floating pad, phone remote, control window, clickers that start and pause, pedals, game controllers, a Stream Deck plugin |
+| Controls | Keyboard shortcuts; arrow keys and a clicker jump between sections; microphone choice | Live control bar, Files menu, recording Tools, grouped Settings with focused subtabs, nine slots, pad, phone remote, operator window, controllers and Stream Deck |
 | Recording rigs      | Mirror (flip) mode                                                                    | Mirroring in any direction, prompter monitor (Elgato Prompter), eye-line mode, one-click mirroring, hide from screen capture, click-through                    |
 | Reading aids        | Background opacity and font size                                                      | Sentence highlight, focus band, text edge, colour themes, Atkinson Hyperlegible and OpenDyslexic                                                               |
 | Help                | Readme; recently opened files                                                         | Built-in user guide with screenshots, sample scripts, shortcuts panel                                                                                          |
@@ -132,7 +140,7 @@ The whole workflow is in the guide:
   marker"** to read on from the last marker.
 - **Heard log:** every word it heard, beside the script words it matched, to
   find words it keeps mishearing.
-- **Your words** (Settings > Voice): words that **sound alike** count as the
+- **Your words** (Settings > Prompting > Voice): words that **sound alike** count as the
   script word ("marsha" for "Moshe") or the command ("prompta" for
   "Prompter"), and lists of script words and command words it mishears, as
   synonyms rather than replacements, with suggestions from the heard log and
@@ -163,7 +171,7 @@ The whole workflow is in the guide:
   logged as a restart so the edit can cut to the second reading.
 - **Slate and sync mark:** a white flash and a beep at the start of each
   take, then the section and take number, so the edit can line every take up
-  with the recording; no clap needed (Settings > Scrolling).
+  with the recording; no clap needed (Settings > Recording > Audio).
 - **Take log for the edit:** every take of every section, with its start and
   end, whether it was read to the end or retaken, and its markers, saved as
   you go and kept in **File > Recordings**, to name, note and export. Say
@@ -186,10 +194,10 @@ The whole workflow is in the guide:
   `{soundcheck: voice}` check the room's background noise and your level
   before you start, say how far to turn the gain, and keep the results with
   the session.
-- **Loudness for each take** (Settings > Scrolling): each take's loudness,
+- **Loudness for each take** (Settings > Recording > Audio): each take's loudness,
   peak and background noise in the take log and edit pack, with a warning as
   it ends if it clipped, was very quiet or had a noisy room.
-- **Scratch audio for syncing** (Settings > Scrolling): a plain microphone
+- **Scratch audio for syncing** (Settings > Recording > Audio): a plain microphone
   recording while the prompter runs, placed on the take log's clock, so an
   editor can line the real recording up by matching soundtracks, with no
   slate needed.
@@ -220,22 +228,24 @@ The whole workflow is in the guide:
 
 ## Controls
 
-- **Control bar** that hides while you read: open, save, edit, the nine slots,
-  start, and Speed, Size and Backing, each with a number box you can type into.
-- **☰ menu** grouped into Script, Playback, Display, Window, Settings and Help,
-  with shortcuts shown.
+- **Control bar** that hides while you read: nine slots, restart, play/pause,
+  On air, speed, size, backing and explicit Steady/Voice switching. Tools,
+  Settings and Help stay reachable on narrow windows.
+- **Files menu (☰)** for scripts, recordings, edit packs, settings-file
+  import/export and Quit, with shortcuts shown. Recording helpers and quick
+  adjustments live under Tools.
 - **Check for updates** on Settings > About, and a quiet check at start-up
   (can be turned off). Nothing downloads by itself.
-- **Settings in nine tabs:** Scrolling, Voice, Display, Layout, Reading,
-  Recording, Files, Remotes and About, all the same height. Save and load all
-  settings as JSON or XML.
+- **Settings in five groups:** Prompting, Appearance, Recording, Controls and
+  About, with focused subtabs and shared live controls. File operations stay
+  in Files; settings still import/export as JSON or XML.
 - **Layout and Voice panels** for changes while the script runs. Drag them,
   or Settings, by the title to anywhere in the window.
 - **Settings** with **Apply** (save and stay) and a prompt before closing with
   unsaved changes; **Quit Sightline** always at the foot of the ☰ menu; and a
   **check for updates** on Settings > About.
-- **On air** and **Mirror** buttons on the control bar, and the Layout
-  panel in three views (Layout, Reading, Recording).
+- **On air** on the control bar, mirror axes in **Tools > Spacing and mirror**,
+  and quick panels for text/colour, take display and voice/microphone.
 - **Floating button pad** that stays on top, even over the prompter, and flips
   with the mirror setting.
 - **Phone remote:** scan a QR code and your phone gets big buttons, over your

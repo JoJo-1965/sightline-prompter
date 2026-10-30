@@ -1,7 +1,7 @@
 # Scrolling and voice
 
-Choose the scroll mode in **Settings > Scrolling**, the Voice panel, or the ☰
-menu under Playback.
+Choose **Steady / Voice** on the top bar, or use **Settings > Prompting >
+Scrolling**. **Tools > Voice and microphone** opens the quick voice panel.
 
 ## Steady scrolling
 
@@ -17,7 +17,7 @@ In voice mode the prompter listens to you and keeps the words you're saying on
 the reading line. Speed up, slow down, pause to think or ad-lib a line, and it
 waits for you and then catches up.
 
-![Settings > Voice](images/settings-voice.png)
+![Settings > Prompting > Voice](images/settings-voice.png)
 
 ### Speech recognition on this computer (the default)
 
@@ -25,7 +25,7 @@ Speech is turned into words **on your own computer**. You don't need an
 account or a key, it works offline, and nothing you say leaves the PC.
 
 The first time you open Sightline, a small note at the bottom right offers it:
-choose **Download**. Or open **Settings > Voice** (or the Voice panel) and
+choose **Download**. Or open **Settings > Prompting > Voice** (or the Voice panel) and
 click **Download speech model**.
 It's a one-off download of about 73 MB, and progress is shown as it goes.
 After that, voice scrolling works with no internet connection at all.
@@ -81,9 +81,9 @@ heard in place of script words, most often first.
 
 Names and unusual words are what speech recognition gets wrong most:
 *Siobhan* heard as *shivawn*, *Sightline* as *site line*, and sometimes the
-wake word or a command. **Settings > Voice > Your words** fixes them.
+wake word or a command. **Settings > Prompting > Your words** fixes them.
 
-![Settings > Voice > Your words](images/settings-words.png)
+![Settings > Prompting > Your words](images/settings-words.png)
 
 - **Match words that sound alike** (on unless you turn it off): a word heard
   that isn't in the script but sounds like a longer script word, starts with
@@ -114,7 +114,7 @@ your settings, so **Export Settings** takes them to another computer.
 
 ## Voice commands: "Prompter, …"
 
-**The wake word** is "Prompter" unless you choose another on **Settings > Voice >
+**The wake word** is "Prompter" unless you choose another on **Settings > Prompting > Commands >
 Wake word**: Computer, Teleprompter or Director. Pick one that doesn't come up in
 your scripts. Below, read "Prompter" as whichever you chose; it takes effect the
 next time Sightline starts listening.
@@ -156,7 +156,7 @@ that*, with the words it heard, so you can say it again.
 | **record take** (or start recording) | Optional OBS integration: confirm recording, then start prompting. Requires enabled OBS recording controls |
 | **finish recording** (or stop recording) | Optional OBS integration: stop prompting and finish the OBS recording |
 
-Choose when it listens on **Settings > Voice**, under **Voice commands**:
+Choose when it listens on **Settings > Prompting > Commands**:
 
 - **In voice mode** (the default): commands work while voice scrolling.
 - **Always, even when stopped**: the microphone listens for the wake word
@@ -179,7 +179,7 @@ Choose when it listens on **Settings > Voice**, under **Voice commands**:
   [control window](06-remotes-and-screens.md#the-control-window) shows the same.
 - **Deepgram is the one exception:** choose it, with your own key, and your
   audio goes to Deepgram while voice scrolling runs.
-- **Scratch audio** (Settings > Scrolling) is the only time Sightline keeps a
+- **Scratch audio** (Settings > Recording > Audio) is the only time Sightline keeps a
   recording of your microphone, and only if you turn it on; it stays on this
   computer.
 
@@ -212,7 +212,7 @@ During a stop or a countdown:
 - In steady scrolling, the microphone listens for "Prompter, go" while the
   prompter waits, even if voice commands are set to voice mode only (the small
   **🎙 Prompter** label shows). Set **Voice commands** to **Off** in
-  Settings > Voice to stop this.
+  Settings > Prompting > Commands to stop this.
 
 ### In voice scrolling
 
@@ -295,5 +295,5 @@ Otherwise it's the sentence on the reading line.
 
 ![The sentence on the reading line, highlighted](images/running.png)
 
-Turn it off or on in **Settings > Display**, the Layout panel, or the ☰ menu
-under Display.
+Turn it off or on in **Settings > Appearance > Spacing**, or the quick panel
+at **Tools > Spacing and mirror**.

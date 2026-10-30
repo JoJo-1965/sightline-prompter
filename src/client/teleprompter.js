@@ -34,6 +34,7 @@ import { createScratchRecorder } from "./scratch-audio.js";
 import { createLevelMeter, soundCheckVerdict } from "./level-meter.js";
 import { SUPPORT_URL } from "./links.js";
 import { createObsUi } from "./obs-ui.js";
+import { createSettingsNavigation } from "./settings-navigation.js";
 import {
 	indexSentences,
 	scriptSentences,
@@ -668,7 +669,7 @@ window.electron.onSaveResult( ( success, filePath ) => {
 window.electron.onToggleEditor( toggleEditMode );
 
 // New file — enter edit mode with empty content
-window.electron.onNewFile( () => {
+function newScript() {
 	if ( isDirty ) {
 		const discard = confirm(
 			"You have unsaved changes. Discard and create a new file?"
@@ -679,7 +680,8 @@ window.electron.onNewFile( () => {
 	isEditMode = true;
 	window.electron.pauseWatcher();
 	loadEditorContent( "", null );
-} );
+}
+window.electron.onNewFile( newScript );
 
 // Listen for menu save/save-as (works from editor or preview with pending edits)
 window.electron.onMenuSave( () => {
@@ -733,6 +735,8 @@ document.addEventListener( "keydown", ( event ) => {
 	}
 	// Typing or nudging a slider in the control bar or a panel.
 	if ( event.target.closest?.( "input, select, textarea" ) ) return;
+	// Let native button activation handle Space/Enter without also starting a take.
+	if ( [ " ", "Enter" ].includes( event.key ) && event.target.closest?.( "button, a, [role=tab]" ) ) return;
 	if ( handlePointsKey( event ) ) return;
 	if ( event.key === "F1" && event.shiftKey ) {
 		event.preventDefault();
@@ -1294,7 +1298,7 @@ async function startAutoScrollSession() {
 		openSettings();
 		showSettingsTab( "voice" );
 		showToast(
-			"Download the speech model first (Settings > Voice), then press Play again"
+			"Download the speech model first (Settings > Prompting > Voice), then press Play again"
 		);
 		return;
 	}
@@ -1376,7 +1380,7 @@ function offerSpeechModel() {
 	const close = document.createElement( "button" );
 	close.type = "button";
 	close.textContent = "×";
-	close.title = "Not now (Settings > Voice has it)";
+	close.title = "Not now (Settings > Prompting > Voice has it)";
 	close.setAttribute( "aria-label", "Not now" );
 	close.addEventListener( "click", () => {
 		rememberVoiceOffer();
@@ -2375,6 +2379,7 @@ gdocInput.addEventListener( "keydown", ( e ) => {
 const settingsModal = document.getElementById( "settings-modal" );
 const field = id => document.getElementById( id );
 let settingsSnapshot = null;
+let settingsReturnFocus = null;
 
 function numberValue( id, min, max, fallback ) {
 	const value = Number( field( id ).value );
@@ -2387,7 +2392,7 @@ function numberValue( id, min, max, fallback ) {
 // Reading and Recording tabs apply as you go, so they don't count.
 let settingsDirty = false;
 let afterSettingsClose = null;
-const LIVE_TABS = "#set-layout-host, #set-reading-host, #set-recording-host";
+const LIVE_TABS = "#set-layout-host, #set-reading-host, #set-recording-host, #set-script-host";
 
 function markSettingsDirty( event ) {
 	if ( !event.isTrusted || event.target.closest( LIVE_TABS ) ) return;
@@ -2408,6 +2413,8 @@ document.getElementById( "settings-save-log" )?.addEventListener( "click", async
 
 async function openSettings() {
 	if ( !settingsModal ) return;
+	settingsReturnFocus = document.activeElement;
+	closePanels();
 	settingsTrail( "opening" );
 	settingsSnapshot = { fontSize, opacity };
 	settingsDirty = false;
@@ -2433,20 +2440,13 @@ async function openSettings() {
 	window.electron.speechModelStatus();
 	field( "set-deepgram-key" ).value = "";
 	field( "set-deepgram-status" ).textContent = settings.hasDeepgramKey
-		? "A key is saved. Type a new one to replace it (Script > Set Deepgram API Key… to clear it)."
+		? "A key is saved. Type a new one to replace it; Clear in Tools > Voice and microphone removes it."
 		: "No key saved. Only needed for Deepgram.";
 	field( "set-font-size" ).value = fontSize;
-	field( "set-opacity" ).value = opacity;
-	field( "set-reading-line" ).value = settings.readingLine;
 	field( "set-directions" ).value = settings.directions ?? "dim";
-	field( "set-reading-marker" ).checked = !!settings.showReadingMarker;
-	field( "set-sentence" ).checked = settings.highlightSentence !== false;
-	field( "set-mirrored" ).value = mirrored;
 	field( "set-always-on-top" ).checked = !!settings.alwaysOnTop;
 	field( "set-check-updates" ).checked = settings.checkUpdates !== false;
 	field( "set-debug-mode" ).checked = settings.debugMode !== false;
-	field( "set-show-pad" ).checked = !!settings.showPad;
-	field( "set-show-control" ).checked = !!settings.showControl;
 	settingsTrail( "display fields filled; asking for monitors" );
 	window.electron.getDisplays();
 	field( "set-highlight-cues" ).checked = !!settings.highlightCues;
@@ -2463,11 +2463,10 @@ async function openSettings() {
 	window.electron.getRemoteInfo();
 	field( "set-phone" ).checked = !!settings.phoneRemote;
 	window.electron.getPhoneInfo();
-	settingsTrail( "remotes filled; files tab next" );
-	fillFilesTab();
 	settingsTrail( `showing tab ${ lastSettingsTab() }` );
 	showSettingsTab( lastSettingsTab() );
 	settingsModal.classList.remove( "hidden" );
+	settingsNavigation.focus();
 	settingsTrail( "visible" );
 	requestAnimationFrame( () => requestAnimationFrame( () => settingsTrail( "painted" ) ) );
 	requestAnimationFrame( () => updateSettingsChevrons() );
@@ -2550,6 +2549,8 @@ function closeSettings( restore ) {
 	settingsSnapshot = null;
 	returnLayoutPanel();
 	settingsModal?.classList.add( "hidden" );
+	const target = settingsReturnFocus?.isConnected && settingsReturnFocus.getClientRects().length ? settingsReturnFocus : field( "cb-settings" );
+	target?.focus( { preventScroll: true } );
 }
 
 // Save and close (Save), or save and stay (Apply).
@@ -2807,14 +2808,9 @@ async function saveSettingsPage( close = true ) {
 		countdown: numberValue( "set-countdown", 0, 10, settings.countdown ),
 		slate: field( "set-slate" ).value,
 		directions: field( "set-directions" ).value,
-		showReadingMarker: field( "set-reading-marker" ).checked,
-		highlightSentence: field( "set-sentence" ).checked,
-		readingLine: numberValue( "set-reading-line", 5, 80, settings.readingLine ),
 		alwaysOnTop: field( "set-always-on-top" ).checked,
 		checkUpdates: field( "set-check-updates" ).checked,
 		debugMode: field( "set-debug-mode" ).checked,
-		showPad: field( "set-show-pad" ).checked,
-		showControl: field( "set-show-control" ).checked,
 		prompterDisplay: field( "set-prompter-display" ).value
 			? Number( field( "set-prompter-display" ).value )
 			: null,
@@ -2851,10 +2847,6 @@ async function saveSettingsPage( close = true ) {
 		)
 	} );
 	setFontSize( Number( field( "set-font-size" ).value ) );
-	setOpacity( Number( field( "set-opacity" ).value ) );
-	if ( field( "set-mirrored" ).value !== mirrored ) {
-		setMirrored( field( "set-mirrored" ).value );
-	}
 	applyAutoScrollSpeed( Number( field( "set-voice-speed" ).value ) );
 	const key = field( "set-deepgram-key" ).value.trim();
 	if ( key ) {
@@ -2878,12 +2870,9 @@ async function saveSettingsPage( close = true ) {
 }
 
 if ( settingsModal ) {
-	// Preview text size and background live while the sliders move.
+	// Preview text size while its slider moves. Backing uses the shared live control.
 	field( "set-font-size" ).addEventListener( "input", e =>
 		setFontSize( Number( e.target.value ), false )
-	);
-	field( "set-opacity" ).addEventListener( "input", e =>
-		setOpacity( Number( e.target.value ), false )
 	);
 	field( "set-cues-browse" ).addEventListener( "click", () =>
 		window.electron.browseCuesFile()
@@ -2904,7 +2893,17 @@ if ( settingsModal ) {
 	settingsModal.addEventListener( "input", markSettingsDirty );
 	settingsModal.addEventListener( "change", markSettingsDirty );
 	settingsModal.addEventListener( "keydown", ( e ) => {
+		if ( e.key === "Tab" ) {
+			const focusable = [ ...settingsModal.querySelectorAll( "button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), a[href]" ) ].filter( el => el.tabIndex >= 0 && el.getClientRects().length );
+			const end = e.shiftKey ? focusable[0] : focusable.at( -1 );
+			if ( document.activeElement === end ) {
+				e.preventDefault();
+				( e.shiftKey ? focusable.at( -1 ) : focusable[0] )?.focus();
+			}
+		}
 		if ( e.key !== "Escape" ) return;
+		e.preventDefault();
+		e.stopPropagation();
 		if ( !field( "settings-unsaved" ).classList.contains( "hidden" ) ) {
 			field( "settings-unsaved-keep" ).click();
 			return;
@@ -3272,6 +3271,8 @@ function updatePlayButton() {
 	if ( !playBtn ) return;
 	const playing = isScrolling();
 	playBtn.textContent = playing ? "❚❚" : "▶";
+	playBtn.setAttribute( "aria-label", playing ? "Pause scrolling" : "Start scrolling" );
+	playBtn.setAttribute( "aria-pressed", String( playing ) );
 	playBtn.classList.toggle( "playing", playing );
 	refreshControlsVisibility();
 }
@@ -3298,7 +3299,7 @@ function syncControls() {
 			speedInput.value = settings.steadyWpm;
 		}
 	}
-	speedLabel.textContent = voice ? "Voice" : "Speed";
+	speedLabel.textContent = voice ? "Response" : "Speed";
 	speedValue.textContent = voice
 		? formatSpeed( autoScrollSpeed )
 		: `${ settings.steadyWpm } wpm`;
@@ -3306,7 +3307,12 @@ function syncControls() {
 	if ( document.activeElement !== opacityInput ) opacityInput.value = liveBacking();
 	const bgInput = document.getElementById( "lp-bg-opacity" );
 	if ( bgInput && document.activeElement !== bgInput ) bgInput.value = opacity;
-	document.getElementById( "cb-voice" )?.classList.toggle( "active", voice );
+	const mode = document.getElementById( "cb-mode" );
+	if ( mode ) {
+		mode.textContent = voice ? "Voice" : "Steady";
+		mode.setAttribute( "aria-label", voice ? "Voice scrolling; switch to steady" : "Steady scrolling; switch to voice" );
+		mode.setAttribute( "aria-pressed", String( voice ) );
+	}
 	syncLayoutPanel();
 	syncVoicePanel();
 }
@@ -3377,19 +3383,26 @@ onClick( "cb-menu", ( e ) => {
 	e.stopPropagation();
 	toggleAppMenu();
 } );
-onClick( "cb-open", () => window.electron.openFileDialog() );
-onClick( "cb-save", saveFromBar );
-onClick( "cb-edit", toggleEditMode );
 onClick( "cb-restart", goToStart );
 onClick( "cb-play", toggleAutoScrollSession );
-onClick( "cb-layout", () => toggleLayoutView( "layout" ) );
-onClick( "cb-reading", () => toggleLayoutView( "reading" ) );
-onClick( "cb-recording", () => toggleLayoutView( "recording" ) );
 onClick( "cb-on-air", toggleOnAir );
-onClick( "cb-mirror", cycleMirror );
-onClick( "cb-voice", () => togglePanel( "voice-panel" ) );
+onClick( "cb-mode", () => window.electron.saveSettings( { scrollMode: settings.scrollMode === "voice" ? "steady" : "voice" } ) );
+onClick( "cb-tools", () => {
+	renderTools();
+	togglePanel( "tools-panel" );
+	if ( !field( "tools-panel" ).classList.contains( "hidden" ) ) field( "tools-panel" ).querySelector( "button" )?.focus();
+} );
 onClick( "cb-help", openHelp );
+onClick( "help-ai-prompt", () => window.electron.copyAiPrompt() );
 onClick( "cb-settings", openSettings );
+for ( const id of [ "cb-menu", "cb-tools" ] ) {
+	document.getElementById( id )?.addEventListener( "keydown", ( event ) => {
+		if ( event.key !== "ArrowDown" ) return;
+		event.preventDefault();
+		event.stopPropagation();
+		event.currentTarget.click();
+	} );
+}
 onClick( "cb-min", () => window.electron.windowControl( "minimize" ) );
 onClick( "cb-max", () => window.electron.windowControl( "maximize" ) );
 onClick( "cb-full", () => window.electron.windowControl( "fullscreen" ) );
@@ -3447,6 +3460,7 @@ window.electron.onWindowState( ( state ) => {
 			: "Maximise (Shift+F11)";
 	}
 	fullBtn?.classList.toggle( "active", !!state.fullScreen );
+	fullBtn?.setAttribute( "aria-pressed", String( !!state.fullScreen ) );
 } );
 window.electron.onMenuWindowControl( action =>
 	window.electron.windowControl( action )
@@ -3465,6 +3479,7 @@ function togglePanel( id ) {
 	closePanels();
 	if ( opening ) {
 		panel.classList.remove( "hidden" );
+		if ( id === "tools-panel" ) field( "cb-tools" ).setAttribute( "aria-expanded", "true" );
 		if ( id === "voice-panel" ) openVoicePanel();
 		syncControls();
 	}
@@ -3481,6 +3496,8 @@ function closePanels() {
 			closed = true;
 		} );
 	stopMicMeter();
+	field( "cb-menu" )?.setAttribute( "aria-expanded", "false" );
+	field( "cb-tools" )?.setAttribute( "aria-expanded", "false" );
 	refreshControlsVisibility();
 	return closed;
 }
@@ -3495,6 +3512,7 @@ document.addEventListener( "mousedown", ( e ) => {
 function closeAppMenu() {
 	if ( appMenu?.classList.contains( "hidden" ) ) return;
 	appMenu.classList.add( "hidden" );
+	field( "cb-menu" ).setAttribute( "aria-expanded", "false" );
 	refreshControlsVisibility();
 }
 document.addEventListener( "mousedown", ( e ) => {
@@ -3504,7 +3522,7 @@ document.addEventListener( "mousedown", ( e ) => {
 } );
 window.addEventListener( "blur", closeAppMenu );
 
-window.electron.onMenuLayout( () => toggleLayoutView( "layout" ) );
+window.electron.onMenuLayout( view => toggleLayoutView( view ?? "layout" ) );
 window.electron.onMenuVoice( () => togglePanel( "voice-panel" ) );
 window.electron.onMenuSoundCheck( () => toggleSoundCheck() );
 
@@ -3513,12 +3531,11 @@ const toggleSetting = key => () =>
 
 // Menu entries: [icon, label, shortcut, action, { checked, disabled }]
 function menuGroups() {
-	const voice = settings.scrollMode === "voice";
-	const playing = isScrolling();
 	return [
 		{
 			heading: "Script",
 			items: [
+				[ "+", "New script", "Ctrl+N", newScript ],
 				[
 					"📂",
 					"Open script…",
@@ -3559,160 +3576,15 @@ function menuGroups() {
 			]
 		},
 		{
-			heading: "Playback",
+			heading: "Recording files",
 			items: [
-				[
-					playing ? "❚❚" : "▶",
-					playing ? "Pause scrolling" : "Start scrolling",
-					"Space",
-					toggleAutoScrollSession
-				],
-				[ "⏮", "Back to the start", "Ctrl+Home", goToStart ],
-				[ "🔴", manualOnAir ? "Go off air" : "Go on air", "Ctrl+Shift+A", toggleOnAir ],
-				[ "🎚", soundCheck ? "Hide the sound check" : "Sound check", "Ctrl+Shift+D", toggleSoundCheck ],
-				[ "★", "This take's a keeper", "K", () => rateTake( "keeper" ) ],
-				[ "✗", "Scrap this take", "Shift+K", () => rateTake( "scrap" ) ],
 				[ "🗒", "Recordings…", "Ctrl+Shift+R", openRecordings ],
-				[
-					"✂",
-					"Export the edit pack…",
-					"",
-					() => window.electron.exportEditPack()
-				],
-				[ "⏩", "Faster", "Ctrl+]", () => adjustAutoScrollSpeed( "up" ) ],
-				[ "⏪", "Slower", "Ctrl+[", () => adjustAutoScrollSpeed( "down" ) ],
-				[ "↺", "Reset speed", "Ctrl+\\", () => adjustAutoScrollSpeed( "reset" ) ],
-				[
-					"≋",
-					"Steady scroll (words per minute)",
-					"",
-					() => window.electron.saveSettings( { scrollMode: "steady" } ),
-					{ checked: !voice }
-				],
-				[
-					"🎙",
-					"Voice scroll sync…",
-					"Ctrl+Shift+V",
-					() => togglePanel( "voice-panel" ),
-					{ checked: voice }
-				]
+				[ "✂", "Export the edit pack…", "", () => window.electron.exportEditPack() ]
 			]
 		},
 		{
-			heading: "Display",
+			heading: "Settings files",
 			items: [
-				[
-					"▤",
-					"Layout and margins…",
-					"Ctrl+Shift+K",
-					() => toggleLayoutView( "layout" )
-				],
-				[
-					"⇋",
-					`Mirror: ${ MIRROR_LABELS[mirrored] }`,
-					"Ctrl+M",
-					cycleMirror,
-					{ checked: mirrored !== "off" }
-				],
-				[
-					"✦",
-					"Highlight slide cues",
-					"",
-					toggleSetting( "highlightCues" ),
-					{ checked: !!settings.highlightCues }
-				],
-				[
-					"▸",
-					"Reading-line marker",
-					"",
-					toggleSetting( "showReadingMarker" ),
-					{ checked: !!settings.showReadingMarker }
-				],
-				[
-					"▭",
-					"Highlight the sentence you're on",
-					"",
-					toggleSetting( "highlightSentence" ),
-					{ checked: settings.highlightSentence !== false }
-				],
-				[
-					"▬",
-					"Progress and time left",
-					"",
-					() =>
-						window.electron.saveSettings( {
-							showProgress: settings.showProgress === false
-						} ),
-					{ checked: settings.showProgress !== false }
-				],
-				[
-					"📌",
-					"Keep controls visible",
-					"Ctrl+Shift+B",
-					toggleSetting( "controlsPinned" ),
-					{ checked: !!settings.controlsPinned }
-				]
-			]
-		},
-		{
-			heading: "Window",
-			items: [
-				[ "◎", "Head-position guide / unlock", "Ctrl+Shift+H", () => window.electron.headGuide(), { checked: !!settings.showHeadGuide } ],
-				[ "⛶", "Head guide fullscreen / restore", "Ctrl+Alt+H", () => window.electron.headGuide( "fullscreen" ), { checked: !!settings.showHeadGuide && !!settings.headGuideFullscreen } ],
-				[
-					"▦",
-					"Control pad (floating buttons)",
-					"Ctrl+Shift+P",
-					toggleSetting( "showPad" ),
-					{ checked: !!settings.showPad }
-				],
-				[
-					"▣",
-					"Control window (second screen)",
-					"Ctrl+Shift+O",
-					toggleSetting( "showControl" ),
-					{ checked: !!settings.showControl }
-				],
-				[
-					"◫",
-					"Eye-line mode (under the webcam)",
-					"Ctrl+L",
-					toggleSetting( "eyeLine" ),
-					{ checked: !!settings.eyeLine }
-				],
-				[
-					"⤒",
-					"Keep on top",
-					"",
-					toggleSetting( "alwaysOnTop" ),
-					{ checked: !!settings.alwaysOnTop }
-				],
-				[
-					"▢",
-					"Maximise / restore",
-					"Shift+F11",
-					() => window.electron.windowControl( "maximize" )
-				],
-				[
-					"⛶",
-					"Full screen",
-					"F11",
-					() => window.electron.windowControl( "fullscreen" )
-				],
-				[
-					"—",
-					"Minimise",
-					"Ctrl+Shift+M",
-					() => window.electron.windowControl( "minimize" )
-				],
-				[ "⏻", "Quit Sightline", "Ctrl+W", () => quitApp() ]
-			]
-		},
-		{
-			heading: "Settings",
-			items: [
-				[ "⚙", "All settings…", "Ctrl+,", openSettings ],
-				[ "🤖", "AI and remote control…", "", openRemoteSettings ],
 				[
 					"⇪",
 					"Load settings from file (JSON or XML)…",
@@ -3726,23 +3598,38 @@ function menuGroups() {
 					() => window.electron.exportSettings()
 				]
 			]
-		},
-		{
-			heading: "Help",
-			items: [
-				[ "📖", "User guide", "Shift+F1", () => window.electron.openGuide() ],
-				[
-					"✨",
-					"Copy the AI script prompt",
-					"",
-					() => window.electron.copyAiPrompt()
-				],
-				[ "?", "Keyboard shortcuts", "F1", openHelp ],
-				[ "☕", "Support Sightline", "", () => window.open( SUPPORT_URL ) ],
-				[ "ⓘ", "About this teleprompter", "", openAbout ]
-			]
 		}
 	];
+}
+
+function renderTools() {
+	const panel = field( "tools-panel" );
+	panel.replaceChildren();
+	const groups = [
+		[ "Recording tools", [
+			[ "🎚", "Sound check", "Ctrl+Shift+D", toggleSoundCheck, { checked: soundCheckOn() } ],
+			[ "◎", "Head guide / unlock", "Ctrl+Shift+H", () => window.electron.headGuide(), { checked: !!settings.showHeadGuide } ],
+			[ "⛶", "Guide fullscreen / restore", "Ctrl+Alt+H", () => window.electron.headGuide( "fullscreen" ) ],
+			[ "★", "Keeper", "K", () => rateTake( "keeper" ) ],
+			[ "✗", "Scrap take", "Shift+K", () => rateTake( "scrap" ) ]
+		] ],
+		[ "Quick adjustments", [
+			[ "▤", "Spacing and mirror…", "Ctrl+Shift+K", () => toggleLayoutView( "layout" ) ],
+			[ "◐", "Text and colour…", "", () => toggleLayoutView( "reading" ) ],
+			[ "●", "Take display…", "", () => toggleLayoutView( "recording" ) ],
+			[ "🎙", "Voice and microphone…", "Ctrl+Shift+V", () => togglePanel( "voice-panel" ) ]
+		] ],
+		[ "Operator windows", [
+			[ "▣", "Control window", "Ctrl+Shift+O", toggleSetting( "showControl" ), { checked: !!settings.showControl } ],
+			[ "▦", "Control pad", "Ctrl+Shift+P", toggleSetting( "showPad" ), { checked: !!settings.showPad } ]
+		] ]
+	];
+	for ( const [ title, items ] of groups ) {
+		const heading = document.createElement( "h4" );
+		heading.textContent = title;
+		panel.append( heading );
+		for ( const args of items ) panel.append( menuButton( ...args ) );
+	}
 }
 
 let recentExpanded = false;
@@ -3753,9 +3640,13 @@ function menuButton( icon, label, key, action, opts = {} ) {
 	btn.type = "button";
 	btn.className = "am-item";
 	btn.disabled = !!opts.disabled;
+	btn.dataset.menuLabel = label;
+	if ( opts.checked !== undefined ) btn.setAttribute( "aria-pressed", String( opts.checked ) );
+	if ( opts.expanded !== undefined ) btn.setAttribute( "aria-expanded", String( opts.expanded ) );
 	if ( opts.checked ) btn.classList.add( "checked" );
 	const iconEl = document.createElement( "span" );
 	iconEl.className = "am-icon";
+	iconEl.setAttribute( "aria-hidden", "true" );
 	iconEl.textContent = opts.checked ? "✓" : icon;
 	const labelEl = document.createElement( "span" );
 	labelEl.textContent = label;
@@ -3766,13 +3657,14 @@ function menuButton( icon, label, key, action, opts = {} ) {
 	btn.addEventListener( "click", () => {
 		if ( !opts.keepOpen ) closePanels();
 		action();
+		if ( opts.keepOpen ) appMenu.querySelector( `[data-menu-label="${ CSS.escape( label ) }"]` )?.focus();
 	} );
 	return btn;
 }
 
 // Menu groups open or closed: the everyday ones start open. Remembered per
 // computer; the menu still works if storage isn't available.
-const MENU_OPEN_BY_DEFAULT = [ "Script", "Playback" ];
+const MENU_OPEN_BY_DEFAULT = [ "Script", "Recording files" ];
 const MENU_GROUPS_KEY = "menuGroupsOpen";
 
 function menuGroupsOpen() {
@@ -3847,7 +3739,7 @@ function renderAppMenu() {
 							recentExpanded = !recentExpanded;
 							renderAppMenu();
 						},
-						{ disabled: recent.length === 0, keepOpen: true }
+						{ disabled: recent.length === 0, keepOpen: true, expanded: recentExpanded }
 					)
 				);
 				if ( recentExpanded && recent.length ) {
@@ -3874,7 +3766,7 @@ function renderAppMenu() {
 							samplesExpanded = !samplesExpanded;
 							renderAppMenu();
 						},
-						{ keepOpen: true }
+						{ keepOpen: true, expanded: samplesExpanded }
 					)
 				);
 				if ( samplesExpanded ) {
@@ -3912,24 +3804,42 @@ function toggleAppMenu() {
 		recentExpanded = false;
 		renderAppMenu();
 		appMenu.classList.remove( "hidden" );
+		field( "cb-menu" ).setAttribute( "aria-expanded", "true" );
 		appMenu.querySelector( ".am-item:not(:disabled)" )?.focus();
 	}
 	showControls();
 }
 
 appMenu?.addEventListener( "keydown", ( e ) => {
+	e.stopPropagation();
 	const items = [
 		...appMenu.querySelectorAll( ".am-heading, .am-item:not(:disabled)" )
 	];
 	const i = items.indexOf( document.activeElement );
-	if ( e.key === "ArrowDown" || e.key === "ArrowUp" ) {
+	if ( [ "ArrowDown", "ArrowUp", "Home", "End" ].includes( e.key ) ) {
 		e.preventDefault();
 		e.stopPropagation();
-		const next = e.key === "ArrowDown" ? i + 1 : i - 1;
+		const next = e.key === "Home" ? 0 : e.key === "End" ? items.length - 1 : e.key === "ArrowDown" ? i + 1 : i - 1;
 		items[( next + items.length ) % items.length]?.focus();
 	} else if ( e.key === "Escape" ) {
 		e.stopPropagation();
 		closePanels();
+		field( "cb-menu" ).focus();
+	}
+} );
+
+field( "tools-panel" )?.addEventListener( "keydown", ( e ) => {
+	e.stopPropagation();
+	const items = [ ...field( "tools-panel" ).querySelectorAll( "button:not(:disabled)" ) ];
+	const index = items.indexOf( document.activeElement );
+	if ( [ "ArrowDown", "ArrowUp", "Home", "End" ].includes( e.key ) ) {
+		e.preventDefault();
+		const next = e.key === "Home" ? 0 : e.key === "End" ? items.length - 1 : ( index + ( e.key === "ArrowDown" ? 1 : -1 ) + items.length ) % items.length;
+		items[next]?.focus();
+	} else if ( e.key === "Escape" ) {
+		e.preventDefault();
+		closePanels();
+		field( "cb-tools" ).focus();
 	}
 } );
 
@@ -4462,11 +4372,6 @@ function fillFooter( el ) {
 	]
 		.filter( Boolean )
 		.join( " · " );
-	const about = document.createElement( "button" );
-	about.type = "button";
-	about.className = "footer-link";
-	about.textContent = "About";
-	about.addEventListener( "click", () => requestCloseSettings( openAbout ) );
 	const credit = document.createElement( "span" );
 	credit.className = "footer-credit";
 	const CREDIT = [
@@ -4475,7 +4380,7 @@ function fillFooter( el ) {
 		"© 2022–2026"
 	];
 	credit.textContent = CREDIT.join( " · " );
-	el.append( `${ line } · `, about, document.createElement( "br" ), credit );
+	el.append( line, document.createElement( "br" ), credit );
 }
 window.electron.getAppInfo();
 
@@ -4904,7 +4809,7 @@ window.electron.onRemoteInfo( ( info ) => {
 	field( "set-remote-token" ).value = info.token ?? "";
 	if ( info.error ) status.textContent = `Not running: ${ info.error }`;
 	else if ( info.running && info.enabled )
-		status.textContent = `On at ${ info.url } (details for assistants in ${ info.file })`;
+		status.textContent = `On at ${ info.url }. Assistant connection details are saved in your Sightline settings folder.`;
 	else status.textContent = "Off.";
 } );
 onClick( "set-remote-copy", async () => {
@@ -4927,17 +4832,12 @@ window.electron.onPhoneInfo( ( info ) => {
 } );
 onClick( "set-phone-new", () => window.electron.newPhoneKey() );
 
-function openRemoteSettings() {
-	openSettings();
-	showSettingsTab( "remotes" );
-}
-
-// Settings tabs: one section at a time, so nothing sits below the fold.
-// The last tab used opens next time.
 const SETTINGS_TAB_KEY = "settingsTab";
-const settingsTabs = [
-	...document.querySelectorAll( ".settings-tabs [data-tab]" )
-];
+const settingsNavigation = createSettingsNavigation( settingsModal, { onShow: ( name ) => {
+	settingsTrail( `tab ${ name }` );
+	if ( LAYOUT_TABS.includes( name ) ) borrowLayoutPanel();
+	settingsBox?.scrollTo( 0, 0 );
+} } );
 
 // The About tab is a brief; the full page is a click away.
 document.getElementById( "settings-about-full" )?.addEventListener( "click", () => requestCloseSettings( openAbout ) );
@@ -4948,38 +4848,7 @@ document.getElementById( "settings-about-support" )?.addEventListener( "click", 
 for ( const link of document.querySelectorAll( "a.support-link" ) ) link.href = SUPPORT_URL;
 
 function showSettingsTab( name ) {
-	settingsTrail( `tab ${ name }` );
-	if ( !settingsTabs.some( t => t.dataset.tab === name ) ) name = "scrolling";
-	for ( const tab of settingsTabs ) {
-		const on = tab.dataset.tab === name;
-		tab.classList.toggle( "active", on );
-		tab.setAttribute( "aria-selected", String( on ) );
-		tab.tabIndex = on ? 0 : -1;
-	}
-	const sets = settingsModal?.querySelectorAll( "fieldset[data-tab]" ) ?? [];
-	for ( const set of sets ) {
-		set.classList.toggle( "hidden", set.dataset.tab !== name );
-	}
-	if ( LAYOUT_TABS.includes( name ) ) borrowLayoutPanel();
-	settingsModal?.querySelector( ".settings-content" )?.scrollTo( 0, 0 );
-	try {
-		localStorage.setItem( SETTINGS_TAB_KEY, name );
-	} catch {
-		// not remembered this time
-	}
-}
-
-for ( const tab of settingsTabs ) {
-	tab.addEventListener( "click", () => showSettingsTab( tab.dataset.tab ) );
-	tab.addEventListener( "keydown", ( e ) => {
-		if ( e.key !== "ArrowRight" && e.key !== "ArrowLeft" ) return;
-		e.preventDefault();
-		e.stopPropagation();
-		const i = settingsTabs.indexOf( tab ) + ( e.key === "ArrowRight" ? 1 : -1 );
-		const next = settingsTabs[( i + settingsTabs.length ) % settingsTabs.length];
-		showSettingsTab( next.dataset.tab );
-		next.focus();
-	} );
+	settingsNavigation.show( name );
 }
 
 // The Layout tab shows the Layout panel's own controls (they apply straight
@@ -4992,7 +4861,8 @@ const layoutHost = document.getElementById( "set-layout-host" );
 const layoutHosts = {
 	layout: layoutHost,
 	reading: document.getElementById( "set-reading-host" ),
-	recording: document.getElementById( "set-recording-host" )
+	recording: document.getElementById( "set-recording-host" ),
+	script: document.getElementById( "set-script-host" )
 };
 const LAYOUT_GROUP_TABS = {
 	Opacity: "reading",
@@ -5045,7 +4915,7 @@ function borrowLayoutPanel() {
 	);
 	let tab = "layout";
 	for ( const el of layoutBorrowed ) {
-		if ( el.tagName === "H5" ) tab = LAYOUT_GROUP_TABS[el.textContent.trim()] ?? "layout";
+		if ( el.tagName === "H5" ) tab = el.textContent.trim() === "Script" ? "script" : LAYOUT_GROUP_TABS[el.textContent.trim()] ?? "layout";
 		// The margins note and Reset layout belong with the spacing.
 		const spacing = el.classList.contains( "lp-hint" ) || el.classList.contains( "lp-actions" );
 		el.classList.remove( "lp-off" );
@@ -5063,14 +4933,8 @@ function returnLayoutPanel() {
 	field( "lp-done" )?.classList.remove( "hidden" );
 }
 
-// Display has a few of the same settings: keep them in step with Layout, so
-// Save doesn't put back the old values (and Cancel keeps the new backing).
+// Shared live controls remain applied when the Settings draft is cancelled.
 function refreshSharedDisplayFields() {
-	field( "set-opacity" ).value = opacity;
-	field( "set-reading-line" ).value = settings.readingLine;
-	field( "set-reading-marker" ).checked = !!settings.showReadingMarker;
-	field( "set-sentence" ).checked = settings.highlightSentence !== false;
-	field( "set-mirrored" ).value = mirrored;
 	if ( settingsSnapshot ) settingsSnapshot.opacity = opacity;
 }
 for ( const type of [ "input", "change", "click" ] ) {
@@ -5080,64 +4944,6 @@ for ( const type of [ "input", "change", "click" ] ) {
 		);
 	}
 }
-
-// --- Files tab: scripts and the settings file ---
-
-function fillFilesTab() {
-	field( "set-file-save" ).disabled = !isDirty;
-	field( "set-file-save-as" ).disabled = !editorView;
-	field( "set-file-edit" ).textContent = isEditMode
-		? "Back to the teleprompter"
-		: "Edit script";
-	const fill = ( id, placeholder, entries ) => {
-		const select = field( id );
-		select.innerHTML = "";
-		select.append( new Option( placeholder, "" ) );
-		for ( const [ label, value, title ] of entries ) {
-			const option = new Option( label, value );
-			if ( title ) option.title = title;
-			select.append( option );
-		}
-		select.disabled = entries.length === 0;
-	};
-	fill(
-		"set-file-recent",
-		( slotState.recent ?? [] ).length ? "Choose…" : "None yet",
-		( slotState.recent ?? [] ).map( r => [ r.name, r.path, r.path ] )
-	);
-	fill(
-		"set-file-sample",
-		"Choose…",
-		( slotState.samples ?? [] ).map( x => [ x.label, x.file ] )
-	);
-}
-
-// Opening something closes Settings, so you see the script (asking first if
-// there are changes that haven't been saved).
-const closeThen = action => () => requestCloseSettings( action );
-onClick(
-	"set-file-open",
-	closeThen( () => window.electron.openFileDialog() )
-);
-onClick( "set-file-edit", closeThen( toggleEditMode ) );
-onClick( "set-file-save", () => {
-	saveFromBar();
-	setTimeout( fillFilesTab, 300 );
-} );
-onClick( "set-file-save-as", () => saveEditorContentAs() );
-onClick(
-	"set-file-load-settings",
-	closeThen( () => window.electron.importSettings() )
-);
-onClick( "set-file-save-settings", () => window.electron.exportSettings() );
-field( "set-file-recent" )?.addEventListener( "change", ( e ) => {
-	if ( e.target.value )
-		closeThen( () => window.electron.openRecent( e.target.value ) )();
-} );
-field( "set-file-sample" )?.addEventListener( "change", ( e ) => {
-	if ( e.target.value )
-		closeThen( () => window.electron.openSample( e.target.value ) )();
-} );
 
 function lastSettingsTab() {
 	try {
@@ -5803,7 +5609,7 @@ function toggleSoundCheck() {
 	syncLevelMeter( active );
 	if ( !soundCheck ) showToast( "Sound check off", 1500 );
 	else if ( active && settings.soundCheckDuringTakes !== true )
-		showToast( "Sound check: it shows when you stop (Settings > Voice can keep it on during takes)", 3500 );
+		showToast( "Sound check: it shows when you stop (Settings > Recording > Audio can keep it on during takes)", 3500 );
 	else showToast( "Sound check on · speak normally, then stay quiet for the room · Ctrl+Shift+D hides it", 3500 );
 }
 

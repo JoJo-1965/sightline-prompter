@@ -49,7 +49,7 @@ Rehearsing? **Use these times as targets** writes each time into the script as
 ## The slate
 
 The slate gives the edit a sync point at the start of every take, in place of a
-clap. Turn it on in **Settings > Scrolling**, under **Slate at the start of
+clap. Turn it on in **Settings > Recording > Takes**, under **Slate at the start of
 each take**:
 
 - **Flash and beep**: the screen flashes white and beeps, then shows the
@@ -70,7 +70,7 @@ flash in the recording: every take's times line up from there.
 
 ## Scratch audio for syncing
 
-Tick **Record a scratch audio track for syncing** in **Settings > Scrolling**
+Tick **Record a scratch audio track for syncing** in **Settings > Recording > Audio**
 and Sightline records the microphone to a plain audio file while the prompter
 runs, from just before the first slate until you stop. It's not a recording
 to use, only a reference: an editor, or an editing tool, lines your real
@@ -91,7 +91,7 @@ when there is one.
 
 **The sound-check meter** shows your microphone at the bottom left of the
 prompter, to check it before a take. Turn it on and off with **Sound check**
-in the Voice panel, **Ctrl+Shift+D**, or ☰ > Playback.
+in the Voice panel, **Ctrl+Shift+D**, or Tools.
 
 - **The bar** is the level, from -60 dBFS (empty) to 0 (full): green for
   speech, amber when it's getting loud (from -18 dBFS), red near the top (from
@@ -105,10 +105,10 @@ in the Voice panel, **Ctrl+Shift+D**, or ☰ > Playback.
   it under your voice.
 
 The meter hides while a take runs, so it doesn't distract you; tick
-**Settings > Voice > Keep the sound-check meter on screen during takes** to
+**Settings > Recording > Audio > Keep the sound-check meter on screen during takes** to
 keep it.
 
-**Loudness for each take** (Settings > Scrolling) measures the mic through
+**Loudness for each take** (Settings > Recording > Audio) measures the mic through
 every take: its loudness, its loudest peak and the room's background noise.
 When a take ends with a problem, a message says so, such as *Section 2, take
 1: the mic clipped (peak -0.3 dBFS)*. The problems are:
@@ -179,7 +179,7 @@ scrolling has no word timings, since nothing is listening to the script.
 
 ## The edit pack
 
-**File > Export Edit Pack…** (also ☰ > Playback) turns the take log into
+**File > Export Edit Pack…** (also Files (☰) > Recording files) turns the take log into
 everything an editor, or an AI editing agent, needs to cut the recording.
 Choose a folder and Sightline makes a new one inside it, named after the
 script and the date, holding:
@@ -202,7 +202,7 @@ plain files on your computer.
 
 ## Recordings
 
-**File > Recordings…** (**Ctrl+Shift+R**, also ☰ > Playback) lists every
+**File > Recordings…** (**Ctrl+Shift+R**, also Files (☰) > Recording files) lists every
 recording session, newest first: one per script per day, with its date, takes,
 keepers and length. Choose one to see its takes, which take of each section
 the edit will use, and how long the edit comes to.

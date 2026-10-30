@@ -47,7 +47,7 @@ with a line like `=== SECTION ===` in plain text. Sections let you:
 Anything in square brackets is a note to you, the speaker, such as
 `[smile]` or `[Say: "Section one". Pause.]`. Notes are shown dimmed, so they
 don't get read out by mistake. Any `"quoted words"` inside a note stay bright,
-because you do say those. Settings > Display can show notes normally, or hide
+because you do say those. Settings > Prompting > Script can show notes normally, or hide
 them.
 
 Voice scrolling and the sentence highlight both ignore notes.

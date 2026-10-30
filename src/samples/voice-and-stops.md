@@ -4,7 +4,7 @@
 
 [First, two sound checks. Stay quiet for the room, then read the card for your voice. Space carries on after each.]
 
-[Optional OBS workflow: prepare the recorded slate in Settings > OBS before recording. It puts its own flash and tone into OBS; keep scratch audio as well. Ordinary stops and retakes leave OBS recording. No extra script directives are needed.]
+[Optional OBS workflow: prepare the recorded slate in Settings > Recording > OBS recording before recording. It puts its own flash and tone into OBS; keep scratch audio as well. Ordinary stops and retakes leave OBS recording. No extra script directives are needed.]
 
 {soundcheck: room}
 
@@ -64,7 +64,7 @@ marker" or press Shift+B, and you read on from the last marker, here at the
 start of this part, without starting the whole section again.
 
 If "Prompter" comes up in your scripts, choose a different wake word in
-Settings, under Voice: Computer, Teleprompter or Director. {stop}
+Settings, under Prompting, Commands: Computer, Teleprompter or Director. {stop}
 
 ## Off script {target: 0:30}
 

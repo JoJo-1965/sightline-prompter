@@ -58,7 +58,7 @@ before you see it.
 
 ## 2. Record: let the AI run the prompter
 
-On **Settings > Remotes**, tick **Let an AI assistant or script on this
+On **Settings > Controls > AI & API**, tick **Let an AI assistant or script on this
 computer load scripts and control the teleprompter**. Sightline then listens
 on `127.0.0.1` (this computer only) and writes its address and a secret token
 to `remote-control.json` in its settings folder:

@@ -76,7 +76,7 @@ spec, the checker and the `sightline` command.
 
 ## Letting an AI run the prompter
 
-On **Settings > Remotes**, under **AI and remote control**:
+On **Settings > Controls > AI & API**, under **AI and remote control**:
 
 - Tick **Let an AI assistant or script on this computer load scripts and
   control the teleprompter**, and save. It's off until you do.
