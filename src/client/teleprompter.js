@@ -4789,6 +4789,17 @@ function runRemoteAction( action, value ) {
 window.electron.onRemoteCommand( runRemoteAction );
 
 window.electron.onRemoteInfo( ( info ) => {
+	const peerStatus = document.getElementById( "set-stream-deck-status" );
+	if ( peerStatus ) {
+		const peer = info.streamDeckPeer;
+		const versions = `Sightline ${ info.appVersion ?? "version unknown" }`;
+		let text;
+		if ( !info.streamDeck ) text = `${ versions }. Stream Deck control is off; Apply after enabling it.`;
+		else if ( info.error ) text = `${ versions }. Connection unavailable: ${ info.error }`;
+		else if ( !peer?.connected ) text = `${ versions }. Plugin version not confirmed. Open Stream Deck with plugin ${ peer?.recommendedPluginVersion ?? "0.1.9" } or later, then check again.`;
+		else text = `${ versions } · plugin ${ peer.pluginVersion }. ${ peer.message }. Required plugin ${ peer.minimumPluginVersion } or later.${ peer.updateRecommended ? ` Recommended: ${ peer.recommendedPluginVersion }.` : "" }`;
+		if ( peerStatus.textContent !== text ) peerStatus.textContent = text;
+	}
 	const status = document.getElementById( "set-remote-status" );
 	if ( !status ) return;
 	field( "set-remote-token" ).value = info.token ?? "";
@@ -4797,6 +4808,7 @@ window.electron.onRemoteInfo( ( info ) => {
 		status.textContent = `On at ${ info.url }. Assistant connection details are saved in your Sightline settings folder.`;
 	else status.textContent = "Off.";
 } );
+onClick( "set-stream-deck-check", () => window.electron.getRemoteInfo() );
 onClick( "set-remote-copy", async () => {
 	await navigator.clipboard.writeText( field( "set-remote-token" ).value );
 	showTransientHint( "Token copied", 1500 );

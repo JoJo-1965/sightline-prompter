@@ -100,7 +100,7 @@ The buttons can't be changed yet; choosing your own is on the roadmap.
 
 ## Stream Deck
 
-For the Sightline 1.0.7 release candidate, private companion test build **0.1.8** includes
+For the Sightline 1.0.7 release candidate, private companion test build **0.1.9** includes
 **Record take (OBS)** and **Finish recording (OBS)**. Enable OBS and allow
 recording controls in Sightline first. The keys show confirmed recording
 state; a disconnected state stays unknown. Play/Pause, section stops and
@@ -164,6 +164,37 @@ next section.
 
 The plugin works with Sightline 1.0.6 or later, on Windows and macOS (Stream
 Deck doesn't run on Linux).
+
+### Compatibility and updates
+
+In **Settings > Controls > Stream Deck**, choose **Check compatibility**.
+Sightline shows its running version, the version reported by the connected
+plugin and any required update. The plugin's **Test connection** reports the
+same pairing, plus whether OBS and guide commands are supported. It runs
+automatically when a key's settings page opens.
+
+| Check | Requirement |
+| --- | --- |
+| Ordinary prompting controls | Sightline 1.0.6 or later; the reported minimum plugin version must be met |
+| Version reporting in both apps | Sightline 1.0.7-rc.3 or later and plugin 0.1.9 or later |
+| OBS and head guide | The app must advertise those commands; OBS also needs its saved connection and recording permission |
+
+The connection protocol and supported commands decide whether an action can
+run. A newer version is not rejected just because its number differs, and
+compatible RC versions are supported. A known incompatible connection shows
+an update message and blocks plugin actions. An unavailable command is blocked
+without disabling ordinary supported controls. No check starts or stops OBS.
+
+Older apps/plugins can still use supported controls, but a version they do
+not report is **not confirmed**, not assumed up to date. Plugin announcements
+expire after 30 seconds without a heartbeat. This is a local status exchange,
+not a search of installed files or a guarantee that the program is genuine.
+
+**Compatible** and **latest** are different. The local check compares the
+minimum/recommended versions known by the app and the actions it supports.
+For the latest public Sightline release, use **About > Check for updates**.
+The private plugin has no public update feed yet; install the supplied test
+build. Marketplace updates apply once a real listing is live.
 
 ## The floating pad
 

@@ -27,7 +27,7 @@ audio is a timing reference; OBS or your usual tool supplies the production mast
 
 **Testing 1.0.7:** this branch contains the local Windows release candidate,
 with OBS support, the head guide and the Settings/help updates. Use the private
-Stream Deck 0.1.8 companion and the [acceptance walkthrough](docs/guide/14-acceptance-test.md).
+Stream Deck 0.1.9 companion and the [acceptance walkthrough](docs/guide/14-acceptance-test.md).
 The latest public download remains 1.0.6; candidate builds are not published.
 
 ## Built around AI for the content creators of today
@@ -229,11 +229,18 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 ### 1.0.7 release candidate (30 October 2026; unpublished)
 
 **Local Windows acceptance build:** RC1 established the feature baseline;
-**1.0.7-rc.2** refreshes its bundled help and adds the reusable acceptance
-samples. The matching private Stream Deck plugin is **0.1.8**. The latest
+RC2 refreshed its bundled help and added the reusable acceptance samples.
+**1.0.7-rc.3** adds compatibility reporting with private Stream Deck **0.1.9**. The latest
 published app remains **1.0.6**. No tag, merge, Marketplace publication or
 website deployment is part of this candidate.
 
+- **Stream Deck compatibility:** **Settings > Controls > Stream Deck > Check compatibility**
+  shows both reported versions, the required/recommended plugin and any update
+  needed. Plugin **Test connection** checks the pairing automatically on opening
+  a key's settings, including supported OBS/guide commands. Known incompatible
+  connections and unavailable actions are blocked. Older unreported versions
+  stay unconfirmed; supported ordinary controls still work. This is a local
+  compatibility check, not a guarantee that either app is the latest release.
 - **Optional OBS recording (52):** **Settings > Recording > OBS connection**
   is off by default, with authenticated connection, saved-connection test
   and status-only operation. Allow controls in **OBS recording** for
@@ -257,7 +264,7 @@ website deployment is part of this candidate.
   Session settings persist across scripts and are saved with takes.
   It is a manual reference, without face tracking. Verify exclusion in the
   actual recording, especially with whole-screen capture.
-- **Stream Deck companion (39):** private **0.1.8** has confirmed-state
+- **Stream Deck companion (39):** private **0.1.9** has version reporting, confirmed-state
   OBS Record take/Finish keys, guide controls, studio line artwork, 27 key
   actions, 5 dial actions and 18 standard/OBS profiles. It uses its own
   buttons-only connection. Physical key checks and Marketplace submission

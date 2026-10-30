@@ -53,7 +53,9 @@ await fs.writeFile( path.join( profile, "app-state.json" ), JSON.stringify( {
 } ) );
 const env = { ...process.env };
 delete env.ELECTRON_RUN_AS_NODE;
-const child = spawn( require( "electron" ), [ ".", `--user-data-dir=${ profile }`, "--remote-debugging-port=9335" ], { cwd: root, env, windowsHide: true, stdio: [ "ignore", "pipe", "pipe" ] } );
+// Native window occlusion must not suspend frame-based checks behind the
+// user's projector or always-on-top prompter. These flags affect this test only.
+const child = spawn( require( "electron" ), [ ".", `--user-data-dir=${ profile }`, "--remote-debugging-port=9335", "--disable-renderer-backgrounding", "--disable-backgrounding-occluded-windows", "--disable-features=CalculateNativeWinOcclusion" ], { cwd: root, env, windowsHide: true, stdio: [ "ignore", "pipe", "pipe" ] } );
 let errors = "";
 child.stderr.on( "data", ( b ) => {
 	errors += b.toString();
@@ -67,7 +69,7 @@ const exceptions = [];
 function send( method, params = {} ) {
 	return new Promise( ( resolve, reject ) => {
 		const n = ++id;
-		const timer = setTimeout( () => reject( new Error( `CDP timed out: ${ method }` ) ), 8000 );
+		const timer = setTimeout( () => reject( new Error( `CDP timed out: ${ method } ${ params.expression?.slice( 0, 180 ) ?? "" }` ) ), 8000 );
 		pending.set( n, ( msg ) => {
 			clearTimeout( timer );
 			resolve( msg );
@@ -126,6 +128,17 @@ try {
 	assert.ok( directions.text.includes( "smile" ) && directions.text.includes( "point" ) );
 	assert.equal( directions.sentences.join( " " ), "Hello there. More words." );
 	console.log( "PASS: delivery notes remain visible but stay out of speech alignment, counts and exported sentences." );
+	const compatibilityConfig = JSON.parse( await fs.readFile( path.join( profile, "stream-deck.json" ), "utf8" ) );
+	assert.equal( compatibilityConfig.streamDeckApi.protocolVersion, 1 );
+	const compatibilityResponse = await fetch( compatibilityConfig.url + "/stream-deck/hello", {
+		method: "POST", headers: { Authorization: `Bearer ${ compatibilityConfig.token }`, "Content-Type": "application/json" },
+		body: JSON.stringify( { pluginVersion: "0.1.9", protocolVersion: 1 } )
+	} );
+	assert.equal( compatibilityResponse.status, 200 );
+	assert.equal( ( await compatibilityResponse.json() ).compatibility.compatible, true );
+	await until( "document.getElementById('set-stream-deck-status').textContent.includes('plugin 0.1.9')" );
+	assert.match( await evaluate( "document.getElementById('set-stream-deck-status').textContent" ), /Compatible/ );
+	console.log( "PASS: authenticated plugin version handshake reaches the Settings compatibility status." );
 
 	// Exercise the visible navigation rather than only testing its configuration.
 	await evaluate( "document.getElementById('cb-menu').click()" );

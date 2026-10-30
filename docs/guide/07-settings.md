@@ -122,6 +122,12 @@ available from **Tools > Sound check** or **Ctrl+Shift+D**.
 enables the companion plugin's connection. **Controls > AI & API** enables an
 AI assistant or local script to control Sightline. Each connection is optional.
 
+**Check compatibility** shows the running Sightline version, the connected
+plugin's reported version and any update requirement. Version reporting needs
+plugin 0.1.9 or later; an older or disconnected plugin stays unconfirmed.
+This checks the local pairing, while **About > Check for updates** checks
+the latest public app release. See [compatibility and updates](06-remotes-and-screens.md#compatibility-and-updates).
+
 ![The Stream Deck connection has its own topic and contextual help](images/settings-streamdeck.png)
 
 Follow [Remotes and second screens](06-remotes-and-screens.md) for pairing and

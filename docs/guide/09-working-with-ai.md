@@ -73,18 +73,23 @@ that file and sends each request with the header
 
 | Request           | What it does                                                         |
 | ----------------- | -------------------------------------------------------------------- |
-| `GET /status`     | The current script, slot, speed, progress and slots                  |
+| `GET /status`     | The script, slot, speed, progress, supported commands, appVersion and streamDeckApi contract |
 | `POST /load-text` | Save a script it wrote and open it `{ text, name, slot }`            |
 | `POST /open`      | Open a script file `{ path, slot }`                                  |
 | `POST /command`   | `play`, `pause`, `next-section`, `go-to-section`, `set-wpm`, `marker`, `keeper`, `scrap` and more; for buttons, `on-air`, `mirror`, `mirror-h`, `mirror-v`, `bigger`, `smaller`, `layout`, `reading`, `recording`, `eye-line`, `click-through`, `sound-check`, `scroll-mode` (steady or voice), `pad` and `control` (the pad and control window open or closed), and `scroll` or `backing` with a number of steps |
 | `GET /events`     | A live stream (server-sent events) of the state, sent again each time something changes: playing, on air, mirror, slot, section, time left, speed, backing |
 | `POST /slot`      | Switch to a slot `{ slot }`                                          |
+| `POST /stream-deck/hello` | Local plugin version report `{ pluginVersion, protocolVersion }`; requires Stream Deck enabled, works with its restricted key, grants no settings or OBS permissions |
 | `POST /settings`  | Change display settings                                              |
 | `GET /recordings` | Every recording session, newest first, with its id                  |
 | `GET /recording?id=…` | One session: its takes and which ones the edit uses            |
 | `GET /recording/pack?id=…` | A session's edit pack, as `{ files: { name: contents } }` |
 | `POST /recording/update` | Name it, add a note or mark it processed `{ id, title, note, processed }` |
 | `POST /recording/delete` | To the Recycle Bin `{ id }`, only if you tick **Let it delete recordings too** |
+
+Use the advertised commands for feature support. A version absent from an older
+response is unknown; the local compatibility exchange is not proof of a particular
+plugin's identity or that the installed app is the latest public release.
 
 It's off by default. Requests from web pages are refused, the API can't
 switch itself on, and **New token** locks out anything that had the old one.

@@ -13,9 +13,10 @@ steady pace or follows your voice.
 **1.0.7 release candidate:** this guide describes the local Windows candidate,
 including OBS recording, the head guide and regrouped Settings. The published
 download is still **1.0.6**, whose bundled guide describes its earlier menus.
-The companion Stream Deck test plugin is **0.1.8** and remains private.
+The companion Stream Deck test plugin is **0.1.9** and remains private.
 RC1 established the feature baseline; RC2 refreshes the bundled documentation
-and adds the reusable acceptance samples. Neither is a public release.
+and adds the reusable acceptance samples. RC3 adds compatibility reporting in
+Sightline and the plugin. These are local test builds, not public releases.
 
 ![The prompter with the control bar, mid-take](images/running.png)
 

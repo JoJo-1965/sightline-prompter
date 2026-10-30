@@ -13,8 +13,11 @@ complex builds come later.
 ## Where it stands (30 October 2026)
 
 **Local Windows release candidate:** RC1 established the feature baseline.
-**1.0.7-rc.2** refreshes the bundled documentation and adds reusable acceptance
-samples. The matching private Stream Deck plugin is **0.1.8**.
+RC2 refreshed the documentation and added reusable acceptance samples.
+**1.0.7-rc.3** adds local compatibility checks and version reporting with
+the matching private Stream Deck plugin **0.1.9**. Unsupported actions and
+known protocol/minimum-version mismatches are blocked; legacy versions stay
+unconfirmed rather than being described as up to date.
 The latest published app is still **1.0.6**. Work remains on
 `codex/obs-integration`; no merge, tag, public release, Marketplace submission
 or website deployment is authorised by preparing or testing this candidate.
@@ -60,7 +63,7 @@ move to Done only when released.
 | --- | --- | --- | --- | --- |
 | 52 | **Optional OBS integration** | ★★★ | M | Built in the Windows 1.0.7 candidate: authenticated connection, status-only/recording permissions, confirmed Record take/Finish, optional chapters, recorded slate and edit-pack references. Default off; ordinary prompting, stops, retakes and On air leave OBS recording. Physical workflow validation and evidence review remain. No separate OBS plugin is needed; optional dock/scene switching are later scope |
 | 55 | **Floating head-position guide** | ★★ | S | Built in the candidate: manual Ideal/Actual comparison, movement/scaling, Centre/Beside placements, chromeless fullscreen/restore, lock, voice on/off, hotkeys and Stream Deck. Separate from OBS sources, with capture protection enabled. It does not detect faces; actual exclusion depends on the chosen capture method and needs recording verification |
-| 39 | **Stream Deck companion** | ★★★ | M | Private 0.1.8 test build: 27 key actions, 5 dials, 18 standard/OBS profiles, recording and guide controls, buttons-only pairing and refreshed studio artwork. Physical keys, states and the model profile need acceptance. Marketplace listing is not live; add its real link to app/guide/readme/site only after listing |
+| 39 | **Stream Deck companion** | ★★★ | M | Private 0.1.9 test build: 27 key actions, 5 dials, 18 standard/OBS profiles, recording and guide controls, buttons-only pairing and refreshed studio artwork. Physical keys, states and the model profile need acceptance. Marketplace listing is not live; add its real link to app/guide/readme/site only after listing |
 
 ## To do
 

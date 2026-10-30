@@ -25,6 +25,7 @@ import { editPack } from "./client/edit-pack.js";
 import { fitInside, keepTopReachable, sameRect } from "./utils/fit.js";
 import { isNewer } from "./utils/version.js";
 import { startRemoteServer, newToken } from "./remote.js";
+import { createStreamDeckPeer, streamDeckContract } from "./stream-deck-compatibility.js";
 import { heardReport } from "./heard-report.js";
 import { deleteRecording, listRecordings, readRecording, recordingAudio, recordingPack, updateRecording, zipFiles } from "./recordings.js";
 import { startPhoneServer, newPhoneKey, lanAddress } from "./phone.js";
@@ -1553,8 +1554,14 @@ app.whenReady().then( async () => {
 		"head-guide-fullscreen" // fullscreen framing overlay / restore
 	];
 
+	const streamDeckPeer = createStreamDeckPeer( { onChange: () => {
+		if ( !win.isDestroyed() ) win.webContents.send( "remoteInfo", remoteInfo() );
+		publishRemoteState();
+	} } );
 	// The prompter's state, for GET /status and the GET /events stream.
 	const remoteStatus = () => ( {
+		appVersion: app.getVersion(),
+		streamDeckApi: streamDeckContract(),
 		file: currentFilePath,
 		slot: activeSlot + 1,
 		slots: slots.map( ( s, i ) => ( { slot: i + 1, file: s?.path ?? null } ) ),
@@ -1623,6 +1630,15 @@ app.whenReady().then( async () => {
 
 	const remoteRoutes = {
 		"GET /status": remoteStatus,
+		"POST /stream-deck/hello": ( body ) => {
+			if ( !settings.streamDeck ) throw Object.assign( new Error( "Stream Deck control is disabled" ), { status: 403 } );
+			return {
+				ok: true,
+				appVersion: app.getVersion(),
+				streamDeckApi: streamDeckContract(),
+				compatibility: streamDeckPeer.hello( body )
+			};
+		},
 		"POST /open": ( { path: filePath, slot } ) => {
 			if ( typeof filePath !== "string" || !path.isAbsolute( filePath ) ) {
 				throw new Error( "path must be an absolute file path" );
@@ -1692,7 +1708,7 @@ app.whenReady().then( async () => {
 	// The Stream Deck plugin's key: the state, the live stream, the commands
 	// and the slots, nothing else (no scripts, settings or recordings).
 	const STREAM_DECK_FILE = path.join( app.getPath( "userData" ), "stream-deck.json" );
-	const BUTTON_ROUTES = new Set( [ "GET /status", "POST /command", "POST /slot" ] );
+	const BUTTON_ROUTES = new Set( [ "GET /status", "POST /command", "POST /slot", "POST /stream-deck/hello" ] );
 	// Close the server now: open event streams (the Stream Deck) would otherwise keep it waiting.
 	const closeServer = server => new Promise( ( r ) => {
 		server.close( r );
@@ -1703,6 +1719,8 @@ app.whenReady().then( async () => {
 		return {
 			enabled: !!settings.remoteControl,
 			streamDeck: !!settings.streamDeck,
+			appVersion: app.getVersion(),
+			streamDeckPeer: streamDeckPeer.status(),
 			running: !!remoteServer,
 			url: `http://127.0.0.1:${ settings.remotePort }`,
 			token: remoteToken,
@@ -1712,6 +1730,7 @@ app.whenReady().then( async () => {
 	}
 
 	async function syncRemoteServer() {
+		if ( !settings.streamDeck ) streamDeckPeer.clear();
 		const on = settings.remoteControl || settings.streamDeck;
 		const wanted = on ? settings.remotePort : null;
 		// Restart when the port or which keys work changes.
@@ -1742,7 +1761,7 @@ app.whenReady().then( async () => {
 		const url = remoteInfo().url;
 		if ( wanted && settings.remoteControl ) await fs.writeFile( REMOTE_FILE, JSON.stringify( { url, token: remoteToken }, null, 2 ) );
 		else await fs.rm( REMOTE_FILE, { force: true } );
-		if ( wanted && settings.streamDeck ) await fs.writeFile( STREAM_DECK_FILE, JSON.stringify( { url, token: streamDeckToken }, null, 2 ) );
+		if ( wanted && settings.streamDeck ) await fs.writeFile( STREAM_DECK_FILE, JSON.stringify( { url, token: streamDeckToken, appVersion: app.getVersion(), streamDeckApi: streamDeckContract() }, null, 2 ) );
 		else await fs.rm( STREAM_DECK_FILE, { force: true } );
 		win.webContents.send( "remoteInfo", remoteInfo() );
 	}

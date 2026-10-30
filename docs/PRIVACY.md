@@ -161,8 +161,11 @@ the supported routes. Deleting recordings through it needs a separate
 setting. An AI assistant using that access may transmit information to its
 own provider according to how you configure it.
 
-The Stream Deck plugin uses a separate key for status, commands, events
-and slot selection. It does not have the full script, settings or recordings
+The Stream Deck plugin uses a separate key for status, commands, events,
+slot selection and a local version-compatibility report. Reported plugin and
+connection versions and the last announcement time are held in memory while
+Sightline is running; the check sends nothing to an external update service.
+It does not have the full script, settings or recordings
 API access. Status can still contain script or section labels. Its
 connection to Sightline stays on your computer. Stream Deck software and
 the Elgato Marketplace have their own privacy terms.

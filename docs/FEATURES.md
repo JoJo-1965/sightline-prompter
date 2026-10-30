@@ -3,9 +3,12 @@
 **Release-candidate status, 30 October 2026:** the Windows 1.0.7 candidate
 contains the OBS integration (52), head guide (55), production exports,
 voice tuning and Settings/help updates described below. The matching private
-Stream Deck plugin is 0.1.8 (39). These features are built and awaiting final
+Stream Deck plugin is 0.1.9 (39). These features are built and awaiting final
 acceptance; the published release remains 1.0.6. RC2 refreshes RC1's bundled
-documentation and acceptance samples. See the
+documentation and acceptance samples. RC3 adds a local version handshake,
+required/recommended versions and capability guards, shown in Settings >
+Controls > Stream Deck and the plugin's Test connection. Unreported legacy
+versions are unconfirmed, not assumed current. See the
 [test walkthrough](guide/14-acceptance-test.md) and [roadmap](../ROADMAP.md).
 
 **Development navigation:** five Settings groups with focused subtabs, a Files
@@ -27,7 +30,7 @@ an illustrated session checklist covering setup, framing, a short test,
 retakes, keeper choices and collecting the master files alongside each edit
 pack. It is available offline through **Help > User Guide**.
 
-The private Stream Deck companion test build **0.1.8** adds OBS Record take
+The private Stream Deck companion test build **0.1.9** includes OBS Record take
 and Finish recording keys, confirmed-state feedback and optional recording
 layouts for each model. The OBS development app enforces saved permissions
 and waits for actual recording state changes. These additions are unreleased;

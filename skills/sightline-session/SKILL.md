@@ -28,9 +28,14 @@ from `remote-control.json`.
 The user must enable the integration in **Settings > Recording > OBS connection**
 and allow controls in **Recording > OBS recording** themselves. These settings
 are protected from the API and script files. Use the private Stream Deck
-0.1.8 companion for physical recording-key checks. The public 1.0.6 app does
+0.1.9 companion for physical recording-key checks. The public 1.0.6 app does
 not contain OBS integration. See the [acceptance walkthrough](../../docs/guide/14-acceptance-test.md)
 for the two sample scripts and the remaining manual checks.
+The status response now includes appVersion and streamDeckApi; commands is
+the capability list. Use both versions and command support rather than
+assuming a version number grants OBS access. Legacy builds may omit version
+metadata; leave it unconfirmed. The authenticated plugin hello is only a
+local compatibility report, not proof of the caller's identity or an update feed.
 Never ask for, print or copy the OBS password. No extra OBS plugin is needed.
 
 Once enabled, `command obs-record` confirms OBS is recording before it starts

@@ -1,8 +1,10 @@
 # Release-candidate acceptance test
 
-**Windows Sightline 1.0.7 release candidate + private Stream Deck 0.1.8.**
+**Windows Sightline 1.0.7 release candidate + private Stream Deck 0.1.9.**
 RC1 established the feature baseline. RC2 updates the bundled help and adds
 both acceptance scripts to **Files (☰) > Sample scripts**.
+RC3 adds compatibility reporting with plugin 0.1.9; older candidates do not
+show the plugin's reported version in Settings.
 
 The public app remains **1.0.6**. The candidate and plugin are private test builds.
 
@@ -13,8 +15,8 @@ checks identify a failure without needing to describe the whole session.
 ## Prepare the matching build
 
 Close Sightline before installing the candidate. Reopen it and check the
-version under **Help > About**. Install the private **0.1.8** plugin separately;
-its archive manifest uses the version **0.1.8.0**. Select the matching
+version under **Help > About**. Install the private **0.1.9** plugin separately;
+its archive manifest uses the version **0.1.9.0**. Select the matching
 **Sightline … OBS** profile in Stream Deck. Keep existing profiles.
 
 The required physical keys are **Record take**, **Play / Pause** and
@@ -28,6 +30,9 @@ A mouse fallback does not prove a physical Stream Deck key works.
 1. In **Settings > Recording > OBS connection**, enable the connection,
    Apply and test it. In **OBS recording**, allow recording controls.
    These permissions must be chosen in Settings; the scripts do not enable them.
+   In **Controls > Stream Deck**, choose **Check compatibility** and confirm
+   both reported versions. In the plugin, open a key's settings and check its
+   Test connection result. A compatible pairing still needs the physical tests.
 2. With OBS stopped, choose **Flash and beep** in **Recording > Takes > Slate**.
    Enable **Include the slate in the OBS recording**, Apply, then
    **Prepare recorded slate**. Include OBS audio track 1.
