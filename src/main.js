@@ -280,7 +280,7 @@ ipcMain.on( "debugLog", ( _event, text ) => {
 	if ( problem || settings.debugMode ) logProblem( `page: ${ text.slice( 0, 500 ) }` );
 } );
 
-// Settings > About > Save a log for support: the log, with what this computer
+// Settings > About > Debug > Save a log for support: the log, with what this computer
 // and Sightline look like, in one file to attach to an issue or an email. No
 // scripts, keys, word lists or audio; nothing is sent by itself.
 ipcMain.handle( "saveSupportLog", async ( event ) => {

@@ -90,6 +90,11 @@ try {
 	await main.evaluate( "document.querySelector('#voice-offer button:last-child')?.click();document.getElementById('cb-settings').click()" );
 	const settings = await connect( "panel=settings" );
 	await settings.until( "!!document.getElementById('set-countdown')" );
+	assert.equal( await settings.evaluate( "document.querySelectorAll('#set-trace-commands').length" ), 1 );
+	assert.equal( await settings.evaluate( "document.getElementById('set-trace-commands').closest('fieldset').dataset.tab" ), "debug", "Command tracing has one home in About > Debug" );
+	assert.equal( await settings.evaluate( "document.querySelectorAll('[data-settings-page=commands] #set-trace-commands').length" ), 0 );
+	assert.equal( await settings.evaluate( "document.getElementById('set-trace-commands').checked" ), false );
+	assert.match( await settings.evaluate( "document.getElementById('set-trace-commands-note').textContent" ), /nearby conversation/ );
 	assert.equal( await main.evaluate( "document.getElementById('settings-modal')===null" ), true, "Settings is in a different native window" );
 	assert.equal( await settings.evaluate( "typeof window.electron" ), "undefined", "Utility host has no privileged bridge" );
 	await settings.evaluate( "document.getElementById('settings-topic-reading').click()" );
@@ -252,7 +257,7 @@ try {
 	await settings.evaluate( "document.querySelector('[data-settings-group=prompting]').click();document.querySelector('[data-tab=scrolling]').click();document.querySelector('[data-tab=scrolling]').focus()" );
 	const picture = await settings.call( "Page.captureScreenshot", { format: "png" } );
 	await fs.writeFile( path.join( artifacts, "floating-settings.png" ), Buffer.from( picture.data, "base64" ) );
-	for ( const topic of [ "commands", "reading", "background", "layout", "display", "recording", "audio", "pad", "streamdeck", "remotes", "obs", "obs-recording" ] ) {
+	for ( const topic of [ "commands", "reading", "background", "layout", "display", "recording", "audio", "pad", "streamdeck", "remotes", "obs", "obs-recording", "about", "debug" ] ) {
 		await settings.evaluate( `document.getElementById('settings-topic-${ topic }').click();document.getElementById('settings-topic-${ topic }').focus()` );
 		await settings.evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
 		for ( let page = 1; page < 8; page++ ) {
@@ -371,7 +376,8 @@ try {
 	await native.evaluate( `(()=>{
 		const {ipcMain}=process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron');
 		globalThis.speechTest={starts:0,ack:true,sender:null,session:null};
-		for(const name of ['speechStart','speechAudio','speechStop'])ipcMain.removeAllListeners(name);
+		for(const name of ['speechStart','speechAudio','speechStop','speechModelStatus'])ipcMain.removeAllListeners(name);
+		ipcMain.on('speechModelStatus',event=>event.sender.send('speechModel',{installed:true}));
 		ipcMain.on('speechStart',(event,options)=>{const t=globalThis.speechTest;t.starts++;t.sender=event.sender;t.session=options.session;if(t.starts>1)t.ack=true;if(!t.defer)event.sender.send('speechState',{type:'ready',session:t.session});});
 		ipcMain.on('speechAudio',()=>{const t=globalThis.speechTest;if(t.ack)t.sender.send('speechState',{type:'health',session:t.session});});
 		return true;
@@ -410,13 +416,51 @@ try {
 	await native.evaluate( "speechTest.sender.send('speechWords',{words:['computer','bigger'],final:true,session:speechTest.session})" );
 	await main.until( `document.body.style.getPropertyValue('--script-size')!==${ JSON.stringify( priorSize ) }` );
 	assert.equal( ( await fs.readdir( path.join( profile, "heard-logs" ) ).catch( () => [] ) ).length, 0, "Commands-only text tracing is off by default" );
-	await main.evaluate( "window.electron.saveSettings({traceCommands:true})" );
-	await pause( 100 );
+	// Earlier scenarios intentionally retained a Settings draft while changing
+	// live preferences through IPC. Reopen it before applying this real UI choice.
+	await settings.evaluate( "document.getElementById('settings-cancel').click();if(!document.getElementById('settings-unsaved').classList.contains('hidden'))document.getElementById('settings-unsaved-discard').click()" );
+	await settings.until( "document.getElementById('settings-modal').classList.contains('hidden')" );
+	await main.evaluate( "document.getElementById('cb-settings').click()" );
+	await settings.until( "!document.getElementById('settings-modal').classList.contains('hidden')" );
+	await settings.evaluate( "document.getElementById('settings-topic-debug').click();document.getElementById('set-trace-commands').focus()" );
+	await settings.call( "Input.dispatchKeyEvent", { type: "keyDown", key: " ", code: "Space", windowsVirtualKeyCode: 32 } );
+	await settings.call( "Input.dispatchKeyEvent", { type: "keyUp", key: " ", code: "Space", windowsVirtualKeyCode: 32 } );
+	await settings.until( "document.getElementById('settings-applied').textContent==='Unsaved changes'" );
+	await settings.evaluate( "document.getElementById('settings-apply').click()" );
+	await settings.until( "document.getElementById('settings-applied').textContent==='Saved'" );
+	const savedDiagnostics = async ( enabled ) => {
+		for ( let n = 0; n < 50; n++ ) {
+			try {
+				const value = JSON.parse( await fs.readFile( path.join( profile, "app-state.json" ), "utf8" ) ).settings;
+				if ( value.traceCommands === enabled ) return value;
+			} catch { /* Wait for the asynchronous preferences write to finish. */ }
+			await pause( 100 );
+		}
+		throw new Error( `Trace preference was not saved as ${ enabled }` );
+	};
+	let diagnostics = await savedDiagnostics( true );
+	assert.equal( diagnostics.traceCommands, true, "The Debug checkbox saves the opt-in" );
+	assert.equal( diagnostics.debugMode, false, "Word tracing does not enable debug logging" );
+	await main.until( "listenerModule.isActive() && !document.getElementById('command-listening').classList.contains('hidden')" );
+	await pause( 150 );
 	await native.evaluate( "speechTest.sender.send('speechWords',{words:['computer','smaller'],final:true,session:speechTest.session})" );
 	for ( let n = 0; n < 50 && !( await fs.readdir( path.join( profile, "heard-logs" ) ).catch( () => [] ) ).length; n++ ) await pause( 100 );
 	const traceFiles = await fs.readdir( path.join( profile, "heard-logs" ) );
 	assert.match( await fs.readFile( path.join( profile, "heard-logs", traceFiles[0] ), "utf8" ), /"mode":"commands"/ );
-	await main.evaluate( "window.electron.saveSettings({voiceCommands:'off',traceCommands:false})" );
+	await settings.evaluate( "document.getElementById('set-trace-commands').focus()" );
+	await settings.call( "Input.dispatchKeyEvent", { type: "keyDown", key: " ", code: "Space", windowsVirtualKeyCode: 32 } );
+	await settings.call( "Input.dispatchKeyEvent", { type: "keyUp", key: " ", code: "Space", windowsVirtualKeyCode: 32 } );
+	await settings.until( "document.getElementById('settings-applied').textContent==='Unsaved changes'" );
+	await settings.evaluate( "document.getElementById('settings-apply').click()" );
+	await settings.until( "document.getElementById('settings-applied').textContent==='Saved'" );
+	diagnostics = await savedDiagnostics( false );
+	assert.equal( diagnostics.traceCommands, false );
+	const traceBefore = await fs.readFile( path.join( profile, "heard-logs", traceFiles[0] ), "utf8" );
+	await native.evaluate( "speechTest.sender.send('speechWords',{words:['a','nearby','conversation'],final:true,session:speechTest.session})" );
+	await pause( 200 );
+	assert.equal( await fs.readFile( path.join( profile, "heard-logs", traceFiles[0] ), "utf8" ), traceBefore, "Turning off the checkbox stops word capture while Always listening continues" );
+	console.log( "PASS: Debug-only trace toggle, keyboard access, Apply persistence, independent logging, explicit opt-in and immediate opt-out." );
+	await main.evaluate( "window.electron.saveSettings({voiceCommands:'off'})" );
 	await main.until( "!listenerModule.isActive()" );
 	const stoppedStarts = await native.evaluate( "speechTest.starts" );
 	await pause( 1500 );
@@ -436,6 +480,11 @@ try {
 	await main.evaluate( "Promise.all(virtualCaptures.map(c=>c.close()));delete navigator.mediaDevices.getUserMedia" );
 	console.log( "PASS: real audio-worklet pipeline with generated silent-route audio; silence stays healthy, worker stall recovers, hold/position persist, mute/off stay off and a changed wake word works immediately." );
 	assert.deepEqual( errors, [] );
+	// Apply cleared the earlier draft; make a fresh one for the exit guard check.
+	await settings.evaluate( "document.getElementById('settings-topic-scrolling').click();document.getElementById('set-countdown').focus();document.getElementById('set-countdown').select()" );
+	await settings.call( "Input.dispatchKeyEvent", { type: "keyDown", key: "ArrowRight", code: "ArrowRight" } );
+	await settings.call( "Input.dispatchKeyEvent", { type: "keyUp", key: "ArrowRight", code: "ArrowRight" } );
+	await settings.until( "document.getElementById('settings-applied').textContent==='Unsaved changes'" );
 	native.socket.close();
 	await pause( 100 );
 	await main.evaluate( "window.electron.windowControl('close')" );

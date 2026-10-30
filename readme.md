@@ -243,6 +243,7 @@ mirroring under Screens and honours capture preferences for helper windows;
 **1.0.7-rc.11** improves OBS button contrast and keeps Settings above the prompter.
 **1.0.7-rc.12** adds independent size and colour for square-bracket comments.
 **1.0.7-rc.13** adds custom pad/phone layouts and listening recovery.
+**1.0.7-rc.14** gives troubleshooting controls their own **About > Debug** topic.
 The latest published app remains **1.0.6**. No tag, merge, Marketplace publication or
 website deployment is part of this candidate.
 
@@ -254,7 +255,9 @@ website deployment is part of this candidate.
 - **Wake-word listening recovery:** interrupted audio or a stalled recogniser
   restarts with bounded retries, preserving position and hold. Silence and
   listening-off stay respected. **Prompting > Commands** shows state and
-  Restart listening; its optional command-word trace is off by default.
+  Restart listening. The optional command-word trace is off by default and
+  lives under **Settings > About > Debug**, independently of Debug mode,
+  with a warning about nearby conversation and the usual Apply/Save controls.
   Applying a wake-word change updates an already-running listener too.
   Stopping during startup cancels cleanly; late messages from the old
   listener cannot stop its replacement.

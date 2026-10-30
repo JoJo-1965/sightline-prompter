@@ -115,4 +115,11 @@ The example QR below is for illustration; scan the code in your own Settings.
 
 ## About
 
-![Version, support, updates and diagnostic logs](images/settings-about.png)
+![Version, support and updates](images/settings-about.png)
+
+### Debug
+
+Command-word tracing is off by default. The warning stays visible beside its
+checkbox; health and recovery logging needs no spoken words.
+
+![Support logs and optional command-word tracing](images/settings-debug.png)

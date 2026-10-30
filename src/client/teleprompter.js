@@ -2489,7 +2489,7 @@ function markSettingsDirty( event ) {
 
 // Each step of opening Settings goes in sightline.log, so if it freezes, the
 // last line says where. (Looking into a freeze on Joanne's computer.)
-// (main.js only keeps them in debug mode, Settings > About.)
+// (main.js only keeps them in debug mode, Settings > About > Debug.)
 const settingsTrail = step => window.electron.debugLog?.( `settings: ${ step }` );
 
 uiElement( "settings-save-log" )?.addEventListener( "click", async () => {

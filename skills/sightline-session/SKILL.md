@@ -207,7 +207,7 @@ Publication remains held until all five production requirements are validated.
 Commands-only listener health is available as `listenerHealth` in status.
 Recovery is bounded and respects listening-off and script mute. The user can
 use Prompting > Commands > Restart listening. Command-word text tracing is
-off by default and must be explicitly enabled there for troubleshooting;
+off by default and must be explicitly enabled in Settings > About > Debug for troubleshooting;
 entries have `mode: "commands"`. Do not enable it through automation. It may
 include surrounding conversation, so ask the user to switch it off afterwards.
 `padLayout` in status describes the shared phone/pad layout; hardware Stream

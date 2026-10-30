@@ -309,7 +309,9 @@ The whole workflow is in the guide:
 - **Listening recovery:** health checks restart interrupted capture or speech
   processing without moving the script or changing its hold. Silence and
   intentional listening-off do not cause restarts. Retries are bounded, with
-  a manual Restart listening button, live state and opt-in local word tracing.
+  a manual Restart listening button and live state. Optional local word tracing
+  lives in **Settings > About > Debug**, alongside support logs. It is off by
+  default, independent of Debug mode, and warns about nearby conversation.
 - **Control window** for a second screen: an upright, live copy of the script
   with big buttons. Click any line to move the prompter there. Its broadcast
   row sets the prompter's on air, text size, backing, mirroring, eye-line and

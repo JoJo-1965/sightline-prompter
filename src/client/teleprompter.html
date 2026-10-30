@@ -755,7 +755,6 @@
           </label>
           <p id="set-listening-status" class="field-hint" data-essential role="status" aria-live="polite">Listening is off.</p>
           <button type="button" id="set-listening-restart">Restart listening</button>
-          <label class="check" title="Save recognised words locally for troubleshooting, including while stopped. This can include surrounding conversation. Turn it off after checking; no audio is saved by this option."><input type="checkbox" id="set-trace-commands" /> Trace command words to the local heard log</label>
         </fieldset>
         <fieldset data-tab="voice">
           <legend>Recognition and microphone</legend>
@@ -1082,19 +1081,23 @@
             ><input id="set-check-updates" type="checkbox" /> Check for updates when
             Sightline starts (asks GitHub; nothing downloads by itself)</label
           >
-          <label class="check"
-            ><input id="set-debug-mode" type="checkbox" /> Debug mode: a step-by-step
-            log, for tracking down a problem</label
-          >
-          <p class="field-hint">Sightline always notes hangs, crashes and errors in a small log on this computer. Debug mode adds each step it takes, such as opening Settings, so a problem can be traced. <strong>Save a log for support</strong> puts it in one file to attach to a GitHub issue or an email, with your version, system and which features are on; never your scripts, keys or audio. Nothing is sent by itself.</p>
-          <p class="settings-about-actions">
-            <button type="button" id="settings-save-log">Save a log for support…</button>
-          </p>
           <p class="field-hint">
             <a href="https://github.com/JoJo-1965/sightline-prompter" target="_blank">github.com/JoJo-1965/sightline-prompter</a>
             ·
             <a href="https://joannelockwood.co.uk/sightline" target="_blank">joannelockwood.co.uk/sightline</a>
           </p>
+        </fieldset>
+
+        <fieldset data-tab="debug">
+          <legend>Support logs</legend>
+          <label class="check"><input id="set-debug-mode" type="checkbox" /> Debug mode: log each step for troubleshooting</label>
+          <p class="field-hint">Hangs, crashes, errors and listening recovery are logged locally. Debug mode adds detail. These logs contain no spoken words or audio.</p>
+          <button type="button" id="settings-save-log" title="Save the support log, version, system and enabled features; excludes scripts, keys, audio and command-word traces. Nothing is sent automatically.">Save a log for support…</button>
+        </fieldset>
+        <fieldset data-tab="debug">
+          <legend>Command-word tracing</legend>
+          <label class="check"><input type="checkbox" id="set-trace-commands" aria-describedby="set-trace-commands-note" /> Trace command words to the local heard log</label>
+          <p id="set-trace-commands-note" class="field-hint" data-essential>Off by default. Saves recognised text locally to investigate mishearings, independently of Debug mode. With Always listening, this may include nearby conversation while stopped or off air. Turn it off afterwards. No audio is saved by this option.</p>
         </fieldset>
 
         <div class="modal-actions settings-actions">

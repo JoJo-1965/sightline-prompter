@@ -55,7 +55,7 @@ Local recognition processes microphone audio before it knows whether you
 said the wake word. It is not listening only after you say "Prompter".
 By default the commands-only listener does not write a heard log; voice
 following does. **Trace command words to the local heard log**, in
-**Settings > Prompting > Commands**, explicitly enables recognised-text
+**Settings > About > Debug**, explicitly enables recognised-text
 diagnostics for commands-only listening. It is off by default. When enabled,
 it can save recognised conversation while stopped or off air. Turn it off
 after troubleshooting. This option does not record audio. Automatic recovery

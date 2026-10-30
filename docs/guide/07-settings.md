@@ -42,7 +42,7 @@ without disappearing as you move the pointer onto it.
 | --- | --- | --- |
 | **Prompting** | Scrolling | Steady or voice mode, steady speed and the opening countdown |
 | | Voice | Speech engine, model download, responsiveness, Deepgram key and microphone |
-| | Commands | When to listen, wake word, listener state, Restart listening and optional word tracing |
+| | Commands | When to listen, wake word, listener state and Restart listening |
 | | Your words | Script synonyms, command synonyms, sound-alike matching, suggestions and Teach |
 | | Script | Notes mode, pacing, script directions, slide cues and directive display |
 | **Appearance** | Text | Body and heading fonts, heading size, comment size/colour and text-size preview |
@@ -58,7 +58,8 @@ without disappearing as you move the pointer onto it.
 | | AI & API | Enable local automation, port, token, recording-delete permission and AI setup help |
 | | OBS connection | Enable OBS, address, port, protected password and the saved-connection test |
 | | OBS recording | Start/stop permission, chapters and preparing the recorded slate |
-| **About** | About | Version, a link to credits, updates, support, debug logging and the support-log export |
+| **About** | About | Version, a link to credits, updates and support |
+| | Debug | Debug logging, support-log export and optional command-word tracing |
 
 OBS settings stay discoverable while disabled so you can configure them.
 Both OBS topics are together under **Controls**. Recording keeps the
@@ -209,9 +210,17 @@ downloads or installs automatically.
 **Help > About**. Copyright and attribution live there, with no repeated
 messages in the Files menu or the Settings overview.
 
-**Debug mode** adds detail to the local support log. **Save a log for support…**
+**About > Debug > Debug mode** adds detail to the local support log. **Save a log for support…**
 creates a file containing the version, system and enabled features, excluding
-scripts, keys and audio. It sends nothing itself.
+scripts, keys, audio and command-word traces. It sends nothing itself.
+
+The separate **Trace command words to the local heard log** checkbox is also
+under **About > Debug**. It is off by default and does not require Debug mode.
+Apply saves the choice. This saves recognised text for investigating mishearings;
+with Always listening it may include nearby conversation while stopped or off air.
+Turn it off afterwards. Health and recovery logs contain no spoken words.
+
+![Debug logs and the optional command-word trace](images/settings-debug.png)
 
 Sightline is free and stays free. Support is voluntary and gives no extra
 features. See [privacy, terms and support](../POLICIES.md).

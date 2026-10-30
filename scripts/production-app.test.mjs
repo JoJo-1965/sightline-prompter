@@ -222,7 +222,7 @@ try {
 	await evaluate( "document.activeElement.dispatchEvent(new KeyboardEvent('keydown',{key:'Tab',bubbles:true}))" );
 	assert.equal( await evaluate( "document.activeElement.id" ), "settings-close" );
 	const visited = await evaluate( "(()=>{const results=[];for(const group of document.querySelectorAll('.settings-tabs button')){group.click();for(const topic of [...document.querySelectorAll('.settings-subtabs button')].filter(b=>!b.hidden)){topic.click();const page=document.getElementById(topic.getAttribute('aria-controls'));results.push({name:topic.dataset.tab,visible:page.getClientRects().length>0,fields:page.querySelectorAll('fieldset').length,one:[...document.querySelectorAll('[data-settings-page]')].filter(p=>p.getClientRects().length).length===1});}}return results;})()" );
-	assert.equal( visited.length, 19 );
+	assert.equal( visited.length, 20 );
 	assert.ok( visited.every( page => page.visible && page.fields && page.one ), JSON.stringify( visited ) );
 	const semantics = await evaluate( "(()=>{const root=document.querySelector('.settings-content');return {unlabelled:[...root.querySelectorAll('input,select,textarea')].filter(e=>!e.getAttribute('aria-label')&&!e.getAttribute('aria-labelledby')&&![...(e.labels??[])].some(l=>l.textContent.trim())).map(e=>e.id||e.className),nested:root.querySelectorAll('label button,label input~input').length,oldCaption:root.textContent.includes('How this works'),colourScheme:getComputedStyle(root).colorScheme,interactiveTooltips:document.querySelectorAll('.settings-explanation a,.settings-explanation button').length};})()" );
 	assert.deepEqual( semantics.unlabelled, [], "Every settings control needs an accessible name" );

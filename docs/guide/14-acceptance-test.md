@@ -24,6 +24,9 @@ RC13 adds custom pad/phone layouts and bounded listening recovery. Under
 **Controls > Pad**, choose Reading or Studio, reorder a button and check that
 the phone shows the same order. **Prompting > Commands** shows listening
 state and Restart listening; command-word tracing is off by default.
+RC14 moves the optional trace to **About > Debug**, alongside support logs.
+Enable it only to investigate a mishearing, Apply, then turn it off afterwards.
+It can capture nearby conversation while Always listening is enabled.
 
 The public app remains **1.0.6**. The candidate and plugin are private test builds.
 

@@ -150,7 +150,7 @@ listening badge, for a deliberate retry. The Commands page shows its state.
 Recovery events go in the support log without spoken words or audio.
 
 For a missed wake word, enable **Trace command words to the local heard log**
-in that same topic, then Apply and reproduce it. This is **off by default**.
+in **Settings > About > Debug**, then Apply and reproduce it. This is **off by default**.
 It saves recognised text during commands-only listening, including while
 stopped, and may include nearby conversation. Turn it off afterwards.
 Entries use `mode: "commands"`; ordinary voice entries use `mode: "voice"`.

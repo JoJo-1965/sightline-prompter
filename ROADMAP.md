@@ -56,6 +56,8 @@ RC12 adds independent size and colour for square-bracket delivery comments
 under Appearance > Text, following Heading font while retaining speech exclusions.
 RC13 completes the customisable pad (#56), shares its layout with the phone,
 and adds bounded listening recovery, immediate wake-word changes and opt-in tracing.
+RC14 puts support logs and the optional word trace in **About > Debug**, with
+the trace off by default and a visible nearby-conversation warning.
 
 The [acceptance walkthrough](docs/guide/14-acceptance-test.md) and two bundled
 sample scripts cover natural voice, physical Stream Deck controls, stops,

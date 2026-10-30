@@ -4,7 +4,7 @@ export const SETTINGS_GROUPS = [
 	{ id: "appearance", label: "Appearance", pages: [ [ "reading", "Text" ], [ "background", "Background" ], [ "aids", "Reading aids" ], [ "layout", "Spacing" ], [ "display", "Screens" ] ] },
 	{ id: "recording", label: "Recording", pages: [ [ "recording", "Takes" ], [ "audio", "Audio" ] ] },
 	{ id: "controls", label: "Controls", pages: [ [ "pad", "Pad" ], [ "phone", "Phone" ], [ "streamdeck", "Stream Deck" ], [ "remotes", "AI & API" ], [ "obs", "OBS connection" ], [ "obs-recording", "OBS recording" ] ] },
-	{ id: "about", label: "About", pages: [ [ "about", "About" ] ] }
+	{ id: "about", label: "About", pages: [ [ "about", "About" ], [ "debug", "Debug" ] ] }
 ];
 
 export function createSettingsNavigation( modal, { onShow = () => {} } = {} ) {
