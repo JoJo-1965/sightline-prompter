@@ -1,5 +1,18 @@
 # TODO
 
+## Pending fixes for the next candidate batch
+
+- [ ] Accept and validate shared `padLayout` objects through the existing
+  `/settings` API and settings-file import. RC14 drops the object because its
+  default is null and `pickKnown` accepts only strings/null in that case.
+  The Settings editor and saved-preference loading work. Preserve protected
+  settings, validate action IDs/columns and test the API/import round trip.
+  Studio was applied to Joanne's saved preferences and verified on the live
+  pad/phone status without building another candidate.
+
+The current feature backlog and release status are in [ROADMAP.md](ROADMAP.md).
+The older checklist below is retained as project history.
+
 ## Features
 
 - [ ] Auto-scroll mode — toggleable auto-scroll at configurable speed (words-per-minute), spacebar to toggle, up/down to adjust speed
