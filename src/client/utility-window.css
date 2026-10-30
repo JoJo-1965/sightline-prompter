@@ -4,3 +4,7 @@ html, body.utility-window { margin: 0; width: 100%; height: 100%; overflow: hidd
 .utility-window .settings-content { padding: 16px 20px; }
 .utility-window .settings-head { -webkit-app-region: no-drag; }
 .utility-window .settings-head h3 { cursor: default; }
+.utility-window #voice-help { position: static; width: 100%; height: 100dvh; max-width: none; max-height: none; transform: none; border: 0; border-radius: 0; }
+.utility-window #voice-help > button { align-self: flex-end; min-width: 80px; padding: 6px 14px; border: 1px solid #505866; border-radius: 4px; background: #343840; color: #e8e8e8; font: inherit; }
+.utility-window #voice-help > button:hover { background: #454c58; }
+.utility-window #voice-help > button:focus-visible { outline: 2px solid #8fd3ff; outline-offset: 2px; }

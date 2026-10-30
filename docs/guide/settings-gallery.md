@@ -52,8 +52,6 @@ Jump to [Prompting](settings-gallery.md#prompting), [Appearance](settings-galler
 
 ![Text and background visibility](images/settings-background.png)
 
-![Background colour theme](images/settings-background-page-2.png)
-
 ### Reading aids
 
 ![Reading aids](images/settings-aids.png)
@@ -65,6 +63,8 @@ Jump to [Prompting](settings-gallery.md#prompting), [Appearance](settings-galler
 ![Spacing and alignment, second page](images/settings-layout-page-2.png)
 
 ### Screens
+
+Mirroring has one Settings home here, alongside the window and monitor controls.
 
 ![Screen and eye-line settings, first page](images/settings-display.png)
 
@@ -91,6 +91,8 @@ Jump to [Prompting](settings-gallery.md#prompting), [Appearance](settings-galler
 ## Controls
 
 ### Phone
+
+The example QR below is for illustration; scan the code in your own Settings.
 
 ![Phone remote](images/settings-phone.png)
 

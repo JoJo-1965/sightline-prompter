@@ -83,13 +83,13 @@ Fonts are in **Appearance > Text**, and colour themes are in **Appearance > Back
 Window and monitor placement, Keep on top and the eye-line strip. Fonts and
 heading size are in **Appearance > Text**; backing and colours are in
 **Appearance > Background**. Highlights are in **Appearance > Reading aids**;
-the reading line and mirroring are in **Appearance > Spacing**. Delivery directions are in
+the reading line is in **Appearance > Spacing**. Mirroring is in **Appearance > Screens**. Delivery directions are in
 **Prompting > Script**.
 
 ## Mirroring
 
 For beam-splitter rigs, where you read the screen through angled glass,
-mirror the prompter. In **Tools > Spacing and mirror**, two
+mirror the prompter. In **Settings > Appearance > Screens > Beam-splitter mirroring**, two
 buttons do it: **↔ Left–right** (most beam splitters) and **↕ Up–down**. Each
 stays lit while it's on; click it again to turn it off. Both lit mirrors both
 ways, and the panel stays open. **Ctrl+M** steps through off, ↔, ↕ and both.
@@ -110,6 +110,10 @@ on **Settings > Appearance > Screens**.
 Tick **Hide from screen capture** in the Layout panel, and the prompter won't
 show up in screen shares or screen recordings (Zoom, Teams, Riverside, OBS and
 so on). You still see it.
+
+Settings, keyboard Help, voice-command help and Guide adjustments follow this
+preference too, including changes while they are open. Turn it off to capture
+these windows for support. The head-guide overlay keeps its own protection.
 
 **Click-through** (**Ctrl+Shift+X**) lets clicks on the script go to the
 window behind, so you can work in another app with the script on top.

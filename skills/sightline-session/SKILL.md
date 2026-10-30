@@ -119,6 +119,9 @@ RC8 also moves Settings and F1 Help into separate movable windows with saved
 geometry. Reopening Settings retains its draft; native Close and app exit
 use the existing unsaved-change guard. The windows reuse the live controllers,
 without starting a second microphone, speech tracker or recording engine.
+RC10 also makes voice-command help movable, restores the phone QR in Settings,
+moves Settings mirroring to Appearance > Screens and applies Hide from capture
+to helper windows. The head-guide overlay keeps independent capture protection.
 
 Sightline logs every take of every section as it's recorded, one file per
 script per day, saved as it goes. These read the files, so they work with the

@@ -8,6 +8,9 @@ In RC8, Settings opens in its own upright window. Drag the native title bar
 to place it beside the prompter or on another screen. Its position and size
 are remembered; opening Settings again brings the same window forward and
 keeps any unsaved draft. **F1 / ?** opens Help in a separate movable window too.
+**“Prompter, what can I say?”** also has its own movable window in RC10.
+Settings, both help windows and Guide adjustments follow **Hide from capture**;
+turn it off to take support screenshots. The head-guide overlay stays protected.
 There are five groups, with a second row of focused topics. Each setting has
 one home. Script files, recordings and settings import/export are in the
 **Files menu (☰)**; live tools are under **Tools** on the top bar.
@@ -44,7 +47,7 @@ without disappearing as you move the pointer onto it.
 | | Background | Text opacity, backing on/off air, brightness and colour theme |
 | | Reading aids | Focus band, text edge, reading-line marker, sentence highlight and progress bar |
 | | Spacing | Margins, line spacing, reading line, alignment and mirror axes |
-| | Screens | Prompter monitor, Keep on top, eye-line strip and keeping controls visible |
+| | Screens | Beam-splitter mirroring, prompter monitor, Keep on top, eye-line strip and keeping controls visible |
 | **Recording** | Takes | Slate, ON AIR display, countdown beep, capture protection and click-through |
 | | Audio | Scratch audio, loudness per take and keeping the sound-check meter visible |
 | | OBS connection | Enable OBS, address, port, protected password and the saved-connection test |
@@ -125,6 +128,8 @@ available from **Tools > Sound check** or **Ctrl+Shift+D**.
 **Controls > Phone** pairs a phone on the same Wi-Fi. **Controls > Stream Deck**
 enables the companion plugin's connection. **Controls > AI & API** enables an
 AI assistant or local script to control Sightline. Each connection is optional.
+Enable Phone and choose **Apply** or **Save & close** to display the QR code.
+RC10 fixes its image in the separate Settings window.
 
 **Check compatibility** shows the running Sightline version, the connected
 plugin's reported version and any update requirement. Version reporting needs

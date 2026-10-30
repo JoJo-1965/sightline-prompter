@@ -234,13 +234,6 @@
           <option value="center">Centre</option>
         </select>
       </div>
-      <div class="lp-row lp-mirror-row">
-        Mirror (Ctrl+M)
-        <div class="mirror-pills" role="group" aria-label="Mirror">
-          <button type="button" data-axis="h" aria-pressed="false" title="Mirror left to right (most beam splitters). Click again to turn it off">↔ Left–right</button>
-          <button type="button" data-axis="v" aria-pressed="false" title="Mirror top to bottom. Click again to turn it off">↕ Up–down</button>
-        </div>
-      </div>
       <label class="lp-check"
         ><input id="lp-marker" type="checkbox" /> Reading-line marker</label
       >
@@ -826,6 +819,10 @@
         </fieldset>
         <fieldset data-tab="aids" id="set-aids-host">
           <legend>Reading aids</legend>
+          <p class="settings-live-note">Saved immediately as you adjust.</p>
+        </fieldset>
+        <fieldset data-tab="display" id="set-mirror-host">
+          <legend>Beam-splitter mirroring</legend>
           <p class="settings-live-note">Saved immediately as you adjust.</p>
         </fieldset>
         <fieldset data-tab="display" id="set-display-host">

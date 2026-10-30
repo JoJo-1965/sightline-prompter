@@ -26,7 +26,7 @@ export async function showPanelWindow( kind, node, onResize = () => {} ) {
 			const timeout = setTimeout( () => reject( new Error( "The floating window did not load" ) ), 8000 );
 			popup.addEventListener( "load", () => {
 				clearTimeout( timeout );
-				popup.document.title = kind === "settings" ? "Sightline Settings" : "Sightline Help and shortcuts";
+				popup.document.title = kind === "settings" ? "Sightline Settings" : kind === "voicehelp" ? "Sightline Voice commands" : "Sightline Help and shortcuts";
 				popup.document.body.append( popup.document.adoptNode( node ) );
 				node.setAttribute( "aria-modal", "false" );
 				popup.addEventListener( "resize", () => {

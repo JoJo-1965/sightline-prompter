@@ -152,7 +152,7 @@ export function addSettingsHelp( modal ) {
 		[ "lp-backing-on-air", "The saved background level while ON AIR is enabled. A low percentage lets you see more of your camera preview, slides or call through the prompting window." ],
 		[ "lp-heading-scale", "Scales titles and section headings relative to their usual size. Reduce this if headings take up too much room after increasing the size of the words you read." ],
 		[ "lp-heading-font", "Choose a separate font for titles and section headings. Same as the text follows your body font; choosing another font changes the headings while keeping the body font you selected." ],
-		[ "lp-hide-capture", "Asks supported capture tools to exclude the prompter. Whole-screen and third-party capture can behave differently, so make a short test recording to check the result. The head guide has its own capture protection." ],
+		[ "lp-hide-capture", "Asks supported capture tools to exclude the prompter, Settings, keyboard and voice Help, and guide adjustments. Turn it off to capture these windows for support. The head guide overlay stays protected independently. Whole-screen and third-party capture can behave differently; check with a short test recording." ],
 		[ "lp-click-through", "Mouse clicks pass to the application behind Sightline. Use Ctrl+Shift+X to turn click-through off again, or use the control window or Stream Deck." ],
 		[ "lp-points", "Show speaking notes one page at a time. H1 headings or {page} divide pages; H2 headings are points within a page. Next and Back change pages instead of scrolling through a script." ]
 	] ) {

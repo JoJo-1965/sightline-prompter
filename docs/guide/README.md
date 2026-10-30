@@ -19,6 +19,8 @@ and adds the reusable acceptance samples. RC3 adds compatibility reporting in
 Sightline and the plugin. These are local test builds, not public releases.
 RC9 adds optional offline release notes and Getting Started reading at the end
 of Windows installation, independently of opening the app.
+RC10 fixes the phone QR in Settings, moves mirroring to Screens and makes
+voice help movable. Helper windows now follow Hide from capture.
 
 ![The prompter with the control bar, mid-take](images/running.png)
 

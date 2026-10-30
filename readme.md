@@ -237,10 +237,22 @@ RC2 refreshed its bundled help and added the reusable acceptance samples.
 **1.0.7-rc.7** adds floating guide adjustments, eye-anchored edge fitting and
 separate guide-background opacity;
 **1.0.7-rc.8** also makes Settings and F1 Help independent movable windows;
-**1.0.7-rc.9** adds optional offline reading at the end of Windows installation.
+**1.0.7-rc.9** adds optional offline reading at the end of Windows installation;
+**1.0.7-rc.10** fixes the phone QR image, makes voice help movable, puts
+mirroring under Screens and honours capture preferences for helper windows.
 The latest published app remains **1.0.6**. No tag, merge, Marketplace publication or
 website deployment is part of this candidate.
 
+- **Phone QR and helper windows:** **Controls > Phone** displays its QR code
+  in the separate Settings window. **Hide from capture** now applies live to
+  Settings, keyboard/voice Help and Guide adjustments; turn it off to capture
+  those windows for support. The head-guide overlay keeps independent protection.
+- **One mirroring home:** **Appearance > Screens > Beam-splitter mirroring**
+  contains both toggles, with no copies in Background or Spacing. Settings
+  toggles work in their separate window and remain in sync with the toolbar.
+- **Movable voice help:** **“Prompter, what can I say?”** opens a separate,
+  upright window with grouped tabs, a draggable title bar and remembered
+  position/size. Close, Escape and **“Prompter, close”** dismiss it independently.
 - **Read after installing:** the Windows finish page has independent **Read
   release notes** and **Read Getting Started guide** tick boxes alongside
   **Run Sightline Prompter**. The reading options start unticked and open
@@ -251,7 +263,7 @@ website deployment is part of this candidate.
   previews and Apply/Save/Cancel behaviour. Closing Settings, or quitting the
   app with a draft, asks before discarding changes. Reopening an already open
   window brings it forward without resetting the draft. Both stay above the
-  prompter, including fullscreen, and have capture protection enabled.
+  prompter, including fullscreen, and follow **Hide from capture**.
 - **Guide adjustments in fullscreen:** the prompter's **Guide adjustments**
   button, **Tools > Guide adjustments…**, and the guide's **Adjust** toggle a
   separate window above the prompter, even when the guide is Clean or locked.

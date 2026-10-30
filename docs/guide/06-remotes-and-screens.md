@@ -271,6 +271,9 @@ same Wi-Fi** and save. Scan the QR code with your phone to get big buttons for
 Start / Pause, Previous, Next, Top, Slower, Faster and Drop a marker, with the
 current section showing.
 
+The code appears after **Apply** or **Save & close**; reopen Settings if needed.
+It also works in the separate movable Settings window (fixed in RC10).
+
 ![The phone remote](images/phone-remote.png)
 
 Only a phone with the code in the QR code can connect. **New code**

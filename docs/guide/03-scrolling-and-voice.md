@@ -156,6 +156,13 @@ that*, with the words it heard, so you can say it again.
 | **record take** (or start recording) | Optional OBS integration: confirm recording, then start prompting. Requires enabled OBS recording controls |
 | **finish recording** (or stop recording) | Optional OBS integration: stop prompting and finish the OBS recording |
 
+In RC10, **“Prompter, what can I say?”** opens a separate upright window.
+Drag its title bar onto another screen; its position and size are remembered.
+Tabs keep the same frame. Close, Escape or **“Prompter, close”** hides it without
+closing Settings or stopping the take. It follows **Hide from capture**.
+
+![The movable voice-command window](images/floating-voice-help.png)
+
 Choose when it listens on **Settings > Prompting > Commands**:
 
 - **In voice mode** (the default): commands work while voice scrolling.

@@ -3,7 +3,7 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { fitInside } from "./utils/fit.js";
 
-// Only the two local, same-origin hosts may retain an opener. Their live DOM
+// Only the local, same-origin panel hosts may retain an opener. Their live DOM
 // and handlers belong to the prompter; no second speech or recording engine runs.
 export function createUtilityWindows( { dir, prompter, getSettings, saveSettings } ) {
 	const host = pathToFileURL( path.join( dir, "client", "utility-window.html" ) ).href;
@@ -11,7 +11,8 @@ export function createUtilityWindows( { dir, prompter, getSettings, saveSettings
 	let dirty = false;
 	let focused = null;
 	let timer;
-	const kindOf = ( url, frameName ) => [ "settings", "help" ].find( kind => url === `${ host }?panel=${ kind }` && frameName === `sightline-${ kind }` );
+	const kinds = [ "settings", "help", "voicehelp" ];
+	const kindOf = ( url, frameName ) => kinds.find( kind => url === `${ host }?panel=${ kind }` && frameName === `sightline-${ kind }` );
 	const restack = () => {
 		for ( const [ kind, win ] of [ ...windows ].sort( ( [ a ], [ b ] ) => Number( a === focused ) - Number( b === focused ) ) ) {
 			if ( win.isDestroyed() || !win.isVisible() ) continue;
@@ -29,7 +30,7 @@ export function createUtilityWindows( { dir, prompter, getSettings, saveSettings
 		prompter.webContents.send( "utilityPanelClose", kind, quit );
 	};
 	const action = ( event, kind, name, value ) => {
-		if ( event.sender !== prompter.webContents || ![ "settings", "help" ].includes( kind ) ) return;
+		if ( event.sender !== prompter.webContents || !kinds.includes( kind ) ) return;
 		if ( name === "dirty" && kind === "settings" ) dirty = value === true;
 		const win = windows.get( kind );
 		if ( !win || win.isDestroyed() ) return;
@@ -58,6 +59,10 @@ export function createUtilityWindows( { dir, prompter, getSettings, saveSettings
 	screen.on( "display-metrics-changed", refit );
 	return {
 		restack, isDirty: () => dirty, requestClose: closeRequest,
+		apply() {
+			for ( const win of windows.values() ) if ( !win.isDestroyed() ) win.setContentProtection( !!getSettings().hideFromCapture );
+			restack();
+		},
 		dialogParent() {
 			for ( const win of windows.values() ) if ( !win.isDestroyed() && win.isFocused() ) return win;
 			return prompter;
@@ -66,7 +71,7 @@ export function createUtilityWindows( { dir, prompter, getSettings, saveSettings
 			const kind = kindOf( url, frameName );
 			if ( !kind ) return null;
 			const area = screen.getDisplayMatching( prompter.getBounds() ).workArea;
-			const size = kind === "settings" ? { width: 676, height: 599 } : { width: 996, height: 679 };
+			const size = kind === "settings" ? { width: 676, height: 599 } : kind === "voicehelp" ? { width: 776, height: 639 } : { width: 996, height: 679 };
 			const candidate = getSettings().utilityWindowBounds?.[kind];
 			const saved = candidate && [ "x", "y", "width", "height" ].every( key => Number.isFinite( candidate[key] ) ) && candidate.width >= 380 && candidate.height >= 420 ? candidate : null;
 			const bounds = fitInside( saved ?? { ...size, x: Math.round( area.x + ( area.width - size.width ) / 2 ), y: Math.round( area.y + ( area.height - size.height ) / 2 ) }, area );
@@ -76,7 +81,7 @@ export function createUtilityWindows( { dir, prompter, getSettings, saveSettings
 			const kind = kindOf( details.url, details.frameName );
 			if ( !kind ) return;
 			windows.set( kind, win );
-			win.setContentProtection( true );
+			win.setContentProtection( !!getSettings().hideFromCapture );
 			win.setAlwaysOnTop( true, "screen-saver" );
 			win.on( "focus", () => {
 				focused = kind;

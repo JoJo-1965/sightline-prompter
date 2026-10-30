@@ -45,6 +45,9 @@ source with a read-only editor and Save a copy.
 RC8 also completes the separate-window implementation of 48, now awaiting acceptance.
 RC9 adds independent Windows installer finish choices for release notes and
 Getting Started, bundled as offline pages matching the installed version.
+RC10 fixes the phone QR in native Settings, puts mirroring only under Screens,
+makes voice-command help movable and applies the capture preference live to
+Settings, both help windows and Guide adjustments. The guide overlay stays protected.
 
 The [acceptance walkthrough](docs/guide/14-acceptance-test.md) and two bundled
 sample scripts cover natural voice, physical Stream Deck controls, stops,

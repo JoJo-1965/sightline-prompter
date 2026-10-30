@@ -15,6 +15,8 @@ RC8 gives Settings and F1 Help separate movable windows, with saved geometry,
 stable topic sizes and a Settings draft guard when closing the window or app.
 RC9 adds optional Windows installer finish choices for offline release notes
 and Getting Started. The matching Stream Deck plugin remains 0.1.9.
+RC10 fixes the phone QR image, gives voice help a movable native window,
+moves mirroring to Screens and honours Hide from capture for helper windows.
 
 The public app remains **1.0.6**. The candidate and plugin are private test builds.
 

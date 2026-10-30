@@ -83,7 +83,7 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 			const saved = getSettings().headGuideControlsBounds;
 			const bounds = fitInside( saved ?? { x: area.x + area.width - 400, y: area.y + 30, width: 390, height: 740 }, area );
 			controls = new BrowserWindow( { ...bounds, minWidth: Math.min( 350, area.width ), minHeight: Math.min( 460, area.height ), show: false, minimizable: false, maximizable: false, fullscreenable: false, autoHideMenuBar: true, title: "Guide adjustments", backgroundColor: "#15222b", webPreferences: { nodeIntegration: false, contextIsolation: true, sandbox: false, preload: path.join( dir, "client", "head-guide-preload.mjs" ) } } );
-			controls.setContentProtection( true );
+			controls.setContentProtection( !!getSettings().hideFromCapture );
 			controls.setAlwaysOnTop( true, "screen-saver" );
 			controls.loadFile( path.join( dir, "client", "head-guide.html" ), { query: { controls: "1" } } );
 			controls.once( "ready-to-show", () => {
@@ -156,6 +156,7 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 			overlay.webContents.setWindowOpenHandler( () => ( { action: "deny" } ) );
 		}
 		fitMode();
+		controls?.setContentProtection( !!getSettings().hideFromCapture );
 		restack();
 		send();
 	}

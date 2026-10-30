@@ -465,7 +465,7 @@ function applyWindowSettings( win, wasEyeLine ) {
 	// is over the control bar or a panel, so the controls stay usable.
 	win.setIgnoreMouseEvents( !!settings.clickThrough, { forward: true } );
 	framingGuide?.restack();
-	utilityWindows?.restack();
+	utilityWindows?.apply();
 }
 
 const emptySlotHtml = index =>

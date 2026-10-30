@@ -330,7 +330,7 @@ window.addEventListener(
 window.addEventListener( "resize", applyMirror );
 
 function showMirrorButton() {
-	// Keep toolbar, Layout and Reading toggles in step.
+	// Keep the toolbar, quick panel and Settings toggles in step.
 	for ( const pill of [ ...document.querySelectorAll( ".mirror-pills [data-axis], .cb-mirror-axis" ), ...uiElement( "settings-modal" ).querySelectorAll( ".mirror-pills [data-axis]" ) ] ) {
 		const on = pill.dataset.axis === "h"
 			? mirrored === "horizontal" || mirrored === "both"
@@ -349,10 +349,10 @@ function toggleMirrorAxis( axis ) {
 	setMirrored( h && v ? "both" : h ? "horizontal" : v ? "vertical" : "off" );
 }
 
-document.addEventListener( "click", ( e ) => {
-	const pill = e.target.closest( ".mirror-pills [data-axis], .cb-mirror-axis" );
-	if ( pill ) toggleMirrorAxis( pill.dataset.axis );
-} );
+// Direct listeners travel with the controls into the separate Settings document.
+for ( const pill of document.querySelectorAll( ".mirror-pills [data-axis], .cb-mirror-axis" ) ) {
+	pill.addEventListener( "click", () => toggleMirrorAxis( pill.dataset.axis ) );
+}
 
 function setMirrored( value, save = true ) {
 	mirrored = normalizeMirror( value );
@@ -1646,7 +1646,9 @@ function voiceMiss( words ) {
 
 // "Prompter, what can I say?": every command on a card, until the next
 // command, Close or Esc. Tabs stay open while the speaker reads them.
-function showVoiceHelp() {
+let voiceHelpGeneration = 0;
+export async function showVoiceHelp() {
+	const generation = ++voiceHelpGeneration;
 	let card = uiElement( "voice-help" );
 	if ( !card ) {
 		card = document.createElement( "div" );
@@ -1671,11 +1673,16 @@ function showVoiceHelp() {
 	renderHelpTabs( uiElement( "voice-help-list" ), voiceHelpTabs( settings ), "voice-help" );
 	card.classList.remove( "hidden" );
 	clearTimeout( showVoiceHelp.timer );
+	await showPanelWindow( "voicehelp", card );
+	if ( generation !== voiceHelpGeneration || card.classList.contains( "hidden" ) ) hidePanelWindow( "voicehelp" );
+	else card.lastElementChild?.focus( { preventScroll: true } );
 }
 
 function hideVoiceHelp() {
+	voiceHelpGeneration++;
 	clearTimeout( showVoiceHelp.timer );
 	uiElement( "voice-help" )?.classList.add( "hidden" );
+	hidePanelWindow( "voicehelp" );
 }
 
 document.addEventListener( "keydown", ( e ) => {
@@ -2959,6 +2966,7 @@ window.electron.onMenuSettings( openSettings );
 window.electron.onUtilityPanelClose( ( kind, quit ) => {
 	if ( kind === "settings" ) requestCloseSettings( quit ? () => window.electron.windowControl( "close" ) : null );
 	if ( kind === "help" ) closeHelp();
+	if ( kind === "voicehelp" ) hideVoiceHelp();
 } );
 window.electron.getSettings();
 // --- Layout: margins, line spacing, alignment, edge fade ---
@@ -4951,7 +4959,7 @@ const LAYOUT_TITLES = { layout: "Layout", reading: "Reading", recording: "Record
 		if ( el.tagName === "H4" ) continue;
 		if ( el.tagName === "H5" ) tab = LAYOUT_GROUP_TABS[el.textContent.trim()] ?? "layout";
 		if ( el.classList.contains( "lp-actions" ) ) continue;
-		el.dataset.view = el.classList.contains( "lp-hint" ) ? "layout" : tab;
+		el.dataset.view = el.classList.contains( "lp-hint" ) || el.classList.contains( "lp-mirror-row" ) ? "layout" : tab;
 	}
 }
 let layoutView = "layout";
@@ -4996,6 +5004,10 @@ function borrowLayoutPanel() {
 		// The margins note and Reset layout belong with the spacing.
 		const spacing = el.classList.contains( "lp-hint" ) || el.classList.contains( "lp-actions" );
 		el.classList.remove( "lp-off" );
+		if ( el.classList.contains( "lp-mirror-row" ) ) {
+			uiElement( "set-mirror-host" ).append( el );
+			continue;
+		}
 		const id = el.dataset.settingsControl ?? el.querySelector( "input[id], select[id]" )?.id;
 		const destination = [ "lp-font", "lp-heading-font", "lp-heading-scale" ].includes( id ) ? "reading" : id === "lp-theme" ? "background" : [ "lp-marker", "lp-sentence", "lp-progress" ].includes( id ) ? "aids" : id === "lp-pinned" ? "display" : id === "lp-summary" ? "recording" : spacing ? "layout" : tab;
 		( layoutHosts[destination] ?? layoutHost ).append( el );

@@ -265,7 +265,11 @@ The whole workflow is in the guide:
   scrolling. Apply stays open; Save & close, Cancel and native Close preserve
   the existing draft checks. Quitting with a Settings draft asks before
   discarding it. Opening the same window again keeps the draft and brings it
-  forward. Both windows are capture-protected and stay above the prompter.
+  forward. Both stay above the prompter and follow **Hide from capture**.
+- **Movable voice-command help:** “Prompter, what can I say?” opens a separate
+  window with a draggable title bar, saved geometry and stable grouped tabs.
+- **Mirroring in one Settings topic:** **Appearance > Screens** holds both
+  beam-splitter toggles. The toolbar mirrors stay available and in sync.
 - **Visible slider labels:** Speed/Response, Text size and Background remain
   identifiable at a glance. On-air BG identifies the background used on air;
   tooltips explain the controls.
