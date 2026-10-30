@@ -2,6 +2,10 @@
 
 ## The Layout panel
 
+**Edit**, immediately left of **Tools** on the toolbar, opens the current
+script's editor. Samples open as read-only source. **Tools** opens below its
+button, with its edges kept inside the window.
+
 The top toolbar has separate **left/right** and **top/bottom** mirror icons.
 Each stays lit while its axis is on; click again to turn it off. Both can be
 on together. The Layout and Reading toggles, keyboard and remote controls

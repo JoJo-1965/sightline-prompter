@@ -7,6 +7,8 @@ RC3 adds compatibility reporting with plugin 0.1.9; older candidates do not
 show the plugin's reported version in Settings.
 RC4 adds persistent labels to the toolbar sliders. It uses the same 0.1.9 plugin.
 RC5 adds eye-position locking and independent head-outline width/height.
+RC6 adds toolbar Edit beside Tools, a dropdown anchored to Tools, and Settings
+centred on opening and window resize. The matching plugin remains 0.1.9.
 
 The public app remains **1.0.6**. The candidate and plugin are private test builds.
 

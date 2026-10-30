@@ -248,6 +248,9 @@ The whole workflow is in the guide:
 - **Control bar** that hides while you read: nine slots, restart, play/pause,
   On air, speed, size, backing, independent mirror-axis icons and explicit Steady/Voice switching. Tools,
   Settings and Help stay reachable on narrow windows.
+- **Edit beside Tools** for direct script/source access; the Tools dropdown
+  follows its toolbar button and stays within the window edges, including
+  mirrored views. Settings opens centred on both axes and recentres on resize.
 - **Visible slider labels:** Speed/Response, Text size and Background remain
   identifiable at a glance. On-air BG identifies the background used on air;
   tooltips explain the controls.

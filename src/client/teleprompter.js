@@ -3343,6 +3343,7 @@ function syncControls() {
 	}
 	syncLayoutPanel();
 	syncVoicePanel();
+	positionToolsPanel();
 }
 
 function panelOpen() {
@@ -3415,6 +3416,7 @@ onClick( "cb-restart", goToStart );
 onClick( "cb-play", toggleAutoScrollSession );
 onClick( "cb-on-air", toggleOnAir );
 onClick( "cb-mode", () => window.electron.saveSettings( { scrollMode: settings.scrollMode === "voice" ? "steady" : "voice" } ) );
+onClick( "cb-edit", toggleEditMode );
 onClick( "cb-tools", () => {
 	renderTools();
 	togglePanel( "tools-panel" );
@@ -3500,6 +3502,21 @@ window.electron.onNotice( text => showTransientHint( text, 2500 ) );
 
 const appMenu = document.getElementById( "app-menu" );
 
+function positionToolsPanel() {
+	const panel = field( "tools-panel" );
+	if ( !panel || panel.classList.contains( "hidden" ) ) return;
+	const edge = 8;
+	const top = controlBar.offsetHeight + 6;
+	const anchor = field( "cb-tools" ).getBoundingClientRect();
+	const anchorLeft = mirrored === "horizontal" || mirrored === "both" ? window.innerWidth - anchor.right : anchor.left;
+	const left = Math.max( edge, Math.min( anchorLeft, window.innerWidth - panel.offsetWidth - edge ) );
+	panel.style.left = `${ left }px`;
+	panel.style.right = "auto";
+	panel.style.top = `${ top }px`;
+	panel.style.maxHeight = `${ Math.max( 0, window.innerHeight - top - edge ) }px`;
+}
+window.addEventListener( "resize", () => requestAnimationFrame( positionToolsPanel ) );
+
 function togglePanel( id ) {
 	const panel = document.getElementById( id );
 	if ( !panel ) return;
@@ -3512,6 +3529,7 @@ function togglePanel( id ) {
 		syncControls();
 	}
 	showControls();
+	if ( id === "tools-panel" ) positionToolsPanel();
 }
 
 // Closes any open panel or menu; returns true if something was open.
@@ -3872,12 +3890,13 @@ field( "tools-panel" )?.addEventListener( "keydown", ( e ) => {
 // its title to anywhere in the window. Each remembers where it was left;
 // double-click the title to put it back. ---
 
-function makeMovable( box, handle, key ) {
+function makeMovable( box, handle, key, { centreOnOpen = false } = {} ) {
 	if ( !box || !handle ) return;
 	const storeKey = `moved:${ key }`;
 	let at = { x: 0, y: 0 };
 	try {
-		at = { ...at, ...JSON.parse( localStorage.getItem( storeKey ) ) };
+		if ( centreOnOpen ) localStorage.removeItem( storeKey );
+		else at = { ...at, ...JSON.parse( localStorage.getItem( storeKey ) ) };
 	} catch {
 		// first time: where it normally sits
 	}
@@ -3897,6 +3916,7 @@ function makeMovable( box, handle, key ) {
 		}
 	};
 	const save = () => {
+		if ( centreOnOpen ) return;
 		try {
 			localStorage.setItem( storeKey, JSON.stringify( at ) );
 		} catch {
@@ -3935,7 +3955,7 @@ function makeMovable( box, handle, key ) {
 		save();
 	} );
 	place();
-	window.addEventListener( "resize", keepInView );
+	if ( !centreOnOpen ) window.addEventListener( "resize", keepInView );
 
 	// The whole box inside the window when it opens and when the window
 	// changes size: a place it was dragged to on a bigger screen may not fit
@@ -3957,12 +3977,19 @@ function makeMovable( box, handle, key ) {
 		place();
 	};
 	const shown = box.closest( ".modal" ) ?? box;
-	new MutationObserver( () => requestAnimationFrame( fit ) ).observe( shown, { attributes: true, attributeFilter: [ "class" ] } );
-	window.addEventListener( "resize", () => requestAnimationFrame( fit ) );
+	const centreAndFit = () => {
+		if ( centreOnOpen ) {
+			at = { x: 0, y: 0 };
+			place();
+		}
+		fit();
+	};
+	new MutationObserver( () => requestAnimationFrame( centreAndFit ) ).observe( shown, { attributes: true, attributeFilter: [ "class" ] } );
+	window.addEventListener( "resize", () => requestAnimationFrame( centreAndFit ) );
 	new ResizeObserver( () => requestAnimationFrame( fit ) ).observe( box );
 }
 
-makeMovable( document.querySelector( "#settings-modal .settings-content" ), document.querySelector( "#settings-modal .settings-head h3" ), "settings" );
+makeMovable( document.querySelector( "#settings-modal .settings-content" ), document.querySelector( "#settings-modal .settings-head h3" ), "settings", { centreOnOpen: true } );
 makeMovable( document.getElementById( "layout-panel" ), document.querySelector( "#layout-panel > h4" ), "layout" );
 makeMovable( document.getElementById( "voice-panel" ), document.querySelector( "#voice-panel > h4" ), "voice" );
 

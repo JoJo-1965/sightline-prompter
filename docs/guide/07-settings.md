@@ -135,6 +135,15 @@ connection steps, or [Setting up your AI](10-setting-up-your-ai.md) for automati
 
 ## Tools and Files
 
+The toolbar's **Edit** button sits immediately left of **Tools**. It opens the
+script editor, or read-only sample source with **Save a copy…**.
+**Tools** drops down beneath its button and shifts inward at the window edge.
+It follows the button when the window size or mirror mode changes.
+
+Settings opens centred horizontally and vertically each time. You can drag
+its title while it is open; reopening it or resizing the window recentres it.
+The panel keeps the same dimensions across topics, within the available space.
+
 **Tools** holds Sound check, the head guide and fullscreen/restore, Keeper,
 Scrap, quick display/voice panels, the control pad and the control window.
 Quick panels reuse the existing live controls rather than separate copies.

@@ -232,10 +232,17 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 RC2 refreshed its bundled help and added the reusable acceptance samples.
 **1.0.7-rc.3** adds compatibility reporting with private Stream Deck **0.1.9**;
 **1.0.7-rc.4** keeps the toolbar sliders labelled at every supported width;
-**1.0.7-rc.5** adds eye-anchored head-outline fitting. The latest
+**1.0.7-rc.5** adds eye-anchored head-outline fitting;
+**1.0.7-rc.6** improves toolbar access and centres Settings on opening. The latest
 published app remains **1.0.6**. No tag, merge, Marketplace publication or
 website deployment is part of this candidate.
 
+- **Edit beside Tools:** a labelled toolbar button opens the editor or read-only
+  sample source. Tools opens beneath its own button, staying within the window
+  edges and following changes to window size and mirror mode.
+- **Centred Settings:** opens in the horizontal and vertical centre each time,
+  and recentres on window resize. Drag it aside while open; old saved offsets
+  no longer move the next opening away from the centre.
 - **Fit the head guide around fixed eyes:** **Adjust > Lock eye position**
   stops accidental dragging or nudging. Independent **Width** and **Height**
   controls reshape Actual position around both fixed eye marks. Save as ideal

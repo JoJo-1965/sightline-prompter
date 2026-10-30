@@ -151,6 +151,24 @@ try {
 	await evaluate( "document.getElementById('cb-menu').click();document.querySelector('#app-menu [data-menu-label=\"Settings…\"]').click()" );
 	await until( "!document.getElementById('settings-modal').classList.contains('hidden')" );
 	await evaluate( "document.getElementById('settings-close').click()" );
+	await evaluate( "document.getElementById('cb-settings').click()" );
+	await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
+	const centred = () => evaluate( "(()=>{const r=document.querySelector('.settings-content').getBoundingClientRect();return Math.abs(r.x+r.width/2-innerWidth/2)<1&&Math.abs(r.y+r.height/2-innerHeight/2)<1;})()" );
+	assert.equal( await centred(), true, "Settings opens centred on both axes" );
+	const settingsDrag = await evaluate( "(()=>{const r=document.querySelector('.settings-head h3').getBoundingClientRect();return {x:r.x+30,y:r.y+r.height/2};})()" );
+	await send( "Input.dispatchMouseEvent", { type: "mousePressed", ...settingsDrag, button: "left", clickCount: 1 } );
+	await send( "Input.dispatchMouseEvent", { type: "mouseMoved", x: settingsDrag.x + 45, y: settingsDrag.y + 35, button: "left", buttons: 1 } );
+	await send( "Input.dispatchMouseEvent", { type: "mouseReleased", x: settingsDrag.x + 45, y: settingsDrag.y + 35, button: "left", clickCount: 1 } );
+	assert.equal( await centred(), false, "Settings can still be dragged while open" );
+	await evaluate( "document.getElementById('settings-close').click();document.getElementById('cb-settings').click()" );
+	await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
+	assert.equal( await centred(), true, "Reopening clears a previous drag offset" );
+	await send( "Emulation.setDeviceMetricsOverride", { width: 560, height: 500, deviceScaleFactor: 1, mobile: false } );
+	await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
+	assert.equal( await centred(), true, "Settings recentres on a smaller viewport" );
+	await send( "Emulation.clearDeviceMetricsOverride" );
+	await evaluate( "document.getElementById('settings-close').click()" );
+	console.log( "PASS: Settings opens and reopens centred horizontally/vertically, still drags, and recentres on resize." );
 	for ( const [ axis, h, v ] of [ [ "h", true, false ], [ "v", true, true ], [ "h", false, true ], [ "v", false, false ] ] ) {
 		await evaluate( `document.getElementById('cb-mirror-${ axis }').click()` );
 		await until( `document.getElementById('cb-mirror-h').getAttribute('aria-pressed')==='${ h }' && document.getElementById('cb-mirror-v').getAttribute('aria-pressed')==='${ v }'` );
@@ -163,6 +181,23 @@ try {
 	await until( "!document.getElementById('tools-panel').classList.contains('hidden')" );
 	assert.equal( await evaluate( "document.getElementById('cb-play').classList.contains('playing')" ), false );
 	assert.ok( await evaluate( "document.getElementById('tools-panel').textContent.includes('Head guide / unlock')" ) );
+	for ( const width of [ 1100, 900, 560 ] ) {
+		await send( "Emulation.setDeviceMetricsOverride", { width, height: 760, deviceScaleFactor: 1, mobile: false } );
+		await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
+		const placement = await evaluate( "(()=>{const p=document.getElementById('tools-panel').getBoundingClientRect();const b=document.getElementById('cb-tools').getBoundingClientRect();const bar=document.getElementById('control-bar').getBoundingClientRect();return {left:p.left,right:p.right,top:p.top,bottom:p.bottom,width:p.width,barBottom:bar.bottom,expectedLeft:Math.max(8,Math.min(b.left,innerWidth-p.width-8))};})()" );
+		assert.ok( Math.abs( placement.left - placement.expectedLeft ) < 1 && placement.top >= placement.barBottom && placement.left >= 8 && placement.right <= width - 8 && placement.bottom <= 752, `Tools must follow its button and fit at ${ width }px` );
+	}
+	await send( "Emulation.clearDeviceMetricsOverride" );
+	await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
+	for ( const axis of [ "h", "v", "h", "v" ] ) {
+		await evaluate( `document.getElementById('cb-mirror-${ axis }').click()` );
+		const attached = await evaluate( "(()=>{const p=document.getElementById('tools-panel').getBoundingClientRect(),b=document.getElementById('cb-tools').getBoundingClientRect(),bar=document.getElementById('control-bar').getBoundingClientRect();const vertical=document.getElementById('cb-mirror-v').getAttribute('aria-pressed')==='true';return p.left<=b.left&&p.right>=b.right&&p.left>=8&&p.right<=innerWidth-8&&(vertical?p.bottom<=bar.top:p.top>=bar.bottom);})()" );
+		assert.equal( attached, true, "Tools must stay attached to its button in every mirror mode" );
+	}
+	const toolsClip = await evaluate( "(()=>{const p=document.getElementById('tools-panel').getBoundingClientRect();const x=Math.max(0,p.left-8);return {x,y:0,width:Math.min(innerWidth-x,p.width+16),height:Math.min(innerHeight,p.bottom+8),scale:1};})()" );
+	const toolsAnchorShot = await send( "Page.captureScreenshot", { format: "png", clip: toolsClip } );
+	await fs.writeFile( path.join( artifacts, "tools-menu-anchor.png" ), Buffer.from( toolsAnchorShot.result.data, "base64" ) );
+	console.log( "PASS: Tools opens below its toolbar button and stays within three viewport widths while resizing." );
 	await evaluate( "document.activeElement.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowDown',bubbles:true}))" );
 	assert.ok( await evaluate( "document.activeElement.textContent.includes('Head guide')" ) );
 	await evaluate( "document.getElementById('tools-panel').dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}))" );
@@ -320,9 +355,9 @@ try {
 	await until( "document.getElementById('cb-speed-label').textContent==='Speed'&&document.getElementById('cb-backing-label').textContent==='Background'" );
 	console.log( "PASS: visible slider labels at four window widths, including voice Response and on-air Background state." );
 	await send( "Emulation.setDeviceMetricsOverride", { width: 700, height: 760, deviceScaleFactor: 1, mobile: false } );
-	assert.equal( await evaluate( "['cb-menu','cb-tools','cb-settings','cb-help','cb-mirror-h','cb-mirror-v'].every(id=>{const r=document.getElementById(id).getBoundingClientRect();return r.width>0&&r.left>=0&&r.right<=innerWidth;})" ), true );
+	assert.equal( await evaluate( "['cb-menu','cb-edit','cb-tools','cb-settings','cb-help','cb-mirror-h','cb-mirror-v'].every(id=>{const r=document.getElementById(id).getBoundingClientRect();return r.width>0&&r.left>=0&&r.right<=innerWidth;})" ), true );
 	await send( "Emulation.setDeviceMetricsOverride", { width: 560, height: 760, deviceScaleFactor: 1, mobile: false } );
-	assert.equal( await evaluate( "['cb-menu','cb-tools','cb-settings','cb-help','cb-mirror-h','cb-mirror-v'].every(id=>{const r=document.getElementById(id).getBoundingClientRect();return r.width>0&&r.left>=0&&r.right<=innerWidth;})" ), true );
+	assert.equal( await evaluate( "['cb-menu','cb-edit','cb-tools','cb-settings','cb-help','cb-mirror-h','cb-mirror-v'].every(id=>{const r=document.getElementById(id).getBoundingClientRect();return r.width>0&&r.left>=0&&r.right<=innerWidth;})" ), true );
 	await send( "Emulation.clearDeviceMetricsOverride" );
 	for ( const [ label, file ] of [ [ "Spacing and mirror…", "layout-panel.png" ], [ "Text and colour…", "reading-panel.png" ], [ "Take display…", "recording-panel.png" ] ] ) {
 		await evaluate( `document.getElementById('cb-tools').click();[...document.querySelectorAll('#tools-panel button')].find(b=>b.textContent.includes(${ JSON.stringify( label ) })).click()` );
@@ -583,7 +618,8 @@ try {
 	console.log( "PASS: module handover flushes the old recording before loading the new script." );
 	await evaluate( "window.electron.openSample('voice-and-stops.md')" );
 	await until( "document.getElementById('md').textContent.includes('Voice')" );
-	await evaluate( "document.getElementById('cb-menu').click();document.querySelector('#app-menu [data-menu-label=\"Edit script\"]').click()" );
+	assert.equal( await evaluate( "document.getElementById('cb-tools').previousElementSibling.id" ), "cb-edit" );
+	await evaluate( "document.getElementById('cb-edit').click()" );
 	await until( "document.querySelector('#editor .cm-content')?.getAttribute('aria-readonly')==='true'" );
 	assert.equal( await evaluate( "document.activeElement === document.querySelector('#editor .cm-content')" ), true, "read-only source stays keyboard-focusable for selection and copying" );
 	assert.equal( await evaluate( "document.getElementById('btn-save').disabled" ), true );
@@ -601,7 +637,7 @@ try {
 	await until( "!document.body.classList.contains('editing')" );
 	await fetch( automation.url + "/open", { method: "POST", headers: { Authorization: `Bearer ${ automation.token }`, "Content-Type": "application/json" }, body: JSON.stringify( { path: secondScript } ) } );
 	await until( "document.getElementById('md').textContent.includes('Module two')" );
-	await evaluate( "document.getElementById('cb-menu').click();document.querySelector('#app-menu [data-menu-label=\"Edit script\"]').click()" );
+	await evaluate( "document.getElementById('cb-edit').click()" );
 	await until( "document.querySelector('#editor .cm-content')?.getAttribute('aria-readonly')==='false'" );
 	await send( "Input.insertText", { text: "An editable original script" } );
 	assert.equal( await evaluate( "document.querySelector('#editor .cm-content').textContent.includes('An editable original script')" ), true );

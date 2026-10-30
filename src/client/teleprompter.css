@@ -1031,6 +1031,11 @@ body.controls-hidden * {
 	-webkit-app-region: no-drag;
 }
 
+#tools-panel {
+	box-sizing: border-box;
+	width: min(380px, calc(100vw - 16px));
+}
+
 .panel h4 {
 	margin: 0 0 6px;
 	font-size: 13px;
