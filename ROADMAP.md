@@ -18,6 +18,8 @@ RC2 refreshed the documentation and added reusable acceptance samples.
 the matching private Stream Deck plugin **0.1.9**. Unsupported actions and
 known protocol/minimum-version mismatches are blocked; legacy versions stay
 unconfirmed rather than being described as up to date.
+**1.0.7-rc.4** retains compact labels above every visible toolbar slider,
+including Response in voice mode and the on-air background state.
 The latest published app is still **1.0.6**. Work remains on
 `codex/obs-integration`; no merge, tag, public release, Marketplace submission
 or website deployment is authorised by preparing or testing this candidate.

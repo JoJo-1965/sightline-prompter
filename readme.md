@@ -230,10 +230,14 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 **Local Windows acceptance build:** RC1 established the feature baseline;
 RC2 refreshed its bundled help and added the reusable acceptance samples.
-**1.0.7-rc.3** adds compatibility reporting with private Stream Deck **0.1.9**. The latest
+**1.0.7-rc.3** adds compatibility reporting with private Stream Deck **0.1.9**;
+**1.0.7-rc.4** keeps the toolbar sliders labelled at every supported width. The latest
 published app remains **1.0.6**. No tag, merge, Marketplace publication or
 website deployment is part of this candidate.
 
+- **Labelled toolbar sliders:** compact labels stay above every visible slider:
+  **Speed** (or **Response** in voice mode), **Text size**, and **Background**
+  (**On-air BG** when on air). Narrow windows keep the labels too.
 - **Safer script slots:** Clear this slot asks for confirmation, naming the slot
   and script, with Cancel selected. The saved script stays on disk.
 - **Samples in the editor:** Edit script opens sample source in a labelled

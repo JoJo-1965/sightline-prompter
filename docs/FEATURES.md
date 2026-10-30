@@ -248,6 +248,9 @@ The whole workflow is in the guide:
 - **Control bar** that hides while you read: nine slots, restart, play/pause,
   On air, speed, size, backing, independent mirror-axis icons and explicit Steady/Voice switching. Tools,
   Settings and Help stay reachable on narrow windows.
+- **Visible slider labels:** Speed/Response, Text size and Background remain
+  identifiable at a glance. On-air BG identifies the background used on air;
+  tooltips explain the controls.
 - **Files menu (☰)** for scripts, recordings, edit packs, settings-file
   import/export, a labelled Settings entry and Quit, with shortcuts shown. Recording helpers and quick
   adjustments live under Tools.

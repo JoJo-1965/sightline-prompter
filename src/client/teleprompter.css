@@ -980,10 +980,19 @@ body.controls-hidden * {
 }
 
 .cb-slider {
-	display: flex;
+	display: grid;
+	grid-template-columns: auto auto;
 	align-items: center;
-	gap: 5px;
+	column-gap: 5px;
+	row-gap: 0;
 	color: #bdbdbd;
+}
+
+.cb-slider > span:not(.slider-with-box) {
+	grid-column: 1 / -1;
+	font-size: 10px;
+	line-height: 12px;
+	white-space: nowrap;
 }
 
 .cb-slider input[type="range"] {
@@ -1568,12 +1577,7 @@ body.editing #cb-progress-text {
 	opacity: 0;
 }
 
-/* Narrow windows (eye-line strip): drop labels, then the less-used controls. */
-@media (max-width: 1470px) {
-	.cb-slider > span:not(.slider-with-box) {
-		display: none;
-	}
-}
+/* Keep every visible slider's label, including in narrow eye-line windows. */
 
 /* The sliders keep working without their number boxes; the panels have them. */
 @media (max-width: 1360px) {

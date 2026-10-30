@@ -305,6 +305,20 @@ try {
 	await evaluate( "document.getElementById('settings-close').click()" );
 	assert.equal( await evaluate( "document.activeElement.id" ), "cb-settings" );
 	await pictureOf( "#control-bar", "control-bar.png" );
+	for ( const width of [ 1100, 900, 700, 560 ] ) {
+		await send( "Emulation.setDeviceMetricsOverride", { width, height: 760, deviceScaleFactor: 1, mobile: false } );
+		assert.equal( await evaluate( "[...document.querySelectorAll('.cb-slider')].filter(s=>s.getBoundingClientRect().width>0).every(s=>{const label=s.querySelector(':scope > span:not(.slider-with-box)');const r=label.getBoundingClientRect();return label.textContent.trim().length>0&&r.width>0&&r.height>0&&r.left>=0&&r.right<=innerWidth&&getComputedStyle(label).visibility==='visible';})" ), true, `Visible sliders need visible labels at ${ width }px` );
+	}
+	await send( "Emulation.clearDeviceMetricsOverride" );
+	await evaluate( "document.getElementById('cb-mode').click()" );
+	await until( "document.getElementById('cb-speed-label').textContent==='Response'" );
+	assert.equal( await evaluate( "document.getElementById('cb-speed').closest('label').title.startsWith('Voice response:')" ), true );
+	await evaluate( "document.getElementById('cb-on-air').click()" );
+	await until( "document.getElementById('cb-backing-label').textContent==='On-air BG'" );
+	await pictureOf( "#control-bar", "control-bar-voice-on-air.png" );
+	await evaluate( "document.getElementById('cb-on-air').click();document.getElementById('cb-mode').click()" );
+	await until( "document.getElementById('cb-speed-label').textContent==='Speed'&&document.getElementById('cb-backing-label').textContent==='Background'" );
+	console.log( "PASS: visible slider labels at four window widths, including voice Response and on-air Background state." );
 	await send( "Emulation.setDeviceMetricsOverride", { width: 700, height: 760, deviceScaleFactor: 1, mobile: false } );
 	assert.equal( await evaluate( "['cb-menu','cb-tools','cb-settings','cb-help','cb-mirror-h','cb-mirror-v'].every(id=>{const r=document.getElementById(id).getBoundingClientRect();return r.width>0&&r.left>=0&&r.right<=innerWidth;})" ), true );
 	await send( "Emulation.setDeviceMetricsOverride", { width: 560, height: 760, deviceScaleFactor: 1, mobile: false } );

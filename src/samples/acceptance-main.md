@@ -6,7 +6,7 @@
 
 [Check OBS is connected and recording controls are allowed. Prepare the recorded slate, choose Flash and beep, and enable scratch audio. The script does not enable these settings for you.]
 
-[A00. Before recording, choose Check compatibility in Settings > Controls > Stream Deck. Confirm Sightline RC3 and plugin 0.1.9 are reported as compatible. In Stream Deck, open a key's settings and check its connection result.]
+[A00. Before recording, choose Check compatibility in Settings > Controls > Stream Deck. Confirm Sightline RC4 and plugin 0.1.9 are reported as compatible. In Stream Deck, open a key's settings and check its connection result.]
 
 [A00b. Before recording, open Settings from Files, then close it. Check both toolbar mirror icons independently and return them off. Switch Help tabs: the frame should stay still. In a spare slot, open a sample and choose Edit script: its source is read-only with Save a copy. Try Clear this slot, then Cancel: the sample should remain. Return to this acceptance script.]
 

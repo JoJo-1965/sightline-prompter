@@ -9,6 +9,12 @@ stay in step with these buttons.
 
 ![Toolbar with independent left/right and top/bottom mirror icons](images/control-bar.png)
 
+Every visible toolbar slider keeps a small label above it: **Speed** in steady
+mode, **Response** in voice mode, **Text size**, and **Background**. **Response**
+sets how quickly voice scrolling follows you. The background label changes
+to **On-air BG** while on air. Hover for more detail. Narrow windows retain
+these labels; the Tools panels provide sliders hidden to make room.
+
 The **Tools** button opens quick adjustments: **Spacing and mirror**
 (**Ctrl+Shift+K**), **Text and colour**, **Take display**, and **Voice and
 microphone**. Changes show straight away. Drag a panel by its title to move
@@ -29,7 +35,7 @@ one copy of each control; closing Settings returns it to the quick panel.
   of the time. Off air the window is solid, like any other; on air the
   backing goes almost clear (7% to start with), so you can see your slides or the
   call behind the words while you read. The control
-  bar's Backing slider changes whichever is in use: its label reads **On air**
+  bar's Background slider changes whichever is in use: its label reads **On-air BG**
   while you are.
 - **Margins** keep the text narrow, so your eyes stay near the camera. The top
   and bottom margins fade the text out near the edges.

@@ -3323,6 +3323,10 @@ function syncControls() {
 		}
 	}
 	speedLabel.textContent = voice ? "Response" : "Speed";
+	speedInput.setAttribute( "aria-labelledby", "cb-speed-label" );
+	speedInput.closest( "label" ).title = voice
+		? "Voice response: how quickly scrolling follows your speech"
+		: "Scroll speed in words per minute (Ctrl+[ and Ctrl+])";
 	speedValue.textContent = voice
 		? formatSpeed( autoScrollSpeed )
 		: `${ settings.steadyWpm } wpm`;
@@ -6059,7 +6063,7 @@ function updateOnAir() {
 	applyBacking();
 	// The bar's Backing slider follows the level in use.
 	const label = document.getElementById( "cb-backing-label" );
-	if ( label ) label.textContent = onAir() ? "On air" : "Backing";
+	if ( label ) label.textContent = onAir() ? "On-air BG" : "Background";
 	if ( opacityInput && document.activeElement !== opacityInput ) opacityInput.value = liveBacking();
 	const button = document.getElementById( "cb-on-air" );
 	button?.classList.toggle( "live", onAir() );
