@@ -17,6 +17,7 @@ RC9 adds optional Windows installer finish choices for offline release notes
 and Getting Started. The matching Stream Deck plugin remains 0.1.9.
 RC10 fixes the phone QR image, gives voice help a movable native window,
 moves mirroring to Screens and honours Hide from capture for helper windows.
+RC11 keeps Settings above the fullscreen prompter and improves OBS button contrast.
 
 The public app remains **1.0.6**. The candidate and plugin are private test builds.
 

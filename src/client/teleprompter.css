@@ -2871,4 +2871,24 @@ body.notes-pages #md ol.current-section {
 }
 #obs-status.hidden { display: none; }
 #obs-status.obs-recording { border-left: 4px solid #ff5252; }
-#obs-status button { font: inherit; cursor: pointer; }
+#obs-status button {
+	min-height: 32px;
+	padding: 5px 10px;
+	border: 1px solid #8391a5;
+	border-radius: 4px;
+	background: #354052;
+	color: #ffffff;
+	font: inherit;
+	opacity: 1;
+	cursor: pointer;
+}
+#obs-status button:hover:not(:disabled) { background: #465772; border-color: #badbff; }
+#obs-status button:active:not(:disabled) { background: #293749; }
+#obs-status button:focus-visible { outline: 2px solid #8fd3ff; outline-offset: 2px; }
+#obs-status button:disabled {
+	background: #262c35;
+	color: #b9c4d2;
+	border-color: #657183;
+	opacity: 1;
+	cursor: not-allowed;
+}

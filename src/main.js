@@ -701,6 +701,7 @@ const createWindow = ( state ) => {
 			} else {
 				win.setAlwaysOnTop( settings.eyeLine || settings.alwaysOnTop, "floating" );
 			}
+			utilityWindows?.restack();
 		}
 		sendWindowState();
 		refreshMenus();

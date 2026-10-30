@@ -8,6 +8,8 @@ In RC8, Settings opens in its own upright window. Drag the native title bar
 to place it beside the prompter or on another screen. Its position and size
 are remembered; opening Settings again brings the same window forward and
 keeps any unsaved draft. **F1 / ?** opens Help in a separate movable window too.
+RC11 keeps these windows above their prompter owner, including fullscreen.
+Opening Settings brings it forward and focuses its controls.
 **“Prompter, what can I say?”** also has its own movable window in RC10.
 Settings, both help windows and Guide adjustments follow **Hide from capture**;
 turn it off to take support screenshots. The head-guide overlay stays protected.

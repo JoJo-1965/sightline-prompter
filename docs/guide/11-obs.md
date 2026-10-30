@@ -50,6 +50,8 @@ Leave **Allow Sightline to start and stop OBS recordings** off for status
 only. Sightline shows whether OBS is recording, paused or stopped, with
 the same information in its control window. A lost connection shows
 **recording status unknown**; it does not claim the recording stopped.
+RC11 gives **Record take** and **Finish recording** explicit dark styles with
+readable disabled labels and a clear keyboard-focus outline.
 
 In **Settings > Controls > OBS recording**, enable recording controls to get **Record take** and **Finish recording**
 beside the script, in the control window and on the phone remote:

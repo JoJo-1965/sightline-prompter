@@ -44,6 +44,7 @@ export function createUtilityWindows( { dir, prompter, getSettings, saveSettings
 			win.show();
 			restack();
 			win.focus();
+			setImmediate( restack );
 		}
 		if ( name === "hide" ) win.hide();
 	};
@@ -81,6 +82,9 @@ export function createUtilityWindows( { dir, prompter, getSettings, saveSettings
 			const kind = kindOf( details.url, details.frameName );
 			if ( !kind ) return;
 			windows.set( kind, win );
+			// A native owner keeps the panel above its prompter even when Windows
+			// promotes the fullscreen owner after an asynchronous window.open.
+			win.setParentWindow( prompter );
 			win.setContentProtection( !!getSettings().hideFromCapture );
 			win.setAlwaysOnTop( true, "screen-saver" );
 			win.on( "focus", () => {

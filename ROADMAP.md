@@ -50,6 +50,8 @@ makes voice-command help movable and applies the capture preference live to
 Settings, both help windows and Guide adjustments. The guide overlay stays protected.
 Both OBS topics now sit together under Controls. Recorded-slate setup explains
 blocked prerequisites and reports its progress and errors in Settings.
+RC11 improves contrast on the OBS status buttons and gives Settings and both
+help windows native ownership so they stay above the fullscreen prompter.
 
 The [acceptance walkthrough](docs/guide/14-acceptance-test.md) and two bundled
 sample scripts cover natural voice, physical Stream Deck controls, stops,

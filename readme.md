@@ -239,10 +239,16 @@ separate guide-background opacity;
 **1.0.7-rc.8** also makes Settings and F1 Help independent movable windows;
 **1.0.7-rc.9** adds optional offline reading at the end of Windows installation;
 **1.0.7-rc.10** fixes the phone QR image, makes voice help movable, puts
-mirroring under Screens and honours capture preferences for helper windows.
+mirroring under Screens and honours capture preferences for helper windows;
+**1.0.7-rc.11** improves OBS button contrast and keeps Settings above the prompter.
 The latest published app remains **1.0.6**. No tag, merge, Marketplace publication or
 website deployment is part of this candidate.
 
+- **Settings opens above prompting:** native ownership keeps Settings and both
+  help windows above the prompter, including when reopening in fullscreen.
+- **Readable OBS controls:** Record take and Finish recording have dark
+  backgrounds, clear outlines and readable text when enabled or disabled,
+  with a visible keyboard-focus ring.
 - **OBS settings together:** **Controls > OBS connection** and **OBS recording**
   sit alongside the other integrations. **Prepare recorded slate** explains
   why it is unavailable, then shows progress, readiness or an error in Settings.

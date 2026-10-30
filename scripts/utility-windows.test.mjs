@@ -105,6 +105,17 @@ try {
 	await fs.writeFile( path.join( artifacts, "phone-settings.png" ), Buffer.from( phonePicture.data, "base64" ) );
 	await main.evaluate( "window.electron.getPhoneInfo()" );
 	const native = await connect( "main-process" );
+	const panelOwners = () => native.evaluate( "(()=>{const {BrowserWindow}=process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron');const main=BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().includes('teleprompter.html'));return BrowserWindow.getAllWindows().filter(w=>w.webContents.getURL().includes('utility-window.html')).map(w=>({url:w.webContents.getURL(),owner:w.getParentWindow()?.id===main.id,top:w.isAlwaysOnTop(),focused:w.isFocused()}));})()" );
+	await main.evaluate( "window.electron.windowControl('fullscreen')" );
+	await settings.evaluate( "document.getElementById('settings-close').click()" );
+	await main.evaluate( "document.getElementById('cb-settings').click()" );
+	await pause( 150 );
+	const ownedSettings = ( await panelOwners() ).find( w => w.url.includes( "panel=settings" ) );
+	assert.equal( ownedSettings.owner, true, "Native ownership keeps Settings above the fullscreen prompter" );
+	assert.equal( ownedSettings.top, true );
+	assert.equal( ownedSettings.focused, true, "Reopening Settings brings it forward and focuses it" );
+	await main.evaluate( "window.electron.windowControl('fullscreen')" );
+	console.log( "PASS: Settings reopens above the fullscreen prompter with native ownership and focus." );
 	const protection = () => native.evaluate( "process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron').BrowserWindow.getAllWindows().map(w=>({url:w.webContents.getURL(),protected:w.isContentProtected()}))" );
 	assert.equal( ( await protection() ).find( w => w.url.includes( "panel=settings" ) ).protected, false, "Settings is capturable when Hide from capture is off" );
 	console.log( "PASS: phone QR decodes in the native Settings window and opens its real remote." );
@@ -195,6 +206,7 @@ try {
 	await main.evaluate( "(async()=>{const {showVoiceHelp}=await import('./teleprompter.js');await showVoiceHelp();})()" );
 	const voiceHelp = await connect( "panel=voicehelp" );
 	await voiceHelp.until( "!!document.querySelector('#voice-help-list [role=tab]')" );
+	assert.ok( ( await panelOwners() ).every( w => w.owner && w.top ), "Settings and both help windows stay above their prompter owner" );
 	assert.equal( await voiceHelp.evaluate( "typeof window.electron" ), "undefined" );
 	const voiceBounds = await voiceHelp.evaluate( "({x:window.screenX,y:window.screenY})" );
 	await voiceHelp.evaluate( "window.moveTo(window.screenX+60,window.screenY+30)" );

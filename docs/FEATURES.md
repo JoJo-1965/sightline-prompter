@@ -272,6 +272,9 @@ The whole workflow is in the guide:
   beam-splitter toggles. The toolbar mirrors stay available and in sync.
 - **OBS connection and recording together under Controls:** recorded-slate
   preparation shows prerequisites, progress, readiness and errors in Settings.
+- **Clear OBS button states:** dark controls with readable enabled/disabled
+  labels and a visible focus outline. Settings and help stay above their
+  prompter owner, including fullscreen.
 - **Visible slider labels:** Speed/Response, Text size and Background remain
   identifiable at a glance. On-air BG identifies the background used on air;
   tooltips explain the controls.
