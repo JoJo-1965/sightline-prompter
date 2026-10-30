@@ -160,8 +160,14 @@ try {
 	await evaluate( "document.activeElement.dispatchEvent(new KeyboardEvent('keydown',{key:'Tab',bubbles:true}))" );
 	assert.equal( await evaluate( "document.activeElement.id" ), "settings-close" );
 	const visited = await evaluate( "(()=>{const results=[];for(const group of document.querySelectorAll('.settings-tabs button')){group.click();for(const topic of [...document.querySelectorAll('.settings-subtabs button')].filter(b=>!b.hidden)){topic.click();const page=document.getElementById(topic.getAttribute('aria-controls'));results.push({name:topic.dataset.tab,visible:page.getClientRects().length>0,fields:page.querySelectorAll('fieldset').length,one:[...document.querySelectorAll('[data-settings-page]')].filter(p=>p.getClientRects().length).length===1});}}return results;})()" );
-	assert.equal( visited.length, 16 );
+	assert.equal( visited.length, 18 );
 	assert.ok( visited.every( page => page.visible && page.fields && page.one ), JSON.stringify( visited ) );
+	const semantics = await evaluate( "(()=>{const root=document.querySelector('.settings-content');return {unlabelled:[...root.querySelectorAll('input,select,textarea')].filter(e=>!e.getAttribute('aria-label')&&!e.getAttribute('aria-labelledby')&&![...(e.labels??[])].some(l=>l.textContent.trim())).map(e=>e.id||e.className),nested:root.querySelectorAll('label button,label input~input').length,oldCaption:root.textContent.includes('How this works'),colourScheme:getComputedStyle(root).colorScheme,interactiveTooltips:document.querySelectorAll('.settings-explanation a,.settings-explanation button').length};})()" );
+	assert.deepEqual( semantics.unlabelled, [], "Every settings control needs an accessible name" );
+	assert.equal( semantics.nested, 0, "Help and number buttons must not be nested inside control labels" );
+	assert.equal( semantics.oldCaption, false );
+	assert.equal( semantics.colourScheme, "dark" );
+	assert.equal( semantics.interactiveTooltips, 0, "Links and actions stay outside non-interactive tooltips" );
 	async function checkSettingsFit( width, height ) {
 		await send( "Emulation.setDeviceMetricsOverride", { width, height, deviceScaleFactor: 1, mobile: false } );
 		await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
@@ -173,6 +179,8 @@ try {
 				const fit = await evaluate( "(()=>{const b=document.querySelector('.settings-content'),r=b.getBoundingClientRect(),f=b.querySelector('.settings-actions').getBoundingClientRect(),p=b.querySelector('[data-settings-page]:not([hidden])');return {width:r.width,height:r.height,top:r.top,bottom:r.bottom,overflow:b.scrollHeight-b.clientHeight,footer:Math.abs(f.bottom-r.bottom)<=1,topic:p.dataset.settingsPage,page:b.querySelector('.settings-pagination [role=status]').textContent,next:b.querySelector('.settings-pagination').getClientRects().length&&!b.querySelector('.settings-pagination button:last-child').disabled};})()" );
 				assert.ok( fit.height <= 560 && fit.top >= 0 && fit.bottom <= height && fit.overflow <= 1 && fit.footer, JSON.stringify( { width, height, ...fit } ) );
 				assert.ok( Math.abs( fit.width - frame.width ) <= 1 && Math.abs( fit.height - frame.height ) <= 1, `Settings must keep the same size across every topic and page: ${ JSON.stringify( { frame, fit } ) }` );
+				const outside = await evaluate( "(()=>{const b=document.querySelector('.settings-content').getBoundingClientRect();return [...document.querySelector('[data-settings-page]:not([hidden])').querySelectorAll('input,select,button,textarea')].filter(e=>e.getClientRects().length).filter(e=>{const r=e.getBoundingClientRect();return r.left<b.left-1||r.right>b.right+1||r.top<b.top-1||r.bottom>b.bottom+1;}).map(e=>e.id||e.className);})()" );
+				assert.deepEqual( outside, [], `Settings controls must stay inside the panel: ${ entry.name }` );
 				if ( !fit.next ) break;
 				assert.ok( n < 29, "Settings pages must end" );
 				await evaluate( "document.querySelector('.settings-pagination button:last-child').click()" );
@@ -201,7 +209,37 @@ try {
 	await send( "Input.dispatchKeyEvent", { type: "keyDown", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 } );
 	await send( "Input.dispatchKeyEvent", { type: "keyUp", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 } );
 	assert.equal( await evaluate( "document.querySelectorAll('.settings-explanation:popover-open').length" ), 0 );
+	const helpSize = await evaluate( "(()=>{const b=document.querySelector('#settings-page-commands .settings-help-button'),r=b.getBoundingClientRect(),p=b.firstElementChild.getBoundingClientRect();return {hit:[r.width,r.height],pill:[p.width,p.height],insideLabel:!!b.closest('label')};})()" );
+	assert.deepEqual( helpSize.hit, [ 24, 24 ] );
+	assert.deepEqual( helpSize.pill, [ 17, 12 ] );
+	assert.equal( helpSize.insideLabel, false );
+	await evaluate( "document.getElementById('settings-topic-audio').click()" );
+	await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
+	const scratchBefore = await evaluate( "document.getElementById('set-scratch-audio').checked" );
+	await evaluate( "document.querySelector('[data-settings-control=set-scratch-audio] .settings-help-button span').click()" );
+	assert.equal( await evaluate( "document.querySelectorAll('.settings-explanation:popover-open').length" ), 1 );
+	assert.equal( await evaluate( "document.getElementById('set-scratch-audio').checked" ), scratchBefore );
+	await evaluate( "document.querySelector('[data-settings-control=set-scratch-audio] .settings-help-button span').click();document.getElementById('settings-topic-scrolling').click();document.getElementById('set-countdown').focus()" );
+	await send( "Input.dispatchKeyEvent", { type: "keyDown", key: "ArrowUp", code: "ArrowUp", windowsVirtualKeyCode: 38 } );
+	await send( "Input.dispatchKeyEvent", { type: "keyUp", key: "ArrowUp", code: "ArrowUp", windowsVirtualKeyCode: 38 } );
+	assert.equal( await evaluate( "document.getElementById('settings-applied').textContent" ), "Unsaved changes" );
+	await evaluate( "document.getElementById('set-countdown').value='0'" );
+	console.log( "PASS: labelled controls, dark native controls, 24px help targets, miniature pills, isolated checkbox help and trusted-input draft feedback." );
 	assert.equal( await evaluate( "document.getElementById('settings-modal').classList.contains('hidden')" ), false );
+	const portBefore = await evaluate( "document.getElementById('set-remote-port').value" );
+	await evaluate( "document.getElementById('set-remote-port').value='70000';document.getElementById('settings-topic-about').click();document.getElementById('settings-apply').click()" );
+	await until( "document.activeElement.id==='set-remote-port'" );
+	assert.equal( await evaluate( "document.getElementById('set-remote-port').validity.rangeOverflow" ), true );
+	assert.equal( await evaluate( "document.querySelector('[data-settings-page]:not([hidden])').dataset.settingsPage" ), "remotes" );
+	await evaluate( `document.getElementById('set-remote-port').value=${ JSON.stringify( portBefore ) };document.getElementById('settings-topic-commands').click()` );
+	await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
+	const trigger = await evaluate( "(()=>{const r=document.querySelector('#settings-page-commands .settings-help-button').getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};})()" );
+	await send( "Input.dispatchMouseEvent", { type: "mouseMoved", ...trigger } );
+	await until( "document.querySelectorAll('.settings-explanation:popover-open').length===1" );
+	const tooltipPoint = await evaluate( "(()=>{const r=document.querySelector('.settings-explanation:popover-open').getBoundingClientRect();return {x:r.x+12,y:r.y+12};})()" );
+	await send( "Input.dispatchMouseEvent", { type: "mouseMoved", ...tooltipPoint } );
+	await pause( 220 );
+	assert.equal( await evaluate( "document.querySelectorAll('.settings-explanation:popover-open').length" ), 1, "The explanation must stay open while the pointer is over it" );
 	await evaluate( "document.querySelector('#settings-page-commands .settings-help-button').click()" );
 	assert.equal( await evaluate( "document.querySelectorAll('.settings-explanation:popover-open').length" ), 1 );
 	const helpClip = await evaluate( "(()=>{const b=document.querySelector('.settings-content').getBoundingClientRect(),p=document.querySelector('.settings-explanation:popover-open').getBoundingClientRect();return {x:Math.min(b.x,p.x),y:Math.min(b.y,p.y),width:Math.max(b.right,p.right)-Math.min(b.x,p.x),height:Math.max(b.bottom,p.bottom)-Math.min(b.y,p.y),scale:1};})()" );
@@ -227,7 +265,7 @@ try {
 	const navigationSaved = JSON.parse( await fs.readFile( path.join( profile, "app-state.json" ), "utf8" ) );
 	assert.equal( navigationSaved.settings.readingLine, lineBefore + 1, "Apply must not overwrite the shared live reading line with an old duplicate" );
 	await evaluate( "document.querySelector('[data-settings-group=prompting]').click();document.getElementById('settings-topic-scrolling').click();document.getElementById('set-countdown').value='0'" );
-	for ( const topic of [ "scrolling", "voice", "commands", "words", "script", "reading", "layout", "display", "recording", "audio", "phone", "streamdeck", "remotes", "obs-recording" ] ) {
+	for ( const topic of [ "scrolling", "voice", "commands", "words", "script", "reading", "background", "aids", "layout", "display", "recording", "audio", "phone", "streamdeck", "remotes", "obs-recording" ] ) {
 		await evaluate( `document.getElementById('settings-topic-${ topic }').click()` );
 		await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
 		await pictureOf( ".settings-content", `settings-${ topic }.png` );

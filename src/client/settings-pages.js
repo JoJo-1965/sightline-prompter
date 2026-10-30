@@ -1,3 +1,5 @@
+import { prepareSettingsControls } from "./settings-controls.js";
+
 // Keep settings readable without scrolling or shrinking their text. Longer
 // topics use short pages; the controls themselves never leave their fieldsets.
 export function createSettingsPages( modal ) {
@@ -48,7 +50,7 @@ export function createSettingsPages( modal ) {
 		box.scrollTop = 0;
 		if ( focus ) {
 			const first = pages[index]?.flatMap( item => [ item, ...item.querySelectorAll( "input, select, button, textarea" ) ] )
-				.find( el => el.matches( "input, select, button, textarea" ) && !el.disabled && el.getClientRects().length );
+				.find( el => el.matches( "input, select, button:not(.settings-help-button), textarea" ) && !el.disabled && el.getClientRects().length );
 			first?.focus( { preventScroll: true } );
 		}
 	}
@@ -73,7 +75,7 @@ export function createSettingsPages( modal ) {
 		const items = [];
 		for ( const set of topic.querySelectorAll( "fieldset" ) ) {
 			for ( const el of set.children ) {
-				if ( el.tagName === "LEGEND" || !el.getClientRects().length || !el.getBoundingClientRect().height ) continue;
+				if ( el.tagName === "LEGEND" || el.classList.contains( "settings-live-note" ) || !el.getClientRects().length || !el.getBoundingClientRect().height ) continue;
 				if ( [ "words-list", "command-words-list", "words-suggestions" ].includes( el.id ) && el.children.length ) {
 					items.push( ...[ ...el.children ].filter( row => row.getClientRects().length ) );
 				} else items.push( el );
@@ -114,12 +116,22 @@ export function createSettingsPages( modal ) {
 		if ( n >= 0 && n !== index ) choose( n );
 	} );
 	new MutationObserver( schedule ).observe( box, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: [ "hidden", "class" ] } );
-	return { layout, schedule };
+	return {
+		layout, schedule,
+		reveal( control ) {
+			layout();
+			const n = pages.findIndex( page => page.some( item => item === control || item.contains( control ) ) );
+			if ( n >= 0 ) choose( n );
+			control.focus( { preventScroll: true } );
+		}
+	};
 }
 
 // Contextual explanations stay out of the form until asked for. The same help
 // works with a mouse, keyboard or touch; it never changes the setting's value.
 export function addSettingsHelp( modal ) {
+	prepareSettingsControls( modal );
+	prepareSettingsControls( document.getElementById( "layout-panel" ) );
 	let shown = null;
 	let leaveTimer;
 	const hide = () => {
@@ -129,30 +141,52 @@ export function addSettingsHelp( modal ) {
 		shown.button.setAttribute( "aria-expanded", "false" );
 		shown = null;
 	};
+	const extraHints = [];
 	for ( const [ id, text ] of [
 		[ "set-countdown", "This countdown runs before prompting starts, giving you time to settle and look at the camera. It is separate from pauses written into a script. A zero starts prompting immediately." ],
+		[ "set-wake-word", "Say the wake word, leave a brief beat, then finish your command within four seconds. For example: Prompter, section one. Your choice applies the next time listening starts." ],
 		[ "set-voice-speed", "Responsiveness changes how quickly the display catches up with recognised speech. Increase it if the text lags; reduce it if movement feels abrupt. It does not change your target speaking pace or microphone sensitivity." ],
-		[ "set-directions", "Delivery notes such as [smile] and [point] guide your performance. They stay out of speech tracking, word counts and timing. Hiding a direction still keeps any quoted words that you are meant to read aloud." ]
+		[ "set-directions", "Delivery notes such as [smile] and [point] guide your performance. They stay out of speech tracking, word counts and timing. Hiding a direction still keeps any quoted words that you are meant to read aloud." ],
+		[ "lp-bg-opacity", "The saved background level while off air. Switching ON AIR uses Background on air instead. Higher percentages give a more opaque background; lower percentages reveal more of the window behind Sightline." ],
+		[ "lp-backing-on-air", "The saved background level while ON AIR is enabled. A low percentage lets you see more of your camera preview, slides or call through the prompting window." ],
+		[ "lp-heading-scale", "Scales titles and section headings relative to their usual size. Reduce this if headings take up too much room after increasing the size of the words you read." ],
+		[ "lp-heading-font", "Choose a separate font for titles and section headings. Same as the text follows your body font; choosing another font changes the headings while keeping the body font you selected." ],
+		[ "lp-hide-capture", "Asks supported capture tools to exclude the prompter. Whole-screen and third-party capture can behave differently, so make a short test recording to check the result. The head guide has its own capture protection." ],
+		[ "lp-click-through", "Mouse clicks pass to the application behind Sightline. Use Ctrl+Shift+X to turn click-through off again, or use the control window or Stream Deck." ],
+		[ "lp-points", "Show speaking notes one page at a time. H1 headings or {page} divide pages; H2 headings are points within a page. Next and Back change pages instead of scrolling through a script." ]
 	] ) {
-		const control = modal.querySelector( `#${ id }` );
+		const control = document.getElementById( id );
 		if ( !control ) continue;
 		const hint = document.createElement( "p" );
 		hint.className = "field-hint";
 		hint.textContent = text;
-		control.closest( "label" ).after( hint );
+		control.closest( "[data-settings-control]" ).after( hint );
+		extraHints.push( hint );
 	}
 	let count = 0;
-	for ( const hint of modal.querySelectorAll( "fieldset > p.field-hint:not([id])" ) ) {
-		if ( hint.textContent.trim().length < 85 || hint.classList.contains( "voice-deepgram-only" ) ) continue;
+	const panels = new Map();
+	for ( const hint of new Set( [ ...modal.querySelectorAll( "fieldset > p.field-hint:not([id])" ), ...extraHints ] ) ) {
+		if ( hint.textContent.trim().length < 85 || hint.classList.contains( "voice-deepgram-only" ) || hint.hasAttribute( "data-essential" ) || hint.querySelector( "a, button, input, select" ) ) continue;
 		const set = hint.closest( "fieldset" );
 		const previous = hint.previousElementSibling;
-		const source = previous?.matches( "label" ) ? previous.cloneNode( true ) : null;
-		for ( const el of source?.querySelectorAll( "select, input" ) ?? [] ) el.remove();
-		const label = source?.textContent.trim().replace( /\s+/g, " " ) ?? set.querySelector( "legend" ).textContent;
+		const control = previous?.querySelector( "input[id], select[id]" );
+		const anchor = previous?.querySelector( ".settings-option-name" ) ?? ( previous?.matches( "h4, h5" ) ? previous : set?.querySelector( "legend" ) );
+		if ( !anchor ) continue;
+		const label = anchor.querySelector( "label" )?.textContent.trim().replace( /\s+/g, " " ) ?? anchor.textContent.trim();
+		const paragraph = document.createElement( "p" );
+		paragraph.append( ...hint.childNodes );
+		if ( panels.has( anchor ) ) {
+			panels.get( anchor ).append( paragraph );
+			hint.remove();
+			continue;
+		}
 		const button = document.createElement( "button" );
 		button.type = "button";
 		button.className = "settings-help-button";
-		button.textContent = "?";
+		const pill = document.createElement( "span" );
+		pill.textContent = "?";
+		pill.setAttribute( "aria-hidden", "true" );
+		button.append( pill );
 		button.setAttribute( "aria-label", `Help: ${ label }` );
 		button.setAttribute( "aria-expanded", "false" );
 		const panel = document.createElement( "div" );
@@ -160,13 +194,13 @@ export function addSettingsHelp( modal ) {
 		panel.className = "settings-explanation";
 		panel.setAttribute( "popover", "manual" );
 		panel.setAttribute( "role", "tooltip" );
-		panel.append( ...hint.childNodes );
+		panel.append( paragraph );
 		button.setAttribute( "aria-controls", panel.id );
 		button.setAttribute( "aria-describedby", panel.id );
-		const caption = document.createElement( "span" );
-		caption.textContent = "How this works";
-		hint.className = "settings-help-anchor";
-		hint.append( button, caption );
+		if ( control ) control.setAttribute( "aria-describedby", [ control.getAttribute( "aria-describedby" ), panel.id ].filter( Boolean ).join( " " ) );
+		anchor.append( button );
+		panels.set( anchor, panel );
+		hint.remove();
 		modal.append( panel );
 		const open = () => {
 			clearTimeout( leaveTimer );
@@ -193,7 +227,7 @@ export function addSettingsHelp( modal ) {
 			open();
 			shown.pinned = true;
 		} );
-		hint.addEventListener( "mouseleave", leave );
+		button.addEventListener( "mouseleave", leave );
 		panel.addEventListener( "mouseenter", () => clearTimeout( leaveTimer ) );
 		panel.addEventListener( "mouseleave", leave );
 		button.addEventListener( "blur", hide );
@@ -205,7 +239,7 @@ export function addSettingsHelp( modal ) {
 		hide();
 	}, true );
 	modal.addEventListener( "click", ( event ) => {
-		if ( shown && event.target !== shown.button && !shown.panel.contains( event.target ) ) hide();
+		if ( shown && !shown.button.contains( event.target ) && !shown.panel.contains( event.target ) ) hide();
 	} );
 	window.addEventListener( "resize", hide );
 	new MutationObserver( hide ).observe( modal, { attributes: true, attributeFilter: [ "class" ] } );

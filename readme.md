@@ -222,6 +222,8 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ### Next release
 
+- **Settings usability audit (development):** approved miniature ? pills sit beside the option they explain, with a larger tap target and hover, keyboard and click support. Appearance now separates Text, Background, Reading aids, Spacing and Screens. Standard dark controls, explicit labels, immediate-save notes, Unsaved changes feedback and Save & close make behaviour clearer. Invalid numbers return to their field for correction; cue-file changes now trigger the unsaved-changes warning. See the [audit](docs/SETTINGS-UX-AUDIT.md).
+
 - **Credits in one place (development):** copyright and attribution appear on the About page. Open it from Help > About or Settings > About > Credits and licence. Repeated menu footers and the duplicate Settings credit have been removed.
 
 - **Clearer navigation (development):** Settings has five groups with focused subtabs: Prompting, Appearance, Recording, Controls and About. The panel keeps a consistent width and height across every tab and page; longer topics and word lists use Previous/Next instead of scrolling. Contextual (?) help works with hover, keyboard focus and a tap or click. Files (☰) handles scripts, recordings and import/export; Tools holds recording tools and quick adjustments. The top bar keeps live controls, with explicit Steady/Voice switching. Duplicate file buttons and Display preferences have been removed; native menus retain keyboard access. Tabs support arrows and Home/End, Settings keeps focus inside, and Escape returns focus to the opener

@@ -14,7 +14,8 @@ There is no scrolling. Longer topics use **Previous / Next**, with the current
 section and page number shown between them. Smaller windows use more pages;
 your draft stays intact as you move between them. Word lists use pages too.
 
-Hover over **(?)**, focus it with the keyboard, or tap/click it for an
+The small raised **?** pill sits beside the option it explains, with a larger
+tap area. Hover over it, focus it with the keyboard, or tap/click it for an
 explanation of the nearby choice. Click again, click elsewhere, or press
 **Esc** to dismiss it. When an explanation is open, the first Esc closes
 that explanation and leaves Settings open. The explanation can be hovered
@@ -31,9 +32,11 @@ without disappearing as you move the pointer onto it.
 | | Commands | When to listen for commands and which wake word to use |
 | | Your words | Script synonyms, command synonyms, sound-alike matching, suggestions and Teach |
 | | Script | Notes mode, pacing, script directions, slide cues and directive display |
-| **Appearance** | Text & colour | Text size, backing on/off air, opacity, brightness, fonts, themes and reading aids |
-| | Spacing | Margins, line spacing, heading size, reading line, alignment and mirror axes |
-| | Screens | Prompter monitor, Keep on top and the eye-line strip |
+| **Appearance** | Text | Body and heading fonts, heading size and text-size preview |
+| | Background | Text opacity, backing on/off air, brightness and colour theme |
+| | Reading aids | Focus band, text edge, reading-line marker, sentence highlight and progress bar |
+| | Spacing | Margins, line spacing, reading line, alignment and mirror axes |
+| | Screens | Prompter monitor, Keep on top, eye-line strip and keeping controls visible |
 | **Recording** | Takes | Slate, ON AIR display, countdown beep, capture protection and click-through |
 | | Audio | Scratch audio, loudness per take and keeping the sound-check meter visible |
 | | OBS connection | Enable OBS, address, port, protected password and the saved-connection test |
@@ -47,16 +50,21 @@ OBS settings stay discoverable while disabled so you can configure them.
 Recording commands in Help and the live recording controls still follow the
 permissions you have enabled. The head guide is independent of OBS.
 
-## Apply, Save and Cancel
+## Apply, Save & close and Cancel
 
 - **Apply** saves your changes and keeps Settings open.
-- **Save** saves and closes.
+- **Save & close** saves and closes.
 - **Cancel**, **×** and **Esc** close without saving the pending draft.
 
 If there are unsaved changes, closing offers **Save**, **Discard** or
-**Keep editing**. Shared live controls in Spacing, Text & colour, Takes and
-Script say that changes apply straight away; cancelling the draft keeps
-those live changes. Text-size preview is restored when cancelled.
+**Keep editing**. Shared live controls show **Saved immediately as you adjust**;
+cancelling the draft keeps those changes. The text-size preview has its own
+**Preview until Apply or Save & close** note and is restored when cancelled.
+
+The footer shows **Unsaved changes** when you edit the pending draft and
+**Saved** after Apply. Clearing or choosing a slide-cue file also counts as a
+pending change. Invalid numbers return you to the relevant topic and page,
+with the field focused and its permitted range explained.
 
 Changing group or topic never applies or discards the draft. Settings remembers
 the last topic used, and returning to a group recalls its last topic during

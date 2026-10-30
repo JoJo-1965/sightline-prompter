@@ -7,8 +7,9 @@ The **Tools** button opens quick adjustments: **Spacing and mirror**
 microphone**. Changes show straight away. Drag a panel by its title to move
 it out of the way; double-click the title to recentre it.
 
-Settings reuses these controls under **Appearance > Spacing**, **Appearance >
-Text & colour**, **Recording > Takes** and **Prompting > Script**. There is
+Settings reuses these controls in **Appearance** under **Text**, **Background**,
+**Reading aids**, **Spacing** and **Screens**, plus **Recording > Takes** and
+**Prompting > Script**. There is
 one copy of each control; closing Settings returns it to the quick panel.
 
 ![The Layout panel](images/layout-panel.png)
@@ -57,9 +58,10 @@ one copy of each control; closing Settings returns it to the quick panel.
 
 ![Window, monitor and eye-line settings under Appearance > Screens](images/settings-display.png)
 
-Window and monitor placement, Keep on top and the eye-line strip. Text and
-backing are in **Appearance > Text & colour**; the reading line, highlights
-and mirroring are in **Appearance > Spacing**. Delivery directions are in
+Window and monitor placement, Keep on top and the eye-line strip. Fonts and
+heading size are in **Appearance > Text**; backing and colours are in
+**Appearance > Background**. Highlights are in **Appearance > Reading aids**;
+the reading line and mirroring are in **Appearance > Spacing**. Delivery directions are in
 **Prompting > Script**.
 
 ## Mirroring

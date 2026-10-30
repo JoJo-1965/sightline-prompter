@@ -7,8 +7,11 @@ Settings. The top bar keeps live controls and Steady/Voice switching; native
 menus retain standard platform access. Keyboard tab navigation, visible focus,
 modal focus containment and focus return are covered by app checks. Settings
 keeps a consistent width and height without scrolling: longer topics and word lists use labelled
-Previous/Next pages. Contextual (?) explanations support hover, keyboard and
-touch, with Escape to dismiss. See the
+Previous/Next pages. Small raised ? pills beside options support hover,
+keyboard and touch, with Escape to dismiss. Appearance separates Text,
+Background, Reading aids, Spacing and Screens. Immediate-save controls are
+labelled; pending changes show Unsaved changes, with Apply and Save & close.
+See the
 [Settings map](guide/07-settings.md).
 
 The development guide includes [From recording to the editor](guide/12-production-handover.md):

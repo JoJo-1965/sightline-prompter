@@ -295,5 +295,5 @@ Otherwise it's the sentence on the reading line.
 
 ![The sentence on the reading line, highlighted](images/running.png)
 
-Turn it off or on in **Settings > Appearance > Spacing**, or the quick panel
+Turn it off or on in **Settings > Appearance > Reading aids**, or the quick panel
 at **Tools > Spacing and mirror**.

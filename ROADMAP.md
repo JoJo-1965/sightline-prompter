@@ -29,6 +29,13 @@ and growing word lists use labelled Previous/Next pages instead of scrolling.
 Contextual (?) help supports hover, keyboard focus and touch. App checks cover
 every topic at 1100×900 and 560×500, paged word lists and help dismissal.
 
+**Settings UI/UX audit:** approved mini help pills are beside their options,
+with 24px tap targets. Appearance has five focused topics; controls have
+explicit labels, dark native styling, visible draft/save feedback and input
+validation that returns to the field needing correction. See the
+[audit and evidence](docs/SETTINGS-UX-AUDIT.md). Manual screen-reader,
+magnification and cross-platform checks remain before claiming conformance.
+
 **Production handover:** the illustrated [session guide](docs/guide/12-production-handover.md)
 now covers setup, framing, a short test, retakes, keeper choices and master-file
 collection. Companion Stream Deck test build **0.1.8** refreshes the key, dial,

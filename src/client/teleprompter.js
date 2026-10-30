@@ -2393,13 +2393,12 @@ function numberValue( id, min, max, fallback ) {
 // Reading and Recording tabs apply as you go, so they don't count.
 let settingsDirty = false;
 let afterSettingsClose = null;
-const LIVE_TABS = "#set-layout-host, #set-reading-host, #set-recording-host, #set-script-host";
+const LIVE_TABS = "#set-layout-host, #set-reading-host, #set-background-host, #set-aids-host, #set-display-host, #set-recording-host, #set-script-host";
 
 function markSettingsDirty( event ) {
 	if ( !event.isTrusted || event.target.closest( LIVE_TABS ) ) return;
 	if ( !event.target.matches( "input, select, textarea" ) ) return;
-	settingsDirty = true;
-	field( "settings-applied" ).textContent = "";
+	wordsChanged();
 }
 
 // Each step of opening Settings goes in sightline.log, so if it freezes, the
@@ -2421,6 +2420,7 @@ async function openSettings() {
 	settingsDirty = false;
 	field( "settings-unsaved" )?.classList.add( "hidden" );
 	if ( field( "settings-applied" ) ) field( "settings-applied" ).textContent = "";
+	field( "settings-applied" )?.removeAttribute( "data-pending" );
 	field( "set-scroll-mode" ).value = settings.scrollMode ?? "steady";
 	field( "set-steady-wpm" ).value = settings.steadyWpm;
 	field( "set-countdown" ).value = settings.countdown;
@@ -2562,7 +2562,8 @@ let teachingWord = false;
 
 function wordsChanged() {
 	settingsDirty = true;
-	field( "settings-applied" ).textContent = "";
+	field( "settings-applied" ).textContent = "Unsaved changes";
+	field( "settings-applied" ).dataset.pending = "true";
 }
 
 function addWordRow( word = "", heard = [] ) {
@@ -2793,6 +2794,14 @@ field( "command-words-add" ).addEventListener( "click", () => {
 } );
 
 async function saveSettingsPage( close = true ) {
+	const invalid = [ ...settingsModal.querySelectorAll( "input, select, textarea" ) ]
+		.find( control => !control.disabled && control.willValidate && !control.checkValidity() );
+	if ( invalid ) {
+		showSettingsTab( invalid.closest( "[data-settings-page]" ).dataset.settingsPage );
+		settingsPages.reveal( invalid );
+		invalid.reportValidity();
+		return false;
+	}
 	if ( !await obsUi.save() ) return false;
 	window.electron.saveSettings( {
 		scrollMode: field( "set-scroll-mode" ).value === "voice" ? "voice" : "steady",
@@ -2867,6 +2876,7 @@ async function saveSettingsPage( close = true ) {
 	settingsSnapshot = { fontSize, opacity };
 	field( "set-deepgram-key" ).value = "";
 	field( "settings-applied" ).textContent = "Saved";
+	field( "settings-applied" ).removeAttribute( "data-pending" );
 	return true;
 }
 
@@ -2880,6 +2890,7 @@ if ( settingsModal ) {
 	);
 	field( "set-cues-clear" ).addEventListener( "click", () => {
 		field( "set-cues-file" ).value = "";
+		wordsChanged();
 	} );
 	field( "settings-save" ).addEventListener( "click", () => saveSettingsPage( true ) );
 	field( "settings-apply" ).addEventListener( "click", () => saveSettingsPage( false ) );
@@ -2914,7 +2925,10 @@ if ( settingsModal ) {
 }
 
 window.electron.onCuesFileChosen( ( filePath ) => {
-	if ( filePath ) field( "set-cues-file" ).value = filePath;
+	if ( filePath ) {
+		field( "set-cues-file" ).value = filePath;
+		wordsChanged();
+	}
 } );
 window.electron.onMenuSettings( openSettings );
 window.electron.getSettings();
@@ -4799,7 +4813,7 @@ window.electron.onPhoneInfo( ( info ) => {
 	if ( info.error ) status.textContent = `Not running: ${ info.error }`;
 	else if ( info.running )
 		status.textContent = "On. Scan the code with your phone.";
-	else status.textContent = "Off. Tick the box and Save to turn it on.";
+	else status.textContent = "Off. Tick the box, then Apply or Save & close.";
 } );
 onClick( "set-phone-new", () => window.electron.newPhoneKey() );
 
@@ -4834,6 +4848,9 @@ const layoutHost = document.getElementById( "set-layout-host" );
 const layoutHosts = {
 	layout: layoutHost,
 	reading: document.getElementById( "set-reading-host" ),
+	background: document.getElementById( "set-background-host" ),
+	aids: document.getElementById( "set-aids-host" ),
+	display: document.getElementById( "set-display-host" ),
 	recording: document.getElementById( "set-recording-host" ),
 	script: document.getElementById( "set-script-host" )
 };
@@ -4888,11 +4905,19 @@ function borrowLayoutPanel() {
 	);
 	let tab = "layout";
 	for ( const el of layoutBorrowed ) {
-		if ( el.tagName === "H5" ) tab = el.textContent.trim() === "Script" ? "script" : LAYOUT_GROUP_TABS[el.textContent.trim()] ?? "layout";
+		if ( el.tagName === "H5" ) {
+			const heading = el.textContent.trim();
+			tab = { Opacity: "background", "Reading aids": "aids", Script: "script" }[heading] ?? LAYOUT_GROUP_TABS[heading] ?? "layout";
+		}
 		// The margins note and Reset layout belong with the spacing.
 		const spacing = el.classList.contains( "lp-hint" ) || el.classList.contains( "lp-actions" );
 		el.classList.remove( "lp-off" );
-		( layoutHosts[spacing ? "layout" : tab] ?? layoutHost ).append( el );
+		const id = el.dataset.settingsControl ?? el.querySelector( "input[id], select[id]" )?.id;
+		const destination = [ "lp-font", "lp-heading-font", "lp-heading-scale" ].includes( id ) ? "reading" : id === "lp-theme" ? "background" : [ "lp-marker", "lp-sentence", "lp-progress" ].includes( id ) ? "aids" : id === "lp-pinned" ? "display" : id === "lp-summary" ? "recording" : spacing ? "layout" : tab;
+		( layoutHosts[destination] ?? layoutHost ).append( el );
+	}
+	for ( const id of [ "lp-font", "lp-heading-font", "lp-heading-scale" ] ) {
+		layoutHosts.reading.append( field( id ).closest( "[data-settings-control]" ) );
 	}
 	field( "lp-done" )?.classList.add( "hidden" );
 	syncControls();

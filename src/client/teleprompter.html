@@ -357,7 +357,7 @@
         <li>A local API for AI agents, and a take log for the edit</li>
         <li>Steady scrolling, a countdown, and a progress bar</li>
         <li>A live control bar, a Files menu and grouped recording Tools</li>
-        <li>Settings groups and subtabs, with keyboard navigation and visible focus</li>
+        <li>Settings grouped by task, with inline help, keyboard navigation and visible focus</li>
         <li>Nine script slots that each remember their place</li>
         <li>Layout controls: margins, spacing, reading line, eye-line</li>
         <li>Word, PDF, Google Docs, rich and plain-text scripts</li>
@@ -802,26 +802,40 @@
         </fieldset>
 
         <fieldset data-tab="layout" id="set-layout-host">
-          <legend>Layout</legend>
-          <p class="field-hint">Changes here show straight away, so you can see them on the script. Cancel doesn't undo them.</p>
+          <legend>Spacing and alignment</legend>
+          <p class="settings-live-note">Saved immediately as you adjust.</p>
         </fieldset>
 
         <fieldset data-tab="reading" id="set-reading-host">
-          <legend>Reading</legend>
-          <p class="field-hint">Changes here show straight away, so you can see them on the script. Cancel doesn't undo them.</p>
+          <legend>Fonts and headings</legend>
+          <p class="settings-live-note">Saved immediately as you adjust.</p>
+        </fieldset>
+
+        <fieldset data-tab="background" id="set-background-host">
+          <legend>Text and background visibility</legend>
+          <p class="settings-live-note">Saved immediately as you adjust.</p>
+        </fieldset>
+        <fieldset data-tab="aids" id="set-aids-host">
+          <legend>Reading aids</legend>
+          <p class="settings-live-note">Saved immediately as you adjust.</p>
+        </fieldset>
+        <fieldset data-tab="display" id="set-display-host">
+          <legend>Control bar</legend>
+          <p class="settings-live-note">Saved immediately as you adjust.</p>
         </fieldset>
 
         <fieldset data-tab="recording" id="set-recording-host">
           <legend>Recording</legend>
-          <p class="field-hint">Changes here show straight away, so you can see them on the script. Cancel doesn't undo them.</p>
+          <p class="settings-live-note">Saved immediately as you adjust.</p>
         </fieldset>
         <fieldset data-tab="script" id="set-script-host">
           <legend>Script behaviour</legend>
-          <p class="field-hint">Changes here show straight away. Open, edit and save scripts from the Files menu (☰).</p>
+          <p class="settings-live-note">Saved immediately as you adjust.</p>
         </fieldset>
 
         <fieldset data-tab="reading">
           <legend>Text size</legend>
+          <p class="field-hint" data-essential>Preview until Apply or Save &amp; close.</p>
           <label class="row"
             >Text size
             <input
@@ -870,6 +884,7 @@
           <div class="row file-row">
             <input
               id="set-cues-file"
+              aria-label="Slide cues file"
               type="text"
               readonly
               placeholder="No cues.yaml chosen"
@@ -932,7 +947,7 @@
             <input id="set-remote-port" type="number" min="1024" max="65535" step="1" />
           </label>
           <div class="row file-row">
-            <input id="set-remote-token" type="password" readonly />
+            <input id="set-remote-token" type="password" readonly aria-label="Local API access token" />
             <button id="set-remote-copy" type="button">Copy token</button>
             <button id="set-remote-new" type="button">New token</button>
           </div>
@@ -1003,11 +1018,11 @@
           <p class="field-hint">In OBS 28 or later: Tools &gt; WebSocket Server Settings. Enable its server and authentication. No additional OBS plugin is needed. Use 127.0.0.1 for OBS on this computer. Remote connections use unencrypted WebSocket: use a trusted network. The password is kept separately using your operating system's protected storage.</p>
           <p id="set-obs-status" role="status" aria-live="polite">OBS disabled</p>
           <button type="button" id="set-obs-test">Test saved connection</button>
-          <p class="field-hint">Apply changes before testing. Recording permissions and the recorded slate are in Recording > OBS recording.</p>
+          <p class="field-hint" data-essential>Apply changes before testing. Recording permissions and the recorded slate are in Recording > OBS recording.</p>
         </fieldset>
         <fieldset data-tab="obs-recording">
           <legend>OBS recording and sync</legend>
-          <p class="field-hint">Connect OBS in Recording > OBS connection first. These permissions apply when OBS integration is enabled.</p>
+          <p class="field-hint" data-essential>Connect OBS in Recording > OBS connection first. These permissions apply when OBS integration is enabled.</p>
           <label class="check"><input id="set-obs-controls" type="checkbox" /> Allow Sightline to start and stop OBS recordings</label>
           <p class="field-hint">Leave this off for status only. Normal Play, Pause, Again and On air do not start or stop OBS. Record take waits for OBS to confirm recording before starting the prompter.</p>
           <label class="check"><input id="set-obs-markers" type="checkbox" /> Send section starts and named markers as OBS chapters</label>
@@ -1031,7 +1046,6 @@
             <button type="button" id="settings-about-support">☕ Support Sightline</button>
           </p>
           <p class="field-hint">Sightline is free. If it helps you, you can say thanks with a coffee in Joanne's tip jar.</p>
-          <p class="field-hint">Optional OBS controls work alongside your camera preview. The floating guide compares a saved ideal head position with a manually adjusted actual position. Find setup and grouped shortcuts in Help and the user guide.</p>
           <p class="field-hint" id="settings-about-update" aria-live="polite"></p>
           <label class="check"
             ><input id="set-check-updates" type="checkbox" /> Check for updates when
@@ -1062,7 +1076,7 @@
           <span id="settings-applied" class="settings-applied" aria-live="polite"></span>
           <button id="settings-cancel" type="button">Cancel</button>
           <button id="settings-apply" type="button" title="Save without closing">Apply</button>
-          <button id="settings-save" type="button" class="primary" title="Save and close">Save</button>
+          <button id="settings-save" type="button" class="primary" title="Save and close">Save &amp; close</button>
         </div>
       </div>
     </div>

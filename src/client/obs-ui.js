@@ -48,7 +48,7 @@ export function createObsUi( { getSettings, canStart, onStart, onFinish, onChang
 		finish.disabled = !ready || ![ "recording", "paused" ].includes( state.recording );
 		start.hidden = finish.hidden = !state.controls;
 		field( "prepare-slate" ).disabled = !ready || !getSettings().obsRecordedSlate || state.recording !== "stopped";
-		field( "slate-status" ).textContent = !getSettings().obsRecordedSlate ? "Recorded slate off" : getSettings().slate === "off" ? "Choose Flash or Flash and beep in Settings > Scrolling > Slate" : state.recordedSlate?.ready ? "Recorded slate source ready · verify the recorded file before a session" : "Prepare the source in this OBS scene before recording";
+		field( "slate-status" ).textContent = !getSettings().obsRecordedSlate ? "Recorded slate off" : getSettings().slate === "off" ? "Choose Flash or Flash and beep in Settings > Recording > Takes" : state.recordedSlate?.ready ? "Recorded slate source ready · verify the recorded file before a session" : "Prepare the source in this OBS scene before recording";
 	}
 	function receive( next ) {
 		state = next;
