@@ -2,6 +2,8 @@
 
 30 October 2026 · OBS development branch · implemented and checked locally.
 
+[View the screenshot gallery](guide/settings-gallery.md).
+
 The review covered finding settings, understanding their effects, saving and
 cancelling changes, keyboard operation, contextual help and visual consistency.
 The panel keeps its agreed 660 × 560 size, reducing only to fit a smaller
