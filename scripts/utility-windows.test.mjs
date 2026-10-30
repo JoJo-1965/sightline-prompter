@@ -372,7 +372,7 @@ try {
 		const {ipcMain}=process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron');
 		globalThis.speechTest={starts:0,ack:true,sender:null,session:null};
 		for(const name of ['speechStart','speechAudio','speechStop'])ipcMain.removeAllListeners(name);
-		ipcMain.on('speechStart',(event,options)=>{const t=globalThis.speechTest;t.starts++;t.sender=event.sender;t.session=options.session;if(t.starts>1)t.ack=true;event.sender.send('speechState',{type:'ready',session:t.session});});
+		ipcMain.on('speechStart',(event,options)=>{const t=globalThis.speechTest;t.starts++;t.sender=event.sender;t.session=options.session;if(t.starts>1)t.ack=true;if(!t.defer)event.sender.send('speechState',{type:'ready',session:t.session});});
 		ipcMain.on('speechAudio',()=>{const t=globalThis.speechTest;if(t.ack)t.sender.send('speechState',{type:'health',session:t.session});});
 		return true;
 	})()` );
@@ -421,6 +421,18 @@ try {
 	const stoppedStarts = await native.evaluate( "speechTest.starts" );
 	await pause( 1500 );
 	assert.equal( await native.evaluate( "speechTest.starts" ), stoppedStarts );
+	await native.evaluate( "speechTest.defer=true" );
+	await main.evaluate( "(()=>{globalThis.cancelledListener=listenerModule.startAutoScroll({engine:'local',scriptEl:document.getElementById('md'),followScript:false}).then(()=>null,e=>e.message);return true;})()" );
+	for ( let n = 0; n < 50 && await native.evaluate( "speechTest.starts" ) === stoppedStarts; n++ ) await pause( 100 );
+	const staleSession = await native.evaluate( "speechTest.session" );
+	await main.evaluate( "listenerModule.stopAutoScroll()" );
+	assert.equal( await main.evaluate( "cancelledListener" ), "Listening was cancelled.", "Stopping during startup cancels promptly without waiting for the startup timeout" );
+	await native.evaluate( "speechTest.defer=false" );
+	await main.evaluate( "(async()=>{globalThis.lastListenerStates=[];globalThis.lastListener=await listenerModule.startAutoScroll({engine:'local',scriptEl:document.getElementById('md'),followScript:false,onStatus:s=>lastListenerStates.push(s.type)});})()" );
+	await native.evaluate( `speechTest.sender.send('speechState',{type:'error',message:'Old session event',session:${ staleSession }})` );
+	await pause( 200 );
+	assert.equal( await main.evaluate( "listenerModule.isActive() && !lastListenerStates.includes('error')" ), true, "Late messages from cancelled sessions cannot stop the replacement listener" );
+	await main.evaluate( "listenerModule.stopAutoScroll()" );
 	await main.evaluate( "Promise.all(virtualCaptures.map(c=>c.close()));delete navigator.mediaDevices.getUserMedia" );
 	console.log( "PASS: real audio-worklet pipeline with generated silent-route audio; silence stays healthy, worker stall recovers, hold/position persist, mute/off stay off and a changed wake word works immediately." );
 	assert.deepEqual( errors, [] );

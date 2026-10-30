@@ -256,6 +256,8 @@ website deployment is part of this candidate.
   listening-off stay respected. **Prompting > Commands** shows state and
   Restart listening; its optional command-word trace is off by default.
   Applying a wake-word change updates an already-running listener too.
+  Stopping during startup cancels cleanly; late messages from the old
+  listener cannot stop its replacement.
 - **Comment appearance:** **Settings > Appearance > Text** has independent
   Comment size and Comment colour controls for `[delivery directions]`.
   Comments follow Heading font; Theme restores the usual colour. Quoted

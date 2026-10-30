@@ -37,6 +37,7 @@ let activeCtx = null;
 let localWords = null;
 let localState = null;
 let localSerial = 0;
+let localOwner = null;
 window.electron?.onSpeechWords?.( heard => localWords?.( heard ) );
 window.electron?.onSpeechState?.( state => localState?.( state ) );
 
@@ -44,8 +45,10 @@ export function isActive() {
 	return activeCtx !== null;
 }
 
-async function openLocal( stream, onWords, onStatus, reset = false ) {
+async function openLocal( stream, onWords, onStatus, reset = false, signal = null ) {
+	if ( signal?.aborted ) throw new Error( "Listening was cancelled." );
 	const session = ++localSerial;
+	localOwner = session;
 	let started = false;
 	let audioAt = Date.now();
 	let engineAt = Date.now();
@@ -54,19 +57,29 @@ async function openLocal( stream, onWords, onStatus, reset = false ) {
 	let blocks;
 	let timeout;
 	let closed = false;
+	let rejectReady;
+	const cancel = () => {
+		rejectReady?.( new Error( "Listening was cancelled." ) );
+		close();
+	};
 	const close = () => {
 		if ( closed ) return;
 		closed = true;
 		clearTimeout( timeout );
-		localWords = null;
-		localState = null;
-		window.electron.speechStop();
+		signal?.removeEventListener( "abort", cancel );
+		if ( localOwner === session ) {
+			localOwner = null;
+			localWords = null;
+			localState = null;
+			window.electron.speechStop( session );
+		}
 		if ( blocks ) blocks.port.onmessage = null;
 		source?.disconnect();
 		audioCtx?.close().catch( () => {} );
 	};
 	try {
 		const ready = new Promise( ( resolve, reject ) => {
+			rejectReady = reject;
 			timeout = setTimeout(
 				() => reject( new Error( "The speech engine didn't start." ) ),
 				20000
@@ -87,6 +100,7 @@ async function openLocal( stream, onWords, onStatus, reset = false ) {
 				}
 			};
 		} );
+		signal?.addEventListener( "abort", cancel, { once: true } );
 		window.electron.speechStart( { session, reset } );
 		await ready;
 
@@ -302,7 +316,7 @@ export async function startAutoScroll( {
 	let held = false; // "Prompter, pause": keep listening, stop following
 
 	let stream;
-	const context = { stream: null, source: null, wordIndex, stopped: false, recovery: null, timer: null };
+	const context = { stream: null, source: null, wordIndex, stopped: false, recovery: null, timer: null, abort: new AbortController() };
 	activeCtx = context;
 	try {
 		stream = await openMic( audioDeviceId, onStatus );
@@ -375,7 +389,7 @@ export async function startAutoScroll( {
 		if ( recovery && ( status.type === "error" || status.type === "closed" ) ) recovery.fail( status.error ?? "speech connection closed" );
 		else onStatus?.( status );
 	};
-	const openSource = reset => engine === "local" ? openLocal( stream, onWords, sourceStatus, reset ) : openDeepgram( deepgramKey, stream, onWords, sourceStatus );
+	const openSource = reset => engine === "local" ? openLocal( stream, onWords, sourceStatus, reset, context.abort.signal ) : openDeepgram( deepgramKey, stream, onWords, sourceStatus );
 	try {
 		source = await openSource( false );
 		if ( context.stopped ) {
@@ -458,6 +472,7 @@ export async function stopAutoScroll() {
 	if ( !activeCtx ) return;
 	const { stream, source } = activeCtx;
 	activeCtx.stopped = true;
+	activeCtx.abort.abort();
 	activeCtx.recovery?.stop();
 	clearInterval( activeCtx.timer );
 	activeCtx = null;

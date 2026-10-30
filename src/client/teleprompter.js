@@ -1505,6 +1505,7 @@ async function beginVoice( engine, deepgramKey ) {
 		else showSlate();
 	} catch ( err ) {
 		autoScrollStarting = false;
+		if ( err.message === "Listening was cancelled." ) return;
 		console.error( "[auto-scroll] start failed", err );
 		setIndicator( "Error", "error" );
 		setTimeout( () => {
@@ -1654,9 +1655,11 @@ function syncCommandListening() {
 				commandListening = true;
 				commandConfig = config;
 			} catch ( err ) {
-				console.warn( "[voice commands] couldn't start", err );
-				commandFailure = true;
-				showListeningStatus( { type: "failed", reason: err.message } );
+				if ( err.message !== "Listening was cancelled." ) {
+					console.warn( "[voice commands] couldn't start", err );
+					commandFailure = true;
+					showListeningStatus( { type: "failed", reason: err.message } );
+				}
 			}
 		} else {
 			await stopAutoScroll();

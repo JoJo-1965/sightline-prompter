@@ -141,6 +141,8 @@ connection or stalled recogniser triggers a fresh listener, keeping the
 script position and voice hold. OBS and scratch recording are independent.
 Silence and missing transcripts alone do not cause a restart. Deliberate
 listening-off and `{listen: off}` remain respected.
+Switching listening off also cancels an in-progress startup. Late messages
+from that old session cannot interrupt its replacement.
 
 Recovery tries at most three times in a minute, then shows that listening
 has stopped. Use **Prompting > Commands > Restart listening**, or click the

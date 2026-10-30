@@ -118,7 +118,7 @@ export function createSpeech( { dir, win } ) {
 		if ( !installed() ) {
 			tell( "speechState", {
 				type: "error",
-				message: "The speech model isn't downloaded yet."
+				message: "The speech model isn't downloaded yet.", session: options?.session ?? null
 			} );
 			return;
 		}
@@ -134,7 +134,8 @@ export function createSpeech( { dir, win } ) {
 		if ( fromPrompter( event ) && worker )
 			worker.postMessage( { type: "audio", samples } );
 	} );
-	ipcMain.on( "speechStop", ( event ) => {
+	ipcMain.on( "speechStop", ( event, session ) => {
+		if ( Number.isSafeInteger( session ) && session !== speechSession ) return;
 		if ( fromPrompter( event ) && worker ) worker.postMessage( { type: "stop" } );
 	} );
 
