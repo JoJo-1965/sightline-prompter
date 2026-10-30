@@ -6,7 +6,7 @@ import { guidePose } from "./client/guide-pose.js";
 
 const HOTKEY = "CommandOrControl+Shift+H";
 const FULLSCREEN_HOTKEY = "CommandOrControl+Alt+H";
-export function createHeadGuide( { dir, prompter, getSettings, saveSettings, saveBounds, onChange, restoreStack } ) {
+export function createHeadGuide( { dir, prompter, getSettings, saveSettings, saveBounds, onChange, restoreStack, restackUtilities } ) {
 	let overlay = null;
 	let controls = null;
 	let locked = false;
@@ -69,6 +69,7 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 			controls.setAlwaysOnTop( true, "screen-saver" );
 			controls.moveTop();
 		}
+		restackUtilities?.();
 	}
 	function toggleControls() {
 		if ( !overlay ) return;

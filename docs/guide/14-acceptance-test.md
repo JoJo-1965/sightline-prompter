@@ -11,6 +11,8 @@ RC6 adds toolbar Edit beside Tools, a dropdown anchored to Tools, and Settings
 centred on opening and window resize. The matching plugin remains 0.1.9.
 RC7 adds floating guide adjustments, eye-first four-edge fitting and separate
 Background/Outline sliders. The same plugin remains compatible.
+RC8 gives Settings and F1 Help separate movable windows, with saved geometry,
+stable topic sizes and a Settings draft guard when closing the window or app.
 
 The public app remains **1.0.6**. The candidate and plugin are private test builds.
 

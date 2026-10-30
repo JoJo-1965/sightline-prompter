@@ -6,9 +6,9 @@
 
 [Check OBS is connected and recording controls are allowed. Prepare the recorded slate, choose Flash and beep, and enable scratch audio. The script does not enable these settings for you.]
 
-[A00. Before recording, choose Check compatibility in Settings > Controls > Stream Deck. Confirm Sightline RC7 and plugin 0.1.9 are reported as compatible. In Stream Deck, open a key's settings and check its connection result.]
+[A00. Before recording, choose Check compatibility in Settings > Controls > Stream Deck. Confirm Sightline RC8 and plugin 0.1.9 are reported as compatible. In Stream Deck, open a key's settings and check its connection result.]
 
-[A00b. Before recording, open Settings from Files: it should be centred horizontally and vertically. Drag it, then close and reopen it: it should recentre. Tools should open beneath its toolbar button. Check both mirror icons independently and return them off. Switch Help tabs: the frame should stay still. In a spare slot, open a sample and choose Edit beside Tools: its source is read-only with Save a copy. Try Clear this slot, then Cancel: the sample should remain. Return to this acceptance script.]
+[A00b. Before recording, open Settings from Files. Move its window by the native title bar, onto another screen if available. Close and reopen: it should remember its position. Change a draft setting and try closing: Keep editing must retain it; Apply must save without closing. F1 Help should also move independently and keep a stable frame across tabs. Mirror the prompter: Settings and Help must stay upright. Tools opens below its button; Edit beside it opens read-only sample source with Save a copy. In a spare slot try Clear, then Cancel: the sample must remain. Return here.]
 
 [Use the Stream Deck Record take key to begin. Wait for confirmation and the slate. For the room check stay quiet; for the voice check read the card. After each result use Play / Pause to carry on.]
 

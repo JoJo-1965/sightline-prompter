@@ -258,7 +258,14 @@ The whole workflow is in the guide:
   Settings and Help stay reachable on narrow windows.
 - **Edit beside Tools** for direct script/source access; the Tools dropdown
   follows its toolbar button and stays within the window edges, including
-  mirrored views. Settings opens centred on both axes and recentres on resize.
+  mirrored views.
+- **Movable Settings and Help windows:** drag their native title bars across
+  screens; each remembers its position and size and stays upright when the
+  prompter is mirrored. Settings keeps a stable frame with pages instead of
+  scrolling. Apply stays open; Save & close, Cancel and native Close preserve
+  the existing draft checks. Quitting with a Settings draft asks before
+  discarding it. Opening the same window again keeps the draft and brings it
+  forward. Both windows are capture-protected and stay above the prompter.
 - **Visible slider labels:** Speed/Response, Text size and Background remain
   identifiable at a glance. On-air BG identifies the background used on air;
   tooltips explain the controls.

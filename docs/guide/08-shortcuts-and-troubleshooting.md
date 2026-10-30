@@ -11,10 +11,16 @@ guide: show, unlock if locked, or hide if already unlocked. If another app
 owns that shortcut, use **Tools > Head-position guide / unlock** or its
 Stream Deck action. See [camera framing](06-remotes-and-screens.md#head-position-guide-development).
 
-Press **F1** (or **?**) for the full list inside the app.
+Press **F1** (or **?**) for the full list in its own movable Help window.
+Drag its native title bar onto another screen. It remembers its position
+and size, stays upright when prompting is mirrored and keeps the same frame
+across topics. Close or Escape hides it without changing Settings.
 
-Both help panels keep the same dimensions across their tabs. Use **Files (☰)
+Both help panels keep the same dimensions across their tabs. Settings also
+has its own movable window; reopening it keeps the draft. Use **Files (☰)
 > Settings…** or **Ctrl+,** if you cannot find the toolbar's gear icon.
+
+![Grouped Help in its own movable window](images/floating-help.png)
 
 ![Keyboard shortcuts](images/shortcuts.png)
 

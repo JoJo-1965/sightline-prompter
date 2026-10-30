@@ -27,6 +27,8 @@ and centres Settings on opening and window resize. Manual dragging still works.
 **1.0.7-rc.7** adds a separate guide-adjustments window, available over a
 fullscreen or locked guide. Fit eye centre/level, then independent top/bottom
 and left/right edges. Separate Background and Outline sliders improve contrast.
+**1.0.7-rc.8** moves Settings and F1 Help into independent upright windows,
+with saved geometry, stable tab sizes and the existing unsaved-change checks.
 The latest published app is still **1.0.6**. Work remains on
 `codex/obs-integration`; no merge, tag, public release, Marketplace submission
 or website deployment is authorised by preparing or testing this candidate.
@@ -40,7 +42,7 @@ modes. The approved screenshots are in the offline guide and website preview.
 RC3 also fixes help-frame resizing, adds independent toolbar mirrors and a
 labelled Files > Settings entry, confirms slot clearing, and protects sample
 source with a read-only editor and Save a copy.
-This completes the grouping part of 48, not the separate-window work.
+RC8 also completes the separate-window implementation of 48, now awaiting acceptance.
 
 The [acceptance walkthrough](docs/guide/14-acceptance-test.md) and two bundled
 sample scripts cover natural voice, physical Stream Deck controls, stops,
@@ -73,6 +75,7 @@ move to Done only when released.
 
 | # | Item | Value | Size | RC status |
 | --- | --- | --- | --- | --- |
+| 48 | **Settings in its own window**, plus movable F1 Help | ★★ | M | Built in RC8: independent upright windows, native title-bar dragging across screens, saved geometry, stable sizes, paged Settings, live controls, Apply/Save/Cancel and unsaved-change guards on window/app close. Native window and inline-fallback tests pass; manual acceptance remains |
 | 52 | **Optional OBS integration** | ★★★ | M | Built in the Windows 1.0.7 candidate: authenticated connection, status-only/recording permissions, confirmed Record take/Finish, optional chapters, recorded slate and edit-pack references. Default off; ordinary prompting, stops, retakes and On air leave OBS recording. Physical workflow validation and evidence review remain. No separate OBS plugin is needed; optional dock/scene switching are later scope |
 | 55 | **Floating head-position guide** | ★★ | S | Built in the candidate: manual Ideal/Actual comparison, movement/scaling, Centre/Beside placements, chromeless fullscreen/restore, lock, voice on/off, hotkeys and Stream Deck. Separate from OBS sources, with capture protection enabled. It does not detect faces; actual exclusion depends on the chosen capture method and needs recording verification |
 | 39 | **Stream Deck companion** | ★★★ | M | Private 0.1.9 test build: 27 key actions, 5 dials, 18 standard/OBS profiles, recording and guide controls, buttons-only pairing and refreshed studio artwork. Physical keys, states and the model profile need acceptance. Marketplace listing is not live; add its real link to app/guide/readme/site only after listing |
@@ -86,7 +89,6 @@ waits for the signing arrangements and Joanne's accounts; it is not in this RC.
 | --- | ---- | ----- | ---- | ----- |
 | 27  | **Code signing for Windows and Mac:** no more "unknown publisher" warnings | ★★★ | S | Moved up from Later. Needs a code-signing certificate and an Apple Developer account (Joanne's decision) |
 | 47  | **Components list:** Settings > About lists each extra part with its status and Install, Reinstall and Remove: the speech model, and an AI agent kit (the skills, the script checker and the sightline command) installed from the app without cloning the repo, with a check for Node.js. Settings > Prompting > Voice gets Reinstall and Remove beside the speech model, and the first run offers to download it | ★★ | M | Joanne asked, 28 Oct: show what's installed, with install and reinstall buttons. In the app rather than an installer tickbox, because only the Windows installer could have one |
-| 48 | **Settings in its own window:** an independent upright window, movable to another screen with saved geometry and live changes sent through main, like the pad/control window | ★★ | M | **Window still to build after this candidate.** Regrouping, stable size, paged topics and contextual help are already included in the RC, but Settings remains inside the prompter. Separate-window work is not a blocker for this release |
 | 40  | **Choose your own buttons:** a key map for game controllers, foot pedals, clickers and keyboard shortcuts (Settings > Controls): pick any action (start and pause, sections, speed, markers, keeper or scrap, on air, again) for each button or key, with a "press the button now" way to set it, and a reset to the defaults | ★★ | S–M | Joanne's idea, 28 Oct. Today the controller buttons and pedal keys are fixed. The Stream Deck plugin (39) can use the same list of actions |
 | 56 | **Customisable virtual control pad:** choose functions and add selectable buttons, then drag and drop to reorder the layout, like a virtual Stream Deck | ★★ | M | Joanne requested, 30 Oct. Save the layout and offer a reset; reuse the existing action list. Planned after the current candidate; not built |
 | 28  | **Rehearsal coach:** after a practice run, pace by section, lines skipped, "um"s and sentences you stumbled on, all on the computer | ★★ | M | Same speech engine as voice scrolling |

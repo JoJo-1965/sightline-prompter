@@ -10,6 +10,8 @@ contextBridge.exposeInMainWorld( "electron", {
 	// Control bar, slots and window IPC
 	windowControl: action => ipcRenderer.send( "windowControl", action ),
 	headGuide: ( action = "toggle" ) => ipcRenderer.send( "headGuideAction", action ),
+	utilityPanel: ( kind, action, value ) => ipcRenderer.send( "utilityPanel", kind, action, value ),
+	onUtilityPanelClose: callback => on( "utilityPanelClose", callback ),
 	onHeadGuideState: callback => on( "headGuideState", callback ),
 	onWindowState: callback => on( "windowState", callback ),
 	onMenuWindowControl: callback => on( "menuWindowControl", callback ),

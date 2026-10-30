@@ -60,7 +60,7 @@ export function createSettingsPages( modal ) {
 		const active = modal.querySelector( "[data-settings-page]:not([hidden])" );
 		if ( !active ) return;
 		const same = topic === active;
-		const focused = document.activeElement;
+		const focused = modal.ownerDocument.activeElement;
 		const anchor = same ? pages[index]?.[0] : null;
 		topic = active;
 		for ( const el of topic.querySelectorAll( "[data-settings-overflow]" ) ) exclude( el, false );
@@ -105,11 +105,12 @@ export function createSettingsPages( modal ) {
 	function schedule() {
 		if ( queued ) return;
 		queued = true;
-		requestAnimationFrame( layout );
+		modal.ownerDocument.defaultView.requestAnimationFrame( layout );
 	}
 	previous.addEventListener( "click", () => choose( index - 1, true ) );
 	next.addEventListener( "click", () => choose( index + 1, true ) );
 	window.addEventListener( "resize", schedule );
+	modal.addEventListener( "utility-resize", schedule );
 	modal.addEventListener( "input", schedule );
 	modal.addEventListener( "focusin", ( event ) => {
 		const n = pages.findIndex( page => page.some( item => item === event.target || item.contains( event.target ) ) );
@@ -209,15 +210,16 @@ export function addSettingsHelp( modal ) {
 			panel.showPopover();
 			const r = button.getBoundingClientRect();
 			const p = panel.getBoundingClientRect();
-			panel.style.left = `${ Math.max( 8, Math.min( r.left, innerWidth - p.width - 8 ) ) }px`;
-			panel.style.top = `${ Math.max( 8, Math.min( r.bottom + 6, innerHeight - p.height - 8 ) ) }px`;
+			const view = modal.ownerDocument.defaultView;
+			panel.style.left = `${ Math.max( 8, Math.min( r.left, view.innerWidth - p.width - 8 ) ) }px`;
+			panel.style.top = `${ Math.max( 8, Math.min( r.bottom + 6, view.innerHeight - p.height - 8 ) ) }px`;
 			button.setAttribute( "aria-expanded", "true" );
 			shown = { button, panel, pinned: false };
 		};
 		const leave = () => {
 			clearTimeout( leaveTimer );
 			leaveTimer = setTimeout( () => {
-				if ( shown?.button === button && !shown.pinned && document.activeElement !== button ) hide();
+				if ( shown?.button === button && !shown.pinned && modal.ownerDocument.activeElement !== button ) hide();
 			}, 160 );
 		};
 		button.addEventListener( "mouseenter", open );
@@ -242,5 +244,6 @@ export function addSettingsHelp( modal ) {
 		if ( shown && !shown.button.contains( event.target ) && !shown.panel.contains( event.target ) ) hide();
 	} );
 	window.addEventListener( "resize", hide );
+	modal.addEventListener( "utility-resize", hide );
 	new MutationObserver( hide ).observe( modal, { attributes: true, attributeFilter: [ "class" ] } );
 }

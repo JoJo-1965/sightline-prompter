@@ -1,4 +1,5 @@
 // Renderer-only OBS controls. The preload remains a pure IPC bridge.
+import { uiElement } from "./panel-windows.js";
 export function obsStatusText( state ) {
 	if ( !state?.enabled ) return "OBS disabled";
 	if ( state.connection === "connecting" ) return "Connecting to OBS…";
@@ -21,7 +22,7 @@ export function obsActionBlock( state, name, { busy = false, canStart = true } =
 }
 
 export function createObsUi( { getSettings, canStart, onStart, onFinish, onChange, toast } ) {
-	const field = id => document.getElementById( `set-obs-${ id }` );
+	const field = id => uiElement( `set-obs-${ id }` );
 	let state = { enabled: false, connection: "disabled" };
 	let busy = false;
 	let markerError = null;

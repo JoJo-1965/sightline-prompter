@@ -2,6 +2,10 @@
 
 Development preview · 30 October 2026. These images show the OBS test branch;
 the release remains on hold. The panel stays the same size across topics.
+RC8 gives Settings and Help their own movable windows. The controls shown
+below are retained; drag the native title bar to use another screen.
+
+![Settings as a separate movable window](images/floating-settings.png)
 
 [Full audit and findings](../SETTINGS-UX-AUDIT.md)
 

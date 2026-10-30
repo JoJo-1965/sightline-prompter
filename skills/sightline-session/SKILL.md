@@ -115,6 +115,11 @@ Guide adjustments window works over fullscreen/Clean/locked overlays.
 Fit eye centre/level first, lock the eyes, then fit top/bottom and left/right.
 These remain manual references, not detected head positions.
 
+RC8 also moves Settings and F1 Help into separate movable windows with saved
+geometry. Reopening Settings retains its draft; native Close and app exit
+use the existing unsaved-change guard. The windows reuse the live controllers,
+without starting a second microphone, speech tracker or recording engine.
+
 Sightline logs every take of every section as it's recorded, one file per
 script per day, saved as it goes. These read the files, so they work with the
 app closed:

@@ -36,6 +36,7 @@ import { SUPPORT_URL } from "./links.js";
 import { createObsUi } from "./obs-ui.js";
 import { createSettingsNavigation } from "./settings-navigation.js";
 import { addSettingsHelp, createSettingsPages } from "./settings-pages.js";
+import { uiElement, showPanelWindow, hidePanelWindow } from "./panel-windows.js";
 import {
 	indexSentences,
 	scriptSentences,
@@ -76,12 +77,12 @@ let pointsRunning = false;
 let pacing = null; // { mode, total, sectionIndex, sectionTime, lastTick }
 let takeLog = new Map(); // section index -> result
 let controlOpen = false; // the control window is showing a copy of the script
-const pacingEl = document.getElementById( "pacing" );
-const summaryModal = document.getElementById( "take-summary" );
+const pacingEl = uiElement( "pacing" );
+const summaryModal = uiElement( "take-summary" );
 let headGuideState = null;
 window.electron.onHeadGuideState( ( value ) => {
 	headGuideState = value;
-	const restore = document.getElementById( "guide-controls" );
+	const restore = uiElement( "guide-controls" );
 	restore?.classList.toggle( "hidden", !value.shown );
 	restore?.setAttribute( "aria-pressed", String( value.controlsShown ) );
 } );
@@ -123,11 +124,11 @@ const obsUi = createObsUi( {
 let recordingSaved = 0; // the take log version last sent to be saved
 let recordingY = null; // reading line at the last tick, to see the text move on
 let pendingJumpReason = null; // "again" when a jump is a voice retake
-const onAirEl = document.getElementById( "on-air" );
+const onAirEl = uiElement( "on-air" );
 const THEMES = [ "default", "yellow", "contrast", "cream" ];
 const FONTS = [ "default", "atkinson", "opendyslexic", "verdana" ];
 const EFFECTS = [ "none", "outline", "shadow" ];
-const md = document.getElementById( "md" );
+const md = uiElement( "md" );
 
 // Recording settings (from main; edited on the Settings page).
 let settings = {
@@ -303,7 +304,7 @@ for ( const el of [ ...document.body.children ] ) {
 document.body.appendChild( hud );
 
 function applyMirror() {
-	const md = document.getElementById( "md" );
+	const md = uiElement( "md" );
 	if ( !md ) return;
 	const sx = mirrored === "horizontal" || mirrored === "both" ? -1 : 1;
 	const sy = mirroredVertically() ? -1 : 1;
@@ -330,7 +331,7 @@ window.addEventListener( "resize", applyMirror );
 
 function showMirrorButton() {
 	// Keep toolbar, Layout and Reading toggles in step.
-	for ( const pill of document.querySelectorAll( ".mirror-pills [data-axis], .cb-mirror-axis" ) ) {
+	for ( const pill of [ ...document.querySelectorAll( ".mirror-pills [data-axis], .cb-mirror-axis" ), ...uiElement( "settings-modal" ).querySelectorAll( ".mirror-pills [data-axis]" ) ] ) {
 		const on = pill.dataset.axis === "h"
 			? mirrored === "horizontal" || mirrored === "both"
 			: mirrored === "vertical" || mirrored === "both";
@@ -373,7 +374,7 @@ function cycleMirror() {
 }
 
 function showToast( text, ms = 1400 ) {
-	let toast = document.getElementById( "toast" );
+	let toast = uiElement( "toast" );
 	if ( !toast ) {
 		toast = document.createElement( "div" );
 		toast.id = "toast";
@@ -422,26 +423,26 @@ let previewManuallyScrolled = false;
 let pendingScrollToCursor = false;
 let savedScrollY = 0;
 
-const previewContainer = document.getElementById( "preview-container" );
-const editorContainer = document.getElementById( "editor-container" );
-const editorDiv = document.getElementById( "editor" );
-const toolbarFilename = document.getElementById( "toolbar-filename" );
-const toolbarDirty = document.getElementById( "toolbar-dirty" );
-const btnSave = document.getElementById( "btn-save" );
-const btnSaveAs = document.getElementById( "btn-save-as" );
-const btnCancel = document.getElementById( "btn-cancel" );
-const resizeHandle = document.getElementById( "resize-handle" );
-const autoScrollIndicator = document.getElementById( "auto-scroll-indicator" );
-const apiKeyModal = document.getElementById( "api-key-modal" );
-const apiKeyInput = document.getElementById( "api-key-input" );
-const apiKeySaveBtn = document.getElementById( "api-key-save" );
-const apiKeyCancelBtn = document.getElementById( "api-key-cancel" );
-const apiKeyClearBtn = document.getElementById( "api-key-clear" );
-const micModal = document.getElementById( "mic-modal" );
-const micSelect = document.getElementById( "mic-modal-select" );
-const micHint = document.getElementById( "mic-modal-hint" );
-const micSaveBtn = document.getElementById( "mic-modal-save" );
-const micCancelBtn = document.getElementById( "mic-modal-cancel" );
+const previewContainer = uiElement( "preview-container" );
+const editorContainer = uiElement( "editor-container" );
+const editorDiv = uiElement( "editor" );
+const toolbarFilename = uiElement( "toolbar-filename" );
+const toolbarDirty = uiElement( "toolbar-dirty" );
+const btnSave = uiElement( "btn-save" );
+const btnSaveAs = uiElement( "btn-save-as" );
+const btnCancel = uiElement( "btn-cancel" );
+const resizeHandle = uiElement( "resize-handle" );
+const autoScrollIndicator = uiElement( "auto-scroll-indicator" );
+const apiKeyModal = uiElement( "api-key-modal" );
+const apiKeyInput = uiElement( "api-key-input" );
+const apiKeySaveBtn = uiElement( "api-key-save" );
+const apiKeyCancelBtn = uiElement( "api-key-cancel" );
+const apiKeyClearBtn = uiElement( "api-key-clear" );
+const micModal = uiElement( "mic-modal" );
+const micSelect = uiElement( "mic-modal-select" );
+const micHint = uiElement( "mic-modal-hint" );
+const micSaveBtn = uiElement( "mic-modal-save" );
+const micCancelBtn = uiElement( "mic-modal-cancel" );
 
 // --- Auto-scroll state ---
 let autoScrollActive = false;
@@ -1443,8 +1444,8 @@ function showSpeechModel() {
 }
 
 function showSpeechModelIn( statusId, buttonId ) {
-	const status = document.getElementById( statusId );
-	const button = document.getElementById( buttonId );
+	const status = uiElement( statusId );
+	const button = uiElement( buttonId );
 	if ( !status || !button ) return;
 	const mb = bytes => Math.round( bytes / 1e6 );
 	if ( speechModel.installed ) {
@@ -1557,7 +1558,7 @@ const COMMAND_LABELS = {
 
 let commandListening = false;
 let commandChange = Promise.resolve();
-const commandPill = document.getElementById( "command-listening" );
+const commandPill = uiElement( "command-listening" );
 
 // Also at a {stop} in steady scrolling, so "Prompter, go" can carry on.
 // Always (Settings > Voice > Voice commands) listens for the wake word
@@ -1646,7 +1647,7 @@ function voiceMiss( words ) {
 // "Prompter, what can I say?": every command on a card, until the next
 // command, Close or Esc. Tabs stay open while the speaker reads them.
 function showVoiceHelp() {
-	let card = document.getElementById( "voice-help" );
+	let card = uiElement( "voice-help" );
 	if ( !card ) {
 		card = document.createElement( "div" );
 		card.id = "voice-help";
@@ -1666,15 +1667,15 @@ function showVoiceHelp() {
 		} );
 		hud.appendChild( card );
 	}
-	document.getElementById( "voice-help-title" ).textContent = `Say “${ wakeLabel( settings.wakeWord ) }”, then:`;
-	renderHelpTabs( document.getElementById( "voice-help-list" ), voiceHelpTabs( settings ), "voice-help" );
+	uiElement( "voice-help-title" ).textContent = `Say “${ wakeLabel( settings.wakeWord ) }”, then:`;
+	renderHelpTabs( uiElement( "voice-help-list" ), voiceHelpTabs( settings ), "voice-help" );
 	card.classList.remove( "hidden" );
 	clearTimeout( showVoiceHelp.timer );
 }
 
 function hideVoiceHelp() {
 	clearTimeout( showVoiceHelp.timer );
-	document.getElementById( "voice-help" )?.classList.add( "hidden" );
+	uiElement( "voice-help" )?.classList.add( "hidden" );
 }
 
 document.addEventListener( "keydown", ( e ) => {
@@ -1816,7 +1817,7 @@ function runVoiceCommand( id, value ) {
 
 // --- Steady scroll (fixed words per minute) ---
 
-const countdownEl = document.getElementById( "countdown" );
+const countdownEl = uiElement( "countdown" );
 let countdownTimer = null;
 
 function steadyIndicatorText() {
@@ -1831,7 +1832,7 @@ function steadySessionActive() {
 // A white flash (and a beep, if chosen) marks the moment; then the section and
 // take number show for a second. The take log notes when it went off.
 
-const slateEl = document.getElementById( "slate" );
+const slateEl = uiElement( "slate" );
 let slating = false; // a slate is showing, and something waits for it
 let slateDue = false; // the slate is about to go off: the take log waits for it
 let slateTimer = null;
@@ -2239,7 +2240,7 @@ window.electron.getAudioDeviceId();
 
 // --- Recording settings ---
 
-const readingMarker = document.getElementById( "reading-marker" );
+const readingMarker = uiElement( "reading-marker" );
 
 // Half the height of a line of script text, in ems of the page's text size:
 // the scroll puts the top of the text on the reading line, so the arrow sits
@@ -2338,10 +2339,10 @@ window.electron.onEditorUnavailable( ( fileName, kind ) => {
 
 // --- Open a Google Doc ---
 
-const gdocModal = document.getElementById( "gdoc-modal" );
-const gdocInput = document.getElementById( "gdoc-input" );
-const gdocError = document.getElementById( "gdoc-error" );
-const gdocOpenBtn = document.getElementById( "gdoc-open" );
+const gdocModal = uiElement( "gdoc-modal" );
+const gdocInput = uiElement( "gdoc-input" );
+const gdocError = uiElement( "gdoc-error" );
+const gdocOpenBtn = uiElement( "gdoc-open" );
 const GOOGLE_DOC_LINK = /docs\.google\.com\/document\//;
 
 function showGdocError( text ) {
@@ -2381,7 +2382,7 @@ window.electron.onGoogleDocResult( ( { ok, message } ) => {
 } );
 window.electron.onShowGoogleDocDialog( () => showGoogleDocDialog() );
 gdocOpenBtn.addEventListener( "click", () => openGoogleDoc( gdocInput.value ) );
-document.getElementById( "gdoc-cancel" ).addEventListener( "click", hideGoogleDocDialog );
+uiElement( "gdoc-cancel" ).addEventListener( "click", hideGoogleDocDialog );
 gdocInput.addEventListener( "keydown", ( e ) => {
 	e.stopPropagation();
 	if ( e.key === "Enter" ) gdocOpenBtn.click();
@@ -2390,8 +2391,8 @@ gdocInput.addEventListener( "keydown", ( e ) => {
 
 // --- Settings page ---
 
-const settingsModal = document.getElementById( "settings-modal" );
-const field = id => document.getElementById( id );
+const settingsModal = uiElement( "settings-modal" );
+const field = id => uiElement( id );
 let settingsSnapshot = null;
 let settingsReturnFocus = null;
 
@@ -2419,18 +2420,23 @@ function markSettingsDirty( event ) {
 // (main.js only keeps them in debug mode, Settings > About.)
 const settingsTrail = step => window.electron.debugLog?.( `settings: ${ step }` );
 
-document.getElementById( "settings-save-log" )?.addEventListener( "click", async () => {
+uiElement( "settings-save-log" )?.addEventListener( "click", async () => {
 	const saved = await window.electron.saveSupportLog();
 	if ( saved ) showToast( "Log saved: attach it to your GitHub issue or email", 3500 );
 } );
 
 async function openSettings() {
 	if ( !settingsModal ) return;
+	if ( !settingsModal.classList.contains( "hidden" ) ) {
+		await showPanelWindow( "settings", settingsModal, () => settingsPages.layout() );
+		return;
+	}
 	settingsReturnFocus = document.activeElement;
 	closePanels();
 	settingsTrail( "opening" );
 	settingsSnapshot = { fontSize, opacity };
 	settingsDirty = false;
+	window.electron.utilityPanel( "settings", "dirty", false );
 	field( "settings-unsaved" )?.classList.add( "hidden" );
 	if ( field( "settings-applied" ) ) field( "settings-applied" ).textContent = "";
 	field( "settings-applied" )?.removeAttribute( "data-pending" );
@@ -2480,6 +2486,7 @@ async function openSettings() {
 	settingsTrail( `showing tab ${ lastSettingsTab() }` );
 	showSettingsTab( lastSettingsTab() );
 	settingsModal.classList.remove( "hidden" );
+	await showPanelWindow( "settings", settingsModal, () => settingsPages.layout() );
 	settingsNavigation.focus();
 	settingsTrail( "visible" );
 	requestAnimationFrame( () => requestAnimationFrame( () => settingsTrail( "painted" ) ) );
@@ -2556,6 +2563,7 @@ async function finishSettingsClose( save ) {
 
 function closeSettings( restore ) {
 	settingsDirty = false;
+	window.electron.utilityPanel( "settings", "dirty", false );
 	if ( restore && settingsSnapshot ) {
 		setFontSize( settingsSnapshot.fontSize, false );
 		setOpacity( settingsSnapshot.opacity, false );
@@ -2563,6 +2571,7 @@ function closeSettings( restore ) {
 	settingsSnapshot = null;
 	returnLayoutPanel();
 	settingsModal?.classList.add( "hidden" );
+	hidePanelWindow( "settings" );
 	const target = settingsReturnFocus?.isConnected && settingsReturnFocus.getClientRects().length ? settingsReturnFocus : field( "cb-settings" );
 	target?.focus( { preventScroll: true } );
 }
@@ -2575,6 +2584,7 @@ let teachingWord = false;
 
 function wordsChanged() {
 	settingsDirty = true;
+	window.electron.utilityPanel( "settings", "dirty", true );
 	field( "settings-applied" ).textContent = "Unsaved changes";
 	field( "settings-applied" ).dataset.pending = "true";
 }
@@ -2882,10 +2892,12 @@ async function saveSettingsPage( close = true ) {
 	}
 	settingsDirty = false;
 	if ( close ) {
+		window.electron.utilityPanel( "settings", "dirty", false );
 		closeSettings( false );
 		return true;
 	}
 	// Applied: Cancel now goes back to these, not to how it was when opened.
+	window.electron.utilityPanel( "settings", "dirty", false );
 	settingsSnapshot = { fontSize, opacity };
 	field( "set-deepgram-key" ).value = "";
 	field( "settings-applied" ).textContent = "Saved";
@@ -2921,7 +2933,7 @@ if ( settingsModal ) {
 		if ( e.key === "Tab" ) {
 			const focusable = [ ...settingsModal.querySelectorAll( "button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), a[href]" ) ].filter( el => el.tabIndex >= 0 && el.getClientRects().length );
 			const end = e.shiftKey ? focusable[0] : focusable.at( -1 );
-			if ( document.activeElement === end ) {
+			if ( settingsModal.ownerDocument.activeElement === end ) {
 				e.preventDefault();
 				( e.shiftKey ? focusable.at( -1 ) : focusable[0] )?.focus();
 			}
@@ -2944,6 +2956,10 @@ window.electron.onCuesFileChosen( ( filePath ) => {
 	}
 } );
 window.electron.onMenuSettings( openSettings );
+window.electron.onUtilityPanelClose( ( kind, quit ) => {
+	if ( kind === "settings" ) requestCloseSettings( quit ? () => window.electron.windowControl( "close" ) : null );
+	if ( kind === "help" ) closeHelp();
+} );
 window.electron.getSettings();
 // --- Layout: margins, line spacing, alignment, edge fade ---
 
@@ -3057,9 +3073,9 @@ function updateEdgeMask() {
 
 // --- Progress and time left ---
 
-const progressBar = document.getElementById( "progress-bar" );
-const progressFill = document.getElementById( "progress-fill" );
-const progressText = document.getElementById( "cb-progress-text" );
+const progressBar = uiElement( "progress-bar" );
+const progressFill = uiElement( "progress-fill" );
+const progressText = uiElement( "cb-progress-text" );
 let textSpan = null; // { top, bottom, words } of the script text, in page pixels
 let measureQueued = false;
 
@@ -3130,8 +3146,8 @@ function updateProgress() {
 // the script, with the section and time at that point in a tip, and a tick
 // where each section starts. Ignored while the prompter runs, so a stray
 // click can't jump a take; pause first.
-const progressTicks = document.getElementById( "progress-ticks" );
-const progressTip = document.getElementById( "progress-tip" );
+const progressTicks = uiElement( "progress-ticks" );
+const progressTip = uiElement( "progress-tip" );
 let progressDragging = false;
 
 const spanHeight = () => Math.max( 1, textSpan.bottom - textSpan.top );
@@ -3213,7 +3229,7 @@ progressBar?.addEventListener( "pointerleave", () => {
 
 // --- Slots: up to nine scripts, each remembering its place ---
 
-const slotsEl = document.getElementById( "cb-slots" );
+const slotsEl = uiElement( "cb-slots" );
 let slotState = { active: 0, slots: [], recent: [] };
 let pendingRestore = null;
 let slotPositionTimer = null;
@@ -3272,15 +3288,15 @@ window.addEventListener(
 
 // --- Control bar ---
 
-const controlBar = document.getElementById( "control-bar" );
-const playBtn = document.getElementById( "cb-play" );
-const speedInput = document.getElementById( "cb-speed" );
-const speedLabel = document.getElementById( "cb-speed-label" );
-const speedValue = document.getElementById( "cb-speed-value" );
-const fontInput = document.getElementById( "cb-font" );
-const opacityInput = document.getElementById( "cb-opacity" );
-const maxBtn = document.getElementById( "cb-max" );
-const fullBtn = document.getElementById( "cb-full" );
+const controlBar = uiElement( "control-bar" );
+const playBtn = uiElement( "cb-play" );
+const speedInput = uiElement( "cb-speed" );
+const speedLabel = uiElement( "cb-speed-label" );
+const speedValue = uiElement( "cb-speed-value" );
+const fontInput = uiElement( "cb-font" );
+const opacityInput = uiElement( "cb-opacity" );
+const maxBtn = uiElement( "cb-max" );
+const fullBtn = uiElement( "cb-full" );
 let idleTimer = null;
 const IDLE_MS_SCROLLING = 1500;
 const IDLE_MS_STOPPED = 5000;
@@ -3337,9 +3353,9 @@ function syncControls() {
 		: `${ settings.steadyWpm } wpm`;
 	if ( document.activeElement !== fontInput ) fontInput.value = fontSize;
 	if ( document.activeElement !== opacityInput ) opacityInput.value = liveBacking();
-	const bgInput = document.getElementById( "lp-bg-opacity" );
-	if ( bgInput && document.activeElement !== bgInput ) bgInput.value = opacity;
-	const mode = document.getElementById( "cb-mode" );
+	const bgInput = uiElement( "lp-bg-opacity" );
+	if ( bgInput && bgInput.ownerDocument.activeElement !== bgInput ) bgInput.value = opacity;
+	const mode = uiElement( "cb-mode" );
 	if ( mode ) {
 		mode.textContent = voice ? "Voice" : "Steady";
 		mode.setAttribute( "aria-label", voice ? "Voice scrolling; switch to steady" : "Steady scrolling; switch to voice" );
@@ -3410,7 +3426,7 @@ function saveFromBar() {
 }
 
 const onClick = ( id, handler ) =>
-	document.getElementById( id )?.addEventListener( "click", handler );
+	uiElement( id )?.addEventListener( "click", handler );
 
 onClick( "cb-menu", ( e ) => {
 	e.stopPropagation();
@@ -3431,7 +3447,7 @@ onClick( "cb-help", openHelp );
 onClick( "help-ai-prompt", () => window.electron.copyAiPrompt() );
 onClick( "cb-settings", openSettings );
 for ( const id of [ "cb-menu", "cb-tools" ] ) {
-	document.getElementById( id )?.addEventListener( "keydown", ( event ) => {
+	uiElement( id )?.addEventListener( "keydown", ( event ) => {
 		if ( event.key !== "ArrowDown" ) return;
 		event.preventDefault();
 		event.stopPropagation();
@@ -3505,7 +3521,7 @@ window.electron.onNotice( text => showTransientHint( text, 2500 ) );
 
 // --- Panels (layout, voice) and the in-app menu ---
 
-const appMenu = document.getElementById( "app-menu" );
+const appMenu = uiElement( "app-menu" );
 
 function positionToolsPanel() {
 	const panel = field( "tools-panel" );
@@ -3523,7 +3539,7 @@ function positionToolsPanel() {
 window.addEventListener( "resize", () => requestAnimationFrame( positionToolsPanel ) );
 
 function togglePanel( id ) {
-	const panel = document.getElementById( id );
+	const panel = uiElement( id );
 	if ( !panel ) return;
 	const opening = panel.classList.contains( "hidden" );
 	closePanels();
@@ -3997,9 +4013,9 @@ function makeMovable( box, handle, key, { centreOnOpen = false } = {} ) {
 	new ResizeObserver( () => requestAnimationFrame( fit ) ).observe( box );
 }
 
-makeMovable( document.querySelector( "#settings-modal .settings-content" ), document.querySelector( "#settings-modal .settings-head h3" ), "settings", { centreOnOpen: true } );
-makeMovable( document.getElementById( "layout-panel" ), document.querySelector( "#layout-panel > h4" ), "layout" );
-makeMovable( document.getElementById( "voice-panel" ), document.querySelector( "#voice-panel > h4" ), "voice" );
+makeMovable( settingsModal?.querySelector( ".settings-content" ), settingsModal?.querySelector( ".settings-head h3" ), "settings", { centreOnOpen: true } );
+makeMovable( uiElement( "layout-panel" ), document.querySelector( "#layout-panel > h4" ), "layout" );
+makeMovable( uiElement( "voice-panel" ), document.querySelector( "#voice-panel > h4" ), "voice" );
 
 // --- Layout panel ---
 
@@ -4021,15 +4037,15 @@ function readingLineKey() {
 }
 
 function syncLayoutPanel() {
-	if ( !document.getElementById( "layout-panel" ) ) return;
+	if ( !uiElement( "layout-panel" ) ) return;
 	for ( const [ id, key, format ] of LAYOUT_FIELDS ) {
 		const input = field( id );
 		const value = settings[key] ?? LAYOUT_DEFAULTS[key];
-		if ( document.activeElement !== input ) input.value = value;
+		if ( input.ownerDocument.activeElement !== input ) input.value = value;
 		field( `${ id }-value` ).textContent = format( value );
 	}
 	const reading = settings[readingLineKey()];
-	if ( document.activeElement !== field( "lp-reading-line" ) )
+	if ( field( "lp-reading-line" ).ownerDocument.activeElement !== field( "lp-reading-line" ) )
 		field( "lp-reading-line" ).value = reading;
 	field( "lp-reading-line-value" ).textContent = `${ reading }%`;
 	field( "lp-align" ).value = settings.textAlign ?? "left";
@@ -4055,7 +4071,7 @@ function syncLayoutPanel() {
 	document.body.classList.toggle( "show-directives", !!settings.showDirectives );
 }
 
-if ( document.getElementById( "layout-panel" ) ) {
+if ( uiElement( "layout-panel" ) ) {
 	for ( const [ id, key ] of LAYOUT_FIELDS ) {
 		field( id ).addEventListener( "input", () => {
 			settings[key] = Number( field( id ).value );
@@ -4155,7 +4171,7 @@ let meterContext = null;
 let meterRaf = null;
 
 function syncVoicePanel() {
-	if ( !document.getElementById( "voice-panel" ) ) return;
+	if ( !uiElement( "voice-panel" ) ) return;
 	field( "vp-mode" ).value = settings.scrollMode === "voice" ? "voice" : "steady";
 	field( "vp-engine" ).value = usesLocalVoice() ? "local" : "deepgram";
 	const panel = field( "voice-panel" );
@@ -4179,7 +4195,7 @@ function stopMicMeter() {
 	meterStream = null;
 	meterContext?.close();
 	meterContext = null;
-	const fill = document.getElementById( "vp-meter-fill" );
+	const fill = uiElement( "vp-meter-fill" );
 	if ( fill ) fill.style.width = "0";
 }
 
@@ -4233,7 +4249,7 @@ async function openVoicePanel() {
 	await fillVoiceMicList();
 }
 
-if ( document.getElementById( "voice-panel" ) ) {
+if ( uiElement( "voice-panel" ) ) {
 	field( "vp-mode" ).addEventListener( "change", () => {
 		window.electron.saveSettings( { scrollMode: field( "vp-mode" ).value } );
 	} );
@@ -4274,28 +4290,30 @@ if ( document.getElementById( "voice-panel" ) ) {
 
 // --- Help ---
 
-const helpModal = document.getElementById( "help-modal" );
+const helpModal = uiElement( "help-modal" );
 
 function renderHelp() {
-	const list = document.getElementById( "help-list" );
+	const list = uiElement( "help-list" );
 	if ( list ) renderHelpTabs( list, helpTabs( settings, document.body.classList.contains( "points-mode" ) ), "help" );
 }
 
-document.getElementById( "help-guide" )?.addEventListener( "click", () => {
+uiElement( "help-guide" )?.addEventListener( "click", () => {
 	closeHelp();
 	window.electron.openGuide();
 } );
 
-function openHelp() {
+async function openHelp() {
 	closePanels();
 	renderHelp();
 	helpModal?.classList.remove( "hidden" );
-	document.getElementById( "help-close" )?.focus( { preventScroll: true } );
+	await showPanelWindow( "help", helpModal );
+	uiElement( "help-close" )?.focus( { preventScroll: true } );
 	showControls();
 }
 
 function closeHelp() {
 	helpModal?.classList.add( "hidden" );
+	hidePanelWindow( "help" );
 	refreshControlsVisibility();
 }
 
@@ -4313,7 +4331,7 @@ window.electron.onMenuHelp( () => {
 
 // --- About ---
 
-const aboutModal = document.getElementById( "about-modal" );
+const aboutModal = uiElement( "about-modal" );
 
 // Floating chevrons instead of a scroll bar: ▲ and ▼ appear at the top and
 // bottom edge only when there is more to see that way. Wheel and keys still scroll.
@@ -4375,9 +4393,9 @@ const updateAboutChevrons = scrollChevrons(
 );
 const settingsBox = document.querySelector( ".settings-content" );
 for ( const box of [
-	document.getElementById( "layout-panel" ),
-	document.getElementById( "voice-panel" ),
-	document.getElementById( "app-menu" ),
+	uiElement( "layout-panel" ),
+	uiElement( "voice-panel" ),
+	uiElement( "app-menu" ),
 	document.querySelector( ".help-content" )
 ] ) {
 	scrollChevrons( box );
@@ -4389,7 +4407,7 @@ function openAbout() {
 	aboutModal?.classList.remove( "hidden" );
 	aboutModal?.querySelector( ".about-content" )?.scrollTo( 0, 0 );
 	requestAnimationFrame( updateAboutChevrons );
-	document.getElementById( "about-close" )?.focus( { preventScroll: true } );
+	uiElement( "about-close" )?.focus( { preventScroll: true } );
 	showControls();
 }
 
@@ -4420,14 +4438,14 @@ function formatReleaseDate( iso ) {
 window.electron.getAppInfo();
 
 window.electron.onAppInfo( ( info ) => {
-	const brief = document.getElementById( "settings-about-version" );
+	const brief = uiElement( "settings-about-version" );
 	if ( brief ) {
 		const updated = formatReleaseDate( info.releaseDate );
 		brief.textContent = [ `Version ${ info.version }`, updated && `updated ${ updated }` ]
 			.filter( Boolean )
 			.join( " · " );
 	}
-	const el = document.getElementById( "about-version" );
+	const el = uiElement( "about-version" );
 	const date = formatReleaseDate( info.releaseDate );
 	if ( el )
 		el.textContent = [
@@ -4441,17 +4459,17 @@ window.electron.onAppInfo( ( info ) => {
 			.join( " · " );
 } );
 
-document.getElementById( "set-remote-help" )?.addEventListener( "click", () => {
+uiElement( "set-remote-help" )?.addEventListener( "click", () => {
 	window.electron.openGuide( "10-setting-up-your-ai.md" );
 } );
-document.getElementById( "set-remote-streamdeck" )?.addEventListener( "click", () => {
+uiElement( "set-remote-streamdeck" )?.addEventListener( "click", () => {
 	window.electron.openGuide( "06-remotes-and-screens.md#stream-deck" );
 } );
 
 // --- Updates: a check against the latest release on GitHub ---
 
-const updateLine = document.getElementById( "settings-about-update" );
-document.getElementById( "settings-about-updates" )?.addEventListener( "click", () => {
+const updateLine = uiElement( "settings-about-update" );
+uiElement( "settings-about-updates" )?.addEventListener( "click", () => {
 	if ( updateLine ) updateLine.textContent = "Checking…";
 	window.electron.checkForUpdates( false );
 } );
@@ -4480,7 +4498,7 @@ window.electron.onUpdateInfo( ( info ) => {
 
 // A small note at the bottom right, there until it's closed.
 function showUpdateNote( info ) {
-	if ( document.getElementById( "update-note" ) ) return;
+	if ( uiElement( "update-note" ) ) return;
 	const note = document.createElement( "div" );
 	note.id = "update-note";
 	note.setAttribute( "role", "status" );
@@ -4510,7 +4528,7 @@ function maybeAskForSupport() {
 	}
 	setTimeout( () => {
 		const busy = steadySessionActive() || autoScrollActive || onAir() || !settingsModal?.classList.contains( "hidden" );
-		if ( busy || document.getElementById( "support-note" ) ) return;
+		if ( busy || uiElement( "support-note" ) ) return;
 		try {
 			localStorage.setItem( SUPPORT_ASKED, new Date().toISOString() );
 		} catch {
@@ -4543,7 +4561,7 @@ window.electron.onMenuImportSettings( () => window.electron.importSettings() );
 
 // --- Drag and drop a script ---
 
-const dropOverlay = document.getElementById( "drop-overlay" );
+const dropOverlay = uiElement( "drop-overlay" );
 let dragDepth = 0;
 
 // A file, or a Google Docs link dragged from the browser's address bar.
@@ -4838,7 +4856,7 @@ function runRemoteAction( action, value ) {
 window.electron.onRemoteCommand( runRemoteAction );
 
 window.electron.onRemoteInfo( ( info ) => {
-	const peerStatus = document.getElementById( "set-stream-deck-status" );
+	const peerStatus = uiElement( "set-stream-deck-status" );
 	if ( peerStatus ) {
 		const peer = info.streamDeckPeer;
 		const versions = `Sightline ${ info.appVersion ?? "version unknown" }`;
@@ -4849,7 +4867,7 @@ window.electron.onRemoteInfo( ( info ) => {
 		else text = `${ versions } · plugin ${ peer.pluginVersion }. ${ peer.message }. Required plugin ${ peer.minimumPluginVersion } or later.${ peer.updateRecommended ? ` Recommended: ${ peer.recommendedPluginVersion }.` : "" }`;
 		if ( peerStatus.textContent !== text ) peerStatus.textContent = text;
 	}
-	const status = document.getElementById( "set-remote-status" );
+	const status = uiElement( "set-remote-status" );
 	if ( !status ) return;
 	field( "set-remote-token" ).value = info.token ?? "";
 	if ( info.error ) status.textContent = `Not running: ${ info.error }`;
@@ -4865,12 +4883,12 @@ onClick( "set-remote-copy", async () => {
 onClick( "set-remote-new", () => window.electron.newRemoteToken() );
 
 window.electron.onPhoneInfo( ( info ) => {
-	const status = document.getElementById( "set-phone-status" );
-	const connect = document.getElementById( "set-phone-connect" );
+	const status = uiElement( "set-phone-status" );
+	const connect = uiElement( "set-phone-connect" );
 	if ( !status || !connect ) return;
 	connect.classList.toggle( "hidden", !info.qr );
-	if ( info.qr ) document.getElementById( "set-phone-qr" ).src = info.qr;
-	document.getElementById( "set-phone-url" ).textContent = info.url ?? "";
+	if ( info.qr ) uiElement( "set-phone-qr" ).src = info.qr;
+	uiElement( "set-phone-url" ).textContent = info.url ?? "";
 	if ( info.error ) status.textContent = `Not running: ${ info.error }`;
 	else if ( info.running )
 		status.textContent = "On. Scan the code with your phone.";
@@ -4888,11 +4906,11 @@ addSettingsHelp( settingsModal );
 const settingsPages = createSettingsPages( settingsModal );
 
 // The About tab is a brief; the full page is a click away.
-document.getElementById( "settings-about-full" )?.addEventListener( "click", () => requestCloseSettings( openAbout ) );
-document.getElementById( "settings-about-guide" )?.addEventListener( "click", () => {
+uiElement( "settings-about-full" )?.addEventListener( "click", () => requestCloseSettings( openAbout ) );
+uiElement( "settings-about-guide" )?.addEventListener( "click", () => {
 	window.electron.openGuide();
 } );
-document.getElementById( "settings-about-support" )?.addEventListener( "click", () => window.open( SUPPORT_URL ) );
+uiElement( "settings-about-support" )?.addEventListener( "click", () => window.open( SUPPORT_URL ) );
 for ( const link of document.querySelectorAll( "a.support-link" ) ) link.href = SUPPORT_URL;
 
 function showSettingsTab( name ) {
@@ -4901,19 +4919,19 @@ function showSettingsTab( name ) {
 
 // The Layout tab shows the Layout panel's own controls (they apply straight
 // away), moved into Settings while it is open and put back when it closes.
-const layoutPanel = document.getElementById( "layout-panel" );
-const layoutHost = document.getElementById( "set-layout-host" );
+const layoutPanel = uiElement( "layout-panel" );
+const layoutHost = uiElement( "set-layout-host" );
 // Settings shows the Layout panel's groups over three tabs, so none runs
 // below the fold: spacing on Layout, opacity and reading aids on Reading,
 // recording and script options on Recording.
 const layoutHosts = {
 	layout: layoutHost,
-	reading: document.getElementById( "set-reading-host" ),
-	background: document.getElementById( "set-background-host" ),
-	aids: document.getElementById( "set-aids-host" ),
-	display: document.getElementById( "set-display-host" ),
-	recording: document.getElementById( "set-recording-host" ),
-	script: document.getElementById( "set-script-host" )
+	reading: uiElement( "set-reading-host" ),
+	background: uiElement( "set-background-host" ),
+	aids: uiElement( "set-aids-host" ),
+	display: uiElement( "set-display-host" ),
+	recording: uiElement( "set-recording-host" ),
+	script: uiElement( "set-script-host" )
 };
 const LAYOUT_GROUP_TABS = {
 	Opacity: "reading",
@@ -4948,6 +4966,11 @@ function showLayoutView( view ) {
 }
 
 function toggleLayoutView( view ) {
+	if ( !settingsModal.classList.contains( "hidden" ) ) {
+		showSettingsTab( view );
+		showPanelWindow( "settings", settingsModal, () => settingsPages.layout() );
+		return;
+	}
 	const open = !layoutPanel?.classList.contains( "hidden" );
 	if ( open && layoutView === view ) {
 		closePanels();
@@ -5891,13 +5914,13 @@ function showTakeSummary() {
 	}
 	const logged = recording.data();
 	const keepers = logged.takes.filter( t => t.rating === "keeper" ).length;
-	const logLine = document.getElementById( "take-summary-log" );
+	const logLine = uiElement( "take-summary-log" );
 	if ( logLine ) {
 		logLine.textContent = logged.takes.length
 			? `Take log so far: ${ logged.takes.length } take${ logged.takes.length === 1 ? "" : "s" } of ${ logged.sections.length } section${ logged.sections.length === 1 ? "" : "s" }${ keepers ? `, ${ keepers } keeper${ keepers === 1 ? "" : "s" }` : "" }. Say “Prompter, keeper” or press K to mark a good take.`
 			: "";
 	}
-	const levelsLine = document.getElementById( "take-summary-levels" );
+	const levelsLine = uiElement( "take-summary-levels" );
 	if ( levelsLine ) {
 		const measured = logged.takes.filter( t => t.loudness ).slice( -6 );
 		levelsLine.textContent = measured.length
@@ -5905,10 +5928,10 @@ function showTakeSummary() {
 			: "";
 	}
 	const full = [ ...takeLog.values() ].some( r => !r.partial );
-	document.getElementById( "take-summary-targets" ).hidden = !full;
-	document.getElementById( "take-summary-targets-hint" ).hidden = !full;
+	uiElement( "take-summary-targets" ).hidden = !full;
+	uiElement( "take-summary-targets-hint" ).hidden = !full;
 	summaryModal.classList.remove( "hidden" );
-	document.getElementById( "take-summary-close" )?.focus( { preventScroll: true } );
+	uiElement( "take-summary-close" )?.focus( { preventScroll: true } );
 }
 
 function closeTakeSummary() {
@@ -5940,7 +5963,7 @@ setInterval( pacingTick, 250 );
 
 // --- Recordings (File > Recordings): every take log, see recordings.js ---
 
-const recordingsModal = document.getElementById( "recordings" );
+const recordingsModal = uiElement( "recordings" );
 let openRecordingId = null;
 
 function recordingWhen( r ) {
@@ -5951,13 +5974,13 @@ function recordingWhen( r ) {
 
 async function showRecordingsList() {
 	openRecordingId = null;
-	document.getElementById( "recordings-list-view" ).hidden = false;
-	document.getElementById( "recordings-detail-view" ).hidden = true;
-	document.getElementById( "recordings-title" ).textContent = "Recordings";
+	uiElement( "recordings-list-view" ).hidden = false;
+	uiElement( "recordings-detail-view" ).hidden = true;
+	uiElement( "recordings-title" ).textContent = "Recordings";
 	const { list, current } = await window.electron.recordings( "list" );
-	const rows = document.getElementById( "recordings-rows" );
+	const rows = uiElement( "recordings-rows" );
 	rows.innerHTML = "";
-	document.getElementById( "recordings-empty" ).hidden = list.length > 0;
+	uiElement( "recordings-empty" ).hidden = list.length > 0;
 	for ( const r of list ) {
 		const tr = document.createElement( "tr" );
 		tr.tabIndex = 0;
@@ -5986,21 +6009,21 @@ async function showRecordingsList() {
 async function showRecording( id ) {
 	const r = await window.electron.recordings( "read", { id } );
 	openRecordingId = id;
-	document.getElementById( "recordings-list-view" ).hidden = true;
-	document.getElementById( "recordings-detail-view" ).hidden = false;
-	document.getElementById( "recordings-title" ).textContent = r.title ?? r.id;
+	uiElement( "recordings-list-view" ).hidden = true;
+	uiElement( "recordings-detail-view" ).hidden = false;
+	uiElement( "recordings-title" ).textContent = r.title ?? r.id;
 	field( "recording-title" ).value = r.title ?? "";
 	field( "recording-title" ).placeholder = r.id;
 	field( "recording-note" ).value = r.note ?? "";
 	field( "recording-processed" ).checked = !!r.processed;
 	const plural = ( n, word ) => `${ n } ${ word }${ n === 1 ? "" : "s" }`;
-	document.getElementById( "recording-facts" ).textContent = [
+	uiElement( "recording-facts" ).textContent = [
 		`${ r.script ?? "No script" }, ${ recordingWhen( r ) }`,
 		`${ plural( r.takes, "take" ) } of ${ plural( r.sections, "section" ) }`,
 		`${ formatClock( r.recordedSeconds ) } recorded, ${ formatClock( r.editSeconds ) } in the edit`,
 		r.voice ? "word timings from voice mode" : "no word timings (steady scrolling)"
 	].join( " · " );
-	const rows = document.getElementById( "recording-takes" );
+	const rows = uiElement( "recording-takes" );
 	rows.innerHTML = "";
 	for ( const t of r.takeList ) {
 		const tr = document.createElement( "tr" );
@@ -6016,7 +6039,7 @@ async function showRecording( id ) {
 async function openRecordings() {
 	recordingsModal.classList.remove( "hidden" );
 	await showRecordingsList();
-	document.getElementById( "recordings-done" ).focus( { preventScroll: true } );
+	uiElement( "recordings-done" ).focus( { preventScroll: true } );
 }
 
 function closeRecordings() {
@@ -6027,7 +6050,7 @@ function closeRecordings() {
 async function updateOpenRecording( changes ) {
 	if ( !openRecordingId ) return;
 	const r = await window.electron.recordings( "update", { id: openRecordingId, changes } );
-	document.getElementById( "recordings-title" ).textContent = r?.title ?? openRecordingId;
+	uiElement( "recordings-title" ).textContent = r?.title ?? openRecordingId;
 }
 
 field( "recording-title" ).addEventListener( "change", e => updateOpenRecording( { title: e.target.value } ) );
@@ -6098,10 +6121,10 @@ function applyDisplayClasses() {
 function updateOnAir() {
 	applyBacking();
 	// The bar's Backing slider follows the level in use.
-	const label = document.getElementById( "cb-backing-label" );
+	const label = uiElement( "cb-backing-label" );
 	if ( label ) label.textContent = onAir() ? "On-air BG" : "Background";
 	if ( opacityInput && document.activeElement !== opacityInput ) opacityInput.value = liveBacking();
-	const button = document.getElementById( "cb-on-air" );
+	const button = uiElement( "cb-on-air" );
 	button?.classList.toggle( "live", onAir() );
 	button?.setAttribute( "aria-pressed", String( manualOnAir ) );
 	if ( !onAirEl ) return;
@@ -6371,7 +6394,7 @@ function attachNumberBox( range, getSpec ) {
 	row.className = "slider-with-box";
 	range.replaceWith( row );
 	row.append( range, box );
-	document.getElementById( `${ range.id }-value` )?.classList.add( "num-replaced" );
+	uiElement( `${ range.id }-value` )?.classList.add( "num-replaced" );
 
 	const read = () => Number( valueProp.get.call( range ) );
 	const refresh = () => {
@@ -6381,7 +6404,7 @@ function attachNumberBox( range, getSpec ) {
 		num.max = tidy( Number( range.max ) * scale );
 		num.step = tidy( Number( range.step ) * scale );
 		const shown = tidy( read() * scale );
-		if ( document.activeElement !== num ) num.value = shown;
+		if ( num.ownerDocument.activeElement !== num ) num.value = shown;
 		unit.textContent = spec.unit;
 		const label = spec.name;
 		num.setAttribute( "aria-label", `${ label } in ${ spec.word }` );
@@ -6474,6 +6497,6 @@ function attachNumberBox( range, getSpec ) {
 }
 
 for ( const [ id, getSpec ] of Object.entries( NUMBER_BOXES ) ) {
-	const range = document.getElementById( id );
+	const range = uiElement( id );
 	if ( range ) attachNumberBox( range, getSpec );
 }

@@ -120,6 +120,9 @@ try {
 		if ( m.method === "Runtime.exceptionThrown" ) exceptions.push( m.params.exceptionDetails.exception?.description ?? m.params.exceptionDetails.text );
 	} );
 	await send( "Runtime.enable" );
+	// Keep exercising the inline fallback and all existing controllers here.
+	// The native utility-window suite separately tests the normal floating UI.
+	await evaluate( "window.openBeforeUtilityTest=window.open;window.open=(url,...args)=>String(url).includes('utility-window.html')?null:window.openBeforeUtilityTest(url,...args)" );
 	await until( "document.getElementById('obs-status') && document.getElementById('md').textContent.trim().length > 100" );
 	await evaluate( "document.querySelector('#voice-offer button:last-child')?.click()" );
 	const directions = await evaluate( "(async()=>{const {decorateScript}=await import('./decorate.js');const {buildWordIndex}=await import('./word-index.js');const {indexSentences,scriptSentences}=await import('./sentence-highlight.js');const root=document.createElement('div');root.innerHTML='<p>[smile] Hello [shrug] there. [think] More [point] words.</p>';decorateScript(root);const words=buildWordIndex(root).words;indexSentences(root);const sentences=scriptSentences();indexSentences(document.getElementById('md'));return {words,text:root.textContent,directions:root.querySelectorAll('.dir-text').length,sentences:sentences.map(s=>s.text)};})()" );

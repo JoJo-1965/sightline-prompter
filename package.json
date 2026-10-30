@@ -18,6 +18,7 @@
 		"dist": "pnpm build:editor && electron-builder --publish never",
 		"check-docs": "node scripts/check-docs-sync.mjs",
 		"test:production-app": "node scripts/production-app.test.mjs",
+		"test:utility-windows": "node scripts/utility-windows.test.mjs",
 		"test:recorded-slate": "node scripts/recorded-slate.test.mjs"
 	},
 	"author": "Joanne Lockwood (SEE Change Happen Ltd)",

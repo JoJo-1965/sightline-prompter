@@ -4,6 +4,10 @@
 1.0.6 layout, use the guide bundled with that app.
 
 Open **⚙ Settings** on the top bar or press **Ctrl+,** (**Cmd+,** on Mac).
+In RC8, Settings opens in its own upright window. Drag the native title bar
+to place it beside the prompter or on another screen. Its position and size
+are remembered; opening Settings again brings the same window forward and
+keeps any unsaved draft. **F1 / ?** opens Help in a separate movable window too.
 There are five groups, with a second row of focused topics. Each setting has
 one home. Script files, recordings and settings import/export are in the
 **Files menu (☰)**; live tools are under **Tools** on the top bar.
@@ -13,7 +17,7 @@ topic and page. The same gallery opens from the guide's contents and works
 offline in the app.
 
 Settings keeps the same width and height across every tab and page. It only
-reduces its size when the prompter window is too small for the standard panel.
+reduces the available content space when you resize the Settings window.
 There is no scrolling. Longer topics use **Previous / Next**, with the current
 section and page number shown between them. Smaller windows use more pages;
 your draft stays intact as you move between them. Word lists use pages too.
@@ -140,13 +144,20 @@ script editor, or read-only sample source with **Save a copy…**.
 **Tools** drops down beneath its button and shifts inward at the window edge.
 It follows the button when the window size or mirror mode changes.
 
-Settings opens centred horizontally and vertically each time. You can drag
-its title while it is open; reopening it or resizing the window recentres it.
-The panel keeps the same dimensions across topics, within the available space.
+Settings starts centred on its first opening, then remembers where you put
+it. It keeps the same dimensions across topics and stays upright when the
+prompter is mirrored. Use the window's native title bar to move it across
+screens. Closing with **×**, Escape or Cancel keeps the existing unsaved-change
+prompt; quitting Sightline with a Settings draft asks too. Apply stays open;
+Save & close saves and hides the window.
+
+![Settings in its own movable window](images/floating-settings.png)
 
 **Tools** holds Sound check, the head guide and fullscreen/restore, Keeper,
 Scrap, quick display/voice panels, the control pad and the control window.
 Quick panels reuse the existing live controls rather than separate copies.
+If Settings is already open, a quick display tool brings the corresponding
+Settings topic forward, keeping the same live controls and draft.
 Their keyboard shortcuts, voice commands and Stream Deck actions still work.
 
 ![Tools grouped into recording tools, quick adjustments and operator windows](images/tools-menu.png)

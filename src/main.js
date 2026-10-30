@@ -17,6 +17,7 @@ import { setSectionTargets } from "./utils/targets.js";
 import { createPad } from "./pad.js";
 import { createControl } from "./control.js";
 import { createHeadGuide } from "./head-guide.js";
+import { createUtilityWindows } from "./utility-windows.js";
 import { readScriptSnapshot } from "./script-snapshot.js";
 import { createSpeech } from "./speech.js";
 import { createGuide } from "./guide.js";
@@ -161,6 +162,7 @@ const defaultSettings = {
 	showPad: false, // the floating control pad (View menu, Ctrl+Shift+P)
 	showHeadGuide: false,
 	headGuideBounds: null,
+	utilityWindowBounds: {},
 	headGuideScale: 1,
 	headGuideWidth: 1,
 	headGuideHeight: 1,
@@ -279,7 +281,7 @@ ipcMain.on( "debugLog", ( _event, text ) => {
 ipcMain.handle( "saveSupportLog", async ( event ) => {
 	const win = BrowserWindow.fromWebContents( event.sender );
 	const date = new Date().toISOString().slice( 0, 10 );
-	const { canceled, filePath } = await dialog.showSaveDialog( win, {
+	const { canceled, filePath } = await dialog.showSaveDialog( utilityWindows?.dialogParent() ?? win, {
 		title: "Save a log for support",
 		defaultPath: path.join( app.getPath( "documents" ), `Sightline support log ${ date }.txt` ),
 		filters: [ { name: "Text", extensions: [ "txt" ] } ]
@@ -378,6 +380,7 @@ let onSettingsChanged = () => {};
 let controlPad = null;
 let controlWindow = null;
 let framingGuide = null;
+let utilityWindows = null;
 let obs = null;
 let obsPassword = "";
 let obsCredentials = null;
@@ -462,6 +465,7 @@ function applyWindowSettings( win, wasEyeLine ) {
 	// is over the control bar or a panel, so the controls stay usable.
 	win.setIgnoreMouseEvents( !!settings.clickThrough, { forward: true } );
 	framingGuide?.restack();
+	utilityWindows?.restack();
 }
 
 const emptySlotHtml = index =>
@@ -511,9 +515,15 @@ const createWindow = ( state ) => {
 		}
 	);
 
+	utilityWindows = createUtilityWindows( { dir: __dirname, prompter: win, getSettings: () => settings, saveSettings: partial => updateSettings( partial ) } );
+	win.on( "closed", () => utilityWindows.dispose() );
+	win.webContents.on( "did-create-window", ( child, details ) => utilityWindows.didCreate( child, details ) );
 	win.loadFile( path.join( __dirname, "client", "teleprompter.html" ) );
 	// Links (About page) open in the browser; the window itself never navigates away.
-	win.webContents.setWindowOpenHandler( ( { url } ) => {
+	win.webContents.setWindowOpenHandler( ( details ) => {
+		const internal = utilityWindows.openHandler( details );
+		if ( internal ) return internal;
+		const { url } = details;
 		if ( /^https:\/\//.test( url ) ) shell.openExternal( url );
 		return { action: "deny" };
 	} );
@@ -768,6 +778,11 @@ const createWindow = ( state ) => {
 	}
 
 	win.on( "close", async ( event ) => {
+		if ( !isClosing && utilityWindows?.isDirty() ) {
+			event.preventDefault();
+			utilityWindows.requestClose( "settings", true );
+			return;
+		}
 		if ( isClosing ) {
 			await saveState( win );
 			return;
@@ -1787,6 +1802,7 @@ app.whenReady().then( async () => {
 	controlPad.apply();
 	framingGuide = createHeadGuide( {
 		dir: __dirname, prompter: win, getSettings: () => settings,
+		restackUtilities: () => utilityWindows?.restack(),
 		saveSettings: partial => updateSettings( partial ),
 		saveBounds: ( bounds ) => {
 			settings.headGuideBounds = bounds;
@@ -2210,7 +2226,7 @@ app.whenReady().then( async () => {
 	} );
 
 	ipcMain.on( "browseCuesFile", async () => {
-		const result = await dialog.showOpenDialog( win, {
+		const result = await dialog.showOpenDialog( utilityWindows?.dialogParent() ?? win, {
 			properties: [ "openFile" ],
 			filters: [
 				{ name: "Cues", extensions: [ "yaml", "yml" ] },

@@ -235,10 +235,18 @@ RC2 refreshed its bundled help and added the reusable acceptance samples.
 **1.0.7-rc.5** adds eye-anchored head-outline fitting;
 **1.0.7-rc.6** improves toolbar access and centres Settings on opening;
 **1.0.7-rc.7** adds floating guide adjustments, eye-anchored edge fitting and
-separate guide-background opacity. The latest
-published app remains **1.0.6**. No tag, merge, Marketplace publication or
+separate guide-background opacity;
+**1.0.7-rc.8** also makes Settings and F1 Help independent movable windows.
+The latest published app remains **1.0.6**. No tag, merge, Marketplace publication or
 website deployment is part of this candidate.
 
+- **Movable Settings and Help:** **Ctrl+,** and **F1 / ?** open separate upright
+  windows. Drag their native title bars to another screen; each remembers its
+  position and size. Settings retains its fixed layout, paged topics, live
+  previews and Apply/Save/Cancel behaviour. Closing Settings, or quitting the
+  app with a draft, asks before discarding changes. Reopening an already open
+  window brings it forward without resetting the draft. Both stay above the
+  prompter, including fullscreen, and have capture protection enabled.
 - **Guide adjustments in fullscreen:** the prompter's **Guide adjustments**
   button, **Tools > Guide adjustments…**, and the guide's **Adjust** toggle a
   separate window above the prompter, even when the guide is Clean or locked.
