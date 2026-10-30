@@ -231,10 +231,15 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 **Local Windows acceptance build:** RC1 established the feature baseline;
 RC2 refreshed its bundled help and added the reusable acceptance samples.
 **1.0.7-rc.3** adds compatibility reporting with private Stream Deck **0.1.9**;
-**1.0.7-rc.4** keeps the toolbar sliders labelled at every supported width. The latest
+**1.0.7-rc.4** keeps the toolbar sliders labelled at every supported width;
+**1.0.7-rc.5** adds eye-anchored head-outline fitting. The latest
 published app remains **1.0.6**. No tag, merge, Marketplace publication or
 website deployment is part of this candidate.
 
+- **Fit the head guide around fixed eyes:** **Adjust > Lock eye position**
+  stops accidental dragging or nudging. Independent **Width** and **Height**
+  controls reshape Actual position around both fixed eye marks. Save as ideal
+  keeps the shape; the dimensions and eye lock are recorded in the edit pack.
 - **Labelled toolbar sliders:** compact labels stay above every visible slider:
   **Speed** (or **Response** in voice mode), **Text size**, and **Background**
   (**On-air BG** when on air). Narrow windows keep the labels too.

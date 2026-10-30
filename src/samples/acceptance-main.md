@@ -6,7 +6,7 @@
 
 [Check OBS is connected and recording controls are allowed. Prepare the recorded slate, choose Flash and beep, and enable scratch audio. The script does not enable these settings for you.]
 
-[A00. Before recording, choose Check compatibility in Settings > Controls > Stream Deck. Confirm Sightline RC4 and plugin 0.1.9 are reported as compatible. In Stream Deck, open a key's settings and check its connection result.]
+[A00. Before recording, choose Check compatibility in Settings > Controls > Stream Deck. Confirm Sightline RC5 and plugin 0.1.9 are reported as compatible. In Stream Deck, open a key's settings and check its connection result.]
 
 [A00b. Before recording, open Settings from Files, then close it. Check both toolbar mirror icons independently and return them off. Switch Help tabs: the frame should stay still. In a spare slot, open a sample and choose Edit script: its source is read-only with Save a copy. Try Clear this slot, then Cancel: the sample should remain. Return to this acceptance script.]
 
@@ -78,7 +78,7 @@ That is the end of this attempt. {stop}
 My guide is a manual framing reference. The ideal shape shows my preferred
 position, and the actual shape records the comparison I have set by hand.
 
-[A09. Use the Head guide fullscreen key, or Ctrl+Alt+H, to fill the monitor and restore it. Try Clean, then Ctrl+Shift+H to reveal controls. Check the projector, guide and prompter stack. Leave the small Actual adjustment for the module-change check.]
+[A09. In Adjust, align the eye marks and choose Lock eye position. Fit Width and Height independently: both eye marks must stay fixed. Unlock the eyes to move Actual position again. Save as ideal only if you want to keep this new reference. Use the Head guide fullscreen key, or Ctrl+Alt+H, to fill the monitor and restore it. Try Clean, then Ctrl+Shift+H to reveal controls. Check the projector, guide and prompter stack. Leave the small Actual adjustment for the module-change check.]
 
 I can still see my preview and read the words. The guide should stay out
 of both the composed camera recording and the separate clean camera file.

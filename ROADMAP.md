@@ -20,6 +20,8 @@ known protocol/minimum-version mismatches are blocked; legacy versions stay
 unconfirmed rather than being described as up to date.
 **1.0.7-rc.4** retains compact labels above every visible toolbar slider,
 including Response in voice mode and the on-air background state.
+**1.0.7-rc.5** adds independent head-guide Width/Height fitting around fixed
+eye marks, an eye-position lock and saved/exported shape proportions.
 The latest published app is still **1.0.6**. Work remains on
 `codex/obs-integration`; no merge, tag, public release, Marketplace submission
 or website deployment is authorised by preparing or testing this candidate.

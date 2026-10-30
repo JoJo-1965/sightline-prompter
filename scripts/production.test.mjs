@@ -10,10 +10,11 @@ import { createObsLedger } from "../src/obs-ledger.js";
 import { helpTabs, voiceHelpTabs } from "../src/client/help-tabs.js";
 import { guidePose } from "../src/client/guide-pose.js";
 
-assert.deepEqual( guidePose( { x: -90, y: 85, scale: 8 } ), { x: -45, y: 45, scale: 2 } );
-assert.deepEqual( guidePose( { x: NaN, y: null, scale: Infinity } ), { x: 0, y: 0, scale: 1 } );
-assert.deepEqual( guidePose( null ), { x: 0, y: 0, scale: 1 } );
-assert.deepEqual( guidePose( { x: 0, y: 0, scale: 0.4 } ), { x: 0, y: 0, scale: 0.4 } );
+assert.deepEqual( guidePose( { x: -90, y: 85, scale: 8, width: 9, height: -2 } ), { x: -45, y: 45, scale: 2, width: 2, height: 0.4 } );
+assert.deepEqual( guidePose( { x: NaN, y: null, scale: Infinity, width: NaN, height: null } ), { x: 0, y: 0, scale: 1, width: 1, height: 1 } );
+assert.deepEqual( guidePose( null ), { x: 0, y: 0, scale: 1, width: 1, height: 1 } );
+assert.deepEqual( guidePose( { x: 0, y: 0, scale: 0.4 } ), { x: 0, y: 0, scale: 0.4, width: 1, height: 1 } );
+assert.deepEqual( guidePose( { width: 1.23, height: 0.87 } ), { x: 0, y: 0, scale: 1, width: 1.23, height: 0.87 } );
 
 const now = Date.parse( "2026-10-29T12:00:00Z" );
 const live = { connection: "connected", recording: "recording", recordingId: "recording-A", outputDuration: 10000, durationObservedAt: new Date( now ).toISOString() };
@@ -50,7 +51,7 @@ try {
 	let time = now;
 	const ledger = createObsLedger();
 	ledger.observe( { ...live, observedAt: new Date( now ).toISOString() } );
-	const log = createTakeLog( { clock: () => time, snapshot: () => snapshot, obsState: () => ( { ...live, durationObservedAt: new Date( time ).toISOString(), outputDuration: 10000 + time - now } ), guideState: () => ( { shown: true, pose: { x: 2, y: -3, scale: 1.1 } } ) } );
+	const log = createTakeLog( { clock: () => time, snapshot: () => snapshot, obsState: () => ( { ...live, durationObservedAt: new Date( time ).toISOString(), outputDuration: 10000 + time - now } ), guideState: () => ( { shown: true, eyesLocked: true, pose: { x: 2, y: -3, scale: 1.1, width: 1.25, height: 0.9 }, ideal: { x: 0, y: 0, scale: 1, width: 1.1, height: 1.2 } } ) } );
 	log.tick( { active: true, index: 0, title: "Section one", advanced: true } );
 	time += 2000;
 	log.marker( { label: "Keep this" } );
@@ -75,6 +76,8 @@ try {
 	assert.equal( pack["script-001-recording-script.md"], original );
 	assert.ok( pack["script-001.html"].includes( "original words" ) );
 	assert.ok( pack["head-guide.json"].includes( "\"y\": -3" ) );
+	assert.ok( pack["head-guide.json"].includes( "\"width\": 1.25" ) && pack["head-guide.json"].includes( "\"height\": 0.9" ) );
+	assert.ok( pack["head-guide.json"].includes( "\"eyesLocked\": true" ) );
 	assert.ok( Object.values( pack ).every( value => typeof value === "string" ), "pack API remains text files" );
 	const restored = createTakeLog();
 	restored.load( linked );

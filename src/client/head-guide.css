@@ -29,10 +29,16 @@ body.fullscreen #resize { display: none; }
 .ideal .pose-label { fill: #fff; }
 #head { cursor: move; touch-action: none; }
 #head ellipse { pointer-events: all; }
-#adjust-panel { position: absolute; z-index: 4; left: 8px; top: 38px; width: min(360px, 94vw); padding: 12px; border-radius: 8px; background: #15222bf5; border: 1px solid #657282; text-wrap: pretty; }
+#adjust-panel { position: absolute; z-index: 4; left: 8px; top: 38px; width: min(360px, 94vw); max-height: calc(100vh - 48px); overflow-y: auto; padding: 12px; border-radius: 8px; background: #15222bf5; border: 1px solid #657282; text-wrap: pretty; }
 #adjust-panel[hidden] { display: none; }
-#adjust-panel p { font-size: 12px; line-height: 1.5; }
+#adjust-panel p { font-size: 12px; line-height: 1.5; text-wrap: balance; }
 #adjust-panel hr { border: 0; border-top: 1px solid #657282; margin: 10px 0; }
 .placements button[aria-pressed="true"] { border-color: #72efce; background: #34535c; }
 .pose-arrows { display: flex; gap: 7px; margin-top: 9px; }
 body.chromeless #adjust-panel, body.locked #adjust-panel { visibility: hidden; }
+.shape-control { display: flex; justify-content: space-between; margin-top: 9px; font-size: 12px; }
+.shape-range { display: block; width: 100%; margin: 3px 0 0; }
+#lock-eyes[aria-pressed="true"] { border-color: #72efce; background: #34535c; }
+button:disabled { opacity: .45; cursor: default; }
+body.eyes-locked #head { cursor: default; }
+button:focus-visible, input:focus-visible { outline: 2px solid #fbd86c; outline-offset: 2px; }

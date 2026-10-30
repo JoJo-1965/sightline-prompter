@@ -291,6 +291,10 @@ The whole workflow is in the guide:
 
 ## Recording setups
 
+- **Eye-anchored head fitting:** independent Actual width/height controls,
+  an eye-position lock, saved Ideal proportions and additive guide dimensions
+  in the edit pack. The guide stays a separate manual overlay.
+
 - **Mirroring** horizontally, vertically or both (the original flipped
   horizontally), with the whole display, controls included, mirrored so it all
   reads correctly in the glass.

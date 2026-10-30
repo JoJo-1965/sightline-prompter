@@ -91,11 +91,12 @@ const recording = createTakeLog( {
 	snapshot: () => recordingScriptSnapshot(),
 	obsState: () => obsUi.state(),
 	guideState: () => headGuideState
-		? { ...headGuideState, pose: { x: headGuideState.x, y: headGuideState.y, scale: headGuideState.scale } }
+		? { ...headGuideState, pose: { x: headGuideState.x, y: headGuideState.y, scale: headGuideState.scale, width: headGuideState.width, height: headGuideState.height } }
 		: ( {
 			shown: !!settings.showHeadGuide, fullscreen: !!settings.headGuideFullscreen,
 			chromeless: !!settings.headGuideChromeless, bounds: settings.headGuideBounds,
-			pose: { x: settings.headGuideX, y: settings.headGuideY, scale: settings.headGuideScale },
+			pose: { x: settings.headGuideX, y: settings.headGuideY, scale: settings.headGuideScale, width: settings.headGuideWidth ?? 1, height: settings.headGuideHeight ?? 1 },
+			eyesLocked: settings.headGuideEyesLocked === true,
 			ideal: settings.headGuideIdeal, showIdeal: settings.headGuideShowIdeal !== false,
 			captureStatus: "Separate protected overlay; actual OBS capture route requires verification"
 		} ),

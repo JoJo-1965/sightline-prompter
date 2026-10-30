@@ -5,6 +5,7 @@ const svg = document.querySelector( "svg" );
 let scale = 1;
 let resize = false;
 let pose = { x: 0, y: 0 };
+let eyesLocked = false;
 const idealShape = document.querySelector( "#head" ).cloneNode( true );
 idealShape.id = "ideal-head";
 idealShape.classList.add( "ideal" );
@@ -20,7 +21,7 @@ function point( event ) {
 	return matrix ? new DOMPoint( event.clientX, event.clientY ).matrixTransform( matrix.inverse() ) : null;
 }
 actualShape.onpointerdown = ( event ) => {
-	if ( event.button !== 0 ) return;
+	if ( event.button !== 0 || eyesLocked ) return;
 	const start = point( event );
 	if ( !start ) return;
 	dragging = { start, pose: { ...pose } };
@@ -28,7 +29,7 @@ actualShape.onpointerdown = ( event ) => {
 	event.preventDefault();
 };
 actualShape.onpointermove = ( event ) => {
-	if ( !dragging ) return;
+	if ( !dragging || eyesLocked ) return;
 	const next = point( event );
 	if ( !next ) return;
 	const moved = guidePose( { x: dragging.pose.x + ( next.x - dragging.start.x ) / 10, y: dragging.pose.y + ( next.y - dragging.start.y ) / 5.625, scale } );
@@ -38,6 +39,17 @@ actualShape.onpointerup = actualShape.onlostpointercapture = () => {
 	dragging = null;
 };
 const transform = value => `translate(${ value.x * 10 } ${ value.y * 5.625 }) translate(500 155) scale(${ value.scale }) translate(-500 -155)`;
+const shapeTransform = value => `translate(500 155) scale(${ value.width } ${ value.height }) translate(-500 -155)`;
+function showPose( element, value ) {
+	element.setAttribute( "transform", transform( value ) );
+	element.querySelector( ".head-outline" ).setAttribute( "transform", shapeTransform( value ) );
+	// Keep both eye marks fixed, even when changing the overall size.
+	element.querySelector( ".eye-reference" ).setAttribute( "transform", `translate(500 155) scale(${ 1 / value.scale }) translate(-500 -155)` );
+}
+document.querySelector( "#lock-eyes" ).onclick = () => guide.action( "preferences", { eyesLocked: !eyesLocked } );
+for ( const axis of [ "width", "height" ] ) {
+	document.querySelector( `#shape-${ axis }` ).oninput = event => guide.action( "preferences", { [axis]: Number( event.target.value ) / 100 } );
+}
 document.querySelector( "#adjust" ).onclick = () => {
 	const panel = document.querySelector( "#adjust-panel" );
 	panel.hidden = !panel.hidden;
@@ -57,9 +69,19 @@ guide.onState( ( value ) => {
 	for ( const button of document.querySelectorAll( "[data-place]" ) ) button.setAttribute( "aria-pressed", String( button.dataset.place === value.placement ) );
 	document.querySelector( "#fullscreen" ).textContent = value.fullscreen ? "Restore" : "Fullscreen";
 	scale = value.scale;
+	eyesLocked = value.eyesLocked === true;
+	document.body.classList.toggle( "eyes-locked", eyesLocked );
+	document.querySelector( "#lock-eyes" ).setAttribute( "aria-pressed", String( eyesLocked ) );
+	document.querySelector( "#lock-eyes" ).textContent = eyesLocked ? "Eyes fixed · unlock" : "Lock eye position";
+	for ( const button of document.querySelectorAll( ".pose-arrows button" ) ) button.disabled = eyesLocked;
+	for ( const axis of [ "width", "height" ] ) {
+		const percent = Math.round( value[axis] * 100 );
+		document.querySelector( `#shape-${ axis }` ).value = percent;
+		document.querySelector( `#shape-${ axis }-value` ).value = `${ percent }%`;
+	}
 	pose = { x: value.x, y: value.y };
-	document.querySelector( "#head" ).setAttribute( "transform", transform( value ) );
-	idealShape.setAttribute( "transform", transform( value.ideal ) );
+	showPose( actualShape, value );
+	showPose( idealShape, value.ideal );
 	idealShape.style.display = value.showIdeal ? "" : "none";
 	document.querySelector( "#ideal-visible" ).textContent = value.showIdeal ? "Hide ideal" : "Show ideal";
 	document.querySelector( "#pose-value" ).textContent = `X ${ value.x }% · Y ${ value.y }% · Size ${ Math.round( scale * 100 ) }%`;

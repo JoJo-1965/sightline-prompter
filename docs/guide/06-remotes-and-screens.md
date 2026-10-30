@@ -11,10 +11,19 @@ opacity or colour, then **Lock** to pass clicks through to the preview.
 
 **Adjust** opens the manual framing check. The solid **Actual position**
 outline can be dragged to match your head in the preview, nudged up, down,
-left or right, and resized with **+ / −**. **Save as ideal** copies that
-position and size to the dashed **Ideal position** outline. Then move the
+left or right, and resized with **+ / −**. Align the eye marks first, then
+choose **Lock eye position**. **Width** stretches the outline horizontally;
+**Height** stretches it vertically. Both eye marks stay fixed, including when
+you use the overall **+ / −** size buttons. Dragging and the nudge arrows are
+disabled until you unlock the eyes. This is separate from the toolbar's
+**Lock**, which passes all clicks through the overlay.
+
+**Save as ideal** copies the position, overall size, width and height to the
+dashed **Ideal position** outline. Then unlock the eyes and move the
 actual outline independently to compare your current framing with the
-reference. **Back to ideal** restores it; **Hide ideal** hides the reference.
+reference. **Back to ideal** restores it and unlocks the eyes;
+**Hide ideal** hides the reference. Eye lock fixes the outline inside the
+guide; moving or resizing the whole overlay still moves the reference on screen.
 This is a manual check, without face detection or automatic tracking.
 
 ![Separate ideal and actual head-position outlines](images/head-guide.png)

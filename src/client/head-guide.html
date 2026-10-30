@@ -26,17 +26,23 @@
 </div>
 <hr>
 <strong>Actual position (manual)</strong>
+<p>Align the eye marks, lock them, then fit the outline.</p>
+<button type="button" id="lock-eyes" aria-pressed="false" title="Prevent dragging or nudging the outline; width and height adjust around the fixed eyes">Lock eye position</button>
 <div class="pose-arrows">
 <button type="button" data-y="-1" aria-label="Move outline up">↑</button>
 <button type="button" data-x="-1" aria-label="Move outline left">←</button>
 <button type="button" data-x="1" aria-label="Move outline right">→</button>
 <button type="button" data-y="1" aria-label="Move outline down">↓</button>
 </div>
+<label class="shape-control" for="shape-width">Width <output id="shape-width-value" for="shape-width">100%</output></label>
+<input id="shape-width" class="shape-range" type="range" min="40" max="200" step="1" value="100" aria-label="Head outline width around the eye position">
+<label class="shape-control" for="shape-height">Height <output id="shape-height-value" for="shape-height">100%</output></label>
+<input id="shape-height" class="shape-range" type="range" min="40" max="200" step="1" value="100" aria-label="Head outline height around the eye line">
 <p id="pose-value"></p>
 <button type="button" id="save-ideal">Save as ideal</button>
-<button type="button" id="reset-pose">Back to ideal</button>
+<button type="button" id="reset-pose" title="Restore the saved ideal shape and position, and unlock the eyes">Back to ideal</button>
 <button type="button" id="ideal-visible">Show ideal</button>
-<p>Drag the solid outline to match your head in the preview, or use the arrows and size buttons. The dashed outline marks your saved ideal position.</p>
+<p>Unlock to drag or nudge. Width, Height and +/− keep the eyes fixed. The dashed shape is your saved Ideal reference.</p>
 <p>This is a manual reference check; it does not track your face.</p>
 </div>
 <div id="stage">
@@ -46,9 +52,14 @@
 <path class="line dashed" d="M95 155H905"/>
 <text class="label" x="105" y="144">Eyes</text>
 <g id="head">
+<g class="head-outline">
 <ellipse class="line" cx="500" cy="187" rx="86" ry="121"/>
 <path class="line" d="M460 298 L455 329 Q424 345 368 367 Q322 384 297 459 M540 298 L545 329 Q576 345 632 367 Q678 384 703 459"/>
-<path class="line quiet" d="M436 155h28m72 0h28"/>
+</g>
+<g class="eye-reference">
+<path class="line eye-marks" d="M436 155h28m72 0h28"/>
+<circle class="line eye-anchor" cx="500" cy="155" r="3"/>
+</g>
 <text class="label pose-label" x="605" y="215">Actual position</text>
 </g>
 <text class="label" x="610" y="72">Headroom</text>

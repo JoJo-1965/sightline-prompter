@@ -15,7 +15,7 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 	let normalBounds = null;
 	const state = () => {
 		const s = getSettings();
-		return { locked, fullscreen, chromeless: s.headGuideChromeless === true, ...guidePose( { x: s.headGuideX, y: s.headGuideY, scale: s.headGuideScale } ), ideal: guidePose( s.headGuideIdeal ), showIdeal: s.headGuideShowIdeal !== false, opacity: Math.max( 0.2, Math.min( 1, Number( s.headGuideOpacity ) || 0.75 ) ), colour: s.headGuideColour === "gold" ? "gold" : "mint" };
+		return { locked, fullscreen, chromeless: s.headGuideChromeless === true, eyesLocked: s.headGuideEyesLocked === true, ...guidePose( { x: s.headGuideX, y: s.headGuideY, scale: s.headGuideScale, width: s.headGuideWidth, height: s.headGuideHeight } ), ideal: guidePose( s.headGuideIdeal ), showIdeal: s.headGuideShowIdeal !== false, opacity: Math.max( 0.2, Math.min( 1, Number( s.headGuideOpacity ) || 0.75 ) ), colour: s.headGuideColour === "gold" ? "gold" : "mint" };
 	};
 	const snapshot = () => ( { ...state(), shown: !!overlay, bounds: overlay?.getBounds() ?? getSettings().headGuideBounds ?? null, windowedBounds: normalBounds ?? getSettings().headGuideBounds ?? null, placement: getSettings().headGuidePlacement ?? "centre", placements: getSettings().headGuidePlacements ?? {}, displayId: overlay ? screen.getDisplayMatching( overlay.getBounds() ).id : null, captureStatus: "Protected separate overlay; OBS capture route not verified" } );
 	const send = () => {
@@ -162,20 +162,23 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 		}
 		if ( name === "preferences" ) {
 			const patch = {};
+			if ( typeof value?.eyesLocked === "boolean" ) patch.headGuideEyesLocked = value.eyesLocked;
+			if ( Number.isFinite( value?.width ) ) patch.headGuideWidth = guidePose( value ).width;
+			if ( Number.isFinite( value?.height ) ) patch.headGuideHeight = guidePose( value ).height;
 			if ( Number.isFinite( value?.scale ) ) patch.headGuideScale = Math.max( 0.4, Math.min( 2, value.scale ) );
-			if ( Number.isFinite( value?.x ) ) patch.headGuideX = Math.max( -45, Math.min( 45, value.x ) );
-			if ( Number.isFinite( value?.y ) ) patch.headGuideY = Math.max( -45, Math.min( 45, value.y ) );
+			if ( !state().eyesLocked && Number.isFinite( value?.x ) ) patch.headGuideX = Math.max( -45, Math.min( 45, value.x ) );
+			if ( !state().eyesLocked && Number.isFinite( value?.y ) ) patch.headGuideY = Math.max( -45, Math.min( 45, value.y ) );
 			if ( Number.isFinite( value?.opacity ) ) patch.headGuideOpacity = Math.max( 0.2, Math.min( 1, value.opacity ) );
 			if ( Object.keys( patch ).length ) saveSettings( patch );
 		}
 		if ( name === "save-ideal" ) {
 			const pose = state();
-			saveSettings( { headGuideIdeal: { x: pose.x, y: pose.y, scale: pose.scale }, headGuideShowIdeal: true } );
+			saveSettings( { headGuideIdeal: guidePose( pose ), headGuideShowIdeal: true } );
 		}
 		if ( name === "ideal-visible" ) saveSettings( { headGuideShowIdeal: !state().showIdeal } );
 		if ( name === "reset-pose" ) {
 			const ideal = state().ideal;
-			saveSettings( { headGuideX: ideal.x, headGuideY: ideal.y, headGuideScale: ideal.scale } );
+			saveSettings( { headGuideX: ideal.x, headGuideY: ideal.y, headGuideScale: ideal.scale, headGuideWidth: ideal.width, headGuideHeight: ideal.height, headGuideEyesLocked: false } );
 		}
 		if ( name === "colour" ) saveSettings( { headGuideColour: state().colour === "mint" ? "gold" : "mint" } );
 		if ( name === "resize-start" && !fullscreen ) resizing = { cursor: screen.getCursorScreenPoint(), bounds: overlay.getBounds() };

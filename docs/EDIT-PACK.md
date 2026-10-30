@@ -311,6 +311,15 @@ Centre/Beside placements. Capture-route status is explicitly unverified
 until the actual OBS output has been checked. The guide is not added as an
 OBS source. No video or camera frames are embedded in these snapshots.
 
+The actual `pose` and `ideal` pose can include additive `width` and `height`
+ratios alongside `x`, `y` and `scale`: `1` is the original proportion,
+`1.25` is 25% wider or taller. Missing width/height in older logs mean `1`.
+The outline scales around the eye centre `(500, 155)` in the guide's
+`1000 × 562.5` viewBox; position offsets use percentages of that viewBox.
+The eye marks retain their spacing while the head outline changes shape or size.
+`eyesLocked` records the manual position lock, separate from click-through
+`locked`. These are session preferences, not automatic measurements of a face.
+
 Do not treat these observations as a continuous or frame-accurate timecode
 map. Connection loss can leave gaps or unknown file associations. Use the
 slate or scratch audio for precise synchronisation, and preserve uncertain

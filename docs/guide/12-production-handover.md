@@ -37,7 +37,11 @@ Source Record filter.
 
 Show the head guide with **Ctrl+Shift+H**, its Stream Deck key, or **Tools >
 Head guide / unlock**. Use your saved ideal outline, then move and scale the
-actual outline to match your head in the camera preview. These are manual
+actual outline to match your head in the camera preview. In **Adjust**, align
+the eye marks, choose **Lock eye position**, then fit **Width** and **Height**
+independently. Both eye marks stay fixed while reshaping. **Save as ideal**
+keeps the fitted shape; **Back to ideal** restores it and unlocks the eyes.
+The dimensions and eye-lock state are included in take snapshots. These are manual
 reference shapes; the app does not detect your face.
 
 ![The head guide and its framing controls](images/head-guide.png)

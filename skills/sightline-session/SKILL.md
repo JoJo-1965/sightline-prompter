@@ -105,6 +105,11 @@ The user may be recording. **Only send `play`, `pause`, jumps, `keeper` or
 
 ## After: the take log and the edit pack
 
+Head-guide snapshots also retain Actual/Ideal `width` and `height` ratios
+(default `1` in older data), overall `scale`, and `eyesLocked`. This manual
+eye-position lock is separate from click-through `locked`. Read the
+[edit-pack contract](../../docs/EDIT-PACK.md) before interpreting the geometry.
+
 Sightline logs every take of every section as it's recorded, one file per
 script per day, saved as it goes. These read the files, so they work with the
 app closed:
