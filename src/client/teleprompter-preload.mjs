@@ -41,7 +41,7 @@ contextBridge.exposeInMainWorld( "electron", {
 	speechModelStatus: () => ipcRenderer.send( "speechModelStatus" ),
 	speechModelDownload: () => ipcRenderer.send( "speechModelDownload" ),
 	onSpeechModel: callback => on( "speechModel", callback ),
-	speechStart: () => ipcRenderer.send( "speechStart" ),
+	speechStart: options => ipcRenderer.send( "speechStart", options ),
 	speechStop: () => ipcRenderer.send( "speechStop" ),
 	sendSpeechAudio: samples => ipcRenderer.send( "speechAudio", samples ),
 	onSpeechWords: callback => on( "speechWords", callback ),

@@ -19,8 +19,10 @@ let recognizer = null;
 let stream = null;
 let committed = 0;
 let fed = 0; // samples since the stream started
+let session = null;
+let lastHealth = 0;
 
-const send = message => process.parentPort.postMessage( message );
+const send = message => process.parentPort.postMessage( { ...message, session } );
 
 function words( text ) {
 	return text.trim().split( /\s+/ ).filter( Boolean );
@@ -99,11 +101,17 @@ function feed( samples ) {
 		at = starts.slice( from, from + out.length ).map( s => Math.round( wall - ( audioNow - s ) * 1000 ) );
 	}
 	if ( out.length || final ) send( { type: "words", words: out, final, at } );
+	if ( Date.now() - lastHealth >= 1000 ) {
+		lastHealth = Date.now();
+		send( { type: "health" } );
+	}
 }
 
 process.parentPort.on( "message", ( { data } ) => {
 	try {
 		if ( data.type === "start" ) {
+			session = data.session ?? null;
+			lastHealth = 0;
 			if ( !recognizer ) load( data.dir );
 			reset();
 			send( { type: "ready" } );

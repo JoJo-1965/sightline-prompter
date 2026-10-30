@@ -204,6 +204,15 @@ Publication remains held until all five production requirements are validated.
 
 ## Don't
 
+Commands-only listener health is available as `listenerHealth` in status.
+Recovery is bounded and respects listening-off and script mute. The user can
+use Prompting > Commands > Restart listening. Command-word text tracing is
+off by default and must be explicitly enabled there for troubleshooting;
+entries have `mode: "commands"`. Do not enable it through automation. It may
+include surrounding conversation, so ask the user to switch it off afterwards.
+`padLayout` in status describes the shared phone/pad layout; hardware Stream
+Deck profiles keep separate assignments. Configure layouts in Controls > Pad.
+
 For recognition diagnosis, compare the original source with the captured
 microphone and check input level before teaching aliases for missing lines.
 The [quiet synthetic-capture investigation](../../docs/VOICE-VALIDATION.md)

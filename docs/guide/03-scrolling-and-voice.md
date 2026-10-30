@@ -116,8 +116,8 @@ your settings, so **Export Settings** takes them to another computer.
 
 **The wake word** is "Prompter" unless you choose another on **Settings > Prompting > Commands >
 Wake word**: Computer, Teleprompter or Director. Pick one that doesn't come up in
-your scripts. Below, read "Prompter" as whichever you chose; it takes effect the
-next time Sightline starts listening.
+your scripts. Below, read "Prompter" as whichever you chose. Apply refreshes
+the active listener immediately, including while it waits for the wake word.
 
 Say **"Prompter"**, leave a brief beat, say the command, then stop for a moment.
 The beat helps the recogniser separate the wake word from the command. Finish
@@ -132,6 +132,31 @@ As soon as it hears **"Prompter"**, a message at the bottom says
 command. Another confirms what was heard, such as *Heard: "Prompter,
 slower"*, and if what followed wasn't a command it says *Didn't catch
 that*, with the words it heard, so you can say it again.
+
+### If listening stops responding
+
+Sightline checks that microphone audio is flowing and the local recogniser
+is acknowledging it. A stopped audio context, ended mic track, failed
+connection or stalled recogniser triggers a fresh listener, keeping the
+script position and voice hold. OBS and scratch recording are independent.
+Silence and missing transcripts alone do not cause a restart. Deliberate
+listening-off and `{listen: off}` remain respected.
+
+Recovery tries at most three times in a minute, then shows that listening
+has stopped. Use **Prompting > Commands > Restart listening**, or click the
+listening badge, for a deliberate retry. The Commands page shows its state.
+Recovery events go in the support log without spoken words or audio.
+
+For a missed wake word, enable **Trace command words to the local heard log**
+in that same topic, then Apply and reproduce it. This is **off by default**.
+It saves recognised text during commands-only listening, including while
+stopped, and may include nearby conversation. Turn it off afterwards.
+Entries use `mode: "commands"`; ordinary voice entries use `mode: "voice"`.
+The trace can reveal a mishearing; add that form in **Prompting > Your words**.
+An operating listener can still misrecognise a word; recovery cannot fix
+every recognition error. This option saves no audio.
+
+### Supported voice phrases
 
 | Say "Prompter, …" | What happens |
 | --- | --- |

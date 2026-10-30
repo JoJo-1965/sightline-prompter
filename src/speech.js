@@ -26,6 +26,7 @@ export function createSpeech( { dir, win } ) {
 		MODEL_NAME
 	);
 	let worker = null;
+	let speechSession = null;
 	let download = null; // { received, error } while fetching
 
 	const installed = () =>
@@ -89,15 +90,18 @@ export function createSpeech( { dir, win } ) {
 		worker = utilityProcess.fork( path.join( dir, "speech-worker.js" ), [], {
 			serviceName: "Sightline speech"
 		} );
+		const current = worker;
 		worker.on( "message", ( message ) => {
-			if ( message.type === "words" ) tell( "speechWords", { words: message.words, final: message.final, at: message.at } );
+			if ( worker !== current || message.session !== speechSession ) return;
+			if ( message.type === "words" ) tell( "speechWords", { words: message.words, final: message.final, at: message.at, session: message.session } );
 			else tell( "speechState", message );
 		} );
 		worker.on( "exit", () => {
+			if ( worker !== current ) return;
 			worker = null;
 			tell( "speechState", {
 				type: "error",
-				message: "The speech engine stopped."
+				message: "The speech engine stopped.", session: speechSession
 			} );
 		} );
 		return worker;
@@ -109,7 +113,7 @@ export function createSpeech( { dir, win } ) {
 	ipcMain.on( "speechModelDownload", ( event ) => {
 		if ( fromPrompter( event ) ) fetchModel();
 	} );
-	ipcMain.on( "speechStart", ( event ) => {
+	ipcMain.on( "speechStart", ( event, options = {} ) => {
 		if ( !fromPrompter( event ) ) return;
 		if ( !installed() ) {
 			tell( "speechState", {
@@ -118,7 +122,13 @@ export function createSpeech( { dir, win } ) {
 			} );
 			return;
 		}
-		ensureWorker().postMessage( { type: "start", dir: modelDir } );
+		speechSession = Number.isSafeInteger( options?.session ) ? options.session : null;
+		if ( options?.reset === true ) {
+			const previous = worker;
+			worker = null;
+			previous?.kill();
+		}
+		ensureWorker().postMessage( { type: "start", dir: modelDir, session: speechSession } );
 	} );
 	ipcMain.on( "speechAudio", ( event, samples ) => {
 		if ( fromPrompter( event ) && worker )

@@ -42,7 +42,7 @@ without disappearing as you move the pointer onto it.
 | --- | --- | --- |
 | **Prompting** | Scrolling | Steady or voice mode, steady speed and the opening countdown |
 | | Voice | Speech engine, model download, responsiveness, Deepgram key and microphone |
-| | Commands | When to listen for commands and which wake word to use |
+| | Commands | When to listen, wake word, listener state, Restart listening and optional word tracing |
 | | Your words | Script synonyms, command synonyms, sound-alike matching, suggestions and Teach |
 | | Script | Notes mode, pacing, script directions, slide cues and directive display |
 | **Appearance** | Text | Body and heading fonts, heading size, comment size/colour and text-size preview |
@@ -52,7 +52,8 @@ without disappearing as you move the pointer onto it.
 | | Screens | Beam-splitter mirroring, prompter monitor, Keep on top, eye-line strip and keeping controls visible |
 | **Recording** | Takes | Slate, ON AIR display, countdown beep, capture protection and click-through |
 | | Audio | Scratch audio, loudness per take and keeping the sound-check meter visible |
-| **Controls** | Phone | Enable the phone remote, scan its QR code or replace its code |
+| **Controls** | Pad | Select and arrange shared pad/phone buttons, columns and presets |
+| | Phone | Enable the phone remote, scan its QR code or replace its code |
 | | Stream Deck | Enable the companion plugin's buttons-only connection and open its guide |
 | | AI & API | Enable local automation, port, token, recording-delete permission and AI setup help |
 | | OBS connection | Enable OBS, address, port, protected password and the saved-connection test |

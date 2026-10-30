@@ -82,6 +82,15 @@ Mirroring has one Settings home here, alongside the window and monitor controls.
 
 ## Controls
 
+### Pad and phone layout
+
+![Select and reorder shared pad and phone buttons](images/settings-pad.png)
+
+The same selected functions and order appear on both screens. Stream Deck
+keeps its physical profiles; the pad and phone reuse its artwork and actions.
+
+![Customised floating pad](images/pad.png)
+
 ### Phone
 
 The example QR below is for illustration; scan the code in your own Settings.

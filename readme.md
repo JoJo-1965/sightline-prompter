@@ -242,9 +242,20 @@ separate guide-background opacity;
 mirroring under Screens and honours capture preferences for helper windows;
 **1.0.7-rc.11** improves OBS button contrast and keeps Settings above the prompter.
 **1.0.7-rc.12** adds independent size and colour for square-bracket comments.
+**1.0.7-rc.13** adds custom pad/phone layouts and listening recovery.
 The latest published app remains **1.0.6**. No tag, merge, Marketplace publication or
 website deployment is part of this candidate.
 
+- **Your control layout:** **Settings > Controls > Pad** selects up to 36
+  buttons with drag reordering, accessible Earlier/Later moves, columns and
+  Compact/Reading/Studio presets. The phone shares the selection and order,
+  using Stream Deck artwork with larger touch targets. Hardware profiles
+  keep their own assignments. The pad's Customise button opens the editor.
+- **Wake-word listening recovery:** interrupted audio or a stalled recogniser
+  restarts with bounded retries, preserving position and hold. Silence and
+  listening-off stay respected. **Prompting > Commands** shows state and
+  Restart listening; its optional command-word trace is off by default.
+  Applying a wake-word change updates an already-running listener too.
 - **Comment appearance:** **Settings > Appearance > Text** has independent
   Comment size and Comment colour controls for `[delivery directions]`.
   Comments follow Heading font; Theme restores the usual colour. Quoted

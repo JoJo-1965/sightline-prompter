@@ -15,6 +15,7 @@ import {
 	buildWordIndex
 } from "./word-index.js";
 import { helpTabs, voiceHelpTabs, renderHelpTabs } from "./help-tabs.js";
+import { createPadSettings } from "./pad-settings.js";
 import {
 	startSteadyScroll,
 	stopSteadyScroll,
@@ -143,6 +144,7 @@ let settings = {
 	eyeLineReadingLine: 15,
 	hasDeepgramKey: false
 };
+let syncPadSettings = () => {};
 let cuePhrases = [];
 let lastScriptHtml = null;
 let sourceSnapshot = null;
@@ -1476,7 +1478,8 @@ async function beginVoice( engine, deepgramKey ) {
 			scriptEl: md,
 			audioDeviceId,
 			onStatus: ( status ) => {
-				if ( status.type === "closed" || status.type === "error" ) {
+				showListeningStatus( status );
+				if ( status.type === "closed" || status.type === "error" || status.type === "failed" ) {
 					if ( autoScrollActive ) stopAutoScrollSession();
 				} else if ( status.type === "device-fallback" ) {
 					showTransientHint( "Saved mic unavailable — using default", 2500 );
@@ -1558,7 +1561,38 @@ const COMMAND_LABELS = {
 
 let commandListening = false;
 let commandChange = Promise.resolve();
+let commandConfig = "";
+let commandFailure = false;
+let listenerHealth = { state: "off" };
 const commandPill = uiElement( "command-listening" );
+
+function showListeningStatus( status ) {
+	if ( status.type === "transcript" || status.type === "device-fallback" ) return;
+	const failed = [ "failed", "error", "closed" ].includes( status.type );
+	const recovering = status.type === "recovering";
+	listenerHealth = { state: failed ? "failed" : recovering ? "recovering" : "listening", reason: status.reason ?? status.error ?? null, audioAt: status.audioAt ?? listenerHealth.audioAt ?? null, engineAt: status.engineAt ?? listenerHealth.engineAt ?? null };
+	const label = recovering ? "Restarting listening…" : failed ? "Listening stopped · use Restart listening" : `Listening for “${ wakeLabel( settings.wakeWord ) }”`;
+	if ( field( "set-listening-status" ) ) field( "set-listening-status" ).textContent = label;
+	if ( commandPill ) commandPill.textContent = label;
+	if ( recovering || failed ) window.electron.debugLog?.( `${ status.reason === "manual restart" ? "voice" : "error" }: speech listener ${ status.type }: ${ status.reason ?? status.error ?? "connection stopped" }` );
+	if ( status.type === "recovered" ) showToast( "Listening restored", 1800 );
+	if ( failed ) showToast( "Listening stopped. Use Restart listening in Prompting > Commands.", 5000 );
+	sendStatus();
+}
+
+async function restartListening() {
+	if ( autoScrollActive ) return autoScrollHandle?.restartListening();
+	if ( !wantCommandListening() && !commandFailure ) {
+		showToast( "Enable Always listening in Prompting > Commands first", 3000 );
+		return;
+	}
+	commandFailure = false;
+	showListeningStatus( { type: "recovering", reason: "manual restart" } );
+	await stopCommandListening();
+	await syncCommandListening();
+}
+commandPill?.addEventListener( "click", restartListening );
+uiElement( "set-listening-restart" )?.addEventListener( "click", restartListening );
 
 // Also at a {stop} in steady scrolling, so "Prompter, go" can carry on.
 // Always (Settings > Voice > Voice commands) listens for the wake word
@@ -1577,6 +1611,7 @@ function wantCommandListening() {
 		&& !autoScrollActive
 		&& !autoScrollStarting
 		&& !teachingWord
+		&& !commandFailure
 	);
 }
 
@@ -1585,7 +1620,12 @@ function wantCommandListening() {
 function syncCommandListening() {
 	commandChange = commandChange.then( async () => {
 		const want = wantCommandListening();
-		if ( want === commandListening ) return;
+		const config = JSON.stringify( [ settings.wakeWord, settings.commandWords, settings.soundAlike, audioDeviceId ] );
+		if ( want === commandListening && ( !want || config === commandConfig ) ) return;
+		if ( commandListening ) {
+			await stopAutoScroll();
+			commandListening = false;
+		}
 		if ( want ) {
 			try {
 				await startAutoScroll( {
@@ -1599,11 +1639,24 @@ function syncCommandListening() {
 					wakeWord: settings.wakeWord ?? "prompter",
 					commandWords: settings.commandWords ?? [],
 					soundAlike: settings.soundAlike !== false,
-					isPaused: () => cuePaused
+					isPaused: () => cuePaused,
+					onHeard: ( entry ) => {
+						if ( settings.traceCommands ) window.electron.appendHeardLog( { ...entry, mode: "commands" } );
+					},
+					onStatus: ( status ) => {
+						showListeningStatus( status );
+						if ( status.type === "failed" ) {
+							commandFailure = true;
+							stopCommandListening();
+						}
+					}
 				} );
 				commandListening = true;
+				commandConfig = config;
 			} catch ( err ) {
 				console.warn( "[voice commands] couldn't start", err );
+				commandFailure = true;
+				showListeningStatus( { type: "failed", reason: err.message } );
 			}
 		} else {
 			await stopAutoScroll();
@@ -1611,6 +1664,10 @@ function syncCommandListening() {
 		}
 		if ( commandPill ) commandPill.textContent = `🎙 Listening for “${ wakeLabel( settings.wakeWord ) }”`;
 		commandPill?.classList.toggle( "hidden", !commandListening );
+		if ( !want && !commandFailure && !autoScrollActive ) {
+			listenerHealth = { state: "off" };
+			if ( field( "set-listening-status" ) ) field( "set-listening-status" ).textContent = "Listening is off.";
+		}
 		sendStatus();
 	} );
 	return commandChange;
@@ -1637,11 +1694,13 @@ function resyncAfterJump() {
 function voiceWake() {
 	if ( isEditMode ) return;
 	showToast( "Listening… go · pause · again · marker", 3000 );
+	window.electron.debugLog?.( "voice: wake word acknowledged" );
 }
 
 function voiceMiss( words ) {
 	if ( isEditMode ) return;
 	showToast( `Didn't catch that: “${ words.join( " " ) }”`, 2500 );
+	window.electron.debugLog?.( "voice: wake heard; command not matched (see heard log)" );
 }
 
 // "Prompter, what can I say?": every command on a card, until the next
@@ -2284,6 +2343,9 @@ function rerenderScript() {
 function applySettings( next ) {
 	const prev = settings;
 	settings = { ...settings, ...next };
+	if ( prev.voiceCommands !== settings.voiceCommands ) commandFailure = false;
+	autoScrollHandle?.setCommandOptions( { onCommand: settings.voiceCommands === "off" ? null : runVoiceCommand, wakeWord: settings.wakeWord ?? "prompter", commandWords: settings.commandWords ?? [], soundAlike: settings.soundAlike !== false } );
+	syncPadSettings( settings.padLayout );
 	const body = document.body;
 	body.classList.remove(
 		"directions-dim",
@@ -2414,7 +2476,7 @@ function numberValue( id, min, max, fallback ) {
 // Reading and Recording tabs apply as you go, so they don't count.
 let settingsDirty = false;
 let afterSettingsClose = null;
-const LIVE_TABS = "#set-layout-host, #set-reading-host, #set-background-host, #set-aids-host, #set-display-host, #set-recording-host, #set-script-host";
+const LIVE_TABS = "#set-layout-host, #set-reading-host, #set-background-host, #set-aids-host, #set-display-host, #set-recording-host, #set-script-host, #set-pad-fieldset";
 
 function markSettingsDirty( event ) {
 	if ( !event.isTrusted || event.target.closest( LIVE_TABS ) ) return;
@@ -2471,6 +2533,7 @@ async function openSettings() {
 		: "No key saved. Only needed for Deepgram.";
 	field( "set-font-size" ).value = fontSize;
 	field( "set-directions" ).value = settings.directions ?? "dim";
+	field( "set-trace-commands" ).checked = settings.traceCommands === true;
 	field( "set-always-on-top" ).checked = !!settings.alwaysOnTop;
 	field( "set-check-updates" ).checked = settings.checkUpdates !== false;
 	field( "set-debug-mode" ).checked = settings.debugMode !== false;
@@ -2848,6 +2911,7 @@ async function saveSettingsPage( close = true ) {
 		countdown: numberValue( "set-countdown", 0, 10, settings.countdown ),
 		slate: field( "set-slate" ).value,
 		directions: field( "set-directions" ).value,
+		traceCommands: field( "set-trace-commands" ).checked,
 		alwaysOnTop: field( "set-always-on-top" ).checked,
 		checkUpdates: field( "set-check-updates" ).checked,
 		debugMode: field( "set-debug-mode" ).checked,
@@ -2962,7 +3026,10 @@ window.electron.onCuesFileChosen( ( filePath ) => {
 		wordsChanged();
 	}
 } );
-window.electron.onMenuSettings( openSettings );
+window.electron.onMenuSettings( async ( topic ) => {
+	await openSettings();
+	if ( topic === "pad" ) showSettingsTab( "pad" );
+} );
 window.electron.onUtilityPanelClose( ( kind, quit ) => {
 	if ( kind === "settings" ) requestCloseSettings( quit ? () => window.electron.windowControl( "close" ) : null );
 	if ( kind === "help" ) closeHelp();
@@ -4655,7 +4722,8 @@ function sendStatus() {
 		soundCheck: soundCheckOn(),
 		// The microphone is on: following your voice, or listening for the wake word.
 		listening: autoScrollActive ? "voice" : commandListeningOn() ? "wake" : null,
-		wakeWord: wakeLabel( settings.wakeWord )
+		wakeWord: wakeLabel( settings.wakeWord ),
+		listenerHealth
 	} );
 }
 
@@ -4920,6 +4988,8 @@ window.electron.onPhoneInfo( ( info ) => {
 onClick( "set-phone-new", () => window.electron.newPhoneKey() );
 
 const SETTINGS_TAB_KEY = "settingsTab";
+syncPadSettings = createPadSettings( settingsModal, partial => window.electron.saveSettings( partial ) );
+syncPadSettings( settings.padLayout );
 const settingsNavigation = createSettingsNavigation( settingsModal, { onShow: ( name ) => {
 	settingsTrail( `tab ${ name }` );
 	if ( LAYOUT_TABS.includes( name ) ) borrowLayoutPanel();

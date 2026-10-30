@@ -1,5 +1,15 @@
 # Shortcuts and troubleshooting
 
+**Wake word sometimes stops responding:** check **Settings > Prompting >
+Commands**. Audio/engine faults recover automatically with bounded retries;
+use **Restart listening** or click the listening badge for a manual retry.
+To investigate a misheard word, enable the optional local command-word trace,
+reproduce it, then switch tracing off. See [Listening recovery](03-scrolling-and-voice.md#if-listening-stops-responding).
+
+**Changing pad or phone buttons:** use **Settings > Controls > Pad**, or
+**Customise** on the pad. Selection and order are shared; Stream Deck
+profiles keep their physical key assignments.
+
 ## Keyboard shortcuts
 
 **Ctrl+Alt+H** (Cmd+Alt+H on Mac) toggles the head guide between borderless

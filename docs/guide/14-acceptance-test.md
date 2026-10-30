@@ -20,6 +20,10 @@ moves mirroring to Screens and honours Hide from capture for helper windows.
 RC11 keeps Settings above the fullscreen prompter and improves OBS button contrast.
 RC12 adds Comment size and Comment colour under Appearance > Text. Comments
 follow Heading font, independently of heading size; Theme restores their colour.
+RC13 adds custom pad/phone layouts and bounded listening recovery. Under
+**Controls > Pad**, choose Reading or Studio, reorder a button and check that
+the phone shows the same order. **Prompting > Commands** shows listening
+state and Restart listening; command-word tracing is off by default.
 
 The public app remains **1.0.6**. The candidate and plugin are private test builds.
 

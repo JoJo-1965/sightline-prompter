@@ -6,20 +6,10 @@ import http from "node:http";
 import crypto from "node:crypto";
 import os from "node:os";
 import { readFile } from "node:fs/promises";
+import path from "node:path";
+import { CONTROL_ACTIONS, controlView } from "./client/control-actions.js";
 
-export const PHONE_COMMANDS = [
-	"obs-record",
-	"obs-finish",
-	"toggle",
-	"restart",
-	"previous-section",
-	"next-section",
-	"faster",
-	"slower",
-	"marker",
-	"keeper",
-	"scrap"
-];
+export const PHONE_COMMANDS = CONTROL_ACTIONS.map( a => a.id );
 
 const MAX_BAD_TRIES = 20;
 
@@ -86,6 +76,10 @@ export function startPhoneServer( {
 				} );
 			}
 			const url = new URL( req.url, "http://phone" );
+			// Only these generic UI assets are public; scripts, state and commands
+			// still require the pairing key. Never resolve arbitrary URL paths.
+			const asset = /^\/assets\/(pad\.css|control-actions\.js|control-buttons\.js|control-icons\.js|phone-controls\.js)$/.exec( url.pathname );
+			if ( req.method === "GET" && asset ) return send( 200, asset[1].endsWith( ".css" ) ? "text/css" : "text/javascript", await readFile( path.join( path.dirname( pagePath ), asset[1] ), "utf8" ) );
 			if ( url.pathname === "/favicon.ico" ) return send( 204, "text/plain", "" );
 			const given = url.searchParams.get( "k" ) ?? req.headers["x-sightline-key"];
 			if ( !keyMatches( given, key ) ) {
@@ -114,6 +108,8 @@ export function startPhoneServer( {
 				const action = url.searchParams.get( "action" );
 				if ( !PHONE_COMMANDS.includes( action ) )
 					return json( 400, { error: "Unknown action" } );
+				const view = controlView( action, getStatus() );
+				if ( view.hidden || view.disabled ) return json( 409, { error: "This control is unavailable" } );
 				onCommand( action );
 				return json( 200, { ok: true } );
 			}

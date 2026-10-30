@@ -308,6 +308,14 @@ body.directions-normal .direction .dir-text {
 	color: #8fd3ff;
 }
 
+.pad-choice { display: flex; align-items: center; gap: 5px; min-height: 36px; margin: 4px 0; }
+.pad-choice > span { flex: 1; min-width: 0; text-wrap: pretty; cursor: grab; }
+.pad-choice-add { display: flex; align-items: center; gap: 8px; margin: 8px 0; }
+.pad-choice-add select { flex: 1; min-width: 0; }
+.pad-choice-pages { display: flex; justify-content: space-between; align-items: center; margin: 6px 0; }
+.pad-toolbar #set-pad-columns { flex: 0 0 58px; }
+.pad-choice-add button { flex-shrink: 0; }
+
 body.directions-hide .direction .dir-text {
 	display: none;
 }
@@ -2864,8 +2872,12 @@ body.notes-pages #md ol.current-section {
 	color: #e8e8ea;
 	font: 600 11px Helvetica, Arial, sans-serif;
 	z-index: 1000;
-	pointer-events: none;
+	pointer-events: auto;
+	cursor: pointer;
+	border: 1px solid #7b8796;
+	-webkit-app-region: no-drag;
 }
+#command-listening:focus-visible { outline: 2px solid #8fd3ff; outline-offset: 2px; }
 
 /* No single words hanging on the last line of a wrapped paragraph or item. */
 /* The script itself is left alone. */

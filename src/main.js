@@ -15,6 +15,7 @@ import { buildMenus } from "./menus.js";
 import { createSlotClearAction } from "./clear-slot.js";
 import { setSectionTargets } from "./utils/targets.js";
 import { createPad } from "./pad.js";
+import { normalisePadLayout, controlAction, controlView } from "./client/control-actions.js";
 import { createControl } from "./control.js";
 import { createHeadGuide } from "./head-guide.js";
 import { createUtilityWindows } from "./utility-windows.js";
@@ -112,6 +113,7 @@ const defaultSettings = {
 	voiceEngine: "local", // "local" (on this computer) or "deepgram" (online, needs a key)
 	voiceCommands: "voice", // "Prompter, pause": "voice" (voice mode), "always" (steady too) or "off"
 	wakeWord: "prompter", // prompter, computer, teleprompter or director
+	traceCommands: false, // opt-in local recognised-text diagnostics for wake-word listening
 	// Settings > Voice > Your words: [{ word: "Moshe", heard: [ "marsha" ] }]
 	wordFixes: [],
 	scratchAudio: false, // Settings > Scrolling: a scratch audio track for syncing (scratch-audio.js)
@@ -162,6 +164,7 @@ const defaultSettings = {
 	startBeep: false, // a short beep when the countdown ends (off: it would be recorded)
 	hideFromCapture: false, // keep the window out of screen sharing and recordings
 	showPad: false, // the floating control pad (View menu, Ctrl+Shift+P)
+	padLayout: null, // shared button selection/order for the pad and phone
 	showHeadGuide: false,
 	headGuideBounds: null,
 	utilityWindowBounds: {},
@@ -209,7 +212,7 @@ const defaultSettings = {
 };
 
 // Settings that a settings file or the remote API may not change.
-const PROTECTED_SETTINGS = [ "remoteControl", "remotePort", "remoteDeleteRecordings", "streamDeck", "phoneRemote", "phonePort", "obsEnabled", "obsHost", "obsPort", "obsControls", "obsMarkers", "obsRecordedSlate" ];
+const PROTECTED_SETTINGS = [ "remoteControl", "remotePort", "remoteDeleteRecordings", "streamDeck", "phoneRemote", "phonePort", "obsEnabled", "obsHost", "obsPort", "obsControls", "obsMarkers", "obsRecordedSlate", "traceCommands" ];
 
 // Take logs, one per script per day: the recordings library (recordings.js).
 const takeLogFolder = () => path.join( app.getPath( "userData" ), "take-logs" );
@@ -1055,6 +1058,7 @@ const createWindow = ( state ) => {
 			t: new Date().toISOString(),
 			heard: entry.heard.slice( 0, 500 ),
 			final: !!entry.final,
+			mode: entry.mode === "commands" ? "commands" : "voice",
 			from: entry.from,
 			to: entry.to,
 			script: String( entry.script ?? "" ).slice( 0, 500 )
@@ -1608,6 +1612,7 @@ app.whenReady().then( async () => {
 		headGuideFullscreen: !!settings.headGuideFullscreen,
 		headGuideChromeless: !!settings.headGuideChromeless,
 		windowMode,
+		padLayout: normalisePadLayout( settings.padLayout ),
 		...rendererStatus,
 		commands: REMOTE_COMMANDS
 	} );
@@ -1795,11 +1800,20 @@ app.whenReady().then( async () => {
 		win.webContents.send( "remoteInfo", remoteInfo() );
 	}
 
+	function runPadCommand( id ) {
+		const request = controlAction( id );
+		const view = controlView( id, remoteStatus() );
+		if ( !request || view.disabled || view.hidden ) return;
+		if ( request.slot ) win.webContents.send( "menuSwitchSlot", request.slot - 1 );
+		else win.webContents.send( "remoteCommand", request.action );
+	}
 	controlPad = createPad( {
 		dir: __dirname,
 		prompter: win,
 		getMirror: () => currentMirrored,
 		getSettings: () => settings,
+		getStatus: remoteStatus,
+		onCommand: runPadCommand,
 		saveSettings: partial => updateSettings( partial )
 	} );
 	controlPad.apply();
@@ -1880,15 +1894,14 @@ app.whenReady().then( async () => {
 				port: wanted,
 				key: phoneKey,
 				pagePath: path.join( __dirname, "client", "phone.html" ),
-				getStatus: () => ( {
-					obs: rendererStatus.obs ?? null,
-					scrolling: !!rendererStatus.scrolling,
-					editing: !!rendererStatus.editing,
-					points: !!rendererStatus.points,
-					sectionTitle: rendererStatus.sectionTitle ?? "",
-					progress: rendererStatus.progress ?? ""
-				} ),
-				onCommand: action => win.webContents.send( "remoteCommand", action ),
+				getStatus: () => {
+					// The phone needs slot availability, never local script paths.
+					const state = remoteStatus();
+					delete state.file;
+					state.slots = state.slots.map( s => ( { slot: s.slot, file: !!s.file } ) );
+					return state;
+				},
+				onCommand: runPadCommand,
 				onError: ( err ) => {
 					phoneError = err.code === "EADDRINUSE" ? `Port ${ wanted } is already in use` : err.message;
 					phoneServer = null;

@@ -299,9 +299,17 @@ The whole workflow is in the guide:
 - **On air** on the control bar, mirror axes in **Tools > Spacing and mirror**,
   and quick panels for text/colour, take display and voice/microphone.
 - **Floating button pad** that stays on top, even over the prompter, and flips
-  with the mirror setting.
+  with the mirror setting. Select up to 36 functions, drag or use Earlier/Later
+  to reorder, choose columns and apply Compact, Reading or Studio presets.
+  **Controls > Pad** and the pad's Customise button share one editor.
 - **Phone remote:** scan a QR code and your phone gets big buttons, over your
-  own Wi-Fi, protected by the code in the QR.
+  own Wi-Fi, protected by the code in the QR. It follows the pad's button
+  selection and order with larger touch targets. Both reuse Stream Deck
+  artwork and actions; hardware profiles stay independent.
+- **Listening recovery:** health checks restart interrupted capture or speech
+  processing without moving the script or changing its hold. Silence and
+  intentional listening-off do not cause restarts. Retries are bounded, with
+  a manual Restart listening button, live state and opt-in local word tracing.
 - **Control window** for a second screen: an upright, live copy of the script
   with big buttons. Click any line to move the prompter there. Its broadcast
   row sets the prompter's on air, text size, backing, mirroring, eye-line and

@@ -93,7 +93,7 @@ export const SHORTCUTS = [
 			[ [ "Ctrl+Shift+A" ], "On air / off air: the on-air backing and the ON AIR light" ],
 			[ [ "Ctrl+Shift+D" ], "Sound-check meter on / off: your mic's level, loudness and the room's background noise" ],
 			[ [ "Ctrl+Shift+X" ], "Click-through on / off (works from any app)" ],
-			[ [ "Ctrl+Shift+P" ], "Floating control pad: Start / Pause, Top, Previous, Next" ],
+			[ [ "Ctrl+Shift+P" ], "Floating control pad; Customise chooses and arranges shared pad/phone buttons" ],
 			[ [ "Ctrl+Shift+H" ], "Head-position guide: show and unlock, or hide (works from any app)" ],
 			[ [ "Ctrl+Alt+H" ], "Head guide fullscreen on this screen / restore (works from any app)" ],
 			[ [ "Ctrl+Shift+O" ], "Control window: a live, upright copy of the script with the buttons, for the operator screen" ],

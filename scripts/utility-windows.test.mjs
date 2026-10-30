@@ -143,6 +143,47 @@ try {
 	await fs.writeFile( path.join( artifacts, "phone-settings.png" ), Buffer.from( phonePicture.data, "base64" ) );
 	await main.evaluate( "window.electron.getPhoneInfo()" );
 	const native = await connect( "main-process" );
+	await settings.evaluate( "document.getElementById('settings-topic-pad').click();document.getElementById('set-pad-preset').value='studio';document.getElementById('set-pad-preset-use').click()" );
+	await main.evaluate( "window.electron.saveSettings({showPad:true})" );
+	const pad = await connect( "pad.html" );
+	await pad.until( "document.querySelectorAll('#pad-buttons button').length===12" );
+	assert.equal( await pad.evaluate( "document.querySelector('[data-action=obs-record]').hidden" ), true );
+	await pad.evaluate( "document.getElementById('pad-customise').click()" );
+	await settings.until( "document.getElementById('settings-topic-pad').getAttribute('aria-selected')==='true'" );
+	await settings.evaluate( "document.querySelector('.pad-choice[data-id=toggle] button').click()" );
+	await pad.until( "document.querySelector('#pad-buttons button').dataset.action==='toggle'" );
+	// Exercise drag reordering without changing the selected function.
+	await settings.evaluate( "(()=>{const from=document.querySelector('.pad-choice[data-id=toggle]'),to=document.querySelector('.pad-choice[data-id=marker]'),data=new DataTransfer();from.dispatchEvent(new DragEvent('dragstart',{dataTransfer:data,bubbles:true}));to.dispatchEvent(new DragEvent('drop',{dataTransfer:data,bubbles:true}));})()" );
+	await pad.until( "document.querySelector('#pad-buttons button').dataset.action==='obs-record'" );
+	for ( const id of [ "slot-3", "mirror-h" ] ) {
+		await settings.evaluate( `document.getElementById('set-pad-add').value='${ id }';document.getElementById('set-pad-insert').click()` );
+		await pad.until( `!!document.querySelector('#pad-buttons [data-action="${ id }"]')` );
+	}
+	const selectedButtons = await pad.evaluate( "[...document.querySelectorAll('#pad-buttons button')].map(b=>b.dataset.action)" );
+	assert.equal( selectedButtons.length, 14 );
+	assert.equal( await pad.evaluate( "document.querySelector('[data-action=slot-3]').disabled" ), true, "Empty slot remains unavailable" );
+	await native.evaluate( `(()=>{const {BrowserWindow}=process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron');globalThis.padTestPhone=new BrowserWindow({show:false,width:390,height:844,webPreferences:{nodeIntegration:false,sandbox:true}});return padTestPhone.loadURL(${ JSON.stringify( phoneUrl ) });})()` );
+	const phone = await connect( "http:" );
+	await phone.until( "document.querySelectorAll('#phone-buttons button').length===14" );
+	assert.deepEqual( await phone.evaluate( "[...document.querySelectorAll('#phone-buttons button')].map(b=>b.dataset.action)" ), selectedButtons );
+	await phone.call( "Emulation.setDeviceMetricsOverride", { width: 390, height: 844, deviceScaleFactor: 1, mobile: true } );
+	assert.equal( await phone.evaluate( "document.body.scrollWidth<=innerWidth" ), true, "Phone layout fits portrait width" );
+	assert.equal( await phone.evaluate( "document.querySelector('[data-action=obs-finish]').hidden" ), true );
+	await phone.evaluate( "document.querySelector('[data-action=mirror-h]').click()" );
+	await main.until( "document.getElementById('cb-mirror-h').getAttribute('aria-pressed')==='true'" );
+	await pad.until( "document.querySelector('[data-action=mirror-h]').getAttribute('aria-pressed')==='true'" );
+	await main.evaluate( "document.getElementById('cb-mirror-h').click()" );
+	await phone.until( "document.querySelector('[data-action=mirror-h]').getAttribute('aria-pressed')==='false'" );
+	await settings.evaluate( "document.getElementById('set-pad-prev').click();document.getElementById('set-pad-prev').click();document.getElementById('set-pad-prev').click();document.getElementById('set-pad-prev').click()" );
+	await settings.evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
+	await native.evaluate( "padTestPhone.showInactive()" );
+	for ( const [ client, name ] of [ [ pad, "custom-pad.png" ], [ phone, "phone-pad.png" ], [ settings, "settings-pad.png" ] ] ) {
+		const shot = await client.call( "Page.captureScreenshot", { format: "png" } );
+		await fs.writeFile( path.join( artifacts, name ), Buffer.from( shot.data, "base64" ) );
+	}
+	await native.evaluate( "padTestPhone.destroy();delete globalThis.padTestPhone" );
+	await main.evaluate( "window.electron.saveSettings({showPad:false,padLayout:null})" );
+	console.log( "PASS: native pad presets, Earlier/Later, drag reorder, additions, slot permissions and matching responsive phone buttons with live feedback." );
 	const panelOwners = () => native.evaluate( "(()=>{const {BrowserWindow}=process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron');const main=BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().includes('teleprompter.html'));return BrowserWindow.getAllWindows().filter(w=>w.webContents.getURL().includes('utility-window.html')).map(w=>({url:w.webContents.getURL(),owner:w.getParentWindow()?.id===main.id,top:w.isAlwaysOnTop(),focused:w.isFocused()}));})()" );
 	await main.evaluate( "window.electron.windowControl('fullscreen')" );
 	await settings.evaluate( "document.getElementById('settings-close').click()" );
@@ -211,7 +252,7 @@ try {
 	await settings.evaluate( "document.querySelector('[data-settings-group=prompting]').click();document.querySelector('[data-tab=scrolling]').click();document.querySelector('[data-tab=scrolling]').focus()" );
 	const picture = await settings.call( "Page.captureScreenshot", { format: "png" } );
 	await fs.writeFile( path.join( artifacts, "floating-settings.png" ), Buffer.from( picture.data, "base64" ) );
-	for ( const topic of [ "reading", "background", "layout", "display", "recording", "audio", "streamdeck", "remotes", "obs", "obs-recording" ] ) {
+	for ( const topic of [ "commands", "reading", "background", "layout", "display", "recording", "audio", "pad", "streamdeck", "remotes", "obs", "obs-recording" ] ) {
 		await settings.evaluate( `document.getElementById('settings-topic-${ topic }').click();document.getElementById('settings-topic-${ topic }').focus()` );
 		await settings.evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
 		for ( let page = 1; page < 8; page++ ) {
@@ -324,6 +365,64 @@ try {
 	await settings.evaluate( "document.getElementById('set-obs-prepare-slate').click()" );
 	await settings.until( "document.getElementById('set-obs-slate-status').textContent.includes('Recorded slate source ready')" );
 	console.log( "PASS: recorded-slate progress, inline failure, retry and readiness through isolated simulated OBS responses." );
+	// All speech input below is a generated stream connected only to a media
+	// destination, never to speakers or a real microphone. The worker is mocked
+	// in this isolated app to exercise failure and recovery deterministically.
+	await native.evaluate( `(()=>{
+		const {ipcMain}=process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron');
+		globalThis.speechTest={starts:0,ack:true,sender:null,session:null};
+		for(const name of ['speechStart','speechAudio','speechStop'])ipcMain.removeAllListeners(name);
+		ipcMain.on('speechStart',(event,options)=>{const t=globalThis.speechTest;t.starts++;t.sender=event.sender;t.session=options.session;if(t.starts>1)t.ack=true;event.sender.send('speechState',{type:'ready',session:t.session});});
+		ipcMain.on('speechAudio',()=>{const t=globalThis.speechTest;if(t.ack)t.sender.send('speechState',{type:'health',session:t.session});});
+		return true;
+	})()` );
+	await main.evaluate( `(async()=>{
+		globalThis.virtualCaptures=[];globalThis.recoveryStates=[];
+		Object.defineProperty(navigator.mediaDevices,'getUserMedia',{configurable:true,value:async()=>{const context=new AudioContext({sampleRate:16000}),destination=context.createMediaStreamDestination(),oscillator=context.createOscillator();oscillator.connect(destination);oscillator.start();await context.resume();virtualCaptures.push(context);return destination.stream;}});
+		const module=await import('./auto-scroll.js');
+		globalThis.listenerModule=module;
+		globalThis.testListener=await module.startAutoScroll({engine:'local',scriptEl:document.getElementById('md'),followScript:false,onStatus:s=>recoveryStates.push(s.type)});
+		testListener.setHold(true);globalThis.originalListenerPosition=testListener.getPosition();
+	})()` );
+	await pause( 8000 );
+	assert.equal( await native.evaluate( "speechTest.starts" ), 1, "No transcripts during healthy audio flow do not trigger recovery" );
+	await native.evaluate( "speechTest.ack=false" );
+	for ( let n = 0; n < 120 && !await main.evaluate( "recoveryStates.includes('recovered')" ); n++ ) await pause( 100 );
+	assert.equal( await native.evaluate( "speechTest.starts" ), 2, "A stalled engine is restarted once" );
+	assert.equal( await main.evaluate( "testListener.isHeld() && testListener.getPosition()===originalListenerPosition" ), true, "Recovery preserves hold and script position" );
+	await main.evaluate( "testListener.setMuted(true)" );
+	await native.evaluate( "speechTest.ack=false" );
+	await pause( 8000 );
+	assert.equal( await native.evaluate( "speechTest.starts" ), 2, "Listen-off mute cannot trigger a restart" );
+	await main.evaluate( "listenerModule.stopAutoScroll()" );
+	await native.evaluate( "speechTest.ack=true;speechTest.sender.send('speechModel',{installed:true})" );
+	await main.evaluate( "window.electron.saveSettings({voiceCommands:'always',voiceEngine:'local',wakeWord:'prompter'})" );
+	await main.until( "!document.getElementById('command-listening').classList.contains('hidden')" );
+	const startsBeforeWakeChange = await native.evaluate( "speechTest.starts" );
+	await main.evaluate( "window.electron.saveSettings({wakeWord:'computer'})" );
+	for ( let n = 0; n < 70 && await native.evaluate( "speechTest.starts" ) === startsBeforeWakeChange; n++ ) await pause( 100 );
+	assert.equal( await native.evaluate( "speechTest.starts" ), startsBeforeWakeChange + 1, "Changing the wake word refreshes the live commands-only listener" );
+	await main.evaluate( "document.getElementById('command-listening').click()" );
+	for ( let n = 0; n < 70 && await native.evaluate( "speechTest.starts" ) === startsBeforeWakeChange + 1; n++ ) await pause( 100 );
+	assert.equal( await native.evaluate( "speechTest.starts" ), startsBeforeWakeChange + 2, "The listening badge provides an immediate manual retry" );
+	await main.until( "!document.getElementById('command-listening').classList.contains('hidden')" );
+	const priorSize = await main.evaluate( "document.body.style.getPropertyValue('--script-size')" );
+	await native.evaluate( "speechTest.sender.send('speechWords',{words:['computer','bigger'],final:true,session:speechTest.session})" );
+	await main.until( `document.body.style.getPropertyValue('--script-size')!==${ JSON.stringify( priorSize ) }` );
+	assert.equal( ( await fs.readdir( path.join( profile, "heard-logs" ) ).catch( () => [] ) ).length, 0, "Commands-only text tracing is off by default" );
+	await main.evaluate( "window.electron.saveSettings({traceCommands:true})" );
+	await pause( 100 );
+	await native.evaluate( "speechTest.sender.send('speechWords',{words:['computer','smaller'],final:true,session:speechTest.session})" );
+	for ( let n = 0; n < 50 && !( await fs.readdir( path.join( profile, "heard-logs" ) ).catch( () => [] ) ).length; n++ ) await pause( 100 );
+	const traceFiles = await fs.readdir( path.join( profile, "heard-logs" ) );
+	assert.match( await fs.readFile( path.join( profile, "heard-logs", traceFiles[0] ), "utf8" ), /"mode":"commands"/ );
+	await main.evaluate( "window.electron.saveSettings({voiceCommands:'off',traceCommands:false})" );
+	await main.until( "!listenerModule.isActive()" );
+	const stoppedStarts = await native.evaluate( "speechTest.starts" );
+	await pause( 1500 );
+	assert.equal( await native.evaluate( "speechTest.starts" ), stoppedStarts );
+	await main.evaluate( "Promise.all(virtualCaptures.map(c=>c.close()));delete navigator.mediaDevices.getUserMedia" );
+	console.log( "PASS: real audio-worklet pipeline with generated silent-route audio; silence stays healthy, worker stall recovers, hold/position persist, mute/off stay off and a changed wake word works immediately." );
 	assert.deepEqual( errors, [] );
 	native.socket.close();
 	await pause( 100 );

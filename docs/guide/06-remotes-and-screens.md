@@ -225,12 +225,29 @@ build. Marketplace updates apply once a real listing is live.
 
 ## The floating pad
 
-**Ctrl+Shift+P** or **Tools > Control pad** opens a small bar with Top,
-Previous, Start / Pause and Next that stays on top of every other window.
+**Ctrl+Shift+P** or **Tools > Control pad** opens a floating button grid.
+The Compact preset starts with Top, Previous, Start / Pause and Next.
+**Customise** on the pad opens **Settings > Controls > Pad**.
+
+Choose **Compact**, **Reading** or **Studio**, then **Use preset**, or add
+individual functions from the list. Presets replace your selection; Compact
+resets it. Up to 36 buttons can include markers, Keeper/Scrap, speed, text
+size, mirror axes, guide, OBS and script slots. Drag selected buttons to
+reorder them, or use **Earlier / Later**, including across the short list
+pages. Remove a button to hide it. Changes save immediately.
+
+The pad and phone share this selection and order, with the Stream Deck
+artwork and equivalent actions. Stream Deck profiles keep their own key
+assignments. Choose 2, 3, 4 or 6 pad columns; narrow phones use two columns
+for larger touch targets. Buttons reflect the current state. Empty slots
+are disabled; OBS controls appear only when OBS and recording permission
+are enabled, and require a connection. Long pads can scroll within the screen.
+
+![Choosing and arranging pad and phone buttons](images/settings-pad.png)
 
 ![The floating pad](images/pad.png)
 
-Drag it by the dots on the left, even onto another monitor or over Riverside.
+Drag it by the title/grip, even onto another monitor or over Riverside.
 It reopens where you left it. Over a mirrored prompter, it flips to match.
 
 ## The control window
@@ -267,9 +284,10 @@ and too far away to work Settings on:
 ## The phone remote
 
 On **Settings > Controls > Phone**, tick **Control the prompter from a phone on the
-same Wi-Fi** and save. Scan the QR code with your phone to get big buttons for
-Start / Pause, Previous, Next, Top, Slower, Faster and Drop a marker, with the
-current section showing.
+same Wi-Fi** and save. Scan the QR code with your phone for the same buttons
+and order as the floating pad, with larger touch targets and the current
+section showing. Choose your layout in **Controls > Pad**. It updates on
+the phone automatically; there is no separate phone layout to maintain.
 
 The code appears after **Apply** or **Save & close**; reopen Settings if needed.
 It also works in the separate movable Settings window (fixed in RC10).

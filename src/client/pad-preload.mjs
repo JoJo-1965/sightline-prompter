@@ -7,6 +7,7 @@ contextBridge.exposeInMainWorld( "pad", {
 	moveTo: ( x, y ) => ipcRenderer.send( "padMoveTo", x, y ),
 	dragEnd: () => ipcRenderer.send( "padDragEnd" ),
 	close: () => ipcRenderer.send( "padClose" ),
+	customise: () => ipcRenderer.send( "padCustomise" ),
 	onMirror: callback => on( "padMirror", callback ),
 	onStatus: callback => on( "padStatus", callback )
 } );

@@ -53,10 +53,15 @@ to those files.
 
 Local recognition processes microphone audio before it knows whether you
 said the wake word. It is not listening only after you say "Prompter".
-The commands-only listener does not itself write a heard log; voice
-following does. Other enabled microphone features work independently.
+By default the commands-only listener does not write a heard log; voice
+following does. **Trace command words to the local heard log**, in
+**Settings > Prompting > Commands**, explicitly enables recognised-text
+diagnostics for commands-only listening. It is off by default. When enabled,
+it can save recognised conversation while stopped or off air. Turn it off
+after troubleshooting. This option does not record audio. Automatic recovery
+logs health events without spoken words. Other microphone features work independently.
 
-Choose Voice commands **Off**, **In voice mode** or **Always** in Settings > Prompting > Voice. Always requires local recognition and an installed speech model.
+Choose Voice commands **Off**, **In voice mode** or **Always** in Settings > Prompting > Commands. Always requires local recognition and an installed speech model.
 The commands-only listener pauses during editing and word teaching; the
 voice-following session takes over when you start voice scrolling.
 
