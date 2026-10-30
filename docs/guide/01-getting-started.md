@@ -141,8 +141,8 @@ click can't jump a take: pause first. Turn the bar off in the Layout panel.
 
 Opening one group folds the others away, so the menu stays short. Click
 anywhere else to close it. **Quit Sightline** is always at the bottom (also
-**Ctrl+W**, or **✕** on the control bar), and below it the line with the
-version and attribution. **About** is in Settings and the native Help menu.
+**Ctrl+W**, or **✕** on the control bar). Copyright and attribution are on
+the About page: **Help > About**, or **Settings > About > Credits and licence**.
 
 ## Your first take
 

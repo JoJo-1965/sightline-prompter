@@ -40,7 +40,7 @@ without disappearing as you move the pointer onto it.
 | **Controls** | Phone | Enable the phone remote, scan its QR code or replace its code |
 | | Stream Deck | Enable the companion plugin's buttons-only connection and open its guide |
 | | AI & API | Enable local automation, port, token, recording-delete permission and AI setup help |
-| **About** | About | Version, credits, updates, support, debug logging and the support-log export |
+| **About** | About | Version, a link to credits, updates, support, debug logging and the support-log export |
 
 OBS settings stay discoverable while disabled so you can configure them.
 Recording commands in Help and the live recording controls still follow the
@@ -113,9 +113,13 @@ Help menu, without enabling remote control.
 
 ## About, updates and support
 
-**About** gives the version, attribution and full About page, the user guide,
+**About** gives the version, **Credits and licence**, the user guide,
 Joanne's tip jar and **Check for updates**. Update checks ask GitHub; nothing
 downloads or installs automatically.
+
+**Credits and licence** opens the full About page, also available from
+**Help > About**. Copyright and attribution live there, with no repeated
+messages in the Files menu or the Settings overview.
 
 **Debug mode** adds detail to the local support log. **Save a log for support…**
 creates a file containing the version, system and enabled features, excluding

@@ -2615,14 +2615,6 @@ body.notes-pages #md ol.current-section {
   font-size: 11px;
 }
 
-/* Version, licence and credit at the foot of the menu and Settings. */
-.app-footer {
-	margin: 0;
-	font-size: 10.5px;
-	line-height: 1.5;
-	color: #80858d;
-}
-
 .settings-content .modal-actions {
 	align-items: center;
 }
@@ -2641,36 +2633,9 @@ body.notes-pages #md ol.current-section {
 	gap: 8px;
 }
 
-.settings-content .modal-actions .app-footer {
-	font-size: 10.5px;
-	flex: 1 1 auto;
-	margin-right: auto;
-	text-align: left;
-}
-
 .am-quit {
 	margin-top: 4px;
 	border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.am-footer {
-	margin-top: 6px;
-	padding: 8px 10px 4px;
-	border-top: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.app-footer .footer-link {
-	padding: 0;
-	font: inherit;
-	color: #8fd3ff;
-	background: none;
-	border: none;
-	cursor: pointer;
-	text-decoration: underline;
-}
-
-.app-footer .footer-credit {
-	color: #6f747c;
 }
 
 /* The sentence you're on (sentence-highlight.js). A soft band, so the text

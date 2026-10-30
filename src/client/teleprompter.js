@@ -3792,10 +3792,6 @@ function renderAppMenu() {
 	const quit = menuButton( "⏻", "Quit Sightline", "Ctrl+W", quitApp );
 	quit.classList.add( "am-quit" );
 	appMenu.appendChild( quit );
-	const footer = document.createElement( "p" );
-	footer.className = "app-footer am-footer";
-	fillFooter( footer );
-	appMenu.appendChild( footer );
 }
 
 function toggleAppMenu() {
@@ -4347,8 +4343,7 @@ aboutModal?.addEventListener( "mousedown", ( e ) => {
 	if ( e.target === aboutModal ) closeAbout();
 } );
 window.electron.onMenuAbout( openAbout );
-// A quiet line at the foot of the menu and Settings: version, date, licence, credit.
-let appInfo = null;
+// Version details for Settings and the full About page.
 function formatReleaseDate( iso ) {
 	const d = iso ? new Date( `${ iso }T12:00:00` ) : null;
 	return d && !Number.isNaN( d.getTime() )
@@ -4359,31 +4354,9 @@ function formatReleaseDate( iso ) {
 		} )
 		: null;
 }
-function fillFooter( el ) {
-	if ( !el ) return;
-	el.replaceChildren();
-	const date = formatReleaseDate( appInfo?.releaseDate );
-	const line = [
-		`Sightline Prompter ${ appInfo?.version ?? "" }`.trim(),
-		date && `updated ${ date }`,
-		"MIT licence"
-	]
-		.filter( Boolean )
-		.join( " · " );
-	const credit = document.createElement( "span" );
-	credit.className = "footer-credit";
-	const CREDIT = [
-		"Adapted and enhanced by Joanne Lockwood from SEE Change Happen Ltd",
-		"based on Electron Teleprompter by David Neal",
-		"© 2022–2026"
-	];
-	credit.textContent = CREDIT.join( " · " );
-	el.append( line, document.createElement( "br" ), credit );
-}
 window.electron.getAppInfo();
 
 window.electron.onAppInfo( ( info ) => {
-	appInfo = info;
 	const brief = document.getElementById( "settings-about-version" );
 	if ( brief ) {
 		const updated = formatReleaseDate( info.releaseDate );
