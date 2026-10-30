@@ -21,6 +21,7 @@
   </head>
 
   <body>
+    <div id="capture-override-note" class="hidden" role="status" aria-live="polite"><span>Capture override on: all Sightline windows may be recorded.</span><button id="capture-override-off" type="button">Turn off</button></div>
     <div id="control-bar">
       <div class="cb-group">
         <button id="cb-menu" class="cb-btn" title="Files: scripts, recordings, import and export" aria-label="Files menu" aria-expanded="false" aria-controls="app-menu">☰</button>
@@ -1088,6 +1089,11 @@
           </p>
         </fieldset>
 
+        <fieldset data-tab="debug" id="set-capture-fieldset">
+          <legend>Screen capture</legend>
+          <label class="check"><input id="set-capture-override" type="checkbox" aria-describedby="set-capture-override-note" /> Allow all windows to be captured</label>
+          <p id="set-capture-override-note" class="field-hint" data-essential>Applies immediately, for this session only. All Sightline windows, including the head guide, may appear in screenshots and recordings. Turn it off to restore your normal capture rules.</p>
+        </fieldset>
         <fieldset data-tab="debug">
           <legend>Support logs</legend>
           <label class="check"><input id="set-debug-mode" type="checkbox" /> Debug mode: log each step for troubleshooting</label>

@@ -181,6 +181,13 @@ Disable remotes you do not need, and check what you share with an agent.
 
 ## When you contact or support the project
 
+The optional **Settings > About > Debug > Allow all windows to be captured**
+control lets screenshots and recording tools capture every Sightline window,
+including the head guide. It is off by default, applies for the current session
+and shows a persistent warning. Turning it off restores the normal capture
+rules; quitting clears it. It does not itself record or send anything.
+Support logs note the override's state without adding recognised speech.
+
 Joanne or the company can receive your name, email, message and any files
 you send voluntarily. Public GitHub issues and contributions are visible
 to others and subject to GitHub's privacy and retention arrangements.

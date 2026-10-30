@@ -80,7 +80,7 @@ that file and sends each request with the header
 | `GET /events`     | A live stream (server-sent events) of the state, sent again each time something changes: playing, on air, mirror, slot, section, time left, speed, backing |
 | `POST /slot`      | Switch to a slot `{ slot }`                                          |
 | `POST /stream-deck/hello` | Local plugin version report `{ pluginVersion, protocolVersion }`; requires Stream Deck enabled, works with its restricted key, grants no settings or OBS permissions |
-| `POST /settings`  | Change display settings                                              |
+| `POST /settings`  | Change display settings and the shared pad layout (next candidate)    |
 | `GET /recordings` | Every recording session, newest first, with its id                  |
 | `GET /recording?id=…` | One session: its takes and which ones the edit uses            |
 | `GET /recording/pack?id=…` | A session's edit pack, as `{ files: { name: contents } }` |

@@ -6,15 +6,25 @@
   columns, fit Studio in two rows and add browser-safe footer spacing.
   Portrait/landscape previews checked; real iPhone acceptance follows RC15.
 
-## Pending fixes for the next candidate batch
+- [x] Accept and validate `padLayout` through the API and JSON/XML imports,
+  preserving structured values and protected permissions. Changes are live.
+- [x] Session-only capture override (#57), desktop/phone warnings, normal-rule
+  restoration, guide metadata and restart reset.
+- [x] Phone sending/sent, refused/no-reply feedback, pending-tap suppression,
+  bounded request waits and no automatic replay.
+- [x] Plan-first install helper: verify candidate hash, retain spaces in the
+  intended folder, request normal Windows elevation only on Run, then verify
+  installed location/version. Native NSIS argument test does not install.
 
-- [ ] Accept and validate shared `padLayout` objects through the existing
-  `/settings` API and settings-file import. RC14 drops the object because its
-  default is null and `pickKnown` accepts only strings/null in that case.
-  The Settings editor and saved-preference loading work. Preserve protected
-  settings, validate action IDs/columns and test the API/import round trip.
-  Studio was applied to Joanne's saved preferences and verified on the live
-  pad/phone status without building another candidate.
+## Before packaging
+
+- [ ] Joanne reviews this batch in [RC15 review](docs/RC15-REVIEW.md).
+- [ ] Check the conversation queue again immediately before any RC build.
+
+## After an approved installation
+
+- [ ] Actual installation-directory repair follows an approved installation;
+  the running RC14 has not been relocated or replaced during this work.
 
 The current feature backlog and release status are in [ROADMAP.md](ROADMAP.md).
 The older checklist below is retained as project history.

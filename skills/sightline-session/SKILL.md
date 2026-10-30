@@ -212,6 +212,12 @@ entries have `mode: "commands"`. Do not enable it through automation. It may
 include surrounding conversation, so ask the user to switch it off afterwards.
 `padLayout` in status describes the shared phone/pad layout; hardware Stream
 Deck profiles keep separate assignments. Configure layouts in Controls > Pad.
+The next candidate also accepts `padLayout` through POST /settings. Verify it
+appears in `applied` and read back status; RC14 silently dropped that object.
+`captureOverride` in status is diagnostic only. The user toggles it manually
+in Settings > About > Debug; do not enable it through automation. It resets
+on app restart and may let the guide appear in a recording. Phone “sent”
+feedback acknowledges dispatch; use returned state to confirm the effect.
 
 For recognition diagnosis, compare the original source with the captured
 microphone and check input level before teaching aliases for missing lines.

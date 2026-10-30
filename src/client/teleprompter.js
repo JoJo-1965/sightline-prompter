@@ -2479,7 +2479,15 @@ function numberValue( id, min, max, fallback ) {
 // Reading and Recording tabs apply as you go, so they don't count.
 let settingsDirty = false;
 let afterSettingsClose = null;
-const LIVE_TABS = "#set-layout-host, #set-reading-host, #set-background-host, #set-aids-host, #set-display-host, #set-recording-host, #set-script-host, #set-pad-fieldset";
+const LIVE_TABS = "#set-layout-host, #set-reading-host, #set-background-host, #set-aids-host, #set-display-host, #set-recording-host, #set-script-host, #set-pad-fieldset, #set-capture-fieldset";
+
+field( "set-capture-override" )?.addEventListener( "change", event => window.electron.setCaptureOverride( event.target.checked ) );
+field( "capture-override-off" )?.addEventListener( "click", () => window.electron.setCaptureOverride( false ) );
+window.electron.onCaptureOverride( ( active ) => {
+	field( "set-capture-override" ).checked = active;
+	field( "capture-override-note" ).classList.toggle( "hidden", !active );
+} );
+window.electron.getCaptureOverride();
 
 function markSettingsDirty( event ) {
 	if ( !event.isTrusted || event.target.closest( LIVE_TABS ) ) return;
@@ -6262,7 +6270,7 @@ document.addEventListener( "mousemove", ( e ) => {
 		return;
 	}
 	const overControls = !!e.target.closest?.(
-		"#control-bar, .panel, #app-menu, .modal, #auto-scroll-indicator, #toast"
+		"#control-bar, .panel, #app-menu, .modal, #auto-scroll-indicator, #toast, #capture-override-note"
 	);
 	const ignore = !overControls;
 	if ( ignore !== ignoringMouse ) {

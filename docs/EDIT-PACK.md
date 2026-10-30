@@ -72,6 +72,11 @@ the earlier one, and the place is marked as a **reread**.
 
 ## The files
 
+Guide snapshots add a `captureOverride` flag. When the session-only debug
+override was on, `captureStatus` says the guide may have been recorded.
+This is a capture-policy record, not proof that a particular OBS source
+included or excluded the guide; inspect the recorded picture.
+
 | File | What's in it |
 | ---- | ------------ |
 | `take-log.json` | Everything, as Sightline saved it: takes, their words, sentences, markers, ratings and slates, plus `sections` with the take to use for each |

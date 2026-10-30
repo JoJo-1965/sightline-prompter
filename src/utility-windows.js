@@ -2,6 +2,7 @@ import { ipcMain, screen, shell } from "electron";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { fitInside } from "./utils/fit.js";
+import { protectWindow } from "./capture-policy.js";
 
 // Only the local, same-origin panel hosts may retain an opener. Their live DOM
 // and handlers belong to the prompter; no second speech or recording engine runs.
@@ -61,7 +62,7 @@ export function createUtilityWindows( { dir, prompter, getSettings, saveSettings
 	return {
 		restack, isDirty: () => dirty, requestClose: closeRequest,
 		apply() {
-			for ( const win of windows.values() ) if ( !win.isDestroyed() ) win.setContentProtection( !!getSettings().hideFromCapture );
+			for ( const win of windows.values() ) protectWindow( win, !!getSettings().hideFromCapture );
 			restack();
 		},
 		dialogParent() {
@@ -85,7 +86,7 @@ export function createUtilityWindows( { dir, prompter, getSettings, saveSettings
 			// A native owner keeps the panel above its prompter even when Windows
 			// promotes the fullscreen owner after an asynchronous window.open.
 			win.setParentWindow( prompter );
-			win.setContentProtection( !!getSettings().hideFromCapture );
+			protectWindow( win, !!getSettings().hideFromCapture );
 			win.setAlwaysOnTop( true, "screen-saver" );
 			win.on( "focus", () => {
 				focused = kind;

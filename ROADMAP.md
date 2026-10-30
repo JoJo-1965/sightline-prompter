@@ -61,6 +61,11 @@ the trace off by default and a visible nearby-conversation warning.
 **RC15 work in progress:** compact phone landscape controls are built and
 checked in portrait/landscape previews. Studio uses six columns and two rows,
 with extra footer spacing. No RC15 has been packaged or installed yet.
+The same review batch adds API/import layout validation, structured XML
+exports, phone command acknowledgements and the session capture override (57).
+The install helper plans the intended destination first and verifies it after
+an explicitly requested install. Correcting the live installation location
+waits for that later installation. See the [batch review](docs/RC15-REVIEW.md).
 
 The [acceptance walkthrough](docs/guide/14-acceptance-test.md) and two bundled
 sample scripts cover natural voice, physical Stream Deck controls, stops,
@@ -97,6 +102,7 @@ move to Done only when released.
 
 | # | Item | Value | Size | RC status |
 | --- | --- | --- | --- | --- |
+| 57 | **Debug capture override** | ★★ | S | Built for the next candidate: About > Debug permits all existing and newly opened windows in captures, with a persistent warning and phone notice. Session-only; restores current normal preferences and resets on restart. Native policy, lifecycle and restore checks pass; awaiting review and packaging |
 | 56 | **Customisable virtual pad and phone layout** | ★★ | M | Built in RC13: select up to 36 functions, drag or use Earlier/Later to reorder, choose columns and Compact/Reading/Studio presets. Pad and phone share choices/order and Stream Deck artwork. Hardware profiles remain independent. Native pad, portrait phone, persistence and permission checks pass; physical iPhone acceptance remains |
 | 48 | **Settings in its own window**, plus movable F1 Help | ★★ | M | Built in RC8: independent upright windows, native title-bar dragging across screens, saved geometry, stable sizes, paged Settings, live controls, Apply/Save/Cancel and unsaved-change guards on window/app close. Native window and inline-fallback tests pass; manual acceptance remains |
 | 52 | **Optional OBS integration** | ★★★ | M | Built in the Windows 1.0.7 candidate: authenticated connection, status-only/recording permissions, confirmed Record take/Finish, optional chapters, recorded slate and edit-pack references. Default off; ordinary prompting, stops, retakes and On air leave OBS recording. Physical workflow validation and evidence review remain. No separate OBS plugin is needed; optional dock/scene switching are later scope |
@@ -113,7 +119,6 @@ waits for the signing arrangements and Joanne's accounts; it is not in this RC.
 | 27  | **Code signing for Windows and Mac:** no more "unknown publisher" warnings | ★★★ | S | Moved up from Later. Needs a code-signing certificate and an Apple Developer account (Joanne's decision) |
 | 47  | **Components list:** Settings > About lists each extra part with its status and Install, Reinstall and Remove: the speech model, and an AI agent kit (the skills, the script checker and the sightline command) installed from the app without cloning the repo, with a check for Node.js. Settings > Prompting > Voice gets Reinstall and Remove beside the speech model, and the first run offers to download it | ★★ | M | Joanne asked, 28 Oct: show what's installed, with install and reinstall buttons. In the app rather than an installer tickbox, because only the Windows installer could have one |
 | 40  | **Choose your own buttons:** a key map for game controllers, foot pedals, clickers and keyboard shortcuts (Settings > Controls): pick any action (start and pause, sections, speed, markers, keeper or scrap, on air, again) for each button or key, with a "press the button now" way to set it, and a reset to the defaults | ★★ | S–M | Joanne's idea, 28 Oct. Today the controller buttons and pedal keys are fixed. The Stream Deck plugin (39) can use the same list of actions |
-| 57 | **Debug capture override:** an **Allow all windows to be captured** checkbox on the debug page for testing, support screenshots and recording demo videos | ★★ | S | Joanne requested, 30 Oct. Override capture protection for every Sightline window, including the prompter, Settings, keyboard/voice Help, pad, control window, head-guide overlay and Guide adjustments. Default off and session-only, with a visible active indicator. Apply to windows already open and newly opened; unticking restores the normal capture preferences without changing them. Planned; not built |
 | 28  | **Rehearsal coach:** after a practice run, pace by section, lines skipped, "um"s and sentences you stumbled on, all on the computer | ★★ | M | Same speech engine as voice scrolling |
 | 29  | **Automatic updates:** new versions download and install themselves, so users get fixes without reinstalling | ★★ | M | Moved up from Later. Best done with code signing (27), which Mac updates need |
 | 53 | **Optional Zoom controls:** investigate microphone, camera and bringing the meeting forward from Sightline, with phone, voice and control-window actions | ★ | To assess | Joanne requested, 29 Oct. Feasibility first: Zoom's [Plugin SDK](https://developers.zoom.us/docs/plugin-sdk/) connects native Windows/macOS companion apps to the installed Zoom Workplace client. Assess permissions, distribution and dependable state feedback before implementation. Off by default; independent of normal prompting. Not built or scheduled for release |

@@ -12,7 +12,9 @@ RC11 keeps these windows above their prompter owner, including fullscreen.
 Opening Settings brings it forward and focuses its controls.
 **“Prompter, what can I say?”** also has its own movable window in RC10.
 Settings, both help windows and Guide adjustments follow **Hide from capture**;
-turn it off to take support screenshots. The head-guide overlay stays protected.
+turn it off to take support screenshots. The head-guide overlay stays protected
+unless the session-only **About > Debug > Allow all windows to be captured**
+override is active.
 There are five groups, with a second row of focused topics. Each setting has
 one home. Script files, recordings and settings import/export are in the
 **Files menu (☰)**; live tools are under **Tools** on the top bar.
@@ -115,8 +117,21 @@ Within either tab row, **← / →** changes selection; **Home / End** goes to i
 first or last tab. Hidden topics stay out of keyboard navigation. Focus stays
 inside Settings until you close it, then returns to the control that opened it.
 
-Drag the title to move Settings within the prompter window. Double-click it
-to recentre. A separate Settings window remains on the roadmap.
+Drag the native title bar to move Settings between screens. The inline
+fallback can be dragged inside the prompter; double-click its title to recentre.
+
+## Settings files and automation
+
+**Files > Save settings to file** and **Load settings from file** preserve
+the shared pad/phone layout in JSON and XML. From the next candidate, the
+local settings API accepts `padLayout` too, with the same validation. Unknown
+actions are removed, duplicates are collapsed and invalid column counts are
+rejected before other settings change. Remotes, credentials and tracing
+permissions remain protected.
+
+New XML exports preserve structured values such as button layouts and word
+lists as JSON inside XML. An older export containing only `[object Object]`
+does not contain the original structure; export again from the corrected app.
 
 ## Voice and commands are separate
 
@@ -214,6 +229,14 @@ messages in the Files menu or the Settings overview.
 creates a file containing the version, system and enabled features, excluding
 scripts, keys, audio and command-word traces. It sends nothing itself.
 
+**Allow all windows to be captured** applies immediately and lasts only until
+Sightline closes. It overrides capture protection for open and newly opened
+windows, including the head guide. A persistent banner and phone notice show
+when it is active. Untick it or use the banner's **Turn off** button to restore
+the current normal rules, including any changes made during the override.
+It does not enable command-word tracing or change the saved capture preferences.
+This control is not exported or available through the settings API.
+
 The separate **Trace command words to the local heard log** checkbox is also
 under **About > Debug**. It is off by default and does not require Debug mode.
 Apply saves the choice. This saves recognised text for investigating mishearings;
@@ -221,6 +244,8 @@ with Always listening it may include nearby conversation while stopped or off ai
 Turn it off afterwards. Health and recovery logs contain no spoken words.
 
 ![Debug logs and the optional command-word trace](images/settings-debug.png)
+
+![Session-only capture override enabled for a demo or support recording](images/settings-debug-capture.png)
 
 Sightline is free and stays free. Support is voluntary and gives no extra
 features. See [privacy, terms and support](../POLICIES.md).

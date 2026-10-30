@@ -140,6 +140,9 @@ contextBridge.exposeInMainWorld( "electron", {
 	// Settings IPC
 	getSettings: () => ipcRenderer.send( "getSettings" ),
 	saveSettings: partial => ipcRenderer.send( "saveSettings", partial ),
+	getCaptureOverride: () => ipcRenderer.send( "getCaptureOverride" ),
+	setCaptureOverride: enabled => ipcRenderer.send( "setCaptureOverride", enabled === true ),
+	onCaptureOverride: callback => on( "captureOverride", callback ),
 	onSettings: callback => ipcRenderer.on( "settings", ( _event, settings ) => callback( settings ) ),
 	onMenuSettings: callback => ipcRenderer.on( "menuSettings", () => callback() ),
 	browseCuesFile: () => ipcRenderer.send( "browseCuesFile" ),

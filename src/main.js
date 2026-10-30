@@ -19,6 +19,8 @@ import { normalisePadLayout, controlAction, controlView } from "./client/control
 import { createControl } from "./control.js";
 import { createHeadGuide } from "./head-guide.js";
 import { createUtilityWindows } from "./utility-windows.js";
+import { captureOverride, protectWindow, setCaptureOverride, trackCaptureWindow } from "./capture-policy.js";
+import { settingsValues } from "./settings-values.js";
 import { readScriptSnapshot } from "./script-snapshot.js";
 import { createSpeech } from "./speech.js";
 import { createGuide } from "./guide.js";
@@ -45,6 +47,7 @@ import {
 } from "./utils/settings-file.js";
 
 const __dirname = import.meta.dirname; // eslint-disable-line n/no-unsupported-features/node-builtins
+app.on( "browser-window-created", ( _event, win ) => trackCaptureWindow( win ) );
 
 const MAX_RECENT_FILES = 10;
 const scriptSnapshots = new Map();
@@ -304,6 +307,7 @@ ipcMain.handle( "saveSupportLog", async ( event ) => {
 		`Sightline ${ app.getVersion() }${ app.isPackaged ? "" : " (running from source)" }, Electron ${ process.versions.electron }, ${ process.platform } ${ process.getSystemVersion() } ${ process.arch }`,
 		`Displays: ${ displays.join( "; " ) }`,
 		`Graphics: compositing ${ gpu.gpu_compositing }, rasterization ${ gpu.rasterization }`,
+		`Debug capture override: ${ captureOverride() ? "on" : "off" }`,
 		`Settings: ${ shown.map( k => `${ k }=${ JSON.stringify( settings[k] ?? null ) }` ).join( ", " ) }`,
 		"",
 		"Log (newest last):",
@@ -465,7 +469,7 @@ function applyWindowSettings( win, wasEyeLine ) {
 		normalBounds = null;
 	}
 	win.setAlwaysOnTop( settings.eyeLine || settings.alwaysOnTop, "floating" );
-	win.setContentProtection( !!settings.hideFromCapture );
+	protectWindow( win, !!settings.hideFromCapture );
 	// Click-through: the renderer turns mouse events back on while the pointer
 	// is over the control bar or a panel, so the controls stay usable.
 	win.setIgnoreMouseEvents( !!settings.clickThrough, { forward: true } );
@@ -1511,6 +1515,7 @@ app.whenReady().then( async () => {
 
 	// Applies settings from a file or the remote API (never the protected ones).
 	async function applySettingValues( values ) {
+		const known = settingsValues( values, defaultSettings, PROTECTED_SETTINGS );
 		const extra = pickKnown( values, {
 			fontSize: 3,
 			opacity: 1,
@@ -1534,8 +1539,6 @@ app.whenReady().then( async () => {
 			currentAutoScrollSpeed = extra.voiceResponsiveness;
 			win.webContents.send( "autoScrollSpeed", currentAutoScrollSpeed );
 		}
-		const known = pickKnown( values, defaultSettings );
-		for ( const key of PROTECTED_SETTINGS ) delete known[key];
 		await updateSettings( known );
 		return { applied: [ ...Object.keys( extra ), ...Object.keys( known ) ] };
 	}
@@ -1613,6 +1616,7 @@ app.whenReady().then( async () => {
 		headGuideChromeless: !!settings.headGuideChromeless,
 		windowMode,
 		padLayout: normalisePadLayout( settings.padLayout ),
+		captureOverride: captureOverride(),
 		...rendererStatus,
 		commands: REMOTE_COMMANDS
 	} );
@@ -1984,6 +1988,16 @@ app.whenReady().then( async () => {
 		controlPad?.sendStatus( rendererStatus );
 		// The control window shows the broadcast settings too (size, mirror…).
 		controlWindow?.sendStatus( remoteStatus() );
+		publishRemoteState();
+	} );
+	ipcMain.on( "getCaptureOverride", ( event ) => {
+		if ( event.sender === win.webContents ) event.sender.send( "captureOverride", captureOverride() );
+	} );
+	ipcMain.on( "setCaptureOverride", ( event, enabled ) => {
+		if ( event.sender !== win.webContents ) return;
+		setCaptureOverride( enabled );
+		framingGuide?.apply();
+		logProblem( `Debug capture override ${ captureOverride() ? "on" : "off" }` );
 		publishRemoteState();
 	} );
 	syncRemoteServer();

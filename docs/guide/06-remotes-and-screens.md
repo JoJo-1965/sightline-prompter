@@ -97,10 +97,13 @@ an unsupported command. Existing sample-profile key assignments are unchanged.
 The separate **Head guide fullscreen** action shows **FULL** or **WIN**.
 
 This is a separate desktop window, not an OBS scene source. Camera-only OBS
-recordings do not include it. It always requests capture protection, even if
+recordings do not include it. It normally requests capture protection, even if
 the prompter's Hide from capture setting is off. Protection for full-display
 recording depends on the capture method and platform: verify a short recording
 first. It does not track your face, access the camera or record audio/video.
+The session-only **About > Debug > Allow all windows to be captured** override
+also permits the guide to be captured. Turn it off before ordinary recording;
+the normal rules are restored and quitting clears the override.
 
 ![The head-position guide](images/head-guide.png)
 
@@ -295,6 +298,16 @@ The code appears after **Apply** or **Save & close**; reopen Settings if needed.
 It also works in the separate movable Settings window (fixed in RC10).
 
 ![The phone remote](images/phone-remote.png)
+
+Phone taps show **Sending…**, followed by the button name and **sent** when
+Sightline accepts the request. Section, prompting and OBS status show the
+resulting state separately. **Unavailable** means the app refused the request;
+**no reply** means the phone could not confirm delivery. Commands are never
+automatically replayed after a connection problem, and a rapid second tap on
+the same pending button is ignored. Polling does not repeatedly announce
+unchanged status to assistive technology.
+
+![A phone command acknowledged separately from the prompter state](images/phone-feedback.png)
 
 In the next candidate, rotating to landscape uses the available width and
 shorter buttons: the 12-button Studio layout fits in two rows on typical

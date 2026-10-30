@@ -123,3 +123,10 @@ Command-word tracing is off by default. The warning stays visible beside its
 checkbox; health and recovery logging needs no spoken words.
 
 ![Support logs and optional command-word tracing](images/settings-debug.png)
+
+The session-only capture override applies immediately. Its checked state is
+shown below; the prompter also keeps a warning visible with a Turn off button.
+
+![Capture override enabled](images/settings-debug-capture.png)
+
+![Persistent capture warning](images/capture-override-notice.png)

@@ -3,6 +3,7 @@ import { BrowserWindow, globalShortcut, ipcMain, screen } from "electron";
 import path from "node:path";
 import { fitInside } from "./utils/fit.js";
 import { guidePose } from "./client/guide-pose.js";
+import { captureOverride, protectWindow } from "./capture-policy.js";
 
 const HOTKEY = "CommandOrControl+Shift+H";
 const FULLSCREEN_HOTKEY = "CommandOrControl+Alt+H";
@@ -18,7 +19,7 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 		const s = getSettings();
 		return { locked, fullscreen, chromeless: s.headGuideChromeless === true, eyesLocked: s.headGuideEyesLocked === true, ...guidePose( { x: s.headGuideX, y: s.headGuideY, scale: s.headGuideScale, width: s.headGuideWidth, height: s.headGuideHeight, top: s.headGuideTop, bottom: s.headGuideBottom, left: s.headGuideLeft, right: s.headGuideRight } ), ideal: guidePose( s.headGuideIdeal ), showIdeal: s.headGuideShowIdeal !== false, opacity: Math.max( 0.2, Math.min( 1, Number( s.headGuideOpacity ) || 0.75 ) ), background: Math.max( 0, Math.min( 0.8, Number( s.headGuideBackground ?? 0.12 ) ) ), colour: s.headGuideColour === "gold" ? "gold" : "mint" };
 	};
-	const snapshot = () => ( { ...state(), shown: !!overlay, bounds: overlay?.getBounds() ?? getSettings().headGuideBounds ?? null, windowedBounds: normalBounds ?? getSettings().headGuideBounds ?? null, placement: getSettings().headGuidePlacement ?? "centre", placements: getSettings().headGuidePlacements ?? {}, displayId: overlay ? screen.getDisplayMatching( overlay.getBounds() ).id : null, captureStatus: "Protected separate overlay; OBS capture route not verified" } );
+	const snapshot = () => ( { ...state(), shown: !!overlay, bounds: overlay?.getBounds() ?? getSettings().headGuideBounds ?? null, windowedBounds: normalBounds ?? getSettings().headGuideBounds ?? null, placement: getSettings().headGuidePlacement ?? "centre", placements: getSettings().headGuidePlacements ?? {}, displayId: overlay ? screen.getDisplayMatching( overlay.getBounds() ).id : null, captureOverride: captureOverride(), captureStatus: captureOverride() ? "Debug capture override on; guide may be recorded" : "Protected separate overlay; OBS capture route not verified" } );
 	const send = () => {
 		const value = snapshot();
 		value.controlsShown = controls?.isVisible() ?? false;
@@ -83,7 +84,7 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 			const saved = getSettings().headGuideControlsBounds;
 			const bounds = fitInside( saved ?? { x: area.x + area.width - 400, y: area.y + 30, width: 390, height: 740 }, area );
 			controls = new BrowserWindow( { ...bounds, minWidth: Math.min( 350, area.width ), minHeight: Math.min( 460, area.height ), show: false, minimizable: false, maximizable: false, fullscreenable: false, autoHideMenuBar: true, title: "Guide adjustments", backgroundColor: "#15222b", webPreferences: { nodeIntegration: false, contextIsolation: true, sandbox: false, preload: path.join( dir, "client", "head-guide-preload.mjs" ) } } );
-			controls.setContentProtection( !!getSettings().hideFromCapture );
+			protectWindow( controls, !!getSettings().hideFromCapture );
 			controls.setAlwaysOnTop( true, "screen-saver" );
 			controls.loadFile( path.join( dir, "client", "head-guide.html" ), { query: { controls: "1" } } );
 			controls.once( "ready-to-show", () => {
@@ -140,7 +141,7 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 			overlay = new BrowserWindow( { x, y, width, height, frame: false, transparent: true, backgroundColor: "#00000000", resizable: false, maximizable: false, minimizable: false, fullscreenable: false, show: false, title: "Sightline head-position guide", webPreferences: { nodeIntegration: false, contextIsolation: true, sandbox: false, preload: path.join( dir, "client", "head-guide-preload.mjs" ) } } );
 			overlay.setAlwaysOnTop( true, "floating" );
 			// Independent of the prompter's Hide from capture preference.
-			overlay.setContentProtection( true );
+			protectWindow( overlay, true );
 			overlay.loadFile( path.join( dir, "client", "head-guide.html" ) );
 			overlay.once( "ready-to-show", () => {
 				overlay?.showInactive();
@@ -156,7 +157,7 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 			overlay.webContents.setWindowOpenHandler( () => ( { action: "deny" } ) );
 		}
 		fitMode();
-		controls?.setContentProtection( !!getSettings().hideFromCapture );
+		protectWindow( controls, !!getSettings().hideFromCapture );
 		restack();
 		send();
 	}

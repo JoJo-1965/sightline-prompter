@@ -1,0 +1,17 @@
+import { pickKnown } from "./utils/settings-file.js";
+import { normalisePadLayout } from "./client/control-actions.js";
+
+// The file importer and local API use the same validation and protected keys.
+export function settingsValues( values, defaults, protectedKeys = [] ) {
+	if ( !values || typeof values !== "object" || Array.isArray( values ) ) throw Object.assign( new Error( "Settings must be an object" ), { status: 400 } );
+	const known = pickKnown( values, defaults );
+	if ( Object.hasOwn( defaults, "padLayout" ) && Object.hasOwn( values, "padLayout" ) ) {
+		const value = values.padLayout;
+		if ( value !== null && ( typeof value !== "object" || Array.isArray( value ) || !Array.isArray( value.buttons ) || ( value.columns !== undefined && ![ 2, 3, 4, 6 ].includes( value.columns ) ) ) ) {
+			throw Object.assign( new Error( "padLayout needs a buttons list and 2, 3, 4 or 6 columns" ), { status: 400 } );
+		}
+		known.padLayout = value === null ? null : normalisePadLayout( value );
+	}
+	for ( const key of protectedKeys ) delete known[key];
+	return known;
+}

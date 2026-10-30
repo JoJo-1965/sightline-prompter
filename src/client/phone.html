@@ -12,6 +12,10 @@
     #status { min-height: 72px; text-align: center; line-height: 1.5; }
     #state { font-size: 20px; font-weight: bold; }
     #state.offline { color: #ffb4a9; }
+    #command-feedback { color: #b8e2ff; font-size: 14px; text-wrap: pretty; }
+    #command-feedback.error { color: #ffb4a9; }
+    #capture-note { padding: 6px; margin-bottom: 8px; border: 1px solid #ffda70; color: #fff4ce; background: #493700; font-size: 13px; text-wrap: pretty; }
+    .control-grid button[aria-busy=true] { border-color: #ffda70; }
     #section { text-wrap: pretty; }
     .control-grid { gap: 10px; overflow: visible; }
     .control-grid button { min-height: 96px; font-size: 16px; padding: 10px 6px; }
@@ -34,7 +38,8 @@
 </head>
 <body>
   <main>
-    <div id="status" role="status" aria-live="polite"><div id="state">Connecting…</div><div id="section"></div><div id="obs-status"></div></div>
+    <div id="capture-note" hidden role="status">Capture override on: Sightline windows may be recorded.</div>
+    <div id="status" role="status" aria-live="polite"><div id="state">Connecting…</div><div id="command-feedback" hidden></div><div id="section"></div><div id="obs-status"></div></div>
     <div id="phone-buttons" class="control-grid" role="group" aria-label="Prompter controls"></div>
     <p id="connection-note">Matches your floating pad. Customise in Sightline: Settings › Controls › Pad.</p>
   </main>

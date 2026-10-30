@@ -308,6 +308,12 @@ The whole workflow is in the guide:
   artwork and actions; hardware profiles stay independent.
   Development for RC15 adds a compact landscape layout: four or six columns
   with the same order, two rows for Studio, and browser-safe footer spacing.
+  Taps have separate sending/accepted feedback, with clear refusal or missing
+  acknowledgement states and no automatic command replay.
+- **Session capture override:** About > Debug can temporarily permit every
+  window, including the head guide, in screenshots and demo recordings.
+  A persistent warning and phone notice show when it is active; turning it
+  off restores the latest normal rules. Quitting resets it.
 - **Listening recovery:** health checks restart interrupted capture or speech
   processing without moving the script or changing its hold. Silence and
   intentional listening-off do not cause restarts. Retries are bounded, with

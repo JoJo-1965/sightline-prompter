@@ -4,6 +4,7 @@
 // beam-splitter glass; anywhere else it reads normally.
 
 import { BrowserWindow, ipcMain, screen } from "electron";
+import { protectWindow } from "./capture-policy.js";
 import path from "node:path";
 import { normalisePadLayout, controlAction, controlView } from "./client/control-actions.js";
 
@@ -111,7 +112,7 @@ export function createPad( {
 			}
 		} );
 		pad.setAlwaysOnTop( true, "screen-saver" );
-		pad.setContentProtection( !!getSettings().hideFromCapture );
+		protectWindow( pad, !!getSettings().hideFromCapture );
 		pad.loadFile( path.join( dir, "client", "pad.html" ) );
 		pad.once( "ready-to-show", () => pad?.showInactive() );
 		pad.webContents.on( "did-finish-load", () => {
@@ -135,7 +136,7 @@ export function createPad( {
 	function apply() {
 		if ( getSettings().showPad ) open();
 		else close();
-		pad?.setContentProtection( !!getSettings().hideFromCapture );
+		protectWindow( pad, !!getSettings().hideFromCapture );
 		update();
 	}
 

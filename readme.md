@@ -247,6 +247,13 @@ mirroring under Screens and honours capture preferences for helper windows;
 **Next candidate work, not yet packaged:** compact phone landscape controls
 use four or six columns, with all 12 Studio buttons in two rows. Portrait
 keeps its large controls, and footer spacing accounts for browser controls.
+The same batch adds live API/JSON/XML pad-layout changes, phone sending/sent
+feedback and a session-only capture override in **About > Debug**. Invalid
+layouts are rejected before other settings change; protected permissions stay
+local. The capture override has persistent desktop/phone warnings and resets
+on exit. A plan-first installation helper checks hashes and verifies the
+complete destination/version after an explicitly requested installation.
+The batch is awaiting review; RC15 has not been built or installed.
 The latest published app remains **1.0.6**. No tag, merge, Marketplace publication or
 website deployment is part of this candidate.
 

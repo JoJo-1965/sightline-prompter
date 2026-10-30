@@ -7,6 +7,7 @@ import net from "node:net";
 import QRCode from "qrcode";
 import { spawn } from "node:child_process";
 import { createRequire } from "node:module";
+import { serialize } from "../src/utils/settings-file.js";
 
 const root = process.cwd();
 const require = createRequire( path.join( root, "package.json" ) );
@@ -19,8 +20,12 @@ const phoneListener = net.createServer();
 await new Promise( resolve => phoneListener.listen( 0, "127.0.0.1", resolve ) );
 const phonePort = phoneListener.address().port;
 await new Promise( resolve => phoneListener.close( resolve ) );
+const apiListener = net.createServer();
+await new Promise( resolve => apiListener.listen( 0, "127.0.0.1", resolve ) );
+const apiPort = apiListener.address().port;
+await new Promise( resolve => apiListener.close( resolve ) );
 await fs.writeFile( file, `# Framing check\n\n## Welcome [point]\n\n[smile] These are spoken words. [Say: "Welcome back"]\n\n${ "These words help check a floating panel while prompting continues. ".repeat( 150 ) }` );
-await fs.writeFile( path.join( profile, "app-state.json" ), JSON.stringify( { width: 1100, height: 900, fontSize: 2, opacity: 1, recentFiles: [ file ], settings: { voiceCommands: "off", scrollMode: "steady", scratchAudio: false, takeLoudness: "off", countdown: 0, slate: "off", debugMode: false, checkUpdates: false, obsEnabled: false, phoneRemote: true, phonePort, hideFromCapture: false } } ) );
+await fs.writeFile( path.join( profile, "app-state.json" ), JSON.stringify( { width: 1100, height: 900, fontSize: 2, opacity: 1, recentFiles: [ file ], settings: { voiceCommands: "off", scrollMode: "steady", scratchAudio: false, takeLoudness: "off", countdown: 0, slate: "off", debugMode: false, checkUpdates: false, obsEnabled: false, phoneRemote: true, phonePort, remoteControl: true, remotePort: apiPort, hideFromCapture: false } } ) );
 const env = { ...process.env };
 delete env.ELECTRON_RUN_AS_NODE;
 const child = spawn( require( "electron" ), [ ".", "--inspect=0", `--user-data-dir=${ profile }`, `--remote-debugging-port=${ port }`, "--disable-renderer-backgrounding", "--disable-backgrounding-occluded-windows", "--disable-features=CalculateNativeWinOcclusion" ], { cwd: root, env, windowsHide: true, stdio: [ "ignore", "pipe", "pipe" ] } );
@@ -61,7 +66,7 @@ async function connect( fragment ) {
 	} );
 	const call = ( method, params = {} ) => new Promise( ( resolve, reject ) => {
 		const id = ++next;
-		const timer = setTimeout( () => reject( new Error( `Timed out: ${ method }` ) ), 8000 );
+		const timer = setTimeout( () => reject( new Error( `Timed out: ${ method } ${ String( params.expression ?? "" ).slice( 0, 180 ) }` ) ), 8000 );
 		pending.set( id, ( m ) => {
 			clearTimeout( timer );
 			if ( m.error ) reject( new Error( m.error.message ) );
@@ -90,6 +95,15 @@ try {
 	await main.evaluate( "document.querySelector('#voice-offer button:last-child')?.click();document.getElementById('cb-settings').click()" );
 	const settings = await connect( "panel=settings" );
 	await settings.until( "!!document.getElementById('set-countdown')" );
+	const revealDebugControl = async ( id ) => {
+		await settings.evaluate( "document.getElementById('settings-topic-debug').click()" );
+		for ( let n = 0; n < 8; n++ ) {
+			await settings.evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
+			if ( await settings.evaluate( `document.getElementById('${ id }').getClientRects().length>0` ) ) return;
+			await settings.evaluate( "document.querySelector('.settings-pagination button:last-child').click()" );
+		}
+		throw new Error( `Debug control is unreachable: ${ id }` );
+	};
 	assert.equal( await settings.evaluate( "document.querySelectorAll('#set-trace-commands').length" ), 1 );
 	assert.equal( await settings.evaluate( "document.getElementById('set-trace-commands').closest('fieldset').dataset.tab" ), "debug", "Command tracing has one home in About > Debug" );
 	assert.equal( await settings.evaluate( "document.querySelectorAll('[data-settings-page=commands] #set-trace-commands').length" ), 0 );
@@ -175,10 +189,57 @@ try {
 	assert.equal( await phone.evaluate( "document.body.scrollWidth<=innerWidth" ), true, "Phone layout fits portrait width" );
 	assert.equal( await phone.evaluate( "document.querySelector('[data-action=obs-finish]').hidden" ), true );
 	await phone.evaluate( "document.querySelector('[data-action=mirror-h]').click()" );
+	await phone.until( "document.getElementById('command-feedback').textContent==='Mirror L/R sent' && !document.getElementById('command-feedback').hidden" );
+	await native.evaluate( "padTestPhone.showInactive()" );
+	const phoneFeedbackShot = await phone.call( "Page.captureScreenshot", { format: "png" } );
+	await fs.writeFile( path.join( artifacts, "phone-feedback.png" ), Buffer.from( phoneFeedbackShot.data, "base64" ) );
 	await main.until( "document.getElementById('cb-mirror-h').getAttribute('aria-pressed')==='true'" );
 	await pad.until( "document.querySelector('[data-action=mirror-h]').getAttribute('aria-pressed')==='true'" );
 	await main.evaluate( "document.getElementById('cb-mirror-h').click()" );
 	await phone.until( "document.querySelector('[data-action=mirror-h]').getAttribute('aria-pressed')==='false'" );
+	// Acknowledgement is separate from state confirmation; never replay a tap.
+	await phone.evaluate( "globalThis.originalPhoneFetch=window.fetch;globalThis.phoneCommandCalls=0;window.fetch=async(url,options)=>{if(String(url).startsWith('/command')){phoneCommandCalls++;await new Promise(r=>setTimeout(r,250));return new Response('{}',{status:409});}return originalPhoneFetch(url,options);};document.querySelector('[data-action=marker]').click();document.querySelector('[data-action=marker]').click()" );
+	await phone.until( "document.getElementById('command-feedback').textContent==='Marker unavailable'" );
+	await phone.until( "!document.querySelector('[data-action=marker]').disabled" );
+	assert.equal( await phone.evaluate( "phoneCommandCalls" ), 1 );
+	assert.equal( await phone.evaluate( "document.getElementById('state').classList.contains('offline')" ), false, "A refused command is not a lost connection" );
+	await phone.evaluate( "window.fetch=async(url,options)=>{if(String(url).startsWith('/command')){phoneCommandCalls++;throw new Error('Isolated network failure');}return originalPhoneFetch(url,options);};document.querySelector('[data-action=marker]').click()" );
+	await phone.until( "document.getElementById('command-feedback').textContent==='Marker: no reply'" );
+	await pause( 1200 );
+	assert.equal( await phone.evaluate( "phoneCommandCalls" ), 2, "Polling never replays the command" );
+	await phone.until( "!document.querySelector('[data-action=marker]').disabled" );
+	await phone.evaluate( "window.fetch=async(url,options)=>{if(String(url).startsWith('/command')){phoneCommandCalls++;return new Promise((resolve,reject)=>options.signal.addEventListener('abort',()=>reject(new DOMException('Timed out','AbortError')),{once:true}));}return originalPhoneFetch(url,options);};document.querySelector('[data-action=marker]').click()" );
+	await phone.until( "document.querySelector('[data-action=marker]').getAttribute('aria-busy')==='false' && document.getElementById('command-feedback').textContent==='Marker: no reply'" );
+	assert.equal( await phone.evaluate( "phoneCommandCalls" ), 3, "A hung request times out without replay" );
+	await phone.evaluate( "window.fetch=originalPhoneFetch" );
+	console.log( "PASS: phone sending/sent feedback, refusals without false offline state, duplicate-tap suppression and no command replay after lost acknowledgement." );
+	const remote = JSON.parse( await fs.readFile( path.join( profile, "remote-control.json" ), "utf8" ) );
+	const apiSettings = async ( values ) => {
+		const response = await fetch( remote.url + "/settings", { method: "POST", headers: { Authorization: `Bearer ${ remote.token }`, "Content-Type": "application/json" }, body: JSON.stringify( values ) } );
+		return { status: response.status, body: await response.json() };
+	};
+	const apiLayout = { columns: 6, buttons: [ "next-section", "toggle" ] };
+	const accepted = await apiSettings( { padLayout: { ...apiLayout, buttons: [ "next-section", "unknown", "toggle", "next-section" ] }, remoteControl: false, traceCommands: true, captureOverride: true } );
+	assert.equal( accepted.status, 200 );
+	assert.deepEqual( accepted.body.applied, [ "padLayout" ] );
+	await phone.until( "document.querySelectorAll('#phone-buttons button').length===2" );
+	assert.deepEqual( await phone.evaluate( "[...document.querySelectorAll('#phone-buttons button')].map(b=>b.dataset.action)" ), apiLayout.buttons );
+	const unchangedFont = await main.evaluate( "document.body.style.getPropertyValue('--script-size')" );
+	assert.equal( ( await apiSettings( { fontSize: 5, padLayout: { columns: 9, buttons: [ "toggle" ] } } ) ).status, 400 );
+	assert.equal( await main.evaluate( "document.body.style.getPropertyValue('--script-size')" ), unchangedFont, "Reject invalid layout before applying other fields" );
+	for ( const extension of [ "json", "xml" ] ) {
+		const fixture = path.join( profile, `layout.${ extension }` );
+		await fs.writeFile( fixture, serialize( { padLayout: { columns: 4, buttons: selectedButtons } }, fixture ) );
+		await native.evaluate( `(()=>{const {dialog}=process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron');globalThis.originalImportDialog=dialog.showOpenDialog;dialog.showOpenDialog=async()=>({canceled:false,filePaths:[${ JSON.stringify( fixture ) }]});return true;})()` );
+		await main.evaluate( "window.electron.importSettings()" );
+		await phone.until( "document.querySelectorAll('#phone-buttons button').length===14" );
+		await native.evaluate( "process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron').dialog.showOpenDialog=originalImportDialog" );
+		assert.equal( ( await apiSettings( { padLayout: apiLayout } ) ).status, 200 );
+		await phone.until( "document.querySelectorAll('#phone-buttons button').length===2" );
+	}
+	await apiSettings( { padLayout: { columns: 4, buttons: selectedButtons } } );
+	await phone.until( "document.querySelectorAll('#phone-buttons button').length===14" );
+	console.log( "PASS: live pad/phone layout changes through the API and actual JSON/XML import handlers, validation and protected settings." );
 	await settings.evaluate( "document.getElementById('set-pad-prev').click();document.getElementById('set-pad-prev').click();document.getElementById('set-pad-prev').click();document.getElementById('set-pad-prev').click()" );
 	await settings.evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
 	await native.evaluate( "padTestPhone.showInactive()" );
@@ -186,7 +247,6 @@ try {
 		const shot = await client.call( "Page.captureScreenshot", { format: "png" } );
 		await fs.writeFile( path.join( artifacts, name ), Buffer.from( shot.data, "base64" ) );
 	}
-	await native.evaluate( "padTestPhone.destroy();delete globalThis.padTestPhone" );
 	await main.evaluate( "window.electron.saveSettings({showPad:false,padLayout:null})" );
 	console.log( "PASS: native pad presets, Earlier/Later, drag reorder, additions, slot permissions and matching responsive phone buttons with live feedback." );
 	const panelOwners = () => native.evaluate( "(()=>{const {BrowserWindow}=process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron');const main=BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().includes('teleprompter.html'));return BrowserWindow.getAllWindows().filter(w=>w.webContents.getURL().includes('utility-window.html')).map(w=>({url:w.webContents.getURL(),owner:w.getParentWindow()?.id===main.id,top:w.isAlwaysOnTop(),focused:w.isFocused()}));})()" );
@@ -314,7 +374,44 @@ try {
 		for ( const fragment of [ "panel=settings", "panel=help", "panel=voicehelp", "controls=1" ] ) assert.equal( states.find( w => w.url.includes( fragment ) )?.protected, enabled, `${ fragment } follows Hide from capture=${ enabled } live` );
 		assert.equal( states.find( w => w.url.includes( "head-guide.html" ) && !w.url.includes( "controls=1" ) )?.protected, true, "The head guide overlay always remains protected" );
 	}
-	await main.evaluate( "window.electron.saveSettings({showHeadGuide:false})" );
+	await main.evaluate( "window.electron.onHeadGuideState(s=>globalThis.captureGuideState=s)" );
+	const normalPolicies = await protection();
+	const priorDraft = await settings.evaluate( "document.getElementById('settings-applied').textContent" );
+	await revealDebugControl( "set-capture-override" );
+	assert.equal( await settings.evaluate( "document.getElementById('set-capture-override').checked" ), false );
+	await settings.evaluate( "document.getElementById('set-capture-override').focus()" );
+	await settings.call( "Input.dispatchKeyEvent", { type: "keyDown", key: " ", code: "Space", windowsVirtualKeyCode: 32 } );
+	await settings.call( "Input.dispatchKeyEvent", { type: "keyUp", key: " ", code: "Space", windowsVirtualKeyCode: 32 } );
+	await main.until( "!document.getElementById('capture-override-note').classList.contains('hidden') && captureGuideState.captureOverride===true" );
+	await phone.until( "!document.getElementById('capture-note').hidden" );
+	assert.equal( await settings.evaluate( "document.getElementById('settings-applied').textContent" ), priorDraft, "Session capture control applies without dirtying Settings" );
+	assert.ok( ( await protection() ).every( w => !w.protected ), "Override includes every existing BrowserWindow" );
+	await main.evaluate( "window.electron.saveSettings({showControl:true,showPad:true,hideFromCapture:true});window.electron.openGuide()" );
+	await connect( "control.html" );
+	await connect( "/client/guide.html" );
+	assert.ok( ( await protection() ).every( w => !w.protected ), "New windows and normal capture-preference changes respect the override" );
+	const debugCaptureShot = await settings.call( "Page.captureScreenshot", { format: "png" } );
+	await fs.writeFile( path.join( artifacts, "settings-debug-capture.png" ), Buffer.from( debugCaptureShot.data, "base64" ) );
+	await main.evaluate( "document.getElementById('cb-mirror-h').click();document.getElementById('cb-mirror-v').click();new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
+	const captureNoticeShot = await main.call( "Page.captureScreenshot", { format: "png", clip: { x: 0, y: 0, width: 1100, height: 140, scale: 1 } } );
+	await fs.writeFile( path.join( artifacts, "capture-override-notice.png" ), Buffer.from( captureNoticeShot.data, "base64" ) );
+	await main.evaluate( "document.getElementById('cb-mirror-h').click();document.getElementById('cb-mirror-v').click()" );
+	await native.evaluate( "(()=>{const {ipcMain}=process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron');globalThis.captureMouseProbe=(_event,value)=>{globalThis.captureIgnore=value;};ipcMain.on('setIgnoreMouse',captureMouseProbe);return true;})()" );
+	await main.evaluate( "window.electron.saveSettings({clickThrough:true})" );
+	await pause( 100 );
+	const captureButton = await main.evaluate( "(()=>{const r=document.getElementById('capture-override-off').getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};})()" );
+	await main.call( "Input.dispatchMouseEvent", { type: "mouseMoved", ...captureButton } );
+	await native.until( "globalThis.captureIgnore===false" );
+	await main.call( "Input.dispatchMouseEvent", { type: "mousePressed", button: "left", clickCount: 1, ...captureButton } );
+	await main.call( "Input.dispatchMouseEvent", { type: "mouseReleased", button: "left", clickCount: 1, ...captureButton } );
+	await main.until( "document.getElementById('capture-override-note').classList.contains('hidden') && captureGuideState.captureOverride===false" );
+	await native.evaluate( "process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron').ipcMain.removeListener('setIgnoreMouse',captureMouseProbe);true" );
+	const restoredPolicies = await protection();
+	for ( const part of [ "teleprompter.html", "panel=settings", "panel=help", "panel=voicehelp", "pad.html", "control.html", "head-guide.html" ] ) assert.ok( restoredPolicies.filter( w => w.url.includes( part ) ).every( w => w.protected ), `Normal protection restored for ${ part }` );
+	assert.equal( normalPolicies.find( w => w.url.includes( "head-guide.html" ) && !w.url.includes( "controls=1" ) )?.protected, true );
+	await main.evaluate( "window.electron.saveSettings({showControl:false,showPad:false,showHeadGuide:false,hideFromCapture:false,clickThrough:false})" );
+	await native.evaluate( "padTestPhone.destroy();delete globalThis.padTestPhone" );
+	console.log( "PASS: session-only capture override, existing/new windows, latest normal rules, persistent warning, phone notice, metadata and one-click restore." );
 	await voiceHelp.call( "Input.dispatchKeyEvent", { type: "keyDown", key: "Escape", code: "Escape" } );
 	await voiceHelp.until( "document.getElementById('voice-help').classList.contains('hidden')" );
 	assert.equal( await settings.evaluate( "document.getElementById('settings-modal').classList.contains('hidden')" ), false );
@@ -422,7 +519,8 @@ try {
 	await settings.until( "document.getElementById('settings-modal').classList.contains('hidden')" );
 	await main.evaluate( "document.getElementById('cb-settings').click()" );
 	await settings.until( "!document.getElementById('settings-modal').classList.contains('hidden')" );
-	await settings.evaluate( "document.getElementById('settings-topic-debug').click();document.getElementById('set-trace-commands').focus()" );
+	await revealDebugControl( "set-trace-commands" );
+	await settings.evaluate( "document.getElementById('set-trace-commands').focus()" );
 	await settings.call( "Input.dispatchKeyEvent", { type: "keyDown", key: " ", code: "Space", windowsVirtualKeyCode: 32 } );
 	await settings.call( "Input.dispatchKeyEvent", { type: "keyUp", key: " ", code: "Space", windowsVirtualKeyCode: 32 } );
 	await settings.until( "document.getElementById('settings-applied').textContent==='Unsaved changes'" );
@@ -487,11 +585,28 @@ try {
 	await settings.until( "document.getElementById('settings-applied').textContent==='Unsaved changes'" );
 	native.socket.close();
 	await pause( 100 );
+	await main.evaluate( "window.electron.setCaptureOverride(true)" );
+	await main.until( "!document.getElementById('capture-override-note').classList.contains('hidden')" );
 	await main.evaluate( "window.electron.windowControl('close')" );
 	await settings.until( "!document.getElementById('settings-unsaved').classList.contains('hidden')" );
 	await settings.evaluate( "document.getElementById('settings-unsaved-discard').click()" );
 	for ( let n = 0; n < 50 && child.exitCode === null; n++ ) await pause( 100 );
 	assert.equal( child.exitCode, 0, "Discarding the Settings draft allows normal app exit and closes the utility windows" );
+	const restarted = spawn( require( "electron" ), [ ".", `--user-data-dir=${ profile }`, `--remote-debugging-port=${ port }` ], { cwd: root, env, windowsHide: true, stdio: "ignore" } );
+	try {
+		const fresh = await connect( "teleprompter.html" );
+		await fresh.until( "!!document.getElementById('capture-override-note') && !!document.getElementById('cb-settings')" );
+		await fresh.evaluate( "window.electron.onCaptureOverride(v=>globalThis.freshCaptureState=v);window.electron.getCaptureOverride()" );
+		await fresh.until( "globalThis.freshCaptureState===false" );
+		assert.equal( await fresh.evaluate( "document.getElementById('capture-override-note').classList.contains('hidden')" ), true, "Capture override resets after a full restart" );
+		assert.equal( JSON.parse( await fs.readFile( path.join( profile, "app-state.json" ), "utf8" ) ).settings.captureOverride, undefined );
+		await fresh.evaluate( "setTimeout(()=>window.electron.windowControl('close'),50);true" );
+		for ( let n = 0; n < 50 && restarted.exitCode === null; n++ ) await pause( 100 );
+		assert.equal( restarted.exitCode, 0 );
+	} finally {
+		restarted.kill();
+	}
+	console.log( "PASS: capture override is not saved and resets after restarting the isolated app." );
 	console.log( JSON.stringify( { pass: true, errors, artifacts } ) );
 } catch ( error ) {
 	console.error( error, JSON.stringify( errors ), stderr.slice( -2400 ) );

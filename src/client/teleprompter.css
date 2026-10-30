@@ -2926,3 +2926,8 @@ body.notes-pages #md ol.current-section {
 	opacity: 1;
 	cursor: not-allowed;
 }
+
+#capture-override-note { position: fixed; z-index: 10000; top: 54px; right: 12px; left: 12px; width: fit-content; max-width: calc(100vw - 24px); margin: auto; padding: 8px 12px; display: flex; align-items: center; gap: 12px; background: #493700; border: 1px solid #ffda70; border-radius: 6px; color: #fff4ce; font: 13px/1.4 system-ui, sans-serif; text-wrap: pretty; pointer-events: auto; -webkit-app-region: no-drag; }
+#capture-override-note.hidden { display: none; }
+#capture-override-note button { flex-shrink: 0; padding: 5px 9px; background: #344355; color: #fff; border: 1px solid #c6d1e2; border-radius: 4px; font: inherit; cursor: pointer; }
+#capture-override-note button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
