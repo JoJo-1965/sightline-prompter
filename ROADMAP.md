@@ -78,8 +78,12 @@ passed. Manual NVDA, Magnifier and OS high-contrast checks remain. macOS and
 VoiceOver testing are deferred to a future Mac tester, not a gate for this
 Windows candidate. See the [Settings audit](docs/SETTINGS-UX-AUDIT.md).
 
-**Next development:** finish the independent Settings window (48) and the
-components manager (47), with controller mappings (40) and signing (27)
+**Before another RC:** reconcile pending conversation requests, unfinished fixes
+and companion work before choosing a version or building. Finish the current
+batch and its supporting updates, then check for new messages before packaging.
+Planned roadmap work and physical acceptance checks stay separately identified.
+
+**Next development:** the components manager (47), with controller mappings (40) and signing (27)
 following the arrangements and priorities below. Zoom (53) and Teams (54)
 remain investigations. No new compulsory script directives are needed.
 
