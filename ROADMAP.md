@@ -43,6 +43,8 @@ RC3 also fixes help-frame resizing, adds independent toolbar mirrors and a
 labelled Files > Settings entry, confirms slot clearing, and protects sample
 source with a read-only editor and Save a copy.
 RC8 also completes the separate-window implementation of 48, now awaiting acceptance.
+RC9 adds independent Windows installer finish choices for release notes and
+Getting Started, bundled as offline pages matching the installed version.
 
 The [acceptance walkthrough](docs/guide/14-acceptance-test.md) and two bundled
 sample scripts cover natural voice, physical Stream Deck controls, stops,

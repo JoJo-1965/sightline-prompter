@@ -19,6 +19,8 @@
 		"check-docs": "node scripts/check-docs-sync.mjs",
 		"test:production-app": "node scripts/production-app.test.mjs",
 		"test:utility-windows": "node scripts/utility-windows.test.mjs",
+		"test:installer-help": "node scripts/installer-help.test.mjs",
+		"test:installer-finish": "node scripts/installer-finish.test.mjs",
 		"test:recorded-slate": "node scripts/recorded-slate.test.mjs"
 	},
 	"author": "Joanne Lockwood (SEE Change Happen Ltd)",
@@ -78,6 +80,10 @@
 			"node_modules/sherpa-onnx-*/**"
 		],
 		"icon": "build/icon.png",
+		"beforePack": "./scripts/build-installer-help.mjs",
+		"extraResources": [
+			{ "from": "build/installer-help", "to": "installer-help" }
+		],
 		"win": {
 			"target": [
 				{
@@ -89,6 +95,7 @@
 			]
 		},
 		"nsis": {
+			"include": "build/installer.nsh",
 			"oneClick": false,
 			"allowToChangeInstallationDirectory": true,
 			"artifactName": "Sightline-Prompter-Setup-${version}.${ext}"

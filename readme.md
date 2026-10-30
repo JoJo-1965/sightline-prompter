@@ -236,10 +236,15 @@ RC2 refreshed its bundled help and added the reusable acceptance samples.
 **1.0.7-rc.6** improves toolbar access and centres Settings on opening;
 **1.0.7-rc.7** adds floating guide adjustments, eye-anchored edge fitting and
 separate guide-background opacity;
-**1.0.7-rc.8** also makes Settings and F1 Help independent movable windows.
+**1.0.7-rc.8** also makes Settings and F1 Help independent movable windows;
+**1.0.7-rc.9** adds optional offline reading at the end of Windows installation.
 The latest published app remains **1.0.6**. No tag, merge, Marketplace publication or
 website deployment is part of this candidate.
 
+- **Read after installing:** the Windows finish page has independent **Read
+  release notes** and **Read Getting Started guide** tick boxes alongside
+  **Run Sightline Prompter**. The reading options start unticked and open
+  version-matched, offline pages in your browser. Silent installs skip them.
 - **Movable Settings and Help:** **Ctrl+,** and **F1 / ?** open separate upright
   windows. Drag their native title bars to another screen; each remembers its
   position and size. Settings retains its fixed layout, paged topics, live

@@ -16,6 +16,16 @@ Sightline is free. Download the installer for your computer from the
 Not sure which Mac you have? Apple menu > **About This Mac**: **Chip** means
 Apple silicon, **Processor** means Intel.
 
+**Windows installer finish page (RC9):** choose **Run Sightline Prompter**,
+**Read release notes** and/or **Read Getting Started guide**, then **Finish**.
+Run is ticked initially; the two reading options start unticked. Each works
+independently, including opening both documents without starting Sightline.
+The documents open in your browser from the installed files and work offline.
+They include the installed version number and links to the bundled user guide.
+Silent installations do not open these pages.
+
+![The Windows installer's finish choices](images/installer-finish.png)
+
 ### The security warnings, and how to get past them
 
 Sightline's installers aren't code-signed yet. Signing costs money every year

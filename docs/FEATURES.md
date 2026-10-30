@@ -306,6 +306,9 @@ The whole workflow is in the guide:
   sample profile for every model. See
   [Remotes and second screens](guide/06-remotes-and-screens.md#stream-deck).
 - A keyboard shortcuts panel (F1) and an About page.
+- **Windows installer reading options:** separate finish-page tick boxes open
+  the release notes and Getting Started guide in your browser. Both are bundled,
+  show the installed version and work offline; neither requires launching Sightline.
 
 ## Recording setups
 
