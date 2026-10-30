@@ -222,6 +222,8 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ### Next release
 
+- **Illustrated Settings help (development):** the approved screenshots now accompany the Settings instructions for fonts, backing, reading aids, audio and connections. The full gallery is in the offline guide's contents, with every topic and page. The Joanne Lockwood webpage preview uses selected Settings screenshots; publication remains held.
+
 - **Settings usability audit (development):** approved miniature ? pills sit beside the option they explain, with a larger tap target and hover, keyboard and click support. Appearance now separates Text, Background, Reading aids, Spacing and Screens. Standard dark controls, explicit labels, immediate-save notes, Unsaved changes feedback and Save & close make behaviour clearer. Invalid numbers return to their field for correction; cue-file changes now trigger the unsaved-changes warning. See the [audit](docs/SETTINGS-UX-AUDIT.md).
 
 - **Credits in one place (development):** copyright and attribution appear on the About page. Open it from Help > About or Settings > About > Credits and licence. Repeated menu footers and the duplicate Settings credit have been removed.

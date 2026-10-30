@@ -41,6 +41,11 @@ one copy of each control; closing Settings returns it to the quick panel.
 
 ## Reading aids
 
+The separate **Appearance > Reading aids** topic brings these choices together.
+Fonts are in **Appearance > Text**, and colour themes are in **Appearance > Background**.
+
+![Reading aids grouped together in Settings](images/settings-aids.png)
+
 - **Theme**: standard, yellow on dark, high contrast or soft cream.
 - **Font**: standard, Atkinson Hyperlegible, OpenDyslexic or Verdana. Some
   people find Atkinson Hyperlegible or OpenDyslexic easier to read.

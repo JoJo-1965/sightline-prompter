@@ -26,6 +26,7 @@ steady pace or follows your voice.
 10. [Setting up your AI](10-setting-up-your-ai.md): Claude Code, Codex, ChatGPT, Claude or Gemini, and the AI and remote control settings
 11. [Recording with OBS](11-obs.md): optional connection, recording controls, chapters and file references (development branch)
 12. [Production handover](12-production-handover.md): setup, framing, a short test, retakes, keeper choices and the files to hand over (development branch)
+13. [Settings screenshot gallery](settings-gallery.md): all five groups, every topic and the extra pages, including contextual help (development branch)
 
 Inside the app, open this guide from **Help > User Guide** or the **?** menu.
 **F1** shows the keyboard shortcuts.

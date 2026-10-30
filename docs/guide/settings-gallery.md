@@ -5,8 +5,10 @@ the release remains on hold. The panel stays the same size across topics.
 
 [Full audit and findings](../SETTINGS-UX-AUDIT.md)
 
-Jump to [Prompting](#prompting), [Appearance](#appearance),
-[Recording](#recording), [Controls](#controls) or [About](#about).
+[Read the illustrated Settings guide](07-settings.md) for what each choice does.
+
+Jump to [Prompting](settings-gallery.md#prompting), [Appearance](settings-gallery.md#appearance),
+[Recording](settings-gallery.md#recording), [Controls](settings-gallery.md#controls) or [About](settings-gallery.md#about).
 
 ## Prompting
 

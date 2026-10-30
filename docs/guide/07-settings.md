@@ -8,6 +8,10 @@ There are five groups, with a second row of focused topics. Each setting has
 one home. Script files, recordings and settings import/export are in the
 **Files menu (☰)**; live tools are under **Tools** on the top bar.
 
+[Browse the full Settings screenshot gallery](settings-gallery.md) for every
+topic and page. The same gallery opens from the guide's contents and works
+offline in the app.
+
 Settings keeps the same width and height across every tab and page. It only
 reduces its size when the prompter window is too small for the standard panel.
 There is no scrolling. Longer topics use **Previous / Next**, with the current
@@ -49,6 +53,24 @@ without disappearing as you move the pointer onto it.
 OBS settings stay discoverable while disabled so you can configure them.
 Recording commands in Help and the live recording controls still follow the
 permissions you have enabled. The head guide is independent of OBS.
+
+## Fonts, backing and reading aids
+
+Open **Appearance > Text** for the body font, heading font, heading size and
+text-size preview. The visible notes distinguish changes saved immediately
+from the text-size preview saved with Apply or Save & close.
+
+![Body and heading fonts alongside the text-size preview](images/settings-reading.png)
+
+**Appearance > Background** holds visibility, brightness and colour choices.
+Use Background for the off-air level and Background on air for the level used
+when ON AIR is enabled. Both values are remembered.
+
+![Separate off-air and on-air backing controls](images/settings-background.png)
+
+**Appearance > Reading aids** holds the focus band, text edge, reading-line
+marker, sentence highlight and progress bar. [Layout and display](04-layout-and-display.md)
+explains these choices, with illustrations.
 
 ## Apply, Save & close and Cancel
 
@@ -93,6 +115,17 @@ Sound checks and loudness are in **Recording > Audio**, with a live meter
 available from **Tools > Sound check** or **Ctrl+Shift+D**.
 
 ![Recording audio settings for scratch audio, loudness and the sound-check display](images/settings-audio.png)
+
+## Connections in Controls
+
+**Controls > Phone** pairs a phone on the same Wi-Fi. **Controls > Stream Deck**
+enables the companion plugin's connection. **Controls > AI & API** enables an
+AI assistant or local script to control Sightline. Each connection is optional.
+
+![The Stream Deck connection has its own topic and contextual help](images/settings-streamdeck.png)
+
+Follow [Remotes and second screens](06-remotes-and-screens.md) for pairing and
+connection steps, or [Setting up your AI](10-setting-up-your-ai.md) for automation.
 
 ## Tools and Files
 
