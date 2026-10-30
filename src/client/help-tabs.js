@@ -38,7 +38,7 @@ export function helpTabs( settings, notes = false ) {
 	const recording = [ takes ];
 	if ( settings.obsEnabled ) {
 		const rows = [
-			[ "Settings > OBS", "Saved address, port and protected password; Apply, then Test saved connection" ],
+			[ "Settings > Recording > OBS connection", "Saved address, port and protected password; Apply, then Test saved connection" ],
 			[ "Status only", "Read recording status without starting or stopping OBS" ],
 			[ "Edit pack", "Confirmed recording paths and observations stay in the take log" ],
 			[ "Disable OBS", "Disconnects Sightline; leaves an existing OBS recording running" ]
@@ -49,7 +49,7 @@ export function helpTabs( settings, notes = false ) {
 			[ "Phone / control window", "The same dedicated recording actions; ordinary Play and On air stay independent" ] );
 		if ( settings.obsControls && settings.obsMarkers ) rows.push( [ "Chapters", "Optional section/marker chapters, where the OBS format supports them" ] );
 		if ( settings.obsControls && settings.obsRecordedSlate ) rows.push( [ "Recorded slate", "With OBS stopped: Apply, then Prepare recorded slate. Records its flash/tone on track 1; the guide stays separate" ] );
-		if ( settings.obsControls && settings.streamDeck ) rows.push( [ "Stream Deck", "Record take / Finish recording keys and optional OBS layouts in companion test build 0.1.7" ] );
+		if ( settings.obsControls && settings.streamDeck ) rows.push( [ "Stream Deck", "Record take / Finish recording keys and optional OBS layouts in the companion plug-in" ] );
 		recording.push( section( "OBS recording", rows ) );
 	}
 	const tabs = [
