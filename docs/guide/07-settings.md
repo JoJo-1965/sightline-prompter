@@ -46,18 +46,21 @@ without disappearing as you move the pointer onto it.
 | **Appearance** | Text | Body and heading fonts, heading size and text-size preview |
 | | Background | Text opacity, backing on/off air, brightness and colour theme |
 | | Reading aids | Focus band, text edge, reading-line marker, sentence highlight and progress bar |
-| | Spacing | Margins, line spacing, reading line, alignment and mirror axes |
+| | Spacing | Margins, line spacing, reading line and alignment |
 | | Screens | Beam-splitter mirroring, prompter monitor, Keep on top, eye-line strip and keeping controls visible |
 | **Recording** | Takes | Slate, ON AIR display, countdown beep, capture protection and click-through |
 | | Audio | Scratch audio, loudness per take and keeping the sound-check meter visible |
-| | OBS connection | Enable OBS, address, port, protected password and the saved-connection test |
-| | OBS recording | Start/stop permission, chapters and preparing the recorded slate |
 | **Controls** | Phone | Enable the phone remote, scan its QR code or replace its code |
 | | Stream Deck | Enable the companion plugin's buttons-only connection and open its guide |
 | | AI & API | Enable local automation, port, token, recording-delete permission and AI setup help |
+| | OBS connection | Enable OBS, address, port, protected password and the saved-connection test |
+| | OBS recording | Start/stop permission, chapters and preparing the recorded slate |
 | **About** | About | Version, a link to credits, updates, support, debug logging and the support-log export |
 
 OBS settings stay discoverable while disabled so you can configure them.
+Both OBS topics are together under **Controls**. Recording keeps the
+prompter's own Takes and Audio choices. **Prepare recorded slate** explains
+any unmet prerequisite beside the button and shows progress or errors in Settings.
 Recording commands in Help and the live recording controls still follow the
 permissions you have enabled. The head guide is independent of OBS.
 

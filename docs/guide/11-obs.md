@@ -1,5 +1,9 @@
 # Recording with OBS Studio
 
+In RC10 both OBS topics are under **Settings > Controls**. On **OBS recording**,
+**Prepare recorded slate** explains any unmet prerequisite, then displays
+progress, readiness or errors beside the button. Apply permission changes first.
+
 **1.0.7 release candidate: built, not publicly released.** These instructions
 describe roadmap item 52 in the local Windows test build. Use the private
 Stream Deck **0.1.9** companion for the recording keys. The published 1.0.6
@@ -19,7 +23,7 @@ For the session checklist and which files to send to Production, follow
 
 1. In OBS Studio 28 or later, open **Tools > WebSocket Server Settings**.
    Enable the server and authentication. Note its port and password.
-2. In Sightline, open **Settings > Recording > OBS connection**. Tick **Enable OBS integration**.
+2. In Sightline, open **Settings > Controls > OBS connection**. Tick **Enable OBS integration**.
 3. Use **127.0.0.1** for OBS on this computer. Enter OBS's port (normally
    **4455**) and password, then click **Apply**.
 4. Click **Test saved connection**. Test uses the saved values; apply any
@@ -47,7 +51,7 @@ only. Sightline shows whether OBS is recording, paused or stopped, with
 the same information in its control window. A lost connection shows
 **recording status unknown**; it does not claim the recording stopped.
 
-In **Settings > Recording > OBS recording**, enable recording controls to get **Record take** and **Finish recording**
+In **Settings > Controls > OBS recording**, enable recording controls to get **Record take** and **Finish recording**
 beside the script, in the control window and on the phone remote:
 
 - **Record take** checks OBS first. If OBS is stopped, it asks it to record,
@@ -87,7 +91,7 @@ enabled. It uses OBS's included Browser source, not the protected head guide.
 
 1. Stop recording and streaming in OBS.
 2. In **Settings > Recording > Takes > Slate**, choose **Flash and beep** or **Flash**.
-3. In **Settings > Recording > OBS recording**, tick **Include the slate in the OBS recording**,
+3. In **Settings > Controls > OBS recording**, tick **Include the slate in the OBS recording**,
    then **Apply** and **Prepare recorded slate**.
 4. Preparation adds or updates only **Sightline recorded sync** above the
    current scene. It leaves your camera, microphone, profile and scene choice

@@ -18,8 +18,8 @@ under **Recording > Takes > Slate**. Scratch audio is an independent microphone 
 production master. Choose steady or voice scrolling for the session. In voice
 mode, take your own beat at timed pauses; `{stop}` still holds the prompter.
 
-In **Settings > Recording > OBS connection**, connect to OBS; allow controls in
-**Recording > OBS recording**. With OBS
+In **Settings > Controls > OBS connection**, connect to OBS; allow controls in
+**Controls > OBS recording**. With OBS
 stopped, enable **Include the slate in the OBS recording**, **Apply**, then
 **Prepare recorded slate**. Prepare again after restarting Sightline or changing
 the OBS scene. Include OBS audio track 1 so the recorded tone reaches the file.

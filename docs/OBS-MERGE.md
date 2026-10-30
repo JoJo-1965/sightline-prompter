@@ -21,7 +21,7 @@ public release or website deployment is part of this preparation.
   Always capture-protected, with no camera/mic access or OBS source.
   The separate Stream Deck `codex/head-position-guide` branch adds its key.
 
-- Settings > Recording > OBS connection, disabled by default, authenticated WebSocket v5 connection,
+- Settings > Controls > OBS connection, disabled by default, authenticated WebSocket v5 connection,
   saved connection test and reconnection while enabled.
 - Status-only mode, then separately permitted recording controls.
 - Record take: OBS confirmation before the usual prompting sequence.

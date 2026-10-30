@@ -25,8 +25,8 @@ from `remote-control.json`.
 
 ### Optional OBS integration (1.0.7 release candidate)
 
-The user must enable the integration in **Settings > Recording > OBS connection**
-and allow controls in **Recording > OBS recording** themselves. These settings
+The user must enable the integration in **Settings > Controls > OBS connection**
+and allow controls in **Controls > OBS recording** themselves. These settings
 are protected from the API and script files. Use the private Stream Deck
 0.1.9 companion for physical recording-key checks. The public 1.0.6 app does
 not contain OBS integration. See the [acceptance walkthrough](../../docs/guide/14-acceptance-test.md)
@@ -50,7 +50,7 @@ recording path after stop. Read [docs/EDIT-PACK.md](../../docs/EDIT-PACK.md)
 for fields and timing limits. The recording file is not included in the
 pack, and the observation times do not replace slate or audio sync.
 
-Optional recorded slates need a prepared source in **Settings > Recording > OBS recording** and
+Optional recorded slates need a prepared source in **Settings > Controls > OBS recording** and
 track 1 in the OBS recording. `recorded-sync.json` links browser acknowledgements
 to a section/take, the recording identifier, UTC times and log-clock `t`.
 Locate the actual flash in the file and map it to `t`; do not use the OBS

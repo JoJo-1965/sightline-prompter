@@ -108,6 +108,14 @@ try {
 	const protection = () => native.evaluate( "process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron').BrowserWindow.getAllWindows().map(w=>({url:w.webContents.getURL(),protected:w.isContentProtected()}))" );
 	assert.equal( ( await protection() ).find( w => w.url.includes( "panel=settings" ) ).protected, false, "Settings is capturable when Hide from capture is off" );
 	console.log( "PASS: phone QR decodes in the native Settings window and opens its real remote." );
+	await settings.evaluate( "document.getElementById('settings-topic-obs-recording').click()" );
+	assert.equal( await settings.evaluate( "document.querySelector('[data-settings-group=controls]').getAttribute('aria-selected')" ), "true" );
+	assert.equal( await settings.evaluate( "document.getElementById('set-obs-prepare-slate').disabled" ), true );
+	assert.match( await settings.evaluate( "document.getElementById('set-obs-slate-status').textContent" ), /Enable OBS integration/ );
+	await settings.evaluate( "document.getElementById('set-obs-enabled').checked=true;document.getElementById('set-obs-enabled').dispatchEvent(new Event('change',{bubbles:true}))" );
+	assert.match( await settings.evaluate( "document.getElementById('set-obs-slate-status').textContent" ), /Apply your OBS changes/ );
+	await settings.evaluate( "document.getElementById('set-obs-enabled').checked=false;document.getElementById('set-obs-enabled').dispatchEvent(new Event('change',{bubbles:true}))" );
+	console.log( "PASS: OBS topics live under Controls; disabled slate setup and unsaved OBS changes have visible guidance." );
 	await settings.evaluate( "document.querySelector('[data-settings-group=appearance]').click();document.querySelector('[data-tab=display]').click()" );
 	assert.equal( await settings.evaluate( "document.querySelectorAll('.mirror-pills').length" ), 1, "Mirroring has one Settings home" );
 	assert.equal( await settings.evaluate( "document.querySelector('.mirror-pills').closest('fieldset').dataset.tab" ), "display" );
@@ -154,8 +162,8 @@ try {
 	await settings.evaluate( "document.querySelector('[data-settings-group=prompting]').click();document.querySelector('[data-tab=scrolling]').click();document.querySelector('[data-tab=scrolling]').focus()" );
 	const picture = await settings.call( "Page.captureScreenshot", { format: "png" } );
 	await fs.writeFile( path.join( artifacts, "floating-settings.png" ), Buffer.from( picture.data, "base64" ) );
-	for ( const topic of [ "background", "layout", "display" ] ) {
-		await settings.evaluate( `document.querySelector('[data-settings-group=appearance]').click();document.querySelector('[data-tab=${ topic }]').click();document.querySelector('[data-tab=${ topic }]').focus()` );
+	for ( const topic of [ "background", "layout", "display", "recording", "audio", "streamdeck", "remotes", "obs", "obs-recording" ] ) {
+		await settings.evaluate( `document.getElementById('settings-topic-${ topic }').click();document.getElementById('settings-topic-${ topic }').focus()` );
 		await settings.evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
 		for ( let page = 1; page < 8; page++ ) {
 			const shot = await settings.call( "Page.captureScreenshot", { format: "png" } );

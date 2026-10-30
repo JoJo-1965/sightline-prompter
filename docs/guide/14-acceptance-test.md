@@ -39,7 +39,7 @@ A mouse fallback does not prove a physical Stream Deck key works.
 
 ## Preflight
 
-1. In **Settings > Recording > OBS connection**, enable the connection,
+1. In **Settings > Controls > OBS connection**, enable the connection,
    Apply and test it. In **OBS recording**, allow recording controls.
    These permissions must be chosen in Settings; the scripts do not enable them.
    In **Controls > Stream Deck**, choose **Check compatibility** and confirm

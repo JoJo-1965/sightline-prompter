@@ -270,6 +270,8 @@ The whole workflow is in the guide:
   window with a draggable title bar, saved geometry and stable grouped tabs.
 - **Mirroring in one Settings topic:** **Appearance > Screens** holds both
   beam-splitter toggles. The toolbar mirrors stay available and in sync.
+- **OBS connection and recording together under Controls:** recorded-slate
+  preparation shows prerequisites, progress, readiness and errors in Settings.
 - **Visible slider labels:** Speed/Response, Text size and Background remain
   identifiable at a glance. On-air BG identifies the background used on air;
   tooltips explain the controls.
@@ -345,7 +347,7 @@ The whole workflow is in the guide:
 
 ## Help and installers
 
-- **Optional OBS integration** (1.0.7 candidate): **Settings > Recording > OBS connection**
+- **Optional OBS integration** (1.0.7 candidate): **Settings > Controls > OBS connection**
   and **OBS recording**,
   off by default; status-only or recording control; Record take and Finish
   recording from Sightline, its control window, phone and voice commands;

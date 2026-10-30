@@ -2,8 +2,8 @@
 export const SETTINGS_GROUPS = [
 	{ id: "prompting", label: "Prompting", pages: [ [ "scrolling", "Scrolling" ], [ "voice", "Voice" ], [ "commands", "Commands" ], [ "words", "Your words" ], [ "script", "Script" ] ] },
 	{ id: "appearance", label: "Appearance", pages: [ [ "reading", "Text" ], [ "background", "Background" ], [ "aids", "Reading aids" ], [ "layout", "Spacing" ], [ "display", "Screens" ] ] },
-	{ id: "recording", label: "Recording", pages: [ [ "recording", "Takes" ], [ "audio", "Audio" ], [ "obs", "OBS connection" ], [ "obs-recording", "OBS recording" ] ] },
-	{ id: "controls", label: "Controls", pages: [ [ "phone", "Phone" ], [ "streamdeck", "Stream Deck" ], [ "remotes", "AI & API" ] ] },
+	{ id: "recording", label: "Recording", pages: [ [ "recording", "Takes" ], [ "audio", "Audio" ] ] },
+	{ id: "controls", label: "Controls", pages: [ [ "phone", "Phone" ], [ "streamdeck", "Stream Deck" ], [ "remotes", "AI & API" ], [ "obs", "OBS connection" ], [ "obs-recording", "OBS recording" ] ] },
 	{ id: "about", label: "About", pages: [ [ "about", "About" ] ] }
 ];
 

@@ -243,6 +243,9 @@ mirroring under Screens and honours capture preferences for helper windows.
 The latest published app remains **1.0.6**. No tag, merge, Marketplace publication or
 website deployment is part of this candidate.
 
+- **OBS settings together:** **Controls > OBS connection** and **OBS recording**
+  sit alongside the other integrations. **Prepare recorded slate** explains
+  why it is unavailable, then shows progress, readiness or an error in Settings.
 - **Phone QR and helper windows:** **Controls > Phone** displays its QR code
   in the separate Settings window. **Hide from capture** now applies live to
   Settings, keyboard/voice Help and Guide adjustments; turn it off to capture
@@ -300,7 +303,7 @@ website deployment is part of this candidate.
   connections and unavailable actions are blocked. Older unreported versions
   stay unconfirmed; supported ordinary controls still work. This is a local
   compatibility check, not a guarantee that either app is the latest release.
-- **Optional OBS recording (52):** **Settings > Recording > OBS connection**
+- **Optional OBS recording (52):** **Settings > Controls > OBS connection**
   is off by default, with authenticated connection, saved-connection test
   and status-only operation. Allow controls in **OBS recording** for
   **Record take** and **Finish recording**, also available on the phone,
@@ -308,7 +311,7 @@ website deployment is part of this candidate.
   Ordinary Play/Pause, section stops, retakes, On air and module changes
   keep OBS recording. Disabling the integration leaves OBS alone.
 - **Recorded sync and production exports:** prepare an optional flash/tone
-  source in **Recording > OBS recording**, with OBS stopped and track 1
+  source in **Controls > OBS recording**, with OBS stopped and track 1
   included. Edit packs retain the exact script, guide snapshots, OBS
   observations, confirmed main filenames and estimated take/marker clock
   positions. Module changes save the outgoing take and scratch WAV before

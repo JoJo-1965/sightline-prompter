@@ -21,11 +21,25 @@ export function obsActionBlock( state, name, { busy = false, canStart = true } =
 	return null;
 }
 
+export function obsSlateSetupBlock( state, settings, busy = false ) {
+	if ( busy ) return "Waiting for OBS confirmation…";
+	if ( !state?.enabled ) return "Enable OBS integration in Controls > OBS connection, then Apply.";
+	if ( !state.controls ) return "Allow Sightline to start and stop OBS recordings, then Apply.";
+	if ( !settings.obsRecordedSlate ) return "Tick Include the slate in the OBS recording, then Apply.";
+	if ( state.connection !== "connected" ) return "Connect OBS and use Test saved connection first.";
+	if ( state.recording !== "stopped" ) return "OBS must be stopped before preparing the slate source.";
+	if ( settings.slate === "off" ) return "Choose Flash or Flash and beep in Recording > Takes.";
+	return null;
+}
+
 export function createObsUi( { getSettings, canStart, onStart, onFinish, onChange, toast } ) {
 	const field = id => uiElement( `set-obs-${ id }` );
 	let state = { enabled: false, connection: "disabled" };
 	let busy = false;
 	let markerError = null;
+	let slateFeedback = null;
+	let preparingSlate = false;
+	const unsavedSlateOptions = () => field( "enabled" ).checked !== !!state.enabled || field( "controls" ).checked !== !!state.controls || field( "recorded-slate" ).checked !== !!getSettings().obsRecordedSlate;
 	const bar = document.createElement( "div" );
 	bar.id = "obs-status";
 	bar.className = "hidden";
@@ -48,8 +62,11 @@ export function createObsUi( { getSettings, canStart, onStart, onFinish, onChang
 		start.disabled = !ready || !canStart();
 		finish.disabled = !ready || ![ "recording", "paused" ].includes( state.recording );
 		start.hidden = finish.hidden = !state.controls;
-		field( "prepare-slate" ).disabled = !ready || !getSettings().obsRecordedSlate || state.recording !== "stopped";
-		field( "slate-status" ).textContent = !getSettings().obsRecordedSlate ? "Recorded slate off" : getSettings().slate === "off" ? "Choose Flash or Flash and beep in Settings > Recording > Takes" : state.recordedSlate?.ready ? "Recorded slate source ready · verify the recorded file before a session" : "Prepare the source in this OBS scene before recording";
+		const slateBlock = unsavedSlateOptions() ? "Apply your OBS changes before preparing the recorded slate." : obsSlateSetupBlock( state, getSettings(), busy );
+		field( "prepare-slate" ).disabled = !!slateBlock;
+		field( "prepare-slate" ).title = slateBlock ?? "Add the recorded slate source to the current OBS scene";
+		field( "prepare-slate" ).textContent = preparingSlate ? "Preparing recorded slate…" : "Prepare recorded slate";
+		field( "slate-status" ).textContent = preparingSlate ? "Preparing the recorded slate in the current OBS scene…" : slateBlock ?? slateFeedback ?? ( state.recordedSlate?.ready ? "Recorded slate source ready · verify the recorded file before a session" : "Prepare the source in this OBS scene before recording" );
 	}
 	function receive( next ) {
 		state = next;
@@ -57,13 +74,16 @@ export function createObsUi( { getSettings, canStart, onStart, onFinish, onChang
 		onChange( state );
 	}
 	async function action( name ) {
-		const blocked = obsActionBlock( state, name, { busy, canStart: name !== "start" || canStart() } );
+		const blocked = name === "slate-prepare" ? ( unsavedSlateOptions() ? "Apply your OBS changes before preparing the recorded slate." : obsSlateSetupBlock( state, getSettings(), busy ) ) : obsActionBlock( state, name, { busy, canStart: name !== "start" || canStart() } );
 		if ( blocked ) {
+			if ( name === "slate-prepare" ) field( "slate-status" ).textContent = blocked;
 			toast( blocked );
 			return;
 		}
 		if ( busy ) return;
 		busy = true;
+		preparingSlate = name === "slate-prepare";
+		if ( preparingSlate ) slateFeedback = null;
 		paint();
 		onChange( state );
 		try {
@@ -76,9 +96,11 @@ export function createObsUi( { getSettings, canStart, onStart, onFinish, onChang
 			if ( name === "test" ) toast( "OBS connection confirmed" );
 			if ( name === "slate-prepare" ) toast( "Recorded slate prepared in the current OBS scene" );
 		} catch ( error ) {
+			if ( name === "slate-prepare" ) slateFeedback = `Could not prepare the recorded slate: ${ error.message }`;
 			toast( error.message || "OBS could not confirm the request" );
 		} finally {
 			busy = false;
+			preparingSlate = false;
 			paint();
 			onChange( state );
 		}
@@ -87,6 +109,10 @@ export function createObsUi( { getSettings, canStart, onStart, onFinish, onChang
 	finish.addEventListener( "click", () => action( "stop" ) );
 	field( "test" ).addEventListener( "click", () => action( "test" ) );
 	field( "prepare-slate" ).addEventListener( "click", () => action( "slate-prepare" ) );
+	for ( const id of [ "enabled", "controls", "recorded-slate" ] ) field( id ).addEventListener( "change", () => {
+		slateFeedback = null;
+		paint();
+	} );
 	window.electron.onObsState( receive );
 	window.electron.obs( "status" ).then( ( result ) => {
 		if ( result.state ) receive( result.state );

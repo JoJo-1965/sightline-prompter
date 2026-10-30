@@ -1026,11 +1026,11 @@
           <p class="field-hint">In OBS 28 or later: Tools &gt; WebSocket Server Settings. Enable its server and authentication. No additional OBS plugin is needed. Use 127.0.0.1 for OBS on this computer. Remote connections use unencrypted WebSocket: use a trusted network. The password is kept separately using your operating system's protected storage.</p>
           <p id="set-obs-status" role="status" aria-live="polite">OBS disabled</p>
           <button type="button" id="set-obs-test">Test saved connection</button>
-          <p class="field-hint" data-essential>Apply changes before testing. Recording permissions and the recorded slate are in Recording > OBS recording.</p>
+          <p class="field-hint" data-essential>Apply changes before testing. Recording permissions and the recorded slate are in Controls > OBS recording.</p>
         </fieldset>
         <fieldset data-tab="obs-recording">
           <legend>OBS recording and sync</legend>
-          <p class="field-hint" data-essential>Connect OBS in Recording > OBS connection first. These permissions apply when OBS integration is enabled.</p>
+          <p class="field-hint" data-essential>Connect OBS in Controls > OBS connection first. These permissions apply when OBS integration is enabled.</p>
           <label class="check"><input id="set-obs-controls" type="checkbox" /> Allow Sightline to start and stop OBS recordings</label>
           <p class="field-hint">Leave this off for status only. Normal Play, Pause, Again and On air do not start or stop OBS. Record take waits for OBS to confirm recording before starting the prompter.</p>
           <label class="check"><input id="set-obs-markers" type="checkbox" /> Send section starts and named markers as OBS chapters</label>
@@ -1038,7 +1038,7 @@
             <label class="check" title="Choose Flash or Flash and beep in Settings > Recording > Takes, then prepare this source"><input id="set-obs-recorded-slate" type="checkbox" /> Include the slate in the OBS recording</label>
             <p class="field-hint">Optional, on this computer only. With OBS stopped, Apply then Prepare adds a dedicated source above this scene. It records a flash and 1 kHz tone on audio track 1; include that track in your recording. Prepare again after restarting Sightline or changing scenes. The head guide stays separate.</p>
             <button type="button" id="set-obs-prepare-slate">Prepare recorded slate</button>
-            <p id="set-obs-slate-status" class="field-hint" role="status">Recorded slate off</p>
+            <p id="set-obs-slate-status" class="field-hint" data-essential role="status" aria-live="polite">Recorded slate off</p>
         </fieldset>
 
         <fieldset data-tab="about" class="settings-about">

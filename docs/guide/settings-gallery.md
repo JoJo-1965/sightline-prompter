@@ -80,14 +80,6 @@ Mirroring has one Settings home here, alongside the window and monitor controls.
 
 ![Scratch audio, loudness and sound checks](images/settings-audio.png)
 
-### OBS connection
-
-![OBS connection with the prompter behind it](images/settings-obs.png)
-
-### OBS recording
-
-![OBS recording permissions and sync](images/settings-obs-recording.png)
-
 ## Controls
 
 ### Phone
@@ -103,6 +95,14 @@ The example QR below is for illustration; scan the code in your own Settings.
 ### AI and API
 
 ![AI and local automation](images/settings-remotes.png)
+
+### OBS connection
+
+![OBS connection under Controls](images/settings-obs.png)
+
+### OBS recording
+
+![OBS recording permissions and visible slate setup guidance](images/settings-obs-recording.png)
 
 ## About
 
