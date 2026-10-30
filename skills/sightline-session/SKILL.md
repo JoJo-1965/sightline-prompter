@@ -23,10 +23,14 @@ from `remote-control.json`.
 
 ## Before: load the scripts
 
-### Optional OBS integration (development branch)
+### Optional OBS integration (1.0.7 release candidate)
 
-The user must enable OBS integration and recording controls in Settings >
-OBS themselves. These settings are protected from the API and script files.
+The user must enable the integration in **Settings > Recording > OBS connection**
+and allow controls in **Recording > OBS recording** themselves. These settings
+are protected from the API and script files. Use the private Stream Deck
+0.1.8 companion for physical recording-key checks. The public 1.0.6 app does
+not contain OBS integration. See the [acceptance walkthrough](../../docs/guide/14-acceptance-test.md)
+for the two sample scripts and the remaining manual checks.
 Never ask for, print or copy the OBS password. No extra OBS plugin is needed.
 
 Once enabled, `command obs-record` confirms OBS is recording before it starts

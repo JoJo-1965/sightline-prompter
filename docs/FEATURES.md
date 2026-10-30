@@ -1,5 +1,13 @@
 # Sightline Prompter: what it adds to Electron Teleprompter
 
+**Release-candidate status, 30 October 2026:** the Windows 1.0.7 candidate
+contains the OBS integration (52), head guide (55), production exports,
+voice tuning and Settings/help updates described below. The matching private
+Stream Deck plugin is 0.1.8 (39). These features are built and awaiting final
+acceptance; the published release remains 1.0.6. RC2 refreshes RC1's bundled
+documentation and acceptance samples. See the
+[test walkthrough](guide/14-acceptance-test.md) and [roadmap](../ROADMAP.md).
+
 **Development navigation:** five Settings groups with focused subtabs, a Files
 menu for input/output and a Tools menu for live recording and operator tools.
 Duplicate file operations and Display preferences have been removed from
@@ -297,7 +305,8 @@ The whole workflow is in the guide:
 
 ## Help and installers
 
-- **Optional OBS integration** (development branch): a separate settings tab,
+- **Optional OBS integration** (1.0.7 candidate): **Settings > Recording > OBS connection**
+  and **OBS recording**,
   off by default; status-only or recording control; Record take and Finish
   recording from Sightline, its control window, phone and voice commands;
   optional recording chapters and file references in the take log.

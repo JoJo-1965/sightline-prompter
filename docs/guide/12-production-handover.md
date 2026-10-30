@@ -1,8 +1,11 @@
 # From recording to the editor
 
-**Development branch: not yet released.** This workflow includes the optional
+**1.0.7 release candidate: not publicly released.** This workflow includes the optional
 OBS connection and head-position guide. Physical camera lip sync, normal
 speech commands and the Stream Deck recording keys still need hands-on checks.
+
+For final testing, use the [two-module acceptance walkthrough](14-acceptance-test.md)
+with Stream Deck **0.1.8**. It records the evidence needed to review this workflow.
 
 ## 1. Set up before the session
 

@@ -1,7 +1,10 @@
 # Recording with OBS Studio
 
-**Development branch: not yet merged or released.** These instructions
-describe the optional OBS integration being prepared for a later release.
+**1.0.7 release candidate: built, not publicly released.** These instructions
+describe roadmap item 52 in the local Windows test build. Use the private
+Stream Deck **0.1.8** companion for the recording keys. The published 1.0.6
+app does not contain this OBS integration. Follow the
+[acceptance test](14-acceptance-test.md) before approving the recording workflow.
 
 Sightline connects to OBS Studio's built-in WebSocket interface. OBS handles
 the audio and video recording; Sightline handles the script, takes and edit
@@ -66,7 +69,7 @@ They do not enable the integration themselves.
 The local API accepts `obs-record` and `obs-finish` as command actions,
 subject to the same saved permissions. Request acceptance means the action
 was dispatched, not that OBS has confirmed it: inspect `status.obs`.
-The private companion Stream Deck test build **0.1.7** adds **Record take
+The private companion Stream Deck test build **0.1.8** includes **Record take
 (OBS)** and **Finish recording (OBS)** keys. They use these same permissions
 and show stopped, recording, paused, confirming or unknown. Unsupported,
 disabled and status-only app states block recording requests. These keys

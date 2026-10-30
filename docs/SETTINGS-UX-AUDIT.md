@@ -71,10 +71,11 @@ Run first-time tasks with Joanne or another speaker: find the microphone,
 choose command listening, adjust off-air backing, configure OBS and collect
 an edit pack. This evaluates discoverability rather than only control access.
 
-NVDA/VoiceOver, stronger magnification, high-contrast OS themes and native
-macOS/Linux controls still need hands-on checks. The automated evidence
-above supports this review; a full accessibility conformance assessment
-requires that wider testing.
+For the Windows 1.0.7 release candidate, NVDA, Windows Magnifier and
+high-contrast OS themes still need hands-on checks. macOS/VoiceOver and
+native Linux controls are deferred to testers with those platforms; they
+are not a gate for this Windows candidate. The automated evidence above
+supports the review, but does not establish accessibility conformance.
 
 A separate Settings window remains roadmap item 48. This pass improves the
 existing dialog; the five production validations still govern publication.

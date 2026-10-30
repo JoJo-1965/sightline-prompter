@@ -4,6 +4,13 @@ Developed on `codex/obs-integration`, rebased onto main at `4e00136`. The origin
 checkout and installed app are separate. Do not release or merge this
 branch until the recording workflow has been reviewed.
 
+**30 October candidate status:** the local Windows 1.0.7 RC includes the
+OBS integration, head guide, production records and Settings/help updates.
+RC1 is the feature baseline; RC2 refreshes documentation and adds the two
+acceptance samples. The matching private Stream Deck build is 0.1.8.
+Use the [acceptance walkthrough](guide/14-acceptance-test.md); no merge, tag,
+public release or website deployment is part of this preparation.
+
 ## Included
 
 - Floating head-position guide (55), independent of OBS: move/resize,
@@ -12,13 +19,13 @@ branch until the recording workflow has been reviewed.
   Always capture-protected, with no camera/mic access or OBS source.
   The separate Stream Deck `codex/head-position-guide` branch adds its key.
 
-- Settings > OBS, disabled by default, authenticated WebSocket v5 connection,
+- Settings > Recording > OBS connection, disabled by default, authenticated WebSocket v5 connection,
   saved connection test and reconnection while enabled.
 - Status-only mode, then separately permitted recording controls.
 - Record take: OBS confirmation before the usual prompting sequence.
 - Finish recording; ordinary prompting and On air stay independent.
-- Control-window, phone and voice actions; API actions ready for a later
-  Stream Deck plugin update.
+- Control-window, phone and voice actions; matching recording keys are in
+  the private Stream Deck 0.1.8 companion.
 - Optional section/take and marker chapters, with graceful format failure.
 - Additive OBS observations and file references in take logs and edit packs.
 - Separate OS-protected password storage; no password in settings exports,
@@ -98,7 +105,7 @@ written to temporary folders, reported on completion.
 
 The private Stream Deck development branch now includes Record take and
 Finish recording, confirmed-state feedback, permission guards and optional
-OBS profiles for each model (test build 0.1.7). The normal layouts remain
+OBS profiles for each model (test build 0.1.8). The normal layouts remain
 unchanged. These coordinate OBS with Sightline prompting and are separate
 from Play/Pause and On air. They are built and tested but not publicly released.
 

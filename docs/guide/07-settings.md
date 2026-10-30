@@ -1,6 +1,6 @@
 # Settings
 
-**Development branch:** this regrouping is not yet released. For the published
+**1.0.7 release candidate:** this regrouping is built and awaiting acceptance. For the published
 1.0.6 layout, use the guide bundled with that app.
 
 Open **⚙ Settings** on the top bar or press **Ctrl+,** (**Cmd+,** on Mac).
