@@ -109,6 +109,11 @@ Head-guide snapshots also retain Actual/Ideal `width` and `height` ratios
 (default `1` in older data), overall `scale`, and `eyesLocked`. This manual
 eye-position lock is separate from click-through `locked`. Read the
 [edit-pack contract](../../docs/EDIT-PACK.md) before interpreting the geometry.
+RC7 also retains independent `top`, `bottom`, `left` and `right` ratios
+(default `1`), `background` opacity and `controlsShown`. The floating
+Guide adjustments window works over fullscreen/Clean/locked overlays.
+Fit eye centre/level first, lock the eyes, then fit top/bottom and left/right.
+These remain manual references, not detected head positions.
 
 Sightline logs every take of every section as it's recorded, one file per
 script per day, saved as it goes. These read the files, so they work with the

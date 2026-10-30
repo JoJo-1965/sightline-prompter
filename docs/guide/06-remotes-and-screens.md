@@ -2,23 +2,37 @@
 
 ## Head-position guide (development)
 
-Use **Tools > Head guide / unlock**, or **Ctrl+Shift+H** from
+Use **Tools > Show head guide**, or **Ctrl+Shift+H** from
 any app (**Cmd+Shift+H** on Mac). The same action appears in the native Tools
 menu. It opens over your camera preview without requiring an OBS connection.
 Drag its title bar and bottom-right resize handle to fit the outer dotted
 rectangle to your 16:9 preview. Adjust the head outline with +/−, change
 opacity or colour, then **Lock** to pass clicks through to the preview.
 
-**Adjust** opens the manual framing check. The solid **Actual position**
-outline can be dragged to match your head in the preview, nudged up, down,
-left or right, and resized with **+ / −**. Align the eye marks first, then
-choose **Lock eye position**. **Width** stretches the outline horizontally;
-**Height** stretches it vertically. Both eye marks stay fixed, including when
-you use the overall **+ / −** size buttons. Dragging and the nudge arrows are
-disabled until you unlock the eyes. This is separate from the toolbar's
-**Lock**, which passes all clicks through the overlay.
+**Adjust**, the prompter's **Guide adjustments** button, or **Tools > Guide
+adjustments…** toggles a separate floating control window. It stays above
+the prompter and works while the guide is fullscreen, Clean or click-through
+locked. **Done**, Escape or the window's close button hides only the adjustments.
 
-**Save as ideal** copies the position, overall size, width and height to the
+1. Set **Eye centre** and **Level**, or use the arrow nudges to align both eye
+   marks with your camera preview. Positive Centre moves right; positive Level
+   moves down. Values are percentage offsets from the original eye position.
+2. Choose **Lock eye position**, then fit **Top** and **Bottom** of the head
+   independently. Moving one edge leaves the other edges and both eyes fixed.
+3. Fit the **Left** and **Right** edges independently around that eye centre.
+
+**Background** adds a dark layer behind the guide to improve contrast over
+the preview. It starts at 12%; choose 0% for a fully transparent background,
+or increase it up to 80%. **Outline** changes line opacity separately. The
+dashed Ideal reference is brighter for easier comparison. Neither slider
+changes the prompter's own background setting.
+
+**Overall proportions and placement** contains the existing **Size**, **Width**
+and **Height** controls. They also preserve both eye marks. Unlock the eyes to
+drag or nudge Actual position again. Eye lock is separate from the guide's
+toolbar **Lock**, which passes clicks through the whole overlay.
+
+**Save as ideal** copies the position, overall proportions and four edges to the
 dashed **Ideal position** outline. Then unlock the eyes and move the
 actual outline independently to compare your current framing with the
 reference. **Back to ideal** restores it and unlocks the eyes;
@@ -28,7 +42,9 @@ This is a manual check, without face detection or automatic tracking.
 
 ![Separate ideal and actual head-position outlines](images/head-guide.png)
 
-**Centre** and **Beside panel** recall separate overlay placements. Move or
+![Floating guide adjustments in eye-first order](images/guide-adjustments.png)
+
+**Centre window** and **Beside prompter** recall separate overlay placements. Move or
 resize the window after choosing one to save that placement for next time.
 These controls position the overlay window; **Actual position** adjusts the
 head shape inside it. The ideal, actual and window settings stay in place
@@ -70,6 +86,8 @@ OBS's projector mode or the prompter's own fullscreen setting.
 regular guide hotkey/key reveals controls or unlocks it without leaving
 fullscreen. **Lock** additionally passes clicks through. Windowed and
 fullscreen choices are remembered, as is the original window position.
+The separate **Guide adjustments** button stays available on the prompter
+while the guide is shown, so no shortcut is needed to adjust a fullscreen guide.
 
 The companion Stream Deck development branch adds a **Head-position guide**
 action you can drag onto any key. It shows **OFF**, **ON** or **LOCK**, using

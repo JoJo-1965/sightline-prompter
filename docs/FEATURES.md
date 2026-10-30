@@ -51,6 +51,14 @@ This is a manual reference check. Both poses persist between scripts and
 are saved with new takes. Help uses tabs and follows enabled modes; voice
 commands **guide on** and **guide off** set the guide's visibility explicitly.
 
+The prompter's **Guide adjustments** button and **Tools > Guide adjustments…**
+toggle a separate control window, including while the guide is fullscreen,
+Clean or click-through locked. Set eye centre/level, lock the eyes, then fit
+Top/Bottom and Left/Right independently. A **Background** slider dims the
+preview behind the guide (0–80%, initially 12%); **Outline** controls line
+opacity separately, and the dashed Ideal reference is brighter. Shape and
+background settings persist between scripts and in the edit-pack snapshots.
+
 **In development:** a floating head-position guide for camera framing, with
 an eye line, head/shoulder outline, adjustable size/opacity/colour, saved
 placement, click-through lock, global Ctrl+Shift+H hotkey and Stream Deck

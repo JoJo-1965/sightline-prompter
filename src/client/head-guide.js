@@ -1,7 +1,11 @@
-import { guidePose } from "./guide-pose.js";
+import { guidePose, guideOutline } from "./guide-pose.js";
 
 const guide = window.headGuide;
 const svg = document.querySelector( "svg" );
+const controlsOnly = new URLSearchParams( window.location.search ).get( "controls" ) === "1";
+if ( controlsOnly ) document.title = "Guide adjustments";
+document.body.classList.toggle( "controls-only", controlsOnly );
+document.querySelector( "#adjust-panel" ).hidden = !controlsOnly;
 let scale = 1;
 let resize = false;
 let pose = { x: 0, y: 0 };
@@ -43,18 +47,24 @@ const shapeTransform = value => `translate(500 155) scale(${ value.width } ${ va
 function showPose( element, value ) {
 	element.setAttribute( "transform", transform( value ) );
 	element.querySelector( ".head-outline" ).setAttribute( "transform", shapeTransform( value ) );
+	const outline = guideOutline( value );
+	for ( const attr of [ "cx", "cy", "rx", "ry" ] ) element.querySelector( "ellipse" ).setAttribute( attr, outline[attr] );
+	element.querySelector( ".head-outline path" ).setAttribute( "d", outline.shoulders );
 	// Keep both eye marks fixed, even when changing the overall size.
 	element.querySelector( ".eye-reference" ).setAttribute( "transform", `translate(500 155) scale(${ 1 / value.scale }) translate(-500 -155)` );
 }
 document.querySelector( "#lock-eyes" ).onclick = () => guide.action( "preferences", { eyesLocked: !eyesLocked } );
-for ( const axis of [ "width", "height" ] ) {
+for ( const axis of [ "scale", "width", "height", "top", "bottom", "left", "right" ] ) {
 	document.querySelector( `#shape-${ axis }` ).oninput = event => guide.action( "preferences", { [axis]: Number( event.target.value ) / 100 } );
 }
-document.querySelector( "#adjust" ).onclick = () => {
-	const panel = document.querySelector( "#adjust-panel" );
-	panel.hidden = !panel.hidden;
-	document.querySelector( "#adjust" ).setAttribute( "aria-expanded", String( !panel.hidden ) );
-};
+document.querySelector( "#adjust" ).onclick = () => guide.action( "adjust" );
+document.querySelector( "#adjust-close" ).onclick = () => guide.action( "adjust-hide" );
+document.addEventListener( "keydown", ( event ) => {
+	if ( controlsOnly && event.key === "Escape" ) guide.action( "adjust-hide" );
+} );
+for ( const axis of [ "x", "y" ] ) document.querySelector( `#eye-${ axis }` ).onchange = event => guide.action( "preferences", { [axis]: event.target.valueAsNumber } );
+document.querySelector( "#background" ).oninput = event => guide.action( "preferences", { background: Number( event.target.value ) / 100 } );
+document.querySelector( "#outline-opacity" ).oninput = event => guide.action( "preferences", { opacity: Number( event.target.value ) / 100 } );
 for ( const button of document.querySelectorAll( ".pose-arrows button" ) ) button.onclick = () => guide.action( "preferences", { x: pose.x + Number( button.dataset.x ?? 0 ), y: pose.y + Number( button.dataset.y ?? 0 ) } );
 for ( const name of [ "save-ideal", "reset-pose", "ideal-visible" ] ) document.getElementById( name ).onclick = () => guide.action( name );
 for ( const button of document.querySelectorAll( "[data-place]" ) ) button.onclick = () => guide.action( "place", button.dataset.place );
@@ -63,9 +73,10 @@ document.querySelector( "#lock" ).onclick = () => guide.action( "lock" );
 document.querySelector( "#fullscreen" ).onclick = () => guide.action( "fullscreen" );
 document.querySelector( "#chrome" ).onclick = () => guide.action( "chrome" );
 guide.onState( ( value ) => {
-	document.body.classList.toggle( "locked", value.locked );
-	document.body.classList.toggle( "fullscreen", value.fullscreen );
-	document.body.classList.toggle( "chromeless", value.chromeless );
+	document.body.classList.toggle( "locked", !controlsOnly && value.locked );
+	document.body.classList.toggle( "fullscreen", !controlsOnly && value.fullscreen );
+	document.body.classList.toggle( "chromeless", !controlsOnly && value.chromeless );
+	document.querySelector( "#adjust" ).setAttribute( "aria-expanded", String( value.controlsShown ) );
 	for ( const button of document.querySelectorAll( "[data-place]" ) ) button.setAttribute( "aria-pressed", String( button.dataset.place === value.placement ) );
 	document.querySelector( "#fullscreen" ).textContent = value.fullscreen ? "Restore" : "Fullscreen";
 	scale = value.scale;
@@ -74,7 +85,12 @@ guide.onState( ( value ) => {
 	document.querySelector( "#lock-eyes" ).setAttribute( "aria-pressed", String( eyesLocked ) );
 	document.querySelector( "#lock-eyes" ).textContent = eyesLocked ? "Eyes fixed · unlock" : "Lock eye position";
 	for ( const button of document.querySelectorAll( ".pose-arrows button" ) ) button.disabled = eyesLocked;
-	for ( const axis of [ "width", "height" ] ) {
+	for ( const axis of [ "x", "y" ] ) {
+		const input = document.querySelector( `#eye-${ axis }` );
+		input.disabled = eyesLocked;
+		if ( document.activeElement !== input ) input.value = value[axis];
+	}
+	for ( const axis of [ "scale", "width", "height", "top", "bottom", "left", "right" ] ) {
 		const percent = Math.round( value[axis] * 100 );
 		document.querySelector( `#shape-${ axis }` ).value = percent;
 		document.querySelector( `#shape-${ axis }-value` ).value = `${ percent }%`;
@@ -86,6 +102,11 @@ guide.onState( ( value ) => {
 	document.querySelector( "#ideal-visible" ).textContent = value.showIdeal ? "Hide ideal" : "Show ideal";
 	document.querySelector( "#pose-value" ).textContent = `X ${ value.x }% · Y ${ value.y }% · Size ${ Math.round( scale * 100 ) }%`;
 	document.querySelector( "#opacity" ).value = value.opacity * 100;
+	document.querySelector( "#outline-opacity" ).value = value.opacity * 100;
+	document.querySelector( "#outline-opacity-value" ).value = `${ Math.round( value.opacity * 100 ) }%`;
+	document.querySelector( "#background" ).value = value.background * 100;
+	document.querySelector( "#background-value" ).value = `${ Math.round( value.background * 100 ) }%`;
+	document.querySelector( "#stage" ).style.backgroundColor = `rgba(0, 0, 0, ${ value.background })`;
 	svg.style.opacity = value.opacity;
 	svg.style.color = value.colour === "gold" ? "#fbd86c" : "#72efce";
 } );

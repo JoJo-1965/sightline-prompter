@@ -180,7 +180,7 @@ try {
 	await send( "Input.dispatchKeyEvent", { type: "keyUp", key: " ", code: "Space", windowsVirtualKeyCode: 32 } );
 	await until( "!document.getElementById('tools-panel').classList.contains('hidden')" );
 	assert.equal( await evaluate( "document.getElementById('cb-play').classList.contains('playing')" ), false );
-	assert.ok( await evaluate( "document.getElementById('tools-panel').textContent.includes('Head guide / unlock')" ) );
+	assert.ok( await evaluate( "document.getElementById('tools-panel').textContent.includes('Show head guide')" ) );
 	for ( const width of [ 1100, 900, 560 ] ) {
 		await send( "Emulation.setDeviceMetricsOverride", { width, height: 760, deviceScaleFactor: 1, mobile: false } );
 		await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
@@ -199,7 +199,7 @@ try {
 	await fs.writeFile( path.join( artifacts, "tools-menu-anchor.png" ), Buffer.from( toolsAnchorShot.result.data, "base64" ) );
 	console.log( "PASS: Tools opens below its toolbar button and stays within three viewport widths while resizing." );
 	await evaluate( "document.activeElement.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowDown',bubbles:true}))" );
-	assert.ok( await evaluate( "document.activeElement.textContent.includes('Head guide')" ) );
+	assert.ok( await evaluate( "/head guide/i.test(document.activeElement.textContent)" ) );
 	await evaluate( "document.getElementById('tools-panel').dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}))" );
 	assert.equal( await evaluate( "document.activeElement.id" ), "cb-tools" );
 	await evaluate( "document.getElementById('cb-settings').focus();document.getElementById('cb-settings').click()" );
@@ -433,6 +433,43 @@ try {
 	await pause( 350 );
 	assert.ok( ( await ge( "document.querySelector('#head').getAttribute('transform')" ) ).includes( "1.05" ) );
 	await ge( "document.querySelector('#adjust').click();document.querySelector('[data-x=\"1\"]').click()" );
+	let controlsTarget;
+	for ( let n = 0; n < 60; n++ ) {
+		controlsTarget = ( await ( await fetch( "http://127.0.0.1:9335/json" ) ).json() ).find( t => t.url.includes( "controls=1" ) );
+		if ( controlsTarget ) break;
+		await pause( 100 );
+	}
+	assert.ok( controlsTarget, "Adjust opens a separate floating window" );
+	const cws = new WebSocket( controlsTarget.webSocketDebuggerUrl );
+	await new Promise( r => cws.addEventListener( "open", r ) );
+	let cid = 0;
+	const cp = new Map();
+	cws.addEventListener( "message", ( e ) => {
+		const m = JSON.parse( e.data );
+		if ( m.id ) {
+			cp.get( m.id )?.( m );
+			cp.delete( m.id );
+		}
+		if ( m.method === "Runtime.exceptionThrown" ) exceptions.push( m.params.exceptionDetails.text );
+	} );
+	const cc = ( method, params = {} ) => new Promise( ( resolve, reject ) => {
+		const id = ++cid;
+		const timer = setTimeout( () => reject( new Error( "adjustments CDP timeout" ) ), 8000 );
+		cp.set( id, ( m ) => {
+			clearTimeout( timer );
+			resolve( m );
+		} );
+		cws.send( JSON.stringify( { id, method, params } ) );
+	} );
+	const ce = async ( expression ) => {
+		const m = await cc( "Runtime.evaluate", { expression, awaitPromise: true, returnByValue: true, userGesture: true } );
+		if ( m.result?.exceptionDetails ) throw new Error( m.result.exceptionDetails.text );
+		return m.result?.result?.value;
+	};
+	await cc( "Runtime.enable" );
+	await pause( 300 );
+	assert.equal( await ce( "document.body.classList.contains('controls-only')&&!document.querySelector('#adjust-panel').hidden" ), true );
+	assert.equal( await ce( "document.querySelector('#adjust-panel').scrollHeight<=document.querySelector('#adjust-panel').clientHeight" ), true, "The main fitting controls fit without scrolling on the test display" );
 	await pause( 200 );
 	await ge( "document.querySelector('[data-y=\"-1\"]').click()" );
 	await pause( 200 );
@@ -473,6 +510,37 @@ try {
 	assert.equal( await ge( "document.querySelector('#lock-eyes').getAttribute('aria-pressed')" ), "false" );
 	assert.equal( await ge( "document.querySelector('#head .head-outline').getAttribute('transform')" ), savedIdealShape );
 	console.log( "PASS: independent outline width/height and overall size preserve both eye marks; eye lock blocks position changes; ideal shape and reset persist." );
+	await ce( "document.querySelector('#eye-x').value=2.5;document.querySelector('#eye-x').dispatchEvent(new Event('change'));document.querySelector('#eye-y').value=-2;document.querySelector('#eye-y').dispatchEvent(new Event('change'))" );
+	await pause( 200 );
+	await ce( "document.querySelector('#lock-eyes').click()" );
+	await pause( 150 );
+	assert.equal( await ce( "document.querySelector('#eye-x').disabled&&document.querySelector('#eye-y').disabled" ), true );
+	const edgeBounds = () => ge( "(()=>{const r=document.querySelector('#head ellipse').getBoundingClientRect();const e=document.querySelector('#head .eye-marks').getBoundingClientRect();return {top:r.top,bottom:r.bottom,left:r.left,right:r.right,eyes:{x:e.x,y:e.y,width:e.width}};})()" );
+	for ( const edge of [ "top", "bottom", "left", "right" ] ) {
+		const before = await edgeBounds();
+		await ce( `document.querySelector('#shape-${ edge }').value=130;document.querySelector('#shape-${ edge }').dispatchEvent(new Event('input'))` );
+		await pause( 150 );
+		const after = await edgeBounds();
+		assert.notEqual( after[edge], before[edge] );
+		for ( const other of [ "top", "bottom", "left", "right" ].filter( e => e !== edge ) ) assert.ok( Math.abs( after[other] - before[other] ) < 0.01, `${ edge } must not move ${ other }` );
+		assert.deepEqual( after.eyes, before.eyes, `${ edge } fitting keeps both eyes fixed` );
+	}
+	await ce( "document.querySelector('#save-ideal').click()" );
+	await pause( 150 );
+	await ce( "document.querySelector('#shape-top').value=70;document.querySelector('#shape-top').dispatchEvent(new Event('input'));document.querySelector('#reset-pose').click()" );
+	await pause( 150 );
+	assert.equal( await ce( "document.querySelector('#shape-top').value" ), "130" );
+	assert.equal( await ce( "document.querySelector('#lock-eyes').getAttribute('aria-pressed')" ), "false" );
+	await ce( "document.querySelector('#background').value=24;document.querySelector('#background').dispatchEvent(new Event('input'))" );
+	await pause( 150 );
+	assert.equal( await ge( "getComputedStyle(document.querySelector('#stage')).backgroundColor" ), "rgba(0, 0, 0, 0.24)" );
+	assert.equal( await ge( "document.querySelector('svg').style.opacity" ), "0.75", "Background must not change outline opacity" );
+	await ce( "document.querySelector('#background').value=0;document.querySelector('#background').dispatchEvent(new Event('input'))" );
+	await pause( 150 );
+	assert.equal( await ge( "getComputedStyle(document.querySelector('#stage')).backgroundColor" ), "rgba(0, 0, 0, 0)" );
+	await ce( "window.headGuide.action('preferences',{x:1,y:-1,top:1,bottom:1,left:1,right:1,background:0.12});document.querySelector('#save-ideal').click()" );
+	await pause( 200 );
+	console.log( "PASS: floating eye centre/level controls, independent four-edge fitting, saved ideal/reset and independent zero-to-24% background opacity." );
 	await ge( "document.querySelector('[data-x=\"-1\"]').click();document.querySelector('#smaller').click()" );
 	await pause( 250 );
 	assert.equal( await ge( "document.querySelector('#ideal-head').getAttribute('transform')" ), savedIdealTransform, "moving actual must leave ideal fixed" );
@@ -506,10 +574,12 @@ try {
 	assert.equal( await ge( "window.guideTestState.ideal.x" ), 1 );
 	console.log( "PASS: separate saved Centre/Beside placements and live guide metadata." );
 	await ge( "window.headGuide.action('resize-start');window.headGuide.action('resize');window.headGuide.action('resize-end')" );
-	await ge( "window.headGuide.action('preferences',{x:9,y:2,scale:0.95});if(document.querySelector('#adjust-panel').hidden)document.querySelector('#adjust').click()" );
+	await ge( "window.headGuide.action('preferences',{x:9,y:2,scale:0.95})" );
 	await pause( 250 );
 	const shotGuide = await gc( "Page.captureScreenshot", { format: "png" } );
 	await fs.writeFile( path.join( path.dirname( screenshot ), "head-guide-integrated.png" ), Buffer.from( shotGuide.result.data, "base64" ) );
+	const shotControls = await cc( "Page.captureScreenshot", { format: "png" } );
+	await fs.writeFile( path.join( path.dirname( screenshot ), "guide-adjustments.png" ), Buffer.from( shotControls.result.data, "base64" ) );
 	await ge( "document.querySelector('#reset-pose').click()" );
 	await pause( 250 );
 	await ge( "document.querySelector('#lock').click()" );
@@ -533,10 +603,39 @@ try {
 	assert.equal( ( await getStatus() ).headGuideFullscreen, true );
 	assert.equal( await ge( "document.body.classList.contains('fullscreen') && document.body.classList.contains('chromeless')" ), true );
 	assert.equal( await ge( "document.querySelector('#stage').getBoundingClientRect().top" ), 0 );
+	await until( "!document.getElementById('guide-controls').classList.contains('hidden')" );
+	assert.equal( await evaluate( "document.getElementById('guide-controls').textContent" ), "Guide adjustments" );
+	// The same button hides and shows the palette without unlocking the fullscreen overlay.
+	await ce( "window.headGuide.action('adjust-hide')" );
+	await until( "document.getElementById('guide-controls').getAttribute('aria-pressed')==='false'" );
+	const adjustmentButton = await evaluate( "(()=>{const b=document.getElementById('guide-controls');const r=b.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2,visible:document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)===b};})()" );
+	assert.equal( adjustmentButton.visible, true, "The guide adjustment button is reachable on the prompter" );
+	await send( "Input.dispatchMouseEvent", { type: "mousePressed", x: adjustmentButton.x, y: adjustmentButton.y, button: "left", clickCount: 1 } );
+	await send( "Input.dispatchMouseEvent", { type: "mouseReleased", x: adjustmentButton.x, y: adjustmentButton.y, button: "left", clickCount: 1 } );
+	await until( "document.getElementById('guide-controls').getAttribute('aria-pressed')==='true'" );
+	await evaluate( "document.getElementById('guide-controls').click()" );
+	await until( "document.getElementById('guide-controls').getAttribute('aria-pressed')==='false'" );
+	await evaluate( "document.getElementById('guide-controls').click()" );
+	await until( "document.getElementById('guide-controls').getAttribute('aria-pressed')==='true'" );
+	assert.equal( await ce( "getComputedStyle(document.querySelector('#adjust-panel')).visibility" ), "visible" );
+	assert.equal( await ge( "document.body.classList.contains('locked')&&document.body.classList.contains('chromeless')&&document.body.classList.contains('fullscreen')" ), true );
+	const fullBounds = await ge( "window.guideTestState.bounds" );
+	await ce( "document.querySelector('#background').value=30;document.querySelector('#background').dispatchEvent(new Event('input'))" );
+	await pause( 150 );
+	assert.equal( await ge( "getComputedStyle(document.querySelector('#stage')).backgroundColor" ), "rgba(0, 0, 0, 0.3)" );
+	assert.deepEqual( await ge( "window.guideTestState.bounds" ), fullBounds );
+	await ce( "document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'}))" );
+	await until( "document.getElementById('guide-controls').getAttribute('aria-pressed')==='false'" );
+	await evaluate( "document.getElementById('cb-tools').click()" );
+	assert.ok( await evaluate( "document.getElementById('tools-panel').textContent.includes('Guide adjustments')" ) );
+	await evaluate( "[...document.querySelectorAll('#tools-panel button')].find(b=>b.textContent.includes('Guide adjustments')).click()" );
+	await pause( 250 );
+	assert.equal( await evaluate( "document.getElementById('guide-controls').getAttribute('aria-pressed')" ), "true" );
+	await ce( "window.close()" );
+	await until( "document.getElementById('guide-controls').getAttribute('aria-pressed')==='false'" );
 	await press();
-	assert.equal( await ge( "document.body.classList.contains('locked')" ), false );
-	assert.equal( await ge( "document.body.classList.contains('fullscreen') && !document.body.classList.contains('chromeless')" ), true );
-	assert.equal( await ge( "getComputedStyle(document.querySelector('header')).visibility" ), "visible" );
+	assert.equal( await ge( "!document.body.classList.contains('locked')&&!document.body.classList.contains('chromeless')&&document.body.classList.contains('fullscreen')" ), true );
+	console.log( "PASS: separate adjustment window toggles from prompter and Tools while the overlay stays fullscreen, Clean and locked; Escape/native Close hide only the palette." );
 	await fullscreenPress();
 	assert.equal( ( await getStatus() ).headGuideFullscreen, false );
 	assert.equal( await ge( "document.querySelector('#stage').getBoundingClientRect().width" ), 960 );
@@ -544,6 +643,7 @@ try {
 	console.log( "PASS: fullscreen button-token command, chromeless screen-fill, reveal controls without exit, and original window size restored." );
 	await press();
 	assert.equal( ( await getStatus() ).showHeadGuide, false );
+	cws.close();
 	gws.close();
 	await press();
 	const reopened = ( await ( await fetch( "http://127.0.0.1:9335/json" ) ).json() ).find( t => t.url.includes( "head-guide.html" ) );
@@ -552,7 +652,8 @@ try {
 	assert.equal( saved.settings.headGuideScale, 1.05 );
 	assert.equal( saved.settings.headGuideColour, "gold" );
 	assert.equal( saved.settings.headGuideBounds.width, 960 );
-	assert.deepEqual( saved.settings.headGuideIdeal, { x: 1, y: -1, scale: 1.05, width: 1.25, height: 0.9 } );
+	assert.deepEqual( saved.settings.headGuideIdeal, { x: 1, y: -1, scale: 1.05, width: 1.25, height: 0.9, top: 1, bottom: 1, left: 1, right: 1 } );
+	assert.equal( saved.settings.headGuideBackground, 0.3 );
 	assert.equal( saved.settings.headGuideWidth, 1.25 );
 	assert.equal( saved.settings.headGuideHeight, 0.9 );
 	assert.equal( saved.settings.headGuideX, 1 );

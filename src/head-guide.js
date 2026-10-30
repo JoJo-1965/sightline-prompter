@@ -8,6 +8,7 @@ const HOTKEY = "CommandOrControl+Shift+H";
 const FULLSCREEN_HOTKEY = "CommandOrControl+Alt+H";
 export function createHeadGuide( { dir, prompter, getSettings, saveSettings, saveBounds, onChange, restoreStack } ) {
 	let overlay = null;
+	let controls = null;
 	let locked = false;
 	let resizing = null;
 	let saveTimer;
@@ -15,12 +16,14 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 	let normalBounds = null;
 	const state = () => {
 		const s = getSettings();
-		return { locked, fullscreen, chromeless: s.headGuideChromeless === true, eyesLocked: s.headGuideEyesLocked === true, ...guidePose( { x: s.headGuideX, y: s.headGuideY, scale: s.headGuideScale, width: s.headGuideWidth, height: s.headGuideHeight } ), ideal: guidePose( s.headGuideIdeal ), showIdeal: s.headGuideShowIdeal !== false, opacity: Math.max( 0.2, Math.min( 1, Number( s.headGuideOpacity ) || 0.75 ) ), colour: s.headGuideColour === "gold" ? "gold" : "mint" };
+		return { locked, fullscreen, chromeless: s.headGuideChromeless === true, eyesLocked: s.headGuideEyesLocked === true, ...guidePose( { x: s.headGuideX, y: s.headGuideY, scale: s.headGuideScale, width: s.headGuideWidth, height: s.headGuideHeight, top: s.headGuideTop, bottom: s.headGuideBottom, left: s.headGuideLeft, right: s.headGuideRight } ), ideal: guidePose( s.headGuideIdeal ), showIdeal: s.headGuideShowIdeal !== false, opacity: Math.max( 0.2, Math.min( 1, Number( s.headGuideOpacity ) || 0.75 ) ), background: Math.max( 0, Math.min( 0.8, Number( s.headGuideBackground ?? 0.12 ) ) ), colour: s.headGuideColour === "gold" ? "gold" : "mint" };
 	};
 	const snapshot = () => ( { ...state(), shown: !!overlay, bounds: overlay?.getBounds() ?? getSettings().headGuideBounds ?? null, windowedBounds: normalBounds ?? getSettings().headGuideBounds ?? null, placement: getSettings().headGuidePlacement ?? "centre", placements: getSettings().headGuidePlacements ?? {}, displayId: overlay ? screen.getDisplayMatching( overlay.getBounds() ).id : null, captureStatus: "Protected separate overlay; OBS capture route not verified" } );
 	const send = () => {
 		const value = snapshot();
+		value.controlsShown = controls?.isVisible() ?? false;
 		overlay?.webContents.send( "headGuideState", value );
+		controls?.webContents.send( "headGuideState", { ...value, controlsOnly: true } );
 		if ( !prompter.isDestroyed() ) prompter.webContents.send( "headGuideState", value );
 	};
 	function remember() {
@@ -42,6 +45,8 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 	}
 	function close() {
 		clearTimeout( saveTimer );
+		controls?.destroy();
+		controls = null;
 		if ( overlay ) {
 			saveBounds( fullscreen ? normalBounds : overlay.getBounds() );
 			overlay.destroy();
@@ -60,6 +65,48 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 		overlay.moveTop();
 		prompter.setAlwaysOnTop( true, "screen-saver" );
 		prompter.moveTop();
+		if ( controls?.isVisible() ) {
+			controls.setAlwaysOnTop( true, "screen-saver" );
+			controls.moveTop();
+		}
+	}
+	function toggleControls() {
+		if ( !overlay ) return;
+		if ( controls?.isVisible() ) {
+			controls.hide();
+			send();
+			return;
+		}
+		if ( !controls ) {
+			const area = screen.getDisplayMatching( prompter.getBounds() ).workArea;
+			const saved = getSettings().headGuideControlsBounds;
+			const bounds = fitInside( saved ?? { x: area.x + area.width - 400, y: area.y + 30, width: 390, height: 740 }, area );
+			controls = new BrowserWindow( { ...bounds, minWidth: Math.min( 350, area.width ), minHeight: Math.min( 460, area.height ), show: false, minimizable: false, maximizable: false, fullscreenable: false, autoHideMenuBar: true, title: "Guide adjustments", backgroundColor: "#15222b", webPreferences: { nodeIntegration: false, contextIsolation: true, sandbox: false, preload: path.join( dir, "client", "head-guide-preload.mjs" ) } } );
+			controls.setContentProtection( true );
+			controls.setAlwaysOnTop( true, "screen-saver" );
+			controls.loadFile( path.join( dir, "client", "head-guide.html" ), { query: { controls: "1" } } );
+			controls.once( "ready-to-show", () => {
+				controls?.show();
+				restack();
+				send();
+			} );
+			controls.on( "close", ( event ) => {
+				event.preventDefault();
+				controls.hide();
+				send();
+			} );
+			const rememberControls = () => {
+				if ( controls ) saveSettings( { headGuideControlsBounds: controls.getBounds() } );
+			};
+			controls.on( "move", rememberControls );
+			controls.on( "resize", rememberControls );
+			controls.webContents.on( "will-navigate", event => event.preventDefault() );
+			controls.webContents.setWindowOpenHandler( () => ( { action: "deny" } ) );
+		} else {
+			controls.show();
+			restack();
+			send();
+		}
 	}
 	function fitMode() {
 		if ( !overlay ) return;
@@ -117,7 +164,17 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 	}
 	function action( event, name, value ) {
 		const fromOverlay = overlay && event.sender === overlay.webContents;
-		if ( !fromOverlay && event.sender !== prompter.webContents ) return;
+		const fromControls = controls && event.sender === controls.webContents;
+		if ( !fromOverlay && !fromControls && event.sender !== prompter.webContents ) return;
+		if ( name === "adjust" ) {
+			toggleControls();
+			return;
+		}
+		if ( name === "adjust-hide" && controls ) {
+			controls.hide();
+			send();
+			return;
+		}
 		if ( name === "toggle" ) {
 			toggle();
 			return;
@@ -134,10 +191,10 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 			saveSettings( { showHeadGuide: false } );
 			return;
 		}
-		if ( !fromOverlay ) return;
+		if ( !fromOverlay && !fromControls ) return;
 		if ( name === "ready" ) {
 			send();
-			if ( !hotkeyRegistered || !fullscreenHotkeyRegistered ) prompter.webContents.send( "toast", "A head guide hotkey is in use. Use the Window menu or Stream Deck for the guide controls." );
+			if ( !hotkeyRegistered || !fullscreenHotkeyRegistered ) prompter.webContents.send( "toast", "A head guide hotkey is in use. Use Tools or Stream Deck for the guide controls." );
 		}
 		if ( name === "chrome" ) saveSettings( { headGuideChromeless: !getSettings().headGuideChromeless } );
 		if ( name === "place" && [ "centre", "beside" ].includes( value ) ) {
@@ -165,10 +222,14 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 			if ( typeof value?.eyesLocked === "boolean" ) patch.headGuideEyesLocked = value.eyesLocked;
 			if ( Number.isFinite( value?.width ) ) patch.headGuideWidth = guidePose( value ).width;
 			if ( Number.isFinite( value?.height ) ) patch.headGuideHeight = guidePose( value ).height;
+			for ( const edge of [ "top", "bottom", "left", "right" ] ) {
+				if ( Number.isFinite( value?.[edge] ) ) patch[`headGuide${ edge[0].toUpperCase() }${ edge.slice( 1 ) }`] = guidePose( value )[edge];
+			}
 			if ( Number.isFinite( value?.scale ) ) patch.headGuideScale = Math.max( 0.4, Math.min( 2, value.scale ) );
 			if ( !state().eyesLocked && Number.isFinite( value?.x ) ) patch.headGuideX = Math.max( -45, Math.min( 45, value.x ) );
 			if ( !state().eyesLocked && Number.isFinite( value?.y ) ) patch.headGuideY = Math.max( -45, Math.min( 45, value.y ) );
 			if ( Number.isFinite( value?.opacity ) ) patch.headGuideOpacity = Math.max( 0.2, Math.min( 1, value.opacity ) );
+			if ( Number.isFinite( value?.background ) ) patch.headGuideBackground = Math.max( 0, Math.min( 0.8, value.background ) );
 			if ( Object.keys( patch ).length ) saveSettings( patch );
 		}
 		if ( name === "save-ideal" ) {
@@ -178,7 +239,7 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 		if ( name === "ideal-visible" ) saveSettings( { headGuideShowIdeal: !state().showIdeal } );
 		if ( name === "reset-pose" ) {
 			const ideal = state().ideal;
-			saveSettings( { headGuideX: ideal.x, headGuideY: ideal.y, headGuideScale: ideal.scale, headGuideWidth: ideal.width, headGuideHeight: ideal.height, headGuideEyesLocked: false } );
+			saveSettings( { headGuideX: ideal.x, headGuideY: ideal.y, headGuideScale: ideal.scale, headGuideWidth: ideal.width, headGuideHeight: ideal.height, headGuideTop: ideal.top, headGuideBottom: ideal.bottom, headGuideLeft: ideal.left, headGuideRight: ideal.right, headGuideEyesLocked: false } );
 		}
 		if ( name === "colour" ) saveSettings( { headGuideColour: state().colour === "mint" ? "gold" : "mint" } );
 		if ( name === "resize-start" && !fullscreen ) resizing = { cursor: screen.getCursorScreenPoint(), bounds: overlay.getBounds() };
@@ -199,6 +260,7 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 		if ( !overlay ) return;
 		if ( fullscreen ) fitMode();
 		else overlay.setBounds( fitInside( overlay.getBounds(), screen.getDisplayMatching( overlay.getBounds() ).workArea ) );
+		if ( controls ) controls.setBounds( fitInside( controls.getBounds(), screen.getDisplayMatching( controls.getBounds() ).workArea ) );
 		send();
 		restack();
 	};

@@ -320,6 +320,15 @@ The eye marks retain their spacing while the head outline changes shape or size.
 `eyesLocked` records the manual position lock, separate from click-through
 `locked`. These are session preferences, not automatic measurements of a face.
 
+RC7 adds `top`, `bottom`, `left` and `right` ratios to both poses; each defaults
+to `1` in older logs. Before applying the existing width/height and scale
+transforms around `(500,155)`, the ellipse edges are `155 - 89*top`,
+`155 + 153*bottom`, `500 - 86*left` and `500 + 86*right`. These factors reshape
+only the outline; the eye marks keep their position and spacing. `background`
+is the separate dimming-layer opacity (0–0.8); `opacity` remains outline opacity.
+`controlsShown` records whether the separate adjustment window was visible.
+Changing its visibility does not alter the recorded guide geometry or lock.
+
 Do not treat these observations as a continuous or frame-accurate timecode
 map. Connection loss can leave gaps or unknown file associations. Use the
 slate or scratch audio for precise synchronisation, and preserve uncertain

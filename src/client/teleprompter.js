@@ -81,6 +81,9 @@ const summaryModal = document.getElementById( "take-summary" );
 let headGuideState = null;
 window.electron.onHeadGuideState( ( value ) => {
 	headGuideState = value;
+	const restore = document.getElementById( "guide-controls" );
+	restore?.classList.toggle( "hidden", !value.shown );
+	restore?.setAttribute( "aria-pressed", String( value.controlsShown ) );
 } );
 // Every take of every section, for the edit (File > Export Take Log), each
 // with its section's sentences for the edit pack.
@@ -91,11 +94,12 @@ const recording = createTakeLog( {
 	snapshot: () => recordingScriptSnapshot(),
 	obsState: () => obsUi.state(),
 	guideState: () => headGuideState
-		? { ...headGuideState, pose: { x: headGuideState.x, y: headGuideState.y, scale: headGuideState.scale, width: headGuideState.width, height: headGuideState.height } }
+		? { ...headGuideState, pose: { x: headGuideState.x, y: headGuideState.y, scale: headGuideState.scale, width: headGuideState.width, height: headGuideState.height, top: headGuideState.top, bottom: headGuideState.bottom, left: headGuideState.left, right: headGuideState.right } }
 		: ( {
 			shown: !!settings.showHeadGuide, fullscreen: !!settings.headGuideFullscreen,
 			chromeless: !!settings.headGuideChromeless, bounds: settings.headGuideBounds,
-			pose: { x: settings.headGuideX, y: settings.headGuideY, scale: settings.headGuideScale, width: settings.headGuideWidth ?? 1, height: settings.headGuideHeight ?? 1 },
+			pose: { x: settings.headGuideX, y: settings.headGuideY, scale: settings.headGuideScale, width: settings.headGuideWidth ?? 1, height: settings.headGuideHeight ?? 1, top: settings.headGuideTop ?? 1, bottom: settings.headGuideBottom ?? 1, left: settings.headGuideLeft ?? 1, right: settings.headGuideRight ?? 1 },
+			background: settings.headGuideBackground ?? 0.12,
 			eyesLocked: settings.headGuideEyesLocked === true,
 			ideal: settings.headGuideIdeal, showIdeal: settings.headGuideShowIdeal !== false,
 			captureStatus: "Separate protected overlay; actual OBS capture route requires verification"
@@ -3417,6 +3421,7 @@ onClick( "cb-play", toggleAutoScrollSession );
 onClick( "cb-on-air", toggleOnAir );
 onClick( "cb-mode", () => window.electron.saveSettings( { scrollMode: settings.scrollMode === "voice" ? "steady" : "voice" } ) );
 onClick( "cb-edit", toggleEditMode );
+onClick( "guide-controls", () => window.electron.headGuide( "adjust" ) );
 onClick( "cb-tools", () => {
 	renderTools();
 	togglePanel( "tools-panel" );
@@ -3651,10 +3656,13 @@ function menuGroups() {
 function renderTools() {
 	const panel = field( "tools-panel" );
 	panel.replaceChildren();
+	const guideShown = headGuideState?.shown ?? !!settings.showHeadGuide;
+	const guideLabel = guideShown ? "Hide head guide" : "Show head guide";
 	const groups = [
 		[ "Recording tools", [
 			[ "🎚", "Sound check", "Ctrl+Shift+D", toggleSoundCheck, { checked: soundCheckOn() } ],
-			[ "◎", "Head guide / unlock", "Ctrl+Shift+H", () => window.electron.headGuide(), { checked: !!settings.showHeadGuide } ],
+			[ "◎", guideLabel, "Ctrl+Shift+H", () => window.electron.headGuide( guideShown ? "hide" : "show" ), { checked: guideShown } ],
+			[ "◉", "Guide adjustments…", "", () => window.electron.headGuide( "adjust" ), { checked: !!headGuideState?.controlsShown, disabled: !guideShown } ],
 			[ "⛶", "Guide fullscreen / restore", "Ctrl+Alt+H", () => window.electron.headGuide( "fullscreen" ) ],
 			[ "★", "Keeper", "K", () => rateTake( "keeper" ) ],
 			[ "✗", "Scrap take", "Shift+K", () => rateTake( "scrap" ) ]

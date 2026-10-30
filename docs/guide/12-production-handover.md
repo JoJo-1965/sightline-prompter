@@ -36,17 +36,19 @@ Source Record filter.
 ## 2. Frame yourself and make a short test
 
 Show the head guide with **Ctrl+Shift+H**, its Stream Deck key, or **Tools >
-Head guide / unlock**. Use your saved ideal outline, then move and scale the
-actual outline to match your head in the camera preview. In **Adjust**, align
-the eye marks, choose **Lock eye position**, then fit **Width** and **Height**
-independently. Both eye marks stay fixed while reshaping. **Save as ideal**
+Show head guide**. Open **Guide adjustments** on the prompter for the floating
+control window, which remains accessible in fullscreen and click-through Lock.
+Set eye centre and level first, choose **Lock eye position**, then fit **Top**,
+**Bottom**, **Left** and **Right** independently. Both eye marks stay fixed.
+Raise **Background** to see the guide more clearly over a bright preview;
+**Outline** changes only the lines. **Save as ideal**
 keeps the fitted shape; **Back to ideal** restores it and unlocks the eyes.
 The dimensions and eye-lock state are included in take snapshots. These are manual
 reference shapes; the app does not detect your face.
 
 ![The head guide and its framing controls](images/head-guide.png)
 
-Use the saved **Centre** or **Beside panel** placement as needed. The guide
+Use the saved **Centre window** or **Beside prompter** placement as needed. The guide
 stays across script changes, and new takes save its ideal/actual outlines and
 window position. **Ctrl+Alt+H** fills the guide's current monitor or restores
 its window. On Mac, use **Cmd** in place of **Ctrl** for these shortcuts.

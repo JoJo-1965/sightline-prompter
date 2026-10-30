@@ -1036,6 +1036,23 @@ body.controls-hidden * {
 	width: min(380px, calc(100vw - 16px));
 }
 
+.guide-controls {
+	position: fixed;
+	top: 50px;
+	right: 10px;
+	z-index: 1300;
+	padding: 6px 10px;
+	border: 1px solid #8fd3ff;
+	border-radius: 6px;
+	background: #263a45;
+	color: #edf3fa;
+	font: 12px "Segoe UI", Helvetica, Arial, sans-serif;
+	cursor: pointer;
+	-webkit-app-region: no-drag;
+}
+.guide-controls:focus-visible { outline: 2px solid #ffd54a; outline-offset: 2px; }
+.guide-controls[aria-pressed="true"] { background: #34535c; border-color: #72efce; }
+
 .panel h4 {
 	margin: 0 0 6px;
 	font-size: 13px;

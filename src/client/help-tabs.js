@@ -5,12 +5,12 @@ const section = ( title, rows ) => ( { section: title, keys: rows.map( ( [ key, 
 const guideRows = [
 	[ "Ctrl+Shift+H", "Show/unlock the head guide, or hide it when unlocked (global)" ],
 	[ "Ctrl+Alt+H", "Fullscreen on its current screen / restore the saved window (global)" ],
-	[ "Clean", "Hide guide controls; Ctrl+Shift+H brings them back" ],
-	[ "Lock", "Pass clicks through the guide; Ctrl+Shift+H unlocks" ],
-	[ "Adjust", "Align Actual position with the eyes, then Lock eye position; fit Width and Height independently" ],
-	[ "Lock eye position", "Fixes both eye marks while Width, Height and +/− reshape the head. Unlock to drag or nudge" ],
+	[ "Guide adjustments", "Toggle via prompter, Tools or Adjust, even in fullscreen. Done/Escape hides" ],
+	[ "Fit the head", "Set eye centre/level, Lock eye position, then Top/Bottom and Left/Right. Both eyes stay fixed" ],
+	[ "Background / Outline", "Dim the preview behind the guide (0–80%) or change line opacity separately" ],
+	[ "Clean / Lock", "Hide the guide bar / pass clicks through. Floating adjustments remain accessible; Ctrl+Shift+H restores the bar" ],
 	[ "Save as ideal / Back to ideal", "Save a framing reference, or restore the actual outline to it (manual, no face tracking)" ],
-	[ "Centre / Beside panel", "Recall separate saved overlay placements; these do not move either head outline" ],
+	[ "Overall proportions", "Size, Width and Height preserve the eyes. Centre window / Beside prompter recall overlay placements" ],
 	[ "Projector stack", "OBS preview at the bottom, guide in the middle, prompter text above" ],
 	[ "Stream Deck", "Head-position guide (OFF/ON/LOCK) and Head guide fullscreen (FULL/WIN)" ]
 ];

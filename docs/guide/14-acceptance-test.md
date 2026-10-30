@@ -9,6 +9,8 @@ RC4 adds persistent labels to the toolbar sliders. It uses the same 0.1.9 plugin
 RC5 adds eye-position locking and independent head-outline width/height.
 RC6 adds toolbar Edit beside Tools, a dropdown anchored to Tools, and Settings
 centred on opening and window resize. The matching plugin remains 0.1.9.
+RC7 adds floating guide adjustments, eye-first four-edge fitting and separate
+Background/Outline sliders. The same plugin remains compatible.
 
 The public app remains **1.0.6**. The candidate and plugin are private test builds.
 
@@ -73,7 +75,7 @@ continue after each result. Follow the silent instructions in the script:
 | A1 | Three visible claps, ordinary speech and a section stop | Hands and voice are captured; Sightline holds while the OBS timer continues |
 | A2 | Silent delivery notes, a timed beat, voice pause/go, help/cancel | Only spoken words are followed; no forced voice-mode countdown; grouped help opens and closes |
 | A3 | Scrap, again, the Muffin pickup marker and Keeper | First attempt remains scrap, second is keeper; marker pickup and retake leave OBS recording |
-| A4 | Actual movement/scale, fixed Ideal, fullscreen, Clean and guide on/off | Only the intended outline moves; controls can be restored and the projector stack stays usable |
+| A4 | Eye centre/level, independent edges, background contrast, fixed Ideal, fullscreen and Lock | Guide adjustments toggles over the fullscreen guide; both eyes and other edges stay fixed during fitting; Background does not fade the outlines |
 | A5 | Off-script hold and physical resume | Speech tracking stops listening; OBS and scratch audio continue; resume returns to the script |
 | A6 | On air, text size and module handover | Saved display levels work; slot 2 opens while the same OBS recording continues |
 | B1 | Record take during an existing recording | A new module/slate uses the same OBS recording; guide settings persist |

@@ -233,10 +233,19 @@ RC2 refreshed its bundled help and added the reusable acceptance samples.
 **1.0.7-rc.3** adds compatibility reporting with private Stream Deck **0.1.9**;
 **1.0.7-rc.4** keeps the toolbar sliders labelled at every supported width;
 **1.0.7-rc.5** adds eye-anchored head-outline fitting;
-**1.0.7-rc.6** improves toolbar access and centres Settings on opening. The latest
+**1.0.7-rc.6** improves toolbar access and centres Settings on opening;
+**1.0.7-rc.7** adds floating guide adjustments, eye-anchored edge fitting and
+separate guide-background opacity. The latest
 published app remains **1.0.6**. No tag, merge, Marketplace publication or
 website deployment is part of this candidate.
 
+- **Guide adjustments in fullscreen:** the prompter's **Guide adjustments**
+  button, **Tools > Guide adjustments…**, and the guide's **Adjust** toggle a
+  separate window above the prompter, even when the guide is Clean or locked.
+  Set eye centre and level first, lock them, then fit Top/Bottom and Left/Right
+  independently. **Background** dims the preview beneath the guide (0–80%,
+  initially 12%); **Outline** controls the lines separately. The saved Ideal
+  reference is brighter. Shape and background settings persist in edit packs.
 - **Edit beside Tools:** a labelled toolbar button opens the editor or read-only
   sample source. Tools opens beneath its own button, staying within the window
   edges and following changes to window size and mirror mode.
