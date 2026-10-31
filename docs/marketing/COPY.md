@@ -5,10 +5,11 @@ boundaries. No copy below has been posted by this audit.
 
 ## Short introduction — public-release safe
 
-Sightline Prompter keeps your words near the camera while you see the slides
-or call behind them. Choose steady scrolling or voice following, control it
-from your phone and mark useful takes for the edit. Free and open source.
-By a speaker, for speakers. AI is optional.
+Sightline Prompter is a traditional teleprompter that works with your AI.
+Voice controlled, see-through and free: read at your pace, with phone and pad
+controls within reach. Your favourite AI can prepare scripts and, through an
+authorised local agent, configure and control it. Optional script directions
+steer the prompting. By a speaker, for speakers. Use it without AI too.
 
 <https://joannelockwood.co.uk/sightline>
 
@@ -62,7 +63,8 @@ instead of adding every Settings screen to the carousel.
 This is reusable copy for a future designed carousel, not an existing exported
 social asset. Keep the eight-slide website carousel distinct from this story.
 
-1. **Your words. Your pace.** A see-through prompter for recording to camera.
+1. **The teleprompter that works with your AI.** A familiar prompter your
+   favourite AI can configure and control through an authorised local agent.
 2. **Keep your view.** Your script near the lens; slides or a call behind it.
 3. **Choose your pace.** Voice following or steady scrolling, with stops for
    the moments you want to hold.
@@ -74,3 +76,10 @@ social asset. Keep the eight-slide website carousel distinct from this story.
    chosen assistant. Basic prompting works without it.
 7. **Try Sightline.** Free and MIT-licensed. Use the verified public download
    at joannelockwood.co.uk/sightline; label any 1.1.0 screenshots as previews.
+
+## Promotional infographic
+
+[Revised navy/gold infographic](sightline-promo-infographic-v2.png) keeps voice
+control explicit, uses dark pictograms on bright tiles and includes a real QR
+to the product page. OBS/Stream Deck are labelled as previews. The illustration
+is a marketing mock-up, not a screenshot. See [the production prompt](INFOGRAPHIC-PROMPT.md).

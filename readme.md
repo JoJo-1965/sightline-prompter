@@ -1,11 +1,16 @@
 # Sightline Prompter
 
-![Sightline Prompter: your words, at your pace. Illustration of a highlighted sentence and a script stop. Free and open source for Windows, Mac and Linux; AI is optional.](docs/images/hero.png)
+![Sightline Prompter, the teleprompter that works with your AI. Illustration of a highlighted sentence and a script stop. Free and open source for Windows, Mac and Linux.](docs/images/hero.png)
 
-**Your words. Your pace.** A free, open-source, see-through desktop teleprompter
-for speakers, content creators and learning teams recording to camera. Keep
-your script near the lens, see the slides or call behind it, and choose voice
-following or a steady pace. Windows, macOS and Linux.
+**The teleprompter that works with your AI.** A traditional teleprompter,
+built for your workflow: free, open source and see-through, with voice control.
+Your favourite AI can prepare scripts and, through an authorised local agent,
+configure and control Sightline. Optional scripting directives steer its
+operation; take information helps your external editing workflow. For speakers,
+content creators and learning teams. Windows, macOS and Linux.
+
+**Your words. Your pace.** Keep your script near the lens, see the slides or
+call behind it, and choose voice following or a steady pace.
 
 **By a speaker, for speakers. By a content creator, for content creators.**
 Built by Joanne Lockwood with Claude Code, from David Neal's Electron
@@ -244,10 +249,15 @@ are test history; the latest public app is still **1.0.6**. Existing plugin
 remain compatible too. See the [freeze record](docs/BUILD-FREEZE-1.1.0.md).
 
 - **Documentation review:** the guide index now names the frozen 1.1.0/0.2.0
-  pair. Overview and marketing copy make AI optional, distinguish estimated
+  pair. Overview and marketing copy retain the AI-led workflow while explaining
+  that AI is optional, distinguish estimated
   alignment from exact recording times, explain scratch audio and qualify
   capture behaviour. Installation help separates reputation warnings from
   malware/damage alerts. A one-pager and audience/message reference are included.
+  About uses the same AI-led message; the Voice panel explains local
+  recognition, optional online audio transfer and local saved files.
+  The promotional infographic restores a tested QR, strengthens icon contrast
+  and makes voice control explicit alongside AI and script directions.
 
 - **Pad and phone operator controls:** both now include listening off/on and
   recovery, a local session check, eye locking, ideal-reference controls and

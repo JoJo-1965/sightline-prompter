@@ -118,6 +118,11 @@ your settings, so **Export Settings** takes them to another computer.
 
 ## Voice commands: "Prompter, …"
 
+The Voice panel distinguishes local processing from optional Deepgram audio
+transfer. Recognised text and optional scratch audio may still be saved locally;
+local recognition does not mean that no files are kept. See the privacy notice
+for each microphone feature and your chosen online services.
+
 Stream Deck 0.2.0 and the shared pad/phone controls add session listening
 off/on and Restart listening. Turning off pauses voice following and stops
 that recognition listener while OBS continues recording. Turning on honours

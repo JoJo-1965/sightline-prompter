@@ -3,7 +3,9 @@
 Sightline Prompter is a see-through teleprompter for speakers, content creators
 and learning teams recording to camera. Choose voice following or a steady
 pace, keep your words near the lens and collect take information for the edit.
-AI is optional, for writing scripts, local control and external editing. See
+It is voice controlled too. Your favourite AI can prepare scripts and, through
+an authorised local agent, configure and control it. Optional script directions
+steer its operation. AI remains optional. See
 [Working with AI](09-working-with-ai.md).
 
 The script floats over your screen, close to the webcam, and scrolls at a

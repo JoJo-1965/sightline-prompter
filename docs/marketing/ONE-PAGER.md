@@ -2,14 +2,18 @@
 
 [Printable one-page PDF](sightline-one-pager.pdf)
 
-## Your words. Your pace.
+## The teleprompter that works with your AI.
 
-A free, open-source, see-through desktop teleprompter for speakers, content
-creators and learning teams recording to camera.
+A traditional teleprompter, built for your workflow. Free, open source and
+see-through, with voice control and voice following or steady scrolling.
+For speakers, content creators and learning teams recording to camera.
+Your favourite AI can prepare scripts and, through an authorised local agent,
+configure and control Sightline. Its optional scripting directives steer
+the prompting; take information helps your external editor afterwards.
 
 **By a speaker, for speakers. By a content creator, for content creators.**
 
-Keep your script near the lens while seeing the slides or call behind it.
+**Your words. Your pace.** Keep your script near the lens while seeing the slides or call behind it.
 Choose a steady pace or let the script follow your voice. Pause, retake and
 mark a keeper without losing the thread of what you wanted to say.
 

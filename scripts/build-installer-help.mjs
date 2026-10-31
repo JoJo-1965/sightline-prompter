@@ -45,7 +45,7 @@ body{display:block;height:auto}nav{padding:16px 24px;background:var(--panel);dis
 	for ( const folder of [ "docs/images", "docs/guide/images", "docs/design/images" ] ) {
 		await fs.cp( path.join( root, folder ), path.join( out, folder ), { recursive: true } );
 	}
-	for ( const name of [ "sightline-one-pager.pdf", "one-pager-preview.png" ] ) await fs.copyFile( path.join( root, "docs/marketing", name ), path.join( out, "docs/marketing", name ) );
+	for ( const name of [ "sightline-one-pager.pdf", "one-pager-preview.png", "sightline-promo-infographic-v2.png", "sightline-qr.png" ] ) await fs.copyFile( path.join( root, "docs/marketing", name ), path.join( out, "docs/marketing", name ) );
 }
 
 export default async function beforePack( context ) {

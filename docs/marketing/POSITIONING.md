@@ -6,12 +6,17 @@ Reviewed 31 October 2026 against frozen Sightline 1.1.0 and private Stream Deck
 
 ## Positioning
 
-**Your words. Your pace.**
+**The teleprompter that works with your AI.**
 
-A free, open-source, see-through desktop teleprompter for speakers, content
-creators and learning teams recording to camera. Keep your words near the lens,
-see the slides or call behind them, and choose voice following or a steady pace.
-Collect take information for your editor. AI is optional.
+A traditional teleprompter, built for your workflow: free, open source and
+see-through, with voice control and voice following or steady scrolling.
+Use your favourite AI to prepare scripts and, through an authorised local
+agent, configure and control Sightline. Optional scripting directives steer
+sections, stops, beats and other operations. Phone, floating pad and optional
+OBS/Stream Deck controls fit the recording setup you choose. Take information
+supports the handover to an external editor. For speakers, content creators
+and learning teams recording to camera. **Your words. Your pace.** is the
+delivery benefit. **AI is optional** is reassurance, not the lead message.
 
 **By a speaker, for speakers. By a content creator, for content creators.**
 Joanne's experience explains the design choices. It is not a claim of customer
@@ -34,15 +39,19 @@ do not describe them as demonstrated demand.
 
 ## Message hierarchy
 
-1. **Deliver naturally:** see-through text near the camera, with your slides or
+1. **A familiar teleprompter that works with your AI:** prepare structured
+   scripts, configure and control it through an authorised local agent, and
+   hand over a machine-readable edit pack. This is
+   the lead differentiator, even though none of these steps is compulsory.
+2. **Deliver naturally:** see-through text near the camera, with your slides or
    call behind it. Choose voice following or steady scrolling.
-2. **Keep control while presenting:** wake commands, phone/pad and optional
+3. **Keep control while presenting:** voice commands, phone/pad and optional
    Stream Deck. Listening preferences and feature permissions remain explicit.
-3. **Keep useful evidence for the edit:** section/take references, markers,
+4. **Keep useful evidence for the edit:** section/take references, markers,
    keeper choices and recognition-derived alignment estimates.
-4. **Build the workflow you need:** optional local AI/API, OBS tools and manual
+5. **Build the workflow you need:** optional local AI/API, OBS tools and manual
    guide. Basic prompting does not require those integrations.
-5. **Free and open:** MIT licence, no Sightline account/subscription. Local
+6. **Free and open:** MIT licence, no Sightline account/subscription. Local
    speech works offline after downloading its model. Optional services have
    their own accounts, connectivity and terms.
 
@@ -53,6 +62,7 @@ No competitor comparison establishes that Sightline is the only or best option.
 
 | Differentiator | User benefit | Evidence and qualification |
 | --- | --- | --- |
+| AI-assisted workflow across authoring, operation and handover | Connect an existing assistant to the recording process rather than copy only plain script text | [AI script prompt](../AI-SCRIPT-BRIEF.md), [agent setup](../guide/10-setting-up-your-ai.md) and [edit pack](../EDIT-PACK.md). External AI/editor and explicit local permissions are required for agent use; not a built-in generative editor |
 | See-through prompting plus pacing choices | Keep the camera, slides and delivery in one view | Core overlay and scrolling; see [display](../guide/04-layout-and-display.md). Overlay heritage is credited to David Neal |
 | Human-readable script directions | Plan sections, holds, beats and edit markers in the script | [Script specification](../SCRIPT-DIRECTIVES.md); timed pauses count down only in steady mode; voice mode treats them as visible beats; stops still hold |
 | Prompting-to-edit handover | Give an editor take choices and context rather than just a video file | [Edit pack](../EDIT-PACK.md); timing is estimated, not guaranteed frame-accurate; an external editor makes the cut |
