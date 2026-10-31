@@ -377,10 +377,16 @@ The whole workflow is in the guide:
   foot pedals** and **game controllers**.
 - **Stream Deck plugin** (coming to the Elgato Marketplace): keys that light up
   to match the prompter (▶ or ❚❚, On air, the open slot, the time left), keys for scroll mode, the
-  pad and the control window, every key ready for an AI on Stream Deck's MCP,
+  pad and the control window, descriptions and optional profiles for AI/MCP setup,
   dials on the Stream Deck + and the three-pedal Stream Deck Pedal, with a
   sample profile for every model. See
   [Remotes and second screens](guide/06-remotes-and-screens.md#stream-deck).
+- **Stream Deck 0.2.0 development:** listening off/on or recovery, session
+  status and detailed error help, optional hold-to-finish and guide dials for
+  eye centre/level, independent edges, proportions and visibility levels.
+  Eye lock fixes the reference while shaping. Two opt-in Guide profiles
+  cover + and + XL. Existing buttons remain supported; new controls need
+  the matching app capabilities and are not in the installed RC14/plugin 0.1.9.
 - A keyboard shortcuts panel (F1) and an About page.
 - **Windows installer reading options:** separate finish-page tick boxes open
   the release notes and Getting Started guide in your browser. Both are bundled,

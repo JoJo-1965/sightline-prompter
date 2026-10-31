@@ -27,7 +27,9 @@ audio is a timing reference; OBS or your usual tool supplies the production mast
 
 **Testing 1.1.0:** this branch contains the local Windows release candidate,
 with OBS support, the head guide and the Settings/help updates. Use the private
-Stream Deck 0.1.9 companion and the [acceptance walkthrough](docs/guide/14-acceptance-test.md).
+Stream Deck companion and the [acceptance walkthrough](docs/guide/14-acceptance-test.md).
+Private plugin 0.2.0 source adds listening recovery, session status, protected
+Finish recording and head-guide dials; installed 0.1.9 retains its existing controls.
 The latest public download remains 1.0.6; candidate builds are not published.
 
 ## Built around AI for the content creators of today
@@ -231,8 +233,16 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 The next candidate is **1.1.0-rc.1**, replacing the planned RC15 name. It has
 not been packaged or installed. The existing installation remains
 **1.0.7-rc.14**; identifiers below describe that earlier preview series.
-The latest public release is still **1.0.6**. Stream Deck **0.1.9** remains
-the matching companion. Scripts and additive edit-pack formats remain compatible.
+The latest public release is still **1.0.6**. Stream Deck **0.2.0 source** is
+the next companion; installed **0.1.9** remains compatible for existing controls.
+Scripts and additive edit-pack formats remain compatible.
+
+- **Stream Deck operator controls:** configurable listening off/on or recovery,
+  session status and fuller error help, an optional one-second Finish recording
+  hold, and head-guide dials for eye centre, independent edges and visibility
+  levels. Eye locking keeps the reference fixed while fitting the outline.
+  Two opt-in framing profiles cover + and + XL. New controls need the matching
+  app capabilities. Neither the new app nor plugin has been packaged/installed.
 
 **Local Windows acceptance build:** RC1 established the feature baseline;
 RC2 refreshed its bundled help and added the reusable acceptance samples.

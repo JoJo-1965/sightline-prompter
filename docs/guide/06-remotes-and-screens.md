@@ -137,7 +137,7 @@ The buttons can't be changed yet; choosing your own is on the roadmap.
 
 ## Stream Deck
 
-For the Sightline 1.1.0 release candidate, private companion test build **0.1.9** includes
+For the Sightline 1.1.0 release candidate, private companion **0.2.0 source** extends the installed **0.1.9**, which includes
 **Record take (OBS)** and **Finish recording (OBS)**. Enable OBS and allow
 recording controls in Sightline first. The keys show confirmed recording
 state; a disconnected state stays unknown. Play/Pause, section stops and
@@ -171,7 +171,8 @@ latest news and the link are on the
    plugin finds Sightline itself, so there's no code or token to type. It gets
    its own key, for buttons only: it can play and pause, move through the
    script, switch slots and show what's happening, but it can't load scripts,
-   change settings or touch your recordings. (That's separate from AI access,
+   access arbitrary settings or touch your recording files. Its named controls
+   can adjust the guide and session listening. (That's separate from AI access,
    which you can leave off.)
 2. Install the plugin. Stream Deck offers a ready-made **Sightline** profile
    for each Stream Deck you have: the Mini, Stream Deck, Neo, XL, +, + XL and
@@ -232,6 +233,35 @@ minimum/recommended versions known by the app and the actions it supports.
 For the latest public Sightline release, use **About > Check for updates**.
 The private plugin has no public update feed yet; install the supplied test
 build. Marketplace updates apply once a real listing is live.
+
+## Stream Deck operator controls (0.2.0 development)
+
+These controls require the matching updated Sightline 1.1 candidate, not just
+a compatible version number. Neither new package has been installed yet.
+
+- **Listening:** choose session off/on or Restart listening. Off pauses voice
+  following and stops its recognition listener; OBS keeps recording. On honours
+  the saved command preference: Always resumes wake listening, otherwise press
+  Play for voice following. Sound check/scratch audio use the mic separately.
+- **Status / session check:** choose progress with play/pause, or software
+  status with a button to open **Session check**. It reports script, listening,
+  OBS and debug-capture state; it does not certify captured picture/sound/sync.
+- **Finish recording:** hold for one second by default, including the OBS
+  pedal. Release early to cancel. Connection, page, setting or recording
+  changes cancel a pending hold. The checkbox allows an immediate press if
+  preferred. The bar measures the hold; confirmed OBS state supplies the result.
+- **Head guide dial:** choose Eye X/Y, Top/Bottom/Left/Right, Width/Height,
+  overall size, Background or Outline. Align eyes, press to lock them, then
+  fit the edges around the fixed reference. Works inside the fullscreen overlay.
+  Press/tap can instead toggle adjustments, ideal visibility or match the
+  actual reference to the saved ideal. The saved ideal is not overwritten.
+
+Choose **Use the head-guide dial profile** in Stream Deck's action settings
+for the opt-in + or + XL framing layout. Related section, speed, size and guide
+actions share settings; saved older buttons keep their original behaviour.
+After a failure, select that key/dial in Stream Deck to read its full reason.
+
+![Listening, session status, finish protection and guide-dial preview](images/streamdeck-operator-controls.png)
 
 ## The floating pad
 

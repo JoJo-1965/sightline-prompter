@@ -1625,7 +1625,12 @@ app.whenReady().then( async () => {
 		"pad", // the floating control pad open or closed
 		"control", // the control window open or closed
 		"head-guide", // show/unlock or hide the framing overlay
-		"head-guide-fullscreen" // fullscreen framing overlay / restore
+		"head-guide-fullscreen", // fullscreen framing overlay / restore
+		"head-guide-adjust", // bounded relative shape adjustment, not window geometry
+		"head-guide-control", // adjustments, eye lock, ideal visibility or restore actual
+		"listening-toggle", // session listening off/on; does not change saved preference
+		"listening-restart",
+		"session-check"
 	];
 
 	const streamDeckPeer = createStreamDeckPeer( { onChange: () => {
@@ -1652,6 +1657,7 @@ app.whenReady().then( async () => {
 		headGuideLocked: framingGuide?.isLocked() ?? false,
 		headGuideFullscreen: !!settings.headGuideFullscreen,
 		headGuideChromeless: !!settings.headGuideChromeless,
+		headGuide: framingGuide?.status() ?? null,
 		windowMode,
 		padLayout: normalisePadLayout( settings.padLayout ),
 		captureOverride: captureOverride(),
@@ -1736,7 +1742,9 @@ app.whenReady().then( async () => {
 			if ( !REMOTE_COMMANDS.includes( action ) ) {
 				throw new Error( `action must be one of: ${ REMOTE_COMMANDS.join( ", " ) }` );
 			}
-			win.webContents.send( "remoteCommand", action, value );
+			if ( action === "head-guide-adjust" ) framingGuide.adjust( value );
+			else if ( action === "head-guide-control" ) framingGuide.control( value );
+			else win.webContents.send( "remoteCommand", action, value );
 			return { ok: true, action };
 		},
 		"POST /slot": ( { slot } ) => {

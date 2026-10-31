@@ -17,6 +17,14 @@ name. Neither has been packaged or published. The installed 1.0.7-rc.14 stays
 unchanged, and the earlier RC identifiers below remain test history.
 Stream Deck 0.1.9 remains compatible; the public app is still 1.0.6.
 
+**Stream Deck additions for review:** private plugin 0.2.0 source adds a
+listening toggle/recovery key, software session status with error guidance,
+optional hold-to-finish and head-guide adjustment dials. Eye-position lock
+keeps outline fitting anchored; opt-in + and + XL Guide profiles are included.
+Related actions share settings, leaving 30 visible actions and preserving
+saved UUIDs. Strict Marketplace-manifest validation passes; physical hardware
+acceptance and submission remain. No new package or installation is made.
+
 **Local Windows release candidate:** RC1 established the feature baseline.
 RC2 refreshed the documentation and added reusable acceptance samples.
 **1.0.7-rc.3** adds local compatibility checks and version reporting with
@@ -125,7 +133,7 @@ move to Done only when released.
 | 48 | **Settings in its own window**, plus movable F1 Help | ★★ | M | Built in RC8: independent upright windows, native title-bar dragging across screens, saved geometry, stable sizes, paged Settings, live controls, Apply/Save/Cancel and unsaved-change guards on window/app close. Native window and inline-fallback tests pass; manual acceptance remains |
 | 52 | **Optional OBS integration** | ★★★ | M | Built in the Windows 1.1.0 candidate: authenticated connection, status-only/recording permissions, confirmed Record take/Finish, optional chapters, recorded slate and edit-pack references. Default off; ordinary prompting, stops, retakes and On air leave OBS recording. Physical workflow validation and evidence review remain. No separate OBS plugin is needed; optional dock/scene switching are later scope |
 | 55 | **Floating head-position guide** | ★★ | S | Built in the candidate: manual Ideal/Actual comparison, movement/scaling, Centre/Beside placements, chromeless fullscreen/restore, lock, voice on/off, hotkeys and Stream Deck. Separate from OBS sources, with capture protection enabled. It does not detect faces; actual exclusion depends on the chosen capture method and needs recording verification |
-| 39 | **Stream Deck companion** | ★★★ | M | Private 0.1.9 test build: 27 key actions, 5 dials, 18 standard/OBS profiles, recording and guide controls, buttons-only pairing and refreshed studio artwork. Physical keys, states and the model profile need acceptance. Marketplace listing is not live; add its real link to app/guide/readme/site only after listing |
+| 39 | **Stream Deck companion** | ★★★ | M | Private 0.2.0 source: 30 visible grouped actions including 6 dials; existing hidden UUIDs still work. Listening recovery/toggle, session status/error help, optional hold-to-finish and guide eye/edge dials. 20 profile files, 18 advertised by the strictly validated Marketplace manifest; MCP profiles/metadata remain available for manual/development setup. Installed 0.1.9 stays unchanged. Physical acceptance and publication remain; add the real listing link only once live |
 
 ## To do
 

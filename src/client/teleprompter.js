@@ -1337,6 +1337,10 @@ function pauseVoiceAt( pause ) {
 
 async function startAutoScrollSession() {
 	if ( autoScrollActive || autoScrollStarting ) return;
+	if ( listeningSuspended ) {
+		showToast( "Listening is off for this session. Turn it on with Stream Deck or Restart listening." );
+		return;
+	}
 	if ( usesLocalVoice() && ( modelMaintenance || speechModel.downloading ) ) {
 		showToast( "Wait for speech model maintenance to finish, then press Play again" );
 		return;
@@ -1600,6 +1604,8 @@ const COMMAND_LABELS = {
 };
 
 let commandListening = false;
+let listeningSuspended = false;
+let listeningChange = Promise.resolve();
 let commandChange = Promise.resolve();
 let commandConfig = "";
 let commandFailure = false;
@@ -1620,7 +1626,9 @@ function showListeningStatus( status ) {
 	sendStatus();
 }
 
-async function restartListening() {
+async function restartListeningNow() {
+	if ( isEditMode || offScript || modelMaintenance || speechModel.downloading ) return showToast( "Finish editing, off-script mode or model maintenance before restarting listening" );
+	listeningSuspended = false;
 	if ( autoScrollActive ) return autoScrollHandle?.restartListening();
 	if ( !wantCommandListening() && !commandFailure ) {
 		showToast( "Enable Always listening in Prompting > Commands first", 3000 );
@@ -1630,6 +1638,27 @@ async function restartListening() {
 	showListeningStatus( { type: "recovering", reason: "manual restart" } );
 	await stopCommandListening();
 	await syncCommandListening();
+}
+function restartListening() {
+	listeningChange = listeningChange.catch( () => {} ).then( restartListeningNow );
+	return listeningChange;
+}
+function toggleSessionListening() {
+	listeningChange = listeningChange.catch( () => {} ).then( async () => {
+		listeningSuspended = !listeningSuspended;
+		if ( listeningSuspended ) {
+			if ( autoScrollActive || autoScrollStarting ) await stopAutoScrollSession();
+			await stopCommandListening();
+			listenerHealth = { state: "off" };
+			showToast( "Listening off · voice following paused · OBS keeps recording", 3000 );
+		} else {
+			commandFailure = false;
+			await syncCommandListening();
+			showToast( commandListening ? "Listening restored" : "Listening available · press Play for voice following", 3000 );
+		}
+		sendStatus();
+	} );
+	return listeningChange;
 }
 commandPill?.addEventListener( "click", restartListening );
 uiElement( "set-listening-restart" )?.addEventListener( "click", restartListening );
@@ -1644,6 +1673,7 @@ function wantCommandListening() {
 	const wanted = always || ( cuePaused && lastCue?.listen !== "off" && settings.voiceCommands !== "off" );
 	return (
 		wanted
+		&& !listeningSuspended
 		&& ( settings.scrollMode !== "voice" || always )
 		&& usesLocalVoice()
 		&& speechModel.installed
@@ -4789,7 +4819,13 @@ function sendStatus() {
 		// The microphone is on: following your voice, or listening for the wake word.
 		listening: autoScrollActive ? "voice" : commandListeningOn() ? "wake" : null,
 		wakeWord: wakeLabel( settings.wakeWord ),
-		listenerHealth
+		listenerHealth,
+		listeningControl: {
+			suspended: listeningSuspended,
+			mode: settings.voiceCommands ?? "voice",
+			available: !isEditMode && !offScript && !modelMaintenance && !speechModel.downloading && ( usesLocalVoice() ? !!speechModel.installed : !!settings.hasDeepgramKey ),
+			canRestart: !listeningSuspended && ( autoScrollActive || wantCommandListening() || commandFailure ) && !isEditMode && !offScript && !modelMaintenance && !speechModel.downloading
+		}
 	} );
 }
 
@@ -4954,6 +4990,9 @@ function jumpSection( step ) {
 }
 
 function runRemoteAction( action, value ) {
+	if ( action === "listening-toggle" ) return toggleSessionListening();
+	if ( action === "listening-restart" ) return restartListening();
+	if ( action === "session-check" ) return workflow?.open( "session" );
 	if ( action === "obs-record" ) {
 		obsUi.action( "start" );
 		return;

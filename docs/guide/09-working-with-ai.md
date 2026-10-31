@@ -91,6 +91,18 @@ Use the advertised commands for feature support. A version absent from an older
 response is unknown; the local compatibility exchange is not proof of a particular
 plugin's identity or that the installed app is the latest public release.
 
+The updated 1.1 candidate advertises `listening-toggle`, `listening-restart`,
+`session-check`, `head-guide-adjust` and `head-guide-control`. These are named
+button controls available through the authenticated local API, including the
+Stream Deck key. They do not grant general settings access. Guide adjustment
+uses `{ action: "head-guide-adjust", value: { axis: "top", steps: 1 } }`;
+axes and step counts are checked, X/Y respect eye lock, and a hidden guide
+cannot be adjusted. Guide controls accept `adjust`, `eyes-lock`,
+`ideal-visible` or `reset-pose` as the value. They cannot overwrite the saved
+ideal. Read `headGuide`, `listeningControl` and `listenerHealth` from status.
+Listening off pauses voice following without stopping OBS or changing the
+saved command preference. Never describe it as a system microphone mute.
+
 It's off by default. Requests from web pages are refused, the API can't
 switch itself on, and **New token** locks out anything that had the old one.
 The full list is in the [readme](https://github.com/JoJo-1965/sightline-prompter#readme), and

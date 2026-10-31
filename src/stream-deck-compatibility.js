@@ -1,7 +1,7 @@
 // Local version/capability exchange, not plugin identity or an update service.
 export const STREAM_DECK_PROTOCOL = 1;
 export const MINIMUM_PLUGIN_VERSION = "0.1.5";
-export const RECOMMENDED_PLUGIN_VERSION = "0.1.9";
+export const RECOMMENDED_PLUGIN_VERSION = "0.2.0";
 
 export function versionAtLeast( version, minimum ) {
 	const parts = ( value ) => {

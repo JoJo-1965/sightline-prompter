@@ -12,7 +12,7 @@ const guideRows = [
 	[ "Save as ideal / Back to ideal", "Save a framing reference, or restore the actual outline to it (manual, no face tracking)" ],
 	[ "Overall proportions", "Size, Width and Height preserve the eyes. Centre window / Beside prompter recall overlay placements" ],
 	[ "Projector stack", "OBS preview at the bottom, guide in the middle, prompter text above" ],
-	[ "Stream Deck", "Head-position guide (OFF/ON/LOCK) and Head guide fullscreen (FULL/WIN)" ]
+	[ "Stream Deck", "Guide key: visibility, fullscreen, adjustments and ideal reference. Plugin 0.2 adds eye/edge dials with eye lock" ]
 ];
 export function voiceHelpTabs( settings ) {
 	const groups = new Map();

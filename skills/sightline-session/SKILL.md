@@ -223,6 +223,23 @@ Publication remains held until all five production requirements are validated.
 ## Don't
 
 Commands-only listener health is available as `listenerHealth` in status.
+
+The updated 1.1 candidate adds capability-gated `listening-toggle`,
+`listening-restart` and `session-check` commands. Session listening off pauses
+voice following without stopping OBS or changing the saved command preference;
+sound check and scratch audio have separate microphone use. Turning on resumes
+wake listening only when Always is configured. Do not silently enable Always.
+`listeningControl` reports availability, session suspension and restart support.
+
+For guide dials, POST `/command` with `{ action: "head-guide-adjust", value:
+{ axis: "top", steps: 1 } }`. Allowed axes are x/y, scale, width/height,
+top/bottom/left/right, background and opacity; steps must be nonzero integers
+from -20 to 20. The guide must be visible. Eye lock blocks X/Y while preserving
+outline fitting. `head-guide-control` accepts adjust, eyes-lock, ideal-visible
+or reset-pose. Status includes `headGuide`. None of these operations overwrites
+the saved ideal. Match commands to the advertised capabilities, not a version
+number alone. Plugin 0.2 source needs the matching app update; neither new
+package has been installed yet.
 Recovery is bounded and respects listening-off and script mute. The user can
 use Prompting > Commands > Restart listening. Command-word text tracing is
 off by default and must be explicitly enabled in Settings > Debug for troubleshooting;

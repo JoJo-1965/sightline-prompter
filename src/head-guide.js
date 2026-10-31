@@ -4,6 +4,7 @@ import path from "node:path";
 import { fitInside } from "./utils/fit.js";
 import { guidePose } from "./client/guide-pose.js";
 import { captureOverride, protectWindow } from "./capture-policy.js";
+import { guideAdjustment, GUIDE_CONTROLS } from "./guide-control.js";
 
 const HOTKEY = "CommandOrControl+Shift+H";
 const FULLSCREEN_HOTKEY = "CommandOrControl+Alt+H";
@@ -165,6 +166,19 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 		if ( overlay && ( locked || getSettings().headGuideChromeless ) ) unlock();
 		else saveSettings( { showHeadGuide: !getSettings().showHeadGuide } );
 	}
+	function remoteControl( name ) {
+		if ( !GUIDE_CONTROLS.includes( name ) ) throw new Error( "Unknown head guide control" );
+		if ( !overlay ) throw new Error( "Show the head guide first" );
+		if ( name === "adjust" ) toggleControls();
+		else if ( name === "eyes-lock" ) saveSettings( { headGuideEyesLocked: !state().eyesLocked } );
+		else if ( name === "ideal-visible" ) saveSettings( { headGuideShowIdeal: !state().showIdeal } );
+		else {
+			const ideal = state().ideal;
+			const patch = { headGuideEyesLocked: false };
+			for ( const [ key, value ] of Object.entries( ideal ) ) patch[`headGuide${ key[0].toUpperCase() }${ key.slice( 1 ) }`] = value;
+			saveSettings( patch );
+		}
+	}
 	function action( event, name, value ) {
 		const fromOverlay = overlay && event.sender === overlay.webContents;
 		const fromControls = controls && event.sender === controls.webContents;
@@ -272,6 +286,9 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 	prompter.on( "focus", restack );
 	return {
 		apply, toggle, toggleFullscreen, restack, isLocked: () => locked,
+		status: () => ( { ...state(), shown: !!overlay } ),
+		adjust: value => saveSettings( guideAdjustment( getSettings(), value ) ),
+		control: remoteControl,
 		dispose() {
 			close();
 			ipcMain.removeListener( "headGuideAction", action );

@@ -118,6 +118,13 @@ your settings, so **Export Settings** takes them to another computer.
 
 ## Voice commands: "Prompter, …"
 
+The private Stream Deck 0.2.0 development controls add session listening
+off/on and Restart listening. Turning off pauses voice following and stops
+that recognition listener while OBS continues recording. Turning on honours
+the saved preference: Always resumes wake listening; otherwise press Play.
+Scratch audio and sound check use the microphone separately. This is not a
+system microphone mute, and it never silently enables Always listening.
+
 **The wake word** is "Prompter" unless you choose another on **Settings > Prompting > Commands >
 Wake word**: Computer, Teleprompter or Director. Pick one that doesn't come up in
 your scripts. Below, read "Prompter" as whichever you chose. Apply refreshes

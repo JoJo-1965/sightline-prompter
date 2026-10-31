@@ -1,6 +1,19 @@
 # Release-candidate acceptance test
 
-**Windows Sightline 1.1.0 release candidate + private Stream Deck 0.1.9.**
+**Windows Sightline 1.1.0 release candidate + private Stream Deck 0.2.0 source.**
+The installed 0.1.9 remains compatible for its existing controls. Neither
+updated package has been installed. Once packaged, add these checks:
+
+- Short Finish recording press must do nothing; a one-second hold finishes.
+  Repeat with the OBS Pedal and a disconnected/revoked-permission setup.
+- Choose session status on the Status key. Check reported state and open
+  the Session check while prompting is paused. Read a blocked action's reason.
+- Test listening off/on and recovery with the normal microphone. Confirm
+  saved Always/off preference is retained and OBS keeps recording.
+- On +/+ XL, show the guide fullscreen, move eye X/Y, lock eyes, then fit
+  all four edges. X/Y must stay fixed; ideal visibility and restore must
+  preserve the saved ideal. Confirm the edit-pack guide metadata matches.
+
 The next build is **1.1.0-rc.1**, replacing the planned RC15. It has not yet
 been packaged or installed. The existing installation is **1.0.7-rc.14**;
 the RC1–RC14 notes below describe that earlier preview series.

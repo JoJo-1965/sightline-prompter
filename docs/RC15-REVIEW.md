@@ -1,5 +1,11 @@
 # Sightline 1.1.0-rc.1 for review
 
+**Stream Deck 0.2.0 additions, not packaged/installed:** listening controls,
+session status/error guidance, optional one-second Finish recording hold and
+head-guide adjustment dials/profiles. Existing installed 0.1.9 remains usable;
+the new controls require the matching updated app capabilities. Strict Elgato
+submission validation passes. Hardware acceptance and publication stay pending.
+
 The next release is **1.1.0**. Its first candidate is **1.1.0-rc.1**, replacing
 the planned RC15 name. The installed **1.0.7-rc.14** stays unchanged. Earlier
 1.0.7 RC identifiers are test history, not published releases. This document
