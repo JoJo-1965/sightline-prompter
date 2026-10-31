@@ -15,6 +15,20 @@ Sightline Prompter (a fork of Electron Teleprompter) is a desktop app that displ
 - **Install deps:** `pnpm install` (pnpm v10.30.2 is the configured package manager)
 - **No test suite** — there are no tests configured
 
+## Before preparing a release candidate
+
+- Check the conversation's pending messages and outstanding requests before
+  choosing a candidate version or starting a build. Reconcile them with the
+  current work, companion plugin and roadmap.
+- Finish queued fixes and their documentation, screenshots and relevant checks
+  as one batch. Check for new messages again immediately before packaging.
+- Keep planned roadmap work and physical acceptance checks distinct from the
+  current implementation queue; a candidate does not require the entire roadmap.
+- Do not mint another RC for each small change. If the queue changes during a
+  build, finish processing it before presenting a candidate as ready for testing.
+- Candidate preparation does not authorise installing over the live app,
+  merging, tagging, publishing or deploying the website.
+
 ## Architecture
 
 Main process (`src/main.js`) → preload (`src/client/teleprompter-preload.mjs`, a **pure** `contextBridge` IPC bridge with no DOM work) → renderer (`src/client/teleprompter.js`, where **all** DOM manipulation happens). Keep that split: logic added to the preload breaks the ESM/contextBridge ordering below.

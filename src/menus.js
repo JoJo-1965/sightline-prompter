@@ -2,364 +2,89 @@ import { Menu, shell } from "electron";
 import path from "node:path";
 import { SUPPORT_URL } from "./client/links.js";
 
-export function buildMenus(
-	browserWindow,
-	{
-		openScriptFile,
-		showOpenScriptDialog,
-		recentFiles,
-		clearRecentFiles,
-		settings,
-		updateSettings,
-		slots,
-		activeSlot,
-		isMaximized,
-		samples = [],
-		openSample,
-		openGoogleDoc,
-		copyAiPrompt,
-		exportEditPack,
-		showRecordings,
-		reloadGoogleDoc,
-		openGuide,
-		displays = []
-	}
-) {
-	const isMac = process.platform === "darwin";
-	const send = ( channel, ...args ) =>
-		browserWindow.webContents.send( channel, ...args );
-
-	const recentSubmenu = recentFiles.map( filePath => ( {
-		label: path.basename( filePath ),
-		click: () => openScriptFile( filePath )
-	} ) );
-
-	if ( recentSubmenu.length > 0 ) {
-		recentSubmenu.push( { type: "separator" } );
-		recentSubmenu.push( {
-			label: "Clear Recent",
-			click: clearRecentFiles
-		} );
-	}
-
-	const slotItems = slots.map( ( slot, i ) => ( {
-		label: `${ i + 1 }: ${ slot ? path.basename( slot.path ) : "(empty)" }`,
-		type: "radio",
-		checked: i === activeSlot,
-		accelerator: `CmdOrCtrl+${ i + 1 }`,
-		click: () => send( "menuSwitchSlot", i )
-	} ) );
-
+// Native menus retain keyboard/platform access; detailed preferences live in Settings.
+export function buildMenus( browserWindow, {
+	openScriptFile, showOpenScriptDialog, recentFiles, clearRecentFiles,
+	settings, updateSettings, slots, activeSlot, isMaximized, samples = [],
+	openSample, openGoogleDoc, copyAiPrompt, exportEditPack, showRecordings,
+	reloadGoogleDoc, openGuide, toggleHeadGuide, toggleHeadGuideFullscreen, displays = []
+} ) {
+	const send = ( channel, ...args ) => browserWindow.webContents.send( channel, ...args );
+	const item = ( label, channel, accelerator, ...args ) => ( {
+		label, ...( accelerator ? { accelerator } : {} ), click: () => send( channel, ...args )
+	} );
+	const separator = { type: "separator" };
+	const recent = recentFiles.map( file => ( { label: path.basename( file ), click: () => openScriptFile( file ) } ) );
+	if ( recent.length ) recent.push( separator, { label: "Clear recent files", click: clearRecentFiles } );
+	const check = ( label, key, accelerator ) => ( {
+		label, type: "checkbox", checked: !!settings[key], ...( accelerator ? { accelerator } : {} ),
+		click: entry => updateSettings( { [key]: entry.checked } )
+	} );
 	const template = [
-		...( isMac ? [ { role: "appMenu" } ] : [] ),
-		{
-			label: "File",
-			submenu: [
-				{
-					label: "New",
-					accelerator: "CmdOrCtrl+N",
-					click: () => send( "newFile" )
-				},
-				{
-					label: "Open…",
-					accelerator: "CmdOrCtrl+O",
-					click: () => showOpenScriptDialog()
-				},
-				{
-					label: "Recordings…",
-					accelerator: "CmdOrCtrl+Shift+R",
-					click: () => showRecordings?.()
-				},
-				{
-					label: "Export Edit Pack…",
-					click: () => exportEditPack?.()
-				},
-				{ type: "separator" },
-				{
-					label: "Open a Google Doc…",
-					click: () => openGoogleDoc?.()
-				},
-				{
-					label: "Reload from Google Docs",
-					click: () => reloadGoogleDoc?.()
-				},
-				{
-					label: "Open Recent",
-					submenu:
-						recentSubmenu.length > 0
-							? recentSubmenu
-							: [ { label: "No Recent Files", enabled: false } ]
-				},
-				{
-					label: "Sample Scripts",
-					submenu: samples.map( s => ( {
-						label: s.label,
-						click: () => openSample?.( s.file )
-					} ) )
-				},
-				{ type: "separator" },
-				{
-					label: "Save",
-					accelerator: "CmdOrCtrl+S",
-					click: () => send( "menuSave" )
-				},
-				{
-					label: "Save As...",
-					accelerator: "CmdOrCtrl+Shift+S",
-					click: () => send( "menuSaveAs" )
-				},
-				{ type: "separator" },
-				{
-					label: "Settings…",
-					accelerator: "CmdOrCtrl+,",
-					click: () => send( "menuSettings" )
-				},
-				{
-					label: "Load Settings from File…",
-					click: () => send( "menuImportSettings" )
-				},
-				{
-					label: "Save Settings to File…",
-					click: () => send( "menuExportSettings" )
-				},
-				{ type: "separator" },
-				{ role: "quit" }
-			]
-		},
-		{
-			label: "Edit",
-			submenu: [
-				{
-					label: "Toggle Editor",
-					accelerator: "CmdOrCtrl+E",
-					click: () => send( "toggleEditor" )
-				},
-				{ type: "separator" },
-				{ role: "undo" },
-				{ role: "redo" },
-				{ type: "separator" },
-				{ role: "cut" },
-				{ role: "copy" },
-				{ role: "paste" },
-				{ role: "selectAll" }
-			]
-		},
-		{
-			label: "Playback",
-			submenu: [
-				{
-					label: "Start/Stop Scrolling (Space)",
-					accelerator: "CmdOrCtrl+Shift+L",
-					click: () => send( "toggleAutoScroll" )
-				},
-				{
-					label: "Back to the Start",
-					accelerator: "CmdOrCtrl+Home",
-					click: () => send( "menuGoToStart" )
-				},
-				{
-					label: "Scroll Mode",
-					submenu: [
-						{
-							label: "Steady (words per minute)",
-							type: "radio",
-							checked: settings.scrollMode !== "voice",
-							click: () => updateSettings( { scrollMode: "steady" } )
-						},
-						{
-							label: "Voice (Follows What You Say)",
-							type: "radio",
-							checked: settings.scrollMode === "voice",
-							click: () => updateSettings( { scrollMode: "voice" } )
-						}
-					]
-				},
-				{ type: "separator" },
-				{
-					label: "Increase Scroll Speed",
-					accelerator: "CmdOrCtrl+]",
-					click: () => send( "menuAdjustAutoScrollSpeed", "up" )
-				},
-				{
-					label: "Decrease Scroll Speed",
-					accelerator: "CmdOrCtrl+[",
-					click: () => send( "menuAdjustAutoScrollSpeed", "down" )
-				},
-				{
-					label: "Reset Scroll Speed",
-					accelerator: "CmdOrCtrl+\\",
-					click: () => send( "menuAdjustAutoScrollSpeed", "reset" )
-				},
-				{ type: "separator" },
-				{
-					label: "Highlight Slide Cues",
-					type: "checkbox",
-					checked: !!settings.highlightCues,
-					click: menuItem =>
-						updateSettings( { highlightCues: menuItem.checked } )
-				},
-				{ type: "separator" },
-				{
-					label: "Voice Scroll Sync (Key and Microphone)…",
-					accelerator: "CmdOrCtrl+Shift+V",
-					click: () => send( "menuVoice" )
-				},
-				{
-					label: "Sound Check Meter",
-					accelerator: "CmdOrCtrl+Shift+D",
-					click: () => send( "menuSoundCheck" )
-				},
-				{
-					label: "Select Microphone…",
-					click: () => send( "menuSelectMicrophone" )
-				},
-				{
-					label: "Set Deepgram API Key…",
-					click: () => send( "menuSetDeepgramKey" )
-				}
-			]
-		},
-		{
-			label: "Slots",
-			submenu: [
-				...slotItems,
-				{ type: "separator" },
-				{
-					label: "Clear This Slot",
-					click: () => send( "menuClearSlot" )
-				}
-			]
-		},
-		{
-			label: "View",
-			submenu: [
-				{
-					label: "Layout and Margins…",
-					accelerator: "CmdOrCtrl+Shift+K",
-					click: () => send( "menuLayout" )
-				},
-				{
-					label: "Keep Controls Visible",
-					type: "checkbox",
-					accelerator: "CmdOrCtrl+Shift+B",
-					checked: !!settings.controlsPinned,
-					click: menuItem =>
-						updateSettings( { controlsPinned: menuItem.checked } )
-				},
-				{
-					label: "Show Progress and Time Left",
-					type: "checkbox",
-					checked: settings.showProgress !== false,
-					click: menuItem =>
-						updateSettings( { showProgress: menuItem.checked } )
-				},
-				{ type: "separator" },
-				{
-					label: "Eye-line Mode",
-					type: "checkbox",
-					accelerator: "CmdOrCtrl+L",
-					checked: !!settings.eyeLine,
-					click: menuItem => updateSettings( { eyeLine: menuItem.checked } )
-				},
-				{
-					label: "Floating Control Pad",
-					type: "checkbox",
-					accelerator: "CmdOrCtrl+Shift+P",
-					checked: !!settings.showPad,
-					click: menuItem => updateSettings( { showPad: menuItem.checked } )
-				},
-				{
-					label: "Control Window (operator screen)",
-					type: "checkbox",
-					accelerator: "CmdOrCtrl+Shift+O",
-					checked: !!settings.showControl,
-					click: menuItem => updateSettings( { showControl: menuItem.checked } )
-				},
-				{
-					label: "Keep on Top",
-					type: "checkbox",
-					checked: !!settings.alwaysOnTop,
-					click: menuItem =>
-						updateSettings( { alwaysOnTop: menuItem.checked } )
-				},
-				{ type: "separator" },
-				{ role: "reload" },
-				{ role: "toggleDevTools" }
-			]
-		},
-		{
-			label: "Window",
-			submenu: [
-				{
-					label: "Minimise",
-					accelerator: "CmdOrCtrl+Shift+M",
-					click: () => send( "menuWindowControl", "minimize" )
-				},
-				{
-					label: isMaximized ? "Restore Size" : "Maximise",
-					accelerator: "Shift+F11",
-					click: () => send( "menuWindowControl", "maximize" )
-				},
-				{
-					label: "Full Screen",
-					accelerator: "F11",
-					click: () => send( "menuWindowControl", "fullscreen" )
-				},
-				{
-					label: "Prompter Monitor",
-					submenu: [
-						{
-							label: "Leave It Where It Is",
-							type: "radio",
-							checked: settings.prompterDisplay == null,
-							click: () => updateSettings( { prompterDisplay: null } )
-						},
-						...displays.map( d => ( {
-							label: `Full Screen on ${ d.label }`,
-							type: "radio",
-							checked: settings.prompterDisplay === d.id,
-							click: () => updateSettings( { prompterDisplay: d.id } )
-						} ) )
-					]
-				},
-				{ type: "separator" },
-				{
-					label: "Close",
-					accelerator: "CmdOrCtrl+W",
-					click: () => send( "menuWindowControl", "close" )
-				}
-			]
-		},
-		{
-			label: "Help",
-			submenu: [
-				{
-					label: "User Guide",
-					accelerator: "Shift+F1",
-					click: () => openGuide?.()
-				},
-				{
-					label: "Copy the AI Script Prompt",
-					click: () => copyAiPrompt?.()
-				},
-				{
-					label: "Keyboard Shortcuts",
-					accelerator: "F1",
-					click: () => send( "menuHelp" )
-				},
-				{
-					label: "Support Sightline (Joanne's Tip Jar)…",
-					click: () => shell.openExternal( SUPPORT_URL )
-				},
-				{ type: "separator" },
-				{
-					label: "About Sightline Prompter",
-					click: () => send( "menuAbout" )
-				}
-			]
-		}
+		...( process.platform === "darwin" ? [ { role: "appMenu" } ] : [] ),
+		{ label: "File", submenu: [
+			item( "New script", "newFile", "CmdOrCtrl+N" ),
+			{ label: "Open script…", accelerator: "CmdOrCtrl+O", click: showOpenScriptDialog },
+			{ label: "Open a Google Doc…", click: () => openGoogleDoc?.() },
+			{ label: "Reload from Google Docs", click: () => reloadGoogleDoc?.() },
+			{ label: "Recent scripts", submenu: recent.length ? recent : [ { label: "No recent scripts", enabled: false } ] },
+			{ label: "Sample scripts", submenu: samples.map( sample => ( { label: sample.label, click: () => openSample?.( sample.file ) } ) ) },
+			{ label: "Script slots", submenu: [
+				...slots.map( ( slot, index ) => ( {
+					label: `${ index + 1 }: ${ slot ? path.basename( slot.path ) : "(empty)" }`, type: "radio", checked: index === activeSlot,
+					accelerator: `CmdOrCtrl+${ index + 1 }`, click: () => send( "menuSwitchSlot", index )
+				} ) ), separator, item( "Clear this slot", "menuClearSlot" )
+			] },
+			separator, item( "Save", "menuSave", "CmdOrCtrl+S" ), item( "Save as…", "menuSaveAs", "CmdOrCtrl+Shift+S" ),
+			separator,
+			{ label: "Recordings…", accelerator: "CmdOrCtrl+Shift+R", click: () => showRecordings?.() },
+			{ label: "Export edit pack…", click: () => exportEditPack?.() },
+			separator, item( "Import settings…", "menuImportSettings" ), item( "Export settings…", "menuExportSettings" ),
+			item( "Settings…", "menuSettings", "CmdOrCtrl+," ), separator, { role: "quit" }
+		] },
+		{ label: "Edit", submenu: [
+			item( "Edit script / return to prompter", "toggleEditor", "CmdOrCtrl+E" ),
+			separator, { role: "undo" }, { role: "redo" }, separator,
+			{ role: "cut" }, { role: "copy" }, { role: "paste" }, { role: "selectAll" }
+		] },
+		{ label: "Playback", submenu: [
+			item( "Start / pause (Space)", "toggleAutoScroll", "CmdOrCtrl+Shift+L" ),
+			item( "Back to the start", "menuGoToStart", "CmdOrCtrl+Home" ), separator,
+			item( "Faster", "menuAdjustAutoScrollSpeed", "CmdOrCtrl+]", "up" ),
+			item( "Slower", "menuAdjustAutoScrollSpeed", "CmdOrCtrl+[", "down" ),
+			item( "Reset speed", "menuAdjustAutoScrollSpeed", "CmdOrCtrl+\\", "reset" )
+		] },
+		{ label: "Tools", submenu: [
+			item( "Session check…", "menuWorkflow", undefined, "session" ),
+			item( "Script & rehearsal review…", "menuReview" ),
+			item( "Sound check", "menuSoundCheck", "CmdOrCtrl+Shift+D" ),
+			{ label: "Head guide / unlock (Ctrl+Shift+H)", type: "checkbox", checked: !!settings.showHeadGuide, click: () => toggleHeadGuide?.() },
+			{ label: "Guide fullscreen / restore (Ctrl+Alt+H)", type: "checkbox", checked: !!settings.showHeadGuide && !!settings.headGuideFullscreen, click: () => toggleHeadGuideFullscreen?.() },
+			separator, check( "Control window", "showControl", "CmdOrCtrl+Shift+O" ), check( "Control pad", "showPad", "CmdOrCtrl+Shift+P" ),
+			separator, item( "Spacing and mirror…", "menuLayout", "CmdOrCtrl+Shift+K", "layout" ),
+			item( "Text and colour…", "menuLayout", undefined, "reading" ), item( "Take display…", "menuLayout", undefined, "recording" ),
+			item( "Voice and microphone…", "menuVoice", "CmdOrCtrl+Shift+V" ), check( "Keep controls visible", "controlsPinned", "CmdOrCtrl+Shift+B" )
+		] },
+		{ label: "Window", submenu: [
+			item( "Minimise", "menuWindowControl", "CmdOrCtrl+Shift+M", "minimize" ),
+			item( isMaximized ? "Restore size" : "Maximise", "menuWindowControl", "Shift+F11", "maximize" ),
+			item( "Full screen", "menuWindowControl", "F11", "fullscreen" ),
+			{ label: "Prompter monitor", submenu: [
+				{ label: "Leave it where it is", type: "radio", checked: settings.prompterDisplay == null, click: () => updateSettings( { prompterDisplay: null } ) },
+				...displays.map( display => ( {
+					label: `Full screen on ${ display.label }`, type: "radio", checked: settings.prompterDisplay === display.id,
+					click: () => updateSettings( { prompterDisplay: display.id } )
+				} ) )
+			] }, separator, item( "Close", "menuWindowControl", "CmdOrCtrl+W", "close" )
+		] },
+		{ label: "Help", submenu: [
+			item( "Getting started…", "menuWorkflow", undefined, "start" ),
+			{ label: "User guide", accelerator: "Shift+F1", click: () => openGuide?.() }, item( "Help and shortcuts", "menuHelp", "F1" ),
+			{ label: "Copy the AI script prompt", click: () => copyAiPrompt?.() }, separator,
+			{ label: "Support Sightline (Joanne's tip jar)…", click: () => shell.openExternal( SUPPORT_URL ) },
+			{ label: "Diagnostics", submenu: [ { role: "reload" }, { role: "toggleDevTools" } ] },
+			item( "About Sightline Prompter", "menuAbout" )
+		] }
 	];
-
-	const menu = Menu.buildFromTemplate( template );
-	Menu.setApplicationMenu( menu );
+	Menu.setApplicationMenu( Menu.buildFromTemplate( template ) );
 }

@@ -53,11 +53,15 @@ to those files.
 
 Local recognition processes microphone audio before it knows whether you
 said the wake word. It is not listening only after you say "Prompter".
-The commands-only listener does not itself write a heard log; voice
-following does. Other enabled microphone features work independently.
+By default the commands-only listener does not write a heard log; voice
+following does. **Trace command words to the local heard log**, in
+**Settings > Debug**, explicitly enables recognised-text
+diagnostics for commands-only listening. It is off by default. When enabled,
+it can save recognised conversation while stopped or off air. Turn it off
+after troubleshooting. This option does not record audio. Automatic recovery
+logs health events without spoken words. Other microphone features work independently.
 
-Choose Voice commands **Off**, **In voice mode** or **Always** in Settings
-> Voice. Always requires local recognition and an installed speech model.
+Choose Voice commands **Off**, **In voice mode** or **Always** in Settings > Prompting > Commands. Always requires local recognition and an installed speech model.
 The commands-only listener pauses during editing and word teaching; the
 voice-following session takes over when you start voice scrolling.
 
@@ -114,6 +118,12 @@ Deepgram key and remote-control keys are stored in local application state;
 connection discovery files also contain keys. Protect your computer account
 and backups. Do not share the whole settings folder as a support attachment.
 
+**Restore defaults** retains installed components, script files, recordings
+and saved service keys. It clears preferences and pairings and disables
+integrations. Before restarting into onboarding it keeps the previous state
+locally as `app-state.before-defaults.json`. That backup may contain service
+keys; protect it like the original state file and do not share it with support.
+
 ## Connections you choose
 
 Sightline has no project account system and no built-in usage analytics or
@@ -122,7 +132,25 @@ advertising trackers. That does not mean every feature is offline:
 - Update checks contact GitHub with a version-bearing request. They are
   enabled by default and can be switched off; updates are not installed
   automatically.
+- Optional rehearsal filler/repetition counting defaults off. When enabled
+  in Recording > Takes, it uses recognised words already supplied by your
+  selected voice engine during active following, after command filtering and
+  outside holds/mute. Only counts are added to takes and edit packs, not an
+  extra transcript or audio file. It starts no extra listener. Recognition
+  and existing heard-log behaviour otherwise remain as described above;
+  Deepgram still sends audio online if you selected it. Script-health review
+  processes the current script/editor draft locally and never saves it itself.
 - The local speech model is downloaded from Hugging Face when requested.
+  Reinstall downloads it again. The optional AI kit is copied from the app
+  into its own managed local folder; installing it does not enable the API or
+  send scripts anywhere. The Components page checks Node.js locally. Custom
+  key/controller assignments and controller names stay in local settings and
+  are included if you export those settings.
+- Optional OBS/Stream Deck checks inspect known installation locations, running
+  application paths and the local Sightline plugin manifest. Locate stores
+  your chosen application path locally, separately from settings exports.
+  These checks never launch the apps or upload an inventory. Installer links
+  open the supplier's website when selected.
 - Opening a Google Docs link fetches content from Google.
 - Selecting Deepgram sends audio to its service while voice scrolling runs.
 - Help, project and support-payment links open external services.
@@ -139,6 +167,18 @@ and your account agreement before sending confidential material.
 
 ## Remotes, Stream Deck and AI assistants
 
+The OBS integration under development is optional and off by default.
+When enabled, it connects to the OBS address you save and reads recording
+status. Recording controls need a separate choice. Optional chapter markers
+send section titles and marker labels to OBS; recording identifiers,
+observations and paths can be kept in the local take log and its exports.
+The integration does not send microphone audio or video to OBS. A saved
+OBS password uses separate OS-protected storage and is excluded from
+settings exports and API responses. Other local logs and files remain
+unencrypted by the app. The initial OBS connection uses unencrypted
+WebSocket; use a trusted network if OBS is on another computer.
+Disabling it closes the connection without stopping OBS's recording.
+
 The phone remote is optional. It serves a password-keyed page over ordinary
 HTTP on your local network. The pairing URL contains its access key. Use
 it on a network you trust, keep the QR code private and do not forward its
@@ -150,8 +190,11 @@ the supported routes. Deleting recordings through it needs a separate
 setting. An AI assistant using that access may transmit information to its
 own provider according to how you configure it.
 
-The Stream Deck plugin uses a separate key for status, commands, events
-and slot selection. It does not have the full script, settings or recordings
+The Stream Deck plugin uses a separate key for status, commands, events,
+slot selection and a local version-compatibility report. Reported plugin and
+connection versions and the last announcement time are held in memory while
+Sightline is running; the check sends nothing to an external update service.
+It does not have the full script, settings or recordings
 API access. Status can still contain script or section labels. Its
 connection to Sightline stays on your computer. Stream Deck software and
 the Elgato Marketplace have their own privacy terms.
@@ -161,6 +204,13 @@ product. Other software running with access to your files may read them.
 Disable remotes you do not need, and check what you share with an agent.
 
 ## When you contact or support the project
+
+The optional **Settings > Debug > Allow all windows to be captured**
+control lets screenshots and recording tools capture every Sightline window,
+including the head guide. It is off by default, applies for the current session
+and shows a persistent warning. Turning it off restores the normal capture
+rules; quitting clears it. It does not itself record or send anything.
+Support logs note the override's state without adding recognised speech.
 
 Joanne or the company can receive your name, email, message and any files
 you send voluntarily. Public GitHub issues and contributions are visible

@@ -8,6 +8,8 @@
 // and CSV (File > Export Take Log).
 
 const MIN_TAKE_SECONDS = 1.5;
+import { obsPosition } from "./obs-position.js";
+import { fillCounts } from "./script-health.js";
 
 const round = n => Math.round( n * 10 ) / 10;
 
@@ -16,21 +18,21 @@ const round = n => Math.round( n * 10 ) / 10;
 // loudness( fromMs, toMs ): the mic's loudness over a take ({ lufs, peak,
 // noise, aboveNoise, warning }, level-meter.js) or null. onTake( take ): a
 // take has just been logged.
-export function createTakeLog( { clock = () => Date.now(), sentences = () => [], loudness = () => null, onTake = () => {} } = {} ) {
+export function createTakeLog( { clock = () => Date.now(), sentences = () => [], loudness = () => null, onTake = () => {}, onOpen = () => {}, onMarker = () => {}, snapshot = () => null, obsState = () => null, guideState = () => null } = {} ) {
 	let log = empty();
 	let current = null; // the take in progress
 	let version = 0; // goes up with every change worth saving
 	let slated = null; // { section, at }: the last slate, for the take that follows it
 
 	function empty() {
-		return { startedAt: null, takes: [], events: [], audio: [], soundChecks: [] };
+		return { startedAt: null, takes: [], events: [], audio: [], soundChecks: [], obs: [], obsRecordings: [], scriptSnapshots: [], guideSnapshots: [], recordedSync: [] };
 	}
 
 	const since = ms => round( ( ms - Date.parse( log.startedAt ) ) / 1000 );
 
 	function event( type, data = {} ) {
 		if ( !log.startedAt ) return;
-		log.events.push( { t: since( clock() ), type, ...data } );
+		log.events.push( { t: since( clock() ), type, ...data, obs: obsPosition( obsState(), clock() ) } );
 		version++;
 	}
 
@@ -38,11 +40,18 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [],
 		const now = clock();
 		if ( !log.startedAt ) log.startedAt = new Date( now ).toISOString();
 		const take = 1 + log.takes.filter( t => t.section === index + 1 ).length;
+		const script = snapshot();
+		if ( script && !log.scriptSnapshots.some( s => s.id === script.id ) ) log.scriptSnapshots.push( script );
+		const guide = guideState();
+		const guideSnapshot = { at: new Date( now ).toISOString(), section: index + 1, take, ...guide };
+		if ( guide ) log.guideSnapshots.push( guideSnapshot );
 		current = {
 			section: index + 1,
 			title,
 			take,
 			openedAt: now,
+			scriptSnapshotId: script?.id ?? null,
+			obsStart: obsPosition( obsState(), now ),
 			lastAdvance: null,
 			markers: [],
 			markerList: [],
@@ -50,6 +59,8 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [],
 			restarts: [],
 			offScript: [],
 			words: [],
+			speechReview: null,
+			reviewPrevious: null,
 			rereads: [],
 			rating: null,
 			slate: null,
@@ -60,6 +71,8 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [],
 			current.slate = since( slated.at );
 		}
 		slated = null;
+		event( "take-start", { section: index + 1, take, scriptSnapshotId: script?.id ?? null } );
+		onOpen( index, title, take );
 	}
 
 	// status: complete | retake | stopped | skipped. A take ends when the text
@@ -85,6 +98,9 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [],
 			end: since( end ),
 			duration: round( seconds ),
 			startedAt: new Date( done.openedAt ).toISOString(),
+			scriptSnapshotId: done.scriptSnapshotId,
+			obsStart: done.obsStart,
+			obsEnd: obsPosition( obsState(), end ),
 			endedAt: new Date( end ).toISOString(),
 			status,
 			rating: done.rating,
@@ -101,6 +117,7 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [],
 			// ad-lib, a demo, questions) with the microphone off: { start, end }.
 			offScript: done.offScript.map( o => ( { start: o.start, end: o.end ?? since( end ) } ) ),
 			words: done.words,
+			speechReview: done.speechReview,
 			rereads: done.rereads,
 			sentences: sectionSentences( done.section - 1 ),
 			// The microphone's level over the take, as Sightline heard it:
@@ -110,6 +127,7 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [],
 			loudness: measureLoudness( done.openedAt, end )
 		};
 		log.takes.push( take );
+		event( "take-end", { section: take.section, take: take.take, status } );
 		version++;
 		try {
 			onTake( take );
@@ -183,6 +201,21 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [],
 			if ( current.words.length % 10 < list.length ) version++;
 		},
 
+		// Optional aggregate counts only. No extra transcript or audio is retained.
+		reviewWords( words, engine = "local" ) {
+			if ( !current || !words.length ) return;
+			const review = current.speechReview ??= { engine, chunks: 0, recognisedWords: 0, fillers: {}, repeatedPairs: 0 };
+			review.chunks++;
+			review.recognisedWords += words.length;
+			for ( const [ word, count ] of Object.entries( fillCounts( words ) ) ) review.fillers[word] = ( review.fillers[word] ?? 0 ) + count;
+			for ( const word of words ) {
+				const key = word.toLowerCase().replace( /[^\p{L}\p{N}]/gu, "" );
+				if ( key.length > 1 && key === current.reviewPrevious ) review.repeatedPairs++;
+				if ( key ) current.reviewPrevious = key;
+			}
+			version++;
+		},
+
 		// label: the {marker: Label} name, or null. at: when, in ms (default
 		// now). key: the same script marker is only logged once a take.
 		marker( { label = null, at = null, from = "key", key = null } = {} ) {
@@ -195,6 +228,25 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [],
 				if ( key !== null ) current.markerKeys.add( key );
 			}
 			event( "marker", label ? { label } : {} );
+			onMarker( label );
+		},
+
+		// Observations, not frame-accurate sync: OBS supplies the path on stop.
+		// Repeated meter/status polls do not grow the log.
+		obs( state ) {
+			const recordingId = state?.recordingId ?? log.obs.at( -1 )?.recordingId;
+			if ( !log.startedAt || !recordingId ) return;
+			const observation = { recordingId, connection: state.connection, recording: state.recording, outputPath: state.outputPath ?? null };
+			const last = log.obs.at( -1 );
+			if ( last && Object.keys( observation ).every( key => observation[key] === last[key] ) ) return;
+			log.obs.push( { ...observation, t: since( clock() ), observedAt: state.observedAt ?? new Date( clock() ).toISOString(), outputDuration: state.outputDuration ?? null } );
+			version++;
+		},
+
+		recordedSync( reference ) {
+			if ( !log.startedAt ) return;
+			log.recordedSync.push( { ...reference, t: ( Date.parse( reference.renderedAt ?? reference.requestedAt ) - Date.parse( log.startedAt ) ) / 1000 } );
+			version++;
 		},
 
 		// Back to a marker in the take and reading on from it (Shift+B, or
@@ -304,7 +356,12 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [],
 					takes: saved.takes ?? [],
 					events: saved.events ?? [],
 					audio: saved.audio ?? [],
-					soundChecks: saved.soundChecks ?? []
+					soundChecks: saved.soundChecks ?? [],
+					obs: saved.obs ?? [],
+					obsRecordings: saved.obsRecordings ?? [],
+					scriptSnapshots: saved.scriptSnapshots ?? [],
+					guideSnapshots: saved.guideSnapshots ?? [],
+					recordedSync: saved.recordedSync ?? []
 				}
 				: empty();
 		},

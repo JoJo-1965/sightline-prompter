@@ -3,14 +3,22 @@
 
 const padEl = document.getElementById( "pad" );
 const grip = document.getElementById( "pad-grip" );
-const toggle = document.getElementById( "pad-toggle" );
-const toggleLabel = document.getElementById( "pad-toggle-label" );
-
-for ( const button of document.querySelectorAll( "button[data-action]" ) ) {
-	button.addEventListener( "click", () =>
-		window.pad.command( button.dataset.action )
-	);
-}
+import { createControlSurface } from "./control-surface.js";
+const feedback = document.getElementById( "pad-feedback" );
+const checked = ( result ) => {
+	if ( result?.error ) throw new Error( result.error );
+	return result;
+};
+const render = createControlSurface( document.getElementById( "pad-buttons" ), {
+	command: async ( id, value ) => checked( await window.pad.command( id, value ) ),
+	hold: { begin: async () => checked( await window.pad.hold( "begin" ) ), cancel: token => window.pad.hold( "cancel", token ) },
+	panel: shown => window.pad.panel( shown ),
+	feedback: ( text, error ) => {
+		feedback.textContent = text;
+		feedback.classList.toggle( "error", error === true );
+	}
+} );
+document.getElementById( "pad-customise" ).addEventListener( "click", () => window.pad.customise() );
 document
 	.getElementById( "pad-close" )
 	.addEventListener( "click", () => window.pad.close() );
@@ -21,21 +29,13 @@ window.pad.onMirror( ( mode ) => {
 } );
 
 window.pad.onStatus( ( status ) => {
-	const running = !!status?.scrolling;
-	toggle.classList.toggle( "running", running );
-	toggleLabel.textContent = running ? "Pause" : "Start";
-	toggle.title = running ? "Pause" : "Start";
-	const unit = status?.points ? "point" : "section";
-	document.getElementById( "pad-prev" ).title = `Previous ${ unit }`;
-	document.getElementById( "pad-next" ).title = `Next ${ unit }`;
-	for ( const button of document.querySelectorAll( "button[data-action]" ) ) {
-		button.disabled = !!status?.editing;
-	}
+	render( status.padLayout, status );
 } );
 
 // Drag by the grip. Screen coordinates are unaffected by the mirror flip.
 let drag = null;
 grip.addEventListener( "pointerdown", ( event ) => {
+	if ( event.target.closest( "button" ) ) return;
 	drag = {
 		dx: event.screenX - window.screenX,
 		dy: event.screenY - window.screenY

@@ -1,0 +1,108 @@
+import assert from "node:assert/strict";
+import "./obs-setup.test.mjs";
+import "./restore-defaults.test.mjs";
+import "./guide-control.test.mjs";
+import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
+import { readScriptSnapshot } from "../src/script-snapshot.js";
+import { createTakeLog } from "../src/client/take-log.js";
+import { editPack } from "../src/client/edit-pack.js";
+import { obsPosition } from "../src/client/obs-position.js";
+import { createObsLedger } from "../src/obs-ledger.js";
+import { helpTabs, voiceHelpTabs } from "../src/client/help-tabs.js";
+import { guidePose, guideOutline } from "../src/client/guide-pose.js";
+
+const edges = { top: 1, bottom: 1, left: 1, right: 1 };
+assert.deepEqual( guidePose( { x: -90, y: 85, scale: 8, width: 9, height: -2 } ), { x: -45, y: 45, scale: 2, width: 2, height: 0.4, ...edges } );
+assert.deepEqual( guidePose( { x: NaN, y: null, scale: Infinity, width: NaN, height: null } ), { x: 0, y: 0, scale: 1, width: 1, height: 1, ...edges } );
+assert.deepEqual( guidePose( null ), { x: 0, y: 0, scale: 1, width: 1, height: 1, ...edges } );
+assert.deepEqual( guidePose( { x: 0, y: 0, scale: 0.4 } ), { x: 0, y: 0, scale: 0.4, width: 1, height: 1, ...edges } );
+assert.deepEqual( guidePose( { width: 1.23, height: 0.87 } ), { x: 0, y: 0, scale: 1, width: 1.23, height: 0.87, ...edges } );
+assert.deepEqual( guidePose( { top: 0, bottom: 9, left: NaN, right: 1.2 } ), { x: 0, y: 0, scale: 1, width: 1, height: 1, top: 0.4, bottom: 2, left: 1, right: 1.2 } );
+const baseOutline = guideOutline();
+assert.deepEqual( [ baseOutline.cx, baseOutline.cy, baseOutline.rx, baseOutline.ry ], [ 500, 187, 86, 121 ] );
+for ( const [ edge, dimension, fixed ] of [ [ "top", "cy", "bottom" ], [ "bottom", "cy", "top" ], [ "left", "cx", "right" ], [ "right", "cx", "left" ] ] ) {
+	const shape = guideOutline( { [edge]: 1.5 } );
+	const bounds = s => ( { top: s.cy - s.ry, bottom: s.cy + s.ry, left: s.cx - s.rx, right: s.cx + s.rx } );
+	assert.notEqual( bounds( shape )[edge], bounds( baseOutline )[edge] );
+	assert.equal( bounds( shape )[fixed], bounds( baseOutline )[fixed] );
+	assert.equal( shape[dimension === "cy" ? "rx" : "ry"], baseOutline[dimension === "cy" ? "rx" : "ry"] );
+}
+
+const now = Date.parse( "2026-10-29T12:00:00Z" );
+const live = { connection: "connected", recording: "recording", recordingId: "recording-A", outputDuration: 10000, durationObservedAt: new Date( now ).toISOString() };
+assert.equal( obsPosition( live, now + 1200 ).seconds, 11.2 );
+assert.equal( obsPosition( live, now - 1000 ).seconds, 9 );
+assert.equal( obsPosition( live, now + 6000 ).seconds, null );
+assert.equal( obsPosition( { ...live, connection: "disconnected" }, now ).seconds, null );
+assert.equal( obsPosition( { ...live, recording: null }, now ).seconds, null, "a starting/stopping transition does not expose a precise position" );
+assert.equal( obsPosition( { ...live, recording: "paused" }, now + 1200 ).seconds, 10 );
+assert.equal( obsPosition( null, now ), null );
+assert.equal( obsPosition( { ...live, fileClockUnknown: true }, now ).seconds, null );
+
+const containsObs = tabs => tabs.some( t => t.sections.some( s => /OBS/.test( s.section ) ) );
+assert.equal( containsObs( helpTabs( { obsEnabled: false, voiceCommands: "off" } ) ), false );
+assert.equal( voiceHelpTabs( { obsEnabled: false } ).some( t => t.label === "OBS" ), false );
+assert.equal( voiceHelpTabs( { obsEnabled: true, obsControls: false } ).some( t => t.label === "OBS" ), false );
+assert.equal( voiceHelpTabs( { obsEnabled: true, obsControls: true } ).some( t => t.label === "OBS" ), true );
+assert.equal( helpTabs( { voiceCommands: "off" } ).some( t => t.label === "Voice" ), false );
+assert.ok( helpTabs( { obsEnabled: false } ).some( t => t.label === "Head guide" ) );
+const helpKeys = settings => helpTabs( settings ).flatMap( t => t.sections.flatMap( s => s.keys.map( ( [ keys ] ) => keys[0] ) ) );
+assert.equal( helpKeys( { obsEnabled: true, obsControls: true, streamDeck: false } ).includes( "Stream Deck" ), false );
+assert.equal( helpKeys( { obsEnabled: true, obsControls: true, streamDeck: true } ).includes( "Stream Deck" ), true );
+assert.equal( helpKeys( { obsEnabled: true, obsControls: false, obsMarkers: true } ).includes( "Chapters" ), false );
+assert.equal( helpKeys( { obsEnabled: true, obsControls: true, obsMarkers: true } ).includes( "Chapters" ), true );
+
+const dir = await fs.mkdtemp( path.join( os.tmpdir(), "sightline-snapshot-" ) );
+const file = path.join( dir, "module.md" );
+try {
+	assert.equal( await readScriptSnapshot( file ), null, "a missing recent file must not break startup" );
+	const original = "# Course\n\n## Section one {target: 0:30}\n\n[smile] These are the original words.\n{marker: Start}\n";
+	await fs.writeFile( file, original );
+	const snapshot = await readScriptSnapshot( file );
+	await fs.writeFile( file, "## Edited later\n\nDifferent words." );
+	let time = now;
+	const ledger = createObsLedger();
+	ledger.observe( { ...live, observedAt: new Date( now ).toISOString() } );
+	const log = createTakeLog( { clock: () => time, snapshot: () => snapshot, obsState: () => ( { ...live, durationObservedAt: new Date( time ).toISOString(), outputDuration: 10000 + time - now } ), guideState: () => ( { shown: true, eyesLocked: true, controlsShown: true, background: 0.24, pose: { x: 2, y: -3, scale: 1.1, width: 1.25, height: 0.9, top: 1.3, bottom: 0.8, left: 0.9, right: 1.2 }, ideal: { x: 0, y: 0, scale: 1, width: 1.1, height: 1.2 } } ) } );
+	log.tick( { active: true, index: 0, title: "Section one", advanced: true } );
+	time += 2000;
+	log.marker( { label: "Keep this" } );
+	log.tick( { active: true, index: 0, advanced: true } );
+	log.jump( "again" );
+	log.tick( { active: true, index: 0, title: "Section one" } );
+	time += 2000;
+	log.tick( { active: false, index: 0 } );
+	const data = log.data();
+	assert.equal( data.takes[0].scriptSnapshotId, snapshot.id );
+	assert.equal( data.takes[0].obsStart.seconds, 10 );
+	assert.equal( data.takes[0].obsEnd.seconds, 12 );
+	assert.equal( data.takes[1].obsStart.recordingId, "recording-A" );
+	assert.equal( data.events.find( e => e.type === "marker" ).obs.seconds, 12 );
+	ledger.observe( { ...live, recording: "paused", observedAt: new Date( time ).toISOString() } );
+	ledger.observe( { ...live, recording: "recording", observedAt: new Date( time ).toISOString() } );
+	ledger.observe( { ...live, recording: "stopped", outputPath: "D:/Production/Sightline-Academy/recording-A.mov", observedAt: new Date( time ).toISOString() } );
+	const linked = ledger.attach( data );
+	assert.equal( linked.obsRecordings[0].outputPath, "D:/Production/Sightline-Academy/recording-A.mov" );
+	assert.equal( linked.obsRecordings[0].events.length, 4 );
+	const pack = editPack( linked );
+	assert.equal( pack["script-001-recording-script.md"], original );
+	assert.ok( pack["script-001.html"].includes( "original words" ) );
+	assert.ok( pack["head-guide.json"].includes( "\"y\": -3" ) );
+	assert.ok( pack["head-guide.json"].includes( "\"width\": 1.25" ) && pack["head-guide.json"].includes( "\"height\": 0.9" ) );
+	assert.ok( pack["head-guide.json"].includes( "\"eyesLocked\": true" ) );
+	const exportedGuide = JSON.parse( pack["head-guide.json"] )[0];
+	assert.deepEqual( exportedGuide.pose, data.guideSnapshots[0].pose );
+	assert.equal( exportedGuide.background, 0.24 );
+	assert.equal( exportedGuide.controlsShown, true );
+	assert.ok( Object.values( pack ).every( value => typeof value === "string" ), "pack API remains text files" );
+	const restored = createTakeLog();
+	restored.load( linked );
+	assert.equal( restored.data().obsRecordings[0].outputPath, linked.obsRecordings[0].outputPath );
+	assert.equal( restored.data().scriptSnapshots[0].source.sha256, snapshot.source.sha256 );
+} finally {
+	await fs.unlink( file );
+	await fs.rmdir( dir );
+}
+console.log( "production snapshots, OBS clock mapping, cross-module references and mode-aware help pass" );

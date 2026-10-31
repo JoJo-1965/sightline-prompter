@@ -30,6 +30,7 @@ export const SHORTCUTS = [
 			[ [ "Ctrl+Shift+↑", "Ctrl+Shift+↓" ], "More / less background backing" ],
 			[ [ "Ctrl+Shift+0" ], "Reset the backing" ],
 			[ [ "Ctrl+M" ], "Mirror: off → horizontal → vertical → both" ],
+			[ [ "Toolbar mirror icons" ], "Toggle left/right and top/bottom independently; lit means on" ],
 			[ [ "Ctrl+Shift+K" ], "Layout: margins, line spacing, alignment" ]
 		]
 	},
@@ -43,7 +44,9 @@ export const SHORTCUTS = [
 			],
 			[ [ "Drop a file" ], "Open it into this slot" ],
 			[ [ "Ctrl+N" ], "New script" ],
-			[ [ "Ctrl+E" ], "Edit the script (Markdown and text files)" ],
+			[ [ "Ctrl+E" ], "Edit Markdown/text, or view sample source read-only; Save a copy makes it editable" ],
+			[ [ "Script health…" ], "Editor check: section reading times, long sentences and similar word starts; reviews unsaved text" ],
+			[ [ "Clear this slot" ], "Confirm removal from the slot; the saved script file stays intact" ],
 			[ [ "Ctrl+S", "Ctrl+Shift+S" ], "Save / Save as" ]
 		]
 	},
@@ -53,7 +56,7 @@ export const SHORTCUTS = [
 			[ [ "Space" ], "Start / stop the talk timer" ],
 			[ [ "Page Down", "→" ], "Next page (starts the timer if it isn't running)" ],
 			[ [ "Page Up", "←" ], "Previous page" ],
-			[ [ "{mode: notes}" ], "In a script: open it as notes, a page at a time (or Layout > Recording > Notes)" ],
+			[ [ "{mode: notes}" ], "In a script: notes, a page at a time (or Settings > Prompting > Script > Notes)" ],
 			[ [ "# Heading", "{page}" ], "In notes: start a new page; each ## heading on it is a bullet" ]
 		]
 	},
@@ -67,7 +70,7 @@ export const SHORTCUTS = [
 			[ [ "{marker}" ], "A bookmark for retakes (Ctrl+B jumps to it)" ],
 			[ [ "{wpm: 140}" ], "On a section heading: that section's pace" ],
 			[ [ "{target: 1:20}" ], "On a section heading: that section's target time" ],
-			[ [ "Layout" ], "Show directives: see them as small tags, with ⚠ on typos" ]
+			[ [ "Prompting > Script" ], "Show directives: see them as small tags, with ⚠ on typos" ]
 		]
 	},
 	{
@@ -91,7 +94,9 @@ export const SHORTCUTS = [
 			[ [ "Ctrl+Shift+A" ], "On air / off air: the on-air backing and the ON AIR light" ],
 			[ [ "Ctrl+Shift+D" ], "Sound-check meter on / off: your mic's level, loudness and the room's background noise" ],
 			[ [ "Ctrl+Shift+X" ], "Click-through on / off (works from any app)" ],
-			[ [ "Ctrl+Shift+P" ], "Floating control pad: Start / Pause, Top, Previous, Next" ],
+			[ [ "Ctrl+Shift+P" ], "Floating control pad; Customise chooses and arranges shared pad/phone buttons" ],
+			[ [ "Ctrl+Shift+H" ], "Head-position guide: show and unlock, or hide (works from any app)" ],
+			[ [ "Ctrl+Alt+H" ], "Head guide fullscreen on this screen / restore (works from any app)" ],
 			[ [ "Ctrl+Shift+O" ], "Control window: a live, upright copy of the script with the buttons, for the operator screen" ],
 			[ [ "Ctrl+," ], "Settings" ],
 			[ [ "F1", "?" ], "This help" ],

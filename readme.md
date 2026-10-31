@@ -1,19 +1,28 @@
 # Sightline Prompter
 
-![Sightline Prompter, the free, open-source teleprompter that works with your AI: a prompter window highlights the sentence being read and says: Stopped, say Prompter, go. For Windows, Mac and Linux, and works offline.](docs/images/hero.png)
+![Sightline Prompter, the teleprompter that works with your AI. Illustration of a highlighted sentence and a script stop. Free and open source for Windows, Mac and Linux.](docs/images/hero.png)
 
-**The teleprompter that works with your AI.** A free, open-source, see-through
-desktop teleprompter for content creators and learning and development teams
-who record to camera at a desk or in a studio. Your AI assistant writes the
-script and its directions, Sightline follows your voice through the take, and
-the take log goes back to your AI for the edit. Speech recognition runs on
-your own computer. Windows, macOS and Linux.
+**The teleprompter that works with your AI.** A traditional teleprompter,
+built for your workflow: free, open source and see-through, with voice control.
+Your favourite AI can prepare scripts and, through an authorised local agent,
+configure and control Sightline. Optional scripting directives steer its
+operation; take information helps your external editing workflow. For speakers,
+content creators and learning teams. Windows, macOS and Linux.
 
-**Sightline doesn't record your video or audio.** Keep recording with the
+**Your words. Your pace.** Keep your script near the lens, see the slides or
+call behind it, and choose voice following or a steady pace.
+
+**By a speaker, for speakers. By a content creator, for content creators.**
+Built by Joanne Lockwood with Claude Code, from David Neal's Electron
+Teleprompter. AI is optional: write your own script, or use your assistant to
+prepare one, control prompting through the local API and interpret the edit pack.
+
+**Sightline works alongside your recording tool.** Keep recording with the
 tools you already use (OBS, Riverside, Zoom, Teams, your camera or your
-phone). Sightline sits alongside them and gathers what they can't: accurate
-timings for every take, section and word, your retakes, markers and ratings,
-and a slate to line them all up with the recording.
+phone). Sightline adds section and take timings, word-alignment estimates,
+retakes, markers and keeper ratings for your editor. A slate and optional scratch
+audio help align that information with the recording. OBS or your usual tool
+supplies the production master; scratch audio is a timing reference.
 
 **[Download the latest release](https://github.com/JoJo-1965/sightline-prompter/releases/latest)** · [Installing it, and the security warnings](docs/guide/01-getting-started.md#installing-sightline) · [Privacy, terms and accessibility](docs/POLICIES.md) · [User guide](docs/guide/README.md) · [Working with AI](docs/guide/09-working-with-ai.md) · [Everything it adds](docs/FEATURES.md) · [joannelockwood.co.uk/sightline](https://joannelockwood.co.uk/sightline)
 
@@ -24,13 +33,22 @@ and a slate to line them all up with the recording.
 > Everything from the original still works. See the [change log](#change-log)
 > for the details, and **Help > About** in the app for credits.
 
-## Built around AI for the content creators of today
+**Released: Sightline 1.1.0 + Stream Deck 0.2.0.** OBS support, the manual head guide,
+shared pad/phone controls and the Settings/help updates are included.
+[Download Sightline](https://github.com/JoJo-1965/sightline-prompter/releases/tag/v1.1.0)
+or [the Stream Deck plugin](https://github.com/JoJo-1965/sightline-prompter/releases/download/v1.1.0/Sightline-StreamDeck-0.2.0.streamDeckPlugin).
+The plugin source repository stays private; its installer is available here
+while the Elgato Marketplace listing is prepared. Existing 0.1.9 assignments
+remain supported. Use the [workflow walkthrough](docs/guide/14-acceptance-test.md)
+to check your own recording setup.
+
+## Optional AI, from script to edit
 
 | Step       | What your AI does                                                         | What Sightline does                                                                                        |
 | ---------- | ------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | **Write**  | Writes the script, with sections, target times, stops and countdowns      | **Help > Copy the AI Script Prompt** gives it the instructions, and a checker validates the result         |
 | **Record** | Loads the script and runs the prompter through a local API, if you let it | Follows your voice, holds at every `{stop}`, takes "Prompter, …" commands, and logs every take            |
-| **Edit**   | Lists your recordings and fetches the edit pack, then chooses the takes   | Keeps every session in **File > Recordings**: each take, every word with its timing, edit marks, captions |
+| **Edit**   | Fetches the edit pack and helps review takes in your external editing workflow | Keeps take/section timings, recognised word alignments, edit marks and draft captions in **Files > Recordings** |
 
 - **Scripts that direct the prompter.** The [AI Script Prompt](docs/AI-SCRIPT-BRIEF.md)
   works with ChatGPT, Claude, Gemini or Copilot. The script that comes back has
@@ -38,8 +56,7 @@ and a slate to line them all up with the recording.
   for a breath, `{marker}` for the edit and `[notes to you]`, all
   [documented](docs/SCRIPT-DIRECTIVES.md). Draft in Google Docs, Word or PDF
   and open it as it is.
-- **An AI that can run the prompter.** Switch on the local API (Settings >
-  Remotes) and an agent on your computer, such as Claude Code, can write a
+- **An AI that can run the prompter.** Switch on the local API (Settings > Controls) and an agent on your computer, such as Claude Code, can write a
   script into a slot, start, pause, jump sections, change speed, drop markers
   and rate takes. It's off by default, token-protected and closed to web
   pages.
@@ -48,13 +65,17 @@ and a slate to line them all up with the recording.
   word with when you said it, sentences, edit marks and captions, and the take
   to use for each section. Every session is kept in **File > Recordings**, and
   an agent can list them and fetch any pack itself.
-- **Private by design.** Voice recognition runs offline on your own computer,
-  so nothing you say is sent anywhere.
+- **Local recognition by default.** After the model download, it works offline.
+  Choosing Deepgram sends audio to that service; sharing files with your AI is
+  a separate choice. Recognised text and optional scratch audio can be saved locally.
 
 The whole workflow is in the guide: [Working with AI](docs/guide/09-working-with-ai.md).
 
-**Coming next** ([roadmap](ROADMAP.md)): a scratch audio track to line the
-edit up with your recording automatically, and signed installers.
+**Included in the unpublished 1.1.0 test build:** optional OBS recording controls,
+a recorded slate, head-position guide, script/rehearsal review and shared pad/phone
+controls. Physical acceptance remains. Signed installers are on the [roadmap](ROADMAP.md).
+
+[One-page overview](docs/marketing/ONE-PAGER.md) · [Audiences, messages and supported claims](docs/marketing/POSITIONING.md)
 
 ## Features
 
@@ -74,7 +95,7 @@ edit up with your recording automatically, and signed installers.
   edit
 - Opens **Markdown, Word, rich text, plain text, PDF and Google Docs links**,
   with a built-in editor and live reload
-- **Nine script slots**, a control bar and menu, six tabs of settings, a
+- **Nine script slots**, live controls, Files and Tools menus, grouped settings, a
   floating button pad, a phone remote, a control window for a second screen,
   clickers, pedals and game controllers, and a
   [Stream Deck plugin](docs/guide/06-remotes-and-screens.md#stream-deck) with
@@ -123,13 +144,13 @@ Speech recognition runs **on this computer** by default, with the [sherpa-onnx](
 
 #### Setup
 
-1. Open **Settings > Voice** (or click **Voice** in the control bar). With "On this computer" chosen, click **Download speech model**. It's a one-off download of about 73 MB.
+1. Open **Settings > Prompting > Voice**, or **Tools > Voice and microphone**. With "On this computer" chosen, click **Download speech model**. It's a one-off download of about 73 MB.
 2. To use Deepgram instead, choose it there and paste in a key from [console.deepgram.com](https://console.deepgram.com/). The key is stored locally in the app's state file and is never written to exported settings files.
 3. Choose **Voice** as the scroll mode, and grant microphone access the first time you start.
 
 #### Auto-Scroll Usage
 
-- Press `Cmd/Ctrl+Shift+L` (or `Script > Toggle Auto-scroll`) to start listening. A green "Listening" pill appears in the top-right corner.
+- Press `Cmd/Ctrl+Shift+L` (or `Playback > Start / pause`) to start listening. A green "Listening" pill appears in the top-right corner.
 - Start reading your script. As you speak, the prompter smoothly scrolls to keep your current word about a third of the way down the screen.
 - If you scroll manually (trackpad, arrow keys, page keys), auto-scroll yields to you for a few seconds before resuming.
 - Press `Cmd/Ctrl+Shift+L` again, or click the indicator pill, to stop listening.
@@ -148,7 +169,7 @@ The speed is persisted across sessions. Speed range is 0.25× to 4× in 0.1 step
 
 #### Selecting a microphone
 
-By default, auto-scroll uses your system's default audio input. To pick a specific microphone (e.g. a USB lavalier or a podcasting mic), open `Script > Select Microphone…` and choose one from the list. The selection is saved and reused on every subsequent auto-scroll session.
+By default, auto-scroll uses your system's default audio input. To pick a specific microphone (e.g. a USB lavalier or a podcasting mic), open `Settings > Prompting > Voice` and choose one from the list. The selection is saved and reused on every subsequent auto-scroll session.
 
 A few notes:
 
@@ -220,14 +241,269 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ## Change log
 
-### Next release
+### 1.1.0 (31 October 2026)
 
-- **Scroll mode, the pad and the control window from a remote:** the local API and the Stream Deck plugin (0.1.5) gain `scroll-mode` (steady or voice scrolling), `pad` (the floating control pad) and `control` (the control window, **Ctrl+Shift+O**), and the control window's broadcast row gains **Voice scroll**, lit while the prompter follows your voice. The keys light to match, so an AI on your Stream Deck's MCP profile can switch them too
-- **Debug mode and a support log** (Settings > About): Sightline always keeps a small log of hangs, crashes and errors (`sightline.log`, on this computer only). **Debug mode** (on by default for now) adds a step-by-step trail; **Save a log for support…** saves it in one file with your version, system, monitors and which features are on (never scripts, keys or audio), to attach to a GitHub issue or an email
-- **Settings and the panels always fit the window:** a panel dragged somewhere on a big screen used to open partly off the edge of a smaller one (a prompter monitor, a laptop). They now move fully into the window when they open and when the window changes size, and remember where you put them for the bigger screen
-- **Policies published:** [privacy and data protection, terms and fair use, accessibility and voluntary support](docs/POLICIES.md), covering Sightline, its Stream Deck plugin and Joanne's tip jar. The About link opens the policy hub. Includes the England/UK base, company details, ICO registration and applicable rights elsewhere; the MIT licence is unchanged
-- **If Sightline stops responding,** it asks whether to wait or reload, instead of leaving a frozen window to be closed from Task Manager, and notes hangs, crashes and errors in `sightline.log` in its folder, to help track down the cause
-- **New users are offered voice scrolling:** the first time Sightline opens without the speech model, a small note offers the one-off 73 MB download, shows its progress, and says how to turn voice scrolling on once it's ready. Close it and it doesn't ask again; Settings > Voice and the Voice panel still have it
+Released with **Stream Deck 0.2.0**. Earlier RC identifiers below are test
+history, not additional public releases. Existing plugin **0.1.9** assignments,
+scripts and additive edit-pack formats remain supported. The source freeze and
+validation limits are recorded in the [freeze record](docs/BUILD-FREEZE-1.1.0.md).
+
+- **Documentation review:** the guide index now names the frozen 1.1.0/0.2.0
+  pair. Overview and marketing copy retain the AI-led workflow while explaining
+  that AI is optional, distinguish estimated
+  alignment from exact recording times, explain scratch audio and qualify
+  capture behaviour. Installation help separates reputation warnings from
+  malware/damage alerts. A one-pager and audience/message reference are included.
+  About uses the same AI-led message; the Voice panel explains local
+  recognition, optional online audio transfer and local saved files.
+  The promotional infographic restores a tested QR, strengthens icon contrast
+  and makes voice control explicit alongside AI and script directions.
+
+- **Pad and phone operator controls:** both now include listening off/on and
+  recovery, a local session check, eye locking, ideal-reference controls and
+  an adjustment panel with Eyes, Outline and Compare tabs. Choose **Framing &
+  checks** under **Settings > Controls > Pad**, or add individual buttons.
+  Existing selections stay in place. Finish recording requires a one-second
+  hold by default; the pad setting is separate from each Stream Deck key.
+
+- **Stream Deck operator controls:** configurable listening off/on or recovery,
+  session status and fuller error help, an optional one-second Finish recording
+  hold, and head-guide dials for eye centre, independent edges and visibility
+  levels. Eye locking keeps the reference fixed while fitting the outline.
+  Two opt-in framing profiles cover + and + XL. New controls need the matching
+  app capabilities. Both packages are available from the 1.1.0 release.
+
+**Local Windows acceptance build:** RC1 established the feature baseline;
+RC2 refreshed its bundled help and added the reusable acceptance samples.
+**1.0.7-rc.3** adds compatibility reporting with private Stream Deck **0.1.9**;
+**1.0.7-rc.4** keeps the toolbar sliders labelled at every supported width;
+**1.0.7-rc.5** adds eye-anchored head-outline fitting;
+**1.0.7-rc.6** improves toolbar access and centres Settings on opening;
+**1.0.7-rc.7** adds floating guide adjustments, eye-anchored edge fitting and
+separate guide-background opacity;
+**1.0.7-rc.8** also makes Settings and F1 Help independent movable windows;
+**1.0.7-rc.9** adds optional offline reading at the end of Windows installation;
+**1.0.7-rc.10** fixes the phone QR image, makes voice help movable, puts
+mirroring under Screens and honours capture preferences for helper windows;
+**1.0.7-rc.11** improves OBS button contrast and keeps Settings above the prompter.
+**1.0.7-rc.12** adds independent size and colour for square-bracket comments.
+**1.0.7-rc.13** adds custom pad/phone layouts and listening recovery.
+**1.0.7-rc.14** gives troubleshooting controls their own **About > Debug** topic.
+**Included in the frozen build:** compact phone landscape controls
+use four or six columns, with all 12 Studio buttons in two rows. Portrait
+keeps its large controls, and footer spacing accounts for browser controls.
+The same batch adds live API/JSON/XML pad-layout changes, phone sending/sent
+feedback and a session-only capture override in **Debug**. Invalid
+layouts are rejected before other settings change; protected permissions stay
+local. The capture override has persistent desktop/phone warnings and resets
+on exit. A plan-first installation helper checks hashes and verifies the
+complete destination/version after an explicitly requested installation.
+The batch also adds top-level **Components** for model/AI-kit installation,
+repair and removal, plus a Node.js check. **Controls > Buttons & keys** learns
+keyboard, clicker, pedal and controller inputs, with action choices and reset.
+The batch is included in the 1.1.0 feature freeze, awaiting final acceptance.
+It now includes **Script health** in the editor and a **Rehearsal** review tab:
+section reading estimates, delivery prompts, take pace, alignment coverage and
+logged rereads. Recognised filler/repetition counts are optional aggregates
+attached to voice takes; no extra listener, transcript or audio is added.
+The latest published app remains **1.0.6**. No tag, merge, Marketplace publication or
+website deployment is part of this candidate.
+
+- **Build versioning:** the frozen build reports **1.1.0**. Update
+  checks recognise a later RC or the final 1.1.0 release correctly; installed
+  1.0.7 previews remain traceable and published 1.0.6 history is retained.
+- **Review before and after a take:** **Script health…** in the editor checks
+  current text, including unsaved changes. It estimates section reading time,
+  flags sentences of 30 words or more and suggests trying similar word starts
+  aloud. **Tools > Script & rehearsal review…** and **Recordings > Coach…**
+  show take pace, unmatched sentence words and logged rereads. These are review
+  prompts, not proof of a delivery error. Optional filler counts are under
+  **Recording > Takes**; `rehearsal-coach.json` travels with the edit pack.
+- **Setup once, check each session:** Help > Getting started opens a first-use
+  checklist; Tools > Session check links to script review, sound, framing,
+  enabled OBS and sync checks. Settings now has top-level Components and Debug,
+  named component subtabs and OBS under Recording. The fixed frame remains.
+- **Start afresh:** **Settings > About > Restore defaults…** confirms before
+  restarting into onboarding with shipped preferences. Layouts, shortcuts,
+  slots, recent history and pairings reset; integrations start off. Installed
+  components, scripts, recordings and service keys stay. A private local
+  settings backup is kept; recording, editing and component maintenance block
+  reset until safe.
+- **Optional OBS setup:** review configured camera/mic sources, folder and
+  1080p/4K canvas before creating a separate profile and three scenes. Existing
+  setups remain available; outputs must be stopped. The
+  [configuration guide](docs/guide/15-obs-setup.md) explains native camera mode,
+  clean-camera/WAV outputs and physical sync checks. Setup starts no recording.
+- **Components in one place:** **Settings > Components** shows the
+  offline speech model, bundled AI kit and Node.js status. Install, Reinstall
+  and Remove manage Sightline's own copies; Node.js uses its own installer.
+  Voice settings also offer model repair/removal. A failed repair retains the
+  previous copy; stop prompting and recording before changing the model.
+- **Explain unavailable controls:** Components also checks optional OBS and
+  Stream Deck installations, offers their installers and remembers custom
+  locations. Missing prerequisites grey out dependent controls with a reason;
+  saved choices survive. AI kit readiness is separate from API access, and
+  remote OBS works without a local install. Plugin compatibility still needs
+  the live handshake; third-party apps use their own updaters.
+- **Choose your buttons:** **Settings > Controls > Buttons & keys** learns a
+  physical key or controller button, then runs your chosen pad action. Plain
+  keys and Shift combinations work while the prompter has focus; system
+  shortcuts stay reserved. Changes save immediately, with pages for longer
+  lists and Reset defaults. Stream Deck profiles stay independent.
+- **Your control layout:** **Settings > Controls > Pad** selects up to 36
+  buttons with drag reordering, accessible Earlier/Later moves, columns and
+  Compact/Reading/Studio presets. The phone shares the selection and order,
+  using Stream Deck artwork with larger touch targets. Hardware profiles
+  keep their own assignments. The pad's Customise button opens the editor.
+- **Wake-word listening recovery:** interrupted audio or a stalled recogniser
+  restarts with bounded retries, preserving position and hold. Silence and
+  listening-off stay respected. **Prompting > Commands** shows state and
+  Restart listening. The optional command-word trace is off by default and
+  lives under **Settings > Debug**, independently of Debug mode,
+  with a warning about nearby conversation and the usual Apply/Save controls.
+  Applying a wake-word change updates an already-running listener too.
+  Stopping during startup cancels cleanly; late messages from the old
+  listener cannot stop its replacement.
+- **Comment appearance:** **Settings > Appearance > Text** has independent
+  Comment size and Comment colour controls for `[delivery directions]`.
+  Comments follow Heading font; Theme restores the usual colour. Quoted
+  spoken words keep their script style, and delivery notes stay outside
+  speech tracking, word counts and timing.
+- **Settings opens above prompting:** native ownership keeps Settings and both
+  help windows above the prompter, including when reopening in fullscreen.
+- **Readable OBS controls:** Record take and Finish recording have dark
+  backgrounds, clear outlines and readable text when enabled or disabled,
+  with a visible keyboard-focus ring.
+- **OBS settings together:** **Recording > OBS connection** and **OBS recording**
+  sit alongside the other integrations. **Prepare recorded slate** explains
+  why it is unavailable, then shows progress, readiness or an error in Settings.
+- **Phone QR and helper windows:** **Controls > Phone** displays its QR code
+  in the separate Settings window. **Hide from capture** now applies live to
+  Settings, keyboard/voice Help and Guide adjustments; turn it off to capture
+  those windows for support. The head-guide overlay keeps independent protection.
+- **One mirroring home:** **Appearance > Screens > Beam-splitter mirroring**
+  contains both toggles, with no copies in Background or Spacing. Settings
+  toggles work in their separate window and remain in sync with the toolbar.
+- **Movable voice help:** **“Prompter, what can I say?”** opens a separate,
+  upright window with grouped tabs, a draggable title bar and remembered
+  position/size. Close, Escape and **“Prompter, close”** dismiss it independently.
+- **Read after installing:** the Windows finish page has independent **Read
+  release notes** and **Read Getting Started guide** tick boxes alongside
+  **Run Sightline Prompter**. The reading options start unticked and open
+  version-matched, offline pages in your browser. Silent installs skip them.
+- **Movable Settings and Help:** **Ctrl+,** and **F1 / ?** open separate upright
+  windows. Drag their native title bars to another screen; each remembers its
+  position and size. Settings retains its fixed layout, paged topics, live
+  previews and Apply/Save/Cancel behaviour. Closing Settings, or quitting the
+  app with a draft, asks before discarding changes. Reopening an already open
+  window brings it forward without resetting the draft. Both stay above the
+  prompter, including fullscreen, and follow **Hide from capture**.
+- **Guide adjustments in fullscreen:** the prompter's **Guide adjustments**
+  button, **Tools > Guide adjustments…**, and the guide's **Adjust** toggle a
+  separate window above the prompter, even when the guide is Clean or locked.
+  Set eye centre and level first, lock them, then fit Top/Bottom and Left/Right
+  independently. **Background** dims the preview beneath the guide (0–80%,
+  initially 12%); **Outline** controls the lines separately. The saved Ideal
+  reference is brighter. Shape and background settings persist in edit packs.
+- **Edit beside Tools:** a labelled toolbar button opens the editor or read-only
+  sample source. Tools opens beneath its own button, staying within the window
+  edges and following changes to window size and mirror mode.
+- **Centred Settings:** opens in the horizontal and vertical centre each time,
+  and recentres on window resize. Drag it aside while open; old saved offsets
+  no longer move the next opening away from the centre.
+- **Fit the head guide around fixed eyes:** **Adjust > Lock eye position**
+  stops accidental dragging or nudging. Independent **Width** and **Height**
+  controls reshape Actual position around both fixed eye marks. Save as ideal
+  keeps the shape; the dimensions and eye lock are recorded in the edit pack.
+- **Labelled toolbar sliders:** compact labels stay above every visible slider:
+  **Speed** (or **Response** in voice mode), **Text size**, and **Background**
+  (**On-air BG** when on air). Narrow windows keep the labels too.
+- **Safer script slots:** Clear this slot asks for confirmation, naming the slot
+  and script, with Cancel selected. The saved script stays on disk.
+- **Samples in the editor:** Edit script opens sample source in a labelled
+  read-only view. Save is disabled; **Save a copy…** creates your editable version
+  in another folder. Changing scripts also clears stale editor contents.
+- **Mirroring on the toolbar:** separate left/right and top/bottom icons toggle
+  each axis independently, with the same state as the quick panels and remotes.
+- **Stable help panels:** keyboard and voice help keep their dimensions across
+  topic changes. **Files (☰) > Settings…** provides a labelled preferences entry.
+- **Stream Deck compatibility:** **Settings > Controls > Stream Deck > Check compatibility**
+  shows both reported versions, the required/recommended plugin and any update
+  needed. Plugin **Test connection** checks the pairing automatically on opening
+  a key's settings, including supported OBS/guide commands. Known incompatible
+  connections and unavailable actions are blocked. Older unreported versions
+  stay unconfirmed; supported ordinary controls still work. This is a local
+  compatibility check, not a guarantee that either app is the latest release.
+- **Optional OBS recording (52):** **Settings > Recording > OBS connection**
+  is off by default, with authenticated connection, saved-connection test
+  and status-only operation. Allow controls in **OBS recording** for
+  **Record take** and **Finish recording**, also available on the phone,
+  control window and by voice. Start/stop wait for confirmed OBS state.
+  Ordinary Play/Pause, section stops, retakes, On air and module changes
+  keep OBS recording. Disabling the integration leaves OBS alone.
+- **Recorded sync and production exports:** prepare an optional flash/tone
+  source in **Recording > OBS recording**, with OBS stopped and track 1
+  included. Edit packs retain the exact script, guide snapshots, OBS
+  observations, confirmed main filenames and estimated take/marker clock
+  positions. Module changes save the outgoing take and scratch WAV before
+  loading the new script. Collect OBS masters separately; clean Source
+  Record output has its own filename and start offset.
+- **Head-position guide (55):** a separate transparent window with saved
+  Ideal and manually adjusted Actual outlines. Drag, nudge and scale Actual
+  without moving Ideal; recall Centre or Beside panel placement. Use
+  **Tools > Head guide / unlock**, **Ctrl+Shift+H**, voice **guide on/off**
+  or Stream Deck. **Ctrl+Alt+H** toggles borderless fullscreen/restore;
+  Clean hides controls and the regular guide shortcut reveals them.
+  Session settings persist across scripts and are saved with takes.
+  It is a manual reference, without face tracking. Verify exclusion in the
+  actual recording, especially with whole-screen capture.
+- **Stream Deck companion (39):** private **0.1.9** has version reporting, confirmed-state
+  OBS Record take/Finish keys, guide controls, studio line artwork, 27 key
+  actions, 5 dial actions and 18 standard/OBS profiles. It uses its own
+  buttons-only connection. Physical key checks and Marketplace submission
+  remain; no listing is live.
+- **Settings and navigation:** seven groups with focused topics: Prompting,
+  Appearance, Recording, Controls, Components, Debug and About. Appearance separates Text,
+  Background, Reading aids, Spacing and Screens. The panel stays the same
+  size; long topics and word lists use pages rather than scrolling. Files
+  handles scripts, recordings and import/export; Tools holds live helpers.
+  The top bar retains live controls and Steady/Voice switching.
+- **Settings usability:** miniature ? pills beside options support hover,
+  keyboard focus and click/touch. Explicit labels, dark controls, visible
+  immediate-save notes and Unsaved changes feedback explain the state.
+  Apply stays open; Save & close saves and closes. Invalid numbers reveal
+  and focus the field needing correction. Cue changes flag the draft.
+  Credits and attribution have one home on the full About page.
+- **Grouped, mode-aware help:** F1 and voice help use tabs and hide actions
+  for disabled modes. Explicit **Prompter, guide on/off** set visibility;
+  **Prompter, cancel** dismisses voice help. The offline guide includes the
+  approved Settings gallery and illustrated production handover.
+- **Voice tuning:** documented phrases and taught synonyms remain, with
+  bounded split-wake/section handling and a four-second wake expiry.
+  Loose guesses that could trigger OBS recording or guide actions were
+  removed; ambiguous taught forms are declined. A controlled quiet-capture
+  investigation recovered the missing synthetic speech with an analysis
+  copy, without changing the microphone or masters. Normal live speech
+  remains an acceptance check.
+- **Acceptance walkthrough:** **Files > Sample scripts** includes RC module
+  A and B. [Guide 14](docs/guide/14-acceptance-test.md) covers the matching
+  pair, claps, natural speech, stops, retakes, guide checks, module handover
+  and evidence review. All five Academy requirements remain the publication
+  gate. Physical camera/mic sync, real projector stacking and Windows manual
+  accessibility checks must not be described as passed. macOS/VoiceOver
+  testing is deferred.
+- **Remote tools:** local API and matching Stream Deck actions switch
+  Steady/Voice mode, the floating pad and the control window; state feedback
+  follows Sightline.
+- **Support and reliability:** local crash/hang/error logging, optional debug
+  detail, Save a log for support, and a Wait/Reload prompt for an unresponsive
+  window. Settings/panels are brought back inside the current window. First
+  use offers the speech-model download with progress and setup guidance.
+- **Policies and website preparation:** the shared policy hub covers the
+  app, plugin and voluntary support, including the England/UK base, company
+  details and ICO registration. Selected approved Settings screenshots and
+  matching RC descriptions are prepared for the Joanne Lockwood website;
+  deployment remains held.
 
 ### 1.0.6 (29 October 2026)
 

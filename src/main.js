@@ -1,4 +1,4 @@
-import { app, BrowserWindow, clipboard, crashReporter, dialog, globalShortcut, ipcMain, Menu, screen, shell } from "electron";
+import { app, BrowserWindow, clipboard, crashReporter, dialog, globalShortcut, ipcMain, Menu, safeStorage, screen, shell } from "electron";
 import path from "node:path";
 import fs from "node:fs/promises";
 import { cpSync, existsSync, readFileSync } from "node:fs";
@@ -6,17 +6,27 @@ import chokidar from "chokidar";
 import stateFactory from "./utils/state.js";
 import {
 	convertMarkdown,
-	readAndConvertScript,
 	readRawMarkdown,
 	readCuePhrases,
 	isRichFile,
 	SCRIPT_EXTENSIONS
 } from "./utils/content.js";
 import { buildMenus } from "./menus.js";
+import { createSlotClearAction } from "./clear-slot.js";
 import { setSectionTargets } from "./utils/targets.js";
 import { createPad } from "./pad.js";
+import { normalisePadLayout, controlAction, controlView } from "./client/control-actions.js";
 import { createControl } from "./control.js";
+import { createHeadGuide } from "./head-guide.js";
+import { createUtilityWindows } from "./utility-windows.js";
+import { captureOverride, protectWindow, setCaptureOverride, trackCaptureWindow } from "./capture-policy.js";
+import { settingsValues } from "./settings-values.js";
+import { readScriptSnapshot } from "./script-snapshot.js";
 import { createSpeech } from "./speech.js";
+import { createAgentKit, nodeStatus } from "./components.js";
+import { createDefaultsRestore, shippedState, resetBlocked } from "./restore-defaults.js";
+import { createExternalComponents } from "./external-components.js";
+import { normaliseMappings } from "./client/input-mappings.js";
 import { createGuide } from "./guide.js";
 import { createGoogleDocs, GOOGLE_DOC_MESSAGES } from "./google-docs.js";
 import { takeLogCsv } from "./client/take-log.js";
@@ -24,10 +34,16 @@ import { editPack } from "./client/edit-pack.js";
 import { fitInside, keepTopReachable, sameRect } from "./utils/fit.js";
 import { isNewer } from "./utils/version.js";
 import { startRemoteServer, newToken } from "./remote.js";
+import { createStreamDeckPeer, streamDeckContract } from "./stream-deck-compatibility.js";
 import { heardReport } from "./heard-report.js";
 import { deleteRecording, listRecordings, readRecording, recordingAudio, recordingPack, updateRecording, zipFiles } from "./recordings.js";
 import { startPhoneServer, newPhoneKey, lanAddress } from "./phone.js";
 import QRCode from "qrcode";
+import { createObs, obsAddress } from "./obs.js";
+import { createObsCredentials } from "./obs-credentials.js";
+import { createObsLedger } from "./obs-ledger.js";
+import { createRecordedSlate } from "./recorded-slate.js";
+import { obsPosition } from "./client/obs-position.js";
 import {
 	serialize as serializeSettings,
 	parse as parseSettings,
@@ -35,8 +51,20 @@ import {
 } from "./utils/settings-file.js";
 
 const __dirname = import.meta.dirname; // eslint-disable-line n/no-unsupported-features/node-builtins
+app.on( "browser-window-created", ( _event, win ) => trackCaptureWindow( win ) );
 
 const MAX_RECENT_FILES = 10;
+const scriptSnapshots = new Map();
+function sendScriptContent( win, html ) {
+	win.webContents.send( "content", html, scriptSnapshots.get( html ) ?? null );
+}
+async function readAndConvertScript( file ) {
+	const snapshot = await readScriptSnapshot( file );
+	if ( !snapshot ) return null;
+	scriptSnapshots.set( snapshot.html, snapshot );
+	if ( scriptSnapshots.size > 20 ) scriptSnapshots.delete( scriptSnapshots.keys().next().value );
+	return snapshot.html;
+}
 
 // Help > User Guide: the pages in docs/guide, in their own window.
 const guide = createGuide( { dir: __dirname } );
@@ -92,6 +120,7 @@ const defaultSettings = {
 	voiceEngine: "local", // "local" (on this computer) or "deepgram" (online, needs a key)
 	voiceCommands: "voice", // "Prompter, pause": "voice" (voice mode), "always" (steady too) or "off"
 	wakeWord: "prompter", // prompter, computer, teleprompter or director
+	traceCommands: false, // opt-in local recognised-text diagnostics for wake-word listening
 	// Settings > Voice > Your words: [{ word: "Moshe", heard: [ "marsha" ] }]
 	wordFixes: [],
 	scratchAudio: false, // Settings > Scrolling: a scratch audio track for syncing (scratch-audio.js)
@@ -122,6 +151,8 @@ const defaultSettings = {
 	marginBottom: 0,
 	lineHeight: 1.3,
 	headingScale: 1, // section headings, as a share of their usual size next to the text
+	directionScale: 1, // delivery comments, independently of headings
+	directionColour: "", // empty follows the theme and direction visibility choice
 	textOpacity: 1, // script text only; the controls stay solid
 	backingOnAir: 0.07, // backing while on air: nearly see-through (Backing is the level off air)
 	textBrightness: 1, // dims the script without making it see-through
@@ -140,6 +171,32 @@ const defaultSettings = {
 	startBeep: false, // a short beep when the countdown ends (off: it would be recorded)
 	hideFromCapture: false, // keep the window out of screen sharing and recordings
 	showPad: false, // the floating control pad (View menu, Ctrl+Shift+P)
+	padLayout: null, // shared button selection/order for the pad and phone
+	inputMappings: null, // null uses the default controller buttons; keys override locally
+	coachFillers: false, // optional recognised filler/repetition counts in voice takes
+	showHeadGuide: false,
+	headGuideBounds: null,
+	utilityWindowBounds: {},
+	headGuideScale: 1,
+	headGuideWidth: 1,
+	headGuideHeight: 1,
+	headGuideTop: 1,
+	headGuideBottom: 1,
+	headGuideLeft: 1,
+	headGuideRight: 1,
+	headGuideControlsBounds: null,
+	headGuideBackground: 0.12,
+	headGuideEyesLocked: false,
+	headGuideOpacity: 0.75,
+	headGuideColour: "mint",
+	headGuideFullscreen: false,
+	headGuideChromeless: false,
+	headGuideX: 0,
+	headGuideY: 0,
+	headGuideIdeal: { x: 0, y: 0, scale: 1 },
+	headGuideShowIdeal: true,
+	headGuidePlacement: "centre",
+	headGuidePlacements: {},
 	showControl: false, // the control window for the operator screen (Ctrl+Shift+O)
 	controlBounds: null, // where the control window was left
 	prompterDisplay: null, // monitor id: open the prompter full screen there
@@ -153,12 +210,18 @@ const defaultSettings = {
 	streamDeck: false, // the Stream Deck plugin: buttons only, its own key (stream-deck.json)
 	remotePort: 47615,
 	remoteDeleteRecordings: false, // the local API may delete recordings (Settings > Remotes)
+	obsEnabled: false,
+	obsHost: "127.0.0.1",
+	obsPort: 4455,
+	obsControls: false, // status only until explicitly allowed
+	obsMarkers: false,
+	obsRecordedSlate: false,
 	phoneRemote: false, // phone remote over the home network (Settings > Phone remote)
 	phonePort: 47616
 };
 
 // Settings that a settings file or the remote API may not change.
-const PROTECTED_SETTINGS = [ "remoteControl", "remotePort", "remoteDeleteRecordings", "streamDeck", "phoneRemote", "phonePort" ];
+const PROTECTED_SETTINGS = [ "remoteControl", "remotePort", "remoteDeleteRecordings", "streamDeck", "phoneRemote", "phonePort", "obsEnabled", "obsHost", "obsPort", "obsControls", "obsMarkers", "obsRecordedSlate", "traceCommands", "coachFillers" ];
 
 // Take logs, one per script per day: the recordings library (recordings.js).
 const takeLogFolder = () => path.join( app.getPath( "userData" ), "take-logs" );
@@ -226,13 +289,13 @@ ipcMain.on( "debugLog", ( _event, text ) => {
 	if ( problem || settings.debugMode ) logProblem( `page: ${ text.slice( 0, 500 ) }` );
 } );
 
-// Settings > About > Save a log for support: the log, with what this computer
+// Settings > About > Debug > Save a log for support: the log, with what this computer
 // and Sightline look like, in one file to attach to an issue or an email. No
 // scripts, keys, word lists or audio; nothing is sent by itself.
 ipcMain.handle( "saveSupportLog", async ( event ) => {
 	const win = BrowserWindow.fromWebContents( event.sender );
 	const date = new Date().toISOString().slice( 0, 10 );
-	const { canceled, filePath } = await dialog.showSaveDialog( win, {
+	const { canceled, filePath } = await dialog.showSaveDialog( utilityWindows?.dialogParent() ?? win, {
 		title: "Save a log for support",
 		defaultPath: path.join( app.getPath( "documents" ), `Sightline support log ${ date }.txt` ),
 		filters: [ { name: "Text", extensions: [ "txt" ] } ]
@@ -250,6 +313,7 @@ ipcMain.handle( "saveSupportLog", async ( event ) => {
 		`Sightline ${ app.getVersion() }${ app.isPackaged ? "" : " (running from source)" }, Electron ${ process.versions.electron }, ${ process.platform } ${ process.getSystemVersion() } ${ process.arch }`,
 		`Displays: ${ displays.join( "; " ) }`,
 		`Graphics: compositing ${ gpu.gpu_compositing }, rasterization ${ gpu.rasterization }`,
+		`Debug capture override: ${ captureOverride() ? "on" : "off" }`,
 		`Settings: ${ shown.map( k => `${ k }=${ JSON.stringify( settings[k] ?? null ) }` ).join( ", " ) }`,
 		"",
 		"Log (newest last):",
@@ -288,6 +352,8 @@ const stateManager = stateFactory( defaultConfig );
 export const SAMPLE_SCRIPTS = [
 	{ file: "welcome.md", label: "Welcome tour" },
 	{ file: "voice-and-stops.md", label: "Voice control, stops and countdowns" },
+	{ file: "acceptance-main.md", label: "RC acceptance: module A" },
+	{ file: "acceptance-module-change.md", label: "RC acceptance: module B" },
 	{ file: "batch-module.md", label: "Batch recording, section by section" },
 	{ file: "single-take.md", label: "Single continuous take" },
 	{ file: "notes.md", label: "Notes, a page at a time" },
@@ -328,6 +394,22 @@ let rendererStatus = {};
 let onSettingsChanged = () => {};
 let controlPad = null;
 let controlWindow = null;
+let framingGuide = null;
+let utilityWindows = null;
+let obs = null;
+let obsPassword = "";
+let obsCredentials = null;
+let restoringDefaults = false;
+let stateWrites = Promise.resolve();
+let recordedSlate = null;
+let recordedSlateUrl = null;
+function syncObsSettings() {
+	if ( !settings.obsEnabled || !settings.obsControls || !settings.obsRecordedSlate ) {
+		recordedSlate?.close();
+		recordedSlateUrl = null;
+	}
+	return obs?.configure( { enabled: settings.obsEnabled, host: settings.obsHost, port: settings.obsPort, password: settings.obsEnabled ? obsPassword : "", controls: settings.obsControls, markers: settings.obsMarkers, recordedSlate: settings.obsRecordedSlate } ).catch( () => {} );
+}
 
 function addRecentFile( filePath ) {
 	recentFiles = [ filePath, ...recentFiles.filter( f => f !== filePath ) ].slice(
@@ -337,6 +419,7 @@ function addRecentFile( filePath ) {
 }
 
 const saveState = async ( win ) => {
+	if ( restoringDefaults ) return;
 	// In eye-line mode, maximised or full screen, remember the normal window so it comes back.
 	let bounds;
 	if ( settings.eyeLine && normalBounds ) {
@@ -347,7 +430,7 @@ const saveState = async ( win ) => {
 		bounds = win.getBounds();
 	}
 
-	stateManager.writeAppState( {
+	const snapshot = structuredClone( {
 		width: bounds.width,
 		height: bounds.height,
 		x: bounds.x,
@@ -367,6 +450,8 @@ const saveState = async ( win ) => {
 		slots,
 		activeSlot
 	} );
+	stateWrites = stateWrites.catch( () => {} ).then( () => stateManager.writeAppState( snapshot ) );
+	return stateWrites;
 };
 
 function eyeLineBounds( win ) {
@@ -395,10 +480,12 @@ function applyWindowSettings( win, wasEyeLine ) {
 		normalBounds = null;
 	}
 	win.setAlwaysOnTop( settings.eyeLine || settings.alwaysOnTop, "floating" );
-	win.setContentProtection( !!settings.hideFromCapture );
+	protectWindow( win, !!settings.hideFromCapture );
 	// Click-through: the renderer turns mouse events back on while the pointer
 	// is over the control bar or a panel, so the controls stay usable.
 	win.setIgnoreMouseEvents( !!settings.clickThrough, { forward: true } );
+	framingGuide?.restack();
+	utilityWindows?.apply();
 }
 
 const emptySlotHtml = index =>
@@ -448,9 +535,15 @@ const createWindow = ( state ) => {
 		}
 	);
 
+	utilityWindows = createUtilityWindows( { dir: __dirname, prompter: win, getSettings: () => settings, saveSettings: partial => updateSettings( partial ) } );
+	win.on( "closed", () => utilityWindows.dispose() );
+	win.webContents.on( "did-create-window", ( child, details ) => utilityWindows.didCreate( child, details ) );
 	win.loadFile( path.join( __dirname, "client", "teleprompter.html" ) );
 	// Links (About page) open in the browser; the window itself never navigates away.
-	win.webContents.setWindowOpenHandler( ( { url } ) => {
+	win.webContents.setWindowOpenHandler( ( details ) => {
+		const internal = utilityWindows.openHandler( details );
+		if ( internal ) return internal;
+		const { url } = details;
 		if ( /^https:\/\//.test( url ) ) shell.openExternal( url );
 		return { action: "deny" };
 	} );
@@ -501,6 +594,10 @@ const createWindow = ( state ) => {
 		sendSlots();
 		sendWindowState();
 		win.webContents.send( "cuePhrases", cuePhrases );
+		if ( state.showGettingStarted ) {
+			state.showGettingStarted = false;
+			win.webContents.send( "gettingStartedOffer" );
+		}
 	} );
 
 	function sendSettings() {
@@ -509,6 +606,89 @@ const createWindow = ( state ) => {
 			hasDeepgramKey: !!currentDeepgramApiKey
 		} );
 	}
+
+	const obsSnapshot = () => ( { ...obs.state(), recordedSlate: recordedSlate.state() } );
+	recordedSlate = createRecordedSlate( { onState: () => {
+		if ( obs && !win.isDestroyed() ) win.webContents.send( "obsState", obsSnapshot() );
+	} } );
+	obs = createObs( { onState: ( state ) => {
+		if ( !win.isDestroyed() ) win.webContents.send( "obsState", { ...state, recordedSlate: recordedSlate.state() } );
+		recordObsHistory( state );
+	} } );
+	win.on( "closed", () => {
+		obs.dispose();
+		recordedSlate.close();
+	} );
+	ipcMain.handle( "obs", async ( event, action, value ) => {
+		if ( event.sender !== win.webContents ) return { ok: false, error: "Use OBS from the prompter" };
+		try {
+			if ( action === "status" ) return { ok: true, state: obsSnapshot(), hasPassword: await obsCredentials.hasSaved() };
+			if ( action === "slate-prepare" || action === "slate" ) {
+				if ( !settings.obsEnabled || !settings.obsControls || !settings.obsRecordedSlate ) throw new Error( "Enable OBS recording controls and the recorded slate, then Apply" );
+				if ( ![ "127.0.0.1", "localhost", "::1", "[::1]" ].includes( settings.obsHost.toLowerCase() ) ) throw new Error( "Recorded slate needs OBS on this computer" );
+				if ( action === "slate-prepare" ) {
+					recordedSlateUrl = await recordedSlate.preparePage( path.join( app.getPath( "userData" ), "obs-recorded-sync.html" ) );
+					const route = await obs.slateRoute( recordedSlateUrl, true );
+					const deadline = Date.now() + 5000;
+					while ( !recordedSlate.state().ready && Date.now() < deadline ) await new Promise( r => setTimeout( r, 100 ) );
+					if ( !recordedSlate.state().ready ) throw new Error( "The OBS browser source is not ready; check its visibility and audio, then prepare again" );
+					return { ok: true, route, state: obsSnapshot() };
+				}
+				if ( !recordedSlateUrl ) throw new Error( "Prepare the recorded slate in Settings > OBS first" );
+				const route = await obs.slateRoute( recordedSlateUrl );
+				await obs.command( "test" );
+				const before = obs.state();
+				const slate = await recordedSlate.play( value );
+				await obs.slateRoute( recordedSlateUrl );
+				if ( obs.state().recordingId !== before.recordingId ) throw new Error( "The OBS recording changed during the slate; check the recorded file" );
+				return { ok: true, slate: { ...slate, ...route, recordingId: before.recordingId, outputPath: before.outputPath, observedAt: before.durationObservedAt, outputDuration: before.outputDuration, obs: obsPosition( before, Date.parse( slate.renderedAt ) ) }, state: obsSnapshot() };
+			}
+			await obs.command( action, value );
+			return { ok: true, state: obsSnapshot() };
+		} catch ( error ) {
+			return { ok: false, error: error.message, state: obsSnapshot() };
+		}
+	} );
+	let setupDirectory = null;
+	ipcMain.handle( "obsSetup", async ( event, action, value ) => {
+		if ( event.sender !== win.webContents ) return { ok: false, error: "Use OBS setup from Sightline" };
+		try {
+			if ( !settings.obsEnabled || ![ "127.0.0.1", "localhost", "::1", "[::1]" ].includes( settings.obsHost.toLowerCase() ) ) throw new Error( "Enable and connect OBS on this computer first. Remote OBS can use the configuration guide." );
+			if ( action === "folder" ) {
+				const chosen = await dialog.showOpenDialog( utilityWindows.dialogParent(), { title: "OBS recording folder", properties: [ "openDirectory", "createDirectory" ] } );
+				if ( chosen.canceled ) return { ok: true, cancelled: true };
+				await fs.access( chosen.filePaths[0], 2 );
+				setupDirectory = chosen.filePaths[0];
+				return { ok: true, directoryLabel: path.basename( setupDirectory ) };
+			}
+			if ( action === "plan" && !setupDirectory ) throw new Error( "Choose a recording folder first" );
+			const result = await obs.setup( action, action === "plan" ? { choices: value, directory: setupDirectory } : value );
+			return { ok: true, result };
+		} catch ( error ) {
+			return { ok: false, error: error.message };
+		}
+	} );
+	ipcMain.handle( "saveObsSettings", async ( event, options ) => {
+		if ( event.sender !== win.webContents ) return { ok: false, error: "Use OBS settings in the prompter" };
+		try {
+			if ( !options || typeof options !== "object" ) throw new Error( "Check the OBS settings" );
+			const host = String( options.host ?? "127.0.0.1" ).trim();
+			const port = Number( options.port );
+			obsAddress( host, port );
+			if ( options.password !== undefined || options.clearPassword ) {
+				const password = options.clearPassword ? "" : String( options.password );
+				if ( password.length > 4096 ) throw new Error( "OBS password is too long" );
+				await obsCredentials.write( password );
+				obsPassword = password;
+			}
+			if ( options.enabled && !obsPassword ) obsPassword = await obsCredentials.read();
+			if ( !options.enabled ) obsPassword = "";
+			await updateSettings( { obsEnabled: options.enabled === true, obsHost: host, obsPort: port, obsControls: options.controls === true, obsMarkers: options.markers === true, obsRecordedSlate: options.recordedSlate === true } );
+			return { ok: true, hasPassword: await obsCredentials.hasSaved(), state: obsSnapshot() };
+		} catch ( error ) {
+			return { ok: false, error: error.message };
+		}
+	} );
 
 	function sendSlots() {
 		win.webContents.send( "slots", {
@@ -564,6 +744,7 @@ const createWindow = ( state ) => {
 			} else {
 				win.setAlwaysOnTop( settings.eyeLine || settings.alwaysOnTop, "floating" );
 			}
+			utilityWindows?.restack();
 		}
 		sendWindowState();
 		refreshMenus();
@@ -636,11 +817,16 @@ const createWindow = ( state ) => {
 		}
 		sendSettings();
 		refreshMenus();
-		await saveState( win );
 		onSettingsChanged();
+		await saveState( win );
 	}
 
 	win.on( "close", async ( event ) => {
+		if ( !isClosing && utilityWindows?.isDirty() ) {
+			event.preventDefault();
+			utilityWindows.requestClose( "settings", true );
+			return;
+		}
 		if ( isClosing ) {
 			await saveState( win );
 			return;
@@ -678,7 +864,7 @@ const createWindow = ( state ) => {
 		watcher.on( "change", async () => {
 			if ( watcherPaused ) return;
 			const md = await readAndConvertScript( scriptFile );
-			win.webContents.send( "content", md );
+			sendScriptContent( win, md );
 		} );
 	}
 
@@ -716,6 +902,7 @@ const createWindow = ( state ) => {
 
 		const md = await readAndConvertScript( scriptFile );
 		if ( md ) {
+			if ( !( await flushRecordingBeforeScriptChange() ) ) return undefined;
 			currentFilePath = scriptFile;
 			slots[activeSlot] = {
 				path: scriptFile,
@@ -723,7 +910,7 @@ const createWindow = ( state ) => {
 				section: restore?.section ?? 0
 			};
 			if ( restore ) win.webContents.send( "restorePosition", restore );
-			win.webContents.send( "content", md );
+			sendScriptContent( win, md );
 			addRecentFile( scriptFile );
 			watchScriptFile( scriptFile );
 			refreshGoogleDoc( scriptFile );
@@ -747,7 +934,7 @@ const createWindow = ( state ) => {
 		try {
 			const changed = await googleDocs.refresh( file, announce );
 			if ( changed && currentFilePath === file ) {
-				win.webContents.send( "content", await readAndConvertScript( file ) );
+				sendScriptContent( win, await readAndConvertScript( file ) );
 				toast( "Updated from Google Docs" );
 			} else if ( announce ) {
 				toast( "Already up to date with Google Docs" );
@@ -768,6 +955,45 @@ const createWindow = ( state ) => {
 			.trim() || "Script";
 	const takeLogFile = file => path.join( takeLogDir, `${ scriptName( file ) } ${ today() }.json` );
 	let takeLog = null; // the current script's log, as last saved
+	const obsLedger = createObsLedger();
+	const sessionLogFiles = new Set();
+	let takeLogQueue = Promise.resolve();
+	let scriptChangeId = 0;
+	let scriptChange = null;
+	ipcMain.on( "scriptChangeReady", ( event, id, error ) => {
+		if ( event.sender === win.webContents && scriptChange?.id === id ) scriptChange.done( error );
+	} );
+	async function flushRecordingBeforeScriptChange() {
+		if ( !currentFilePath ) return true;
+		if ( scriptChange ) return false;
+		const id = ++scriptChangeId;
+		const ready = new Promise( ( resolve ) => {
+			const timer = setTimeout( () => scriptChange?.done( "The current recording did not finish saving; try opening the script again" ), 8000 );
+			scriptChange = { id, done: ( error ) => {
+				clearTimeout( timer );
+				scriptChange = null;
+				if ( error && !win.isDestroyed() ) win.webContents.send( "toast", error );
+				resolve( !error );
+			} };
+		} );
+		win.webContents.send( "prepareScriptChange", id );
+		if ( !( await ready ) ) return false;
+		await takeLogQueue;
+		return true;
+	}
+	function recordObsHistory( state ) {
+		if ( !obsLedger.observe( state ) ) return;
+		takeLogQueue = takeLogQueue.then( async () => {
+			for ( const file of sessionLogFiles ) {
+				try {
+					const saved = JSON.parse( await fs.readFile( file, "utf8" ) );
+					const next = obsLedger.attach( saved );
+					await fs.writeFile( file, JSON.stringify( next, null, 2 ) );
+					if ( currentFilePath && file === takeLogFile( currentFilePath ) ) takeLog = next;
+				} catch { /* A deleted session must not be recreated. */ }
+			}
+		} ).catch( error => logProblem( `OBS recording references: ${ error.message }` ) );
+	}
 
 	async function sendTakeLog( file ) {
 		try {
@@ -788,15 +1014,18 @@ const createWindow = ( state ) => {
 		};
 	}
 
-	ipcMain.on( "saveTakeLog", async ( _event, data ) => {
+	ipcMain.on( "saveTakeLog", ( event, data ) => {
+		if ( event.sender !== win.webContents ) return;
 		if ( !currentFilePath || !data?.startedAt ) return;
-		try {
-			takeLog = withHeader( data );
+		const file = takeLogFile( currentFilePath );
+		const headed = withHeader( data );
+		sessionLogFiles.add( file );
+		takeLogQueue = takeLogQueue.then( async () => {
+			const next = obsLedger.attach( headed );
+			if ( currentFilePath && file === takeLogFile( currentFilePath ) ) takeLog = next;
 			await fs.mkdir( takeLogDir, { recursive: true } );
-			await fs.writeFile( takeLogFile( currentFilePath ), JSON.stringify( takeLog, null, 2 ) );
-		} catch ( err ) {
-			console.log( "Take log:", err.message );
-		}
+			await fs.writeFile( file, JSON.stringify( next, null, 2 ) );
+		} ).catch( error => logProblem( `Take log: ${ error.message }` ) );
 	} );
 
 	// Save the take log where you choose, as JSON and a CSV beside it.
@@ -867,6 +1096,7 @@ const createWindow = ( state ) => {
 			t: new Date().toISOString(),
 			heard: entry.heard.slice( 0, 500 ),
 			final: !!entry.final,
+			mode: entry.mode === "commands" ? "commands" : "voice",
 			from: entry.from,
 			to: entry.to,
 			script: String( entry.script ?? "" ).slice( 0, 500 )
@@ -1071,12 +1301,16 @@ const createWindow = ( state ) => {
 	} );
 
 	async function showEmptySlot( note = "" ) {
+		if ( !( await flushRecordingBeforeScriptChange() ) ) return false;
 		if ( watcher ) {
 			await watcher.close();
 			watcher = null;
 		}
 		currentFilePath = null;
-		win.webContents.send( "content", emptySlotHtml( activeSlot ) + note );
+		takeLog = null;
+		sendScriptContent( win, emptySlotHtml( activeSlot ) + note );
+		win.webContents.send( "takeLog", null );
+		return true;
 	}
 
 	async function switchSlot( index, position ) {
@@ -1088,6 +1322,7 @@ const createWindow = ( state ) => {
 		if ( slots[activeSlot] && position ) {
 			slots[activeSlot] = { ...slots[activeSlot], ...position };
 		}
+		const previousSlot = activeSlot;
 		activeSlot = index;
 		const slot = slots[index];
 		if ( slot?.path ) {
@@ -1095,6 +1330,10 @@ const createWindow = ( state ) => {
 				scrollY: slot.scrollY ?? 0,
 				section: slot.section ?? 0
 			} );
+			if ( md === undefined ) {
+				activeSlot = previousSlot;
+				return;
+			}
 			if ( !md ) {
 				slots[index] = null;
 				await showEmptySlot(
@@ -1102,23 +1341,31 @@ const createWindow = ( state ) => {
 				);
 			}
 		} else {
-			await showEmptySlot();
+			if ( !( await showEmptySlot() ) ) {
+				activeSlot = previousSlot;
+				return;
+			}
 		}
 		sendSlots();
 		refreshMenus();
 		await saveState( win );
 	}
 
-	async function clearSlot() {
-		if ( !( await confirmLeave( "Save your changes before clearing this slot?" ) ) ) {
-			return;
+	const clearSlot = createSlotClearAction( {
+		current: () => ( { index: activeSlot, slot: slots[activeSlot], name: slots[activeSlot] ? path.basename( slots[activeSlot].path ) : "" } ),
+		ask: options => dialog.showMessageBox( win, options ),
+		leave: () => confirmLeave( "Save your changes before clearing this slot?" ),
+		clear: async ( { index, slot } ) => {
+			slots[index] = null;
+			if ( !( await showEmptySlot() ) ) {
+				slots[index] = slot;
+				return;
+			}
+			sendSlots();
+			refreshMenus();
+			await saveState( win );
 		}
-		slots[activeSlot] = null;
-		await showEmptySlot();
-		sendSlots();
-		refreshMenus();
-		await saveState( win );
-	}
+	} );
 
 	async function showOpenScriptDialog() {
 		const results = await dialog.showOpenDialog( win, {
@@ -1158,6 +1405,8 @@ const createWindow = ( state ) => {
 			showRecordings: () => win.webContents.send( "showRecordings" ),
 			reloadGoogleDoc: () => refreshGoogleDoc( currentFilePath, true ),
 			openGuide: page => guide.open( page ),
+			toggleHeadGuide: () => framingGuide?.toggle(),
+			toggleHeadGuideFullscreen: () => framingGuide?.toggleFullscreen(),
 			isMaximized: windowMode === "maximized",
 			displays: displayList()
 		} );
@@ -1174,6 +1423,7 @@ const createWindow = ( state ) => {
 		clearSlot,
 		windowControl,
 		updateSettings,
+		flushRecordingBeforeScriptChange,
 		sendSettings,
 		sendSlots
 	};
@@ -1206,7 +1456,10 @@ app.whenReady().then( async () => {
 		logProblem( `Start-up details failed: ${ err.message }` );
 	}
 	if ( !firstInstance ) return;
+	const firstLaunch = !existsSync( path.join( app.getPath( "userData" ), "app-state.json" ) );
 	const state = await stateManager.readAppState();
+	state.showGettingStarted = firstLaunch || state.showGettingStarted === true;
+	obsCredentials = createObsCredentials( app.getPath( "userData" ), safeStorage );
 	currentFontSize = state.fontSize || defaultConfig.fontSize;
 	currentOpacity = state.opacity ?? defaultConfig.opacity;
 	currentMirrored = state.mirrored || "off";
@@ -1219,6 +1472,7 @@ app.whenReady().then( async () => {
 	streamDeckToken = state.streamDeckToken || newToken();
 	phoneKey = state.phoneKey || newPhoneKey();
 	settings = { ...defaultSettings, ...state.settings };
+	if ( settings.obsEnabled ) obsPassword = await obsCredentials.read();
 	normalBounds = state.normalBounds ?? null;
 	slots = Array.from( { length: SLOT_COUNT }, ( _, i ) =>
 		state.slots?.[i]?.path ? state.slots[i] : null
@@ -1260,6 +1514,7 @@ app.whenReady().then( async () => {
 		clearSlot,
 		windowControl,
 		updateSettings,
+		flushRecordingBeforeScriptChange,
 		sendSettings,
 		sendSlots
 	} = createWindow( state );
@@ -1298,6 +1553,7 @@ app.whenReady().then( async () => {
 
 	// Applies settings from a file or the remote API (never the protected ones).
 	async function applySettingValues( values ) {
+		const known = settingsValues( values, defaultSettings, PROTECTED_SETTINGS );
 		const extra = pickKnown( values, {
 			fontSize: 3,
 			opacity: 1,
@@ -1321,8 +1577,6 @@ app.whenReady().then( async () => {
 			currentAutoScrollSpeed = extra.voiceResponsiveness;
 			win.webContents.send( "autoScrollSpeed", currentAutoScrollSpeed );
 		}
-		const known = pickKnown( values, defaultSettings );
-		for ( const key of PROTECTED_SETTINGS ) delete known[key];
 		await updateSettings( known );
 		return { applied: [ ...Object.keys( extra ), ...Object.keys( known ) ] };
 	}
@@ -1334,6 +1588,8 @@ app.whenReady().then( async () => {
 	const APP_DATA_LABEL = { win32: "%APPDATA%", darwin: "~/Library/Application Support" }[process.platform] ?? "~/.config";
 	const REMOTE_FILE_LABEL = REMOTE_FILE.replace( app.getPath( "appData" ), APP_DATA_LABEL );
 	const REMOTE_COMMANDS = [
+		"obs-record",
+		"obs-finish",
 		"play",
 		"pause",
 		"toggle",
@@ -1367,11 +1623,25 @@ app.whenReady().then( async () => {
 		"sound-check", // the sound-check meter on or off
 		"scroll-mode", // steady or voice scrolling
 		"pad", // the floating control pad open or closed
-		"control" // the control window open or closed
+		"control", // the control window open or closed
+		"head-guide", // show/unlock or hide the framing overlay
+		"head-guide-fullscreen", // fullscreen framing overlay / restore
+		"head-guide-adjust", // bounded relative shape adjustment, not window geometry
+		"head-guide-control", // adjustments, eye lock, ideal visibility or restore actual
+		"listening-toggle", // session listening off/on; does not change saved preference
+		"listening-restart",
+		"session-check"
 	];
 
+	const streamDeckPeer = createStreamDeckPeer( { onChange: () => {
+		if ( !win.isDestroyed() ) win.webContents.send( "remoteInfo", remoteInfo() );
+		publishRemoteState();
+	} } );
 	// The prompter's state, for GET /status and the GET /events stream.
 	const remoteStatus = () => ( {
+		appVersion: app.getVersion(),
+		scriptLoaded: !!currentFilePath,
+		streamDeckApi: streamDeckContract(),
 		file: currentFilePath,
 		slot: activeSlot + 1,
 		slots: slots.map( ( s, i ) => ( { slot: i + 1, file: s?.path ?? null } ) ),
@@ -1384,14 +1654,23 @@ app.whenReady().then( async () => {
 		clickThrough: !!settings.clickThrough,
 		showPad: !!settings.showPad,
 		showControl: !!settings.showControl,
+		showHeadGuide: !!settings.showHeadGuide,
+		headGuideLocked: framingGuide?.isLocked() ?? false,
+		headGuideFullscreen: !!settings.headGuideFullscreen,
+		headGuideChromeless: !!settings.headGuideChromeless,
+		headGuide: framingGuide?.status() ?? null,
 		windowMode,
+		padLayout: normalisePadLayout( settings.padLayout ),
+		captureOverride: captureOverride(),
 		...rendererStatus,
 		commands: REMOTE_COMMANDS
 	} );
 	const remoteListeners = new Set();
+	const controlObservers = new Set();
 	let lastPublished = "";
 	// Tell every listener when something they can show has changed.
 	function publishRemoteState() {
+		for ( const observe of controlObservers ) observe();
 		if ( !remoteListeners.size ) return;
 		const state = remoteStatus();
 		const text = JSON.stringify( state );
@@ -1436,6 +1715,15 @@ app.whenReady().then( async () => {
 
 	const remoteRoutes = {
 		"GET /status": remoteStatus,
+		"POST /stream-deck/hello": ( body ) => {
+			if ( !settings.streamDeck ) throw Object.assign( new Error( "Stream Deck control is disabled" ), { status: 403 } );
+			return {
+				ok: true,
+				appVersion: app.getVersion(),
+				streamDeckApi: streamDeckContract(),
+				compatibility: streamDeckPeer.hello( body )
+			};
+		},
 		"POST /open": ( { path: filePath, slot } ) => {
 			if ( typeof filePath !== "string" || !path.isAbsolute( filePath ) ) {
 				throw new Error( "path must be an absolute file path" );
@@ -1457,7 +1745,9 @@ app.whenReady().then( async () => {
 			if ( !REMOTE_COMMANDS.includes( action ) ) {
 				throw new Error( `action must be one of: ${ REMOTE_COMMANDS.join( ", " ) }` );
 			}
-			win.webContents.send( "remoteCommand", action, value );
+			if ( action === "head-guide-adjust" ) framingGuide.adjust( value );
+			else if ( action === "head-guide-control" ) framingGuide.control( value );
+			else win.webContents.send( "remoteCommand", action, value );
 			return { ok: true, action };
 		},
 		"POST /slot": ( { slot } ) => {
@@ -1505,7 +1795,7 @@ app.whenReady().then( async () => {
 	// The Stream Deck plugin's key: the state, the live stream, the commands
 	// and the slots, nothing else (no scripts, settings or recordings).
 	const STREAM_DECK_FILE = path.join( app.getPath( "userData" ), "stream-deck.json" );
-	const BUTTON_ROUTES = new Set( [ "GET /status", "POST /command", "POST /slot" ] );
+	const BUTTON_ROUTES = new Set( [ "GET /status", "POST /command", "POST /slot", "POST /stream-deck/hello" ] );
 	// Close the server now: open event streams (the Stream Deck) would otherwise keep it waiting.
 	const closeServer = server => new Promise( ( r ) => {
 		server.close( r );
@@ -1516,6 +1806,8 @@ app.whenReady().then( async () => {
 		return {
 			enabled: !!settings.remoteControl,
 			streamDeck: !!settings.streamDeck,
+			appVersion: app.getVersion(),
+			streamDeckPeer: streamDeckPeer.status(),
 			running: !!remoteServer,
 			url: `http://127.0.0.1:${ settings.remotePort }`,
 			token: remoteToken,
@@ -1525,6 +1817,7 @@ app.whenReady().then( async () => {
 	}
 
 	async function syncRemoteServer() {
+		if ( !settings.streamDeck ) streamDeckPeer.clear();
 		const on = settings.remoteControl || settings.streamDeck;
 		const wanted = on ? settings.remotePort : null;
 		// Restart when the port or which keys work changes.
@@ -1555,21 +1848,115 @@ app.whenReady().then( async () => {
 		const url = remoteInfo().url;
 		if ( wanted && settings.remoteControl ) await fs.writeFile( REMOTE_FILE, JSON.stringify( { url, token: remoteToken }, null, 2 ) );
 		else await fs.rm( REMOTE_FILE, { force: true } );
-		if ( wanted && settings.streamDeck ) await fs.writeFile( STREAM_DECK_FILE, JSON.stringify( { url, token: streamDeckToken }, null, 2 ) );
+		if ( wanted && settings.streamDeck ) await fs.writeFile( STREAM_DECK_FILE, JSON.stringify( { url, token: streamDeckToken, appVersion: app.getVersion(), streamDeckApi: streamDeckContract() }, null, 2 ) );
 		else await fs.rm( STREAM_DECK_FILE, { force: true } );
 		win.webContents.send( "remoteInfo", remoteInfo() );
 	}
 
+	function runPadCommand( id, value ) {
+		const request = controlAction( id, value );
+		const view = controlView( id, remoteStatus() );
+		if ( !request || !view || view.disabled || view.hidden ) throw new Error( view?.reason || "This control is unavailable" );
+		if ( request.slot ) win.webContents.send( "menuSwitchSlot", request.slot - 1 );
+		else if ( request.action === "head-guide-adjust" ) framingGuide.adjust( request.value );
+		else if ( request.action === "head-guide-control" ) framingGuide.control( request.value );
+		else win.webContents.send( "remoteCommand", request.action, request.value );
+	}
 	controlPad = createPad( {
 		dir: __dirname,
 		prompter: win,
 		getMirror: () => currentMirrored,
 		getSettings: () => settings,
+		getStatus: remoteStatus,
+		onCommand: runPadCommand,
 		saveSettings: partial => updateSettings( partial )
 	} );
 	controlPad.apply();
-	createSpeech( { dir: __dirname, win } );
+	controlObservers.add( controlPad.observeControls );
+	framingGuide = createHeadGuide( {
+		dir: __dirname, prompter: win, getSettings: () => settings,
+		restackUtilities: () => utilityWindows?.restack(),
+		saveSettings: partial => updateSettings( partial ),
+		saveBounds: ( bounds ) => {
+			settings.headGuideBounds = bounds;
+			settings.headGuidePlacements = { ...settings.headGuidePlacements, [settings.headGuidePlacement ?? "centre"]: bounds };
+			if ( !win.isDestroyed() ) saveState( win );
+		},
+		onChange: () => publishRemoteState(),
+		restoreStack: () => win.setAlwaysOnTop( windowMode === "fullscreen" || settings.eyeLine || settings.alwaysOnTop, windowMode === "fullscreen" ? "screen-saver" : "floating" )
+	} );
+	framingGuide.apply();
+	win.on( "closed", () => framingGuide.dispose() );
+	const speech = createSpeech( { dir: __dirname, win, busy: () => !!rendererStatus.scrolling || [ "recording", "paused" ].includes( obs.state().recording ) } );
+	const kitFolder = path.join( app.getPath( "userData" ), "ai-kit" );
+	const kit = createAgentKit( { source: app.getAppPath(), folder: kitFolder, version: app.getVersion(), trash: target => shell.trashItem( target ) } );
+	const externalComponents = createExternalComponents( { folder: app.getPath( "userData" ) } );
+	let previousResetState = null;
+	const restoreDefaults = createDefaultsRestore( {
+		blocked: async () => {
+			if ( settings.obsEnabled && obs.state().connection === "connected" && !obs.state().setupBusy && !obs.state().recordingBusy ) await obs.command( "test" );
+			return resetBlocked( { renderer: rendererStatus, obs: obs.state(), obsEnabled: settings.obsEnabled, dirty: hasUnsavedChanges, maintaining: speech.status().downloading || kit.busy } );
+		},
+		confirm: async () => ( await dialog.showMessageBox( utilityWindows.dialogParent(), {
+			type: "warning", title: "Restore shipped defaults", message: "Restore defaults and start setup again?",
+			detail: "Sightline will restart with shipped preferences, layouts and shortcuts. Slot assignments, recent-file history and pairings are cleared; integrations start off. Unsaved Settings changes are discarded. Installed components, script files, recordings and saved service keys stay. A local settings backup is kept. OBS profiles and scenes are not changed.",
+			buttons: [ "Cancel", "Restore defaults and restart" ], defaultId: 0, cancelId: 0, noLink: true
+		} ) ).response === 1,
+		flush: flushRecordingBeforeScriptChange,
+		settle: async () => {
+			await saveState( win );
+			restoringDefaults = true;
+			await stateWrites;
+			previousResetState = await fs.readFile( path.join( app.getPath( "userData" ), "app-state.json" ), "utf8" );
+		},
+		replace: async () => {
+			await fs.writeFile( path.join( app.getPath( "userData" ), "app-state.before-defaults.json" ), previousResetState );
+			await stateManager.writeAppState( shippedState( defaultConfig, currentDeepgramApiKey, { remoteToken: newToken(), streamDeckToken: newToken(), phoneKey: newPhoneKey() } ) );
+		},
+		clearUi: () => win.webContents.session.clearStorageData( { storages: [ "localstorage" ] } ),
+		restart: () => {
+			app.relaunch();
+			isClosing = true;
+			// Close the owner first: reusable utility windows intercept direct
+			// app.quit() to hide themselves, which can cancel an application quit.
+			setImmediate( () => win.close() );
+		},
+		rollback: async () => {
+			if ( previousResetState !== null ) await stateManager.writeAppState( JSON.parse( previousResetState ) );
+			restoringDefaults = false;
+			previousResetState = null;
+		}
+	} );
+	ipcMain.handle( "restoreDefaults", event => event.sender === win.webContents ? restoreDefaults() : { ok: false, error: "Use Restore defaults in Sightline Settings." } );
+	ipcMain.handle( "components", async ( event, component, action ) => {
+		if ( event.sender !== win.webContents ) return { error: "Unavailable" };
+		try {
+			if ( component === "kit" && action === "open" ) {
+				if ( !( await kit.status() ).installed ) throw new Error( "Install the AI kit first" );
+				const error = await shell.openPath( kitFolder );
+				if ( error ) throw new Error( error );
+			} else if ( component === "kit" ) await kit.change( action );
+			else if ( [ "obs", "streamdeck" ].includes( component ) && action === "locate" ) {
+				const parent = utilityWindows.dialogParent();
+				const chosen = await dialog.showOpenDialog( parent, {
+					title: `Locate ${ component === "obs" ? "OBS Studio" : "Stream Deck" }`,
+					properties: [ process.platform === "darwin" ? "openDirectory" : "openFile" ],
+					...( process.platform === "win32" ? { filters: [ { name: "Application", extensions: [ "exe" ] } ] } : {} )
+				} );
+				if ( !chosen.canceled && chosen.filePaths[0] ) await externalComponents.locate( component, chosen.filePaths[0] );
+			} else if ( component !== undefined ) throw new Error( "Unknown component" );
+			const [ kitStatus, node, external ] = await Promise.all( [ kit.status(), nodeStatus(), externalComponents.status() ] );
+			return { speech: speech.status(), kit: kitStatus, node, ...external };
+		} catch ( err ) {
+			return { error: err.message };
+		}
+	} );
 	ipcMain.on( "copyAiPrompt", () => copyAiPrompt( win ) );
+	ipcMain.handle( "scriptReviewHtml", async ( event, text ) => {
+		if ( event.sender !== win.webContents || typeof text !== "string" ) throw new Error( "Script text required" );
+		if ( text.length > 2e6 ) throw new Error( "Review scripts smaller than 2 MB" );
+		return convertMarkdown( text );
+	} );
 
 	ipcMain.on( "openGoogleDoc", async ( _event, link ) => {
 		try {
@@ -1631,14 +2018,14 @@ app.whenReady().then( async () => {
 				port: wanted,
 				key: phoneKey,
 				pagePath: path.join( __dirname, "client", "phone.html" ),
-				getStatus: () => ( {
-					scrolling: !!rendererStatus.scrolling,
-					editing: !!rendererStatus.editing,
-					points: !!rendererStatus.points,
-					sectionTitle: rendererStatus.sectionTitle ?? "",
-					progress: rendererStatus.progress ?? ""
-				} ),
-				onCommand: action => win.webContents.send( "remoteCommand", action ),
+				getStatus: () => {
+					// The phone needs slot availability, never local script paths.
+					const state = remoteStatus();
+					delete state.file;
+					state.slots = state.slots.map( s => ( { slot: s.slot, file: !!s.file } ) );
+					return state;
+				},
+				onCommand: runPadCommand,
 				onError: ( err ) => {
 					phoneError = err.code === "EADDRINUSE" ? `Port ${ wanted } is already in use` : err.message;
 					phoneServer = null;
@@ -1646,6 +2033,9 @@ app.whenReady().then( async () => {
 				}
 			} );
 			phoneServer.phonePort = wanted;
+			const server = phoneServer;
+			controlObservers.add( server.observeControls );
+			server.once( "close", () => controlObservers.delete( server.observeControls ) );
 		}
 		await sendPhoneInfo();
 	}
@@ -1658,13 +2048,21 @@ app.whenReady().then( async () => {
 	syncPhoneServer();
 
 	onSettingsChanged = () => {
+		syncObsSettings();
 		syncRemoteServer();
 		syncPhoneServer();
 		controlPad.apply();
 		controlWindow.apply();
+		framingGuide.apply();
 	};
-	// Samples are copied into the app's folder first, so editing one never
-	// changes the original (which is read-only inside an installed app).
+	syncObsSettings();
+	// Samples stay viewable in the editor; only Save a copy can create an editable file.
+	function isSampleFile( file ) {
+		if ( !file ) return false;
+		const folder = path.dirname( path.resolve( file ) );
+		return [ path.join( app.getPath( "userData" ), "samples" ), path.join( __dirname, "samples" ) ]
+			.some( dir => path.relative( dir, folder ) === "" );
+	}
 	async function openSample( name ) {
 		const sample = SAMPLE_SCRIPTS.find( s => s.file === name );
 		if ( !sample ) return null;
@@ -1713,6 +2111,16 @@ app.whenReady().then( async () => {
 		controlPad?.sendStatus( rendererStatus );
 		// The control window shows the broadcast settings too (size, mirror…).
 		controlWindow?.sendStatus( remoteStatus() );
+		publishRemoteState();
+	} );
+	ipcMain.on( "getCaptureOverride", ( event ) => {
+		if ( event.sender === win.webContents ) event.sender.send( "captureOverride", captureOverride() );
+	} );
+	ipcMain.on( "setCaptureOverride", ( event, enabled ) => {
+		if ( event.sender !== win.webContents ) return;
+		setCaptureOverride( enabled );
+		framingGuide?.apply();
+		logProblem( `Debug capture override ${ captureOverride() ? "on" : "off" }` );
 		publishRemoteState();
 	} );
 	syncRemoteServer();
@@ -1793,24 +2201,31 @@ app.whenReady().then( async () => {
 			win.webContents.send( "editorUnavailable", path.basename( currentFilePath ), kind );
 		} else if ( currentFilePath ) {
 			const raw = await readRawMarkdown( currentFilePath );
-			win.webContents.send( "rawMarkdown", raw, currentFilePath );
+			win.webContents.send( "rawMarkdown", raw, currentFilePath, { readOnly: isSampleFile( currentFilePath ) } );
 		} else {
 			win.webContents.send( "rawMarkdown", "", null );
 		}
 	} );
 
 	async function saveFileAs( content ) {
+		const sample = isSampleFile( currentFilePath );
+		const defaultPath = sample
+			? path.join( app.getPath( "documents" ), `${ path.basename( currentFilePath, path.extname( currentFilePath ) ) } - my copy.md` )
+			: currentFilePath && !isRichFile( currentFilePath ) ? currentFilePath : "untitled.md";
 		const result = await dialog.showSaveDialog( win, {
-			defaultPath:
-				currentFilePath && !isRichFile( currentFilePath )
-					? currentFilePath
-					: "untitled.md",
+			title: sample ? "Save an editable copy of this sample" : "Save script as",
+			defaultPath,
 			filters: [
 				{ name: "Markdown", extensions: [ "md", "txt" ] },
 				{ name: "All Files", extensions: [ "*" ] }
 			]
 		} );
 		if ( !result.canceled && result.filePath ) {
+			if ( isSampleFile( result.filePath ) ) {
+				win.webContents.send( "toast", "Samples are read-only. Choose another folder for your copy." );
+				win.webContents.send( "saveResult", false, null );
+				return;
+			}
 			try {
 				await fs.writeFile( result.filePath, content, { encoding: "utf-8" } );
 				currentFilePath = result.filePath;
@@ -1819,7 +2234,7 @@ app.whenReady().then( async () => {
 				slots[activeSlot] = { path: result.filePath, scrollY: 0, section: 0 };
 				refreshMenus();
 				const md = await readAndConvertScript( result.filePath );
-				win.webContents.send( "content", md );
+				sendScriptContent( win, md );
 				win.webContents.send( "saveResult", true, result.filePath );
 				sendSlots();
 				await saveState( win );
@@ -1827,16 +2242,21 @@ app.whenReady().then( async () => {
 				console.log( "Save As error:", err );
 				win.webContents.send( "saveResult", false, null );
 			}
-		}
+		} else win.webContents.send( "saveResult", false, null );
 	}
 
 	ipcMain.on( "saveFile", async ( _event, content ) => {
+		if ( isSampleFile( currentFilePath ) ) {
+			win.webContents.send( "toast", "Sample scripts are read-only. Use Save a copy to make your own version." );
+			win.webContents.send( "saveResult", false, null );
+			return;
+		}
 		if ( currentFilePath ) {
 			try {
 				await fs.writeFile( currentFilePath, content, { encoding: "utf-8" } );
 				hasUnsavedChanges = false;
 				const md = await readAndConvertScript( currentFilePath );
-				win.webContents.send( "content", md );
+				sendScriptContent( win, md );
 				win.webContents.send( "saveResult", true, currentFilePath );
 			} catch ( err ) {
 				console.log( "Save error:", err );
@@ -1851,6 +2271,7 @@ app.whenReady().then( async () => {
 	ipcMain.on( "applySectionTargets", async ( _event, targets ) => {
 		const toast = text => win.webContents.send( "toast", text );
 		if ( !currentFilePath ) return toast( "Save the script first, then try again" );
+		if ( isSampleFile( currentFilePath ) ) return toast( "Save an editable copy before applying rehearsal targets" );
 		if ( isRichFile( currentFilePath ) ) {
 			return toast( "Targets can only be written into .md and .txt scripts" );
 		}
@@ -1860,7 +2281,7 @@ app.whenReady().then( async () => {
 			const { text, changed } = setSectionTargets( raw, targets ?? {} );
 			if ( !changed ) return toast( "No sections to update" );
 			await fs.writeFile( currentFilePath, text, "utf-8" );
-			win.webContents.send( "content", await readAndConvertScript( currentFilePath ) );
+			sendScriptContent( win, await readAndConvertScript( currentFilePath ) );
 			toast( `Targets saved for ${ changed } section${ changed === 1 ? "" : "s" }` );
 		} catch ( err ) {
 			console.log( "Targets error:", err );
@@ -1886,14 +2307,14 @@ app.whenReady().then( async () => {
 
 	ipcMain.on( "previewMarkdown", async ( _event, markdown ) => {
 		const html = await convertMarkdown( markdown );
-		win.webContents.send( "content", html );
+		win.webContents.send( "content", html, scriptSnapshots.get( html ) ?? null );
 	} );
 
 	ipcMain.on( "reloadContent", async () => {
 		if ( currentFilePath ) {
 			const md = await readAndConvertScript( currentFilePath );
 			if ( md ) {
-				win.webContents.send( "content", md );
+				sendScriptContent( win, md );
 			}
 		}
 	} );
@@ -1953,12 +2374,20 @@ app.whenReady().then( async () => {
 
 	ipcMain.on( "saveSettings", async ( _event, partial ) => {
 		if ( partial && typeof partial === "object" ) {
+			if ( Object.hasOwn( partial, "inputMappings" ) ) {
+				try {
+					partial.inputMappings = partial.inputMappings === null ? null : normaliseMappings( partial.inputMappings );
+				} catch ( err ) {
+					win.webContents.send( "toast", err.message );
+					return;
+				}
+			}
 			await updateSettings( partial );
 		}
 	} );
 
 	ipcMain.on( "browseCuesFile", async () => {
-		const result = await dialog.showOpenDialog( win, {
+		const result = await dialog.showOpenDialog( utilityWindows?.dialogParent() ?? win, {
 			properties: [ "openFile" ],
 			filters: [
 				{ name: "Cues", extensions: [ "yaml", "yml" ] },
@@ -1983,10 +2412,10 @@ app.whenReady().then( async () => {
 			} );
 			if ( !md ) {
 				slots[activeSlot] = null;
-				win.webContents.send( "content", emptySlotHtml( activeSlot ) );
+				sendScriptContent( win, emptySlotHtml( activeSlot ) );
 			}
 		} else if ( slots.some( Boolean ) ) {
-			win.webContents.send( "content", emptySlotHtml( activeSlot ) );
+			sendScriptContent( win, emptySlotHtml( activeSlot ) );
 		}
 	} );
 } );

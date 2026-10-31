@@ -6,7 +6,7 @@
 //
 // The on-device recogniser mishears some short words ("pause" as "paws",
 // "resync" as "rezinc"), so each command lists what it tends to hear, and
-// close matches count too. Settings > Voice > Your words adds your own
+// Settings > Voice > Your words adds your own
 // (commandWords: [{ id: "wake" or a command id, heard: [ … ] }]), and with
 // soundAlike a word that sounds like the wake word or a command counts.
 
@@ -18,13 +18,17 @@ import { heardForms } from "./word-fixes.js";
 export const WAKE_WORDS = {
 	prompter: { label: "Prompter", heard: [ "prompter", "promptor", "prompters", "promoter" ] },
 	computer: { label: "Computer", heard: [ "computer", "computers", "compuder" ] },
-	teleprompter: { label: "Teleprompter", heard: [ "teleprompter", "teleprompters", "teleprompt" ] },
+	teleprompter: { label: "Teleprompter", heard: [ "teleprompter", "teleprompters", "teleprompt", "tele prompter" ] },
 	director: { label: "Director", heard: [ "director", "directors", "directa" ] }
 };
 
 export const wakeLabel = key => ( WAKE_WORDS[key] ?? WAKE_WORDS.prompter ).label;
 
 export const COMMANDS = [
+	{ id: "guide-on", phrases: [ "guide on", "show guide", "show the guide", "head guide on" ] },
+	{ id: "guide-off", phrases: [ "guide off", "hide guide", "hide the guide", "head guide off" ] },
+	{ id: "obs-record", phrases: [ "record take", "start recording" ] },
+	{ id: "obs-finish", phrases: [ "finish recording", "stop recording" ] },
 	{
 		id: "pause",
 		phrases: [
@@ -177,6 +181,8 @@ export const COMMANDS = [
 // What each command does, for the "Prompter, what can I say?" card and the
 // help: [ what to say, what it does ].
 export const COMMAND_HELP = [
+	[ "guide on · guide off", "Show or hide the head-position guide", "Guide" ],
+	[ "record take · finish recording", "OBS only, when enabled with recording controls" ],
 	[ "pause", "Pause (stop, hold, wait)" ],
 	[ "go", "Start, or carry on (carry on, continue)" ],
 	[ "slower · faster", "Change the speed" ],
@@ -222,57 +228,40 @@ const NUMBER_WORDS = {
 	twelve: 12, thirteen: 13, fourteen: 14, fifteen: 15, sixteen: 16,
 	seventeen: 17, eighteen: 18, nineteen: 19, twenty: 20
 };
+const TENS = { twenty: 20, thirty: 30, forty: 40, fifty: 50, sixty: 60, seventy: 70, eighty: 80, ninety: 90 };
 
 export function sectionNumber( words ) {
-	const said = words.map( normalize ).filter( Boolean );
-	if ( said.length !== 2 || said[0] !== "section" ) return null;
-	const n = /^\d+$/.test( said[1] ) ? Number( said[1] ) : NUMBER_WORDS[said[1]];
+	const said = words.flatMap( w => w.split( "-" ) ).map( normalize ).filter( Boolean );
+	if ( said[0] !== "section" || said.length < 2 || said.length > 3 ) return null;
+	let n = /^\d+$/.test( said[1] ) ? Number( said[1] ) : NUMBER_WORDS[said[1]] ?? TENS[said[1]];
+	if ( said.length === 3 ) {
+		const unit = NUMBER_WORDS[said[2]];
+		n = TENS[said[1]] && unit >= 1 && unit <= 9 ? TENS[said[1]] + unit : null;
+	}
 	return n >= 1 && n <= 99 ? n : null;
 }
 
-function distance( a, b ) {
-	const row = Array.from( { length: b.length + 1 }, ( _, j ) => j );
-	for ( let i = 1; i <= a.length; i++ ) {
-		let prev = row[0];
-		row[0] = i;
-		for ( let j = 1; j <= b.length; j++ ) {
-			const keep = row[j];
-			row[j] = Math.min(
-				row[j] + 1,
-				row[j - 1] + 1,
-				prev + ( a[i - 1] === b[j - 1] ? 0 : 1 )
-			);
-			prev = keep;
-		}
-	}
-	return row[b.length];
-}
-
-// The command the words after the wake word are, or null. Exact phrases win;
-// otherwise the closest phrase if it is near enough (never for very short
-// words, where one letter changes the meaning).
+// Exact built-in phrases win. Taught forms must identify just one command.
+// Optional phonetics compare each word, preserving short words such as on/off.
+// Recording and guide states require explicit phrases, never guessed matches.
 export function matchCommand( words, { extra = {}, soundAlike = false } = {} ) {
-	const said = words.map( normalize ).filter( Boolean ).join( " " );
-	if ( !said || words.length > 4 ) return null;
-	let best = null;
+	const tokens = words.map( normalize ).filter( Boolean );
+	const said = tokens.join( " " );
+	if ( !said ) return null;
+	const builtIn = COMMANDS.find( c => c.phrases.includes( said ) );
+	if ( builtIn ) return builtIn.id;
+	const exact = COMMANDS.filter( c => extra[c.id]?.includes( said ) );
+	if ( exact.length ) return exact.length === 1 ? exact[0].id : null;
+	if ( !soundAlike ) return null;
+	const matches = new Set();
 	for ( const command of COMMANDS ) {
+		if ( command.id.startsWith( "guide-" ) || command.id.startsWith( "obs-" ) ) continue;
 		for ( const phrase of [ ...command.phrases, ...( extra[command.id] ?? [] ) ] ) {
-			if ( phrase === said ) return command.id;
-			if ( phrase.length < 4 || said.length < 4 ) continue;
-			const score
-				= 1 - distance( phrase, said ) / Math.max( phrase.length, said.length );
-			if ( score >= 0.72 && ( !best || score > best.score ) )
-				best = { id: command.id, score };
+			const expected = phrase.split( " " );
+			if ( expected.length === tokens.length && expected.every( ( w, i ) => w === tokens[i] || soundsLike( w, tokens[i] ) ) ) matches.add( command.id );
 		}
 	}
-	if ( best ) return best.id;
-	if ( soundAlike ) {
-		const joined = said.replace( / /g, "" );
-		for ( const command of COMMANDS ) {
-			if ( command.phrases.some( p => soundsLike( p.replace( / /g, "" ), joined ) ) ) return command.id;
-		}
-	}
-	return null;
+	return matches.size === 1 ? [ ...matches ][0] : null;
 }
 
 // take( words, final ) returns the words that are not part of a command, for
@@ -291,82 +280,86 @@ export function createCommandListener( {
 	isPaused = () => false,
 	wakeWord = "prompter",
 	commandWords = [], // Settings > Voice > Your words > Command words
-	soundAlike = false
+	soundAlike = false,
+	clock = Date.now
 } ) {
 	const extra = commandExtras( commandWords );
 	const wakeKey = WAKE_WORDS[wakeWord] ? wakeWord : "prompter";
-	const WAKE = new Set( [ ...WAKE_WORDS[wakeKey].heard, ...( extra.wake ?? [] ).filter( w => !w.includes( " " ) ) ] );
-	// Your two- or three-word forms of the wake word ("prompt her").
-	const wakePhrases = ( extra.wake ?? [] ).filter( w => w.includes( " " ) );
-	const isWake = w => WAKE.has( w ) || ( soundAlike && soundsLike( w, wakeKey ) );
+	const wakePhrases = [ ...WAKE_WORDS[wakeKey].heard, ...( extra.wake ?? [] ) ];
+	const isWake = text => wakePhrases.includes( text ) || ( !text.includes( " " ) && soundAlike && soundsLike( text, wakeKey ) );
 	const options = { extra, soundAlike };
-	let recent = []; // the last words passed on, to spot a wake phrase
-	let held = null; // words from the wake word on, waiting for the phrase to end
-	let heldAt = 0;
-	let phrase = []; // every word of the phrase so far
+	const goPhrases = [ ...COMMANDS.find( c => c.id === "go" ).phrases, ...( extra.go ?? [] ) ];
+	const maxWords = Math.max( ...COMMANDS.flatMap( c => [ ...c.phrases, ...( extra[c.id] ?? [] ) ].map( p => p.split( " " ).length ) ) );
+	let pending = []; // possible wake phrase, bare section or paused resume
+	let held = null; // { wake, words, at }: an acknowledged wake word
+	let atStart = true;
+	const textOf = words => words.map( normalize ).filter( Boolean ).join( " " );
+	const bareCommand = ( words ) => {
+		const n = sectionNumber( words );
+		if ( n ) return [ "section", n ];
+		return isPaused() && matchCommand( words, { extra } ) === "go" ? [ "go" ] : null;
+	};
+	const barePrefix = ( words ) => {
+		const text = textOf( words );
+		const tens = words.length === 2 && normalize( words[0] ) === "section" && TENS[normalize( words[1] )];
+		return text === "section" || !!tens || !!bareCommand( words ) || ( isPaused() && goPhrases.some( p => p.startsWith( `${ text } ` ) ) );
+	};
 
 	return function take( words, final ) {
-		phrase.push( ...words );
-		const whole = phrase;
-		if ( final ) phrase = [];
-		// "Section 3" said on its own (a spoken slate): go to that section,
-		// with or without the wake word.
-		if ( final && !held ) {
-			const n = sectionNumber( whole );
-			if ( n ) {
-				onCommand( "section", n );
-				return [];
-			}
-		}
-		if ( final && !held && isPaused() ) {
-			const said = whole.map( normalize ).filter( Boolean ).join( " " );
-			const go = COMMANDS.find( c => c.id === "go" );
-			if ( go.phrases.includes( said ) || extra.go?.includes( said ) ) {
-				onCommand( "go" );
-				return [];
-			}
-		}
 		const pass = [];
+		// Expire before accepting more words: a later "reset" must not use an
+		// old wake word. No growing whole-phrase buffer during ordinary reading.
+		if ( held && clock() - held.at > 4000 ) {
+			pass.push( ...held.wake, ...held.words );
+			held = null;
+		}
 		for ( const word of words ) {
-			const said = normalize( word );
-			const phraseLength = wakePhrases.length
-				? [ 3, 2 ].find( n => recent.length >= n - 1 && wakePhrases.includes( [ ...recent.slice( 1 - n ), said ].join( " " ) ) )
-				: undefined;
-			if ( held ) held.push( word );
-			else if ( isWake( said ) || phraseLength ) {
-				// A wake phrase's first words were passed on already: take back
-				// the ones still in this chunk.
-				for ( let n = 1; phraseLength && n < phraseLength && pass.length; n++ ) pass.pop();
-				held = [ word ];
-				heldAt = Date.now();
-				recent = [];
-				onWake();
-			} else {
-				pass.push( word );
-				recent = [ ...recent, said ].slice( -2 );
+			if ( held ) {
+				held.words.push( word );
+				// A repeated wake word starts a fresh request.
+				const repeated = [ 3, 2, 1 ].find( n => held.words.length >= n && isWake( textOf( held.words.slice( -n ) ) ) );
+				if ( repeated ) {
+					if ( held.words.length > repeated ) pass.push( ...held.wake, ...held.words.slice( 0, -repeated ) );
+					held = { wake: held.words.slice( -repeated ), words: [], at: clock() };
+					onWake();
+				} else if ( held.words.length > maxWords ) {
+					pass.push( ...held.wake, ...held.words );
+					held = null;
+					atStart = false;
+				}
+				continue;
 			}
-			// A long run after the wake word isn't a command: let it go.
-			if ( held && held.length > 5 ) {
-				pass.push( ...held );
+			pending.push( word );
+			while ( pending.length ) {
+				const text = textOf( pending );
+				if ( isWake( text ) ) {
+					held = { wake: pending, words: [], at: clock() };
+					pending = [];
+					onWake();
+					break;
+				}
+				if ( wakePhrases.some( p => p.startsWith( `${ text } ` ) ) || ( atStart && barePrefix( pending ) ) ) break;
+				pass.push( pending.shift() );
+				atStart = false;
+			}
+		}
+		if ( final ) {
+			if ( held?.words.length ) {
+				const n = sectionNumber( held.words );
+				const id = n ? null : matchCommand( held.words, options );
+				if ( n ) onCommand( "section", n );
+				else if ( id ) onCommand( id );
+				else {
+					if ( held.words.length <= 3 ) onMiss( held.words );
+					pass.push( ...held.wake, ...held.words );
+				}
 				held = null;
 			}
-		}
-		// "Prompter … go": a little pause after the wake word ends the phrase
-		// there, so a wake word on its own waits for the next phrase.
-		if ( held && final && held.length === 1 && Date.now() - heldAt < 3000 )
-			return pass;
-		if ( held && ( final || Date.now() - heldAt > 4000 ) ) {
-			const n = final ? sectionNumber( held.slice( 1 ) ) : null;
-			const id = final && !n ? matchCommand( held.slice( 1 ), options ) : null;
-			if ( n ) onCommand( "section", n );
-			else if ( id ) onCommand( id );
-			else {
-				// Something short after "Prompter" that isn't a command is worth a
-				// word; a script line that mentions the prompter is longer.
-				if ( final && held.length > 1 && held.length <= 4 ) onMiss( held.slice( 1 ) );
-				pass.push( ...held );
-			}
-			held = null;
+			const bare = atStart && bareCommand( pending );
+			if ( bare ) onCommand( ...bare );
+			else pass.push( ...pending );
+			pending = [];
+			atStart = true;
 		}
 		return pass;
 	};

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Sightline recorded sync reference</title>
+<style>
+html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: transparent; }
+#card { display: none; position: absolute; inset: 0; background: #142331; color: white; font: 5vw system-ui, sans-serif; text-align: center; align-content: center; padding: 5%; box-sizing: border-box; }
+#card.show { display: block; } #card.flash { background: white; color: white; }
+h1 { font-size: 1em; margin: 0 0 .3em; text-wrap: balance; } p { font-size: .6em; margin: .3em 0; text-wrap: pretty; }
+</style></head>
+<body><div id="card"><h1 id="take"></h1><p id="title"></p><p>Recorded sync reference · Sightline</p></div>
+<script>
+"use strict";
+const key = new URLSearchParams(location.search).get("key");
+const endpoint = name => `/${name}?key=${encodeURIComponent(key)}`;
+const post = (name, data) => fetch(endpoint(name), {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(data)}).catch(() => {});
+const audio = new AudioContext({sampleRate: 48000});
+let beep = null, busy = false;
+let events, heartbeat;
+async function ready() {
+ await audio.resume();
+ await post("ready", {audioState: beep ? audio.state : "loading"});
+}
+async function start() {
+ const response = await fetch(endpoint("beep.wav"));
+ beep = await audio.decodeAudioData(await response.arrayBuffer());
+ events = new EventSource(endpoint("events"));
+ events.onopen = () => { ready(); heartbeat = setInterval(ready, 2000); };
+ events.onerror = () => { clearInterval(heartbeat); events.close(); document.getElementById("card").className = ""; };
+ events.onmessage = async event => {
+  const data = JSON.parse(event.data);
+  if (busy) return;
+  busy = true;
+  await audio.resume();
+  const card = document.getElementById("card");
+  document.getElementById("take").textContent = `Section ${data.section} · Take ${data.take}`;
+  document.getElementById("title").textContent = data.title;
+  requestAnimationFrame(() => {
+   const renderedAt = Date.now();
+   card.className = "show flash";
+   if (data.mode === "beep") {
+    const source = audio.createBufferSource(); source.buffer = beep;
+    source.connect(audio.destination); source.start(); source.onended = () => source.disconnect();
+   }
+   setTimeout(() => card.classList.remove("flash"), data.flashMs);
+   setTimeout(() => {
+    card.className = ""; busy = false;
+    post("ack", {id: data.id, renderedAt, audioState: audio.state});
+   }, data.cardMs);
+  });
+ };
+}
+start().catch(() => post("ready", {audioState: "failed"}));
+</script></body></html>

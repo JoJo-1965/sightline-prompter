@@ -14,7 +14,19 @@ import {
 	getReadingAnchor,
 	buildWordIndex
 } from "./word-index.js";
-import { SHORTCUTS } from "./shortcuts.js";
+import { helpTabs, voiceHelpTabs, renderHelpTabs } from "./help-tabs.js";
+import { createPadSettings } from "./pad-settings.js";
+import { createMappingSettings } from "./mapping-settings.js";
+import { keyInput, normaliseMappings, mappedAction, createButtonEdges } from "./input-mappings.js";
+import { controlAction, controlView } from "./control-actions.js";
+import { createComponentSettings } from "./component-settings.js";
+import { createComponentAvailability } from "./component-availability.js";
+import { healthSections } from "./health-script-dom.js";
+import { scriptHealth } from "./script-health.js";
+import { rehearsalCoach } from "./rehearsal-coach.js";
+import { createScriptReview } from "./script-review.js";
+import { createWorkflow } from "./workflow.js";
+import { createObsSetupUi } from "./obs-setup-ui.js";
 import {
 	startSteadyScroll,
 	stopSteadyScroll,
@@ -28,11 +40,15 @@ import {
 import { decorateScript } from "./decorate.js";
 import { readDirectives, parseDirective, parseDuration } from "./directives.js";
 import { createTakeLog } from "./take-log.js";
-import { COMMAND_HELP, COMMANDS, wakeLabel } from "./voice-commands.js";
+import { COMMANDS, wakeLabel } from "./voice-commands.js";
 import { heardForms, normalizeWord } from "./word-fixes.js";
 import { createScratchRecorder } from "./scratch-audio.js";
 import { createLevelMeter, soundCheckVerdict } from "./level-meter.js";
 import { SUPPORT_URL } from "./links.js";
+import { createObsUi } from "./obs-ui.js";
+import { createSettingsNavigation } from "./settings-navigation.js";
+import { addSettingsHelp, createSettingsPages } from "./settings-pages.js";
+import { uiElement, showPanelWindow, hidePanelWindow } from "./panel-windows.js";
 import {
 	indexSentences,
 	scriptSentences,
@@ -73,23 +89,58 @@ let pointsRunning = false;
 let pacing = null; // { mode, total, sectionIndex, sectionTime, lastTick }
 let takeLog = new Map(); // section index -> result
 let controlOpen = false; // the control window is showing a copy of the script
-const pacingEl = document.getElementById( "pacing" );
-const summaryModal = document.getElementById( "take-summary" );
+const pacingEl = uiElement( "pacing" );
+const summaryModal = uiElement( "take-summary" );
+let headGuideState = null;
+window.electron.onHeadGuideState( ( value ) => {
+	headGuideState = value;
+	const restore = uiElement( "guide-controls" );
+	restore?.classList.toggle( "hidden", !value.shown );
+	restore?.setAttribute( "aria-pressed", String( value.controlsShown ) );
+} );
 // Every take of every section, for the edit (File > Export Take Log), each
 // with its section's sentences for the edit pack.
 const recording = createTakeLog( {
 	sentences: scriptSentences,
 	loudness: ( from, to ) => levelMeter.measure( from, to ),
-	onTake: takeLogged
+	onTake: takeLogged,
+	snapshot: () => recordingScriptSnapshot(),
+	obsState: () => obsUi.state(),
+	guideState: () => headGuideState
+		? { ...headGuideState, pose: { x: headGuideState.x, y: headGuideState.y, scale: headGuideState.scale, width: headGuideState.width, height: headGuideState.height, top: headGuideState.top, bottom: headGuideState.bottom, left: headGuideState.left, right: headGuideState.right } }
+		: ( {
+			shown: !!settings.showHeadGuide, fullscreen: !!settings.headGuideFullscreen,
+			chromeless: !!settings.headGuideChromeless, bounds: settings.headGuideBounds,
+			pose: { x: settings.headGuideX, y: settings.headGuideY, scale: settings.headGuideScale, width: settings.headGuideWidth ?? 1, height: settings.headGuideHeight ?? 1, top: settings.headGuideTop ?? 1, bottom: settings.headGuideBottom ?? 1, left: settings.headGuideLeft ?? 1, right: settings.headGuideRight ?? 1 },
+			background: settings.headGuideBackground ?? 0.12,
+			eyesLocked: settings.headGuideEyesLocked === true,
+			ideal: settings.headGuideIdeal, showIdeal: settings.headGuideShowIdeal !== false,
+			captureStatus: "Separate protected overlay; actual OBS capture route requires verification"
+		} ),
+	onOpen: ( index, title, take ) => obsUi.chapter( `Section ${ index + 1 } · Take ${ take } · ${ title }` ),
+	onMarker: label => obsUi.chapter( label || "Sightline marker" )
+} );
+const obsUi = createObsUi( {
+	getSettings: () => settings,
+	canStart: () => !isEditMode && !isScrolling() && !autoScrollStarting && !slating && !pointsRunning && !!md.textContent.trim() && ( pointsMode() || settings.scrollMode !== "voice" || ( usesLocalVoice() ? speechModel.installed && !speechModel.downloading && !modelMaintenance : settings.hasDeepgramKey ) ),
+	onStart: () => runRemoteAction( "play" ),
+	onFinish: () => {
+		stopSteadySession();
+		stopAutoScrollSession();
+		if ( pointsRunning ) togglePoints();
+		feedTakeLog( false );
+	},
+	onChange: () => sendStatus(),
+	toast: text => showToast( text, 4500 )
 } );
 let recordingSaved = 0; // the take log version last sent to be saved
 let recordingY = null; // reading line at the last tick, to see the text move on
 let pendingJumpReason = null; // "again" when a jump is a voice retake
-const onAirEl = document.getElementById( "on-air" );
+const onAirEl = uiElement( "on-air" );
 const THEMES = [ "default", "yellow", "contrast", "cream" ];
 const FONTS = [ "default", "atkinson", "opendyslexic", "verdana" ];
 const EFFECTS = [ "none", "outline", "shadow" ];
-const md = document.getElementById( "md" );
+const md = uiElement( "md" );
 
 // Recording settings (from main; edited on the Settings page).
 let settings = {
@@ -104,8 +155,29 @@ let settings = {
 	eyeLineReadingLine: 15,
 	hasDeepgramKey: false
 };
+let syncPadSettings = () => {};
+let mappingSettings = null;
+let componentSettings = null;
+let componentAvailability = null;
+let componentStatus = null;
+let phoneStatus = null;
+let workflow = null;
+let obsSetupUi = null;
+let modelMaintenance = false;
+let scriptReview = null;
+let reviewedRecording = null;
 let cuePhrases = [];
 let lastScriptHtml = null;
+let sourceSnapshot = null;
+let recordingSnapshotCache = null;
+function recordingScriptSnapshot() {
+	const sections = [ ...md.querySelectorAll( "h2" ) ].map( ( el, i ) => ( { section: i + 1, id: el.id || String( i + 1 ), title: el.textContent } ) );
+	const key = JSON.stringify( { source: sourceSnapshot?.id, html: lastScriptHtml, cues: cuePhrases, sections } );
+	if ( recordingSnapshotCache?.key === key ) return recordingSnapshotCache.value;
+	const value = { ...sourceSnapshot, id: crypto.randomUUID(), html: lastScriptHtml ?? "", renderedHtml: md.innerHTML, capturedAt: new Date().toISOString(), sections, cuePhrases: [ ...cuePhrases ] };
+	recordingSnapshotCache = { key, value };
+	return value;
+}
 
 function renderScript( html ) {
 	md.innerHTML = html;
@@ -255,7 +327,7 @@ for ( const el of [ ...document.body.children ] ) {
 document.body.appendChild( hud );
 
 function applyMirror() {
-	const md = document.getElementById( "md" );
+	const md = uiElement( "md" );
 	if ( !md ) return;
 	const sx = mirrored === "horizontal" || mirrored === "both" ? -1 : 1;
 	const sy = mirroredVertically() ? -1 : 1;
@@ -280,23 +352,15 @@ window.addEventListener(
 );
 window.addEventListener( "resize", applyMirror );
 
-// The Mirror button shows the state: ↔ horizontal, ↕ vertical, ↔↕ both.
-const MIRROR_BADGES = { off: "", horizontal: " ↔", vertical: " ↕", both: " ↔↕" };
-
 function showMirrorButton() {
-	// The two toggles (↔ and ↕) in the Layout and Reading views.
-	for ( const pill of document.querySelectorAll( ".mirror-pills [data-axis]" ) ) {
+	// Keep the toolbar, quick panel and Settings toggles in step.
+	for ( const pill of [ ...document.querySelectorAll( ".mirror-pills [data-axis], .cb-mirror-axis" ), ...uiElement( "settings-modal" ).querySelectorAll( ".mirror-pills [data-axis]" ) ] ) {
 		const on = pill.dataset.axis === "h"
 			? mirrored === "horizontal" || mirrored === "both"
 			: mirrored === "vertical" || mirrored === "both";
 		pill.classList.toggle( "on", on );
 		pill.setAttribute( "aria-pressed", String( on ) );
 	}
-	const button = document.getElementById( "cb-mirror" );
-	if ( !button ) return;
-	button.textContent = `Mirror${ MIRROR_BADGES[mirrored] ?? "" }`;
-	button.classList.toggle( "on", mirrored !== "off" );
-	button.setAttribute( "aria-label", `Mirror: ${ MIRROR_LABELS[mirrored] }` );
 }
 
 // Each toggle stays on until clicked again; both on mirrors both ways.
@@ -308,10 +372,10 @@ function toggleMirrorAxis( axis ) {
 	setMirrored( h && v ? "both" : h ? "horizontal" : v ? "vertical" : "off" );
 }
 
-document.addEventListener( "click", ( e ) => {
-	const pill = e.target.closest( ".mirror-pills [data-axis]" );
-	if ( pill ) toggleMirrorAxis( pill.dataset.axis );
-} );
+// Direct listeners travel with the controls into the separate Settings document.
+for ( const pill of document.querySelectorAll( ".mirror-pills [data-axis], .cb-mirror-axis" ) ) {
+	pill.addEventListener( "click", () => toggleMirrorAxis( pill.dataset.axis ) );
+}
 
 function setMirrored( value, save = true ) {
 	mirrored = normalizeMirror( value );
@@ -333,7 +397,7 @@ function cycleMirror() {
 }
 
 function showToast( text, ms = 1400 ) {
-	let toast = document.getElementById( "toast" );
+	let toast = uiElement( "toast" );
 	if ( !toast ) {
 		toast = document.createElement( "div" );
 		toast.id = "toast";
@@ -377,30 +441,31 @@ let isLoadingContent = false;
 let isNewFile = false;
 let isSaving = false;
 let editorView = null;
+let editorReadOnly = false;
 let previewManuallyScrolled = false;
 let pendingScrollToCursor = false;
 let savedScrollY = 0;
 
-const previewContainer = document.getElementById( "preview-container" );
-const editorContainer = document.getElementById( "editor-container" );
-const editorDiv = document.getElementById( "editor" );
-const toolbarFilename = document.getElementById( "toolbar-filename" );
-const toolbarDirty = document.getElementById( "toolbar-dirty" );
-const btnSave = document.getElementById( "btn-save" );
-const btnSaveAs = document.getElementById( "btn-save-as" );
-const btnCancel = document.getElementById( "btn-cancel" );
-const resizeHandle = document.getElementById( "resize-handle" );
-const autoScrollIndicator = document.getElementById( "auto-scroll-indicator" );
-const apiKeyModal = document.getElementById( "api-key-modal" );
-const apiKeyInput = document.getElementById( "api-key-input" );
-const apiKeySaveBtn = document.getElementById( "api-key-save" );
-const apiKeyCancelBtn = document.getElementById( "api-key-cancel" );
-const apiKeyClearBtn = document.getElementById( "api-key-clear" );
-const micModal = document.getElementById( "mic-modal" );
-const micSelect = document.getElementById( "mic-modal-select" );
-const micHint = document.getElementById( "mic-modal-hint" );
-const micSaveBtn = document.getElementById( "mic-modal-save" );
-const micCancelBtn = document.getElementById( "mic-modal-cancel" );
+const previewContainer = uiElement( "preview-container" );
+const editorContainer = uiElement( "editor-container" );
+const editorDiv = uiElement( "editor" );
+const toolbarFilename = uiElement( "toolbar-filename" );
+const toolbarDirty = uiElement( "toolbar-dirty" );
+const btnSave = uiElement( "btn-save" );
+const btnSaveAs = uiElement( "btn-save-as" );
+const btnCancel = uiElement( "btn-cancel" );
+const resizeHandle = uiElement( "resize-handle" );
+const autoScrollIndicator = uiElement( "auto-scroll-indicator" );
+const apiKeyModal = uiElement( "api-key-modal" );
+const apiKeyInput = uiElement( "api-key-input" );
+const apiKeySaveBtn = uiElement( "api-key-save" );
+const apiKeyCancelBtn = uiElement( "api-key-cancel" );
+const apiKeyClearBtn = uiElement( "api-key-clear" );
+const micModal = uiElement( "mic-modal" );
+const micSelect = uiElement( "mic-modal-select" );
+const micHint = uiElement( "mic-modal-hint" );
+const micSaveBtn = uiElement( "mic-modal-save" );
+const micCancelBtn = uiElement( "mic-modal-cancel" );
 
 // --- Auto-scroll state ---
 let autoScrollActive = false;
@@ -457,6 +522,8 @@ const SCROLL_KEYS = new Set( [
 document.addEventListener(
 	"keydown",
 	( e ) => {
+		const input = keyInput( e );
+		if ( input && mappedAction( normaliseMappings( settings.inputMappings ), input ) !== undefined ) return;
 		if ( SCROLL_KEYS.has( e.key ) ) noteManualScroll();
 	},
 	true
@@ -517,14 +584,18 @@ function enterEditMode() {
 	window.electron.requestRawMarkdown();
 }
 
-function loadEditorContent( content, filePath ) {
+function loadEditorContent( content, filePath, access = {} ) {
 	const rawContent = content ?? "";
+	editorReadOnly = access.readOnly === true;
+	btnSave.disabled = editorReadOnly;
+	btnSaveAs.textContent = editorReadOnly ? "Save a copy…" : "Save As";
+	btnCancel.textContent = editorReadOnly ? "Back to prompter" : "Cancel";
 
 	showEditor();
 
 	if ( toolbarFilename ) {
 		toolbarFilename.textContent = filePath
-			? filePath.split( "/" ).pop()
+			? `${ filePath.split( /[\\/]/ ).pop() }${ editorReadOnly ? " · Sample · read-only" : "" }`
 			: "New file";
 	}
 	setDirty( false );
@@ -532,20 +603,22 @@ function loadEditorContent( content, filePath ) {
 	isLoadingContent = true;
 	if ( editorView ) {
 		window.EditorModule.setEditorContent( editorView, rawContent );
+		window.EditorModule.setEditorReadOnly( editorView, editorReadOnly );
 	} else {
 		editorView = window.EditorModule.createEditor( editorDiv, rawContent, () => {
+			scriptReview?.changed();
 			if ( !isDirty && !isLoadingContent ) {
 				setDirty( true );
 			}
-		} );
+		}, editorReadOnly );
 	}
 	isLoadingContent = false;
 	editorView.focus();
 }
 
-window.electron.onRawMarkdown( ( content, filePath ) => {
+window.electron.onRawMarkdown( ( content, filePath, access ) => {
 	if ( !isEditMode ) return;
-	loadEditorContent( content, filePath );
+	loadEditorContent( content, filePath, access );
 } );
 
 function discardAndExitEditor() {
@@ -587,7 +660,7 @@ function toggleEditMode() {
 }
 
 function saveEditorContent() {
-	if ( !editorView ) return;
+	if ( !editorView || editorReadOnly ) return;
 	isSaving = true;
 	const content = window.EditorModule.getEditorContent( editorView );
 	if ( isNewFile ) {
@@ -611,6 +684,11 @@ let pendingSaveAndClose = false;
 window.electron.onSaveResult( ( success, filePath ) => {
 	isSaving = false;
 	if ( success ) {
+		editorReadOnly = false;
+		btnSave.disabled = false;
+		btnSaveAs.textContent = "Save As";
+		btnCancel.textContent = "Cancel";
+		if ( editorView ) window.EditorModule.setEditorReadOnly( editorView, false );
 		setDirty( false );
 		isNewFile = false;
 		if ( filePath && toolbarFilename ) {
@@ -627,7 +705,7 @@ window.electron.onSaveResult( ( success, filePath ) => {
 window.electron.onToggleEditor( toggleEditMode );
 
 // New file — enter edit mode with empty content
-window.electron.onNewFile( () => {
+function newScript() {
 	if ( isDirty ) {
 		const discard = confirm(
 			"You have unsaved changes. Discard and create a new file?"
@@ -638,7 +716,8 @@ window.electron.onNewFile( () => {
 	isEditMode = true;
 	window.electron.pauseWatcher();
 	loadEditorContent( "", null );
-} );
+}
+window.electron.onNewFile( newScript );
 
 // Listen for menu save/save-as (works from editor or preview with pending edits)
 window.electron.onMenuSave( () => {
@@ -683,6 +762,7 @@ document.addEventListener( "keydown", ( event ) => {
 	if ( isEditMode ) return;
 	// Leave keys alone while a dialog (Settings, API key, mic) is open.
 	if ( document.querySelector( ".modal:not(.hidden)" ) ) return;
+	if ( event.target.closest?.( "#voice-help" ) ) return;
 
 	const plainKey = !event.metaKey && !event.ctrlKey && !event.altKey;
 	if ( event.key === "Escape" && closePanels() ) {
@@ -691,6 +771,15 @@ document.addEventListener( "keydown", ( event ) => {
 	}
 	// Typing or nudging a slider in the control bar or a panel.
 	if ( event.target.closest?.( "input, select, textarea" ) ) return;
+	// Let native button activation handle Space/Enter without also starting a take.
+	if ( [ " ", "Enter" ].includes( event.key ) && event.target.closest?.( "button, a, [role=tab]" ) ) return;
+	const customInput = keyInput( event );
+	const customAction = customInput && mappedAction( normaliseMappings( settings.inputMappings ), customInput );
+	if ( customAction !== undefined && customAction !== null ) {
+		event.preventDefault();
+		if ( !event.repeat ) runMappedAction( customAction );
+		return;
+	}
 	if ( handlePointsKey( event ) ) return;
 	if ( event.key === "F1" && event.shiftKey ) {
 		event.preventDefault();
@@ -848,7 +937,14 @@ if ( resizeHandle ) {
 }
 
 // Handle content loaded from main process
-window.electron.onContent( ( content ) => {
+window.electron.onContent( ( content, snapshot ) => {
+	// A different script must not reopen the previous script's cached editor.
+	if ( snapshot && !isEditMode && !isSaving && !isDirty && editorView ) {
+		editorView.destroy();
+		editorView = null;
+	}
+	sourceSnapshot = snapshot ?? null;
+	recordingSnapshotCache = null;
 	if ( md ) {
 		lastScriptHtml = content;
 		renderScript( content );
@@ -1241,6 +1337,14 @@ function pauseVoiceAt( pause ) {
 
 async function startAutoScrollSession() {
 	if ( autoScrollActive || autoScrollStarting ) return;
+	if ( listeningSuspended ) {
+		showToast( "Listening is off for this session. Turn it on with Stream Deck or Restart listening." );
+		return;
+	}
+	if ( usesLocalVoice() && ( modelMaintenance || speechModel.downloading ) ) {
+		showToast( "Wait for speech model maintenance to finish, then press Play again" );
+		return;
+	}
 	if ( isEditMode ) {
 		alert( "Exit the editor before starting auto-scroll." );
 		return;
@@ -1250,7 +1354,7 @@ async function startAutoScrollSession() {
 		openSettings();
 		showSettingsTab( "voice" );
 		showToast(
-			"Download the speech model first (Settings > Voice), then press Play again"
+			"Download the speech model first (Settings > Prompting > Voice), then press Play again"
 		);
 		return;
 	}
@@ -1292,6 +1396,7 @@ let speechModel = { installed: false };
 window.electron.onSpeechModel( ( status ) => {
 	speechModel = status;
 	showSpeechModel();
+	componentSettings?.paintSpeech( status );
 	syncCommandListening();
 	offerSpeechModel();
 } );
@@ -1332,7 +1437,7 @@ function offerSpeechModel() {
 	const close = document.createElement( "button" );
 	close.type = "button";
 	close.textContent = "×";
-	close.title = "Not now (Settings > Voice has it)";
+	close.title = "Not now (Settings > Prompting > Voice has it)";
 	close.setAttribute( "aria-label", "Not now" );
 	close.addEventListener( "click", () => {
 		rememberVoiceOffer();
@@ -1381,17 +1486,17 @@ function showSpeechModel() {
 }
 
 function showSpeechModelIn( statusId, buttonId ) {
-	const status = document.getElementById( statusId );
-	const button = document.getElementById( buttonId );
+	const status = uiElement( statusId );
+	const button = uiElement( buttonId );
 	if ( !status || !button ) return;
 	const mb = bytes => Math.round( bytes / 1e6 );
-	if ( speechModel.installed ) {
-		status.textContent
-			= "Speech model installed. Voice scrolling works offline.";
-		button.classList.add( "hidden" );
-	} else if ( speechModel.downloading ) {
+	if ( speechModel.downloading ) {
 		const pct = Math.floor( ( 100 * speechModel.received ) / speechModel.total );
 		status.textContent = `Downloading… ${ mb( speechModel.received ) } of ${ mb( speechModel.total ) } MB (${ pct }%)`;
+		button.classList.add( "hidden" );
+	} else if ( speechModel.installed ) {
+		status.textContent
+			= "Speech model installed. Voice scrolling works offline.";
 		button.classList.add( "hidden" );
 	} else {
 		const failed = speechModel.error
@@ -1413,7 +1518,8 @@ async function beginVoice( engine, deepgramKey ) {
 			scriptEl: md,
 			audioDeviceId,
 			onStatus: ( status ) => {
-				if ( status.type === "closed" || status.type === "error" ) {
+				showListeningStatus( status );
+				if ( status.type === "closed" || status.type === "error" || status.type === "failed" ) {
 					if ( autoScrollActive ) stopAutoScrollSession();
 				} else if ( status.type === "device-fallback" ) {
 					showTransientHint( "Saved mic unavailable — using default", 2500 );
@@ -1422,6 +1528,9 @@ async function beginVoice( engine, deepgramKey ) {
 			onScroll: handleAutoScrollPosition,
 			onFollow: logSpokenWords,
 			onHeard: entry => window.electron.appendHeardLog( entry ),
+			onReview: ( { words, engine: usedEngine } ) => {
+				if ( settings.coachFillers === true && !offScript && !cuePaused ) recording.reviewWords( words, usedEngine );
+			},
 			wordFixes: settings.wordFixes ?? [],
 			soundAlike: settings.soundAlike !== false,
 			commandWords: settings.commandWords ?? [],
@@ -1439,6 +1548,7 @@ async function beginVoice( engine, deepgramKey ) {
 		else showSlate();
 	} catch ( err ) {
 		autoScrollStarting = false;
+		if ( err.message === "Listening was cancelled." ) return;
 		console.error( "[auto-scroll] start failed", err );
 		setIndicator( "Error", "error" );
 		setTimeout( () => {
@@ -1472,6 +1582,8 @@ async function stopAutoScrollSession() {
 // scrolling" chosen, the mic listens for commands only, the rest of the time.
 
 const COMMAND_LABELS = {
+	"guide-on": "guide on",
+	"guide-off": "guide off",
 	pause: "pause",
 	go: "go",
 	slower: "slower",
@@ -1492,8 +1604,64 @@ const COMMAND_LABELS = {
 };
 
 let commandListening = false;
+let listeningSuspended = false;
+let listeningChange = Promise.resolve();
 let commandChange = Promise.resolve();
-const commandPill = document.getElementById( "command-listening" );
+let commandConfig = "";
+let commandFailure = false;
+let listenerHealth = { state: "off" };
+const commandPill = uiElement( "command-listening" );
+
+function showListeningStatus( status ) {
+	if ( status.type === "transcript" || status.type === "device-fallback" ) return;
+	const failed = [ "failed", "error", "closed" ].includes( status.type );
+	const recovering = status.type === "recovering";
+	listenerHealth = { state: failed ? "failed" : recovering ? "recovering" : "listening", reason: status.reason ?? status.error ?? null, audioAt: status.audioAt ?? listenerHealth.audioAt ?? null, engineAt: status.engineAt ?? listenerHealth.engineAt ?? null };
+	const label = recovering ? "Restarting listening…" : failed ? "Listening stopped · use Restart listening" : `Listening for “${ wakeLabel( settings.wakeWord ) }”`;
+	if ( field( "set-listening-status" ) ) field( "set-listening-status" ).textContent = label;
+	if ( commandPill ) commandPill.textContent = label;
+	if ( recovering || failed ) window.electron.debugLog?.( `${ status.reason === "manual restart" ? "voice" : "error" }: speech listener ${ status.type }: ${ status.reason ?? status.error ?? "connection stopped" }` );
+	if ( status.type === "recovered" ) showToast( "Listening restored", 1800 );
+	if ( failed ) showToast( "Listening stopped. Use Restart listening in Prompting > Commands.", 5000 );
+	sendStatus();
+}
+
+async function restartListeningNow() {
+	if ( isEditMode || offScript || modelMaintenance || speechModel.downloading ) return showToast( "Finish editing, off-script mode or model maintenance before restarting listening" );
+	listeningSuspended = false;
+	if ( autoScrollActive ) return autoScrollHandle?.restartListening();
+	if ( !wantCommandListening() && !commandFailure ) {
+		showToast( "Enable Always listening in Prompting > Commands first", 3000 );
+		return;
+	}
+	commandFailure = false;
+	showListeningStatus( { type: "recovering", reason: "manual restart" } );
+	await stopCommandListening();
+	await syncCommandListening();
+}
+function restartListening() {
+	listeningChange = listeningChange.catch( () => {} ).then( restartListeningNow );
+	return listeningChange;
+}
+function toggleSessionListening() {
+	listeningChange = listeningChange.catch( () => {} ).then( async () => {
+		listeningSuspended = !listeningSuspended;
+		if ( listeningSuspended ) {
+			if ( autoScrollActive || autoScrollStarting ) await stopAutoScrollSession();
+			await stopCommandListening();
+			listenerHealth = { state: "off" };
+			showToast( "Listening off · voice following paused · OBS keeps recording", 3000 );
+		} else {
+			commandFailure = false;
+			await syncCommandListening();
+			showToast( commandListening ? "Listening restored" : "Listening available · press Play for voice following", 3000 );
+		}
+		sendStatus();
+	} );
+	return listeningChange;
+}
+commandPill?.addEventListener( "click", restartListening );
+uiElement( "set-listening-restart" )?.addEventListener( "click", restartListening );
 
 // Also at a {stop} in steady scrolling, so "Prompter, go" can carry on.
 // Always (Settings > Voice > Voice commands) listens for the wake word
@@ -1505,13 +1673,17 @@ function wantCommandListening() {
 	const wanted = always || ( cuePaused && lastCue?.listen !== "off" && settings.voiceCommands !== "off" );
 	return (
 		wanted
+		&& !listeningSuspended
 		&& ( settings.scrollMode !== "voice" || always )
 		&& usesLocalVoice()
 		&& speechModel.installed
+		&& !speechModel.downloading
 		&& !isEditMode
 		&& !autoScrollActive
 		&& !autoScrollStarting
 		&& !teachingWord
+		&& !commandFailure
+		&& !modelMaintenance
 	);
 }
 
@@ -1520,7 +1692,12 @@ function wantCommandListening() {
 function syncCommandListening() {
 	commandChange = commandChange.then( async () => {
 		const want = wantCommandListening();
-		if ( want === commandListening ) return;
+		const config = JSON.stringify( [ settings.wakeWord, settings.commandWords, settings.soundAlike, audioDeviceId ] );
+		if ( want === commandListening && ( !want || config === commandConfig ) ) return;
+		if ( commandListening ) {
+			await stopAutoScroll();
+			commandListening = false;
+		}
 		if ( want ) {
 			try {
 				await startAutoScroll( {
@@ -1534,11 +1711,26 @@ function syncCommandListening() {
 					wakeWord: settings.wakeWord ?? "prompter",
 					commandWords: settings.commandWords ?? [],
 					soundAlike: settings.soundAlike !== false,
-					isPaused: () => cuePaused
+					isPaused: () => cuePaused,
+					onHeard: ( entry ) => {
+						if ( settings.traceCommands ) window.electron.appendHeardLog( { ...entry, mode: "commands" } );
+					},
+					onStatus: ( status ) => {
+						showListeningStatus( status );
+						if ( status.type === "failed" ) {
+							commandFailure = true;
+							stopCommandListening();
+						}
+					}
 				} );
 				commandListening = true;
+				commandConfig = config;
 			} catch ( err ) {
-				console.warn( "[voice commands] couldn't start", err );
+				if ( err.message !== "Listening was cancelled." ) {
+					console.warn( "[voice commands] couldn't start", err );
+					commandFailure = true;
+					showListeningStatus( { type: "failed", reason: err.message } );
+				}
 			}
 		} else {
 			await stopAutoScroll();
@@ -1546,6 +1738,10 @@ function syncCommandListening() {
 		}
 		if ( commandPill ) commandPill.textContent = `🎙 Listening for “${ wakeLabel( settings.wakeWord ) }”`;
 		commandPill?.classList.toggle( "hidden", !commandListening );
+		if ( !want && !commandFailure && !autoScrollActive ) {
+			listenerHealth = { state: "off" };
+			if ( field( "set-listening-status" ) ) field( "set-listening-status" ).textContent = "Listening is off.";
+		}
 		sendStatus();
 	} );
 	return commandChange;
@@ -1572,17 +1768,21 @@ function resyncAfterJump() {
 function voiceWake() {
 	if ( isEditMode ) return;
 	showToast( "Listening… go · pause · again · marker", 3000 );
+	window.electron.debugLog?.( "voice: wake word acknowledged" );
 }
 
 function voiceMiss( words ) {
 	if ( isEditMode ) return;
 	showToast( `Didn't catch that: “${ words.join( " " ) }”`, 2500 );
+	window.electron.debugLog?.( "voice: wake heard; command not matched (see heard log)" );
 }
 
 // "Prompter, what can I say?": every command on a card, until the next
-// command, a click, Esc or 15 seconds.
-function showVoiceHelp() {
-	let card = document.getElementById( "voice-help" );
+// command, Close or Esc. Tabs stay open while the speaker reads them.
+let voiceHelpGeneration = 0;
+export async function showVoiceHelp() {
+	const generation = ++voiceHelpGeneration;
+	let card = uiElement( "voice-help" );
 	if ( !card ) {
 		card = document.createElement( "div" );
 		card.id = "voice-help";
@@ -1590,27 +1790,32 @@ function showVoiceHelp() {
 		card.setAttribute( "aria-label", "Voice commands" );
 		const title = document.createElement( "h4" );
 		title.id = "voice-help-title";
-		const list = document.createElement( "dl" );
-		for ( const [ say, does ] of COMMAND_HELP ) {
-			const dt = document.createElement( "dt" );
-			dt.textContent = say;
-			const dd = document.createElement( "dd" );
-			dd.textContent = does;
-			list.append( dt, dd );
-		}
-		card.append( title, list );
-		card.addEventListener( "click", hideVoiceHelp );
+		const list = document.createElement( "div" );
+		list.id = "voice-help-list";
+		const close = document.createElement( "button" );
+		close.type = "button";
+		close.textContent = "Close";
+		close.addEventListener( "click", hideVoiceHelp );
+		card.append( title, list, close );
+		card.addEventListener( "keydown", ( event ) => {
+			if ( event.key === "Escape" ) hideVoiceHelp();
+		} );
 		hud.appendChild( card );
 	}
-	document.getElementById( "voice-help-title" ).textContent = `Say “${ wakeLabel( settings.wakeWord ) }”, then:`;
+	uiElement( "voice-help-title" ).textContent = `Say “${ wakeLabel( settings.wakeWord ) }”, then:`;
+	renderHelpTabs( uiElement( "voice-help-list" ), voiceHelpTabs( settings ), "voice-help" );
 	card.classList.remove( "hidden" );
 	clearTimeout( showVoiceHelp.timer );
-	showVoiceHelp.timer = setTimeout( hideVoiceHelp, 15000 );
+	await showPanelWindow( "voicehelp", card );
+	if ( generation !== voiceHelpGeneration || card.classList.contains( "hidden" ) ) hidePanelWindow( "voicehelp" );
+	else card.lastElementChild?.focus( { preventScroll: true } );
 }
 
 function hideVoiceHelp() {
+	voiceHelpGeneration++;
 	clearTimeout( showVoiceHelp.timer );
-	document.getElementById( "voice-help" )?.classList.add( "hidden" );
+	uiElement( "voice-help" )?.classList.add( "hidden" );
+	hidePanelWindow( "voicehelp" );
 }
 
 document.addEventListener( "keydown", ( e ) => {
@@ -1655,6 +1860,16 @@ function resetPrompter() {
 
 function runVoiceCommand( id, value ) {
 	if ( isEditMode ) return;
+	if ( id === "obs-record" || id === "obs-finish" ) {
+		runRemoteAction( id );
+		return;
+	}
+	if ( id === "guide-on" || id === "guide-off" ) {
+		hideVoiceHelp();
+		window.electron.headGuide( id === "guide-on" ? "show" : "hide" );
+		showToast( id === "guide-on" ? "Head guide on" : "Head guide off" );
+		return;
+	}
 	hideVoiceHelp();
 	showToast( id === "section" ? `Heard: “Section ${ value }”` : `Heard: “${ wakeLabel( settings.wakeWord ) }, ${ COMMAND_LABELS[id] ?? id }”` );
 	if ( id === "help" ) {
@@ -1742,7 +1957,7 @@ function runVoiceCommand( id, value ) {
 
 // --- Steady scroll (fixed words per minute) ---
 
-const countdownEl = document.getElementById( "countdown" );
+const countdownEl = uiElement( "countdown" );
 let countdownTimer = null;
 
 function steadyIndicatorText() {
@@ -1757,7 +1972,7 @@ function steadySessionActive() {
 // A white flash (and a beep, if chosen) marks the moment; then the section and
 // take number show for a second. The take log notes when it went off.
 
-const slateEl = document.getElementById( "slate" );
+const slateEl = uiElement( "slate" );
 let slating = false; // a slate is showing, and something waits for it
 let slateDue = false; // the slate is about to go off: the take log waits for it
 let slateTimer = null;
@@ -1797,14 +2012,28 @@ function showSlate() {
 	slateEl.classList.remove( "hidden" );
 	slateEl.classList.add( "flash" );
 	recording.slate( index );
+	const slateLog = recording.data().startedAt;
+	const recorded = obsUi.recordedSlate( { section: index + 1, take, title: slateEl.querySelector( ".slate-title" ).textContent, mode: settings.slate } ).then( ( result ) => {
+		if ( result && recording.data().startedAt === slateLog ) recording.recordedSync( result );
+		if ( result?.status === "failed" ) {
+			stopSteadySession();
+			stopAutoScrollSession();
+			setIndicator( "Recorded slate failed · check OBS", "error" );
+			return false;
+		}
+		return true;
+	} );
+	pendingRecordedSlates.add( recorded );
+	recorded.then( () => pendingRecordedSlates.delete( recorded ), () => pendingRecordedSlates.delete( recorded ) );
 	if ( settings.slate === "beep" ) playTone( 1000, 0.25, 0.35 );
 	setTimeout( () => slateEl.classList.remove( "flash" ), 150 );
-	return new Promise( ( resolve ) => {
+	const local = new Promise( ( resolve ) => {
 		slateTimer = setTimeout( () => {
 			slateEl.classList.add( "hidden" );
 			resolve();
 		}, 1100 );
 	} );
+	return Promise.all( [ local, recorded ] ).then( ( [ , ok ] ) => ok );
 }
 
 function hideSlate() {
@@ -1829,9 +2058,10 @@ function afterSlate( start ) {
 	scratchChange
 		.then( () => scratch.recording && new Promise( r => setTimeout( r, 300 ) ) )
 		.then( () => ( slating ? showSlate() : null ) )
-		.then( () => {
+		.then( ( ok ) => {
 			if ( !slating ) return;
 			slating = false;
+			if ( ok === false ) return;
 			start();
 		} );
 }
@@ -1856,6 +2086,7 @@ function startSteadySession() {
 				onFinished: () => setIndicator( null )
 			} );
 			startCueTracking();
+			feedTakeLog( true );
 			if ( settings.slate !== "beep" ) startBeep();
 			setIndicator( steadyIndicatorText() );
 		} );
@@ -2149,7 +2380,7 @@ window.electron.getAudioDeviceId();
 
 // --- Recording settings ---
 
-const readingMarker = document.getElementById( "reading-marker" );
+const readingMarker = uiElement( "reading-marker" );
 
 // Half the height of a line of script text, in ems of the page's text size:
 // the scroll puts the top of the text on the reading line, so the arrow sits
@@ -2186,6 +2417,10 @@ function rerenderScript() {
 function applySettings( next ) {
 	const prev = settings;
 	settings = { ...settings, ...next };
+	if ( prev.voiceCommands !== settings.voiceCommands ) commandFailure = false;
+	autoScrollHandle?.setCommandOptions( { onCommand: settings.voiceCommands === "off" ? null : runVoiceCommand, wakeWord: settings.wakeWord ?? "prompter", commandWords: settings.commandWords ?? [], soundAlike: settings.soundAlike !== false } );
+	syncPadSettings( settings.padLayout );
+	mappingSettings?.sync( settings.inputMappings );
 	const body = document.body;
 	body.classList.remove(
 		"directions-dim",
@@ -2248,10 +2483,10 @@ window.electron.onEditorUnavailable( ( fileName, kind ) => {
 
 // --- Open a Google Doc ---
 
-const gdocModal = document.getElementById( "gdoc-modal" );
-const gdocInput = document.getElementById( "gdoc-input" );
-const gdocError = document.getElementById( "gdoc-error" );
-const gdocOpenBtn = document.getElementById( "gdoc-open" );
+const gdocModal = uiElement( "gdoc-modal" );
+const gdocInput = uiElement( "gdoc-input" );
+const gdocError = uiElement( "gdoc-error" );
+const gdocOpenBtn = uiElement( "gdoc-open" );
 const GOOGLE_DOC_LINK = /docs\.google\.com\/document\//;
 
 function showGdocError( text ) {
@@ -2291,7 +2526,7 @@ window.electron.onGoogleDocResult( ( { ok, message } ) => {
 } );
 window.electron.onShowGoogleDocDialog( () => showGoogleDocDialog() );
 gdocOpenBtn.addEventListener( "click", () => openGoogleDoc( gdocInput.value ) );
-document.getElementById( "gdoc-cancel" ).addEventListener( "click", hideGoogleDocDialog );
+uiElement( "gdoc-cancel" ).addEventListener( "click", hideGoogleDocDialog );
 gdocInput.addEventListener( "keydown", ( e ) => {
 	e.stopPropagation();
 	if ( e.key === "Enter" ) gdocOpenBtn.click();
@@ -2300,9 +2535,10 @@ gdocInput.addEventListener( "keydown", ( e ) => {
 
 // --- Settings page ---
 
-const settingsModal = document.getElementById( "settings-modal" );
-const field = id => document.getElementById( id );
+const settingsModal = uiElement( "settings-modal" );
+const field = id => uiElement( id );
 let settingsSnapshot = null;
+let settingsReturnFocus = null;
 
 function numberValue( id, min, max, fallback ) {
 	const value = Number( field( id ).value );
@@ -2315,32 +2551,47 @@ function numberValue( id, min, max, fallback ) {
 // Reading and Recording tabs apply as you go, so they don't count.
 let settingsDirty = false;
 let afterSettingsClose = null;
-const LIVE_TABS = "#set-layout-host, #set-reading-host, #set-recording-host";
+const LIVE_TABS = "#set-layout-host, #set-reading-host, #set-background-host, #set-aids-host, #set-display-host, #set-recording-host, #set-script-host, #set-pad-fieldset, #set-capture-fieldset, #set-mapping-fieldset";
+
+field( "set-capture-override" )?.addEventListener( "change", event => window.electron.setCaptureOverride( event.target.checked ) );
+field( "capture-override-off" )?.addEventListener( "click", () => window.electron.setCaptureOverride( false ) );
+window.electron.onCaptureOverride( ( active ) => {
+	field( "set-capture-override" ).checked = active;
+	field( "capture-override-note" ).classList.toggle( "hidden", !active );
+} );
+window.electron.getCaptureOverride();
 
 function markSettingsDirty( event ) {
 	if ( !event.isTrusted || event.target.closest( LIVE_TABS ) ) return;
 	if ( !event.target.matches( "input, select, textarea" ) ) return;
-	settingsDirty = true;
-	field( "settings-applied" ).textContent = "";
+	wordsChanged();
 }
 
 // Each step of opening Settings goes in sightline.log, so if it freezes, the
 // last line says where. (Looking into a freeze on Joanne's computer.)
-// (main.js only keeps them in debug mode, Settings > About.)
+// (main.js only keeps them in debug mode, Settings > Debug.)
 const settingsTrail = step => window.electron.debugLog?.( `settings: ${ step }` );
 
-document.getElementById( "settings-save-log" )?.addEventListener( "click", async () => {
+uiElement( "settings-save-log" )?.addEventListener( "click", async () => {
 	const saved = await window.electron.saveSupportLog();
 	if ( saved ) showToast( "Log saved: attach it to your GitHub issue or email", 3500 );
 } );
 
 async function openSettings() {
 	if ( !settingsModal ) return;
+	if ( !settingsModal.classList.contains( "hidden" ) ) {
+		await showPanelWindow( "settings", settingsModal, () => settingsPages.layout() );
+		return;
+	}
+	settingsReturnFocus = document.activeElement;
+	closePanels();
 	settingsTrail( "opening" );
 	settingsSnapshot = { fontSize, opacity };
 	settingsDirty = false;
+	window.electron.utilityPanel( "settings", "dirty", false );
 	field( "settings-unsaved" )?.classList.add( "hidden" );
 	if ( field( "settings-applied" ) ) field( "settings-applied" ).textContent = "";
+	field( "settings-applied" )?.removeAttribute( "data-pending" );
 	field( "set-scroll-mode" ).value = settings.scrollMode ?? "steady";
 	field( "set-steady-wpm" ).value = settings.steadyWpm;
 	field( "set-countdown" ).value = settings.countdown;
@@ -2350,6 +2601,7 @@ async function openSettings() {
 	field( "set-voice-commands" ).value = settings.voiceCommands ?? "voice";
 	field( "set-wake-word" ).value = settings.wakeWord ?? "prompter";
 	field( "set-scratch-audio" ).checked = settings.scratchAudio === true;
+	field( "set-coach-fillers" ).checked = settings.coachFillers === true;
 	field( "set-take-loudness" ).value = settings.takeLoudness ?? "voice";
 	field( "set-sound-check-takes" ).checked = settings.soundCheckDuringTakes === true;
 	field( "set-sound-alike" ).checked = settings.soundAlike !== false;
@@ -2361,20 +2613,14 @@ async function openSettings() {
 	window.electron.speechModelStatus();
 	field( "set-deepgram-key" ).value = "";
 	field( "set-deepgram-status" ).textContent = settings.hasDeepgramKey
-		? "A key is saved. Type a new one to replace it (Script > Set Deepgram API Key… to clear it)."
+		? "A key is saved. Type a new one to replace it; Clear in Tools > Voice and microphone removes it."
 		: "No key saved. Only needed for Deepgram.";
 	field( "set-font-size" ).value = fontSize;
-	field( "set-opacity" ).value = opacity;
-	field( "set-reading-line" ).value = settings.readingLine;
 	field( "set-directions" ).value = settings.directions ?? "dim";
-	field( "set-reading-marker" ).checked = !!settings.showReadingMarker;
-	field( "set-sentence" ).checked = settings.highlightSentence !== false;
-	field( "set-mirrored" ).value = mirrored;
+	field( "set-trace-commands" ).checked = settings.traceCommands === true;
 	field( "set-always-on-top" ).checked = !!settings.alwaysOnTop;
 	field( "set-check-updates" ).checked = settings.checkUpdates !== false;
 	field( "set-debug-mode" ).checked = settings.debugMode !== false;
-	field( "set-show-pad" ).checked = !!settings.showPad;
-	field( "set-show-control" ).checked = !!settings.showControl;
 	settingsTrail( "display fields filled; asking for monitors" );
 	window.electron.getDisplays();
 	field( "set-highlight-cues" ).checked = !!settings.highlightCues;
@@ -2384,20 +2630,22 @@ async function openSettings() {
 	field( "set-eye-line-height" ).value = settings.eyeLineHeight;
 	field( "set-eye-line-reading" ).value = settings.eyeLineReadingLine;
 	field( "set-remote" ).checked = !!settings.remoteControl;
+	obsUi.fill();
 	field( "set-stream-deck" ).checked = !!settings.streamDeck;
 	field( "set-remote-delete" ).checked = !!settings.remoteDeleteRecordings;
 	field( "set-remote-port" ).value = settings.remotePort ?? 47615;
+	componentAvailability?.fill();
 	window.electron.getRemoteInfo();
 	field( "set-phone" ).checked = !!settings.phoneRemote;
 	window.electron.getPhoneInfo();
-	settingsTrail( "remotes filled; files tab next" );
-	fillFilesTab();
 	settingsTrail( `showing tab ${ lastSettingsTab() }` );
 	showSettingsTab( lastSettingsTab() );
 	settingsModal.classList.remove( "hidden" );
+	await showPanelWindow( "settings", settingsModal, () => settingsPages.layout() );
+	settingsNavigation.focus();
 	settingsTrail( "visible" );
 	requestAnimationFrame( () => requestAnimationFrame( () => settingsTrail( "painted" ) ) );
-	requestAnimationFrame( () => updateSettingsChevrons() );
+	requestAnimationFrame( () => settingsPages.layout() );
 	settingsTrail( "listing microphones" );
 	await populateMicSelect();
 	field( "set-microphone" ).innerHTML = micSelect.innerHTML;
@@ -2455,17 +2703,23 @@ function requestCloseSettings( then = null ) {
 	then?.();
 }
 
-function finishSettingsClose( save ) {
+async function finishSettingsClose( save ) {
+	mappingSettings?.cancel();
 	const then = afterSettingsClose;
 	afterSettingsClose = null;
 	field( "settings-unsaved" ).classList.add( "hidden" );
-	if ( save ) saveSettingsPage();
-	else closeSettings( true );
+	if ( save ) {
+		if ( !await saveSettingsPage() ) {
+			afterSettingsClose = then;
+			return;
+		}
+	} else closeSettings( true );
 	then?.();
 }
 
 function closeSettings( restore ) {
 	settingsDirty = false;
+	window.electron.utilityPanel( "settings", "dirty", false );
 	if ( restore && settingsSnapshot ) {
 		setFontSize( settingsSnapshot.fontSize, false );
 		setOpacity( settingsSnapshot.opacity, false );
@@ -2473,6 +2727,9 @@ function closeSettings( restore ) {
 	settingsSnapshot = null;
 	returnLayoutPanel();
 	settingsModal?.classList.add( "hidden" );
+	hidePanelWindow( "settings" );
+	const target = settingsReturnFocus?.isConnected && settingsReturnFocus.getClientRects().length ? settingsReturnFocus : field( "cb-settings" );
+	target?.focus( { preventScroll: true } );
 }
 
 // Save and close (Save), or save and stay (Apply).
@@ -2483,7 +2740,9 @@ let teachingWord = false;
 
 function wordsChanged() {
 	settingsDirty = true;
-	field( "settings-applied" ).textContent = "";
+	window.electron.utilityPanel( "settings", "dirty", true );
+	field( "settings-applied" ).textContent = "Unsaved changes";
+	field( "settings-applied" ).dataset.pending = "true";
 }
 
 function addWordRow( word = "", heard = [] ) {
@@ -2713,13 +2972,23 @@ field( "command-words-add" ).addEventListener( "click", () => {
 	row.querySelector( "select" ).focus();
 } );
 
-function saveSettingsPage( close = true ) {
+async function saveSettingsPage( close = true ) {
+	const invalid = [ ...settingsModal.querySelectorAll( "input, select, textarea" ) ]
+		.find( control => !control.disabled && control.willValidate && !control.checkValidity() );
+	if ( invalid ) {
+		showSettingsTab( invalid.closest( "[data-settings-page]" ).dataset.settingsPage );
+		settingsPages.reveal( invalid );
+		invalid.reportValidity();
+		return false;
+	}
+	if ( !await obsUi.save() ) return false;
 	window.electron.saveSettings( {
 		scrollMode: field( "set-scroll-mode" ).value === "voice" ? "voice" : "steady",
 		voiceEngine: field( "set-voice-engine" ).value === "deepgram" ? "deepgram" : "local",
 		voiceCommands: field( "set-voice-commands" ).value,
 		wakeWord: field( "set-wake-word" ).value,
 		scratchAudio: field( "set-scratch-audio" ).checked,
+		coachFillers: field( "set-coach-fillers" ).checked,
 		takeLoudness: field( "set-take-loudness" ).value,
 		soundCheckDuringTakes: field( "set-sound-check-takes" ).checked,
 		soundAlike: field( "set-sound-alike" ).checked,
@@ -2729,14 +2998,10 @@ function saveSettingsPage( close = true ) {
 		countdown: numberValue( "set-countdown", 0, 10, settings.countdown ),
 		slate: field( "set-slate" ).value,
 		directions: field( "set-directions" ).value,
-		showReadingMarker: field( "set-reading-marker" ).checked,
-		highlightSentence: field( "set-sentence" ).checked,
-		readingLine: numberValue( "set-reading-line", 5, 80, settings.readingLine ),
+		traceCommands: field( "set-trace-commands" ).checked,
 		alwaysOnTop: field( "set-always-on-top" ).checked,
 		checkUpdates: field( "set-check-updates" ).checked,
 		debugMode: field( "set-debug-mode" ).checked,
-		showPad: field( "set-show-pad" ).checked,
-		showControl: field( "set-show-control" ).checked,
 		prompterDisplay: field( "set-prompter-display" ).value
 			? Number( field( "set-prompter-display" ).value )
 			: null,
@@ -2773,10 +3038,6 @@ function saveSettingsPage( close = true ) {
 		)
 	} );
 	setFontSize( Number( field( "set-font-size" ).value ) );
-	setOpacity( Number( field( "set-opacity" ).value ) );
-	if ( field( "set-mirrored" ).value !== mirrored ) {
-		setMirrored( field( "set-mirrored" ).value );
-	}
 	applyAutoScrollSpeed( Number( field( "set-voice-speed" ).value ) );
 	const key = field( "set-deepgram-key" ).value.trim();
 	if ( key ) {
@@ -2789,28 +3050,30 @@ function saveSettingsPage( close = true ) {
 	}
 	settingsDirty = false;
 	if ( close ) {
+		window.electron.utilityPanel( "settings", "dirty", false );
 		closeSettings( false );
-		return;
+		return true;
 	}
 	// Applied: Cancel now goes back to these, not to how it was when opened.
+	window.electron.utilityPanel( "settings", "dirty", false );
 	settingsSnapshot = { fontSize, opacity };
 	field( "set-deepgram-key" ).value = "";
 	field( "settings-applied" ).textContent = "Saved";
+	field( "settings-applied" ).removeAttribute( "data-pending" );
+	return true;
 }
 
 if ( settingsModal ) {
-	// Preview text size and background live while the sliders move.
+	// Preview text size while its slider moves. Backing uses the shared live control.
 	field( "set-font-size" ).addEventListener( "input", e =>
 		setFontSize( Number( e.target.value ), false )
-	);
-	field( "set-opacity" ).addEventListener( "input", e =>
-		setOpacity( Number( e.target.value ), false )
 	);
 	field( "set-cues-browse" ).addEventListener( "click", () =>
 		window.electron.browseCuesFile()
 	);
 	field( "set-cues-clear" ).addEventListener( "click", () => {
 		field( "set-cues-file" ).value = "";
+		wordsChanged();
 	} );
 	field( "settings-save" ).addEventListener( "click", () => saveSettingsPage( true ) );
 	field( "settings-apply" ).addEventListener( "click", () => saveSettingsPage( false ) );
@@ -2825,7 +3088,17 @@ if ( settingsModal ) {
 	settingsModal.addEventListener( "input", markSettingsDirty );
 	settingsModal.addEventListener( "change", markSettingsDirty );
 	settingsModal.addEventListener( "keydown", ( e ) => {
+		if ( e.key === "Tab" ) {
+			const focusable = [ ...settingsModal.querySelectorAll( "button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), a[href]" ) ].filter( el => el.tabIndex >= 0 && el.getClientRects().length );
+			const end = e.shiftKey ? focusable[0] : focusable.at( -1 );
+			if ( settingsModal.ownerDocument.activeElement === end ) {
+				e.preventDefault();
+				( e.shiftKey ? focusable.at( -1 ) : focusable[0] )?.focus();
+			}
+		}
 		if ( e.key !== "Escape" ) return;
+		e.preventDefault();
+		e.stopPropagation();
 		if ( !field( "settings-unsaved" ).classList.contains( "hidden" ) ) {
 			field( "settings-unsaved-keep" ).click();
 			return;
@@ -2835,9 +3108,22 @@ if ( settingsModal ) {
 }
 
 window.electron.onCuesFileChosen( ( filePath ) => {
-	if ( filePath ) field( "set-cues-file" ).value = filePath;
+	if ( filePath ) {
+		field( "set-cues-file" ).value = filePath;
+		wordsChanged();
+	}
 } );
-window.electron.onMenuSettings( openSettings );
+window.electron.onMenuSettings( async ( topic ) => {
+	await openSettings();
+	if ( topic === "pad" ) showSettingsTab( "pad" );
+} );
+window.electron.onUtilityPanelClose( ( kind, quit ) => {
+	if ( kind === "settings" ) requestCloseSettings( quit ? () => window.electron.windowControl( "close" ) : null );
+	if ( kind === "help" ) closeHelp();
+	if ( kind === "voicehelp" ) hideVoiceHelp();
+	if ( kind === "workflow" ) workflow?.close();
+	if ( kind === "obssetup" ) obsSetupUi?.close();
+} );
 window.electron.getSettings();
 // --- Layout: margins, line spacing, alignment, edge fade ---
 
@@ -2847,6 +3133,8 @@ const LAYOUT_DEFAULTS = {
 	marginBottom: 0,
 	lineHeight: 1.3,
 	headingScale: 1,
+	directionScale: 1,
+	directionColour: "",
 	textOpacity: 1,
 	textBrightness: 1,
 	backingOnAir: 0.07,
@@ -2870,6 +3158,9 @@ function applyLayout() {
 		"--heading-scale",
 		settings.headingScale ?? LAYOUT_DEFAULTS.headingScale
 	);
+	style.setProperty( "--direction-scale", settings.directionScale ?? LAYOUT_DEFAULTS.directionScale );
+	if ( /^#[\da-f]{6}$/i.test( settings.directionColour ?? "" ) ) style.setProperty( "--direction-colour", settings.directionColour );
+	else style.removeProperty( "--direction-colour" );
 	style.setProperty(
 		"--text-opacity",
 		settings.textOpacity ?? LAYOUT_DEFAULTS.textOpacity
@@ -2951,9 +3242,9 @@ function updateEdgeMask() {
 
 // --- Progress and time left ---
 
-const progressBar = document.getElementById( "progress-bar" );
-const progressFill = document.getElementById( "progress-fill" );
-const progressText = document.getElementById( "cb-progress-text" );
+const progressBar = uiElement( "progress-bar" );
+const progressFill = uiElement( "progress-fill" );
+const progressText = uiElement( "cb-progress-text" );
 let textSpan = null; // { top, bottom, words } of the script text, in page pixels
 let measureQueued = false;
 
@@ -3024,8 +3315,8 @@ function updateProgress() {
 // the script, with the section and time at that point in a tip, and a tick
 // where each section starts. Ignored while the prompter runs, so a stray
 // click can't jump a take; pause first.
-const progressTicks = document.getElementById( "progress-ticks" );
-const progressTip = document.getElementById( "progress-tip" );
+const progressTicks = uiElement( "progress-ticks" );
+const progressTip = uiElement( "progress-tip" );
 let progressDragging = false;
 
 const spanHeight = () => Math.max( 1, textSpan.bottom - textSpan.top );
@@ -3107,7 +3398,7 @@ progressBar?.addEventListener( "pointerleave", () => {
 
 // --- Slots: up to nine scripts, each remembering its place ---
 
-const slotsEl = document.getElementById( "cb-slots" );
+const slotsEl = uiElement( "cb-slots" );
 let slotState = { active: 0, slots: [], recent: [] };
 let pendingRestore = null;
 let slotPositionTimer = null;
@@ -3166,15 +3457,15 @@ window.addEventListener(
 
 // --- Control bar ---
 
-const controlBar = document.getElementById( "control-bar" );
-const playBtn = document.getElementById( "cb-play" );
-const speedInput = document.getElementById( "cb-speed" );
-const speedLabel = document.getElementById( "cb-speed-label" );
-const speedValue = document.getElementById( "cb-speed-value" );
-const fontInput = document.getElementById( "cb-font" );
-const opacityInput = document.getElementById( "cb-opacity" );
-const maxBtn = document.getElementById( "cb-max" );
-const fullBtn = document.getElementById( "cb-full" );
+const controlBar = uiElement( "control-bar" );
+const playBtn = uiElement( "cb-play" );
+const speedInput = uiElement( "cb-speed" );
+const speedLabel = uiElement( "cb-speed-label" );
+const speedValue = uiElement( "cb-speed-value" );
+const fontInput = uiElement( "cb-font" );
+const opacityInput = uiElement( "cb-opacity" );
+const maxBtn = uiElement( "cb-max" );
+const fullBtn = uiElement( "cb-full" );
 let idleTimer = null;
 const IDLE_MS_SCROLLING = 1500;
 const IDLE_MS_STOPPED = 5000;
@@ -3193,6 +3484,8 @@ function updatePlayButton() {
 	if ( !playBtn ) return;
 	const playing = isScrolling();
 	playBtn.textContent = playing ? "❚❚" : "▶";
+	playBtn.setAttribute( "aria-label", playing ? "Pause scrolling" : "Start scrolling" );
+	playBtn.setAttribute( "aria-pressed", String( playing ) );
 	playBtn.classList.toggle( "playing", playing );
 	refreshControlsVisibility();
 }
@@ -3219,17 +3512,27 @@ function syncControls() {
 			speedInput.value = settings.steadyWpm;
 		}
 	}
-	speedLabel.textContent = voice ? "Voice" : "Speed";
+	speedLabel.textContent = voice ? "Response" : "Speed";
+	speedInput.setAttribute( "aria-labelledby", "cb-speed-label" );
+	speedInput.closest( "label" ).title = voice
+		? "Voice response: how quickly scrolling follows your speech"
+		: "Scroll speed in words per minute (Ctrl+[ and Ctrl+])";
 	speedValue.textContent = voice
 		? formatSpeed( autoScrollSpeed )
 		: `${ settings.steadyWpm } wpm`;
 	if ( document.activeElement !== fontInput ) fontInput.value = fontSize;
 	if ( document.activeElement !== opacityInput ) opacityInput.value = liveBacking();
-	const bgInput = document.getElementById( "lp-bg-opacity" );
-	if ( bgInput && document.activeElement !== bgInput ) bgInput.value = opacity;
-	document.getElementById( "cb-voice" )?.classList.toggle( "active", voice );
+	const bgInput = uiElement( "lp-bg-opacity" );
+	if ( bgInput && bgInput.ownerDocument.activeElement !== bgInput ) bgInput.value = opacity;
+	const mode = uiElement( "cb-mode" );
+	if ( mode ) {
+		mode.textContent = voice ? "Voice" : "Steady";
+		mode.setAttribute( "aria-label", voice ? "Voice scrolling; switch to steady" : "Steady scrolling; switch to voice" );
+		mode.setAttribute( "aria-pressed", String( voice ) );
+	}
 	syncLayoutPanel();
 	syncVoicePanel();
+	positionToolsPanel();
 }
 
 function panelOpen() {
@@ -3292,25 +3595,34 @@ function saveFromBar() {
 }
 
 const onClick = ( id, handler ) =>
-	document.getElementById( id )?.addEventListener( "click", handler );
+	uiElement( id )?.addEventListener( "click", handler );
 
 onClick( "cb-menu", ( e ) => {
 	e.stopPropagation();
 	toggleAppMenu();
 } );
-onClick( "cb-open", () => window.electron.openFileDialog() );
-onClick( "cb-save", saveFromBar );
-onClick( "cb-edit", toggleEditMode );
 onClick( "cb-restart", goToStart );
 onClick( "cb-play", toggleAutoScrollSession );
-onClick( "cb-layout", () => toggleLayoutView( "layout" ) );
-onClick( "cb-reading", () => toggleLayoutView( "reading" ) );
-onClick( "cb-recording", () => toggleLayoutView( "recording" ) );
 onClick( "cb-on-air", toggleOnAir );
-onClick( "cb-mirror", cycleMirror );
-onClick( "cb-voice", () => togglePanel( "voice-panel" ) );
+onClick( "cb-mode", () => window.electron.saveSettings( { scrollMode: settings.scrollMode === "voice" ? "steady" : "voice" } ) );
+onClick( "cb-edit", toggleEditMode );
+onClick( "guide-controls", () => window.electron.headGuide( "adjust" ) );
+onClick( "cb-tools", () => {
+	renderTools();
+	togglePanel( "tools-panel" );
+	if ( !field( "tools-panel" ).classList.contains( "hidden" ) ) field( "tools-panel" ).querySelector( "button" )?.focus();
+} );
 onClick( "cb-help", openHelp );
+onClick( "help-ai-prompt", () => window.electron.copyAiPrompt() );
 onClick( "cb-settings", openSettings );
+for ( const id of [ "cb-menu", "cb-tools" ] ) {
+	uiElement( id )?.addEventListener( "keydown", ( event ) => {
+		if ( event.key !== "ArrowDown" ) return;
+		event.preventDefault();
+		event.stopPropagation();
+		event.currentTarget.click();
+	} );
+}
 onClick( "cb-min", () => window.electron.windowControl( "minimize" ) );
 onClick( "cb-max", () => window.electron.windowControl( "maximize" ) );
 onClick( "cb-full", () => window.electron.windowControl( "fullscreen" ) );
@@ -3368,6 +3680,7 @@ window.electron.onWindowState( ( state ) => {
 			: "Maximise (Shift+F11)";
 	}
 	fullBtn?.classList.toggle( "active", !!state.fullScreen );
+	fullBtn?.setAttribute( "aria-pressed", String( !!state.fullScreen ) );
 } );
 window.electron.onMenuWindowControl( action =>
 	window.electron.windowControl( action )
@@ -3377,19 +3690,36 @@ window.electron.onNotice( text => showTransientHint( text, 2500 ) );
 
 // --- Panels (layout, voice) and the in-app menu ---
 
-const appMenu = document.getElementById( "app-menu" );
+const appMenu = uiElement( "app-menu" );
+
+function positionToolsPanel() {
+	const panel = field( "tools-panel" );
+	if ( !panel || panel.classList.contains( "hidden" ) ) return;
+	const edge = 8;
+	const top = controlBar.offsetHeight + 6;
+	const anchor = field( "cb-tools" ).getBoundingClientRect();
+	const anchorLeft = mirrored === "horizontal" || mirrored === "both" ? window.innerWidth - anchor.right : anchor.left;
+	const left = Math.max( edge, Math.min( anchorLeft, window.innerWidth - panel.offsetWidth - edge ) );
+	panel.style.left = `${ left }px`;
+	panel.style.right = "auto";
+	panel.style.top = `${ top }px`;
+	panel.style.maxHeight = `${ Math.max( 0, window.innerHeight - top - edge ) }px`;
+}
+window.addEventListener( "resize", () => requestAnimationFrame( positionToolsPanel ) );
 
 function togglePanel( id ) {
-	const panel = document.getElementById( id );
+	const panel = uiElement( id );
 	if ( !panel ) return;
 	const opening = panel.classList.contains( "hidden" );
 	closePanels();
 	if ( opening ) {
 		panel.classList.remove( "hidden" );
+		if ( id === "tools-panel" ) field( "cb-tools" ).setAttribute( "aria-expanded", "true" );
 		if ( id === "voice-panel" ) openVoicePanel();
 		syncControls();
 	}
 	showControls();
+	if ( id === "tools-panel" ) positionToolsPanel();
 }
 
 // Closes any open panel or menu; returns true if something was open.
@@ -3402,6 +3732,8 @@ function closePanels() {
 			closed = true;
 		} );
 	stopMicMeter();
+	field( "cb-menu" )?.setAttribute( "aria-expanded", "false" );
+	field( "cb-tools" )?.setAttribute( "aria-expanded", "false" );
 	refreshControlsVisibility();
 	return closed;
 }
@@ -3416,6 +3748,7 @@ document.addEventListener( "mousedown", ( e ) => {
 function closeAppMenu() {
 	if ( appMenu?.classList.contains( "hidden" ) ) return;
 	appMenu.classList.add( "hidden" );
+	field( "cb-menu" ).setAttribute( "aria-expanded", "false" );
 	refreshControlsVisibility();
 }
 document.addEventListener( "mousedown", ( e ) => {
@@ -3425,7 +3758,7 @@ document.addEventListener( "mousedown", ( e ) => {
 } );
 window.addEventListener( "blur", closeAppMenu );
 
-window.electron.onMenuLayout( () => toggleLayoutView( "layout" ) );
+window.electron.onMenuLayout( view => toggleLayoutView( view ?? "layout" ) );
 window.electron.onMenuVoice( () => togglePanel( "voice-panel" ) );
 window.electron.onMenuSoundCheck( () => toggleSoundCheck() );
 
@@ -3434,12 +3767,11 @@ const toggleSetting = key => () =>
 
 // Menu entries: [icon, label, shortcut, action, { checked, disabled }]
 function menuGroups() {
-	const voice = settings.scrollMode === "voice";
-	const playing = isScrolling();
 	return [
 		{
 			heading: "Script",
 			items: [
+				[ "+", "New script", "Ctrl+N", newScript ],
 				[
 					"📂",
 					"Open script…",
@@ -3480,158 +3812,15 @@ function menuGroups() {
 			]
 		},
 		{
-			heading: "Playback",
+			heading: "Recording files",
 			items: [
-				[
-					playing ? "❚❚" : "▶",
-					playing ? "Pause scrolling" : "Start scrolling",
-					"Space",
-					toggleAutoScrollSession
-				],
-				[ "⏮", "Back to the start", "Ctrl+Home", goToStart ],
-				[ "🔴", manualOnAir ? "Go off air" : "Go on air", "Ctrl+Shift+A", toggleOnAir ],
-				[ "🎚", soundCheck ? "Hide the sound check" : "Sound check", "Ctrl+Shift+D", toggleSoundCheck ],
-				[ "★", "This take's a keeper", "K", () => rateTake( "keeper" ) ],
-				[ "✗", "Scrap this take", "Shift+K", () => rateTake( "scrap" ) ],
 				[ "🗒", "Recordings…", "Ctrl+Shift+R", openRecordings ],
-				[
-					"✂",
-					"Export the edit pack…",
-					"",
-					() => window.electron.exportEditPack()
-				],
-				[ "⏩", "Faster", "Ctrl+]", () => adjustAutoScrollSpeed( "up" ) ],
-				[ "⏪", "Slower", "Ctrl+[", () => adjustAutoScrollSpeed( "down" ) ],
-				[ "↺", "Reset speed", "Ctrl+\\", () => adjustAutoScrollSpeed( "reset" ) ],
-				[
-					"≋",
-					"Steady scroll (words per minute)",
-					"",
-					() => window.electron.saveSettings( { scrollMode: "steady" } ),
-					{ checked: !voice }
-				],
-				[
-					"🎙",
-					"Voice scroll sync…",
-					"Ctrl+Shift+V",
-					() => togglePanel( "voice-panel" ),
-					{ checked: voice }
-				]
+				[ "✂", "Export the edit pack…", "", () => window.electron.exportEditPack() ]
 			]
 		},
 		{
-			heading: "Display",
+			heading: "Settings files",
 			items: [
-				[
-					"▤",
-					"Layout and margins…",
-					"Ctrl+Shift+K",
-					() => toggleLayoutView( "layout" )
-				],
-				[
-					"⇋",
-					`Mirror: ${ MIRROR_LABELS[mirrored] }`,
-					"Ctrl+M",
-					cycleMirror,
-					{ checked: mirrored !== "off" }
-				],
-				[
-					"✦",
-					"Highlight slide cues",
-					"",
-					toggleSetting( "highlightCues" ),
-					{ checked: !!settings.highlightCues }
-				],
-				[
-					"▸",
-					"Reading-line marker",
-					"",
-					toggleSetting( "showReadingMarker" ),
-					{ checked: !!settings.showReadingMarker }
-				],
-				[
-					"▭",
-					"Highlight the sentence you're on",
-					"",
-					toggleSetting( "highlightSentence" ),
-					{ checked: settings.highlightSentence !== false }
-				],
-				[
-					"▬",
-					"Progress and time left",
-					"",
-					() =>
-						window.electron.saveSettings( {
-							showProgress: settings.showProgress === false
-						} ),
-					{ checked: settings.showProgress !== false }
-				],
-				[
-					"📌",
-					"Keep controls visible",
-					"Ctrl+Shift+B",
-					toggleSetting( "controlsPinned" ),
-					{ checked: !!settings.controlsPinned }
-				]
-			]
-		},
-		{
-			heading: "Window",
-			items: [
-				[
-					"▦",
-					"Control pad (floating buttons)",
-					"Ctrl+Shift+P",
-					toggleSetting( "showPad" ),
-					{ checked: !!settings.showPad }
-				],
-				[
-					"▣",
-					"Control window (second screen)",
-					"Ctrl+Shift+O",
-					toggleSetting( "showControl" ),
-					{ checked: !!settings.showControl }
-				],
-				[
-					"◫",
-					"Eye-line mode (under the webcam)",
-					"Ctrl+L",
-					toggleSetting( "eyeLine" ),
-					{ checked: !!settings.eyeLine }
-				],
-				[
-					"⤒",
-					"Keep on top",
-					"",
-					toggleSetting( "alwaysOnTop" ),
-					{ checked: !!settings.alwaysOnTop }
-				],
-				[
-					"▢",
-					"Maximise / restore",
-					"Shift+F11",
-					() => window.electron.windowControl( "maximize" )
-				],
-				[
-					"⛶",
-					"Full screen",
-					"F11",
-					() => window.electron.windowControl( "fullscreen" )
-				],
-				[
-					"—",
-					"Minimise",
-					"Ctrl+Shift+M",
-					() => window.electron.windowControl( "minimize" )
-				],
-				[ "⏻", "Quit Sightline", "Ctrl+W", () => quitApp() ]
-			]
-		},
-		{
-			heading: "Settings",
-			items: [
-				[ "⚙", "All settings…", "Ctrl+,", openSettings ],
-				[ "🤖", "AI and remote control…", "", openRemoteSettings ],
 				[
 					"⇪",
 					"Load settings from file (JSON or XML)…",
@@ -3645,23 +3834,47 @@ function menuGroups() {
 					() => window.electron.exportSettings()
 				]
 			]
-		},
-		{
-			heading: "Help",
-			items: [
-				[ "📖", "User guide", "Shift+F1", () => window.electron.openGuide() ],
-				[
-					"✨",
-					"Copy the AI script prompt",
-					"",
-					() => window.electron.copyAiPrompt()
-				],
-				[ "?", "Keyboard shortcuts", "F1", openHelp ],
-				[ "☕", "Support Sightline", "", () => window.open( SUPPORT_URL ) ],
-				[ "ⓘ", "About this teleprompter", "", openAbout ]
-			]
 		}
 	];
+}
+
+function renderTools() {
+	const panel = field( "tools-panel" );
+	panel.replaceChildren();
+	const guideShown = headGuideState?.shown ?? !!settings.showHeadGuide;
+	const guideLabel = guideShown ? "Hide head guide" : "Show head guide";
+	const groups = [
+		[ "Recording tools", [
+			[ "🎚", "Sound check", "Ctrl+Shift+D", toggleSoundCheck, { checked: soundCheckOn() } ],
+			[ "◎", guideLabel, "Ctrl+Shift+H", () => window.electron.headGuide( guideShown ? "hide" : "show" ), { checked: guideShown } ],
+			[ "◉", "Guide adjustments…", "", () => window.electron.headGuide( "adjust" ), { checked: !!headGuideState?.controlsShown, disabled: !guideShown } ],
+			[ "⛶", "Guide fullscreen / restore", "Ctrl+Alt+H", () => window.electron.headGuide( "fullscreen" ) ],
+			[ "★", "Keeper", "K", () => rateTake( "keeper" ) ],
+			[ "✗", "Scrap take", "Shift+K", () => rateTake( "scrap" ) ]
+		] ],
+		[ "Review", [
+			[ "▤", "Script & rehearsal review…", "", () => openScriptReview(), { disabled: isScrolling() } ]
+		] ],
+		[ "Prepare a session", [
+			[ "✓", "Session check…", "", () => workflow.open( "session" ), { disabled: isScrolling() } ]
+		] ],
+		[ "Quick adjustments", [
+			[ "▤", "Spacing and mirror…", "Ctrl+Shift+K", () => toggleLayoutView( "layout" ) ],
+			[ "◐", "Text and colour…", "", () => toggleLayoutView( "reading" ) ],
+			[ "●", "Take display…", "", () => toggleLayoutView( "recording" ) ],
+			[ "🎙", "Voice and microphone…", "Ctrl+Shift+V", () => togglePanel( "voice-panel" ) ]
+		] ],
+		[ "Operator windows", [
+			[ "▣", "Control window", "Ctrl+Shift+O", toggleSetting( "showControl" ), { checked: !!settings.showControl } ],
+			[ "▦", "Control pad", "Ctrl+Shift+P", toggleSetting( "showPad" ), { checked: !!settings.showPad } ]
+		] ]
+	];
+	for ( const [ title, items ] of groups ) {
+		const heading = document.createElement( "h4" );
+		heading.textContent = title;
+		panel.append( heading );
+		for ( const args of items ) panel.append( menuButton( ...args ) );
+	}
 }
 
 let recentExpanded = false;
@@ -3672,9 +3885,13 @@ function menuButton( icon, label, key, action, opts = {} ) {
 	btn.type = "button";
 	btn.className = "am-item";
 	btn.disabled = !!opts.disabled;
+	btn.dataset.menuLabel = label;
+	if ( opts.checked !== undefined ) btn.setAttribute( "aria-pressed", String( opts.checked ) );
+	if ( opts.expanded !== undefined ) btn.setAttribute( "aria-expanded", String( opts.expanded ) );
 	if ( opts.checked ) btn.classList.add( "checked" );
 	const iconEl = document.createElement( "span" );
 	iconEl.className = "am-icon";
+	iconEl.setAttribute( "aria-hidden", "true" );
 	iconEl.textContent = opts.checked ? "✓" : icon;
 	const labelEl = document.createElement( "span" );
 	labelEl.textContent = label;
@@ -3685,13 +3902,14 @@ function menuButton( icon, label, key, action, opts = {} ) {
 	btn.addEventListener( "click", () => {
 		if ( !opts.keepOpen ) closePanels();
 		action();
+		if ( opts.keepOpen ) appMenu.querySelector( `[data-menu-label="${ CSS.escape( label ) }"]` )?.focus();
 	} );
 	return btn;
 }
 
 // Menu groups open or closed: the everyday ones start open. Remembered per
 // computer; the menu still works if storage isn't available.
-const MENU_OPEN_BY_DEFAULT = [ "Script", "Playback" ];
+const MENU_OPEN_BY_DEFAULT = [ "Script", "Recording files" ];
 const MENU_GROUPS_KEY = "menuGroupsOpen";
 
 function menuGroupsOpen() {
@@ -3766,7 +3984,7 @@ function renderAppMenu() {
 							recentExpanded = !recentExpanded;
 							renderAppMenu();
 						},
-						{ disabled: recent.length === 0, keepOpen: true }
+						{ disabled: recent.length === 0, keepOpen: true, expanded: recentExpanded }
 					)
 				);
 				if ( recentExpanded && recent.length ) {
@@ -3793,7 +4011,7 @@ function renderAppMenu() {
 							samplesExpanded = !samplesExpanded;
 							renderAppMenu();
 						},
-						{ keepOpen: true }
+						{ keepOpen: true, expanded: samplesExpanded }
 					)
 				);
 				if ( samplesExpanded ) {
@@ -3815,13 +4033,10 @@ function renderAppMenu() {
 		}
 	}
 	// Always in view, whichever groups are folded.
+	appMenu.appendChild( menuButton( "⚙", "Settings…", "Ctrl+,", openSettings ) );
 	const quit = menuButton( "⏻", "Quit Sightline", "Ctrl+W", quitApp );
 	quit.classList.add( "am-quit" );
 	appMenu.appendChild( quit );
-	const footer = document.createElement( "p" );
-	footer.className = "app-footer am-footer";
-	fillFooter( footer );
-	appMenu.appendChild( footer );
 }
 
 function toggleAppMenu() {
@@ -3831,24 +4046,42 @@ function toggleAppMenu() {
 		recentExpanded = false;
 		renderAppMenu();
 		appMenu.classList.remove( "hidden" );
+		field( "cb-menu" ).setAttribute( "aria-expanded", "true" );
 		appMenu.querySelector( ".am-item:not(:disabled)" )?.focus();
 	}
 	showControls();
 }
 
 appMenu?.addEventListener( "keydown", ( e ) => {
+	e.stopPropagation();
 	const items = [
 		...appMenu.querySelectorAll( ".am-heading, .am-item:not(:disabled)" )
 	];
 	const i = items.indexOf( document.activeElement );
-	if ( e.key === "ArrowDown" || e.key === "ArrowUp" ) {
+	if ( [ "ArrowDown", "ArrowUp", "Home", "End" ].includes( e.key ) ) {
 		e.preventDefault();
 		e.stopPropagation();
-		const next = e.key === "ArrowDown" ? i + 1 : i - 1;
+		const next = e.key === "Home" ? 0 : e.key === "End" ? items.length - 1 : e.key === "ArrowDown" ? i + 1 : i - 1;
 		items[( next + items.length ) % items.length]?.focus();
 	} else if ( e.key === "Escape" ) {
 		e.stopPropagation();
 		closePanels();
+		field( "cb-menu" ).focus();
+	}
+} );
+
+field( "tools-panel" )?.addEventListener( "keydown", ( e ) => {
+	e.stopPropagation();
+	const items = [ ...field( "tools-panel" ).querySelectorAll( "button:not(:disabled)" ) ];
+	const index = items.indexOf( document.activeElement );
+	if ( [ "ArrowDown", "ArrowUp", "Home", "End" ].includes( e.key ) ) {
+		e.preventDefault();
+		const next = e.key === "Home" ? 0 : e.key === "End" ? items.length - 1 : ( index + ( e.key === "ArrowDown" ? 1 : -1 ) + items.length ) % items.length;
+		items[next]?.focus();
+	} else if ( e.key === "Escape" ) {
+		e.preventDefault();
+		closePanels();
+		field( "cb-tools" ).focus();
 	}
 } );
 
@@ -3856,12 +4089,13 @@ appMenu?.addEventListener( "keydown", ( e ) => {
 // its title to anywhere in the window. Each remembers where it was left;
 // double-click the title to put it back. ---
 
-function makeMovable( box, handle, key ) {
+function makeMovable( box, handle, key, { centreOnOpen = false } = {} ) {
 	if ( !box || !handle ) return;
 	const storeKey = `moved:${ key }`;
 	let at = { x: 0, y: 0 };
 	try {
-		at = { ...at, ...JSON.parse( localStorage.getItem( storeKey ) ) };
+		if ( centreOnOpen ) localStorage.removeItem( storeKey );
+		else at = { ...at, ...JSON.parse( localStorage.getItem( storeKey ) ) };
 	} catch {
 		// first time: where it normally sits
 	}
@@ -3881,6 +4115,7 @@ function makeMovable( box, handle, key ) {
 		}
 	};
 	const save = () => {
+		if ( centreOnOpen ) return;
 		try {
 			localStorage.setItem( storeKey, JSON.stringify( at ) );
 		} catch {
@@ -3919,7 +4154,7 @@ function makeMovable( box, handle, key ) {
 		save();
 	} );
 	place();
-	window.addEventListener( "resize", keepInView );
+	if ( !centreOnOpen ) window.addEventListener( "resize", keepInView );
 
 	// The whole box inside the window when it opens and when the window
 	// changes size: a place it was dragged to on a bigger screen may not fit
@@ -3941,13 +4176,21 @@ function makeMovable( box, handle, key ) {
 		place();
 	};
 	const shown = box.closest( ".modal" ) ?? box;
-	new MutationObserver( () => requestAnimationFrame( fit ) ).observe( shown, { attributes: true, attributeFilter: [ "class" ] } );
-	window.addEventListener( "resize", () => requestAnimationFrame( fit ) );
+	const centreAndFit = () => {
+		if ( centreOnOpen ) {
+			at = { x: 0, y: 0 };
+			place();
+		}
+		fit();
+	};
+	new MutationObserver( () => requestAnimationFrame( centreAndFit ) ).observe( shown, { attributes: true, attributeFilter: [ "class" ] } );
+	window.addEventListener( "resize", () => requestAnimationFrame( centreAndFit ) );
+	new ResizeObserver( () => requestAnimationFrame( fit ) ).observe( box );
 }
 
-makeMovable( document.querySelector( "#settings-modal .settings-content" ), document.querySelector( "#settings-modal .settings-head h3" ), "settings" );
-makeMovable( document.getElementById( "layout-panel" ), document.querySelector( "#layout-panel > h4" ), "layout" );
-makeMovable( document.getElementById( "voice-panel" ), document.querySelector( "#voice-panel > h4" ), "voice" );
+makeMovable( settingsModal?.querySelector( ".settings-content" ), settingsModal?.querySelector( ".settings-head h3" ), "settings", { centreOnOpen: true } );
+makeMovable( uiElement( "layout-panel" ), document.querySelector( "#layout-panel > h4" ), "layout" );
+makeMovable( uiElement( "voice-panel" ), document.querySelector( "#voice-panel > h4" ), "voice" );
 
 // --- Layout panel ---
 
@@ -3958,6 +4201,7 @@ const LAYOUT_FIELDS = [
 	[ "lp-margin-bottom", "marginBottom", v => `${ v }%` ],
 	[ "lp-line-height", "lineHeight", v => `${ Number( v ).toFixed( 2 ) }×` ],
 	[ "lp-heading-scale", "headingScale", v => `${ Math.round( v * 100 ) }%` ],
+	[ "lp-direction-scale", "directionScale", v => `${ Math.round( v * 100 ) }%` ],
 	[ "lp-text-opacity", "textOpacity", v => `${ Math.round( v * 100 ) }%` ],
 	[ "lp-backing-on-air", "backingOnAir", v => `${ Math.round( v * 100 ) }%` ],
 	[ "lp-text-brightness", "textBrightness", v => `${ Math.round( v * 100 ) }%` ],
@@ -3969,15 +4213,15 @@ function readingLineKey() {
 }
 
 function syncLayoutPanel() {
-	if ( !document.getElementById( "layout-panel" ) ) return;
+	if ( !uiElement( "layout-panel" ) ) return;
 	for ( const [ id, key, format ] of LAYOUT_FIELDS ) {
 		const input = field( id );
 		const value = settings[key] ?? LAYOUT_DEFAULTS[key];
-		if ( document.activeElement !== input ) input.value = value;
+		if ( input.ownerDocument.activeElement !== input ) input.value = value;
 		field( `${ id }-value` ).textContent = format( value );
 	}
 	const reading = settings[readingLineKey()];
-	if ( document.activeElement !== field( "lp-reading-line" ) )
+	if ( field( "lp-reading-line" ).ownerDocument.activeElement !== field( "lp-reading-line" ) )
 		field( "lp-reading-line" ).value = reading;
 	field( "lp-reading-line-value" ).textContent = `${ reading }%`;
 	field( "lp-align" ).value = settings.textAlign ?? "left";
@@ -3993,6 +4237,8 @@ function syncLayoutPanel() {
 	field( "lp-theme" ).value = settings.theme ?? "default";
 	field( "lp-font" ).value = settings.scriptFont ?? "default";
 	field( "lp-heading-font" ).value = settings.headingFont ?? "same";
+	field( "lp-direction-colour" ).value = settings.directionColour || "#c8c8c8";
+	field( "lp-direction-theme" ).setAttribute( "aria-pressed", String( !settings.directionColour ) );
 	field( "lp-on-air" ).checked = settings.onAirLight !== false;
 	field( "lp-pacing" ).checked = settings.showPacing !== false;
 	field( "lp-points" ).checked = !!settings.pointsMode;
@@ -4003,7 +4249,14 @@ function syncLayoutPanel() {
 	document.body.classList.toggle( "show-directives", !!settings.showDirectives );
 }
 
-if ( document.getElementById( "layout-panel" ) ) {
+if ( uiElement( "layout-panel" ) ) {
+	field( "lp-direction-colour" ).addEventListener( "input", () => {
+		settings.directionColour = field( "lp-direction-colour" ).value;
+		applyLayout();
+		syncLayoutPanel();
+	} );
+	field( "lp-direction-colour" ).addEventListener( "change", () => window.electron.saveSettings( { directionColour: field( "lp-direction-colour" ).value } ) );
+	onClick( "lp-direction-theme", () => window.electron.saveSettings( { directionColour: "" } ) );
 	for ( const [ id, key ] of LAYOUT_FIELDS ) {
 		field( id ).addEventListener( "input", () => {
 			settings[key] = Number( field( id ).value );
@@ -4103,7 +4356,7 @@ let meterContext = null;
 let meterRaf = null;
 
 function syncVoicePanel() {
-	if ( !document.getElementById( "voice-panel" ) ) return;
+	if ( !uiElement( "voice-panel" ) ) return;
 	field( "vp-mode" ).value = settings.scrollMode === "voice" ? "voice" : "steady";
 	field( "vp-engine" ).value = usesLocalVoice() ? "local" : "deepgram";
 	const panel = field( "voice-panel" );
@@ -4127,7 +4380,7 @@ function stopMicMeter() {
 	meterStream = null;
 	meterContext?.close();
 	meterContext = null;
-	const fill = document.getElementById( "vp-meter-fill" );
+	const fill = uiElement( "vp-meter-fill" );
 	if ( fill ) fill.style.width = "0";
 }
 
@@ -4181,7 +4434,7 @@ async function openVoicePanel() {
 	await fillVoiceMicList();
 }
 
-if ( document.getElementById( "voice-panel" ) ) {
+if ( uiElement( "voice-panel" ) ) {
 	field( "vp-mode" ).addEventListener( "change", () => {
 		window.electron.saveSettings( { scrollMode: field( "vp-mode" ).value } );
 	} );
@@ -4222,49 +4475,30 @@ if ( document.getElementById( "voice-panel" ) ) {
 
 // --- Help ---
 
-const helpModal = document.getElementById( "help-modal" );
+const helpModal = uiElement( "help-modal" );
 
 function renderHelp() {
-	const list = document.getElementById( "help-list" );
-	if ( !list || list.childElementCount ) return;
-	for ( const { section, keys } of SHORTCUTS ) {
-		const sectionEl = document.createElement( "div" );
-		sectionEl.className = "help-section";
-		const heading = document.createElement( "h5" );
-		heading.textContent = section;
-		const dl = document.createElement( "dl" );
-		for ( const [ combos, description ] of keys ) {
-			const dt = document.createElement( "dt" );
-			combos.forEach( ( combo, i ) => {
-				if ( i ) dt.append( " " );
-				const kbd = document.createElement( "kbd" );
-				kbd.textContent = combo;
-				dt.appendChild( kbd );
-			} );
-			const dd = document.createElement( "dd" );
-			dd.textContent = description;
-			dl.append( dt, dd );
-		}
-		sectionEl.append( heading, dl );
-		list.appendChild( sectionEl );
-	}
+	const list = uiElement( "help-list" );
+	if ( list ) renderHelpTabs( list, helpTabs( settings, document.body.classList.contains( "points-mode" ) ), "help" );
 }
 
-document.getElementById( "help-guide" )?.addEventListener( "click", () => {
+uiElement( "help-guide" )?.addEventListener( "click", () => {
 	closeHelp();
 	window.electron.openGuide();
 } );
 
-function openHelp() {
+async function openHelp() {
 	closePanels();
 	renderHelp();
 	helpModal?.classList.remove( "hidden" );
-	document.getElementById( "help-close" )?.focus( { preventScroll: true } );
+	await showPanelWindow( "help", helpModal );
+	uiElement( "help-close" )?.focus( { preventScroll: true } );
 	showControls();
 }
 
 function closeHelp() {
 	helpModal?.classList.add( "hidden" );
+	hidePanelWindow( "help" );
 	refreshControlsVisibility();
 }
 
@@ -4282,7 +4516,7 @@ window.electron.onMenuHelp( () => {
 
 // --- About ---
 
-const aboutModal = document.getElementById( "about-modal" );
+const aboutModal = uiElement( "about-modal" );
 
 // Floating chevrons instead of a scroll bar: ▲ and ▼ appear at the top and
 // bottom edge only when there is more to see that way. Wheel and keys still scroll.
@@ -4343,14 +4577,10 @@ const updateAboutChevrons = scrollChevrons(
 	aboutModal?.querySelector( ".about-content" )
 );
 const settingsBox = document.querySelector( ".settings-content" );
-const updateSettingsChevrons = scrollChevrons( settingsBox, {
-	after: settingsBox?.querySelector( ".settings-head" ),
-	before: settingsBox?.querySelector( ".modal-actions" )
-} );
 for ( const box of [
-	document.getElementById( "layout-panel" ),
-	document.getElementById( "voice-panel" ),
-	document.getElementById( "app-menu" ),
+	uiElement( "layout-panel" ),
+	uiElement( "voice-panel" ),
+	uiElement( "app-menu" ),
 	document.querySelector( ".help-content" )
 ] ) {
 	scrollChevrons( box );
@@ -4362,7 +4592,7 @@ function openAbout() {
 	aboutModal?.classList.remove( "hidden" );
 	aboutModal?.querySelector( ".about-content" )?.scrollTo( 0, 0 );
 	requestAnimationFrame( updateAboutChevrons );
-	document.getElementById( "about-close" )?.focus( { preventScroll: true } );
+	uiElement( "about-close" )?.focus( { preventScroll: true } );
 	showControls();
 }
 
@@ -4379,8 +4609,7 @@ aboutModal?.addEventListener( "mousedown", ( e ) => {
 	if ( e.target === aboutModal ) closeAbout();
 } );
 window.electron.onMenuAbout( openAbout );
-// A quiet line at the foot of the menu and Settings: version, date, licence, credit.
-let appInfo = null;
+// Version details for Settings and the full About page.
 function formatReleaseDate( iso ) {
 	const d = iso ? new Date( `${ iso }T12:00:00` ) : null;
 	return d && !Number.isNaN( d.getTime() )
@@ -4391,44 +4620,17 @@ function formatReleaseDate( iso ) {
 		} )
 		: null;
 }
-function fillFooter( el ) {
-	if ( !el ) return;
-	el.replaceChildren();
-	const date = formatReleaseDate( appInfo?.releaseDate );
-	const line = [
-		`Sightline Prompter ${ appInfo?.version ?? "" }`.trim(),
-		date && `updated ${ date }`,
-		"MIT licence"
-	]
-		.filter( Boolean )
-		.join( " · " );
-	const about = document.createElement( "button" );
-	about.type = "button";
-	about.className = "footer-link";
-	about.textContent = "About";
-	about.addEventListener( "click", () => requestCloseSettings( openAbout ) );
-	const credit = document.createElement( "span" );
-	credit.className = "footer-credit";
-	const CREDIT = [
-		"Adapted and enhanced by Joanne Lockwood from SEE Change Happen Ltd",
-		"based on Electron Teleprompter by David Neal",
-		"© 2022–2026"
-	];
-	credit.textContent = CREDIT.join( " · " );
-	el.append( `${ line } · `, about, document.createElement( "br" ), credit );
-}
 window.electron.getAppInfo();
 
 window.electron.onAppInfo( ( info ) => {
-	appInfo = info;
-	const brief = document.getElementById( "settings-about-version" );
+	const brief = uiElement( "settings-about-version" );
 	if ( brief ) {
 		const updated = formatReleaseDate( info.releaseDate );
 		brief.textContent = [ `Version ${ info.version }`, updated && `updated ${ updated }` ]
 			.filter( Boolean )
 			.join( " · " );
 	}
-	const el = document.getElementById( "about-version" );
+	const el = uiElement( "about-version" );
 	const date = formatReleaseDate( info.releaseDate );
 	if ( el )
 		el.textContent = [
@@ -4442,17 +4644,17 @@ window.electron.onAppInfo( ( info ) => {
 			.join( " · " );
 } );
 
-document.getElementById( "set-remote-help" )?.addEventListener( "click", () => {
+uiElement( "set-remote-help" )?.addEventListener( "click", () => {
 	window.electron.openGuide( "10-setting-up-your-ai.md" );
 } );
-document.getElementById( "set-remote-streamdeck" )?.addEventListener( "click", () => {
+uiElement( "set-remote-streamdeck" )?.addEventListener( "click", () => {
 	window.electron.openGuide( "06-remotes-and-screens.md#stream-deck" );
 } );
 
 // --- Updates: a check against the latest release on GitHub ---
 
-const updateLine = document.getElementById( "settings-about-update" );
-document.getElementById( "settings-about-updates" )?.addEventListener( "click", () => {
+const updateLine = uiElement( "settings-about-update" );
+uiElement( "settings-about-updates" )?.addEventListener( "click", () => {
 	if ( updateLine ) updateLine.textContent = "Checking…";
 	window.electron.checkForUpdates( false );
 } );
@@ -4481,7 +4683,7 @@ window.electron.onUpdateInfo( ( info ) => {
 
 // A small note at the bottom right, there until it's closed.
 function showUpdateNote( info ) {
-	if ( document.getElementById( "update-note" ) ) return;
+	if ( uiElement( "update-note" ) ) return;
 	const note = document.createElement( "div" );
 	note.id = "update-note";
 	note.setAttribute( "role", "status" );
@@ -4511,7 +4713,7 @@ function maybeAskForSupport() {
 	}
 	setTimeout( () => {
 		const busy = steadySessionActive() || autoScrollActive || onAir() || !settingsModal?.classList.contains( "hidden" );
-		if ( busy || document.getElementById( "support-note" ) ) return;
+		if ( busy || uiElement( "support-note" ) ) return;
 		try {
 			localStorage.setItem( SUPPORT_ASKED, new Date().toISOString() );
 		} catch {
@@ -4544,7 +4746,7 @@ window.electron.onMenuImportSettings( () => window.electron.importSettings() );
 
 // --- Drag and drop a script ---
 
-const dropOverlay = document.getElementById( "drop-overlay" );
+const dropOverlay = uiElement( "drop-overlay" );
 let dragDepth = 0;
 
 // A file, or a Google Docs link dragged from the browser's address bar.
@@ -4600,7 +4802,9 @@ let lastStatusSent = 0;
 
 function sendStatus() {
 	window.electron.sendRendererStatus( {
+		obs: obsUi.state(),
 		scrolling: isScrolling(),
+		preparing: autoScrollStarting || slating,
 		onAir: onAir(),
 		backing: Math.round( liveBacking() * 100 ),
 		panel: layoutPanel?.classList.contains( "hidden" ) === false ? layoutView : null,
@@ -4614,7 +4818,14 @@ function sendStatus() {
 		soundCheck: soundCheckOn(),
 		// The microphone is on: following your voice, or listening for the wake word.
 		listening: autoScrollActive ? "voice" : commandListeningOn() ? "wake" : null,
-		wakeWord: wakeLabel( settings.wakeWord )
+		wakeWord: wakeLabel( settings.wakeWord ),
+		listenerHealth,
+		listeningControl: {
+			suspended: listeningSuspended,
+			mode: settings.voiceCommands ?? "voice",
+			available: !isEditMode && !offScript && !modelMaintenance && !speechModel.downloading && ( usesLocalVoice() ? !!speechModel.installed : !!settings.hasDeepgramKey ),
+			canRestart: !listeningSuspended && ( autoScrollActive || wantCommandListening() || commandFailure ) && !isEditMode && !offScript && !modelMaintenance && !speechModel.downloading
+		}
 	} );
 }
 
@@ -4779,6 +4990,21 @@ function jumpSection( step ) {
 }
 
 function runRemoteAction( action, value ) {
+	if ( action === "listening-toggle" ) return toggleSessionListening();
+	if ( action === "listening-restart" ) return restartListening();
+	if ( action === "session-check" ) return workflow?.open( "session" );
+	if ( action === "obs-record" ) {
+		obsUi.action( "start" );
+		return;
+	}
+	if ( action === "obs-finish" ) {
+		obsUi.action( "stop" );
+		return;
+	}
+	if ( action === "head-guide" || action === "head-guide-fullscreen" ) {
+		window.electron.headGuide( action === "head-guide" ? "toggle" : "fullscreen" );
+		return;
+	}
 	if ( isEditMode && action !== "help" ) return;
 	if ( action === "play" && ( !isScrolling() || offScript ) ) toggleAutoScrollSession();
 	else if ( action === "pause" && isScrolling() ) toggleAutoScrollSession();
@@ -4826,100 +5052,144 @@ function runRemoteAction( action, value ) {
 window.electron.onRemoteCommand( runRemoteAction );
 
 window.electron.onRemoteInfo( ( info ) => {
-	const status = document.getElementById( "set-remote-status" );
+	componentAvailability?.remote( info );
+	const peerStatus = uiElement( "set-stream-deck-status" );
+	if ( peerStatus ) {
+		const peer = info.streamDeckPeer;
+		const versions = `Sightline ${ info.appVersion ?? "version unknown" }`;
+		let text;
+		if ( !info.streamDeck ) text = `${ versions }. Stream Deck control is off; Apply after enabling it.`;
+		else if ( info.error ) text = `${ versions }. Connection unavailable: ${ info.error }`;
+		else if ( !peer?.connected ) text = `${ versions }. Plugin version not confirmed. Open Stream Deck with plugin ${ peer?.recommendedPluginVersion ?? "0.1.9" } or later, then check again.`;
+		else text = `${ versions } · plugin ${ peer.pluginVersion }. ${ peer.message }. Required plugin ${ peer.minimumPluginVersion } or later.${ peer.updateRecommended ? ` Recommended: ${ peer.recommendedPluginVersion }.` : "" }`;
+		if ( peerStatus.textContent !== text ) peerStatus.textContent = text;
+	}
+	const status = uiElement( "set-remote-status" );
 	if ( !status ) return;
 	field( "set-remote-token" ).value = info.token ?? "";
 	if ( info.error ) status.textContent = `Not running: ${ info.error }`;
 	else if ( info.running && info.enabled )
-		status.textContent = `On at ${ info.url } (details for assistants in ${ info.file })`;
+		status.textContent = `On at ${ info.url }. Assistant connection details are saved in your Sightline settings folder.`;
 	else status.textContent = "Off.";
 } );
+onClick( "set-stream-deck-check", () => window.electron.getRemoteInfo() );
 onClick( "set-remote-copy", async () => {
-	await navigator.clipboard.writeText( field( "set-remote-token" ).value );
-	showTransientHint( "Token copied", 1500 );
+	if ( field( "set-remote-copy" ).disabled ) return;
+	try {
+		await navigator.clipboard.writeText( field( "set-remote-token" ).value );
+		showTransientHint( "Token copied", 1500 );
+	} catch {
+		showToast( "Could not copy the token. Try again from Settings." );
+	}
 } );
 onClick( "set-remote-new", () => window.electron.newRemoteToken() );
 
 window.electron.onPhoneInfo( ( info ) => {
-	const status = document.getElementById( "set-phone-status" );
-	const connect = document.getElementById( "set-phone-connect" );
+	phoneStatus = info;
+	const status = uiElement( "set-phone-status" );
+	const connect = uiElement( "set-phone-connect" );
 	if ( !status || !connect ) return;
 	connect.classList.toggle( "hidden", !info.qr );
-	if ( info.qr ) document.getElementById( "set-phone-qr" ).src = info.qr;
-	document.getElementById( "set-phone-url" ).textContent = info.url ?? "";
+	if ( info.qr ) uiElement( "set-phone-qr" ).src = info.qr;
+	uiElement( "set-phone-url" ).textContent = info.url ?? "";
 	if ( info.error ) status.textContent = `Not running: ${ info.error }`;
 	else if ( info.running )
 		status.textContent = "On. Scan the code with your phone.";
-	else status.textContent = "Off. Tick the box and Save to turn it on.";
+	else status.textContent = "Off. Tick the box, then Apply or Save & close.";
 } );
 onClick( "set-phone-new", () => window.electron.newPhoneKey() );
 
-function openRemoteSettings() {
-	openSettings();
-	showSettingsTab( "remotes" );
-}
-
-// Settings tabs: one section at a time, so nothing sits below the fold.
-// The last tab used opens next time.
 const SETTINGS_TAB_KEY = "settingsTab";
-const settingsTabs = [
-	...document.querySelectorAll( ".settings-tabs [data-tab]" )
-];
+syncPadSettings = createPadSettings( settingsModal, partial => window.electron.saveSettings( partial ) );
+syncPadSettings( settings.padLayout );
+mappingSettings = createMappingSettings( settingsModal, partial => window.electron.saveSettings( partial ) );
+mappingSettings.sync( settings.inputMappings );
+componentAvailability = createComponentAvailability( settingsModal, { navigate: name => showSettingsTab( name ) } );
+componentSettings = createComponentSettings( settingsModal, { onStatus: ( status ) => {
+	componentStatus = status;
+	componentAvailability.components( status );
+	obsUi.installation( status.obs ?? null );
+}, toast: text => showToast( text, 4500 ), changeModel: async ( action ) => {
+	if ( isScrolling() || autoScrollStarting || slating || [ "recording", "paused" ].includes( obsUi.state().recording ) ) throw new Error( "Stop prompting and recording before changing the speech model" );
+	modelMaintenance = true;
+	try {
+		await syncCommandListening();
+		return await window.electron.speechModelChange( action );
+	} finally {
+		modelMaintenance = false;
+		syncCommandListening();
+	}
+} } );
+componentSettings.paintSpeech( speechModel );
+// The modal is adopted by the separate Settings window; listen on the node.
+settingsModal.addEventListener( "keydown", ( event ) => {
+	if ( !mappingSettings.learning ) return;
+	event.preventDefault();
+	event.stopImmediatePropagation();
+	if ( event.key === "Escape" ) mappingSettings.cancel();
+	else if ( !event.repeat ) {
+		const input = keyInput( event );
+		if ( input ) mappingSettings.learn( input );
+	}
+}, true );
+const settingsNavigation = createSettingsNavigation( settingsModal, { onShow: ( name ) => {
+	if ( name !== "buttons" ) mappingSettings.cancel();
+	if ( name.startsWith( "component-" ) || [ "remotes", "streamdeck", "obs", "obs-recording", "obs-setup" ].includes( name ) ) componentSettings.refresh();
+	settingsTrail( `tab ${ name }` );
+	if ( LAYOUT_TABS.includes( name ) ) borrowLayoutPanel();
+	settingsBox?.scrollTo( 0, 0 );
+} } );
+addSettingsHelp( settingsModal );
+const settingsPages = createSettingsPages( settingsModal );
 
 // The About tab is a brief; the full page is a click away.
-document.getElementById( "settings-about-full" )?.addEventListener( "click", () => requestCloseSettings( openAbout ) );
-document.getElementById( "settings-about-guide" )?.addEventListener( "click", () => {
+uiElement( "settings-about-full" )?.addEventListener( "click", () => requestCloseSettings( openAbout ) );
+uiElement( "settings-about-guide" )?.addEventListener( "click", () => {
 	window.electron.openGuide();
 } );
-document.getElementById( "settings-about-support" )?.addEventListener( "click", () => window.open( SUPPORT_URL ) );
+uiElement( "settings-about-support" )?.addEventListener( "click", () => window.open( SUPPORT_URL ) );
+onClick( "settings-restore-defaults", async () => {
+	const button = field( "settings-restore-defaults" );
+	const status = field( "settings-restore-defaults-status" );
+	if ( isScrolling() || autoScrollStarting || slating || isEditMode || isDirty ) {
+		status.textContent = "Pause prompting and save or close the script editor before resetting.";
+		return;
+	}
+	button.disabled = true;
+	status.textContent = "Waiting for your confirmation…";
+	let restarting = false;
+	try {
+		const result = await window.electron.restoreDefaults();
+		restarting = result.restarting === true;
+		status.textContent = result.cancelled ? "Cancelled. Your setup is unchanged." : result.ok ? "Restarting into initial setup…" : result.error;
+	} catch ( error ) {
+		status.textContent = `Restore could not finish: ${ error.message }`;
+	} finally {
+		if ( !restarting ) changingRecordingScript = false;
+		button.disabled = false;
+	}
+} );
 for ( const link of document.querySelectorAll( "a.support-link" ) ) link.href = SUPPORT_URL;
 
 function showSettingsTab( name ) {
-	settingsTrail( `tab ${ name }` );
-	if ( !settingsTabs.some( t => t.dataset.tab === name ) ) name = "scrolling";
-	for ( const tab of settingsTabs ) {
-		const on = tab.dataset.tab === name;
-		tab.classList.toggle( "active", on );
-		tab.setAttribute( "aria-selected", String( on ) );
-		tab.tabIndex = on ? 0 : -1;
-	}
-	const sets = settingsModal?.querySelectorAll( "fieldset[data-tab]" ) ?? [];
-	for ( const set of sets ) {
-		set.classList.toggle( "hidden", set.dataset.tab !== name );
-	}
-	if ( LAYOUT_TABS.includes( name ) ) borrowLayoutPanel();
-	settingsModal?.querySelector( ".settings-content" )?.scrollTo( 0, 0 );
-	try {
-		localStorage.setItem( SETTINGS_TAB_KEY, name );
-	} catch {
-		// not remembered this time
-	}
-}
-
-for ( const tab of settingsTabs ) {
-	tab.addEventListener( "click", () => showSettingsTab( tab.dataset.tab ) );
-	tab.addEventListener( "keydown", ( e ) => {
-		if ( e.key !== "ArrowRight" && e.key !== "ArrowLeft" ) return;
-		e.preventDefault();
-		e.stopPropagation();
-		const i = settingsTabs.indexOf( tab ) + ( e.key === "ArrowRight" ? 1 : -1 );
-		const next = settingsTabs[( i + settingsTabs.length ) % settingsTabs.length];
-		showSettingsTab( next.dataset.tab );
-		next.focus();
-	} );
+	settingsNavigation.show( name );
 }
 
 // The Layout tab shows the Layout panel's own controls (they apply straight
 // away), moved into Settings while it is open and put back when it closes.
-const layoutPanel = document.getElementById( "layout-panel" );
-const layoutHost = document.getElementById( "set-layout-host" );
+const layoutPanel = uiElement( "layout-panel" );
+const layoutHost = uiElement( "set-layout-host" );
 // Settings shows the Layout panel's groups over three tabs, so none runs
 // below the fold: spacing on Layout, opacity and reading aids on Reading,
 // recording and script options on Recording.
 const layoutHosts = {
 	layout: layoutHost,
-	reading: document.getElementById( "set-reading-host" ),
-	recording: document.getElementById( "set-recording-host" )
+	reading: uiElement( "set-reading-host" ),
+	background: uiElement( "set-background-host" ),
+	aids: uiElement( "set-aids-host" ),
+	display: uiElement( "set-display-host" ),
+	recording: uiElement( "set-recording-host" ),
+	script: uiElement( "set-script-host" )
 };
 const LAYOUT_GROUP_TABS = {
 	Opacity: "reading",
@@ -4939,7 +5209,7 @@ const LAYOUT_TITLES = { layout: "Layout", reading: "Reading", recording: "Record
 		if ( el.tagName === "H4" ) continue;
 		if ( el.tagName === "H5" ) tab = LAYOUT_GROUP_TABS[el.textContent.trim()] ?? "layout";
 		if ( el.classList.contains( "lp-actions" ) ) continue;
-		el.dataset.view = el.classList.contains( "lp-hint" ) ? "layout" : tab;
+		el.dataset.view = el.classList.contains( "lp-hint" ) || el.classList.contains( "lp-mirror-row" ) ? "layout" : tab;
 	}
 }
 let layoutView = "layout";
@@ -4954,6 +5224,11 @@ function showLayoutView( view ) {
 }
 
 function toggleLayoutView( view ) {
+	if ( !settingsModal.classList.contains( "hidden" ) ) {
+		showSettingsTab( view );
+		showPanelWindow( "settings", settingsModal, () => settingsPages.layout() );
+		return;
+	}
 	const open = !layoutPanel?.classList.contains( "hidden" );
 	if ( open && layoutView === view ) {
 		closePanels();
@@ -4972,11 +5247,23 @@ function borrowLayoutPanel() {
 	);
 	let tab = "layout";
 	for ( const el of layoutBorrowed ) {
-		if ( el.tagName === "H5" ) tab = LAYOUT_GROUP_TABS[el.textContent.trim()] ?? "layout";
+		if ( el.tagName === "H5" ) {
+			const heading = el.textContent.trim();
+			tab = { Opacity: "background", "Reading aids": "aids", Script: "script" }[heading] ?? LAYOUT_GROUP_TABS[heading] ?? "layout";
+		}
 		// The margins note and Reset layout belong with the spacing.
 		const spacing = el.classList.contains( "lp-hint" ) || el.classList.contains( "lp-actions" );
 		el.classList.remove( "lp-off" );
-		( layoutHosts[spacing ? "layout" : tab] ?? layoutHost ).append( el );
+		if ( el.classList.contains( "lp-mirror-row" ) ) {
+			uiElement( "set-mirror-host" ).append( el );
+			continue;
+		}
+		const id = el.dataset.settingsControl ?? el.querySelector( "input[id], select[id]" )?.id;
+		const destination = [ "lp-font", "lp-heading-font", "lp-heading-scale", "lp-direction-scale", "lp-direction-colour" ].includes( id ) ? "reading" : id === "lp-theme" ? "background" : [ "lp-marker", "lp-sentence", "lp-progress" ].includes( id ) ? "aids" : id === "lp-pinned" ? "display" : id === "lp-summary" ? "recording" : spacing ? "layout" : tab;
+		( layoutHosts[destination] ?? layoutHost ).append( el );
+	}
+	for ( const id of [ "lp-font", "lp-heading-font", "lp-heading-scale", "lp-direction-scale", "lp-direction-colour" ] ) {
+		layoutHosts.reading.append( field( id ).closest( "[data-settings-control]" ) );
 	}
 	field( "lp-done" )?.classList.add( "hidden" );
 	syncControls();
@@ -4990,14 +5277,8 @@ function returnLayoutPanel() {
 	field( "lp-done" )?.classList.remove( "hidden" );
 }
 
-// Display has a few of the same settings: keep them in step with Layout, so
-// Save doesn't put back the old values (and Cancel keeps the new backing).
+// Shared live controls remain applied when the Settings draft is cancelled.
 function refreshSharedDisplayFields() {
-	field( "set-opacity" ).value = opacity;
-	field( "set-reading-line" ).value = settings.readingLine;
-	field( "set-reading-marker" ).checked = !!settings.showReadingMarker;
-	field( "set-sentence" ).checked = settings.highlightSentence !== false;
-	field( "set-mirrored" ).value = mirrored;
 	if ( settingsSnapshot ) settingsSnapshot.opacity = opacity;
 }
 for ( const type of [ "input", "change", "click" ] ) {
@@ -5007,64 +5288,6 @@ for ( const type of [ "input", "change", "click" ] ) {
 		);
 	}
 }
-
-// --- Files tab: scripts and the settings file ---
-
-function fillFilesTab() {
-	field( "set-file-save" ).disabled = !isDirty;
-	field( "set-file-save-as" ).disabled = !editorView;
-	field( "set-file-edit" ).textContent = isEditMode
-		? "Back to the teleprompter"
-		: "Edit script";
-	const fill = ( id, placeholder, entries ) => {
-		const select = field( id );
-		select.innerHTML = "";
-		select.append( new Option( placeholder, "" ) );
-		for ( const [ label, value, title ] of entries ) {
-			const option = new Option( label, value );
-			if ( title ) option.title = title;
-			select.append( option );
-		}
-		select.disabled = entries.length === 0;
-	};
-	fill(
-		"set-file-recent",
-		( slotState.recent ?? [] ).length ? "Choose…" : "None yet",
-		( slotState.recent ?? [] ).map( r => [ r.name, r.path, r.path ] )
-	);
-	fill(
-		"set-file-sample",
-		"Choose…",
-		( slotState.samples ?? [] ).map( x => [ x.label, x.file ] )
-	);
-}
-
-// Opening something closes Settings, so you see the script (asking first if
-// there are changes that haven't been saved).
-const closeThen = action => () => requestCloseSettings( action );
-onClick(
-	"set-file-open",
-	closeThen( () => window.electron.openFileDialog() )
-);
-onClick( "set-file-edit", closeThen( toggleEditMode ) );
-onClick( "set-file-save", () => {
-	saveFromBar();
-	setTimeout( fillFilesTab, 300 );
-} );
-onClick( "set-file-save-as", () => saveEditorContentAs() );
-onClick(
-	"set-file-load-settings",
-	closeThen( () => window.electron.importSettings() )
-);
-onClick( "set-file-save-settings", () => window.electron.exportSettings() );
-field( "set-file-recent" )?.addEventListener( "change", ( e ) => {
-	if ( e.target.value )
-		closeThen( () => window.electron.openRecent( e.target.value ) )();
-} );
-field( "set-file-sample" )?.addEventListener( "change", ( e ) => {
-	if ( e.target.value )
-		closeThen( () => window.electron.openSample( e.target.value ) )();
-} );
 
 function lastSettingsTab() {
 	try {
@@ -5630,6 +5853,24 @@ function formatClock( seconds ) {
 const scratch = createScratchRecorder();
 let scratchWanted = false;
 let scratchChange = Promise.resolve();
+let changingRecordingScript = false;
+const pendingRecordedSlates = new Set();
+
+window.electron.onPrepareScriptChange( async ( id ) => {
+	try {
+		stopSteadySession();
+		await stopAutoScrollSession();
+		if ( pointsRunning ) togglePoints();
+		await Promise.all( [ ...pendingRecordedSlates ] );
+		feedTakeLog( false );
+		await scratchChange;
+		feedTakeLog( false );
+		changingRecordingScript = true;
+		window.electron.scriptChangeReady( id );
+	} catch {
+		window.electron.scriptChangeReady( id, "The recording could not finish saving; keep this script open and try again" );
+	}
+} );
 
 function syncScratchAudio( active ) {
 	const want = ( active || slating ) && settings.scratchAudio === true && !isEditMode;
@@ -5712,7 +5953,7 @@ function toggleSoundCheck() {
 	syncLevelMeter( active );
 	if ( !soundCheck ) showToast( "Sound check off", 1500 );
 	else if ( active && settings.soundCheckDuringTakes !== true )
-		showToast( "Sound check: it shows when you stop (Settings > Voice can keep it on during takes)", 3500 );
+		showToast( "Sound check: it shows when you stop (Settings > Recording > Audio can keep it on during takes)", 3500 );
 	else showToast( "Sound check on · speak normally, then stay quiet for the room · Ctrl+Shift+D hides it", 3500 );
 }
 
@@ -5729,10 +5970,11 @@ function takeLogged( take ) {
 }
 
 function feedTakeLog( active ) {
+	if ( changingRecordingScript ) return;
 	syncScratchAudio( active );
 	syncLevelMeter( active );
 	// Waiting for the slate: the take opens after it, so it gets the slate.
-	if ( slateDue ) return;
+	if ( slateDue || slating ) return;
 	const y = readingLineY();
 	const index = pointsMode() ? pointsIndex : sectionIndexAt( y );
 	const section = directivePoints.sections[index];
@@ -5762,6 +6004,8 @@ function feedTakeLog( active ) {
 			if ( m.y > recordingY && m.y <= y ) recording.marker( { label: m.label, from: "script", key: m.key } );
 		}
 	}
+	recording.obs( obsUi.state() );
+	obsUi.refresh();
 	recordingY = y;
 	if ( recording.version() !== recordingSaved ) {
 		recordingSaved = recording.version();
@@ -5932,13 +6176,13 @@ function showTakeSummary() {
 	}
 	const logged = recording.data();
 	const keepers = logged.takes.filter( t => t.rating === "keeper" ).length;
-	const logLine = document.getElementById( "take-summary-log" );
+	const logLine = uiElement( "take-summary-log" );
 	if ( logLine ) {
 		logLine.textContent = logged.takes.length
 			? `Take log so far: ${ logged.takes.length } take${ logged.takes.length === 1 ? "" : "s" } of ${ logged.sections.length } section${ logged.sections.length === 1 ? "" : "s" }${ keepers ? `, ${ keepers } keeper${ keepers === 1 ? "" : "s" }` : "" }. Say “Prompter, keeper” or press K to mark a good take.`
 			: "";
 	}
-	const levelsLine = document.getElementById( "take-summary-levels" );
+	const levelsLine = uiElement( "take-summary-levels" );
 	if ( levelsLine ) {
 		const measured = logged.takes.filter( t => t.loudness ).slice( -6 );
 		levelsLine.textContent = measured.length
@@ -5946,10 +6190,10 @@ function showTakeSummary() {
 			: "";
 	}
 	const full = [ ...takeLog.values() ].some( r => !r.partial );
-	document.getElementById( "take-summary-targets" ).hidden = !full;
-	document.getElementById( "take-summary-targets-hint" ).hidden = !full;
+	uiElement( "take-summary-targets" ).hidden = !full;
+	uiElement( "take-summary-targets-hint" ).hidden = !full;
 	summaryModal.classList.remove( "hidden" );
-	document.getElementById( "take-summary-close" )?.focus( { preventScroll: true } );
+	uiElement( "take-summary-close" )?.focus( { preventScroll: true } );
 }
 
 function closeTakeSummary() {
@@ -5958,9 +6202,14 @@ function closeTakeSummary() {
 
 onClick( "take-summary-close", closeTakeSummary );
 onClick( "take-summary-export", () => window.electron.exportTakeLog() );
+onClick( "take-summary-coach", () => {
+	closeTakeSummary();
+	openScriptReview( "coach" );
+} );
 // The saved log for this script and day, so take numbers carry on.
 window.electron.onTakeLog( ( saved ) => {
 	recording.load( saved );
+	changingRecordingScript = false;
 	recordingSaved = recording.version();
 	recordingY = null;
 } );
@@ -5980,7 +6229,7 @@ setInterval( pacingTick, 250 );
 
 // --- Recordings (File > Recordings): every take log, see recordings.js ---
 
-const recordingsModal = document.getElementById( "recordings" );
+const recordingsModal = uiElement( "recordings" );
 let openRecordingId = null;
 
 function recordingWhen( r ) {
@@ -5991,13 +6240,13 @@ function recordingWhen( r ) {
 
 async function showRecordingsList() {
 	openRecordingId = null;
-	document.getElementById( "recordings-list-view" ).hidden = false;
-	document.getElementById( "recordings-detail-view" ).hidden = true;
-	document.getElementById( "recordings-title" ).textContent = "Recordings";
+	uiElement( "recordings-list-view" ).hidden = false;
+	uiElement( "recordings-detail-view" ).hidden = true;
+	uiElement( "recordings-title" ).textContent = "Recordings";
 	const { list, current } = await window.electron.recordings( "list" );
-	const rows = document.getElementById( "recordings-rows" );
+	const rows = uiElement( "recordings-rows" );
 	rows.innerHTML = "";
-	document.getElementById( "recordings-empty" ).hidden = list.length > 0;
+	uiElement( "recordings-empty" ).hidden = list.length > 0;
 	for ( const r of list ) {
 		const tr = document.createElement( "tr" );
 		tr.tabIndex = 0;
@@ -6026,21 +6275,21 @@ async function showRecordingsList() {
 async function showRecording( id ) {
 	const r = await window.electron.recordings( "read", { id } );
 	openRecordingId = id;
-	document.getElementById( "recordings-list-view" ).hidden = true;
-	document.getElementById( "recordings-detail-view" ).hidden = false;
-	document.getElementById( "recordings-title" ).textContent = r.title ?? r.id;
+	uiElement( "recordings-list-view" ).hidden = true;
+	uiElement( "recordings-detail-view" ).hidden = false;
+	uiElement( "recordings-title" ).textContent = r.title ?? r.id;
 	field( "recording-title" ).value = r.title ?? "";
 	field( "recording-title" ).placeholder = r.id;
 	field( "recording-note" ).value = r.note ?? "";
 	field( "recording-processed" ).checked = !!r.processed;
 	const plural = ( n, word ) => `${ n } ${ word }${ n === 1 ? "" : "s" }`;
-	document.getElementById( "recording-facts" ).textContent = [
+	uiElement( "recording-facts" ).textContent = [
 		`${ r.script ?? "No script" }, ${ recordingWhen( r ) }`,
 		`${ plural( r.takes, "take" ) } of ${ plural( r.sections, "section" ) }`,
 		`${ formatClock( r.recordedSeconds ) } recorded, ${ formatClock( r.editSeconds ) } in the edit`,
 		r.voice ? "word timings from voice mode" : "no word timings (steady scrolling)"
 	].join( " · " );
-	const rows = document.getElementById( "recording-takes" );
+	const rows = uiElement( "recording-takes" );
 	rows.innerHTML = "";
 	for ( const t of r.takeList ) {
 		const tr = document.createElement( "tr" );
@@ -6056,7 +6305,7 @@ async function showRecording( id ) {
 async function openRecordings() {
 	recordingsModal.classList.remove( "hidden" );
 	await showRecordingsList();
-	document.getElementById( "recordings-done" ).focus( { preventScroll: true } );
+	uiElement( "recordings-done" ).focus( { preventScroll: true } );
 }
 
 function closeRecordings() {
@@ -6067,13 +6316,17 @@ function closeRecordings() {
 async function updateOpenRecording( changes ) {
 	if ( !openRecordingId ) return;
 	const r = await window.electron.recordings( "update", { id: openRecordingId, changes } );
-	document.getElementById( "recordings-title" ).textContent = r?.title ?? openRecordingId;
+	uiElement( "recordings-title" ).textContent = r?.title ?? openRecordingId;
 }
 
 field( "recording-title" ).addEventListener( "change", e => updateOpenRecording( { title: e.target.value } ) );
 field( "recording-note" ).addEventListener( "change", e => updateOpenRecording( { note: e.target.value } ) );
 field( "recording-processed" ).addEventListener( "change", e => updateOpenRecording( { processed: e.target.checked } ) );
 onClick( "recording-back", showRecordingsList );
+onClick( "recording-coach", async () => {
+	const saved = await window.electron.recordings( "read", { id: openRecordingId } );
+	if ( saved?.coach ) openScriptReview( "coach", { ...saved.coach, sourceLabel: `Saved recording: ${ saved.title ?? saved.id }` } );
+} );
 onClick( "recording-export", async () => {
 	const { saved } = await window.electron.recordings( "export", { id: openRecordingId } );
 	if ( saved ) showToast( `Edit pack saved: ${ saved }`, 2500 );
@@ -6126,7 +6379,7 @@ function applyDisplayClasses() {
 			`font-${ f }`,
 			( settings.scriptFont ?? "default" ) === f
 		);
-	// Headings can have their own font ("same" follows the text).
+	// Headings and delivery comments share a font ("same" follows the text).
 	for ( const f of FONTS )
 		body.classList.toggle( `heading-font-${ f }`, ( settings.headingFont ?? "same" ) === f );
 	for ( const e of EFFECTS )
@@ -6138,10 +6391,10 @@ function applyDisplayClasses() {
 function updateOnAir() {
 	applyBacking();
 	// The bar's Backing slider follows the level in use.
-	const label = document.getElementById( "cb-backing-label" );
-	if ( label ) label.textContent = onAir() ? "On air" : "Backing";
+	const label = uiElement( "cb-backing-label" );
+	if ( label ) label.textContent = onAir() ? "On-air BG" : "Background";
 	if ( opacityInput && document.activeElement !== opacityInput ) opacityInput.value = liveBacking();
-	const button = document.getElementById( "cb-on-air" );
+	const button = uiElement( "cb-on-air" );
 	button?.classList.toggle( "live", onAir() );
 	button?.setAttribute( "aria-pressed", String( manualOnAir ) );
 	if ( !onAirEl ) return;
@@ -6179,7 +6432,7 @@ document.addEventListener( "mousemove", ( e ) => {
 		return;
 	}
 	const overControls = !!e.target.closest?.(
-		"#control-bar, .panel, #app-menu, .modal, #auto-scroll-indicator, #toast"
+		"#control-bar, .panel, #app-menu, .modal, #auto-scroll-indicator, #toast, #capture-override-note"
 	);
 	const ignore = !overControls;
 	if ( ignore !== ignoringMouse ) {
@@ -6190,43 +6443,89 @@ document.addEventListener( "mousemove", ( e ) => {
 
 window.electron.onToast( text => showToast( text ) );
 
-// Game controllers: buttons act like the matching keys.
-const PAD_KEYS = {
-	0: { key: "PageDown" }, // A: start / pause / carry on
-	1: { key: "b" }, // B: drop a marker
-	2: { key: "b", ctrlKey: true }, // X: next marker
-	12: { key: "ArrowUp" }, // d-pad up: faster while scrolling
-	13: { key: "ArrowDown" }, // d-pad down: slower
-	14: { key: "ArrowLeft" }, // d-pad left: previous section
-	15: { key: "ArrowRight" } // d-pad right: next section
-};
-let padTimer = null;
-const padPressed = new Map();
-function pollGamepads() {
-	const pads = navigator.getGamepads?.() ?? [];
-	let any = false;
-	for ( const pad of pads ) {
-		if ( !pad ) continue;
-		any = true;
-		for ( const [ index, keyInit ] of Object.entries( PAD_KEYS ) ) {
-			const down = !!pad.buttons[index]?.pressed;
-			const id = `${ pad.index }:${ index }`;
-			if ( down && !padPressed.get( id ) ) {
-				document.dispatchEvent(
-					new KeyboardEvent( "keydown", { ...keyInit, bubbles: true } )
-				);
-			}
-			padPressed.set( id, down );
-		}
+function openScriptReview( tab = isEditMode ? "health" : "coach", saved = null ) {
+	if ( isScrolling() || autoScrollStarting || slating ) {
+		showToast( "Pause prompting before opening the review" );
+		return;
 	}
-	if ( !any ) {
-		clearInterval( padTimer );
-		padTimer = null;
+	reviewedRecording = saved;
+	scriptReview.open( tab );
+}
+scriptReview = createScriptReview( field( "script-review" ), {
+	health: async ( wpm ) => {
+		const html = isEditMode && editorView ? await window.electron.scriptReviewHtml( window.EditorModule.getEditorContent( editorView ) ) : lastScriptHtml ?? md.innerHTML;
+		const parsed = healthSections( html );
+		return { ...scriptHealth( parsed.sections, wpm ), notes: parsed.notes || pointsMode(), sourceLabel: isEditMode ? "Current editor text, including unsaved changes" : "Current script" };
+	},
+	coach: async () => reviewedRecording ?? rehearsalCoach( recording.data() ),
+	canJump: () => isEditMode && !!editorView,
+	jump: section => window.EditorModule.selectSection( editorView, section )
+} );
+const navigateWorkflowSettings = async ( topic ) => {
+	await openSettings();
+	showSettingsTab( topic );
+};
+workflow = createWorkflow( field( "workflow-modal" ), {
+	getState: async () => {
+		await componentSettings.refresh();
+		return { settings, components: componentStatus, obs: obsUi.state(), microphone: micSelect?.selectedOptions[0]?.textContent, guideShown: !!headGuideState?.shown, scriptTitle: slotState.slots[slotState.active]?.name, phone: phoneStatus };
+	},
+	navigate: async topic => topic === "obs-setup" ? obsSetupUi.open() : navigateWorkflowSettings( topic ),
+	act: ( action ) => {
+		if ( action === "sound" ) toggleSoundCheck();
+		else if ( action === "guide" ) window.electron.headGuide( "show" );
+		else openScriptReview( "health" );
+	},
+	isBusy: () => isScrolling() || autoScrollStarting || slating,
+	toast: showToast
+} );
+obsSetupUi = createObsSetupUi( field( "obs-setup-modal" ), { navigate: navigateWorkflowSettings, isBusy: () => isScrolling() || autoScrollStarting || slating, toast: showToast } );
+onClick( "set-obs-setup-open", () => obsSetupUi.open() );
+onClick( "set-obs-setup-guide", () => window.electron.openGuide( "15-obs-setup.md" ) );
+onClick( "help-getting-started", () => {
+	closeHelp();
+	workflow.open( "start" );
+} );
+window.electron.onMenuWorkflow( mode => workflow.open( mode ) );
+window.electron.onGettingStartedOffer( () => workflow.open( "start" ) );
+onClick( "btn-script-health", () => openScriptReview( "health" ) );
+window.electron.onMenuReview( () => openScriptReview() );
+makeMovable( field( "script-review" ).querySelector( ".review-content" ), field( "review-title" ), "script-review" );
+
+// Controller actions use the same guards as the pad; no synthetic key events.
+const buttonEdges = createButtonEdges();
+function mappingBlocked() {
+	return isEditMode || !settingsModal.classList.contains( "hidden" ) || !!document.querySelector( ".modal:not(.hidden), #voice-help:not(.hidden)" ) || !!document.activeElement?.closest( "input, select, textarea, [contenteditable=true]" );
+}
+function runMappedAction( action ) {
+	if ( action === "none" || mappingBlocked() ) return;
+	if ( action === "next-marker" ) {
+		jumpToNextMarker();
+		return;
+	}
+	const view = controlView( action, { ...settings, ...obsUiStatus(), editing: isEditMode } );
+	if ( !view || view.disabled || view.hidden ) return;
+	const request = controlAction( action );
+	if ( request.slot ) switchToSlot( request.slot - 1 );
+	else runRemoteAction( request.action );
+}
+function obsUiStatus() {
+	return { obs: obsUi.state(), scrolling: isScrolling(), slots: slotState.slots.map( slot => ( { file: slot ? slot.name : null } ) ) };
+}
+function pollGamepads() {
+	for ( const input of buttonEdges( navigator.getGamepads?.() ?? [] ) ) {
+		if ( mappingSettings?.learning ) {
+			if ( settingsModal.ownerDocument.hasFocus() && settingsModal.querySelector( "#settings-page-buttons" )?.hidden === false ) mappingSettings.learn( input );
+			continue;
+		}
+		if ( !document.hasFocus() || mappingBlocked() ) continue;
+		const action = mappedAction( normaliseMappings( settings.inputMappings ), input );
+		if ( action ) runMappedAction( action );
 	}
 }
+setInterval( pollGamepads, 40 );
 window.addEventListener( "gamepadconnected", () => {
-	padTimer ??= setInterval( pollGamepads, 40 );
-	showToast( "Controller connected · A starts and pauses, B adds a marker" );
+	showToast( "Controller connected · change buttons in Settings > Controls > Buttons & keys" );
 } );
 
 // --- Number boxes beside sliders ---
@@ -6311,6 +6610,12 @@ const NUMBER_BOXES = {
 		unit: "%",
 		word: "percent",
 		name: "Heading size"
+	} ),
+	"lp-direction-scale": () => ( {
+		scale: 100,
+		unit: "%",
+		word: "percent",
+		name: "Comment size"
 	} ),
 	"lp-line-height": () => ( {
 		scale: 100,
@@ -6411,7 +6716,7 @@ function attachNumberBox( range, getSpec ) {
 	row.className = "slider-with-box";
 	range.replaceWith( row );
 	row.append( range, box );
-	document.getElementById( `${ range.id }-value` )?.classList.add( "num-replaced" );
+	uiElement( `${ range.id }-value` )?.classList.add( "num-replaced" );
 
 	const read = () => Number( valueProp.get.call( range ) );
 	const refresh = () => {
@@ -6421,7 +6726,7 @@ function attachNumberBox( range, getSpec ) {
 		num.max = tidy( Number( range.max ) * scale );
 		num.step = tidy( Number( range.step ) * scale );
 		const shown = tidy( read() * scale );
-		if ( document.activeElement !== num ) num.value = shown;
+		if ( num.ownerDocument.activeElement !== num ) num.value = shown;
 		unit.textContent = spec.unit;
 		const label = spec.name;
 		num.setAttribute( "aria-label", `${ label } in ${ spec.word }` );
@@ -6514,6 +6819,6 @@ function attachNumberBox( range, getSpec ) {
 }
 
 for ( const [ id, getSpec ] of Object.entries( NUMBER_BOXES ) ) {
-	const range = document.getElementById( id );
+	const range = uiElement( id );
 	if ( range ) attachNumberBox( range, getSpec );
 }

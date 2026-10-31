@@ -23,13 +23,14 @@ function unescapeXml( text ) {
 
 function typeOf( value ) {
 	if ( value === null ) return "null";
+	if ( typeof value === "object" ) return "json";
 	return typeof value;
 }
 
 export function toXml( values ) {
 	const lines = Object.entries( values ).map(
 		( [ name, value ] ) =>
-			`  <setting name="${ escapeXml( name ) }" type="${ typeOf( value ) }">${ value === null ? "" : escapeXml( value ) }</setting>`
+			`  <setting name="${ escapeXml( name ) }" type="${ typeOf( value ) }">${ value === null ? "" : escapeXml( typeof value === "object" ? JSON.stringify( value ) : value ) }</setting>`
 	);
 	return `<?xml version="1.0" encoding="UTF-8"?>\n<${ XML_ROOT } version="1">\n${ lines.join( "\n" ) }\n</${ XML_ROOT }>\n`;
 }
@@ -46,6 +47,7 @@ export function fromXml( text ) {
 		if ( type === "number" ) values[unescapeXml( name )] = Number( value );
 		else if ( type === "boolean" ) values[unescapeXml( name )] = value === "true";
 		else if ( type === "null" ) values[unescapeXml( name )] = null;
+		else if ( type === "json" ) values[unescapeXml( name )] = JSON.parse( value );
 		else values[unescapeXml( name )] = value;
 	}
 	return values;

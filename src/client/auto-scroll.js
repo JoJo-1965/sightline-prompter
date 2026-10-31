@@ -18,6 +18,7 @@ import {
 import { createAligner } from "./aligner.js";
 import { createWordFixer } from "./word-fixes.js";
 import { createCommandListener } from "./voice-commands.js";
+import { createSpeechRecovery } from "./speech-recovery.js";
 
 const DEEPGRAM_QUERY = new URLSearchParams( {
 	model: "nova-3",
@@ -35,6 +36,8 @@ let activeCtx = null;
 // once; each session points them at its own handlers.
 let localWords = null;
 let localState = null;
+let localSerial = 0;
+let localOwner = null;
 window.electron?.onSpeechWords?.( heard => localWords?.( heard ) );
 window.electron?.onSpeechState?.( state => localState?.( state ) );
 
@@ -42,56 +45,98 @@ export function isActive() {
 	return activeCtx !== null;
 }
 
-async function openLocal( stream, onWords, onStatus ) {
+async function openLocal( stream, onWords, onStatus, reset = false, signal = null ) {
+	if ( signal?.aborted ) throw new Error( "Listening was cancelled." );
+	const session = ++localSerial;
+	localOwner = session;
 	let started = false;
-	const ready = new Promise( ( resolve, reject ) => {
-		const timeout = setTimeout(
-			() => reject( new Error( "The speech engine didn't start." ) ),
-			20000
-		);
-		localState = ( state ) => {
-			if ( state.type === "ready" ) {
-				clearTimeout( timeout );
-				started = true;
-				resolve();
-			} else if ( state.type === "error" ) {
-				clearTimeout( timeout );
-				if ( started ) onStatus?.( { type: "error", error: state.message } );
-				else reject( new Error( state.message ) );
-			}
-		};
-	} );
-	window.electron.speechStart();
-	await ready;
-
-	// The recogniser wants 16 kHz audio; the audio context resamples the mic.
-	const audioCtx = new AudioContext( { sampleRate: 16000 } );
-	await audioCtx.audioWorklet.addModule(
-		new URL( "./mic-worklet.js", import.meta.url )
-	);
-	const source = audioCtx.createMediaStreamSource( stream );
-	const blocks = new AudioWorkletNode( audioCtx, "mic-blocks" );
-	const silent = audioCtx.createGain();
-	silent.gain.value = 0;
-	blocks.port.onmessage = event =>
-		window.electron.sendSpeechAudio( event.data );
-	source.connect( blocks ).connect( silent ).connect( audioCtx.destination );
-	localWords = ( { words, final, at } ) => onWords( words, null, final, at );
-
-	return {
-		close() {
+	let audioAt = Date.now();
+	let engineAt = Date.now();
+	let audioCtx;
+	let source;
+	let blocks;
+	let timeout;
+	let closed = false;
+	let rejectReady;
+	const cancel = () => {
+		rejectReady?.( new Error( "Listening was cancelled." ) );
+		close();
+	};
+	const close = () => {
+		if ( closed ) return;
+		closed = true;
+		clearTimeout( timeout );
+		signal?.removeEventListener( "abort", cancel );
+		if ( localOwner === session ) {
+			localOwner = null;
 			localWords = null;
 			localState = null;
-			window.electron.speechStop();
-			blocks.port.onmessage = null;
-			source.disconnect();
-			audioCtx.close().catch( () => {} );
+			window.electron.speechStop( session );
 		}
+		if ( blocks ) blocks.port.onmessage = null;
+		source?.disconnect();
+		audioCtx?.close().catch( () => {} );
 	};
+	try {
+		const ready = new Promise( ( resolve, reject ) => {
+			rejectReady = reject;
+			timeout = setTimeout(
+				() => reject( new Error( "The speech engine didn't start." ) ),
+				20000
+			);
+			localState = ( state ) => {
+				if ( state.session != null && state.session !== session ) return;
+				if ( state.type === "ready" ) {
+					clearTimeout( timeout );
+					started = true;
+					engineAt = Date.now();
+					resolve();
+				} else if ( state.type === "health" ) {
+					engineAt = Date.now();
+				} else if ( state.type === "error" ) {
+					clearTimeout( timeout );
+					if ( started ) onStatus?.( { type: "error", error: state.message } );
+					else reject( new Error( state.message ) );
+				}
+			};
+		} );
+		signal?.addEventListener( "abort", cancel, { once: true } );
+		window.electron.speechStart( { session, reset } );
+		await ready;
+
+		// The recogniser wants 16 kHz audio; the audio context resamples the mic.
+		audioCtx = new AudioContext( { sampleRate: 16000 } );
+		await audioCtx.resume();
+		await audioCtx.audioWorklet.addModule(
+			new URL( "./mic-worklet.js", import.meta.url )
+		);
+		source = audioCtx.createMediaStreamSource( stream );
+		blocks = new AudioWorkletNode( audioCtx, "mic-blocks" );
+		const silent = audioCtx.createGain();
+		silent.gain.value = 0;
+		blocks.port.onmessage = ( event ) => {
+			audioAt = Date.now();
+			window.electron.sendSpeechAudio( event.data );
+		};
+		source.connect( blocks ).connect( silent ).connect( audioCtx.destination );
+		localWords = ( heard ) => {
+			if ( heard.session == null || heard.session === session ) onWords( heard.words, null, heard.final, heard.at );
+		};
+
+		return {
+			close,
+			health: () => ( { audioAt, engineAt, contextState: audioCtx.state } )
+		};
+	} catch ( err ) {
+		close();
+		throw err;
+	}
 }
 
 async function openDeepgram( deepgramKey, stream, onWords, onStatus ) {
 	const dgSocket = new WebSocket( DEEPGRAM_URL, [ "token", deepgramKey ] );
+	let closing = false;
+	let audioAt = Date.now();
 
 	await new Promise( ( resolve, reject ) => {
 		const timeout = setTimeout(
@@ -116,6 +161,10 @@ async function openDeepgram( deepgramKey, stream, onWords, onStatus ) {
 			},
 			{ once: true }
 		);
+	} ).catch( ( err ) => {
+		closing = true;
+		dgSocket.close();
+		throw err;
 	} );
 
 	dgSocket.addEventListener( "message", ( event ) => {
@@ -134,18 +183,26 @@ async function openDeepgram( deepgramKey, stream, onWords, onStatus ) {
 	} );
 
 	dgSocket.addEventListener( "error", ( err ) => {
-		onStatus?.( { type: "error", error: err?.message || "websocket error" } );
+		if ( !closing ) onStatus?.( { type: "error", error: err?.message || "websocket error" } );
 	} );
 
 	dgSocket.addEventListener( "close", () => {
-		onStatus?.( { type: "closed" } );
+		if ( !closing ) onStatus?.( { type: "closed" } );
 	} );
 
 	const mimeType = MediaRecorder.isTypeSupported( "audio/webm;codecs=opus" )
 		? "audio/webm;codecs=opus"
 		: "audio/webm";
-	const recorder = new MediaRecorder( stream, { mimeType } );
+	let recorder;
+	try {
+		recorder = new MediaRecorder( stream, { mimeType } );
+	} catch ( err ) {
+		closing = true;
+		dgSocket.close();
+		throw err;
+	}
 	recorder.ondataavailable = async ( event ) => {
+		audioAt = Date.now();
 		if (
 			event.data
 			&& event.data.size > 0
@@ -159,10 +216,22 @@ async function openDeepgram( deepgramKey, stream, onWords, onStatus ) {
 			}
 		}
 	};
-	recorder.start( 250 );
+	try {
+		recorder.start( 250 );
+	} catch ( err ) {
+		closing = true;
+		dgSocket.close();
+		throw err;
+	}
+	const keepAlive = setInterval( () => {
+		if ( dgSocket.readyState === WebSocket.OPEN ) dgSocket.send( JSON.stringify( { type: "KeepAlive" } ) );
+	}, 3000 );
 
 	return {
+		health: () => ( { audioAt, engineAt: dgSocket.readyState === WebSocket.OPEN ? Date.now() : 0 } ),
 		close() {
+			closing = true;
+			clearInterval( keepAlive );
 			try {
 				if ( recorder.state !== "inactive" ) recorder.stop();
 			} catch ( err ) {
@@ -213,6 +282,7 @@ export async function startAutoScroll( {
 	onScroll,
 	onFollow = null, // ({ from, to, start, end, ranges }): script words passed, and when they were said
 	onHeard = null, // ({ heard, final, from, to, script }): every chunk heard, for the heard log
+	onReview = null, // command-filtered word deltas, only during active voice following
 	onCommand = null,
 	onWake = () => {}, // the wake word was heard
 	onMiss = () => {}, // ( words ): what followed it wasn't a command
@@ -239,10 +309,28 @@ export async function startAutoScroll( {
 	const wordFixer = createWordFixer( wordFixes, wordIndex.words );
 	const aligner = createAligner( wordIndex.words, { synonyms: wordFixer.synonyms, soundAlike } );
 	aligner.setPosition( findWordAtViewport( wordIndex.ranges ) );
-	const takeCommands = onCommand ? createCommandListener( { onCommand, onWake, onMiss, wakeWord, commandWords, soundAlike, isPaused: () => held || !!isPaused?.() } ) : null;
+	let takeCommands;
+	const setCommandOptions = ( options ) => {
+		takeCommands = options.onCommand ? createCommandListener( { onWake, onMiss, isPaused: () => held || !!isPaused?.(), ...options } ) : null;
+	};
+	setCommandOptions( { onCommand, wakeWord, commandWords, soundAlike } );
 	let held = false; // "Prompter, pause": keep listening, stop following
 
-	const stream = await openMic( audioDeviceId, onStatus );
+	let stream;
+	const context = { stream: null, source: null, wordIndex, stopped: false, recovery: null, timer: null, abort: new AbortController() };
+	activeCtx = context;
+	try {
+		stream = await openMic( audioDeviceId, onStatus );
+		context.stream = stream;
+		if ( context.stopped ) {
+			stream.getTracks().forEach( t => t.stop() );
+			throw new Error( "Listening was cancelled." );
+		}
+	} catch ( err ) {
+		if ( activeCtx === context ) activeCtx = null;
+		throw err;
+	}
+	let muted = false;
 
 	const onWords = ( heard, transcript, final, at = null ) => {
 		const heardAt = Date.now();
@@ -261,7 +349,8 @@ export async function startAutoScroll( {
 				script: wordIndex.ranges.slice( from, to + 1 ).map( r => r.toString().trim() ).join( " " )
 			} );
 		};
-		const words = wordFixer.join( takeCommands ? takeCommands( heard, final ) : heard );
+		const spoken = takeCommands ? takeCommands( heard, final ) : heard;
+		const words = wordFixer.join( spoken );
 		if ( !followScript || held || !words.length ) {
 			logHeard( before );
 			return;
@@ -287,6 +376,7 @@ export async function startAutoScroll( {
 				} );
 			}
 		}
+		if ( !muted ) onReview?.( { words: spoken, engine } );
 		onStatus?.( {
 			type: "transcript",
 			wordIdx: newPos,
@@ -296,17 +386,60 @@ export async function startAutoScroll( {
 	};
 
 	let source;
+	let recovery;
+	const sourceStatus = ( status ) => {
+		if ( context.stopped ) return;
+		if ( recovery && ( status.type === "error" || status.type === "closed" ) ) recovery.fail( status.error ?? "speech connection closed" );
+		else onStatus?.( status );
+	};
+	const openSource = reset => engine === "local" ? openLocal( stream, onWords, sourceStatus, reset, context.abort.signal ) : openDeepgram( deepgramKey, stream, onWords, sourceStatus );
 	try {
-		source
-			= engine === "local"
-				? await openLocal( stream, onWords, onStatus )
-				: await openDeepgram( deepgramKey, stream, onWords, onStatus );
+		source = await openSource( false );
+		if ( context.stopped ) {
+			source.close();
+			throw new Error( "Listening was cancelled." );
+		}
+		context.source = source;
 	} catch ( err ) {
-		stream.getTracks().forEach( t => t.stop() );
+		stream?.getTracks().forEach( t => t.stop() );
+		if ( activeCtx === context ) activeCtx = null;
 		throw err;
 	}
 
-	activeCtx = { stream, source, wordIndex };
+	recovery = createSpeechRecovery( {
+		wanted: () => !context.stopped && !muted,
+		probe: () => ( { ...source.health(), trackLive: stream.getAudioTracks().every( t => t.readyState === "live" ) } ),
+		notify: ( state ) => {
+			onStatus?.( state );
+			if ( state.type === "failed" ) {
+				clearInterval( context.timer );
+				context.timer = null;
+				source.close();
+				stream.getTracks().forEach( t => t.stop() );
+			}
+		},
+		restart: async () => {
+			source.close();
+			stream.getTracks().forEach( t => t.stop() );
+			stream = await openMic( audioDeviceId, sourceStatus );
+			context.stream = stream;
+			if ( context.stopped ) {
+				stream.getTracks().forEach( t => t.stop() );
+				return;
+			}
+			for ( const track of stream.getAudioTracks() ) track.enabled = !muted;
+			source = await openSource( true );
+			if ( context.stopped ) {
+				source.close();
+				stream.getTracks().forEach( t => t.stop() );
+				return;
+			}
+			context.source = source;
+			if ( !context.timer ) context.timer = setInterval( () => recovery.tick(), 1000 );
+		}
+	} );
+	context.recovery = recovery;
+	context.timer = setInterval( () => recovery.tick(), 1000 );
 	onStatus?.( { type: "started", wordCount: wordIndex.words.length } );
 
 	const syncToViewport = () => {
@@ -314,6 +447,8 @@ export async function startAutoScroll( {
 		aligner.clearRecent();
 	};
 	return {
+		setCommandOptions,
+		restartListening: () => recovery.retry(),
 		getPosition: () => aligner.currentPosition(),
 		// Re-anchor to the visible text after the user scrolls by hand.
 		syncToViewport,
@@ -326,6 +461,7 @@ export async function startAutoScroll( {
 		isHeld: () => held,
 		// {listen: off}: no sound reaches the speech engine until it's unmuted.
 		setMuted( value ) {
+			muted = !!value;
 			for ( const track of stream.getAudioTracks() ) track.enabled = !value;
 		},
 		// "Prompter, resync": find the reader anywhere in the script from what
@@ -338,15 +474,19 @@ export async function startAutoScroll( {
 export async function stopAutoScroll() {
 	if ( !activeCtx ) return;
 	const { stream, source } = activeCtx;
+	activeCtx.stopped = true;
+	activeCtx.abort.abort();
+	activeCtx.recovery?.stop();
+	clearInterval( activeCtx.timer );
 	activeCtx = null;
 	cancelScroll();
 	try {
-		source.close();
+		source?.close();
 	} catch ( err ) {
 		console.warn( "[auto-scroll] close error", err );
 	}
 	try {
-		stream.getTracks().forEach( t => t.stop() );
+		stream?.getTracks().forEach( t => t.stop() );
 	} catch ( err ) {
 		console.warn( "[auto-scroll] stream stop error", err );
 	}

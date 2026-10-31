@@ -1,8 +1,42 @@
 # Shortcuts and troubleshooting
 
+**Wake word sometimes stops responding:** check **Settings > Prompting >
+Commands**. Audio/engine faults recover automatically with bounded retries;
+use **Restart listening** or click the listening badge for a manual retry.
+To investigate a misheard word, enable the optional local command-word trace in **Settings > Debug**,
+reproduce it, then switch tracing off. See [Listening recovery](03-scrolling-and-voice.md#if-listening-stops-responding).
+
+**Changing pad or phone buttons:** use **Settings > Controls > Pad**, or
+**Customise** on the pad. Selection and order are shared; Stream Deck
+profiles keep their physical key assignments.
+
+**Reviewing delivery:** **Script health…** in the editor checks current text,
+including unsaved changes. **Tools > Script & rehearsal review…** has the
+same check and a Rehearsal tab for finished takes. **Recordings > Coach…**
+reviews a saved session. Pause prompting first. Missing alignment is not proof
+of missed speech, and optional filler counting must be enabled for future takes.
+
 ## Keyboard shortcuts
 
-Press **F1** (or **?**) for the full list inside the app.
+**Ctrl+Alt+H** (Cmd+Alt+H on Mac) toggles the head guide between borderless
+fullscreen on its current monitor and its saved window size. Fullscreen
+hides its controls; Ctrl+Shift+H reveals them without leaving fullscreen.
+
+**Ctrl+Shift+H** (Cmd+Shift+H on Mac) works globally for the head-position
+guide: show, unlock if locked, or hide if already unlocked. If another app
+owns that shortcut, use **Tools > Head-position guide / unlock** or its
+Stream Deck action. See [camera framing](06-remotes-and-screens.md#head-position-guide-development).
+
+Press **F1** (or **?**) for the full list in its own movable Help window.
+Drag its native title bar onto another screen. It remembers its position
+and size, stays upright when prompting is mirrored and keeps the same frame
+across topics. Close or Escape hides it without changing Settings.
+
+Both help panels keep the same dimensions across their tabs. Settings also
+has its own movable window; reopening it keeps the draft. Use **Files (☰)
+> Settings…** or **Ctrl+,** if you cannot find the toolbar's gear icon.
+
+![Grouped Help in its own movable window](images/floating-help.png)
 
 ![Keyboard shortcuts](images/shortcuts.png)
 
@@ -36,22 +70,28 @@ and restore it.
 
 **Voice scrolling doesn't move.** Check the scroll mode is **Voice**, the
 **Listening** label is showing, and the meter in the Voice panel moves when you
-speak. If you use "On this computer", check Settings > Voice says the speech
+speak. If you use "On this computer", check Settings > Prompting > Voice says the speech
 model is installed.
 
 **Voice scrolling has lost its place.** Scroll by hand to where you are. It
 picks up from what's on screen once you stop scrolling.
 
+**Ordinary words or whole lines are missing.** Pick the intended mic and run
+the room and voice checks at your normal speaking distance. Check the input
+feeding Sightline, since a recording fader in another app may not affect it.
+Use Your words for repeated names or phonetic forms after checking level.
+See [voice input checks](03-scrolling-and-voice.md#if-ordinary-words-or-whole-lines-are-missed).
+
 **Sightline stops responding.** It asks whether to **Wait** or **Reload**;
 reloading keeps your scripts and settings, but loses unsaved changes in the
 editor. Hangs, crashes and errors are noted in `sightline.log` in Sightline's
 folder (`%APPDATA%\Sightline Prompter` on Windows). To report it, turn on
-**Settings > About > Debug mode**, make it happen again, then use **Save a log
+**Settings > Debug > Debug mode**, make it happen again, then use **Save a log
 for support…** and attach the file.
 
 **A voice command isn't heard.** Say "Prompter", then the command, then stop
 for a moment: commands only count at the end of what you say. Check Voice
-commands is on in Settings > Voice. To use them while steady scrolling, or to
+commands is on in Settings > Prompting > Voice. To use them while steady scrolling, or to
 start with "Prompter, go", choose "Always, even when stopped" and look for the
 🎙 Prompter label.
 

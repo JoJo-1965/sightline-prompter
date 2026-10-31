@@ -1,6 +1,16 @@
 // node scripts/voice-commands.test.mjs
 import assert from "node:assert/strict";
-import { matchCommand, createCommandListener, sectionNumber } from "../src/client/voice-commands.js";
+import { COMMANDS, WAKE_WORDS, matchCommand, createCommandListener, sectionNumber } from "../src/client/voice-commands.js";
+
+assert.equal( matchCommand( [ "record", "take" ] ), "obs-record" );
+assert.equal( matchCommand( [ "guide", "on" ] ), "guide-on" );
+assert.equal( matchCommand( [ "guide", "off" ] ), "guide-off" );
+assert.equal( matchCommand( [ "show", "the", "guide" ] ), "guide-on" );
+assert.equal( matchCommand( [ "hide", "the", "guide" ] ), "guide-off" );
+assert.equal( matchCommand( [ "start", "recording" ] ), "obs-record" );
+assert.equal( matchCommand( [ "finish", "recording" ] ), "obs-finish" );
+assert.equal( matchCommand( [ "stop", "recording" ] ), "obs-finish" );
+assert.equal( matchCommand( [ "stop" ] ), "pause", "ordinary Stop still pauses prompting" );
 
 // What the on-device recogniser actually heard for each command (speech-lab/cmd).
 const heard = {
@@ -140,7 +150,7 @@ const got7 = [];
 const take7 = createCommandListener( { onCommand: id => got7.push( id ), commandWords: mine } );
 assert.deepEqual( take7( [ "TRUMPETER", "CHEAPER" ], true ), [] );
 assert.deepEqual( take7( [ "PROMPT", "HER", "PAUSE" ], true ), [] );
-assert.deepEqual( take7( [ "PROMPT" ], false ), [ "PROMPT" ] );
+assert.deepEqual( take7( [ "PROMPT" ], false ), [], "hold a possible wake prefix out of script tracking" );
 assert.deepEqual( take7( [ "HER", "MARKER" ], true ), [], "a wake phrase split across chunks" );
 assert.deepEqual( take7( [ "I", "PROMPT", "HER", "TO", "SPEAK", "UP", "EVERY", "DAY" ], true ).length > 0, true );
 assert.deepEqual( got7, [ "keeper", "pause", "marker" ] );
@@ -153,3 +163,97 @@ assert.deepEqual( got8, [ "pause" ] );
 const take9 = createCommandListener( { onCommand: () => assert.fail( "no sound-alike unless asked" ) } );
 take9( [ "PROMPTA", "PAUSE" ], true );
 console.log( "your command words and sound-alikes pass" );
+
+// Every advertised alias works, including five-word help, for each selected
+// wake word and every recogniser chunk boundary. Commands never reach alignment.
+for ( const wakeWord of Object.keys( WAKE_WORDS ) ) {
+	for ( const command of COMMANDS ) {
+		for ( const phrase of command.phrases ) {
+			assert.equal( matchCommand( phrase.split( " " ) ), command.id, phrase );
+			const words = [ wakeWord, ...phrase.split( " " ) ];
+			for ( let split = 0; split <= words.length; split++ ) {
+				const commands = [];
+				const listener = createCommandListener( { wakeWord, onCommand: id => commands.push( id ) } );
+				assert.deepEqual( listener( words.slice( 0, split ), false ), [] );
+				assert.deepEqual( listener( words.slice( split ), true ), [] );
+				assert.deepEqual( commands, [ command.id ], `${ wakeWord } ${ phrase }, split ${ split }` );
+			}
+		}
+	}
+}
+
+// Similar spelling alone must not change the guide or recording state, jump a
+// section or rate a take. Test both settings of optional phonetic matching.
+const negatives = [ "guide in", "guide of", "head guide of", "show the slide", "hide the slide", "not recording", "started recording", "restart recording", "start reading", "stop reading", "do not record", "next question", "market", "resetting", "bigger picture" ];
+for ( const soundAlike of [ false, true ] ) {
+	for ( const phrase of negatives ) {
+		assert.equal( matchCommand( phrase.split( " " ), { soundAlike } ), null, phrase );
+		const commands = [];
+		const listener = createCommandListener( { soundAlike, onCommand: id => commands.push( id ) } );
+		const words = [ "prompter", ...phrase.split( " " ) ];
+		assert.deepEqual( listener( words, true ), words );
+		assert.deepEqual( commands, [] );
+	}
+}
+assert.equal( matchCommand( [ "banana" ], { extra: { keeper: [ "banana" ], scrap: [ "banana" ] } } ), null, "conflicting taught aliases are not guessed" );
+assert.equal( matchCommand( [ "pause" ], { extra: { reset: [ "pause" ] } } ), "pause", "built-in meanings remain stable" );
+assert.equal( matchCommand( [ "guide", "of" ], { extra: { "guide-off": [ "guide of" ] } } ), "guide-off", "an explicitly taught form still works" );
+assert.equal( matchCommand( [ "slowa" ], { soundAlike: false } ), null );
+
+let now = 1000;
+const timed = [];
+const timedTake = createCommandListener( { clock: () => now, onCommand: id => timed.push( id ) } );
+timedTake( [ "prompter" ], true );
+now += 4001;
+assert.deepEqual( timedTake( [ "reset" ], true ), [ "prompter", "reset" ], "an expired wake cannot reset a later phrase" );
+assert.deepEqual( timed, [] );
+timedTake( [ "prompter" ], true );
+now += 3000;
+assert.deepEqual( timedTake( [ "pause" ], true ), [] );
+assert.deepEqual( timed, [ "pause" ] );
+assert.deepEqual( timedTake( [ "prompter", "prompter", "go" ], true ), [] );
+assert.deepEqual( timed, [ "pause", "go" ], "repeating the wake word starts a fresh request" );
+
+// A bare section or paused resume can straddle chunks without leaking words.
+for ( const phrase of [ "section one", "section twenty one", "section ninety nine", "carry on" ] ) {
+	const words = phrase.split( " " );
+	for ( let split = 1; split < words.length; split++ ) {
+		const commands = [];
+		const listener = createCommandListener( { isPaused: () => true, onCommand: ( ...args ) => commands.push( args ) } );
+		assert.deepEqual( listener( words.slice( 0, split ), false ), [] );
+		assert.deepEqual( listener( words.slice( split ), true ), [] );
+		assert.equal( commands.length, 1, phrase );
+	}
+}
+assert.equal( sectionNumber( [ "section", "twenty-one" ] ), 21 );
+assert.equal( sectionNumber( [ "section", "ninety", "nine" ] ), 99 );
+assert.equal( sectionNumber( [ "section", "twenty", "ten" ] ), null );
+assert.equal( sectionNumber( [ "section", "100" ] ), null );
+const passThrough = createCommandListener( { commandWords: mine, onCommand: () => assert.fail( "ordinary speech is not a command" ) } );
+assert.deepEqual( passThrough( [ "section" ], false ), [] );
+assert.deepEqual( passThrough( [ "one", "explains", "this" ], true ), [ "section", "one", "explains", "this" ] );
+assert.deepEqual( passThrough( [ "prompt" ], false ), [] );
+assert.deepEqual( passThrough( [ "her", "to", "read" ], true ), [ "prompt", "her", "to", "read" ] );
+assert.deepEqual( passThrough( [ "prompt" ], true ), [ "prompt" ] );
+assert.deepEqual( passThrough( [ "her", "pause" ], true ), [ "her", "pause" ], "incomplete wake prefixes do not span separate phrases" );
+const longWords = Array( 10000 ).fill( "reading" );
+assert.deepEqual( passThrough( longWords, false ), longWords );
+assert.deepEqual( passThrough( [], true ), [] );
+assert.deepEqual( passThrough( [ "the", "prompter", "follows", "my", "prompter", "device" ], true ), [ "the", "prompter", "follows", "my", "prompter", "device" ], "repeated mentions preserve ordinary speech" );
+console.log( "command alias matrix, chunk boundaries, negative phrases, expiry and bounded buffering pass" );
+
+// Observed on-device split spelling of the chosen Teleprompter wake word.
+for ( let split = 0; split <= 4; split++ ) {
+	const commands = [];
+	const listener = createCommandListener( { wakeWord: "teleprompter", onCommand: id => commands.push( id ) } );
+	const words = [ "TELE", "PROMPTER", "GUIDE", "OFF" ];
+	assert.deepEqual( listener( words.slice( 0, split ), false ), [] );
+	assert.deepEqual( listener( words.slice( split ), true ), [] );
+	assert.deepEqual( commands, [ "guide-off" ] );
+}
+const disabledSplitWake = createCommandListener( { wakeWord: "computer", onCommand: () => assert.fail( "selected wake word only" ) } );
+assert.deepEqual( disabledSplitWake( [ "TELE", "PROMPTER", "PAUSE" ], true ), [ "TELE", "PROMPTER", "PAUSE" ] );
+assert.equal( matchCommand( [ "culer" ], { soundAlike: true, extra: { keeper: [ "colour" ], scrap: [ "color" ] } } ), null, "ambiguous phonetics are declined" );
+assert.equal( matchCommand( [ "cansel" ], { soundAlike: true } ), "close", "observed on-device Cancel spelling" );
+const conflictingResume = createCommandListener( { isPaused: () => true, commandWords: [ { id: "go", heard: "pause" } ], onCommand: () => assert.fail( "a taught resume form cannot override built-in Pause" ) } );
+assert.deepEqual( conflictingResume( [ "pause" ], true ), [ "pause" ] );

@@ -21,30 +21,10 @@
   </head>
 
   <body>
+    <div id="capture-override-note" class="hidden" role="status" aria-live="polite"><span>Capture override on: all Sightline windows may be recorded.</span><button id="capture-override-off" type="button">Turn off</button></div>
     <div id="control-bar">
       <div class="cb-group">
-        <button id="cb-menu" class="cb-btn" title="Menu">☰</button>
-        <button
-          id="cb-open"
-          class="cb-btn cb-text"
-          title="Open a script into this slot (Ctrl+O)"
-        >
-          Open
-        </button>
-        <button
-          id="cb-save"
-          class="cb-btn cb-text"
-          title="Save edits (Ctrl+S) — opens Save As if the script isn't a text or Markdown file"
-        >
-          Save
-        </button>
-        <button
-          id="cb-edit"
-          class="cb-btn cb-text"
-          title="Edit the script (Ctrl+E)"
-        >
-          Edit
-        </button>
+        <button id="cb-menu" class="cb-btn" title="Files: scripts, recordings, import and export" aria-label="Files menu" aria-expanded="false" aria-controls="app-menu">☰</button>
       </div>
       <div
         class="cb-group"
@@ -55,6 +35,7 @@
         <button
           id="cb-restart"
           class="cb-btn"
+          aria-label="Back to the start"
           title="Back to the start (Ctrl+Home)"
         >
           ⏮
@@ -62,6 +43,8 @@
         <button
           id="cb-play"
           class="cb-btn cb-play"
+          aria-label="Start scrolling"
+          aria-pressed="false"
           title="Start / pause scrolling (Space)"
         >
           ▶
@@ -86,78 +69,56 @@
       </div>
       <div class="cb-group">
         <label class="cb-slider" title="Text size (Ctrl+= / Ctrl+-)">
-          <span>Size</span>
-          <input id="cb-font" type="range" min="1" max="8" step="0.05" />
+          <span id="cb-font-label">Text size</span>
+          <input id="cb-font" aria-labelledby="cb-font-label" type="range" min="1" max="8" step="0.05" />
         </label>
         <label class="cb-slider" title="Background opacity: off air, or on air while you're on air (Ctrl+Shift+↑ / ↓)">
-          <span id="cb-backing-label">Backing</span>
-          <input id="cb-opacity" type="range" min="0" max="1" step="0.01" />
+          <span id="cb-backing-label">Background</span>
+          <input id="cb-opacity" aria-labelledby="cb-backing-label" type="range" min="0" max="1" step="0.01" />
         </label>
-        <button
-          id="cb-layout"
-          class="cb-btn cb-text"
-          title="Margins, line spacing, alignment (Ctrl+Shift+K)"
-        >
-          Layout
+        <button id="cb-mode" class="cb-btn cb-text" title="Switch between steady and voice scrolling" aria-label="Voice scrolling" aria-pressed="false">Steady</button>
+        <button id="cb-mirror-h" class="cb-btn cb-mirror-axis" data-axis="h" aria-label="Mirror left to right" aria-pressed="false" title="Mirror left to right: click again to turn off">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M9 7 3 17h6ZM15 7l6 10h-6Z" /></svg>
         </button>
-        <button
-          id="cb-reading"
-          class="cb-btn cb-text"
-          title="Reading: opacity, colours, fonts and the focus band"
-        >
-          Reading
+        <button id="cb-mirror-v" class="cb-btn cb-mirror-axis" data-axis="v" aria-label="Mirror top to bottom" aria-pressed="false" title="Mirror top to bottom: click again to turn off">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h18M7 9l10-6v6ZM7 15l10 6v-6Z" /></svg>
         </button>
-        <button
-          id="cb-recording"
-          class="cb-btn cb-text"
-          title="Recording: ON AIR, hide from screen sharing, click-through, notes, pacing light"
-        >
-          Recording
-        </button>
-        <button
-          id="cb-mirror"
-          class="cb-btn cb-text"
-          title="Mirror for beam-splitter glass: off, horizontal, vertical, both (Ctrl+M)"
-        >
-          Mirror
-        </button>
-        <button
-          id="cb-voice"
-          class="cb-btn cb-text"
-          title="Voice scroll sync: mode, Deepgram API key, microphone (Ctrl+Shift+V)"
-        >
-          Voice
-        </button>
+        <button id="cb-edit" class="cb-btn cb-text" title="Edit script or view sample source (Ctrl+E)" aria-label="Edit script or view sample source">Edit</button>
+        <button id="cb-tools" class="cb-btn cb-text" title="Recording tools, framing and quick adjustments" aria-expanded="false" aria-controls="tools-panel">Tools</button>
       </div>
       <div class="cb-spacer"></div>
       <div class="cb-group">
         <button
           id="cb-help"
           class="cb-btn"
+          aria-label="Help and shortcuts"
           title="Keyboard shortcuts (F1 or ?)"
         >
           ?
         </button>
-        <button id="cb-settings" class="cb-btn" title="Settings (Ctrl+,)">
+        <button id="cb-settings" class="cb-btn" title="Settings (Ctrl+,)" aria-label="Settings">
           ⚙
         </button>
-        <button id="cb-min" class="cb-btn" title="Minimise (Ctrl+Shift+M)">
+        <button id="cb-min" class="cb-btn" title="Minimise (Ctrl+Shift+M)" aria-label="Minimise">
           —
         </button>
         <button
           id="cb-max"
           class="cb-btn"
+          aria-label="Maximise or restore"
           title="Maximise / restore (Shift+F11)"
         >
           ▢
         </button>
-        <button id="cb-full" class="cb-btn" title="Full screen (F11)">⛶</button>
-        <button id="cb-close" class="cb-btn cb-close" title="Close (Ctrl+W)">
+        <button id="cb-full" class="cb-btn" title="Full screen (F11)" aria-label="Full screen" aria-pressed="false">⛶</button>
+        <button id="cb-close" class="cb-btn cb-close" title="Close (Ctrl+W)" aria-label="Close Sightline">
           ✕
         </button>
       </div>
     </div>
-    <nav id="app-menu" class="hidden" aria-label="Teleprompter menu"></nav>
+    <nav id="app-menu" class="hidden" aria-label="Files menu"></nav>
+    <div id="tools-panel" class="panel hidden" role="region" aria-label="Recording tools"></div>
+    <button id="guide-controls" class="guide-controls hidden" type="button" aria-pressed="false" title="Toggle floating guide adjustments, including while the guide is fullscreen or locked">Guide adjustments</button>
     <div id="voice-panel" class="panel hidden">
       <h4>Voice scroll sync</h4>
       <div class="lp-row lp-inline">
@@ -207,10 +168,9 @@
         <input id="vp-speed" type="range" min="0.25" max="4" step="0.05" />
       </label>
       <p class="lp-hint">
-        On this computer, nothing you say leaves the PC. A Deepgram key is
-        stored only on this computer, in the teleprompter's settings file.
-        Speak a few words: the meter should move for the mic you'll record
-        with.
+        Local recognition processes audio on this computer. Selecting Deepgram
+        sends audio online. Recognised text and optional scratch audio can be
+        saved locally. Speak a few words to check the microphone's meter.
       </p>
       <div class="lp-actions">
         <button id="vp-done" type="button" class="primary">Done</button>
@@ -264,6 +224,10 @@
         <input id="lp-heading-scale" type="range" min="0.4" max="1.5" step="0.05" />
       </label>
       <label class="lp-row"
+        >Comment size <output id="lp-direction-scale-value"></output>
+        <input id="lp-direction-scale" type="range" min="0.4" max="1.5" step="0.05" />
+      </label>
+      <label class="lp-row"
         >Reading line <output id="lp-reading-line-value"></output>
         <input id="lp-reading-line" type="range" min="5" max="80" step="1" />
       </label>
@@ -273,13 +237,6 @@
           <option value="left">Left</option>
           <option value="center">Centre</option>
         </select>
-      </div>
-      <div class="lp-row lp-mirror-row">
-        Mirror (Ctrl+M)
-        <div class="mirror-pills" role="group" aria-label="Mirror">
-          <button type="button" data-axis="h" aria-pressed="false" title="Mirror left to right (most beam splitters). Click again to turn it off">↔ Left–right</button>
-          <button type="button" data-axis="v" aria-pressed="false" title="Mirror top to bottom. Click again to turn it off">↕ Up–down</button>
-        </div>
       </div>
       <label class="lp-check"
         ><input id="lp-marker" type="checkbox" /> Reading-line marker</label
@@ -316,6 +273,13 @@
       <div class="lp-row lp-inline" title="Section headings and titles can use a different font from the text you read">
         Heading font
         <select id="lp-heading-font"><option value="same">Same as the text</option><option value="default">Standard</option><option value="atkinson">Atkinson Hyperlegible</option><option value="opendyslexic">OpenDyslexic</option><option value="verdana">Verdana</option></select>
+      </div>
+      <div class="lp-row lp-inline" data-settings-control="lp-direction-colour">
+        <span class="settings-option-name"><label for="lp-direction-colour">Comment colour</label></span>
+        <span class="direction-colour-controls">
+          <input id="lp-direction-colour" type="color" value="#c8c8c8" />
+          <button type="button" id="lp-direction-theme" aria-pressed="true" title="Use the theme's comment colour">Theme</button>
+        </span>
       </div>
       <h5 class="lp-sub">Recording</h5>
       <label class="lp-check"
@@ -404,7 +368,8 @@
         <li>Built for AI: an AI script prompt and a script checker</li>
         <li>A local API for AI agents, and a take log for the edit</li>
         <li>Steady scrolling, a countdown, and a progress bar</li>
-        <li>A control bar and menu, with a number box by each slider</li>
+        <li>A live control bar, a Files menu and grouped recording Tools</li>
+        <li>Settings grouped by task, with inline help, keyboard navigation and visible focus</li>
         <li>Nine script slots that each remember their place</li>
         <li>Layout controls: margins, spacing, reading line, eye-line</li>
         <li>Word, PDF, Google Docs, rich and plain-text scripts</li>
@@ -478,12 +443,18 @@
   </div>
 </div>
 
-    <div id="help-modal" class="modal hidden">
+    <div id="help-modal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Help and shortcuts">
       <div class="modal-content help-content">
-        <h3>Keyboard shortcuts</h3>
+        <h3>Help and shortcuts</h3>
         <p class="field-hint">
-          New here? <button type="button" id="help-guide" class="link-button">Open the user guide</button>
+          New here? <button type="button" id="help-getting-started" class="link-button">Getting started</button> · <button type="button" id="help-guide" class="link-button">Open the user guide</button>
           (Shift+F1): every feature, with pictures.
+          <button type="button" id="help-ai-prompt" class="link-button">Copy the AI script prompt</button>
+          for your writing assistant.
+          Choose a topic below. Help follows the modes you have enabled.
+          Files (☰) opens scripts and exports; Tools opens recording helpers;
+          Files > Settings or ⚙ opens preferences. Drag the Help or Settings
+          window's title bar to use another screen; each remembers its position.
         </p>
         <div id="help-list"></div>
         <p class="field-hint">
@@ -504,6 +475,21 @@
     <div id="cb-progress-text"></div>
     <div id="on-air" class="hidden" role="status">ON AIR</div>
     <div id="pacing" class="hidden" role="status" aria-live="polite"></div>
+    <div id="script-review" class="modal hidden">
+      <div class="modal-content review-content" role="dialog" aria-modal="true" aria-labelledby="review-title">
+        <h3 id="review-title">Script &amp; rehearsal review</h3>
+        <div class="help-tabs" role="tablist" aria-label="Review topics"><button type="button" id="review-health-tab" data-review-tab="health" role="tab" aria-controls="review-panel">Script health</button><button type="button" id="review-coach-tab" data-review-tab="coach" role="tab" aria-controls="review-panel">Rehearsal</button></div>
+        <div id="review-panel" role="tabpanel" aria-labelledby="review-health-tab">
+          <p id="review-source" class="field-hint"></p>
+          <label id="review-pace">Default pace <input id="review-wpm" type="number" min="60" max="300" value="145" required /> wpm (section pace overrides)</label>
+          <label><span id="review-item-label">Section</span> <select id="review-item"></select></label>
+          <p id="review-overview" role="status" aria-live="polite"></p>
+          <div id="review-body"></div>
+        </div>
+        <nav id="review-pages" class="pad-choice-pages" aria-label="Review result pages"><button type="button" id="review-prev">Previous</button><span id="review-page" role="status"></span><button type="button" id="review-next">Next</button></nav>
+        <div class="modal-actions"><button type="button" id="review-refresh">Refresh</button><button type="button" id="review-close" class="primary">Close</button></div>
+      </div>
+    </div>
     <div id="take-summary" class="modal hidden">
       <div class="modal-content summary-content" role="dialog" aria-modal="true" aria-labelledby="take-summary-title">
         <h3 id="take-summary-title">How the take went</h3>
@@ -519,6 +505,7 @@
         <p class="field-hint" id="take-summary-targets-hint">Rehearsing? <strong>Use these times as targets</strong> writes each time into the script as <code>{target: m:ss}</code> (to the nearest 5 seconds), replacing any target that section had. Sections you started part-way through are left alone.</p>
         <div class="modal-actions">
           <button id="take-summary-export" type="button">Export take log…</button>
+          <button id="take-summary-coach" type="button">Rehearsal coach…</button>
           <button id="take-summary-targets" type="button">Use these times as targets</button>
           <button id="take-summary-close" type="button" class="primary">Close</button>
         </div>
@@ -564,6 +551,7 @@
           </div>
           <div class="modal-actions">
             <button id="recording-back" type="button">← All recordings</button>
+            <button id="recording-coach" type="button">Coach…</button>
             <button id="recording-delete" type="button" class="danger">Delete…</button>
             <button id="recording-zip" type="button">Export as zip…</button>
             <button id="recording-export" type="button" class="primary">Export edit pack…</button>
@@ -605,15 +593,16 @@
       <div id="editor-toolbar">
         <span class="toolbar-dirty hidden" id="toolbar-dirty">●</span>
         <span class="toolbar-filename" id="toolbar-filename">No file open</span>
+        <button id="btn-script-health" type="button">Script health…</button>
         <button id="btn-save" class="primary">Save</button>
         <button id="btn-save-as">Save As</button>
         <button id="btn-cancel">Cancel</button>
       </div>
       <div id="editor"></div>
     </div>
-    <div id="command-listening" class="hidden" title="Listening for the wake word, on this computer only. Nothing is recorded or sent anywhere. Settings > Voice > Voice commands turns it off.">
+    <button type="button" id="command-listening" class="hidden" title="Listening for the wake word on this computer. Click to restart listening. Settings > Prompting > Commands chooses when to listen.">
       🎙 Listening for “Prompter”
-    </div>
+    </button>
     <div
       id="auto-scroll-indicator"
       class="hidden"
@@ -676,22 +665,42 @@
         </div>
       </div>
     </div>
-    <div id="settings-modal" class="modal hidden">
+    <div id="workflow-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="workflow-title">
+      <div class="modal-content workflow-content">
+        <h3 id="workflow-title">Get ready with Sightline</h3>
+        <div id="workflow-rows" class="workflow-body"></div>
+        <p id="workflow-status" class="field-hint" role="status" aria-live="polite"></p>
+        <div class="workflow-footer"><button type="button" id="workflow-guide">User guide</button><button type="button" id="workflow-refresh">Refresh checks</button><button type="button" id="workflow-close">Later</button><button type="button" id="workflow-sample" class="primary">Open a sample script</button></div>
+      </div>
+    </div>
+    <div id="obs-setup-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="setup-title">
+      <div class="modal-content workflow-content">
+        <h3 id="setup-title">Set up OBS for Sightline</h3>
+        <div class="workflow-tabs" role="tablist" aria-label="OBS setup stages"><button type="button" role="tab" aria-controls="setup-choices-panel" data-setup-stage="choices" id="setup-choices-tab">Choices</button><button type="button" role="tab" aria-controls="setup-review-panel" data-setup-stage="review" id="setup-review-tab">Review plan</button><button type="button" role="tab" aria-controls="setup-result-panel" data-setup-stage="result" id="setup-result-tab">Result</button></div>
+        <div class="workflow-body">
+          <section data-setup-panel="choices" id="setup-choices-panel" role="tabpanel" aria-labelledby="setup-choices-tab">
+            <label class="workflow-option">New profile name <input id="setup-name" value="Sightline Academy" maxlength="60"></label>
+            <label class="workflow-option">Camera source <select id="setup-camera"></select></label>
+            <label class="workflow-option">Microphone source <select id="setup-microphone"></select></label>
+            <label class="workflow-option">Presentation source <select id="setup-presentation"></select></label>
+            <label class="workflow-option">Canvas and output <select id="setup-height"><option value="2160">4K canvas · 3840 × 2160, 30 fps</option><option value="1080">1080p canvas · 1920 × 1080, 30 fps</option></select></label>
+            <div class="workflow-option"><span>Recording folder</span><button type="button" id="setup-folder">Choose folder…</button><span id="setup-directory" class="field-hint">Not chosen</span></div>
+            <p class="field-hint">Reuses OBS device settings. Check the camera's native resolution separately. Presentation is optional.</p>
+          </section>
+          <section data-setup-panel="review" id="setup-review-panel" role="tabpanel" aria-labelledby="setup-review-tab" hidden><div id="setup-plan"></div></section>
+          <section data-setup-panel="result" id="setup-result-panel" role="tabpanel" aria-labelledby="setup-result-tab" hidden><p id="setup-result"></p><button type="button" id="setup-restore" hidden>Use previous setup</button></section>
+        </div>
+        <p id="setup-status" class="field-hint" role="status" aria-live="polite">Connect local OBS to inspect its configured sources.</p>
+        <div class="workflow-footer"><button type="button" id="setup-guide">Configuration guide</button><button type="button" id="setup-connection">Connection…</button><button type="button" id="setup-refresh">Refresh sources</button><button type="button" id="setup-review">Review plan</button><button type="button" id="setup-apply" class="primary" hidden>Create separate setup</button><button type="button" id="setup-close">Close</button></div>
+      </div>
+    </div>
+    <div id="settings-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="settings-title">
       <div class="modal-content settings-content">
         <div class="settings-head">
-        <h3>Settings</h3>
+        <h3 id="settings-title">Settings</h3>
         <button type="button" id="settings-close" class="modal-close" title="Close without saving (Esc)" aria-label="Close settings">×</button>
-        <div class="settings-tabs" role="tablist" aria-label="Settings sections">
-          <button type="button" role="tab" data-tab="scrolling">Scrolling</button>
-          <button type="button" role="tab" data-tab="voice">Voice</button>
-          <button type="button" role="tab" data-tab="display">Display</button>
-          <button type="button" role="tab" data-tab="layout">Layout</button>
-          <button type="button" role="tab" data-tab="reading">Reading</button>
-          <button type="button" role="tab" data-tab="recording">Recording</button>
-          <button type="button" role="tab" data-tab="files">Files</button>
-          <button type="button" role="tab" data-tab="remotes">Remotes</button>
-          <button type="button" role="tab" data-tab="about">About</button>
-        </div>
+        <div class="settings-tabs" role="tablist" aria-label="Settings groups"></div>
+        <div class="settings-subtabs" role="tablist" aria-label="Settings topics"></div>
         </div>
 
         <fieldset data-tab="scrolling">
@@ -717,6 +726,14 @@
             >Countdown before scrolling (seconds)
             <input id="set-countdown" type="range" min="0" max="10" step="1" />
           </label>
+        </fieldset>
+        <fieldset data-tab="recording">
+          <legend>Rehearsal coaching</legend>
+          <label class="check"><input id="set-coach-fillers" type="checkbox" /> Count recognised fillers and repeated words during voice takes</label>
+          <p class="field-hint" data-essential>Off by default. Saves counts with the take, without extra transcripts or audio. Uses the speech engine you selected; it never starts another listener. Commands and held/off-script periods are excluded. Recognition may omit fillers or count scripted wording. Apply saves this choice.</p>
+        </fieldset>
+        <fieldset data-tab="recording">
+          <legend>Slate</legend>
           <label class="row"
             >Slate at the start of each take
             <select id="set-slate">
@@ -726,6 +743,9 @@
             </select>
           </label>
           <p class="field-hint">A sync point for the edit. Before each take the screen flashes white and shows the section and take number for a second; with the beep, your microphone records it too. The take log notes when each slate went off, so every take can be lined up with the recording. Start reading after the beep.</p>
+        </fieldset>
+        <fieldset data-tab="audio">
+          <legend>Audio references and levels</legend>
           <label class="check"
             ><input id="set-scratch-audio" type="checkbox" /> Record a scratch audio
             track for syncing</label
@@ -755,10 +775,15 @@
             <p class="field-hint" id="set-speech-model-status"></p>
             <div class="button-row">
               <button id="set-speech-model-get" type="button" class="hidden">Download speech model</button>
+              <button id="set-speech-model-reinstall" type="button" class="hidden">Reinstall</button>
+              <button id="set-speech-model-remove" type="button" class="hidden">Remove…</button>
             </div>
           </div>
+        </fieldset>
+        <fieldset data-tab="commands">
+          <legend>Voice commands</legend>
           <label class="row"
-            >Voice commands (“Prompter, pause”)
+            >Listen for commands
             <select id="set-voice-commands">
               <option value="voice">In voice mode</option>
               <option value="always">Always, even when stopped (the mic stays on)</option>
@@ -773,7 +798,7 @@
             so "Prompter, go" starts it hands-free, in voice or steady
             scrolling (on this computer only; nothing is sent anywhere).
           </p>
-          <label class="row" title="The word you say before a command. It applies the next time Sightline starts listening"
+          <label class="row" title="Say the wake word, leave a brief beat, then finish the command within four seconds. Applying a new choice refreshes listening immediately"
             >Wake word
             <select id="set-wake-word">
               <option value="prompter">Prompter</option>
@@ -782,6 +807,11 @@
               <option value="director">Director</option>
             </select>
           </label>
+          <p id="set-listening-status" class="field-hint" data-essential role="status" aria-live="polite">Listening is off.</p>
+          <button type="button" id="set-listening-restart">Restart listening</button>
+        </fieldset>
+        <fieldset data-tab="voice">
+          <legend>Recognition and microphone</legend>
           <label class="row"
             >Voice responsiveness
             <input
@@ -806,7 +836,10 @@
             >Microphone (voice mode)
             <select id="set-microphone"></select>
           </label>
-          <p class="field-hint">Choose Voice as the mode on the Scrolling tab to use these.</p>
+          <p class="field-hint">Choose Voice on the top bar or in Prompting > Scrolling to follow your speech.</p>
+        </fieldset>
+        <fieldset data-tab="audio">
+          <legend>Sound-check display</legend>
           <label class="check"
             ><input id="set-sound-check-takes" type="checkbox" /> Keep the sound-check
             meter on screen during takes</label
@@ -814,7 +847,7 @@
           <p class="field-hint">The sound-check meter (<strong>Sound check</strong> in the Voice panel, or Ctrl+Shift+D) shows your mic's level, loudness and the room's background noise at the edge of the prompter. It hides while a take runs unless this is ticked.</p>
         </fieldset>
 
-        <fieldset data-tab="voice" id="set-words">
+        <fieldset data-tab="words" id="set-words">
           <legend>Your words</legend>
           <label class="check"
             ><input id="set-sound-alike" type="checkbox" /> Match words that sound
@@ -838,50 +871,44 @@
         </fieldset>
 
         <fieldset data-tab="layout" id="set-layout-host">
-          <legend>Layout</legend>
-          <p class="field-hint">Changes here show straight away, so you can see them on the script. Cancel doesn't undo them.</p>
+          <legend>Spacing and alignment</legend>
+          <p class="settings-live-note">Saved immediately as you adjust.</p>
         </fieldset>
 
         <fieldset data-tab="reading" id="set-reading-host">
-          <legend>Reading</legend>
-          <p class="field-hint">Changes here show straight away, so you can see them on the script. Cancel doesn't undo them.</p>
+          <legend>Script appearance</legend>
+          <p class="settings-live-note">Saved immediately as you adjust.</p>
+        </fieldset>
+
+        <fieldset data-tab="background" id="set-background-host">
+          <legend>Text and background visibility</legend>
+          <p class="settings-live-note">Saved immediately as you adjust.</p>
+        </fieldset>
+        <fieldset data-tab="aids" id="set-aids-host">
+          <legend>Reading aids</legend>
+          <p class="settings-live-note">Saved immediately as you adjust.</p>
+        </fieldset>
+        <fieldset data-tab="display" id="set-mirror-host">
+          <legend>Beam-splitter mirroring</legend>
+          <p class="settings-live-note">Saved immediately as you adjust.</p>
+        </fieldset>
+        <fieldset data-tab="display" id="set-display-host">
+          <legend>Control bar</legend>
+          <p class="settings-live-note">Saved immediately as you adjust.</p>
         </fieldset>
 
         <fieldset data-tab="recording" id="set-recording-host">
           <legend>Recording</legend>
-          <p class="field-hint">Changes here show straight away, so you can see them on the script. Cancel doesn't undo them.</p>
+          <p class="settings-live-note">Saved immediately as you adjust.</p>
+        </fieldset>
+        <fieldset data-tab="script" id="set-script-host">
+          <legend>Script behaviour</legend>
+          <p class="settings-live-note">Saved immediately as you adjust.</p>
         </fieldset>
 
-        <fieldset data-tab="files">
-          <legend>Scripts</legend>
-          <div class="button-row">
-            <button id="set-file-open" type="button">Open script…</button>
-            <button id="set-file-edit" type="button">Edit script</button>
-            <button id="set-file-save" type="button">Save</button>
-            <button id="set-file-save-as" type="button">Save as…</button>
-          </div>
-          <label class="row"
-            >Open a recent script
-            <select id="set-file-recent"></select>
-          </label>
-          <label class="row"
-            >Open a sample script
-            <select id="set-file-sample"></select>
-          </label>
-          <p class="field-hint">Scripts can be Markdown, plain text, Word (.docx), rich text (.rtf) or web pages (.html).</p>
-        </fieldset>
-
-        <fieldset data-tab="files">
-          <legend>Settings file</legend>
-          <div class="button-row">
-            <button id="set-file-load-settings" type="button">Load settings from file…</button>
-            <button id="set-file-save-settings" type="button">Save settings to file…</button>
-          </div>
-          <p class="field-hint">JSON or XML. Useful for moving your set-up to another computer.</p>
-        </fieldset>
-
-        <fieldset data-tab="display">
-          <legend>Display</legend>
+        <fieldset data-tab="reading">
+          <legend>Text size</legend>
+          <p class="field-hint" data-essential>Preview until Apply or Save &amp; close.</p>
           <label class="row"
             >Text size
             <input
@@ -892,20 +919,9 @@
               step="0.05"
             />
           </label>
-          <label class="row"
-            >Background darkness
-            <input id="set-opacity" type="range" min="0" max="1" step="0.01" />
-          </label>
-          <label class="row"
-            >Reading line (% from top)
-            <input
-              id="set-reading-line"
-              type="range"
-              min="5"
-              max="80"
-              step="1"
-            />
-          </label>
+        </fieldset>
+        <fieldset data-tab="script">
+          <legend>Delivery directions</legend>
           <label class="row"
             >[Directions]
             <select id="set-directions">
@@ -914,23 +930,9 @@
               <option value="normal">Normal</option>
             </select>
           </label>
-          <label class="check"
-            ><input id="set-reading-marker" type="checkbox" /> Show reading-line
-            marker</label
-          >
-          <label class="check"
-            ><input id="set-sentence" type="checkbox" /> Highlight the sentence
-            you're on (in voice mode, the one you're about to say)</label
-          >
-          <label class="row"
-            >Mirror text (beam-splitter rigs)
-            <select id="set-mirrored">
-              <option value="off">Off</option>
-              <option value="horizontal">Horizontal</option>
-              <option value="vertical">Vertical</option>
-              <option value="both">Both</option>
-            </select>
-          </label>
+        </fieldset>
+        <fieldset data-tab="display">
+          <legend>Window and monitor</legend>
           <label class="check"
             ><input id="set-always-on-top" type="checkbox" /> Keep window on
             top</label
@@ -946,7 +948,7 @@
           </p>
         </fieldset>
 
-        <fieldset data-tab="files">
+        <fieldset data-tab="script">
           <legend>Slide cues</legend>
           <label class="check"
             ><input id="set-highlight-cues" type="checkbox" /> Highlight cue
@@ -955,6 +957,7 @@
           <div class="row file-row">
             <input
               id="set-cues-file"
+              aria-label="Slide cues file"
               type="text"
               readonly
               placeholder="No cues.yaml chosen"
@@ -1017,11 +1020,12 @@
             <input id="set-remote-port" type="number" min="1024" max="65535" step="1" />
           </label>
           <div class="row file-row">
-            <input id="set-remote-token" type="password" readonly />
+            <input id="set-remote-token" type="password" readonly aria-label="Local API access token" />
             <button id="set-remote-copy" type="button">Copy token</button>
             <button id="set-remote-new" type="button">New token</button>
           </div>
           <p class="field-hint" id="set-remote-status"></p>
+          <p class="field-hint" id="set-remote-controls-hint" data-essential></p>
           <p class="field-hint">
             Only programs on this computer can connect, and only with the
             token. Turn this off when you don't need it.
@@ -1037,10 +1041,23 @@
           >
           <p class="settings-about-actions">
             <button type="button" id="set-remote-help">How to set up your AI</button>
+            <button type="button" id="set-remote-components">Components…</button>
           </p>
+          <p id="set-agent-readiness" class="field-hint" data-essential role="status" aria-live="polite">Checking local AI kit commands…</p>
+          <p class="field-hint">The supplied command tools need the kit and Node.js. Other API clients, script review and rehearsal coaching work without them.</p>
         </fieldset>
 
-        <fieldset data-tab="remotes">
+        <fieldset data-tab="pad" id="set-pad-fieldset">
+          <legend>Pad and phone buttons</legend>
+          <p class="settings-live-note">Saved immediately. The phone uses the same buttons and order.</p>
+          <div class="pad-choice-add pad-toolbar" data-settings-control="set-pad-columns"><span class="settings-option-name"><label for="set-pad-columns">Columns</label></span><select id="set-pad-columns"><option>2</option><option>3</option><option selected>4</option><option>6</option></select><select id="set-pad-preset" aria-label="Button preset"><option value="compact">Compact (reset)</option><option value="reading">Reading</option><option value="studio">Studio</option><option value="framing">Framing &amp; checks</option></select><button type="button" id="set-pad-preset-use">Use preset</button></div>
+          <div class="pad-choice-add"><select id="set-pad-add" aria-label="Button to add"></select><button type="button" id="set-pad-insert">Add button</button></div>
+          <div id="set-pad-buttons" aria-label="Selected buttons"></div>
+          <nav class="pad-choice-pages" aria-label="Selected button pages"><button type="button" id="set-pad-prev">Previous</button><span id="set-pad-page" role="status"></span><button type="button" id="set-pad-next">Next</button></nav>
+          <p class="field-hint" data-essential>Drag to reorder, or use Earlier / Later.</p>
+          <label class="check-label"><input id="set-pad-hold-finish" type="checkbox" checked /> Hold Finish recording for one second (pad and phone)</label>
+        </fieldset>
+        <fieldset data-tab="streamdeck">
           <legend>Stream Deck</legend>
           <label class="check"
             ><input id="set-stream-deck" type="checkbox" /> Let the Sightline plugin for
@@ -1052,23 +1069,15 @@
             scripts, change settings or touch your recordings.
           </p>
           <p class="settings-about-actions">
+            <button type="button" id="set-stream-deck-check">Check compatibility</button>
             <button type="button" id="set-remote-streamdeck">Stream Deck in the guide</button>
+            <button type="button" id="set-stream-deck-components">Components…</button>
           </p>
+          <p id="set-stream-deck-installation" class="field-hint" data-essential role="status" aria-live="polite">Checking for Stream Deck…</p>
+          <p id="set-stream-deck-status" class="field-hint" data-essential role="status" aria-live="polite">Checking the saved connection…</p>
         </fieldset>
 
-        <fieldset data-tab="remotes">
-          <legend>Control pad and control window</legend>
-          <label class="check"
-            ><input id="set-show-pad" type="checkbox" /> Control pad: a small bar of
-            buttons that floats over every window (Ctrl+Shift+P)</label
-          >
-          <label class="check"
-            ><input id="set-show-control" type="checkbox" /> Control window: a copy
-            of the script with big buttons, for a second screen (Ctrl+Shift+O)</label
-          >
-          <p class="field-hint">Both are also in ☰ > Window.</p>
-        </fieldset>
-        <fieldset id="set-phone-fieldset" data-tab="remotes">
+        <fieldset id="set-phone-fieldset" data-tab="phone">
           <legend>Phone remote</legend>
           <label class="check"><input id="set-phone" type="checkbox" /> Control the prompter from a phone on the same Wi-Fi</label>
           <div id="set-phone-connect" class="phone-connect hidden">
@@ -1088,17 +1097,97 @@
           </p>
         </fieldset>
 
+        <fieldset data-tab="obs">
+          <legend>OBS Studio</legend>
+          <label class="check"><input id="set-obs-enabled" type="checkbox" /> Enable OBS integration</label>
+          <p id="set-obs-installation" class="field-hint" data-essential role="status" aria-live="polite">Checking for OBS Studio…</p>
+          <p class="settings-about-actions"><button type="button" id="set-obs-components">Components…</button></p>
+          <p class="field-hint">Off by default. Disabled means no OBS connection or commands. Disabling or quitting Sightline leaves any OBS recording running. Apply saves these choices.</p>
+          <label>Address <input id="set-obs-host" type="text" value="127.0.0.1" autocomplete="off" spellcheck="false" /></label>
+          <label>Port <input id="set-obs-port" type="number" min="1" max="65535" value="4455" /></label>
+          <label>Password <input id="set-obs-password" type="password" autocomplete="new-password" placeholder="Leave blank to keep the saved password" /></label>
+          <label class="check"><input id="set-obs-clear-password" type="checkbox" /> Remove the saved OBS password</label>
+          <p id="set-obs-password-status" class="field-hint"></p>
+          <p class="field-hint">In OBS 28 or later: Tools &gt; WebSocket Server Settings. Enable its server and authentication. No additional OBS plugin is needed. Use 127.0.0.1 for OBS on this computer. Remote connections use unencrypted WebSocket: use a trusted network. The password is kept separately using your operating system's protected storage.</p>
+          <p id="set-obs-status" role="status" aria-live="polite">OBS disabled</p>
+          <button type="button" id="set-obs-test">Test saved connection</button>
+          <p class="field-hint" data-essential>Apply changes before testing. Recording permissions and the recorded slate are in Recording > OBS recording.</p>
+        </fieldset>
+        <fieldset data-tab="obs-recording">
+          <legend>OBS recording and sync</legend>
+          <p id="set-obs-recording-availability" class="field-hint" data-essential role="status" aria-live="polite">Connect OBS in Recording > OBS connection first. These permissions apply when OBS integration is enabled.</p>
+          <label class="check"><input id="set-obs-controls" type="checkbox" /> Allow Sightline to start and stop OBS recordings</label>
+          <p class="field-hint">Leave this off for status only. Normal Play, Pause, Again and On air do not start or stop OBS. Record take waits for OBS to confirm recording before starting the prompter.</p>
+          <label class="check"><input id="set-obs-markers" type="checkbox" /> Send section starts and named markers as OBS chapters</label>
+          <p class="field-hint">Needs recording controls and a supported OBS version and recording format, such as Hybrid MP4. Chapter failures leave prompting and recording running.</p>
+            <label class="check" title="Choose Flash or Flash and beep in Settings > Recording > Takes, then prepare this source"><input id="set-obs-recorded-slate" type="checkbox" /> Include the slate in the OBS recording</label>
+            <p class="field-hint">Optional, on this computer only. With OBS stopped, Apply then Prepare adds a dedicated source above this scene. It records a flash and 1 kHz tone on audio track 1; include that track in your recording. Prepare again after restarting Sightline or changing scenes. The head guide stays separate.</p>
+            <button type="button" id="set-obs-prepare-slate">Prepare recorded slate</button>
+            <p id="set-obs-slate-status" class="field-hint" data-essential role="status" aria-live="polite">Recorded slate off</p>
+        </fieldset>
+
+        <fieldset data-tab="buttons" id="set-mapping-fieldset">
+          <legend>Buttons and keys</legend>
+          <p class="field-hint" data-essential>Choose an action, then press a key, clicker, pedal or controller button. Changes save immediately. Works while the prompter has focus.</p>
+          <label>Action <select id="set-map-action"></select></label>
+          <div class="button-row"><button type="button" id="set-map-learn">Press a key or button…</button><button type="button" id="set-map-cancel" hidden>Cancel</button><button type="button" id="set-map-reset">Reset defaults</button></div>
+          <p id="set-map-notice" class="field-hint" role="status" aria-live="polite">Plain keys and Shift combinations. Ctrl, Alt, Command, Escape, Tab, F1 and F11 stay reserved.</p>
+          <div id="set-map-list"></div>
+          <nav class="pad-choice-pages" aria-label="Mapping pages"><button type="button" id="set-map-prev">Previous</button><span id="set-map-page" role="status"></span><button type="button" id="set-map-next">Next</button></nav>
+          <p class="field-hint">Key mappings use physical key positions. Controller mappings match the device name; identical controllers share them. A held button fires once. Settings, editing and typing suspend actions. Remove an entry to leave that input unused; Do nothing overrides a generic controller mapping. Reset restores the original buttons. Stream Deck keeps its own profile settings.</p>
+        </fieldset>
+        <fieldset data-tab="obs-setup">
+          <legend>Guided OBS setup</legend>
+          <p class="field-hint" data-essential>Create a separate profile and scene collection using camera and microphone sources already configured in OBS. Review the plan before creating it. Existing setups are retained.</p>
+          <p class="settings-about-actions"><button type="button" id="set-obs-setup-open">Set up OBS…</button><button type="button" id="set-obs-setup-guide">Configuration guide</button></p>
+          <p class="field-hint" id="set-obs-setup-status" data-essential role="status" aria-live="polite">Enable the local OBS connection and Apply first. OBS recording, streaming and replay buffer must be stopped. Setup never starts recording.</p>
+        </fieldset>
+        <fieldset data-tab="component-model" id="set-components-model">
+          <legend>Offline speech model</legend>
+          <p id="component-speech-status" class="field-hint" role="status" aria-live="polite">Checking…</p>
+          <div class="button-row"><button type="button" id="component-speech-install">Install</button><button type="button" id="component-speech-reinstall">Reinstall</button><button type="button" id="component-speech-remove">Remove…</button></div>
+          <p class="field-hint">Optional 73 MB download for offline voice following and commands. Reinstall fetches a fresh copy and keeps the old one if the download fails. Remove moves it to your system bin. Stop prompting and recording first; command listening resumes afterwards if the model is available.</p>
+        </fieldset>
+        <fieldset data-tab="component-kit" id="set-components-kit">
+          <legend>AI agent kit</legend>
+          <p id="component-kit-status" class="field-hint" role="status" aria-live="polite">Checking…</p>
+          <div class="button-row"><button type="button" id="component-kit-install">Install</button><button type="button" id="component-kit-reinstall">Reinstall</button><button type="button" id="component-kit-remove">Remove…</button><button type="button" id="component-kit-open" aria-describedby="component-kit-commands">Open folder</button></div>
+          <p id="component-kit-commands" class="field-hint" data-essential role="status" aria-live="polite">Checking local AI kit commands…</p>
+          <p class="field-hint">Copies the authoring and session skills, checker and command tool from this app. No repository clone or npm install needed. Open the folder for START-HERE. Reinstall replaces this managed copy; keep your own files elsewhere. Remove moves it to the system bin. Your assistant's own settings and API permissions stay as you set them.</p>
+        </fieldset>
+        <fieldset data-tab="component-node">
+          <legend>Node.js for AI commands</legend>
+          <div>
+          <p id="component-node-status" class="field-hint" role="status" aria-live="polite">Checking…</p>
+          <div class="button-row"><button type="button" id="component-refresh">Check again</button><a href="https://nodejs.org/en/download" target="_blank">Get Node.js</a></div>
+          </div>
+          <p class="field-hint">Node.js 22.16 or later runs the AI kit commands. The desktop app and offline voice engine work without it. Install Node.js from its own website, then restart Sightline and check again.</p>
+        </fieldset>
+        <fieldset data-tab="component-obs">
+          <legend>OBS Studio (optional)</legend>
+          <div>
+          <p id="component-obs-status" class="field-hint" data-essential role="status" aria-live="polite">Checking…</p>
+          <div class="button-row"><a href="https://obsproject.com/download" target="_blank">Install / reinstall OBS</a><button type="button" id="component-obs-locate">Locate…</button><button type="button" id="component-obs-check">Check again</button></div>
+          </div>
+          <p class="field-hint">Uses OBS's own installer. Locate accepts a portable or custom installation. OBS on another computer needs its address under Recording > OBS connection.</p>
+        </fieldset>
+        <fieldset data-tab="component-streamdeck">
+          <legend>Stream Deck (optional)</legend>
+          <div>
+          <p id="component-streamdeck-status" class="field-hint" data-essential role="status" aria-live="polite">Checking…</p>
+          <div class="button-row"><a href="https://www.elgato.com/ww/en/s/downloads" target="_blank">Install / reinstall Stream Deck</a><button type="button" id="component-streamdeck-locate">Locate…</button><button type="button" id="component-streamdeck-check">Check again</button></div>
+          <p id="component-streamdeck-plugin" class="field-hint" data-essential>Plugin connection not confirmed.</p>
+          </div>
+          <p class="field-hint">The Elgato app and Sightline plugin are separate installs. Use Controls > Stream Deck for the setup guide and live version check. The plugin remains privately distributed during testing.</p>
+        </fieldset>
         <fieldset data-tab="about" class="settings-about">
           <legend>Sightline Prompter</legend>
           <p class="settings-about-version" id="settings-about-version"></p>
           <p>
-            The teleprompter that works with your AI. Adapted and enhanced by
-            <strong>Joanne Lockwood</strong> from <strong>SEE Change Happen Ltd</strong>,
-            based on Electron Teleprompter by <strong>David Neal</strong>.
+            The teleprompter that works with your AI.
           </p>
-          <p class="field-hint">MIT licence · © 2022–2026</p>
           <p class="settings-about-actions">
-            <button type="button" id="settings-about-full">Full About page…</button>
+            <button type="button" id="settings-about-full">Credits and licence…</button>
             <button type="button" id="settings-about-guide">User guide</button>
             <button type="button" id="settings-about-updates">Check for updates</button>
             <button type="button" id="settings-about-support">☕ Support Sightline</button>
@@ -1109,19 +1198,34 @@
             ><input id="set-check-updates" type="checkbox" /> Check for updates when
             Sightline starts (asks GitHub; nothing downloads by itself)</label
           >
-          <label class="check"
-            ><input id="set-debug-mode" type="checkbox" /> Debug mode: a step-by-step
-            log, for tracking down a problem</label
-          >
-          <p class="field-hint">Sightline always notes hangs, crashes and errors in a small log on this computer. Debug mode adds each step it takes, such as opening Settings, so a problem can be traced. <strong>Save a log for support</strong> puts it in one file to attach to a GitHub issue or an email, with your version, system and which features are on; never your scripts, keys or audio. Nothing is sent by itself.</p>
-          <p class="settings-about-actions">
-            <button type="button" id="settings-save-log">Save a log for support…</button>
-          </p>
           <p class="field-hint">
             <a href="https://github.com/JoJo-1965/sightline-prompter" target="_blank">github.com/JoJo-1965/sightline-prompter</a>
             ·
             <a href="https://joannelockwood.co.uk/sightline" target="_blank">joannelockwood.co.uk/sightline</a>
           </p>
+        </fieldset>
+
+        <fieldset data-tab="about" id="set-defaults-fieldset">
+          <legend>Start afresh</legend>
+          <button type="button" id="settings-restore-defaults" aria-describedby="settings-restore-defaults-note">Restore defaults…</button>
+          <p id="settings-restore-defaults-note" class="field-hint" data-essential>Restart with shipped preferences and initial setup. Clears layouts, shortcuts, slots and pairings. Keeps installed components, script files, recordings and service keys. Asks before resetting.</p>
+          <p id="settings-restore-defaults-status" class="field-hint" role="status" aria-live="polite"></p>
+        </fieldset>
+        <fieldset data-tab="debug" id="set-capture-fieldset">
+          <legend>Screen capture</legend>
+          <label class="check"><input id="set-capture-override" type="checkbox" aria-describedby="set-capture-override-note" /> Allow all windows to be captured</label>
+          <p id="set-capture-override-note" class="field-hint" data-essential>Applies immediately, for this session only. All Sightline windows, including the head guide, may appear in screenshots and recordings. Turn it off to restore your normal capture rules.</p>
+        </fieldset>
+        <fieldset data-tab="debug">
+          <legend>Support logs</legend>
+          <label class="check"><input id="set-debug-mode" type="checkbox" /> Debug mode: log each step for troubleshooting</label>
+          <p class="field-hint">Hangs, crashes, errors and listening recovery are logged locally. Debug mode adds detail. These logs contain no spoken words or audio.</p>
+          <button type="button" id="settings-save-log" title="Save the support log, version, system and enabled features; excludes scripts, keys, audio and command-word traces. Nothing is sent automatically.">Save a log for support…</button>
+        </fieldset>
+        <fieldset data-tab="debug">
+          <legend>Command-word tracing</legend>
+          <label class="check"><input type="checkbox" id="set-trace-commands" aria-describedby="set-trace-commands-note" /> Trace command words to the local heard log</label>
+          <p id="set-trace-commands-note" class="field-hint" data-essential>Off by default. Saves recognised text locally to investigate mishearings, independently of Debug mode. With Always listening, this may include nearby conversation while stopped or off air. Turn it off afterwards. No audio is saved by this option.</p>
         </fieldset>
 
         <div class="modal-actions settings-actions">
@@ -1134,7 +1238,7 @@
           <span id="settings-applied" class="settings-applied" aria-live="polite"></span>
           <button id="settings-cancel" type="button">Cancel</button>
           <button id="settings-apply" type="button" title="Save without closing">Apply</button>
-          <button id="settings-save" type="button" class="primary" title="Save and close">Save</button>
+          <button id="settings-save" type="button" class="primary" title="Save and close">Save &amp; close</button>
         </div>
       </div>
     </div>

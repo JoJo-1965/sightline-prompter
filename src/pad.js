@@ -4,22 +4,41 @@
 // beam-splitter glass; anywhere else it reads normally.
 
 import { BrowserWindow, ipcMain, screen } from "electron";
+import { protectWindow } from "./capture-policy.js";
 import path from "node:path";
+import { normalisePadLayout, controlView } from "./client/control-actions.js";
+import { createControlDispatcher } from "./control-dispatch.js";
 
 const PAD_WIDTH = 360;
-const PAD_HEIGHT = 76;
-const PAD_COMMANDS = [ "toggle", "restart", "previous-section", "next-section" ];
+const PAD_HEIGHT = 110;
 
 export function createPad( {
 	dir,
 	prompter,
 	getMirror,
 	getSettings,
+	getStatus = () => ( {} ),
+	onCommand,
 	saveSettings
 } ) {
 	let pad = null;
 	let mirror = "off";
 	let status = {};
+	let panelOpen = false;
+	const controls = createControlDispatcher( { getStatus, onCommand } );
+	function update() {
+		controls.observe();
+		if ( !pad ) return;
+		const padLayout = normalisePadLayout( getSettings().padLayout );
+		const current = { ...getStatus(), ...status, padLayout };
+		const visible = padLayout.buttons.filter( id => !controlView( id, current ).hidden ).length;
+		const area = screen.getDisplayMatching( pad.getBounds() ).workArea;
+		const width = Math.min( area.width, panelOpen ? 460 : Math.max( 260, padLayout.columns * 88 + 18 ) );
+		const height = Math.min( area.height - 24, panelOpen ? 670 : Math.max( 134, Math.ceil( visible / padLayout.columns ) * 72 + 64 ) );
+		const bounds = pad.getBounds();
+		pad.setBounds( { x: Math.max( area.x, Math.min( bounds.x, area.x + area.width - width ) ), y: Math.max( area.y, Math.min( bounds.y, area.y + area.height - height ) ), width, height } );
+		pad.webContents.send( "padStatus", current );
+	}
 
 	// Keep a saved position only if it is still on a connected display.
 	function startBounds() {
@@ -97,13 +116,14 @@ export function createPad( {
 			}
 		} );
 		pad.setAlwaysOnTop( true, "screen-saver" );
-		pad.setContentProtection( !!getSettings().hideFromCapture );
+		protectWindow( pad, !!getSettings().hideFromCapture );
 		pad.loadFile( path.join( dir, "client", "pad.html" ) );
 		pad.once( "ready-to-show", () => pad?.showInactive() );
 		pad.webContents.on( "did-finish-load", () => {
 			mirror = mirrorFor();
 			pad.webContents.send( "padMirror", mirror );
 			pad.webContents.send( "padStatus", status );
+			update();
 		} );
 		pad.webContents.on( "will-navigate", e => e.preventDefault() );
 		pad.on( "move", refreshMirror );
@@ -115,41 +135,66 @@ export function createPad( {
 	function close() {
 		if ( pad && !pad.isDestroyed() ) pad.destroy();
 		pad = null;
+		panelOpen = false;
 	}
 
 	function apply() {
 		if ( getSettings().showPad ) open();
 		else close();
-		pad?.setContentProtection( !!getSettings().hideFromCapture );
+		protectWindow( pad, !!getSettings().hideFromCapture );
+		update();
 	}
 
 	function sendStatus( next ) {
 		status = next ?? {};
-		pad?.webContents.send( "padStatus", status );
+		update();
 	}
 
-	ipcMain.on( "padCommand", ( _event, action ) => {
-		if ( PAD_COMMANDS.includes( action ) && !prompter.isDestroyed() ) {
-			prompter.webContents.send( "remoteCommand", action );
+	ipcMain.handle( "padCommand", async ( event, action, value ) => {
+		if ( event.sender !== pad?.webContents || prompter.isDestroyed() ) return { ok: false, error: "Control pad is closed" };
+		try {
+			return await controls.command( action, value );
+		} catch ( error ) {
+			return { ok: false, error: error.message };
 		}
 	} );
-	ipcMain.on( "padMoveTo", ( _event, x, y ) => {
-		if ( pad && Number.isFinite( x ) && Number.isFinite( y ) ) {
+	ipcMain.handle( "padHold", ( event, phase, token ) => {
+		if ( event.sender !== pad?.webContents ) return { ok: false, error: "Control pad is closed" };
+		try {
+			return controls.hold( phase, token );
+		} catch ( error ) {
+			return { ok: false, error: error.message };
+		}
+	} );
+	ipcMain.on( "padPanel", ( event, shown ) => {
+		if ( event.sender !== pad?.webContents || typeof shown !== "boolean" ) return;
+		panelOpen = shown;
+		pad.setFocusable( shown );
+		update();
+		if ( shown ) pad.focus();
+	} );
+	ipcMain.on( "padMoveTo", ( event, x, y ) => {
+		if ( event.sender === pad?.webContents && Number.isFinite( x ) && Number.isFinite( y ) ) {
 			pad.setBounds( {
 				x: Math.round( x ),
 				y: Math.round( y ),
-				width: PAD_WIDTH,
-				height: PAD_HEIGHT
+				width: pad.getBounds().width,
+				height: pad.getBounds().height
 			} );
 			refreshMirror();
 		}
 	} );
-	ipcMain.on( "padDragEnd", () => {
-		if ( !pad ) return;
+	ipcMain.on( "padDragEnd", ( event ) => {
+		if ( event.sender !== pad?.webContents ) return;
 		const { x, y } = pad.getBounds();
 		saveSettings( { padX: x, padY: y } );
 	} );
-	ipcMain.on( "padClose", () => saveSettings( { showPad: false } ) );
+	ipcMain.on( "padClose", ( event ) => {
+		if ( event.sender === pad?.webContents ) saveSettings( { showPad: false } );
+	} );
+	ipcMain.on( "padCustomise", ( event ) => {
+		if ( event.sender === pad?.webContents ) prompter.webContents.send( "menuSettings", "pad" );
+	} );
 
 	for ( const event of [
 		"move",
@@ -169,6 +214,7 @@ export function createPad( {
 		sendStatus,
 		get window() {
 			return pad;
-		}
+		},
+		observeControls: controls.observe
 	};
 }

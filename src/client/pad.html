@@ -1,77 +1,17 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'"
-    />
-    <title>Control pad</title>
-    <link rel="stylesheet" type="text/css" href="pad.css" />
-  </head>
-  <body>
-    <div id="pad" role="toolbar" aria-label="Prompter controls">
-      <div id="pad-grip" title="Drag to move" aria-hidden="true">
-        <svg viewBox="0 0 10 24" width="10" height="24">
-          <circle cx="2.5" cy="5" r="1.6" />
-          <circle cx="7.5" cy="5" r="1.6" />
-          <circle cx="2.5" cy="12" r="1.6" />
-          <circle cx="7.5" cy="12" r="1.6" />
-          <circle cx="2.5" cy="19" r="1.6" />
-          <circle cx="7.5" cy="19" r="1.6" />
-        </svg>
-      </div>
-      <button type="button" data-action="restart" title="Back to the top">
-        <svg viewBox="0 0 24 24"><path d="M5 4h2.5v16H5zM20 4v16L9 12z" /></svg>
-        <span>Top</span>
-      </button>
-      <button
-        type="button"
-        data-action="previous-section"
-        title="Previous section"
-        id="pad-prev"
-      >
-        <svg viewBox="0 0 24 24"><path d="M16 4v16L5 12z" /></svg>
-        <span>Previous</span>
-      </button>
-      <button
-        type="button"
-        data-action="toggle"
-        id="pad-toggle"
-        class="primary"
-        title="Start"
-      >
-        <svg viewBox="0 0 24 24" class="icon-play">
-          <path d="M7 4v16l13-8z" />
-        </svg>
-        <svg viewBox="0 0 24 24" class="icon-pause">
-          <path d="M6 4h4v16H6zM14 4h4v16h-4z" />
-        </svg>
-        <span id="pad-toggle-label">Start</span>
-      </button>
-      <button
-        type="button"
-        data-action="next-section"
-        title="Next section"
-        id="pad-next"
-      >
-        <svg viewBox="0 0 24 24"><path d="M8 4v16l11-8z" /></svg>
-        <span>Next</span>
-      </button>
-      <button
-        type="button"
-        id="pad-close"
-        class="close"
-        title="Hide the pad (Ctrl+Shift+P)"
-        aria-label="Hide the pad"
-      >
-        <svg viewBox="0 0 24 24">
-          <path
-            d="M6.4 5 12 10.6 17.6 5 19 6.4 13.4 12 19 17.6 17.6 19 12 13.4 6.4 19 5 17.6 10.6 12 5 6.4z"
-          />
-        </svg>
-      </button>
-    </div>
-    <script type="module" src="pad.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'" />
+  <title>Control pad</title>
+  <link rel="stylesheet" href="pad.css" />
+</head>
+<body>
+  <div id="pad">
+    <header id="pad-grip"><span>⠿ Control pad</span><button id="pad-customise" type="button">Customise</button><button id="pad-close" type="button" aria-label="Hide the pad">×</button></header>
+    <div id="pad-buttons" class="control-grid" role="group" aria-label="Prompter controls"></div>
+    <p id="pad-feedback" class="control-feedback" role="status" aria-live="polite"></p>
+  </div>
+  <script type="module" src="pad.js"></script>
+</body>
 </html>

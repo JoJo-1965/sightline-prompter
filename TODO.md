@@ -1,5 +1,59 @@
 # TODO
 
+## Built for the next candidate, not yet packaged
+
+- [x] Setup/session workflow (58): named component subtabs, top-level
+  Components/Debug, OBS under Recording, first-use checklist and Session check.
+- [x] Restore shipped defaults and restart onboarding, with confirmation,
+  private settings backup and retained components/files/keys. Active recording,
+  editing and maintenance block reset. Native isolated-profile checks pass.
+- [x] OBS setup assistant (59): configured-source choices, folder picker,
+  reviewed separate profile/scene plan, idle guards, retained old setups and
+  configuration guide. Actual device quality, clean outputs and sync still
+  require a recording test. No user OBS setup has been changed by this work.
+
+- [x] Component prerequisites: optional OBS/Stream Deck discovery, separate plugin
+  checks, supplier installers/Locate and clear grey-control reasons. Preserve
+  preferences, remote OBS and independent API clients.
+
+- [x] Script health (#30): current editor text, section estimates, long-sentence
+  and similar-word-start prompts, with section navigation and no rewrite/save.
+- [x] Rehearsal coach (#28): per-take pace, qualified sentence/reread review,
+  optional aggregate filler counts and additive CLI/API/edit-pack reports.
+
+- [x] Components manager (#47): model and AI-kit status, Install/Reinstall/
+  Remove, separate Node check, bundled standalone tools and model busy guards.
+- [x] Button mappings (#40): learn local keys and controller buttons, choose
+  shared pad actions, device overrides, pages, immediate saving and reset.
+- [ ] Physical controller/pedal acceptance of the new mappings after packaging.
+
+- [x] Compact phone landscape layout: preserve button order, use four or six
+  columns, fit Studio in two rows and add browser-safe footer spacing.
+  Portrait/landscape previews checked; real iPhone acceptance follows 1.1.0-rc.1.
+
+- [x] Accept and validate `padLayout` through the API and JSON/XML imports,
+  preserving structured values and protected permissions. Changes are live.
+- [x] Session-only capture override (#57), desktop/phone warnings, normal-rule
+  restoration, guide metadata and restart reset.
+- [x] Phone sending/sent, refused/no-reply feedback, pending-tap suppression,
+  bounded request waits and no automatic replay.
+- [x] Plan-first install helper: verify candidate hash, retain spaces in the
+  intended folder, request normal Windows elevation only on Run, then verify
+  installed location/version. Native NSIS argument test does not install.
+
+## Before packaging
+
+- [ ] Joanne reviews this batch in [1.1.0-rc.1 review](docs/RC15-REVIEW.md).
+- [ ] Check the conversation queue again immediately before any RC build.
+
+## After an approved installation
+
+- [ ] Actual installation-directory repair follows an approved installation;
+  the running RC14 has not been relocated or replaced during this work.
+
+The current feature backlog and release status are in [ROADMAP.md](ROADMAP.md).
+The older checklist below is retained as project history.
+
 ## Features
 
 - [ ] Auto-scroll mode — toggleable auto-scroll at configurable speed (words-per-minute), spacebar to toggle, up/down to adjust speed

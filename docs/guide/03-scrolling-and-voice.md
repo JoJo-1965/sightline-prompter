@@ -1,7 +1,7 @@
 # Scrolling and voice
 
-Choose the scroll mode in **Settings > Scrolling**, the Voice panel, or the ☰
-menu under Playback.
+Choose **Steady / Voice** on the top bar, or use **Settings > Prompting >
+Scrolling**. **Tools > Voice and microphone** opens the quick voice panel.
 
 ## Steady scrolling
 
@@ -17,7 +17,7 @@ In voice mode the prompter listens to you and keeps the words you're saying on
 the reading line. Speed up, slow down, pause to think or ad-lib a line, and it
 waits for you and then catches up.
 
-![Settings > Voice](images/settings-voice.png)
+![Settings > Prompting > Voice](images/settings-voice.png)
 
 ### Speech recognition on this computer (the default)
 
@@ -25,9 +25,13 @@ Speech is turned into words **on your own computer**. You don't need an
 account or a key, it works offline, and nothing you say leaves the PC.
 
 The first time you open Sightline, a small note at the bottom right offers it:
-choose **Download**. Or open **Settings > Voice** (or the Voice panel) and
+choose **Download**. Or open **Settings > Prompting > Voice** (or the Voice panel) and
 click **Download speech model**.
 It's a one-off download of about 73 MB, and progress is shown as it goes.
+In the next candidate, the same Voice page also has Reinstall and Remove.
+**Settings > Components** lists the model and the optional AI kit,
+with their status and maintenance controls. Stop prompting and recording
+before repairing/removing the model; a failed repair keeps the old copy.
 After that, voice scrolling works with no internet connection at all.
 
 ### Deepgram (online)
@@ -53,6 +57,19 @@ computer and is never written to exported settings files.
 **Voice responsiveness** sets how quickly the script glides to catch up with
 you. Higher is snappier, lower is smoother.
 
+### If ordinary words or whole lines are missed
+
+Check that Sightline is using your intended microphone, then run the room
+and voice sound checks at your normal speaking distance and level. A meter
+can move even when the input is too quiet for reliable recognition. Adjust
+the input level that actually feeds Sightline and check again; an OBS or
+Riverside recording fader may affect only that app's recording.
+
+Once the level is suitable, use **Your words** for recurring names or
+phonetic forms. Playing synthetic speech through speakers is useful for
+development checks, but it adds a different speaker/room/mic path. Check
+normal speech before changing a working recording setup.
+
 ### What it heard
 
 While voice scrolling listens, Sightline keeps a **heard log**: every word
@@ -68,9 +85,9 @@ heard in place of script words, most often first.
 
 Names and unusual words are what speech recognition gets wrong most:
 *Siobhan* heard as *shivawn*, *Sightline* as *site line*, and sometimes the
-wake word or a command. **Settings > Voice > Your words** fixes them.
+wake word or a command. **Settings > Prompting > Your words** fixes them.
 
-![Settings > Voice > Your words](images/settings-words.png)
+![Settings > Prompting > Your words](images/settings-words.png)
 
 - **Match words that sound alike** (on unless you turn it off): a word heard
   that isn't in the script but sounds like a longer script word, starts with
@@ -83,7 +100,10 @@ wake word or a command. **Settings > Voice > Your words** fixes them.
 - **Command words** does the same for the wake word and the commands: choose
   one (the wake word, pause, keeper and so on), then type what it hears, such
   as *prompt her* for Prompter or *cheaper* for keeper. A command still only
-  counts at the end of what you say, so a script line can't set one off.
+  counts at the end of what you say. Give each heard form one meaning:
+  conflicting forms are declined, and built-in phrases keep their meaning.
+  Recording and guide on/off use explicit phrases or your taught synonyms;
+  similar spelling alone does not trigger them.
 - Each form is a **synonym**, not a replacement: it counts as your word
   wherever the script has your word, and as itself everywhere else. So a
   script that really says *Marsha* still matches *Marsha*.
@@ -98,20 +118,63 @@ your settings, so **Export Settings** takes them to another computer.
 
 ## Voice commands: "Prompter, …"
 
-**The wake word** is "Prompter" unless you choose another on **Settings > Voice >
-Wake word**: Computer, Teleprompter or Director. Pick one that doesn't come up in
-your scripts. Below, read "Prompter" as whichever you chose; it takes effect the
-next time Sightline starts listening.
+The Voice panel distinguishes local processing from optional Deepgram audio
+transfer. Recognised text and optional scratch audio may still be saved locally;
+local recognition does not mean that no files are kept. See the privacy notice
+for each microphone feature and your chosen online services.
 
-Say **"Prompter"**, then a command, then stop for a moment. The command only
-counts when it ends what you're saying, so a line in your script such as "the
-prompter pauses" never sets it off.
+Stream Deck 0.2.0 and the shared pad/phone controls add session listening
+off/on and Restart listening. Turning off pauses voice following and stops
+that recognition listener while OBS continues recording. Turning on honours
+the saved preference: Always resumes wake listening; otherwise press Play.
+Scratch audio and sound check use the microphone separately. This is not a
+system microphone mute, and it never silently enables Always listening.
+
+**The wake word** is "Prompter" unless you choose another on **Settings > Prompting > Commands >
+Wake word**: Computer, Teleprompter or Director. Pick one that doesn't come up in
+your scripts. Below, read "Prompter" as whichever you chose. Apply refreshes
+the active listener immediately, including while it waits for the wake word.
+
+Say **"Prompter"**, leave a brief beat, say the command, then stop for a moment.
+The beat helps the recogniser separate the wake word from the command. Finish
+within four seconds of the wake acknowledgement; after that, say the wake word
+again. Commands only count at the end of a phrase. Pick a wake word your script
+doesn't use as an instruction: reading a complete command aloud can trigger it.
+For the Teleprompter choice, the recogniser's split spelling *tele prompter*
+works too. Split command words are held out of script tracking.
 
 As soon as it hears **"Prompter"**, a message at the bottom says
 *Listening… go · pause · again · marker*, so you know it's ready for the
 command. Another confirms what was heard, such as *Heard: "Prompter,
 slower"*, and if what followed wasn't a command it says *Didn't catch
 that*, with the words it heard, so you can say it again.
+
+### If listening stops responding
+
+Sightline checks that microphone audio is flowing and the local recogniser
+is acknowledging it. A stopped audio context, ended mic track, failed
+connection or stalled recogniser triggers a fresh listener, keeping the
+script position and voice hold. OBS and scratch recording are independent.
+Silence and missing transcripts alone do not cause a restart. Deliberate
+listening-off and `{listen: off}` remain respected.
+Switching listening off also cancels an in-progress startup. Late messages
+from that old session cannot interrupt its replacement.
+
+Recovery tries at most three times in a minute, then shows that listening
+has stopped. Use **Prompting > Commands > Restart listening**, or click the
+listening badge, for a deliberate retry. The Commands page shows its state.
+Recovery events go in the support log without spoken words or audio.
+
+For a missed wake word, enable **Trace command words to the local heard log**
+in **Settings > Debug**, then Apply and reproduce it. This is **off by default**.
+It saves recognised text during commands-only listening, including while
+stopped, and may include nearby conversation. Turn it off afterwards.
+Entries use `mode: "commands"`; ordinary voice entries use `mode: "voice"`.
+The trace can reveal a mishearing; add that form in **Prompting > Your words**.
+An operating listener can still misrecognise a word; recovery cannot fix
+every recognition error. This option saves no audio.
+
+### Supported voice phrases
 
 | Say "Prompter, …" | What happens |
 | --- | --- |
@@ -122,7 +185,7 @@ that*, with the words it heard, so you can say it again.
 | **next section** (or next page) | On to the next section. In notes, the next page |
 | **from the top** (or top, start again) | Back to the start |
 | **reset** (or restart) | Back to the start, with the speed back to normal and the pacing clock cleared, ready for a fresh run |
-| **section 3** (any number) | To the start of that section. You can say it without "Prompter" too, as your spoken slate before each section: saying the section you're in counts as a retake |
+| **section 3** (1–99, including “section twenty one”) | To the start of that section. You can say it without "Prompter" too, as your spoken slate before each section: saying the section you're in counts as a retake |
 | **again** (or retake) | Drops a marker where you are, then goes back to the start of the section for a retake |
 | **marker** | Drops a marker |
 | **back to the marker** (or from the marker, last marker) | Back to the last marker, to read on from there (Shift+B) |
@@ -130,10 +193,20 @@ that*, with the words it heard, so you can say it again.
 | **scrap that** (or bin it, bad take) | Marks that take to be thrown away |
 | **resync** (or find me) | Voice mode: if it has lost you, keep reading and it finds your place anywhere in the script |
 | **bigger** / **smaller** | Text size |
-| **what can I say** (or help, commands) | Shows every command on the prompter, until your next command, a click, Esc or 15 seconds |
+| **what can I say** (or help, commands) | Opens commands in grouped tabs; stays until your next command, Close or Esc. OBS commands appear only with OBS recording controls enabled |
+| **guide on · guide off** | Shows or hides the separate head-position guide; repeats keep the requested state |
 | **close** (or cancel, never mind) | Hides that list |
+| **record take** (or start recording) | Optional OBS integration: confirm recording, then start prompting. Requires enabled OBS recording controls |
+| **finish recording** (or stop recording) | Optional OBS integration: stop prompting and finish the OBS recording |
 
-Choose when it listens on **Settings > Voice**, under **Voice commands**:
+In RC10, **“Prompter, what can I say?”** opens a separate upright window.
+Drag its title bar onto another screen; its position and size are remembered.
+Tabs keep the same frame. Close, Escape or **“Prompter, close”** hides it without
+closing Settings or stopping the take. It follows **Hide from capture**.
+
+![The movable voice-command window](images/floating-voice-help.png)
+
+Choose when it listens on **Settings > Prompting > Commands**:
 
 - **In voice mode** (the default): commands work while voice scrolling.
 - **Always, even when stopped**: the microphone listens for the wake word
@@ -156,7 +229,7 @@ Choose when it listens on **Settings > Voice**, under **Voice commands**:
   [control window](06-remotes-and-screens.md#the-control-window) shows the same.
 - **Deepgram is the one exception:** choose it, with your own key, and your
   audio goes to Deepgram while voice scrolling runs.
-- **Scratch audio** (Settings > Scrolling) is the only time Sightline keeps a
+- **Scratch audio** (Settings > Recording > Audio) is the only time Sightline keeps a
   recording of your microphone, and only if you turn it on; it stays on this
   computer.
 
@@ -189,7 +262,7 @@ During a stop or a countdown:
 - In steady scrolling, the microphone listens for "Prompter, go" while the
   prompter waits, even if voice commands are set to voice mode only (the small
   **🎙 Prompter** label shows). Set **Voice commands** to **Off** in
-  Settings > Voice to stop this.
+  Settings > Prompting > Commands to stop this.
 
 ### In voice scrolling
 
@@ -243,9 +316,10 @@ At each one the prompter stops and shows a card:
 - **Voice check: read this at your normal level.** Read the line on the card
   for 7 seconds, and it says **Good level ✓**, **Too quiet**, **Loud**,
   **Clipping ✗** or **Didn't hear you**, with how far to turn your mic's gain,
-  such as *Turn the mic gain up about 8 dB*. Sightline can't change the gain
-  for you: it doesn't make the recording, so turn the knob (or the level in
-  Riverside or OBS) yourself.
+  such as *Turn the mic gain up about 8 dB*. Adjust the input level that
+  actually feeds Sightline, then check again. A separate recording fader in
+  Riverside or OBS may affect only that app and leave Sightline's input
+  unchanged. Sightline does not change your microphone gain for you.
 
 Say **"Prompter, again"** (or click **Check again**) to measure again after
 you've changed something, and press **Space** or say **"Prompter, go"** to
@@ -271,5 +345,5 @@ Otherwise it's the sentence on the reading line.
 
 ![The sentence on the reading line, highlighted](images/running.png)
 
-Turn it off or on in **Settings > Display**, the Layout panel, or the ☰ menu
-under Display.
+Turn it off or on in **Settings > Appearance > Reading aids**, or the quick panel
+at **Tools > Spacing and mirror**.

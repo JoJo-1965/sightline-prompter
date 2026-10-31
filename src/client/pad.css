@@ -1,114 +1,47 @@
-html,
-body {
-  margin: 0;
-  height: 100%;
-  overflow: hidden;
-  background: transparent;
-  font-family: "Segoe UI", system-ui, sans-serif;
-  user-select: none;
-}
-
-#pad {
-  box-sizing: border-box;
-  display: flex;
-  align-items: stretch;
-  gap: 4px;
-  height: 100%;
-  padding: 6px;
-  border-radius: 14px;
-  background: rgba(24, 24, 28, 0.92);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  color: #f2f2f2;
-  transform-origin: 50% 50%;
-}
-
-/* Over the prompter, the pad flips with it so it reads right in the glass. */
-#pad.mirror-horizontal {
-  transform: scaleX(-1);
-}
-#pad.mirror-vertical {
-  transform: scaleY(-1);
-}
-#pad.mirror-both {
-  transform: scale(-1, -1);
-}
-
-#pad-grip {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  cursor: grab;
-  fill: rgba(255, 255, 255, 0.55);
-  touch-action: none;
-}
-#pad-grip.dragging {
-  cursor: grabbing;
-}
-
-button {
-  flex: 1 1 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  min-width: 0;
-  padding: 4px 2px;
-  border: 0;
-  border-radius: 9px;
-  background: rgba(255, 255, 255, 0.08);
-  color: inherit;
-  font: inherit;
-  font-size: 12px;
-  cursor: pointer;
-}
-button:hover {
-  background: rgba(255, 255, 255, 0.18);
-}
-button:active {
-  background: rgba(255, 255, 255, 0.28);
-}
-button:focus-visible {
-  outline: 2px solid #ffd166;
-  outline-offset: 1px;
-}
-button:disabled {
-  opacity: 0.4;
-  cursor: default;
-}
-button svg {
-  width: 22px;
-  height: 22px;
-  fill: currentColor;
-}
-
-button.primary {
-  flex-grow: 1.3;
-  background: #2e7d32;
-}
-button.primary:hover {
-  background: #388e3c;
-}
-button.primary.running {
-  background: #b23b3b;
-}
-button.primary.running:hover {
-  background: #c44848;
-}
-.icon-pause,
-.running .icon-play {
-  display: none;
-}
-.running .icon-pause {
-  display: block;
-}
-
-button.close {
-  flex: 0 0 26px;
-  background: transparent;
-}
-button.close svg {
-  width: 16px;
-  height: 16px;
-}
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; background: transparent; font-family: "Segoe UI", system-ui, sans-serif; user-select: none; }
+#pad { display: flex; flex-direction: column; height: 100%; padding: 6px; border-radius: 12px; background: rgba(24,24,28,.97); border: 1px solid #667080; color: #f2f2f2; }
+#pad.mirror-horizontal { transform: scaleX(-1); }
+#pad.mirror-vertical { transform: scaleY(-1); }
+#pad.mirror-both { transform: scale(-1,-1); }
+header { display: flex; align-items: center; gap: 6px; padding-bottom: 6px; font-size: 12px; }
+header > span { flex: 1; cursor: grab; touch-action: none; }
+header.dragging { cursor: grabbing; }
+button { background: #303744; border: 1px solid #788599; border-radius: 7px; color: #f5f7fa; font: inherit; cursor: pointer; }
+button:hover:not(:disabled) { background: #435169; }
+button:focus-visible { outline: 2px solid #ffd54a; outline-offset: -3px; }
+button:disabled { color: #bac4d2; background: #252a33; cursor: default; }
+button[hidden] { display: none !important; }
+.control-grid { display: grid; grid-template-columns: repeat(var(--pad-columns,4),minmax(0,1fr)); align-content: start; gap: 5px; min-height: 0; overflow-y: auto; }
+.control-grid button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; min-height: 66px; padding: 5px 3px; font-size: 12px; line-height: 1.15; text-wrap: balance; }
+.control-icon { font-size: 22px; line-height: 1; }
+.control-icon svg { display: block; width: 24px; height: 24px; }
+.control-grid button.active { border-color: #8fd3ff; background: #28465a; }
+.control-grid button.primary { background: #24692c; border-color: #83c58b; }
+.control-grid button.primary.active { background: #843434; border-color: #f0a0a0; }
+.control-grid button { position: relative; overflow: hidden; touch-action: manipulation; -webkit-touch-callout: none; }
+.control-grid button.holding::after { content: ""; position: absolute; bottom: 0; left: 0; height: 5px; width: var(--hold-progress,0%); background: #ff7a89; }
+.control-feedback { margin: 5px 2px 0; min-height: 18px; font-size: 11px; color: #b8e2ff; text-wrap: pretty; }
+.error { color: #ffb4a9; }
+.control-sheet { position: fixed; inset: 0; margin: auto; width: min(560px,calc(100vw - 20px)); max-height: calc(100dvh - 20px); padding: 16px; border: 1px solid #788599; border-radius: 12px; color: #f2f2f2; background: #20252e; overflow: auto; }
+.control-sheet::backdrop { background: rgba(0,0,0,.65); }
+.control-sheet header { position: sticky; top: -16px; padding: 4px 0 10px; background: #20252e; z-index: 1; }
+.control-sheet h2 { flex: 1; margin: 0; font-size: 19px; text-wrap: balance; }
+.control-sheet button { min-height: 38px; padding: 7px 10px; }
+.control-sheet nav { display: flex; gap: 6px; }
+.control-sheet nav button { flex: 1; }
+.control-sheet button[aria-pressed=true] { background: #28465a; border-color: #8fd3ff; }
+.control-sheet-note, .control-sheet-message, .session-rows p { font-size: 13px; line-height: 1.5; text-wrap: pretty; }
+.control-sheet-note { min-height: 39px; color: #ccd7e5; }
+.control-sheet-fields { display: grid; gap: 10px; }
+.control-slider { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 4px 10px; font-size: 13px; }
+.control-slider input { grid-column: 1 / -1; width: 100%; accent-color: #8fd3ff; min-height: 28px; margin: 0; }
+.control-slider input:focus-visible { outline: 2px solid #ffd54a; outline-offset: 2px; }
+.control-slider output { color: #8fd3ff; }
+.control-arrows { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 5px; }
+.control-arrows button { padding: 7px 3px; }
+.control-sheet-actions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
+.control-sheet-actions button { flex: 1; text-wrap: balance; }
+[hidden] { display: none !important; }
+@media (min-width:650px) and (max-height:600px) { .control-sheet { width: min(760px,calc(100vw - 24px)); } .control-sheet-fields { grid-template-columns: repeat(2,minmax(0,1fr)); column-gap: 20px; } .control-arrows, .session-rows { grid-column: 1 / -1; } }

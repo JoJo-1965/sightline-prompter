@@ -1,8 +1,9 @@
 {
 	"name": "sightline-prompter",
 	"productName": "Sightline Prompter",
-	"version": "1.0.6",
-	"releaseDate": "2026-10-29",
+	"version": "1.1.0",
+	"documentationRevision": 1,
+	"releaseDate": "2026-10-31",
 	"description": "See-through desktop teleprompter for recording to camera. A fork of Electron Teleprompter by David Neal.",
 	"main": "src/main.js",
 	"type": "module",
@@ -14,9 +15,17 @@
 		"build": "pnpm dlx @electron/packager --overwrite ./ --out ./dist --ignore=\"/node_modules/\\.ignored\" --ignore=\"/node_modules/(electron|@electron|eslint)\"",
 		"lint": "eslint --fix",
 		"check-script": "node scripts/check-script.mjs",
-		"test": "node scripts/targets.test.mjs && node scripts/fit.test.mjs && node scripts/voice-commands.test.mjs && node scripts/pdf.test.mjs && node scripts/take-log.test.mjs && node scripts/edit-pack.test.mjs && node scripts/version.test.mjs && node scripts/heard-report.test.mjs && node scripts/recordings.test.mjs && node scripts/word-fixes.test.mjs && node scripts/level-meter.test.mjs",
+		"test": "node scripts/targets.test.mjs && node scripts/fit.test.mjs && node scripts/voice-commands.test.mjs && node scripts/pdf.test.mjs && node scripts/take-log.test.mjs && node scripts/edit-pack.test.mjs && node scripts/version.test.mjs && node scripts/heard-report.test.mjs && node scripts/recordings.test.mjs && node scripts/word-fixes.test.mjs && node scripts/level-meter.test.mjs && node scripts/obs.test.mjs && node scripts/production.test.mjs && node scripts/recorded-slate.test.mjs && node scripts/stream-deck-compatibility.test.mjs && node scripts/clear-slot.test.mjs && node scripts/pad-layout.test.mjs && node scripts/speech-recovery.test.mjs && node scripts/settings-values.test.mjs && node scripts/capture-policy.test.mjs && node scripts/components.test.mjs && node scripts/input-mappings.test.mjs && node scripts/script-review.test.mjs",
 		"dist": "pnpm build:editor && electron-builder --publish never",
-		"check-docs": "node scripts/check-docs-sync.mjs"
+		"check-docs": "node scripts/check-docs-sync.mjs",
+		"test:production-app": "node scripts/production-app.test.mjs",
+		"test:utility-windows": "node scripts/utility-windows.test.mjs",
+		"test:installer-help": "node scripts/installer-help.test.mjs",
+		"test:installer-finish": "node scripts/installer-finish.test.mjs",
+		"test:installer-directory": "node scripts/installer-directory.test.mjs",
+		"test:components-package": "node scripts/components-package.test.mjs",
+		"test:script-review-app": "node scripts/script-review-app.test.mjs",
+		"test:recorded-slate": "node scripts/recorded-slate.test.mjs"
 	},
 	"author": "Joanne Lockwood (SEE Change Happen Ltd)",
 	"contributors": [
@@ -65,7 +74,14 @@
 		},
 		"files": [
 			"src/**/*",
+			"skills/**/*",
+			"scripts/sightline.mjs",
+			"scripts/check-script.mjs",
+			"scripts/heard-report.mjs",
+			"scripts/edit-pack.mjs",
+			"docs/script-directives.json",
 			"docs/guide/**/*",
+			"docs/marketing/**/*",
 			"docs/*.md",
 			"LICENSE",
 			"readme.md",
@@ -75,6 +91,10 @@
 			"node_modules/sherpa-onnx-*/**"
 		],
 		"icon": "build/icon.png",
+		"beforePack": "./scripts/build-installer-help.mjs",
+		"extraResources": [
+			{ "from": "build/installer-help", "to": "installer-help" }
+		],
 		"win": {
 			"target": [
 				{
@@ -86,6 +106,7 @@
 			]
 		},
 		"nsis": {
+			"include": "build/installer.nsh",
 			"oneClick": false,
 			"allowToChangeInstallationDirectory": true,
 			"artifactName": "Sightline-Prompter-Setup-${version}.${ext}"
