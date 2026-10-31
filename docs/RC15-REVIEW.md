@@ -14,6 +14,35 @@ Publication, merging, tagging and website deployment remain on hold.
 | Phone landscape | The Studio selection uses six columns and two rows in short landscape windows. Button order is retained, portrait targets remain large and the footer has extra browser spacing. Long layouts remain scrollable. |
 | Installation route | A plan-first helper verifies the manifest/hash, preserves spaces in the complete destination, elevates the installer directly when Run is requested and verifies its installed version/location afterwards. The native directory-parser fixture installs nothing. |
 
+### Components and custom inputs
+
+Roadmap **47** adds **About > Components**: optional offline model and AI kit,
+Install/Reinstall/Remove, and a separate Node.js check. The app bundles the
+standalone checker, command tool, skills, briefs and examples; no clone or npm
+install is needed. Reinstall stages a fresh copy. Failed downloads leave the
+existing model available; removal asks first and uses the system bin. Model
+maintenance requires prompting and recording to be stopped.
+
+![Components in Settings](guide/images/settings-components.png)
+
+Roadmap **40** adds **Controls > Buttons & keys**: choose an action and press
+an input. Assignments save immediately. Plain keys/Shift combinations stay
+local to the prompter; system shortcuts remain reserved. Controller device
+overrides, pages, removal and reset are included. Shared pad actions retain
+their OBS permissions. Stream Deck profiles remain independent.
+
+![Button and key assignments](guide/images/settings-buttons.png)
+
+Native checks exercise install/repair/removal and cancellation, real key
+learning/execution, simulated controller learning/execution, typing guards,
+repeat/reconnect suppression, reset and all 22 Settings topics without scrolling.
+Pure checks cover corrupt/missing downloads, rollback, standalone kit command
+execution, device overrides, held/reconnected buttons and settings round trips.
+The new controller/pedal assignments still need a physical acceptance pass.
+An additional Electron archive fixture verifies installation directly from
+an app archive, and the file-list check covers every bundled kit dependency.
+The fixture creates no product installer or release candidate.
+
 ### Capture controls
 
 ![Capture override in Debug settings](guide/images/settings-debug-capture.png)
@@ -75,4 +104,5 @@ the helper checks both the intended destination and expected version.
 
 The five physical production acceptance requirements and manual Windows
 accessibility checks still apply. macOS/VoiceOver remains deferred to a Mac
-tester. Components, controller remapping and signing remain on the roadmap.
+tester. Components and controller remapping are built for review; physical
+controller/pedal acceptance remains. Signing still awaits its arrangements.

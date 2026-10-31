@@ -16,6 +16,10 @@ import {
 } from "./word-index.js";
 import { helpTabs, voiceHelpTabs, renderHelpTabs } from "./help-tabs.js";
 import { createPadSettings } from "./pad-settings.js";
+import { createMappingSettings } from "./mapping-settings.js";
+import { keyInput, normaliseMappings, mappedAction, createButtonEdges } from "./input-mappings.js";
+import { controlAction, controlView } from "./control-actions.js";
+import { createComponentSettings } from "./component-settings.js";
 import {
 	startSteadyScroll,
 	stopSteadyScroll,
@@ -111,7 +115,7 @@ const recording = createTakeLog( {
 } );
 const obsUi = createObsUi( {
 	getSettings: () => settings,
-	canStart: () => !isEditMode && !isScrolling() && !autoScrollStarting && !slating && !pointsRunning && !!md.textContent.trim() && ( pointsMode() || settings.scrollMode !== "voice" || ( usesLocalVoice() ? speechModel.installed : settings.hasDeepgramKey ) ),
+	canStart: () => !isEditMode && !isScrolling() && !autoScrollStarting && !slating && !pointsRunning && !!md.textContent.trim() && ( pointsMode() || settings.scrollMode !== "voice" || ( usesLocalVoice() ? speechModel.installed && !speechModel.downloading && !modelMaintenance : settings.hasDeepgramKey ) ),
 	onStart: () => runRemoteAction( "play" ),
 	onFinish: () => {
 		stopSteadySession();
@@ -145,6 +149,9 @@ let settings = {
 	hasDeepgramKey: false
 };
 let syncPadSettings = () => {};
+let mappingSettings = null;
+let componentSettings = null;
+let modelMaintenance = false;
 let cuePhrases = [];
 let lastScriptHtml = null;
 let sourceSnapshot = null;
@@ -501,6 +508,8 @@ const SCROLL_KEYS = new Set( [
 document.addEventListener(
 	"keydown",
 	( e ) => {
+		const input = keyInput( e );
+		if ( input && mappedAction( normaliseMappings( settings.inputMappings ), input ) !== undefined ) return;
 		if ( SCROLL_KEYS.has( e.key ) ) noteManualScroll();
 	},
 	true
@@ -749,6 +758,13 @@ document.addEventListener( "keydown", ( event ) => {
 	if ( event.target.closest?.( "input, select, textarea" ) ) return;
 	// Let native button activation handle Space/Enter without also starting a take.
 	if ( [ " ", "Enter" ].includes( event.key ) && event.target.closest?.( "button, a, [role=tab]" ) ) return;
+	const customInput = keyInput( event );
+	const customAction = customInput && mappedAction( normaliseMappings( settings.inputMappings ), customInput );
+	if ( customAction !== undefined && customAction !== null ) {
+		event.preventDefault();
+		if ( !event.repeat ) runMappedAction( customAction );
+		return;
+	}
 	if ( handlePointsKey( event ) ) return;
 	if ( event.key === "F1" && event.shiftKey ) {
 		event.preventDefault();
@@ -1306,6 +1322,10 @@ function pauseVoiceAt( pause ) {
 
 async function startAutoScrollSession() {
 	if ( autoScrollActive || autoScrollStarting ) return;
+	if ( usesLocalVoice() && ( modelMaintenance || speechModel.downloading ) ) {
+		showToast( "Wait for speech model maintenance to finish, then press Play again" );
+		return;
+	}
 	if ( isEditMode ) {
 		alert( "Exit the editor before starting auto-scroll." );
 		return;
@@ -1357,6 +1377,7 @@ let speechModel = { installed: false };
 window.electron.onSpeechModel( ( status ) => {
 	speechModel = status;
 	showSpeechModel();
+	componentSettings?.paintSpeech( status );
 	syncCommandListening();
 	offerSpeechModel();
 } );
@@ -1450,13 +1471,13 @@ function showSpeechModelIn( statusId, buttonId ) {
 	const button = uiElement( buttonId );
 	if ( !status || !button ) return;
 	const mb = bytes => Math.round( bytes / 1e6 );
-	if ( speechModel.installed ) {
-		status.textContent
-			= "Speech model installed. Voice scrolling works offline.";
-		button.classList.add( "hidden" );
-	} else if ( speechModel.downloading ) {
+	if ( speechModel.downloading ) {
 		const pct = Math.floor( ( 100 * speechModel.received ) / speechModel.total );
 		status.textContent = `Downloading… ${ mb( speechModel.received ) } of ${ mb( speechModel.total ) } MB (${ pct }%)`;
+		button.classList.add( "hidden" );
+	} else if ( speechModel.installed ) {
+		status.textContent
+			= "Speech model installed. Voice scrolling works offline.";
 		button.classList.add( "hidden" );
 	} else {
 		const failed = speechModel.error
@@ -1608,11 +1629,13 @@ function wantCommandListening() {
 		&& ( settings.scrollMode !== "voice" || always )
 		&& usesLocalVoice()
 		&& speechModel.installed
+		&& !speechModel.downloading
 		&& !isEditMode
 		&& !autoScrollActive
 		&& !autoScrollStarting
 		&& !teachingWord
 		&& !commandFailure
+		&& !modelMaintenance
 	);
 }
 
@@ -2349,6 +2372,7 @@ function applySettings( next ) {
 	if ( prev.voiceCommands !== settings.voiceCommands ) commandFailure = false;
 	autoScrollHandle?.setCommandOptions( { onCommand: settings.voiceCommands === "off" ? null : runVoiceCommand, wakeWord: settings.wakeWord ?? "prompter", commandWords: settings.commandWords ?? [], soundAlike: settings.soundAlike !== false } );
 	syncPadSettings( settings.padLayout );
+	mappingSettings?.sync( settings.inputMappings );
 	const body = document.body;
 	body.classList.remove(
 		"directions-dim",
@@ -2479,7 +2503,7 @@ function numberValue( id, min, max, fallback ) {
 // Reading and Recording tabs apply as you go, so they don't count.
 let settingsDirty = false;
 let afterSettingsClose = null;
-const LIVE_TABS = "#set-layout-host, #set-reading-host, #set-background-host, #set-aids-host, #set-display-host, #set-recording-host, #set-script-host, #set-pad-fieldset, #set-capture-fieldset";
+const LIVE_TABS = "#set-layout-host, #set-reading-host, #set-background-host, #set-aids-host, #set-display-host, #set-recording-host, #set-script-host, #set-pad-fieldset, #set-capture-fieldset, #set-mapping-fieldset";
 
 field( "set-capture-override" )?.addEventListener( "change", event => window.electron.setCaptureOverride( event.target.checked ) );
 field( "capture-override-off" )?.addEventListener( "click", () => window.electron.setCaptureOverride( false ) );
@@ -2630,6 +2654,7 @@ function requestCloseSettings( then = null ) {
 }
 
 async function finishSettingsClose( save ) {
+	mappingSettings?.cancel();
 	const then = afterSettingsClose;
 	afterSettingsClose = null;
 	field( "settings-unsaved" ).classList.add( "hidden" );
@@ -5001,7 +5026,34 @@ onClick( "set-phone-new", () => window.electron.newPhoneKey() );
 const SETTINGS_TAB_KEY = "settingsTab";
 syncPadSettings = createPadSettings( settingsModal, partial => window.electron.saveSettings( partial ) );
 syncPadSettings( settings.padLayout );
+mappingSettings = createMappingSettings( settingsModal, partial => window.electron.saveSettings( partial ) );
+mappingSettings.sync( settings.inputMappings );
+componentSettings = createComponentSettings( settingsModal, { toast: text => showToast( text, 4500 ), changeModel: async ( action ) => {
+	if ( isScrolling() || autoScrollStarting || slating || [ "recording", "paused" ].includes( obsUi.state().recording ) ) throw new Error( "Stop prompting and recording before changing the speech model" );
+	modelMaintenance = true;
+	try {
+		await syncCommandListening();
+		return await window.electron.speechModelChange( action );
+	} finally {
+		modelMaintenance = false;
+		syncCommandListening();
+	}
+} } );
+componentSettings.paintSpeech( speechModel );
+// The modal is adopted by the separate Settings window; listen on the node.
+settingsModal.addEventListener( "keydown", ( event ) => {
+	if ( !mappingSettings.learning ) return;
+	event.preventDefault();
+	event.stopImmediatePropagation();
+	if ( event.key === "Escape" ) mappingSettings.cancel();
+	else if ( !event.repeat ) {
+		const input = keyInput( event );
+		if ( input ) mappingSettings.learn( input );
+	}
+}, true );
 const settingsNavigation = createSettingsNavigation( settingsModal, { onShow: ( name ) => {
+	if ( name !== "buttons" ) mappingSettings.cancel();
+	if ( name === "components" ) componentSettings.refresh();
 	settingsTrail( `tab ${ name }` );
 	if ( LAYOUT_TABS.includes( name ) ) borrowLayoutPanel();
 	settingsBox?.scrollTo( 0, 0 );
@@ -6281,43 +6333,40 @@ document.addEventListener( "mousemove", ( e ) => {
 
 window.electron.onToast( text => showToast( text ) );
 
-// Game controllers: buttons act like the matching keys.
-const PAD_KEYS = {
-	0: { key: "PageDown" }, // A: start / pause / carry on
-	1: { key: "b" }, // B: drop a marker
-	2: { key: "b", ctrlKey: true }, // X: next marker
-	12: { key: "ArrowUp" }, // d-pad up: faster while scrolling
-	13: { key: "ArrowDown" }, // d-pad down: slower
-	14: { key: "ArrowLeft" }, // d-pad left: previous section
-	15: { key: "ArrowRight" } // d-pad right: next section
-};
-let padTimer = null;
-const padPressed = new Map();
-function pollGamepads() {
-	const pads = navigator.getGamepads?.() ?? [];
-	let any = false;
-	for ( const pad of pads ) {
-		if ( !pad ) continue;
-		any = true;
-		for ( const [ index, keyInit ] of Object.entries( PAD_KEYS ) ) {
-			const down = !!pad.buttons[index]?.pressed;
-			const id = `${ pad.index }:${ index }`;
-			if ( down && !padPressed.get( id ) ) {
-				document.dispatchEvent(
-					new KeyboardEvent( "keydown", { ...keyInit, bubbles: true } )
-				);
-			}
-			padPressed.set( id, down );
-		}
+// Controller actions use the same guards as the pad; no synthetic key events.
+const buttonEdges = createButtonEdges();
+function mappingBlocked() {
+	return isEditMode || !settingsModal.classList.contains( "hidden" ) || !!document.querySelector( ".modal:not(.hidden), #voice-help:not(.hidden)" ) || !!document.activeElement?.closest( "input, select, textarea, [contenteditable=true]" );
+}
+function runMappedAction( action ) {
+	if ( action === "none" || mappingBlocked() ) return;
+	if ( action === "next-marker" ) {
+		jumpToNextMarker();
+		return;
 	}
-	if ( !any ) {
-		clearInterval( padTimer );
-		padTimer = null;
+	const view = controlView( action, { ...settings, ...obsUiStatus(), editing: isEditMode } );
+	if ( !view || view.disabled || view.hidden ) return;
+	const request = controlAction( action );
+	if ( request.slot ) switchToSlot( request.slot - 1 );
+	else runRemoteAction( request.action );
+}
+function obsUiStatus() {
+	return { obs: obsUi.state(), scrolling: isScrolling(), slots: slotState.slots.map( slot => ( { file: slot ? slot.name : null } ) ) };
+}
+function pollGamepads() {
+	for ( const input of buttonEdges( navigator.getGamepads?.() ?? [] ) ) {
+		if ( mappingSettings?.learning ) {
+			if ( settingsModal.ownerDocument.hasFocus() && settingsModal.querySelector( "#settings-page-buttons" )?.hidden === false ) mappingSettings.learn( input );
+			continue;
+		}
+		if ( !document.hasFocus() || mappingBlocked() ) continue;
+		const action = mappedAction( normaliseMappings( settings.inputMappings ), input );
+		if ( action ) runMappedAction( action );
 	}
 }
+setInterval( pollGamepads, 40 );
 window.addEventListener( "gamepadconnected", () => {
-	padTimer ??= setInterval( pollGamepads, 40 );
-	showToast( "Controller connected · A starts and pauses, B adds a marker" );
+	showToast( "Controller connected · change buttons in Settings > Controls > Buttons & keys" );
 } );
 
 // --- Number boxes beside sliders ---

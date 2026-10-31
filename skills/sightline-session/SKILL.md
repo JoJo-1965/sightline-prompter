@@ -5,7 +5,8 @@ description: Use when working with Sightline Prompter around a recording session
 
 # Running a Sightline session: before, during and after
 
-**Where Sightline is:** the Sightline Prompter source folder, a clone of
+**Where Sightline is:** the managed AI kit from **Settings > About > Components
+> Install > Open folder**, or the Sightline Prompter source folder, a clone of
 https://github.com/JoJo-1965/sightline-prompter. Use the `SIGHTLINE_HOME`
 environment variable if it's set; otherwise, if this skill sits in that
 repo's `skills` folder, it's two folders up; otherwise ask the user. Below,

@@ -91,8 +91,9 @@ and companion work before choosing a version or building. Finish the current
 batch and its supporting updates, then check for new messages before packaging.
 Planned roadmap work and physical acceptance checks stay separately identified.
 
-**Next development:** the components manager (47), with controller mappings (40) and signing (27)
-following the arrangements and priorities below. Zoom (53) and Teams (54)
+**Next development:** signing (27) awaits the arrangements below; rehearsal
+coaching (28) and automatic updates (29) remain planned. Components (47) and
+input mappings (40) are built for review, absent from installed RC14. Zoom (53) and Teams (54)
 remain investigations. No new compulsory script directives are needed.
 
 ## Built, awaiting acceptance and publication
@@ -102,6 +103,8 @@ move to Done only when released.
 
 | # | Item | Value | Size | RC status |
 | --- | --- | --- | --- | --- |
+| 47 | **Components manager** | ★★ | M | Built for review: About > Components manages the optional offline model and bundled AI kit with status, Install/Reinstall/Remove and a separate Node.js check. Voice also has model repair/removal; the first-run offer remains. Failed repairs preserve previous files. Standalone kit and native Settings checks pass; not packaged yet |
+| 40 | **Choose your buttons and keys** | ★★ | S–M | Built for review: Controls > Buttons & keys learns plain keys/Shift combinations and controller buttons with shared pad actions, device overrides, pages, immediate saving and reset. Reserved shortcuts remain intact; typing, editing and Settings suspend actions. Native key and simulated button checks pass; physical controller/pedal acceptance remains |
 | 57 | **Debug capture override** | ★★ | S | Built for the next candidate: About > Debug permits all existing and newly opened windows in captures, with a persistent warning and phone notice. Session-only; restores current normal preferences and resets on restart. Native policy, lifecycle and restore checks pass; awaiting review and packaging |
 | 56 | **Customisable virtual pad and phone layout** | ★★ | M | Built in RC13: select up to 36 functions, drag or use Earlier/Later to reorder, choose columns and Compact/Reading/Studio presets. Pad and phone share choices/order and Stream Deck artwork. Hardware profiles remain independent. Native pad, portrait phone, persistence and permission checks pass; physical iPhone acceptance remains |
 | 48 | **Settings in its own window**, plus movable F1 Help | ★★ | M | Built in RC8: independent upright windows, native title-bar dragging across screens, saved geometry, stable sizes, paged Settings, live controls, Apply/Save/Cancel and unsaved-change guards on window/app close. Native window and inline-fallback tests pass; manual acceptance remains |
@@ -117,8 +120,6 @@ waits for the signing arrangements and Joanne's accounts; it is not in this RC.
 | #   | Item | Value | Size | Notes |
 | --- | ---- | ----- | ---- | ----- |
 | 27  | **Code signing for Windows and Mac:** no more "unknown publisher" warnings | ★★★ | S | Moved up from Later. Needs a code-signing certificate and an Apple Developer account (Joanne's decision) |
-| 47  | **Components list:** Settings > About lists each extra part with its status and Install, Reinstall and Remove: the speech model, and an AI agent kit (the skills, the script checker and the sightline command) installed from the app without cloning the repo, with a check for Node.js. Settings > Prompting > Voice gets Reinstall and Remove beside the speech model, and the first run offers to download it | ★★ | M | Joanne asked, 28 Oct: show what's installed, with install and reinstall buttons. In the app rather than an installer tickbox, because only the Windows installer could have one |
-| 40  | **Choose your own buttons:** a key map for game controllers, foot pedals, clickers and keyboard shortcuts (Settings > Controls): pick any action (start and pause, sections, speed, markers, keeper or scrap, on air, again) for each button or key, with a "press the button now" way to set it, and a reset to the defaults | ★★ | S–M | Joanne's idea, 28 Oct. Today the controller buttons and pedal keys are fixed. The Stream Deck plugin (39) can use the same list of actions |
 | 28  | **Rehearsal coach:** after a practice run, pace by section, lines skipped, "um"s and sentences you stumbled on, all on the computer | ★★ | M | Same speech engine as voice scrolling |
 | 29  | **Automatic updates:** new versions download and install themselves, so users get fixes without reinstalling | ★★ | M | Moved up from Later. Best done with code signing (27), which Mac updates need |
 | 53 | **Optional Zoom controls:** investigate microphone, camera and bringing the meeting forward from Sightline, with phone, voice and control-window actions | ★ | To assess | Joanne requested, 29 Oct. Feasibility first: Zoom's [Plugin SDK](https://developers.zoom.us/docs/plugin-sdk/) connects native Windows/macOS companion apps to the installed Zoom Workplace client. Assess permissions, distribution and dependable state feedback before implementation. Off by default; independent of normal prompting. Not built or scheduled for release |

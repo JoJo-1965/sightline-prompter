@@ -127,6 +127,11 @@ advertising trackers. That does not mean every feature is offline:
   enabled by default and can be switched off; updates are not installed
   automatically.
 - The local speech model is downloaded from Hugging Face when requested.
+  Reinstall downloads it again. The optional AI kit is copied from the app
+  into its own managed local folder; installing it does not enable the API or
+  send scripts anywhere. The Components page checks Node.js locally. Custom
+  key/controller assignments and controller names stay in local settings and
+  are included if you export those settings.
 - Opening a Google Docs link fetches content from Google.
 - Selecting Deepgram sends audio to its service while voice scrolling runs.
 - Help, project and support-payment links open external services.

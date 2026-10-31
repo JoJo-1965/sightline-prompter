@@ -2,6 +2,12 @@
 
 30 October 2026 · OBS development branch · implemented and checked locally.
 
+The next-candidate extension adds **Controls > Buttons & keys** and **About >
+Components**. Native checks now cover all 22 topics at the same fixed frame,
+including smaller windows, without scrolling. Component maintenance and
+mapping edits apply immediately; their help explains the effects. New images
+are in the gallery. Manual screen-reader/magnification checks remain pending.
+
 [View the screenshot gallery](guide/settings-gallery.md).
 
 The review covered finding settings, understanding their effects, saving and
@@ -13,7 +19,7 @@ prompter window. Longer topics use pages, with no scrolling.
 
 | Finding | Resolution | Evidence |
 | --- | --- | --- |
-| Fonts, backing, colours and reading aids shared a long topic | Appearance now has Text, Background, Reading aids, Spacing and Screens. Body and heading fonts sit together; heading size is with typography | All 18 topics are reachable; rendered screenshots reviewed |
+| Fonts, backing, colours and reading aids shared a long topic | Appearance now has Text, Background, Reading aids, Spacing and Screens. Body and heading fonts sit together; heading size is with typography | All 22 current topics are reachable; rendered screenshots reviewed |
 | A separate question mark and caption took space and could describe a whole section rather than its option | Approved superscript-style pills sit beside the relevant label; broader explanations use a section heading | 17 × 12 visual pill inside a 24 × 24 target; no repeated caption |
 | Adding help inside an implicit control label could make a help click toggle the setting | Controls use explicit labels, with help as a separate sibling button | Every form control has an accessible name; no help or numeric buttons nested in labels; clicking checkbox help leaves its value unchanged |
 | Immediate-save behaviour was hidden in optional help, while text size is only a preview | Live fieldsets visibly say Saved immediately as you adjust. The text-size preview has its own Apply/Save & close note | Live notes remain visible on later pages of their fieldset; shared controls still persist |

@@ -91,6 +91,13 @@ keeps its physical profiles; the pad and phone reuse its artwork and actions.
 
 ![Customised floating pad](images/pad.png)
 
+### Buttons and keys
+
+Choose an action and press an input to learn it. Changes save immediately;
+longer lists use pages. System shortcuts stay reserved.
+
+![Custom button and key mappings](images/settings-buttons.png)
+
 ### Phone
 
 The example QR below is for illustration; scan the code in your own Settings.
@@ -116,6 +123,10 @@ The example QR below is for illustration; scan the code in your own Settings.
 ## About
 
 ![Version, support and updates](images/settings-about.png)
+
+### Components
+
+![Offline model, AI kit and Node.js status](images/settings-components.png)
 
 ### Debug
 

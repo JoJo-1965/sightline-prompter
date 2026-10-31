@@ -2,6 +2,12 @@
 
 ## Built for the next candidate, not yet packaged
 
+- [x] Components manager (#47): model and AI-kit status, Install/Reinstall/
+  Remove, separate Node check, bundled standalone tools and model busy guards.
+- [x] Button mappings (#40): learn local keys and controller buttons, choose
+  shared pad actions, device overrides, pages, immediate saving and reset.
+- [ ] Physical controller/pedal acceptance of the new mappings after packaging.
+
 - [x] Compact phone landscape layout: preserve button order, use four or six
   columns, fit Studio in two rows and add browser-safe footer spacing.
   Portrait/landscape previews checked; real iPhone acceptance follows RC15.

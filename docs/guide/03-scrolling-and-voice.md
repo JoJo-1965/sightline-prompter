@@ -28,6 +28,10 @@ The first time you open Sightline, a small note at the bottom right offers it:
 choose **Download**. Or open **Settings > Prompting > Voice** (or the Voice panel) and
 click **Download speech model**.
 It's a one-off download of about 73 MB, and progress is shown as it goes.
+In the next candidate, the same Voice page also has Reinstall and Remove.
+**Settings > About > Components** lists the model and the optional AI kit,
+with their status and maintenance controls. Stop prompting and recording
+before repairing/removing the model; a failed repair keeps the old copy.
 After that, voice scrolling works with no internet connection at all.
 
 ### Deepgram (online)

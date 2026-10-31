@@ -724,6 +724,8 @@
             <p class="field-hint" id="set-speech-model-status"></p>
             <div class="button-row">
               <button id="set-speech-model-get" type="button" class="hidden">Download speech model</button>
+              <button id="set-speech-model-reinstall" type="button" class="hidden">Reinstall</button>
+              <button id="set-speech-model-remove" type="button" class="hidden">Remove…</button>
             </div>
           </div>
         </fieldset>
@@ -1064,6 +1066,34 @@
             <p id="set-obs-slate-status" class="field-hint" data-essential role="status" aria-live="polite">Recorded slate off</p>
         </fieldset>
 
+        <fieldset data-tab="buttons" id="set-mapping-fieldset">
+          <legend>Buttons and keys</legend>
+          <p class="field-hint" data-essential>Choose an action, then press a key, clicker, pedal or controller button. Changes save immediately. Works while the prompter has focus.</p>
+          <label>Action <select id="set-map-action"></select></label>
+          <div class="button-row"><button type="button" id="set-map-learn">Press a key or button…</button><button type="button" id="set-map-cancel" hidden>Cancel</button><button type="button" id="set-map-reset">Reset defaults</button></div>
+          <p id="set-map-notice" class="field-hint" role="status" aria-live="polite">Plain keys and Shift combinations. Ctrl, Alt, Command, Escape, Tab, F1 and F11 stay reserved.</p>
+          <div id="set-map-list"></div>
+          <nav class="pad-choice-pages" aria-label="Mapping pages"><button type="button" id="set-map-prev">Previous</button><span id="set-map-page" role="status"></span><button type="button" id="set-map-next">Next</button></nav>
+          <p class="field-hint">Key mappings use physical key positions. Controller mappings match the device name; identical controllers share them. A held button fires once. Settings, editing and typing suspend actions. Remove an entry to leave that input unused; Do nothing overrides a generic controller mapping. Reset restores the original buttons. Stream Deck keeps its own profile settings.</p>
+        </fieldset>
+        <fieldset data-tab="components" id="set-components-model">
+          <legend>Offline speech model</legend>
+          <p id="component-speech-status" class="field-hint" role="status" aria-live="polite">Checking…</p>
+          <div class="button-row"><button type="button" id="component-speech-install">Install</button><button type="button" id="component-speech-reinstall">Reinstall</button><button type="button" id="component-speech-remove">Remove…</button></div>
+          <p class="field-hint">Optional 73 MB download for offline voice following and commands. Reinstall fetches a fresh copy and keeps the old one if the download fails. Remove moves it to your system bin. Stop prompting and recording first; command listening resumes afterwards if the model is available.</p>
+        </fieldset>
+        <fieldset data-tab="components" id="set-components-kit">
+          <legend>AI agent kit</legend>
+          <p id="component-kit-status" class="field-hint" role="status" aria-live="polite">Checking…</p>
+          <div class="button-row"><button type="button" id="component-kit-install">Install</button><button type="button" id="component-kit-reinstall">Reinstall</button><button type="button" id="component-kit-remove">Remove…</button><button type="button" id="component-kit-open">Open folder</button></div>
+          <p class="field-hint">Copies the authoring and session skills, checker and command tool from this app. No repository clone or npm install needed. Open the folder for START-HERE. Reinstall replaces this managed copy; keep your own files elsewhere. Remove moves it to the system bin. Your assistant's own settings and API permissions stay as you set them.</p>
+        </fieldset>
+        <fieldset data-tab="components">
+          <legend>Node.js for AI commands</legend>
+          <p id="component-node-status" class="field-hint" role="status" aria-live="polite">Checking…</p>
+          <div class="button-row"><button type="button" id="component-refresh">Check again</button><a href="https://nodejs.org/en/download" target="_blank">Get Node.js</a></div>
+          <p class="field-hint">Node.js 22.16 or later runs the AI kit commands. The desktop app and offline voice engine work without it. Install Node.js from its own website, then restart Sightline and check again.</p>
+        </fieldset>
         <fieldset data-tab="about" class="settings-about">
           <legend>Sightline Prompter</legend>
           <p class="settings-about-version" id="settings-about-version"></p>

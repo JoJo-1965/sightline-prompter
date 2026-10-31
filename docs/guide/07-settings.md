@@ -55,12 +55,14 @@ without disappearing as you move the pointer onto it.
 | **Recording** | Takes | Slate, ON AIR display, countdown beep, capture protection and click-through |
 | | Audio | Scratch audio, loudness per take and keeping the sound-check meter visible |
 | **Controls** | Pad | Select and arrange shared pad/phone buttons, columns and presets |
+| | Buttons & keys | Learn local keys, clicker/pedal inputs and controller buttons; choose actions and reset |
 | | Phone | Enable the phone remote, scan its QR code or replace its code |
 | | Stream Deck | Enable the companion plugin's buttons-only connection and open its guide |
 | | AI & API | Enable local automation, port, token, recording-delete permission and AI setup help |
 | | OBS connection | Enable OBS, address, port, protected password and the saved-connection test |
 | | OBS recording | Start/stop permission, chapters and preparing the recorded slate |
 | **About** | About | Version, a link to credits, updates and support |
+| | Components | Install, repair or remove the offline model and AI kit; check Node.js |
 | | Debug | Debug logging, support-log export and optional command-word tracing |
 
 OBS settings stay discoverable while disabled so you can configure them.
@@ -69,6 +71,32 @@ prompter's own Takes and Audio choices. **Prepare recorded slate** explains
 any unmet prerequisite beside the button and shows progress or errors in Settings.
 Recording commands in Help and the live recording controls still follow the
 permissions you have enabled. The head guide is independent of OBS.
+
+## Components
+
+In the next candidate, **About > Components** shows each optional part:
+
+- **Offline speech model:** Install downloads about 73 MB. Reinstall downloads
+  a fresh copy to staging; an incomplete download leaves the previous model
+  available. Remove moves the model to your system bin. Voice following and
+  offline commands need it; steady scrolling still works without it.
+- **AI agent kit:** Install copies the skills, script checker, command tool
+  and briefs from this app into a managed folder. Open folder and read
+  **START-HERE.md**. No repository clone or npm install is needed. Reinstall
+  refreshes this managed copy; keep personal files elsewhere. Remove moves
+  it to your system bin. Other applications' installed skills stay separate.
+- **Node.js:** reports whether a suitable version is available on the app's
+  PATH. Commands need 22.16 or later. Use Get Node.js for its own installer,
+  restart Sightline, then Check again. The desktop app needs no separate Node.
+
+Model Reinstall and Remove also appear in **Prompting > Voice**. Stop
+prompting and recording before changing the model. Always command listening
+pauses for maintenance and resumes afterwards if a usable model remains.
+Removal asks first. Component actions apply immediately, independently of
+Settings Apply/Cancel. The existing first-run model download offer remains.
+Installing the AI kit does not enable the API or alter your assistant.
+
+![Optional components and their installation controls](images/settings-components.png)
 
 ## Fonts, backing and reading aids
 

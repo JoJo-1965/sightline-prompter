@@ -25,6 +25,16 @@ labelled; pending changes show Unsaved changes, with Apply and Save & close.
 See the
 [Settings map](guide/07-settings.md).
 
+The next batch also includes **About > Components**: offline model and AI kit
+status, Install/Reinstall/Remove, and a separate Node.js availability check.
+The kit runs without cloning the repository or installing npm dependencies.
+**Controls > Buttons & keys** learns controller buttons and local keyboard
+inputs from clickers/pedals, with the pad's action choices, duplicate-input
+replacement, immediate saving, three-entry pages and reset. Held/reconnected
+buttons do not repeat; typing, editing and Settings suspend actions. Plain
+keys and Shift combinations can be assigned; system shortcuts stay reserved.
+These additions are source changes for review, absent from installed RC14.
+
 The development guide includes [From recording to the editor](guide/12-production-handover.md):
 an illustrated session checklist covering setup, framing, a short test,
 retakes, keeper choices and collecting the master files alongside each edit

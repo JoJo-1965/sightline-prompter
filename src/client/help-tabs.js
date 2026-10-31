@@ -60,6 +60,12 @@ export function helpTabs( settings, notes = false ) {
 		{ label: "Recording", sections: recording },
 		{ label: "Head guide", sections: [ section( "Camera framing", guideRows.filter( ( [ label ] ) => label !== "Stream Deck" || settings.streamDeck ) ) ] }
 	];
+	tabs.push( { label: "Controls", sections: [ section( "Buttons and components", [
+		[ "Settings > Controls > Buttons & keys", "Choose an action, then press a key, clicker, pedal or controller button. Changes save immediately" ],
+		[ "Custom keys", "Plain keys and Shift combinations override the defaults shown here. System shortcuts stay reserved. Mappings stop during typing, editing and Settings" ],
+		[ "Reset defaults", "Restores controller buttons and clears custom keys; Stream Deck profiles stay separate" ],
+		[ "Settings > About > Components", "Install, repair or remove the offline speech model and AI kit; check Node.js for AI commands" ]
+	] ) ] } );
 	if ( settings.voiceCommands !== "off" ) tabs.push( { label: "Voice", sections: voiceHelpTabs( settings ).flatMap( t => t.sections ) } );
 	return tabs;
 }

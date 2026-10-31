@@ -324,6 +324,34 @@ networks.
 
 ![Settings > Controls](images/settings-remotes.png)
 
+## Choose your buttons and keys
+
+For the next candidate, open **Settings > Controls > Buttons & keys**. Choose
+an action, select **Press a key or button…**, then press your clicker, pedal,
+keyboard key or controller button once. Escape cancels; learning times out
+after 15 seconds. Assigning an existing input replaces its action. Changes
+save immediately and are included in JSON/XML settings exports.
+
+Use the action list beside each entry to change it, or Remove to clear that
+entry. Lists use three entries per page. **Reset defaults** clears custom keys
+and restores the original controller buttons. The defaults are A/play-pause,
+B/marker, X/next marker and D-pad/speed or sections.
+
+Plain keys and Shift combinations use physical key positions. Ctrl, Alt,
+Command, Escape, Tab, F1 and F11 remain reserved for menus, the system and access
+tools. Mappings act while the prompter has focus, and pause during editing,
+typing and Settings. Space/Enter on a focused button keep normal activation.
+Held buttons fire once; reconnecting a held button does not trigger it.
+
+Controller entries match the device name; identical controllers share their
+assignments. Device-specific entries override generic controller defaults.
+**Do nothing** suppresses that default for the chosen device. Removing a
+device-specific entry reveals any generic default underneath. Keyboard pedals
+work as local keys. Stream Deck uses its own profiles and buttons-only API.
+OBS actions still require the existing connection and recording permissions.
+
+![Learning and arranging key and controller mappings](images/settings-buttons.png)
+
 ## AI and remote control
 
 On **Settings > Controls > AI & API**, you can let an AI assistant (such as Claude

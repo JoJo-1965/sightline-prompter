@@ -132,6 +132,24 @@ actual build versions, recording filenames, pack folders and any existing
 OBS audio offset with the results. A ready indicator, successful install or
 browser acknowledgement is not proof of a correct physical recording.
 
+## Optional components and custom inputs in the next candidate
+
+These additions are absent from installed RC14. After an approved build:
+
+1. Open **About > Components**. Check the model status and Node.js result.
+   Install the AI kit, open its folder and run the checker on your own script.
+   Reinstall should refresh the managed copy. Removal must ask first; Cancel
+   should leave it installed. Stop prompting/recording before model changes.
+2. In **Controls > Buttons & keys**, choose Next and learn your pedal or
+   clicker. Close Settings, focus the prompter and press once. It should
+   advance once; holding the button should not keep advancing.
+3. Assign a second action, try it, then test that typing or opening Settings
+   suspends mapped actions. Reset defaults should restore the original
+   controller assignments. Stream Deck profiles should be unchanged.
+
+Keep these results alongside the production checklist; simulated button
+checks do not prove a particular physical controller's behaviour.
+
 ## Separate accessibility and publication checks
 
 Keyboard/layout automation has passed, but manual **NVDA**, **Windows

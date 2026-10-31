@@ -40,6 +40,8 @@ contextBridge.exposeInMainWorld( "electron", {
 	// On-device voice scrolling (speech.js)
 	speechModelStatus: () => ipcRenderer.send( "speechModelStatus" ),
 	speechModelDownload: () => ipcRenderer.send( "speechModelDownload" ),
+	speechModelChange: action => ipcRenderer.invoke( "speechModelChange", action ),
+	components: ( component, action ) => ipcRenderer.invoke( "components", component, action ),
 	onSpeechModel: callback => on( "speechModel", callback ),
 	speechStart: options => ipcRenderer.send( "speechStart", options ),
 	speechStop: session => ipcRenderer.send( "speechStop", session ),

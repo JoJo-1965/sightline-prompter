@@ -315,6 +315,10 @@ body.directions-normal .direction .dir-text {
 .pad-choice-pages { display: flex; justify-content: space-between; align-items: center; margin: 6px 0; }
 .pad-toolbar #set-pad-columns { flex: 0 0 58px; }
 .pad-choice-add button { flex-shrink: 0; }
+.mapping-row { display: flex; align-items: center; gap: 6px; margin: 6px 0; min-height: 36px; }
+.mapping-row > span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mapping-row > select { width: 11em; min-width: 0; }
+.mapping-row > button { flex-shrink: 0; }
 
 body.directions-hide .direction .dir-text {
 	display: none;

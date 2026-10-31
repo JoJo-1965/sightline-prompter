@@ -23,6 +23,8 @@ import { captureOverride, protectWindow, setCaptureOverride, trackCaptureWindow 
 import { settingsValues } from "./settings-values.js";
 import { readScriptSnapshot } from "./script-snapshot.js";
 import { createSpeech } from "./speech.js";
+import { createAgentKit, nodeStatus } from "./components.js";
+import { normaliseMappings } from "./client/input-mappings.js";
 import { createGuide } from "./guide.js";
 import { createGoogleDocs, GOOGLE_DOC_MESSAGES } from "./google-docs.js";
 import { takeLogCsv } from "./client/take-log.js";
@@ -168,6 +170,7 @@ const defaultSettings = {
 	hideFromCapture: false, // keep the window out of screen sharing and recordings
 	showPad: false, // the floating control pad (View menu, Ctrl+Shift+P)
 	padLayout: null, // shared button selection/order for the pad and phone
+	inputMappings: null, // null uses the default controller buttons; keys override locally
 	showHeadGuide: false,
 	headGuideBounds: null,
 	utilityWindowBounds: {},
@@ -1835,7 +1838,23 @@ app.whenReady().then( async () => {
 	} );
 	framingGuide.apply();
 	win.on( "closed", () => framingGuide.dispose() );
-	createSpeech( { dir: __dirname, win } );
+	const speech = createSpeech( { dir: __dirname, win, busy: () => !!rendererStatus.scrolling || [ "recording", "paused" ].includes( obs.state().recording ) } );
+	const kitFolder = path.join( app.getPath( "userData" ), "ai-kit" );
+	const kit = createAgentKit( { source: app.getAppPath(), folder: kitFolder, version: app.getVersion(), trash: target => shell.trashItem( target ) } );
+	ipcMain.handle( "components", async ( event, component, action ) => {
+		if ( event.sender !== win.webContents ) return { error: "Unavailable" };
+		try {
+			if ( component === "kit" && action === "open" ) {
+				if ( !( await kit.status() ).installed ) throw new Error( "Install the AI kit first" );
+				const error = await shell.openPath( kitFolder );
+				if ( error ) throw new Error( error );
+			} else if ( component === "kit" ) await kit.change( action );
+			else if ( component !== undefined ) throw new Error( "Unknown component" );
+			return { speech: speech.status(), kit: await kit.status(), node: await nodeStatus() };
+		} catch ( err ) {
+			return { error: err.message };
+		}
+	} );
 	ipcMain.on( "copyAiPrompt", () => copyAiPrompt( win ) );
 
 	ipcMain.on( "openGoogleDoc", async ( _event, link ) => {
@@ -2251,6 +2270,14 @@ app.whenReady().then( async () => {
 
 	ipcMain.on( "saveSettings", async ( _event, partial ) => {
 		if ( partial && typeof partial === "object" ) {
+			if ( Object.hasOwn( partial, "inputMappings" ) ) {
+				try {
+					partial.inputMappings = partial.inputMappings === null ? null : normaliseMappings( partial.inputMappings );
+				} catch ( err ) {
+					win.webContents.send( "toast", err.message );
+					return;
+				}
+			}
 			await updateSettings( partial );
 		}
 	} );

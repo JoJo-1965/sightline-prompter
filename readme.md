@@ -253,10 +253,23 @@ layouts are rejected before other settings change; protected permissions stay
 local. The capture override has persistent desktop/phone warnings and resets
 on exit. A plan-first installation helper checks hashes and verifies the
 complete destination/version after an explicitly requested installation.
+The batch also adds **About > Components** for model/AI-kit installation,
+repair and removal, plus a Node.js check. **Controls > Buttons & keys** learns
+keyboard, clicker, pedal and controller inputs, with action choices and reset.
 The batch is awaiting review; RC15 has not been built or installed.
 The latest published app remains **1.0.6**. No tag, merge, Marketplace publication or
 website deployment is part of this candidate.
 
+- **Components in one place:** **Settings > About > Components** shows the
+  offline speech model, bundled AI kit and Node.js status. Install, Reinstall
+  and Remove manage Sightline's own copies; Node.js uses its own installer.
+  Voice settings also offer model repair/removal. A failed repair retains the
+  previous copy; stop prompting and recording before changing the model.
+- **Choose your buttons:** **Settings > Controls > Buttons & keys** learns a
+  physical key or controller button, then runs your chosen pad action. Plain
+  keys and Shift combinations work while the prompter has focus; system
+  shortcuts stay reserved. Changes save immediately, with pages for longer
+  lists and Reset defaults. Stream Deck profiles stay independent.
 - **Your control layout:** **Settings > Controls > Pad** selects up to 36
   buttons with drag reordering, accessible Earlier/Later moves, columns and
   Compact/Reading/Studio presets. The phone shares the selection and order,
