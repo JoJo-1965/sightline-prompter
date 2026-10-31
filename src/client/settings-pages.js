@@ -51,7 +51,7 @@ export function createSettingsPages( modal ) {
 		if ( focus ) {
 			const first = pages[index]?.flatMap( item => [ item, ...item.querySelectorAll( "input, select, button, textarea" ) ] )
 				.find( el => el.matches( "input, select, button:not(.settings-help-button), textarea" ) && !el.disabled && el.getClientRects().length );
-			first?.focus( { preventScroll: true } );
+			( first ?? ( next.disabled ? previous : next ) ).focus( { preventScroll: true } );
 		}
 	}
 	function layout() {
@@ -144,6 +144,9 @@ export function addSettingsHelp( modal ) {
 	};
 	const extraHints = [];
 	for ( const [ id, text ] of [
+		[ "set-remote", "The API can be used by any authorised local client. Only the supplied AI kit commands require Node.js and the kit. Enable and Apply before using token controls; Components explains missing local setup." ],
+		[ "set-stream-deck", "Stream Deck needs Elgato's app and the separate Sightline plugin. Components checks installed files; Check compatibility confirms the running plugin version and protocol. A missing app can be installed or located without enabling control." ],
+		[ "set-obs-enabled", "A local OBS connection needs OBS Studio installed. Components offers its installer and Locate for portable copies. For OBS on another computer, enter its address instead. Start OBS, enable its WebSocket server, Apply and test; finding an installation does not grant recording permission." ],
 		[ "set-countdown", "This countdown runs before prompting starts, giving you time to settle and look at the camera. It is separate from pauses written into a script. A zero starts prompting immediately." ],
 		[ "set-wake-word", "Say the wake word, leave a brief beat, then finish your command within four seconds. For example: Prompter, section one. Applying a new wake word refreshes the listener immediately." ],
 		[ "set-pad-columns", "The floating pad and phone share selected buttons and their order. Narrow phones use two columns; short landscape screens use four or six. Stream Deck profiles keep their own assignments. Presets replace the selection; Compact resets it. OBS buttons appear only when OBS and recording controls are enabled." ],

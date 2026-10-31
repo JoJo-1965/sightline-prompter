@@ -89,6 +89,27 @@ In the next candidate, **About > Components** shows each optional part:
 - **Node.js:** reports whether a suitable version is available on the app's
   PATH. Commands need 22.16 or later. Use Get Node.js for its own installer,
   restart Sightline, then Check again. The desktop app needs no separate Node.
+- **OBS Studio:** checks the usual installation folders and running portable
+  copies. Install / reinstall opens OBS's own download page. **Locate** remembers
+  a custom installation; **Check again** detects later removal too.
+- **Stream Deck:** checks the Elgato application and looks for the Sightline
+  plugin manifest. Its installer is separate from the plugin. **Controls >
+  Stream Deck > Check compatibility** confirms the live plugin version and
+  protocol; finding installed files alone does not confirm a working connection.
+
+Unavailable controls are greyed out with a visible explanation. **AI & API**
+reports readiness of the supplied kit commands: these need both the kit and
+Node.js. Other API clients and the built-in reviews do not. Turning the API
+off disables its port, token and deletion controls without erasing their values.
+Installation, help and Components links remain available.
+
+OBS and Stream Deck cannot be enabled for a missing local application. An
+existing enabled connection can still be switched off. OBS's address stays
+editable so you can use OBS on another computer; that setup needs no local
+OBS installation. A confirmed live connection also establishes availability.
+OBS recording permissions stay unavailable while the integration is off.
+After installing or locating software, use **Check again**. These checks do
+not claim that third-party software is the newest version; use its own updater.
 
 Model Reinstall and Remove also appear in **Prompting > Voice**. Stop
 prompting and recording before changing the model. Always command listening
@@ -98,6 +119,15 @@ Settings Apply/Cancel. The existing first-run model download offer remains.
 Installing the AI kit does not enable the API or alter your assistant.
 
 ![Optional components and their installation controls](images/settings-components.png)
+
+![Node.js and optional OBS installation checks](images/settings-components-apps.png)
+
+![Stream Deck app and Sightline plugin checks](images/settings-components-streamdeck.png)
+
+The API controls below are off in a draft. The saved service stays on until
+Apply; the grey controls retain their values.
+
+![Grey API controls with a visible draft explanation](images/settings-ai-unavailable.png)
 
 ## Fonts, backing and reading aids
 

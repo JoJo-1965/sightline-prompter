@@ -10,7 +10,7 @@ complex builds come later.
 - **Value:** ★★★ changes recording day · ★★ clearly better · ★ nice to have
 - **Size:** **S** about a day · **M** a few days · **L** a week or more, for a person. Built with Claude Code, most take minutes to an hour, plus testing
 
-## Where it stands (30 October 2026)
+## Where it stands (31 October 2026)
 
 **Local Windows release candidate:** RC1 established the feature baseline.
 RC2 refreshed the documentation and added reusable acceptance samples.
@@ -63,6 +63,11 @@ checked in portrait/landscape previews. Studio uses six columns and two rows,
 with extra footer spacing. No RC15 has been packaged or installed yet.
 The same review batch adds API/import layout validation, structured XML
 exports, phone command acknowledgements and the session capture override (57).
+Components (47) now also checks optional OBS/Stream Deck applications and
+plugin files, with installer/Locate links and visible dependency reasons.
+Disabled controls retain their preferences; remote OBS and general API clients
+remain independent of local-only prerequisites. Script health (30) and the
+rehearsal coach (28) are also built for this review batch.
 The install helper plans the intended destination first and verifies it after
 an explicitly requested install. Correcting the live installation location
 waits for that later installation. See the [batch review](docs/RC15-REVIEW.md).
@@ -123,6 +128,8 @@ waits for the signing arrangements and Joanne's accounts; it is not in this RC.
 | #   | Item | Value | Size | Notes |
 | --- | ---- | ----- | ---- | ----- |
 | 27  | **Code signing for Windows and Mac:** no more "unknown publisher" warnings | ★★★ | S | Moved up from Later. Needs a code-signing certificate and an Apple Developer account (Joanne's decision) |
+| 58 | **Setup and session workflow:** first-use checklist, session checks and named component subtabs; make Components/Debug easy to find and keep frequent tools together | ★★ | To assess | Requested 31 Oct. [Workflow mock-ups](docs/SETTINGS-WORKFLOW-PROPOSAL.md) prepared; wider navigation/onboarding changes are not implemented. Replace numbered component pages; retain the stable frame and no Settings scrolling |
+| 59 | **Optional OBS setup assistant:** create a separate profile and scene collection with chosen camera, mic, output folder and a configuration guide | ★★ | To assess | Requested 31 Oct. Included in the workflow mock-up; not built. Review before applying, keep existing profiles, require idle OBS, validate device modes and distinguish separate tracks from actual clean-camera/WAV outputs |
 | 29  | **Automatic updates:** new versions download and install themselves, so users get fixes without reinstalling | ★★ | M | Moved up from Later. Best done with code signing (27), which Mac updates need |
 | 53 | **Optional Zoom controls:** investigate microphone, camera and bringing the meeting forward from Sightline, with phone, voice and control-window actions | ★ | To assess | Joanne requested, 29 Oct. Feasibility first: Zoom's [Plugin SDK](https://developers.zoom.us/docs/plugin-sdk/) connects native Windows/macOS companion apps to the installed Zoom Workplace client. Assess permissions, distribution and dependable state feedback before implementation. Off by default; independent of normal prompting. Not built or scheduled for release |
 | 54 | **Optional Teams controls:** investigate microphone, camera and bringing the meeting forward from Sightline | ★ | To assess | Joanne requested, 29 Oct. [Elgato reports](https://www.elgato.com/us/en/explorer/products/stream-deck/control-microsoft-teams-meetings-with-stream-deck/) the previous third-party API was discontinued. Keyboard shortcuts require Teams to be in the foreground and do not verify mic/camera state. Assess a maintainable approach; show unverified actions as command sent, not confirmed state. Off by default; not built or scheduled for release |

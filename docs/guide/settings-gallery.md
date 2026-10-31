@@ -135,6 +135,15 @@ The example QR below is for illustration; scan the code in your own Settings.
 
 ![Offline model, AI kit and Node.js status](images/settings-components.png)
 
+Component pages keep each app's status and actions together. Installer links
+open the supplier's website; Locate supports portable/custom copies.
+
+![Node.js and optional OBS checks](images/settings-components-apps.png)
+
+![Optional Stream Deck and separate plugin detection](images/settings-components-streamdeck.png)
+
+![Unavailable API controls retain draft values until Apply](images/settings-ai-unavailable.png)
+
 ### Debug
 
 Command-word tracing is off by default. The warning stays visible beside its

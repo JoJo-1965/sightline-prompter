@@ -247,3 +247,13 @@ recognition errors, deliberate changes or partial readings. No word timings
 means unavailable coverage, not missed speech. Never change keepers or make
 automatic cuts solely from this report. Filler counting defaults off and is
 protected from API/import changes; the user enables it in Recording > Takes.
+
+## Optional component checks
+
+Controls > AI & API reports readiness of the supplied kit commands, which need
+Node.js 22.16 or later and the kit. Other API clients do not need either.
+About > Components checks optional OBS/Stream Deck apps and the local plugin
+manifest. Installer/Locate links handle missing copies. Installed files do
+not confirm a live connection or the newest third-party version; retain the
+OBS connection and Stream Deck protocol checks. OBS on another computer needs
+no local installation. Component discovery never enables recording permissions.

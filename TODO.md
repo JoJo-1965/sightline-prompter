@@ -1,6 +1,17 @@
 # TODO
 
+## Workflow design to review before wider changes
+
+- [ ] Named Components subtabs and direct Components/Debug access, replacing
+  numbered component pages (58). See the workflow proposal and mock-ups.
+- [ ] First-use checklist and session-check entry point (58).
+- [ ] Optional separate OBS profile/scenes setup assistant and guide (59).
+
 ## Built for the next candidate, not yet packaged
+
+- [x] Component prerequisites: optional OBS/Stream Deck discovery, separate plugin
+  checks, supplier installers/Locate and clear grey-control reasons. Preserve
+  preferences, remote OBS and independent API clients.
 
 - [x] Script health (#30): current editor text, section estimates, long-sentence
   and similar-word-start prompts, with section navigation and no rewrite/save.

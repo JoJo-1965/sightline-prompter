@@ -473,7 +473,10 @@ try {
 		return m.result?.result?.value;
 	};
 	await cc( "Runtime.enable" );
-	await pause( 300 );
+	for ( let attempt = 0; attempt < 50; attempt++ ) {
+		if ( await ce( "document.body.classList.contains('controls-only')&&!document.querySelector('#adjust-panel').hidden" ) ) break;
+		await pause( 100 );
+	}
 	assert.equal( await ce( "document.body.classList.contains('controls-only')&&!document.querySelector('#adjust-panel').hidden" ), true );
 	assert.equal( await ce( "document.querySelector('#adjust-panel').scrollHeight<=document.querySelector('#adjust-panel').clientHeight" ), true, "The main fitting controls fit without scrolling on the test display" );
 	await pause( 200 );
@@ -644,6 +647,10 @@ try {
 	console.log( "PASS: separate adjustment window toggles from prompter and Tools while the overlay stays fullscreen, Clean and locked; Escape/native Close hide only the palette." );
 	await fullscreenPress();
 	assert.equal( ( await getStatus() ).headGuideFullscreen, false );
+	for ( let attempt = 0; attempt < 50; attempt++ ) {
+		if ( await ge( "document.querySelector('#stage').getBoundingClientRect().width===960&&document.querySelector('#stage').getBoundingClientRect().height===540" ) ) break;
+		await pause( 100 );
+	}
 	assert.equal( await ge( "document.querySelector('#stage').getBoundingClientRect().width" ), 960 );
 	assert.equal( await ge( "document.querySelector('#stage').getBoundingClientRect().height" ), 540 );
 	console.log( "PASS: fullscreen button-token command, chromeless screen-fill, reveal controls without exit, and original window size restored." );

@@ -66,7 +66,7 @@ async function connect( fragment ) {
 	} );
 	const call = ( method, params = {} ) => new Promise( ( resolve, reject ) => {
 		const id = ++next;
-		const timer = setTimeout( () => reject( new Error( `Timed out: ${ method } ${ String( params.expression ?? "" ).slice( 0, 180 ) }` ) ), 8000 );
+		const timer = setTimeout( () => reject( new Error( `Timed out: ${ method } ${ String( params.expression ?? "" ).slice( 0, 180 ) }` ) ), method === "Page.captureScreenshot" ? 20000 : 8000 );
 		pending.set( id, ( m ) => {
 			clearTimeout( timer );
 			if ( m.error ) reject( new Error( m.error.message ) );
@@ -186,9 +186,12 @@ try {
 	await main.evaluate( "window.electron.speechModelStatus()" );
 	await settings.evaluate( "document.getElementById('settings-topic-components').click()" );
 	await settings.until( "document.getElementById('component-kit-status').textContent.includes('Not installed') && !document.getElementById('component-node-status').textContent.includes('Checking')" );
+	assert.equal( await settings.evaluate( "document.getElementById('component-kit-open').disabled" ), true, "An absent kit cannot open an absent folder" );
+	assert.match( await settings.evaluate( "document.getElementById('component-kit-commands').textContent" ), /install the AI agent kit/ );
 	await settings.evaluate( "document.getElementById('component-kit-install').click()" );
 	await settings.until( "document.getElementById('component-kit-status').textContent.startsWith('Installed') && !document.getElementById('component-kit-reinstall').disabled" );
 	assert.equal( JSON.parse( await fs.readFile( path.join( profile, "ai-kit", "package.json" ), "utf8" ) ).type, "module" );
+	assert.equal( await settings.evaluate( "document.getElementById('component-kit-open').disabled" ), false );
 	await settings.evaluate( "document.getElementById('component-kit-reinstall').click()" );
 	await settings.until( "!document.getElementById('component-kit-reinstall').disabled && document.getElementById('component-kit-status').textContent.startsWith('Installed')" );
 	const componentShot = await settings.call( "Page.captureScreenshot", { format: "png" } );
@@ -200,6 +203,40 @@ try {
 	assert.equal( await fs.access( path.join( profile, "ai-kit" ) ).then( () => true, () => false ), false, "Confirmed removal uses only the test profile's managed kit" );
 	await settings.evaluate( "window.confirm=originalConfirm;document.getElementById('component-kit-install').click()" );
 	await settings.until( "document.getElementById('component-kit-status').textContent.startsWith('Installed') && !document.getElementById('component-kit-reinstall').disabled" );
+	// Real disabled controls preserve preferences; only the supplied command
+	// tools depend on Node/the kit, never the independent API service.
+	await settings.evaluate( "document.getElementById('settings-topic-remotes').click()" );
+	await settings.until( "!document.getElementById('set-remote-copy').disabled && document.getElementById('set-agent-readiness').textContent.includes('ready')" );
+	const apiPortBefore = await settings.evaluate( "document.getElementById('set-remote-port').value" );
+	await settings.evaluate( "document.getElementById('set-remote-delete').checked=true;document.getElementById('set-remote').checked=false;document.getElementById('set-remote').dispatchEvent(new Event('change',{bubbles:true}))" );
+	assert.equal( await settings.evaluate( "document.getElementById('set-remote-copy').disabled && document.getElementById('set-remote-port').disabled && document.getElementById('set-remote-delete').disabled" ), true );
+	assert.equal( await settings.evaluate( "document.getElementById('set-remote-delete').checked" ), true, "Disabling a dependency does not erase the choice" );
+	assert.equal( await settings.evaluate( "document.getElementById('set-remote-port').value" ), apiPortBefore );
+	assert.equal( await settings.evaluate( "document.getElementById('set-remote-components').disabled || document.getElementById('set-remote-help').disabled" ), false );
+	const apiOffShot = await settings.call( "Page.captureScreenshot", { format: "png" } );
+	await fs.writeFile( path.join( artifacts, "settings-ai-unavailable.png" ), Buffer.from( apiOffShot.data, "base64" ) );
+	await settings.evaluate( "document.getElementById('set-remote').checked=true;document.getElementById('set-remote-delete').checked=false;document.getElementById('set-remote').dispatchEvent(new Event('change',{bubbles:true}));document.getElementById('settings-apply').click()" );
+	await settings.until( "!document.getElementById('set-remote-copy').disabled" );
+	await settings.evaluate( "document.getElementById('set-remote-components').click()" );
+	await settings.until( "document.getElementById('settings-topic-components').getAttribute('aria-selected')==='true'" );
+	for ( let page = 0; page < 8; page++ ) {
+		await pause( 120 );
+		const externalShot = await settings.call( "Page.captureScreenshot", { format: "png" } );
+		await fs.writeFile( path.join( artifacts, `settings-components-page-${ page + 1 }.png` ), Buffer.from( externalShot.data, "base64" ) );
+		if ( await settings.evaluate( "document.querySelector('.settings-pagination').hasAttribute('data-settings-overflow') || document.querySelector('.settings-pagination button:last-child').disabled" ) ) break;
+		const beforePage = await settings.evaluate( "document.querySelector('.settings-pagination span').textContent" );
+		await settings.evaluate( "document.querySelector('.settings-pagination button:last-child').click()" );
+		await settings.until( `document.querySelector('.settings-pagination span').textContent!==${ JSON.stringify( beforePage ) }` );
+	}
+	await settings.evaluate( "document.getElementById('settings-topic-obs').click()" );
+	await settings.until( "!document.getElementById('set-obs-installation').textContent.startsWith('Checking')" );
+	assert.equal( await settings.evaluate( "document.getElementById('set-obs-controls').disabled" ), true, "Recording options are disabled while integration is off" );
+	await settings.evaluate( "globalThis.originalObsHost=document.getElementById('set-obs-host').value;document.getElementById('set-obs-host').value='192.0.2.20';document.getElementById('set-obs-host').dispatchEvent(new Event('input',{bubbles:true}))" );
+	assert.equal( await settings.evaluate( "document.getElementById('set-obs-enabled').disabled" ), false, "A remote OBS address does not need a local installation" );
+	await settings.evaluate( "document.getElementById('set-obs-enabled').checked=true;document.getElementById('set-obs-enabled').dispatchEvent(new Event('change',{bubbles:true}))" );
+	assert.equal( await settings.evaluate( "document.getElementById('set-obs-controls').disabled" ), false );
+	await settings.evaluate( "document.getElementById('set-obs-enabled').checked=false;document.getElementById('set-obs-host').value=originalObsHost;document.getElementById('set-obs-enabled').dispatchEvent(new Event('change',{bubbles:true}));document.getElementById('settings-apply').click()" );
+	console.log( "PASS: component prerequisites, disabled API options, preserved drafts, accessible setup links and remote OBS configuration." );
 	await settings.evaluate( "document.getElementById('settings-topic-buttons').click();document.getElementById('set-map-action').value='mirror-h';document.getElementById('set-map-learn').focus();document.getElementById('set-map-learn').click()" );
 	await settings.call( "Input.dispatchKeyEvent", { type: "keyDown", key: "j", code: "KeyJ" } );
 	await settings.call( "Input.dispatchKeyEvent", { type: "keyUp", key: "j", code: "KeyJ" } );
@@ -454,6 +491,7 @@ try {
 	await main.evaluate( "(async()=>{const {showVoiceHelp}=await import('./teleprompter.js');await showVoiceHelp();})()" );
 	assert.equal( await voiceHelp.evaluate( "window.screenX" ), voiceBounds.x + 60, "Voice help reopens at the moved position" );
 	await voiceHelp.evaluate( "[...document.querySelectorAll('#voice-help-list [role=tab]')].find(b=>b.textContent==='Reading').click()" );
+	await voiceHelp.call( "Page.bringToFront" );
 	const voicePicture = await voiceHelp.call( "Page.captureScreenshot", { format: "png" } );
 	await fs.writeFile( path.join( artifacts, "floating-voice-help.png" ), Buffer.from( voicePicture.data, "base64" ) );
 	await main.evaluate( "window.electron.saveSettings({showHeadGuide:true});window.electron.headGuide('adjust')" );

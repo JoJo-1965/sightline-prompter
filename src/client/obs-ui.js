@@ -1,5 +1,6 @@
 // Renderer-only OBS controls. The preload remains a pure IPC bridge.
 import { uiElement } from "./panel-windows.js";
+import { obsInstallBlock } from "./component-availability.js";
 export function obsStatusText( state ) {
 	if ( !state?.enabled ) return "OBS disabled";
 	if ( state.connection === "connecting" ) return "Connecting to OBS…";
@@ -39,6 +40,7 @@ export function createObsUi( { getSettings, canStart, onStart, onFinish, onChang
 	let markerError = null;
 	let slateFeedback = null;
 	let preparingSlate = false;
+	let installation = null;
 	const unsavedSlateOptions = () => field( "enabled" ).checked !== !!state.enabled || field( "controls" ).checked !== !!state.controls || field( "recorded-slate" ).checked !== !!getSettings().obsRecordedSlate;
 	const bar = document.createElement( "div" );
 	bar.id = "obs-status";
@@ -54,6 +56,23 @@ export function createObsUi( { getSettings, canStart, onStart, onFinish, onChang
 	bar.append( label, start, finish );
 	document.body.append( bar );
 	function paint() {
+		const installBlock = obsInstallBlock( installation, field( "host" ).value, state.connection === "connected" && field( "host" ).value === ( getSettings().obsHost ?? "127.0.0.1" ) );
+		field( "installation" ).textContent = installBlock ?? ( state.connection === "connected" ? "OBS connection confirmed. Recording controls still need your permission." : installation?.installed ? "OBS Studio is installed. Start OBS and enable its WebSocket server, then Apply and test." : "Using an OBS address on another computer. Apply and test the connection." );
+		field( "enabled" ).disabled = !!installBlock && !field( "enabled" ).checked;
+		field( "enabled" ).setAttribute( "aria-describedby", "set-obs-installation" );
+		const optionsReady = field( "enabled" ).checked && !installBlock;
+		for ( const id of [ "port", "password", "clear-password", "controls", "markers", "recorded-slate" ] ) {
+			field( id ).disabled = !optionsReady;
+			field( id ).setAttribute( "aria-describedby", "set-obs-installation" );
+		}
+		const recordingBlock = installBlock ?? ( !field( "enabled" ).checked ? "Enable OBS in Controls > OBS connection to use recording options." : !field( "controls" ).checked ? "Allow recording controls to use chapters and the recorded slate." : null );
+		field( "recording-availability" ).textContent = recordingBlock ?? "Recording options are available. Apply changes before using them; the saved connection must be confirmed.";
+		for ( const id of [ "markers", "recorded-slate" ] ) {
+			field( id ).disabled = !!recordingBlock;
+			field( id ).setAttribute( "aria-describedby", "set-obs-recording-availability" );
+		}
+		field( "test" ).disabled = !!installBlock || !state.enabled || busy;
+		field( "test" ).title = installBlock ?? ( !state.enabled ? "Enable OBS and Apply before testing the saved connection" : "Test the saved OBS connection" );
 		bar.classList.toggle( "hidden", !state.enabled );
 		bar.classList.toggle( "obs-recording", state.recording === "recording" && state.connection === "connected" );
 		label.textContent = obsStatusText( state );
@@ -62,7 +81,7 @@ export function createObsUi( { getSettings, canStart, onStart, onFinish, onChang
 		start.disabled = !ready || !canStart();
 		finish.disabled = !ready || ![ "recording", "paused" ].includes( state.recording );
 		start.hidden = finish.hidden = !state.controls;
-		const slateBlock = unsavedSlateOptions() ? "Apply your OBS changes before preparing the recorded slate." : obsSlateSetupBlock( state, getSettings(), busy );
+		const slateBlock = installBlock ?? ( unsavedSlateOptions() ? "Apply your OBS changes before preparing the recorded slate." : obsSlateSetupBlock( state, getSettings(), busy ) );
 		field( "prepare-slate" ).disabled = !!slateBlock;
 		field( "prepare-slate" ).title = slateBlock ?? "Add the recorded slate source to the current OBS scene";
 		field( "prepare-slate" ).textContent = preparingSlate ? "Preparing recorded slate…" : "Prepare recorded slate";
@@ -113,11 +132,16 @@ export function createObsUi( { getSettings, canStart, onStart, onFinish, onChang
 		slateFeedback = null;
 		paint();
 	} );
+	field( "host" ).addEventListener( "input", paint );
 	window.electron.onObsState( receive );
 	window.electron.obs( "status" ).then( ( result ) => {
 		if ( result.state ) receive( result.state );
 	} ).catch( () => {} );
 	return {
+		installation( value ) {
+			installation = value;
+			paint();
+		},
 		state: () => ( {
 			...state, controlBusy: busy,
 			canRecord: !obsActionBlock( state, "start", { busy, canStart: state.enabled && state.controls && canStart() } ),

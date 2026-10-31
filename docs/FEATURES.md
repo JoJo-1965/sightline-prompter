@@ -28,6 +28,12 @@ See the
 The next batch also includes **About > Components**: offline model and AI kit
 status, Install/Reinstall/Remove, and a separate Node.js availability check.
 The kit runs without cloning the repository or installing npm dependencies.
+Components also detects optional OBS/Stream Deck applications and the Sightline
+plugin manifest, with official installer links and a portable/custom **Locate**
+option. Missing dependencies have grey controls and visible explanations;
+preferences are retained. Local kit-command readiness stays separate from
+general API access. Remote OBS needs no local installation, and live plugin
+compatibility is checked separately from installed files.
 **Controls > Buttons & keys** learns controller buttons and local keyboard
 inputs from clickers/pedals, with the pad's action choices, duplicate-input
 replacement, immediate saving, three-entry pages and reset. Held/reconnected

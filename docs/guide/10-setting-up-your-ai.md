@@ -39,6 +39,11 @@ install is needed. Read START-HERE.md and use that kit folder below wherever
 the instructions say clone. The Components page checks for Node.js 22.16 or
 later; Node.js is needed for these commands, not for normal prompting.
 
+**Controls > AI & API** reports whether these supplied command tools are
+ready and links to Components when setup is missing. The API itself works
+with other clients without Node.js or the kit. Its token controls become
+available after enabling the API and applying the change.
+
 With the current public release, or if you prefer working from source,
 install [Node.js](https://nodejs.org/) 22.16 or later, then clone the repository:
 

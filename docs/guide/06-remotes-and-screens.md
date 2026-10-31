@@ -1,5 +1,12 @@
 # Remotes and second screens
 
+In the next candidate, **Settings > About > Components** lists Stream Deck
+as optional software, with its installer, **Locate** and **Check again**.
+It checks the app and Sightline plugin files separately. **Controls > Stream
+Deck > Check compatibility** confirms the running plugin; unconfirmed versions
+are never described as up to date. A missing local app greys out its enable
+box, while the setup guide and installation controls remain available.
+
 ## Head-position guide (development)
 
 Use **Tools > Show head guide**, or **Ctrl+Shift+H** from

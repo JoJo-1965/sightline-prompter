@@ -276,6 +276,12 @@ website deployment is part of this candidate.
   and Remove manage Sightline's own copies; Node.js uses its own installer.
   Voice settings also offer model repair/removal. A failed repair retains the
   previous copy; stop prompting and recording before changing the model.
+- **Explain unavailable controls:** Components also checks optional OBS and
+  Stream Deck installations, offers their installers and remembers custom
+  locations. Missing prerequisites grey out dependent controls with a reason;
+  saved choices survive. AI kit readiness is separate from API access, and
+  remote OBS works without a local install. Plugin compatibility still needs
+  the live handshake; third-party apps use their own updaters.
 - **Choose your buttons:** **Settings > Controls > Buttons & keys** learns a
   physical key or controller button, then runs your chosen pad action. Plain
   keys and Shift combinations work while the prompter has focus; system

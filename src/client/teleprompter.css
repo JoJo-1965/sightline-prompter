@@ -2559,6 +2559,8 @@ body.edge-shadow #md {
 .review-finding { border: 1px solid #697586; border-radius: 5px; padding: 10px; margin: 8px 0; }
 .review-finding strong { display: block; font-size: 13px; }
 .review-content [hidden] { display: none !important; }
+.settings-content input:disabled, .settings-content select:disabled { opacity: 0.55; cursor: not-allowed; }
+.settings-content [data-settings-control]:has(input:disabled) .settings-option-name label { color: #aeb5bf; }
 
 .summary-table {
 	width: 100%;

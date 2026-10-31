@@ -24,6 +24,7 @@ import { settingsValues } from "./settings-values.js";
 import { readScriptSnapshot } from "./script-snapshot.js";
 import { createSpeech } from "./speech.js";
 import { createAgentKit, nodeStatus } from "./components.js";
+import { createExternalComponents } from "./external-components.js";
 import { normaliseMappings } from "./client/input-mappings.js";
 import { createGuide } from "./guide.js";
 import { createGoogleDocs, GOOGLE_DOC_MESSAGES } from "./google-docs.js";
@@ -1842,6 +1843,7 @@ app.whenReady().then( async () => {
 	const speech = createSpeech( { dir: __dirname, win, busy: () => !!rendererStatus.scrolling || [ "recording", "paused" ].includes( obs.state().recording ) } );
 	const kitFolder = path.join( app.getPath( "userData" ), "ai-kit" );
 	const kit = createAgentKit( { source: app.getAppPath(), folder: kitFolder, version: app.getVersion(), trash: target => shell.trashItem( target ) } );
+	const externalComponents = createExternalComponents( { folder: app.getPath( "userData" ) } );
 	ipcMain.handle( "components", async ( event, component, action ) => {
 		if ( event.sender !== win.webContents ) return { error: "Unavailable" };
 		try {
@@ -1850,8 +1852,17 @@ app.whenReady().then( async () => {
 				const error = await shell.openPath( kitFolder );
 				if ( error ) throw new Error( error );
 			} else if ( component === "kit" ) await kit.change( action );
-			else if ( component !== undefined ) throw new Error( "Unknown component" );
-			return { speech: speech.status(), kit: await kit.status(), node: await nodeStatus() };
+			else if ( [ "obs", "streamdeck" ].includes( component ) && action === "locate" ) {
+				const parent = utilityWindows.dialogParent();
+				const chosen = await dialog.showOpenDialog( parent, {
+					title: `Locate ${ component === "obs" ? "OBS Studio" : "Stream Deck" }`,
+					properties: [ process.platform === "darwin" ? "openDirectory" : "openFile" ],
+					...( process.platform === "win32" ? { filters: [ { name: "Application", extensions: [ "exe" ] } ] } : {} )
+				} );
+				if ( !chosen.canceled && chosen.filePaths[0] ) await externalComponents.locate( component, chosen.filePaths[0] );
+			} else if ( component !== undefined ) throw new Error( "Unknown component" );
+			const [ kitStatus, node, external ] = await Promise.all( [ kit.status(), nodeStatus(), externalComponents.status() ] );
+			return { speech: speech.status(), kit: kitStatus, node, ...external };
 		} catch ( err ) {
 			return { error: err.message };
 		}

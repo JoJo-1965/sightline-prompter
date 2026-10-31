@@ -6,6 +6,37 @@ Publication, merging, tagging and website deployment remain on hold.
 
 ## Changes ready to review
 
+**Workflow review:** Joanne has asked to replace numbered component pages with
+named subtabs, promote Components/Debug, distinguish onboarding from frequent
+use, and add an optional OBS setup assistant. The
+[workflow proposal and mock-ups](SETTINGS-WORKFLOW-PROPOSAL.md) address this
+direction. These wider navigation/onboarding/OBS-setup changes are proposed,
+not implemented; the availability checks below are built and tested.
+
+### Component availability
+
+Components now includes optional OBS Studio and Stream Deck. Official supplier
+installer links, Locate and Check again support standard and portable copies.
+Stream Deck app detection and plugin-manifest detection are separate from the
+existing live compatibility handshake. Third-party app update status remains
+the responsibility of its own updater.
+
+Dependent controls grey out with visible reasons and retain their saved values.
+AI kit readiness does not block other API clients or the built-in reviews.
+Remote OBS configuration stays available without a local installation. Existing
+enabled integrations can always be disabled. The longer Components topic uses
+pages, with a focus fix for explanatory pages that contain no active controls.
+
+Unit checks cover missing, portable and removed apps, plugin manifests, Flatpak
+and dependency rules. Native checks cover disabled options, preserved drafts,
+setup navigation and remote OBS. No installer was run and RC14 is unchanged.
+
+![Optional application checks](guide/images/settings-components-apps.png)
+
+![Separate Stream Deck app and plugin checks](guide/images/settings-components-streamdeck.png)
+
+![Disabled controls with retained draft values](guide/images/settings-ai-unavailable.png)
+
 ### Script health and rehearsal coach
 
 Roadmap **30** adds **Script health…** in the editor, using current text

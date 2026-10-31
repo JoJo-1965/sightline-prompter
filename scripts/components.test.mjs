@@ -5,6 +5,7 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { createAgentKit, nodeStatus, KIT_FILES } from "../src/components.js";
 import { createModelStore } from "../src/model-store.js";
+import "./component-availability.test.mjs";
 
 const temp = await fs.mkdtemp( path.join( os.tmpdir(), "sightline-components-" ) );
 try {

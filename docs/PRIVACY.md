@@ -140,6 +140,11 @@ advertising trackers. That does not mean every feature is offline:
   send scripts anywhere. The Components page checks Node.js locally. Custom
   key/controller assignments and controller names stay in local settings and
   are included if you export those settings.
+- Optional OBS/Stream Deck checks inspect known installation locations, running
+  application paths and the local Sightline plugin manifest. Locate stores
+  your chosen application path locally, separately from settings exports.
+  These checks never launch the apps or upload an inventory. Installer links
+  open the supplier's website when selected.
 - Opening a Google Docs link fetches content from Google.
 - Selecting Deepgram sends audio to its service while voice scrolling runs.
 - Help, project and support-payment links open external services.

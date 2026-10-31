@@ -997,6 +997,7 @@
             <button id="set-remote-new" type="button">New token</button>
           </div>
           <p class="field-hint" id="set-remote-status"></p>
+          <p class="field-hint" id="set-remote-controls-hint" data-essential></p>
           <p class="field-hint">
             Only programs on this computer can connect, and only with the
             token. Turn this off when you don't need it.
@@ -1012,7 +1013,10 @@
           >
           <p class="settings-about-actions">
             <button type="button" id="set-remote-help">How to set up your AI</button>
+            <button type="button" id="set-remote-components">Components…</button>
           </p>
+          <p id="set-agent-readiness" class="field-hint" data-essential role="status" aria-live="polite">Checking local AI kit commands…</p>
+          <p class="field-hint">The supplied command tools need the kit and Node.js. Other API clients, script review and rehearsal coaching work without them.</p>
         </fieldset>
 
         <fieldset data-tab="pad" id="set-pad-fieldset">
@@ -1038,7 +1042,9 @@
           <p class="settings-about-actions">
             <button type="button" id="set-stream-deck-check">Check compatibility</button>
             <button type="button" id="set-remote-streamdeck">Stream Deck in the guide</button>
+            <button type="button" id="set-stream-deck-components">Components…</button>
           </p>
+          <p id="set-stream-deck-installation" class="field-hint" data-essential role="status" aria-live="polite">Checking for Stream Deck…</p>
           <p id="set-stream-deck-status" class="field-hint" data-essential role="status" aria-live="polite">Checking the saved connection…</p>
         </fieldset>
 
@@ -1065,6 +1071,8 @@
         <fieldset data-tab="obs">
           <legend>OBS Studio</legend>
           <label class="check"><input id="set-obs-enabled" type="checkbox" /> Enable OBS integration</label>
+          <p id="set-obs-installation" class="field-hint" data-essential role="status" aria-live="polite">Checking for OBS Studio…</p>
+          <p class="settings-about-actions"><button type="button" id="set-obs-components">Components…</button></p>
           <p class="field-hint">Off by default. Disabled means no OBS connection or commands. Disabling or quitting Sightline leaves any OBS recording running. Apply saves these choices.</p>
           <label>Address <input id="set-obs-host" type="text" value="127.0.0.1" autocomplete="off" spellcheck="false" /></label>
           <label>Port <input id="set-obs-port" type="number" min="1" max="65535" value="4455" /></label>
@@ -1078,7 +1086,7 @@
         </fieldset>
         <fieldset data-tab="obs-recording">
           <legend>OBS recording and sync</legend>
-          <p class="field-hint" data-essential>Connect OBS in Controls > OBS connection first. These permissions apply when OBS integration is enabled.</p>
+          <p id="set-obs-recording-availability" class="field-hint" data-essential role="status" aria-live="polite">Connect OBS in Controls > OBS connection first. These permissions apply when OBS integration is enabled.</p>
           <label class="check"><input id="set-obs-controls" type="checkbox" /> Allow Sightline to start and stop OBS recordings</label>
           <p class="field-hint">Leave this off for status only. Normal Play, Pause, Again and On air do not start or stop OBS. Record take waits for OBS to confirm recording before starting the prompter.</p>
           <label class="check"><input id="set-obs-markers" type="checkbox" /> Send section starts and named markers as OBS chapters</label>
@@ -1108,14 +1116,34 @@
         <fieldset data-tab="components" id="set-components-kit">
           <legend>AI agent kit</legend>
           <p id="component-kit-status" class="field-hint" role="status" aria-live="polite">Checking…</p>
-          <div class="button-row"><button type="button" id="component-kit-install">Install</button><button type="button" id="component-kit-reinstall">Reinstall</button><button type="button" id="component-kit-remove">Remove…</button><button type="button" id="component-kit-open">Open folder</button></div>
+          <div class="button-row"><button type="button" id="component-kit-install">Install</button><button type="button" id="component-kit-reinstall">Reinstall</button><button type="button" id="component-kit-remove">Remove…</button><button type="button" id="component-kit-open" aria-describedby="component-kit-commands">Open folder</button></div>
+          <p id="component-kit-commands" class="field-hint" data-essential role="status" aria-live="polite">Checking local AI kit commands…</p>
           <p class="field-hint">Copies the authoring and session skills, checker and command tool from this app. No repository clone or npm install needed. Open the folder for START-HERE. Reinstall replaces this managed copy; keep your own files elsewhere. Remove moves it to the system bin. Your assistant's own settings and API permissions stay as you set them.</p>
         </fieldset>
         <fieldset data-tab="components">
           <legend>Node.js for AI commands</legend>
+          <div>
           <p id="component-node-status" class="field-hint" role="status" aria-live="polite">Checking…</p>
           <div class="button-row"><button type="button" id="component-refresh">Check again</button><a href="https://nodejs.org/en/download" target="_blank">Get Node.js</a></div>
+          </div>
           <p class="field-hint">Node.js 22.16 or later runs the AI kit commands. The desktop app and offline voice engine work without it. Install Node.js from its own website, then restart Sightline and check again.</p>
+        </fieldset>
+        <fieldset data-tab="components">
+          <legend>OBS Studio (optional)</legend>
+          <div>
+          <p id="component-obs-status" class="field-hint" data-essential role="status" aria-live="polite">Checking…</p>
+          <div class="button-row"><a href="https://obsproject.com/download" target="_blank">Install / reinstall OBS</a><button type="button" id="component-obs-locate">Locate…</button><button type="button" id="component-obs-check">Check again</button></div>
+          </div>
+          <p class="field-hint">Uses OBS's own installer. Locate accepts a portable or custom installation. OBS on another computer needs its address under Controls > OBS connection.</p>
+        </fieldset>
+        <fieldset data-tab="components">
+          <legend>Stream Deck (optional)</legend>
+          <div>
+          <p id="component-streamdeck-status" class="field-hint" data-essential role="status" aria-live="polite">Checking…</p>
+          <div class="button-row"><a href="https://www.elgato.com/ww/en/s/downloads" target="_blank">Install / reinstall Stream Deck</a><button type="button" id="component-streamdeck-locate">Locate…</button><button type="button" id="component-streamdeck-check">Check again</button></div>
+          <p id="component-streamdeck-plugin" class="field-hint" data-essential>Plugin connection not confirmed.</p>
+          </div>
+          <p class="field-hint">The Elgato app and Sightline plugin are separate installs. Use Controls > Stream Deck for the setup guide and live version check. The plugin remains privately distributed during testing.</p>
         </fieldset>
         <fieldset data-tab="about" class="settings-about">
           <legend>Sightline Prompter</legend>

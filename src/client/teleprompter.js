@@ -20,6 +20,7 @@ import { createMappingSettings } from "./mapping-settings.js";
 import { keyInput, normaliseMappings, mappedAction, createButtonEdges } from "./input-mappings.js";
 import { controlAction, controlView } from "./control-actions.js";
 import { createComponentSettings } from "./component-settings.js";
+import { createComponentAvailability } from "./component-availability.js";
 import { healthSections } from "./health-script-dom.js";
 import { scriptHealth } from "./script-health.js";
 import { rehearsalCoach } from "./rehearsal-coach.js";
@@ -155,6 +156,7 @@ let settings = {
 let syncPadSettings = () => {};
 let mappingSettings = null;
 let componentSettings = null;
+let componentAvailability = null;
 let modelMaintenance = false;
 let scriptReview = null;
 let reviewedRecording = null;
@@ -2596,6 +2598,7 @@ async function openSettings() {
 	field( "set-stream-deck" ).checked = !!settings.streamDeck;
 	field( "set-remote-delete" ).checked = !!settings.remoteDeleteRecordings;
 	field( "set-remote-port" ).value = settings.remotePort ?? 47615;
+	componentAvailability?.fill();
 	window.electron.getRemoteInfo();
 	field( "set-phone" ).checked = !!settings.phoneRemote;
 	window.electron.getPhoneInfo();
@@ -4998,6 +5001,7 @@ function runRemoteAction( action, value ) {
 window.electron.onRemoteCommand( runRemoteAction );
 
 window.electron.onRemoteInfo( ( info ) => {
+	componentAvailability?.remote( info );
 	const peerStatus = uiElement( "set-stream-deck-status" );
 	if ( peerStatus ) {
 		const peer = info.streamDeckPeer;
@@ -5019,8 +5023,13 @@ window.electron.onRemoteInfo( ( info ) => {
 } );
 onClick( "set-stream-deck-check", () => window.electron.getRemoteInfo() );
 onClick( "set-remote-copy", async () => {
-	await navigator.clipboard.writeText( field( "set-remote-token" ).value );
-	showTransientHint( "Token copied", 1500 );
+	if ( field( "set-remote-copy" ).disabled ) return;
+	try {
+		await navigator.clipboard.writeText( field( "set-remote-token" ).value );
+		showTransientHint( "Token copied", 1500 );
+	} catch {
+		showToast( "Could not copy the token. Try again from Settings." );
+	}
 } );
 onClick( "set-remote-new", () => window.electron.newRemoteToken() );
 
@@ -5043,7 +5052,11 @@ syncPadSettings = createPadSettings( settingsModal, partial => window.electron.s
 syncPadSettings( settings.padLayout );
 mappingSettings = createMappingSettings( settingsModal, partial => window.electron.saveSettings( partial ) );
 mappingSettings.sync( settings.inputMappings );
-componentSettings = createComponentSettings( settingsModal, { toast: text => showToast( text, 4500 ), changeModel: async ( action ) => {
+componentAvailability = createComponentAvailability( settingsModal, { navigate: name => showSettingsTab( name ) } );
+componentSettings = createComponentSettings( settingsModal, { onStatus: ( status ) => {
+	componentAvailability.components( status );
+	obsUi.installation( status.obs ?? null );
+}, toast: text => showToast( text, 4500 ), changeModel: async ( action ) => {
 	if ( isScrolling() || autoScrollStarting || slating || [ "recording", "paused" ].includes( obsUi.state().recording ) ) throw new Error( "Stop prompting and recording before changing the speech model" );
 	modelMaintenance = true;
 	try {
@@ -5068,7 +5081,7 @@ settingsModal.addEventListener( "keydown", ( event ) => {
 }, true );
 const settingsNavigation = createSettingsNavigation( settingsModal, { onShow: ( name ) => {
 	if ( name !== "buttons" ) mappingSettings.cancel();
-	if ( name === "components" ) componentSettings.refresh();
+	if ( [ "components", "remotes", "streamdeck", "obs", "obs-recording" ].includes( name ) ) componentSettings.refresh();
 	settingsTrail( `tab ${ name }` );
 	if ( LAYOUT_TABS.includes( name ) ) borrowLayoutPanel();
 	settingsBox?.scrollTo( 0, 0 );
