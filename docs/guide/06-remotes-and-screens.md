@@ -137,7 +137,7 @@ The buttons can't be changed yet; choosing your own is on the roadmap.
 
 ## Stream Deck
 
-For the frozen Sightline 1.1.0 test build, private companion **0.2.0** extends **0.1.9**, which includes
+Sightline 1.1.0 pairs with companion **0.2.0**, extending **0.1.9** with
 **Record take (OBS)** and **Finish recording (OBS)**. Enable OBS and allow
 recording controls in Sightline first. The keys show confirmed recording
 state; a disconnected state stays unknown. Play/Pause, section stops and
@@ -147,10 +147,10 @@ Use **Use the OBS recording profile** in the key's settings to choose a
 separate recording layout for that model, including Mobile and Pedal.
 The Pedal recording layout is Record take, Play/Pause, Finish recording;
 the last pedal finishes the whole file. Standard profiles remain available.
-These additions require the OBS-enabled development app and are not in
-the published 1.0.6 release or on the Marketplace yet.
+These additions require Sightline 1.1.0 with OBS enabled; they are not in
+the earlier 1.0.6 app. The Marketplace listing is pending.
 
-Use the matching candidate and plugin rather than the older local installers.
+Use the matching app and plugin rather than older local installers.
 The [acceptance test](14-acceptance-test.md) checks the physical keys, guide
 controls and continuous OBS recording; installation alone is not a passed test.
 
@@ -159,10 +159,10 @@ Elgato Stream Deck's keys, the Stream Deck + dials and the Stream Deck Pedal,
 and the keys show what the prompter is doing: ▶ or ❚❚, On air in red, the
 script slot that's open, the section and the time left.
 
-**Getting it:** the plugin is coming to the Elgato Marketplace, where you'll
-find it by searching for *Sightline Prompter* in the Stream Deck app. The
-latest news and the link are on the
-[Sightline page](https://joannelockwood.co.uk/sightline#stream-deck).
+**Getting it:** [download Stream Deck 0.2.0](https://github.com/JoJo-1965/sightline-prompter/releases/download/v1.1.0/Sightline-StreamDeck-0.2.0.streamDeckPlugin)
+from the app release, then double-click it to open Stream Deck. The source
+repository stays private; Marketplace listing is pending. Current links are
+on the [Sightline page](https://joannelockwood.co.uk/sightline#stream-deck).
 
 **Setting it up:**
 
@@ -231,8 +231,8 @@ not a search of installed files or a guarantee that the program is genuine.
 **Compatible** and **latest** are different. The local check compares the
 minimum/recommended versions known by the app and the actions it supports.
 For the latest public Sightline release, use **About > Check for updates**.
-The private plugin has no public update feed yet; install the supplied test
-build. Marketplace updates apply once a real listing is live.
+Download the current plugin from the app's public release. Its source stays
+private. Marketplace updates apply once a real listing is live.
 
 ## Stream Deck operator controls (0.2.0)
 

@@ -12,16 +12,17 @@ complex builds come later.
 
 ## Where it stands (31 October 2026)
 
-**Frozen for final acceptance: Sightline 1.1.0 + private Stream Deck 0.2.0.**
-Local packages do not update installed copies. The earlier RC identifiers below
-remain test history. Plugin 0.1.9 remains compatible for existing controls;
-the public app is still 1.0.6. See the [freeze record](docs/BUILD-FREEZE-1.1.0.md).
+**Released: Sightline 1.1.0 + Stream Deck 0.2.0.** The app release includes the
+plugin installer; the plugin source repository stays private. Marketplace
+submission remains separate. Earlier RC identifiers are test history. Existing
+0.1.9 assignments remain supported. See the [release](https://github.com/JoJo-1965/sightline-prompter/releases/tag/v1.1.0)
+and [validation record](docs/BUILD-FREEZE-1.1.0.md).
 
 Documentation revision 1 adds the [help/marketing audit](docs/marketing/AUDIT-2026-10-31.md),
 corrected version/feature claims and a printable overview. Feature scope stays
 frozen; revised artifacts keep their own source record and checksums.
 
-**Stream Deck additions for acceptance:** private plugin 0.2.0 adds a
+**Stream Deck 0.2.0:** the plugin adds a
 listening toggle/recovery key, software session status with error guidance,
 optional hold-to-finish and head-guide adjustment dials. Eye-position lock
 keeps outline fitting anchored; opt-in + and + XL Guide profiles are included.

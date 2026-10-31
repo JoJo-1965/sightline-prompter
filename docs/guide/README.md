@@ -11,12 +11,12 @@ steer its operation. AI remains optional. See
 The script floats over your screen, close to the webcam, and scrolls at a
 steady pace or follows your voice.
 
-**Frozen test pair: Sightline 1.1.0 + private Stream Deck 0.2.0.** This guide describes the local Windows build,
-including OBS recording, the head guide and regrouped Settings. The published
-download is still **1.0.6**, whose bundled guide describes its earlier menus.
-The packages are prepared for final acceptance, not public release. Preparing
-them does not update an installed copy. Earlier **1.0.7-rc.1–rc.14** names below
-are test history; no public 1.0.7 release was made.
+**Current release: Sightline 1.1.0 + Stream Deck 0.2.0.** This guide covers
+OBS recording, the manual head guide, shared controls and regrouped Settings.
+[Download the app and plugin](https://github.com/JoJo-1965/sightline-prompter/releases/tag/v1.1.0).
+The plugin source remains private; Marketplace listing is pending. Test your
+own recording route using the workflow walkthrough. Earlier
+**1.0.7-rc.1–rc.14** names below are test history; no public 1.0.7 release was made.
 RC1 established the feature baseline; RC2 refreshes the bundled documentation
 and adds the reusable acceptance samples. RC3 adds compatibility reporting in
 Sightline and the plugin. These are local test builds, not public releases.

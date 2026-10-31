@@ -27,18 +27,18 @@ mark a keeper without losing the thread of what you wanted to say.
 - **Review:** keep section/take references, markers, keeper choices and
   estimated word alignment in an edit pack for your external editing workflow.
 
-### In the frozen 1.1.0 test build
+### Recording controls in 1.1.0
 
 Optional OBS recording controls, a recorded-slate route and a manual Ideal/Actual
 head guide support a studio workflow. Shared pad/phone controls add local guide
 fitting, listening controls and session checks. Script health and rehearsal
-review offer local checks and estimates. Private Stream Deck 0.2.0 adds guide
+review offer local checks and estimates. Stream Deck 0.2.0 adds guide
 dials, listening/recovery and an optional one-second hold to finish recording.
 
-**Release status, 31 October 2026:** public download **1.0.6**; **1.1.0 + private
-plugin 0.2.0** are frozen for final acceptance and are not publicly released.
-Marketplace submission is pending. The app targets Windows, macOS and Linux;
-the frozen installer is Windows. Stream Deck is for Windows and macOS.
+**Released 31 October 2026: Sightline 1.1.0 + Stream Deck 0.2.0.** Download
+both from the app release. The plugin source stays private; Marketplace
+listing is pending. The app targets Windows, macOS and Linux; Stream Deck is
+for Windows and macOS. Check your own recording and sync route.
 
 ### Know what you are getting
 

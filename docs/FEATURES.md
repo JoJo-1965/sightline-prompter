@@ -1,17 +1,15 @@
 # Sightline Prompter: what it adds to Electron Teleprompter
 
-**Frozen test-build status, 31 October 2026:** Windows Sightline 1.1.0
-contains the OBS integration (52), head guide (55), production exports,
-voice tuning and Settings/help updates described below. The matching private
-Stream Deck plugin is 0.2.0 (39). These features are built and awaiting final
-acceptance; the published release remains 1.0.6. RC2 refreshes RC1's bundled
-documentation and acceptance samples. RC3 adds a local version handshake,
-required/recommended versions and capability guards, shown in Settings >
-Controls > Stream Deck and the plugin's Test connection. Unreported legacy
-versions are unconfirmed, not assumed current. See the
-[test walkthrough](guide/14-acceptance-test.md) and [roadmap](../ROADMAP.md).
+**Sightline 1.1.0, released 31 October 2026:** includes OBS integration (52),
+the manual head guide (55), production exports, voice tuning, component checks,
+onboarding, script/rehearsal review and the Settings/help updates below.
+The matching Stream Deck plugin is **0.2.0**, downloadable from the app release
+while its source stays private and Marketplace submission is prepared.
+New controls check advertised app capabilities; older unreported versions are
+unconfirmed. See the [workflow walkthrough](guide/14-acceptance-test.md),
+[validation limits](BUILD-FREEZE-1.1.0.md) and [roadmap](../ROADMAP.md).
 
-**Development navigation:** seven Settings groups with focused subtabs, a Files
+**Navigation:** seven Settings groups with focused subtabs, a Files
 menu for input/output and a Tools menu for live recording and operator tools.
 Duplicate file operations and Display preferences have been removed from
 Settings. The top bar keeps live controls and Steady/Voice switching; native
@@ -25,7 +23,7 @@ labelled; pending changes show Unsaved changes, with Apply and Save & close.
 See the
 [Settings map](guide/07-settings.md).
 
-The next batch also includes **Components**: offline model and AI kit
+**Components** includes offline model and AI kit
 status, Install/Reinstall/Remove, and a separate Node.js availability check.
 The kit runs without cloning the repository or installing npm dependencies.
 Components also detects optional OBS/Stream Deck applications and the Sightline

@@ -1,10 +1,11 @@
 # Sightline 1.1.0 and Stream Deck 0.2.0 feature freeze
 
-Frozen for final acceptance on 31 October 2026. These version numbers identify
-local test packages, not a published release. The latest public app is 1.0.6.
-No tag, merge, public upload, Marketplace submission or website deployment is
-part of this freeze. The plugin repository stays private. Building a package
-does not install it over an existing copy.
+Frozen for acceptance on 31 October 2026; Joanne subsequently authorised
+publication of **Sightline 1.1.0 + Stream Deck 0.2.0**. This is the historical
+freeze and validation record, not a claim that every hardware check passed.
+The plugin installer is distributed with the app release; its source stays
+private and Marketplace submission remains separate. Local frozen packages
+are retained, and publication does not install them on Joanne's PC.
 
 **Documentation revision 1:** a separate delivery refresh corrects help/version
 labels and reviewed marketing claims, adds the one-pager and audience reference,
@@ -50,6 +51,8 @@ the files together and verify their hashes before installing. Subsequent fixes
 must replace the frozen pair with a newly identified build and fresh checksums;
 do not silently overwrite an accepted artifact.
 
-Publication remains on hold until Joanne accepts the physical workflow and
-authorises the release. Further feature ideas go to the roadmap for a later
-version; only acceptance-blocking fixes belong in this frozen batch.
+Joanne authorised publication on 31 October 2026. Physical camera/audio,
+recording-route and device checks remain setup-specific and are not claimed as
+universal passes. Mac hardware/VoiceOver and manual accessibility acceptance
+remain unclaimed. Further feature ideas go to the roadmap; the release
+preserves the frozen prompting, recording and control behaviour.

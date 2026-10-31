@@ -1,7 +1,8 @@
 # Sightline audience and messaging reference
 
-Reviewed 31 October 2026 against frozen Sightline 1.1.0 and private Stream Deck
-0.2.0. Public download: 1.0.6. This is the editorial source for the
+Reviewed 31 October 2026 for Sightline 1.1.0 and Stream Deck 0.2.0.
+The plugin installer is available with the app release; its source stays private.
+Marketplace listing is pending. This is the editorial source for the
 [one-pager](ONE-PAGER.md), [channel copy](COPY.md) and JL product page.
 
 ## Positioning
@@ -67,7 +68,7 @@ No competitor comparison establishes that Sightline is the only or best option.
 | Human-readable script directions | Plan sections, holds, beats and edit markers in the script | [Script specification](../SCRIPT-DIRECTIVES.md); timed pauses count down only in steady mode; voice mode treats them as visible beats; stops still hold |
 | Prompting-to-edit handover | Give an editor take choices and context rather than just a video file | [Edit pack](../EDIT-PACK.md); timing is estimated, not guaranteed frame-accurate; an external editor makes the cut |
 | One configurable pad/phone vocabulary | Keep useful controls within reach without separate layouts | [Controls guide](../guide/06-remotes-and-screens.md); shared customisation/new fitting panels are in 1.1.0 |
-| Optional OBS and framing workflow | Coordinate recording and manual references while retaining normal prompting | [OBS](../guide/11-obs.md), [handover](../guide/12-production-handover.md); 1.1.0 acceptance gates remain; guide capture exclusion depends on the route |
+| Optional OBS and framing workflow | Coordinate recording and manual references while retaining normal prompting | [OBS](../guide/11-obs.md), [handover](../guide/12-production-handover.md); physical routes need setup-specific checks; guide capture exclusion depends on the route |
 | Local recognition and optional AI | Use your own script or assistant, with clear data choices | [AI guide](../guide/09-working-with-ai.md), [privacy](../PRIVACY.md); Deepgram sends audio online if selected |
 
 ## Claims to use and avoid
@@ -82,8 +83,8 @@ No competitor comparison establishes that Sightline is the only or best option.
 | Script health/rehearsal review uses local checks and estimates | The coach is an AI judge or detects every delivery problem |
 | Separate manual Ideal/Actual framing reference | Automatic face detection or head tracking |
 | Capture protection depends on platform and capture method; verify a recording | Guaranteed invisible in every recording or screen share |
-| Plugin is private, Marketplace submission pending | Install it from Marketplace now; a made-up listing link |
-| App targets Windows, macOS and Linux; this final test package is Windows | This build has passed physical Mac/VoiceOver acceptance |
+| Plugin installer is available with the app release; source private, Marketplace pending | Install it from Marketplace now; a made-up listing link |
+| App targets Windows, macOS and Linux | This build has passed physical Mac/VoiceOver acceptance |
 | OBS is optional and has dedicated permissions | Sightline automatically controls Teams, Zoom or Riverside recording |
 
 ## Voice, attribution and calls to action
@@ -94,8 +95,9 @@ the opening. Keep short blocks balanced and longer prose pretty-wrapped.
 
 Primary CTA: **Download the public release** at
 <https://github.com/JoJo-1965/sightline-prompter/releases/latest>.
-Secondary: read the guide or try a sample. Acceptance material clearly labels
-1.1.0/0.2.0 as unpublished. Voluntary support is tertiary, with no paid perks.
+Secondary: read the guide or try a sample. Earlier acceptance material is
+historical; current download links identify 1.1.0/0.2.0. Voluntary support is
+tertiary, with no paid perks.
 
 Attribution: **Adapted and enhanced by Joanne Lockwood from SEE Change Happen
 Ltd, based on Electron Teleprompter by David Neal.** Credit Claude Code for

@@ -29,17 +29,19 @@ your way, and help shape what comes next.
 <https://joannelockwood.co.uk/sightline>
 <https://github.com/JoJo-1965/sightline-prompter>
 
-## 1.1.0 announcement — hold until publication
+## 1.1.0 announcement
 
-The following is prepared copy, not a claim that the release is available:
+Publication was authorised on 31 October 2026. This is reusable copy, not an
+automatically posted message.
 
 Sightline 1.1.0 brings more of the recording workflow within reach: optional
 OBS controls, a manual head-position reference, script and rehearsal review,
 and shared pad/phone controls for framing, listening and session checks.
 
-The private Stream Deck 0.2.0 companion adds guide dials and listening recovery,
-with a one-second Finish recording hold by default. Its Marketplace listing
-is still pending; do not link to an invented listing or promise a date.
+The Stream Deck 0.2.0 companion adds guide dials and listening recovery,
+with a one-second Finish recording hold by default. Download it from the app
+release while its source stays private. Its Marketplace listing is pending;
+do not invent a listing link or promise a date.
 
 Change availability wording and add verified download/listing links only after
 Joanne approves the corresponding publication. Do not announce separate clean
@@ -50,8 +52,8 @@ tracks or sync as automatic for every OBS setup.
 The product-page carousel is a proof sequence, not a catalogue of Settings.
 Use eight relevant screenshots: readable script, script stop, reading options,
 notes, second-screen control, phone controls, manual framing and Stream Deck.
-Lead with the core prompting benefit. Mark the section as 1.1.0 test previews;
-do not imply the download CTA installs every preview feature.
+Lead with the core prompting benefit. Use current 1.1.0 captions and link to
+the matching release.
 
 Keep swipe, keyboard arrows, labelled previous/next buttons and direct slide
 selection. No autoplay. State the slide count, preserve focus, describe each
@@ -69,17 +71,17 @@ social asset. Keep the eight-slide website carousel distinct from this story.
 3. **Choose your pace.** Voice following or steady scrolling, with stops for
    the moments you want to hold.
 4. **Keep control.** Voice, phone, keys or a floating pad. Optional Stream Deck
-   is in private testing, with Marketplace submission pending.
+   is downloadable from the app release, with Marketplace submission pending.
 5. **Leave clues for the edit.** Mark keepers and hand over take references and
    estimated alignments alongside the recording.
 6. **Use AI if it helps.** Prepare scripts or interpret the edit pack with your
    chosen assistant. Basic prompting works without it.
 7. **Try Sightline.** Free and MIT-licensed. Use the verified public download
-   at joannelockwood.co.uk/sightline; label any 1.1.0 screenshots as previews.
+   at joannelockwood.co.uk/sightline; use current 1.1.0 screenshots.
 
 ## Promotional infographic
 
 [Revised navy/gold infographic](sightline-promo-infographic-v2.png) keeps voice
 control explicit, uses dark pictograms on bright tiles and includes a real QR
-to the product page. OBS/Stream Deck are labelled as previews. The illustration
+to the product page. OBS/Stream Deck versions and Marketplace status are labelled. The illustration
 is a marketing mock-up, not a screenshot. See [the production prompt](INFOGRAPHIC-PROMPT.md).

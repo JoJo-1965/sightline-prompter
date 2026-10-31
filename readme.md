@@ -33,12 +33,14 @@ supplies the production master; scratch audio is a timing reference.
 > Everything from the original still works. See the [change log](#change-log)
 > for the details, and **Help > About** in the app for credits.
 
-**Frozen for testing: Sightline 1.1.0 + private Stream Deck 0.2.0.** This branch contains the local Windows build,
-with OBS support, the head guide and the Settings/help updates. Use the private
-Stream Deck companion and the [acceptance walkthrough](docs/guide/14-acceptance-test.md).
-Private plugin 0.2.0 adds listening recovery, session status, protected
-Finish recording and head-guide dials; installed 0.1.9 retains its existing controls.
-The latest public download remains 1.0.6; candidate builds are not published.
+**Released: Sightline 1.1.0 + Stream Deck 0.2.0.** OBS support, the manual head guide,
+shared pad/phone controls and the Settings/help updates are included.
+[Download Sightline](https://github.com/JoJo-1965/sightline-prompter/releases/tag/v1.1.0)
+or [the Stream Deck plugin](https://github.com/JoJo-1965/sightline-prompter/releases/download/v1.1.0/Sightline-StreamDeck-0.2.0.streamDeckPlugin).
+The plugin source repository stays private; its installer is available here
+while the Elgato Marketplace listing is prepared. Existing 0.1.9 assignments
+remain supported. Use the [workflow walkthrough](docs/guide/14-acceptance-test.md)
+to check your own recording setup.
 
 ## Optional AI, from script to edit
 
@@ -239,14 +241,12 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ## Change log
 
-### 1.1.0 (feature freeze; unpublished)
+### 1.1.0 (31 October 2026)
 
-The frozen acceptance pair is **Sightline 1.1.0** and private **Stream Deck
-0.2.0**. Local packages are for final testing; this is not a public release.
-Preparing them does not update an installed copy. Earlier RC identifiers below
-are test history; the latest public app is still **1.0.6**. Existing plugin
-**0.1.9** controls remain compatible. Scripts and additive edit-pack formats
-remain compatible too. See the [freeze record](docs/BUILD-FREEZE-1.1.0.md).
+Released with **Stream Deck 0.2.0**. Earlier RC identifiers below are test
+history, not additional public releases. Existing plugin **0.1.9** assignments,
+scripts and additive edit-pack formats remain supported. The source freeze and
+validation limits are recorded in the [freeze record](docs/BUILD-FREEZE-1.1.0.md).
 
 - **Documentation review:** the guide index now names the frozen 1.1.0/0.2.0
   pair. Overview and marketing copy retain the AI-led workflow while explaining
@@ -271,7 +271,7 @@ remain compatible too. See the [freeze record](docs/BUILD-FREEZE-1.1.0.md).
   hold, and head-guide dials for eye centre, independent edges and visibility
   levels. Eye locking keeps the reference fixed while fitting the outline.
   Two opt-in framing profiles cover + and + XL. New controls need the matching
-  app capabilities. The new pair is frozen for local acceptance testing.
+  app capabilities. Both packages are available from the 1.1.0 release.
 
 **Local Windows acceptance build:** RC1 established the feature baseline;
 RC2 refreshed its bundled help and added the reusable acceptance samples.

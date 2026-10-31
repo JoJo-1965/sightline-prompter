@@ -51,3 +51,7 @@ the generated illustration with an independent QR/label panel rendered by
 `scripts/render-promo-qr.mjs`. OpenCV successfully decoded the final 2244×2804
 artwork to `https://joannelockwood.co.uk/sightline`. This checks the digital
 asset; check a printed copy again at the intended print size.
+
+For publication, a final built-in edit changes only the status line beneath
+the audience cards to “Sightline 1.1.0 · Stream Deck 0.2.0 · Marketplace coming
+soon”. The functional QR layer is reapplied and decoded after that edit.
