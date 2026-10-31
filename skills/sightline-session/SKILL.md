@@ -234,12 +234,15 @@ wake listening only when Always is configured. Do not silently enable Always.
 For guide dials, POST `/command` with `{ action: "head-guide-adjust", value:
 { axis: "top", steps: 1 } }`. Allowed axes are x/y, scale, width/height,
 top/bottom/left/right, background and opacity; steps must be nonzero integers
-from -20 to 20. The guide must be visible. Eye lock blocks X/Y while preserving
+from -20 to 20. Sliders may instead send `{ axis: "top", value: 1.2 }`, never
+both value and steps. Absolute ranges: X/Y -45 to 45 percentage points; shape
+axes 0.4 to 2; background 0 to 0.8; opacity 0.2 to 1. The guide must be visible.
+Eye lock blocks X/Y while preserving
 outline fitting. `head-guide-control` accepts adjust, eyes-lock, ideal-visible
 or reset-pose. Status includes `headGuide`. None of these operations overwrites
 the saved ideal. Match commands to the advertised capabilities, not a version
-number alone. Plugin 0.2 source needs the matching app update; neither new
-package has been installed yet.
+number alone. Frozen plugin 0.2.0 needs the matching 1.1.0 app capabilities;
+building the packages does not install them.
 Recovery is bounded and respects listening-off and script mute. The user can
 use Prompting > Commands > Restart listening. Command-word text tracing is
 off by default and must be explicitly enabled in Settings > Debug for troubleshooting;
@@ -247,12 +250,16 @@ entries have `mode: "commands"`. Do not enable it through automation. It may
 include surrounding conversation, so ask the user to switch it off afterwards.
 `padLayout` in status describes the shared phone/pad layout; hardware Stream
 Deck profiles keep separate assignments. Configure layouts in Controls > Pad.
-The next candidate also accepts `padLayout` through POST /settings. Verify it
+Version 1.1.0 also accepts `padLayout` through POST /settings. Verify it
 appears in `applied` and read back status; RC14 silently dropped that object.
 `captureOverride` in status is diagnostic only. The user toggles it manually
 in Settings > Debug; do not enable it through automation. It resets
 on app restart and may let the guide appear in a recording. Phone “sent”
 feedback acknowledges dispatch; use returned state to confirm the effect.
+The Framing & checks preset exposes guide fitting, listening and local session
+status on pad/phone too. Their `padLayout.holdToFinish` defaults to true;
+false disables the one-second finish hold. Do not disable a user's protection
+through automation. This preference does not change Stream Deck key settings.
 
 For recognition diagnosis, compare the original source with the captured
 microphone and check input level before teaching aliases for missing lines.

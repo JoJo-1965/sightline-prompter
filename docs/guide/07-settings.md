@@ -224,8 +224,15 @@ fallback can be dragged inside the prompter; double-click its title to recentre.
 
 ## Settings files and automation
 
+**Controls > Pad** has a **Framing & checks** preset and selectable guide,
+listening and session-check buttons. **Hold Finish recording for one second**
+is on by default for pad and phone; Stream Deck has a separate per-key choice.
+These layout choices save immediately and preserve existing selections unless
+you apply a preset. [The controls guide](06-remotes-and-screens.md#the-floating-pad)
+explains the device-local guide panels and software status checks.
+
 **Files > Save settings to file** and **Load settings from file** preserve
-the shared pad/phone layout in JSON and XML. From the next candidate, the
+the shared pad/phone layout in JSON and XML. In 1.1.0, the
 local settings API accepts `padLayout` too, with the same validation. Unknown
 actions are removed, duplicates are collapsed and invalid column counts are
 rejected before other settings change. Remotes, credentials and tracing

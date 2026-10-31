@@ -6,7 +6,8 @@
 import { BrowserWindow, ipcMain, screen } from "electron";
 import { protectWindow } from "./capture-policy.js";
 import path from "node:path";
-import { normalisePadLayout, controlAction, controlView } from "./client/control-actions.js";
+import { normalisePadLayout, controlView } from "./client/control-actions.js";
+import { createControlDispatcher } from "./control-dispatch.js";
 
 const PAD_WIDTH = 360;
 const PAD_HEIGHT = 110;
@@ -23,14 +24,17 @@ export function createPad( {
 	let pad = null;
 	let mirror = "off";
 	let status = {};
+	let panelOpen = false;
+	const controls = createControlDispatcher( { getStatus, onCommand } );
 	function update() {
+		controls.observe();
 		if ( !pad ) return;
 		const padLayout = normalisePadLayout( getSettings().padLayout );
 		const current = { ...getStatus(), ...status, padLayout };
 		const visible = padLayout.buttons.filter( id => !controlView( id, current ).hidden ).length;
 		const area = screen.getDisplayMatching( pad.getBounds() ).workArea;
-		const width = Math.min( area.width, Math.max( 260, padLayout.columns * 88 + 18 ) );
-		const height = Math.min( area.height - 24, Math.max( 110, Math.ceil( visible / padLayout.columns ) * 72 + 40 ) );
+		const width = Math.min( area.width, panelOpen ? 460 : Math.max( 260, padLayout.columns * 88 + 18 ) );
+		const height = Math.min( area.height - 24, panelOpen ? 670 : Math.max( 134, Math.ceil( visible / padLayout.columns ) * 72 + 64 ) );
 		const bounds = pad.getBounds();
 		pad.setBounds( { x: Math.max( area.x, Math.min( bounds.x, area.x + area.width - width ) ), y: Math.max( area.y, Math.min( bounds.y, area.y + area.height - height ) ), width, height } );
 		pad.webContents.send( "padStatus", current );
@@ -131,6 +135,7 @@ export function createPad( {
 	function close() {
 		if ( pad && !pad.isDestroyed() ) pad.destroy();
 		pad = null;
+		panelOpen = false;
 	}
 
 	function apply() {
@@ -145,9 +150,28 @@ export function createPad( {
 		update();
 	}
 
-	ipcMain.on( "padCommand", ( event, action ) => {
-		if ( event.sender !== pad?.webContents || !controlAction( action ) || prompter.isDestroyed() ) return;
-		onCommand?.( action );
+	ipcMain.handle( "padCommand", async ( event, action, value ) => {
+		if ( event.sender !== pad?.webContents || prompter.isDestroyed() ) return { ok: false, error: "Control pad is closed" };
+		try {
+			return await controls.command( action, value );
+		} catch ( error ) {
+			return { ok: false, error: error.message };
+		}
+	} );
+	ipcMain.handle( "padHold", ( event, phase, token ) => {
+		if ( event.sender !== pad?.webContents ) return { ok: false, error: "Control pad is closed" };
+		try {
+			return controls.hold( phase, token );
+		} catch ( error ) {
+			return { ok: false, error: error.message };
+		}
+	} );
+	ipcMain.on( "padPanel", ( event, shown ) => {
+		if ( event.sender !== pad?.webContents || typeof shown !== "boolean" ) return;
+		panelOpen = shown;
+		pad.setFocusable( shown );
+		update();
+		if ( shown ) pad.focus();
 	} );
 	ipcMain.on( "padMoveTo", ( event, x, y ) => {
 		if ( event.sender === pad?.webContents && Number.isFinite( x ) && Number.isFinite( y ) ) {
@@ -190,6 +214,7 @@ export function createPad( {
 		sendStatus,
 		get window() {
 			return pad;
-		}
+		},
+		observeControls: controls.observe
 	};
 }

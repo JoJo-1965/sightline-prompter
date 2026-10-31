@@ -349,16 +349,22 @@ The whole workflow is in the guide:
   and quick panels for text/colour, take display and voice/microphone.
 - **Floating button pad** that stays on top, even over the prompter, and flips
   with the mirror setting. Select up to 36 functions, drag or use Earlier/Later
-  to reorder, choose columns and apply Compact, Reading or Studio presets.
+  to reorder, choose columns and apply Compact, Reading, Studio or Framing & checks presets.
   **Controls > Pad** and the pad's Customise button share one editor.
 - **Phone remote:** scan a QR code and your phone gets big buttons, over your
   own Wi-Fi, protected by the code in the QR. It follows the pad's button
   selection and order with larger touch targets. Both reuse Stream Deck
   artwork and actions; hardware profiles stay independent.
-  Development for 1.1.0-rc.1 adds a compact landscape layout: four or six columns
+  Version 1.1.0 adds a compact landscape layout: four or six columns
   with the same order, two rows for Studio, and browser-safe footer spacing.
   Taps have separate sending/accepted feedback, with clear refusal or missing
   acknowledgement states and no automatic command replay.
+- **Shared operator controls:** pad and phone offer local Eyes/Outline/Compare
+  guide panels, eye locking, ideal visibility/restoration, session checks and
+  listening off/on or recovery. Existing layouts stay intact. Finish recording
+  uses a default one-second hold with server-side duration checks and single-use
+  tickets; connection or recording changes cancel it. Its pad/phone preference
+  is separate from Stream Deck's per-key choice.
 - **Session capture override:** Debug can temporarily permit every
   window, including the head guide, in screenshots and demo recordings.
   A persistent warning and phone notice show when it is active; turning it
@@ -381,7 +387,7 @@ The whole workflow is in the guide:
   dials on the Stream Deck + and the three-pedal Stream Deck Pedal, with a
   sample profile for every model. See
   [Remotes and second screens](guide/06-remotes-and-screens.md#stream-deck).
-- **Stream Deck 0.2.0 development:** listening off/on or recovery, session
+- **Stream Deck 0.2.0 frozen test build:** listening off/on or recovery, session
   status and detailed error help, optional hold-to-finish and guide dials for
   eye centre/level, independent edges, proportions and visibility levels.
   Eye lock fixes the reference while shaping. Two opt-in Guide profiles

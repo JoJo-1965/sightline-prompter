@@ -228,21 +228,28 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ## Change log
 
-### 1.1.0 (in development; unpublished)
+### 1.1.0 (feature freeze; unpublished)
 
-The next candidate is **1.1.0-rc.1**, replacing the planned RC15 name. It has
-not been packaged or installed. The existing installation remains
-**1.0.7-rc.14**; identifiers below describe that earlier preview series.
-The latest public release is still **1.0.6**. Stream Deck **0.2.0 source** is
-the next companion; installed **0.1.9** remains compatible for existing controls.
-Scripts and additive edit-pack formats remain compatible.
+The frozen acceptance pair is **Sightline 1.1.0** and private **Stream Deck
+0.2.0**. Local packages are for final testing; this is not a public release.
+Preparing them does not update an installed copy. Earlier RC identifiers below
+are test history; the latest public app is still **1.0.6**. Existing plugin
+**0.1.9** controls remain compatible. Scripts and additive edit-pack formats
+remain compatible too. See the [freeze record](docs/BUILD-FREEZE-1.1.0.md).
+
+- **Pad and phone operator controls:** both now include listening off/on and
+  recovery, a local session check, eye locking, ideal-reference controls and
+  an adjustment panel with Eyes, Outline and Compare tabs. Choose **Framing &
+  checks** under **Settings > Controls > Pad**, or add individual buttons.
+  Existing selections stay in place. Finish recording requires a one-second
+  hold by default; the pad setting is separate from each Stream Deck key.
 
 - **Stream Deck operator controls:** configurable listening off/on or recovery,
   session status and fuller error help, an optional one-second Finish recording
   hold, and head-guide dials for eye centre, independent edges and visibility
   levels. Eye locking keeps the reference fixed while fitting the outline.
   Two opt-in framing profiles cover + and + XL. New controls need the matching
-  app capabilities. Neither the new app nor plugin has been packaged/installed.
+  app capabilities. The new pair is frozen for local acceptance testing.
 
 **Local Windows acceptance build:** RC1 established the feature baseline;
 RC2 refreshed its bundled help and added the reusable acceptance samples.
@@ -260,7 +267,7 @@ mirroring under Screens and honours capture preferences for helper windows;
 **1.0.7-rc.12** adds independent size and colour for square-bracket comments.
 **1.0.7-rc.13** adds custom pad/phone layouts and listening recovery.
 **1.0.7-rc.14** gives troubleshooting controls their own **About > Debug** topic.
-**Next candidate work, not yet packaged:** compact phone landscape controls
+**Included in the frozen build:** compact phone landscape controls
 use four or six columns, with all 12 Studio buttons in two rows. Portrait
 keeps its large controls, and footer spacing accounts for browser controls.
 The same batch adds live API/JSON/XML pad-layout changes, phone sending/sent
@@ -272,7 +279,7 @@ complete destination/version after an explicitly requested installation.
 The batch also adds top-level **Components** for model/AI-kit installation,
 repair and removal, plus a Node.js check. **Controls > Buttons & keys** learns
 keyboard, clicker, pedal and controller inputs, with action choices and reset.
-The batch is awaiting review; 1.1.0-rc.1 has not been built or installed.
+The batch is included in the 1.1.0 feature freeze, awaiting final acceptance.
 It now includes **Script health** in the editor and a **Rehearsal** review tab:
 section reading estimates, delivery prompts, take pace, alignment coverage and
 logged rereads. Recognised filler/repetition counts are optional aggregates
@@ -280,7 +287,7 @@ attached to voice takes; no extra listener, transcript or audio is added.
 The latest published app remains **1.0.6**. No tag, merge, Marketplace publication or
 website deployment is part of this candidate.
 
-- **Candidate versioning:** development now reports **1.1.0-rc.1**. Update
+- **Build versioning:** the frozen build reports **1.1.0**. Update
   checks recognise a later RC or the final 1.1.0 release correctly; installed
   1.0.7 previews remain traceable and published 1.0.6 history is retained.
 - **Review before and after a take:** **Script health…** in the editor checks

@@ -1,8 +1,8 @@
 # Release-candidate acceptance test
 
-**Windows Sightline 1.1.0 release candidate + private Stream Deck 0.2.0 source.**
+**Frozen Windows Sightline 1.1.0 + private Stream Deck 0.2.0.**
 The installed 0.1.9 remains compatible for its existing controls. Neither
-updated package has been installed. Once packaged, add these checks:
+updated package is installed by preparing it. Add these checks after installation:
 
 - Short Finish recording press must do nothing; a one-second hold finishes.
   Repeat with the OBS Pedal and a disconnected/revoked-permission setup.
@@ -14,8 +14,9 @@ updated package has been installed. Once packaged, add these checks:
   all four edges. X/Y must stay fixed; ideal visibility and restore must
   preserve the saved ideal. Confirm the edit-pack guide metadata matches.
 
-The next build is **1.1.0-rc.1**, replacing the planned RC15. It has not yet
-been packaged or installed. The existing installation is **1.0.7-rc.14**;
+The build versions are frozen at **1.1.0** and **0.2.0** for final acceptance;
+publication remains on hold. See the [freeze record](../BUILD-FREEZE-1.1.0.md).
+The existing installation is **1.0.7-rc.14** until explicitly updated;
 the RC1–RC14 notes below describe that earlier preview series.
 RC1 established the feature baseline. RC2 updates the bundled help and adds
 both acceptance scripts to **Files (☰) > Sample scripts**.
@@ -47,6 +48,20 @@ It can capture nearby conversation while Always listening is enabled.
 The public app remains **1.0.6**. The candidate and plugin are private test builds.
 
 ### Additional checks for the next candidate
+
+Under **Controls > Pad**, select **Framing & checks > Use preset**, or add its
+buttons to your existing layout. Verify the same order on pad and phone.
+Open **Adjust guide** on each: align Eyes, lock them, fit Outline edges, then
+use Compare to change contrast, show/hide Ideal and restore Actual. The saved
+Ideal must stay unchanged. Session check should report software state locally;
+the full checklist is available on the PC while prompting is paused.
+
+Test listening off/on and Restart listening on both surfaces with the normal
+microphone. These must not stop OBS or change the saved listening preference.
+Tap Finish briefly: OBS must continue. Hold for one second: one Finish request
+should be sent. Repeat after a connection loss. The **Hold Finish recording**
+checkbox in Controls > Pad affects pad and phone; Stream Deck has its own
+per-key setting. Restore your normal layout and leave protection enabled.
 
 RC14 does not yet include this batch. After the next candidate is approved
 and installed, check the seven Settings groups and the five named Components

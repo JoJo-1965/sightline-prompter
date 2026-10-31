@@ -36,8 +36,18 @@ const GLYPHS = {
 	restore: "<rect x=\"3\" y=\"7\" width=\"14\" height=\"14\" rx=\"2\"/><path d=\"M8 3h11a2 2 0 0 1 2 2v11\"/>",
 	help: "<circle cx=\"12\" cy=\"12\" r=\"9\"/><path d=\"M9 8a3 3 0 1 1 4 3c-1 0-1 2-1 2m0 4h.01\"/>"
 };
+GLYPHS["mic-off"] = "<path d=\"M9 4a4 4 0 0 1 7 2v7M8 8v3a4 4 0 0 0 6 3M5 11a7 7 0 0 0 12 5m2-5v2m-7 5v4m-4 0h8M3 3l18 18\"/>";
+GLYPHS["listen-restart"] = "<rect x=\"9\" y=\"5\" width=\"6\" height=\"10\" rx=\"3\"/><path d=\"M5 12a7 7 0 0 0 14 0m-7 7v3M4 7V2m0 5h5M4 7a10 10 0 0 1 16-2\"/>";
+GLYPHS["guide-lock"] = "<path d=\"M3 8V3h5M3 16v5h5M6 13c-3-4-1-10 3-10 3 0 5 4 3 8\"/><rect x=\"12\" y=\"14\" width=\"10\" height=\"8\" rx=\"2\"/><path d=\"M14 14v-3a3 3 0 0 1 6 0v3\"/>";
+GLYPHS["guide-adjustments"] = "<path d=\"M4 5h16M4 12h16M4 19h16\"/><circle cx=\"8\" cy=\"5\" r=\"2\" fill=\"currentColor\"/><circle cx=\"16\" cy=\"12\" r=\"2\" fill=\"currentColor\"/><circle cx=\"10\" cy=\"19\" r=\"2\" fill=\"currentColor\"/>";
+GLYPHS["guide-ideal-visible"] = "<ellipse cx=\"9\" cy=\"10\" rx=\"5\" ry=\"7\" stroke-dasharray=\"2 3\"/><ellipse cx=\"15\" cy=\"13\" rx=\"5\" ry=\"7\"/>";
+GLYPHS["guide-match-ideal"] = "<ellipse cx=\"15\" cy=\"12\" rx=\"5\" ry=\"8\" stroke-dasharray=\"2 3\"/><path d=\"M2 12h12m-4-4 4 4-4 4\"/>";
 export function controlIcon( id, status ) {
 	if ( /^slot-[1-9]$/.test( id ) ) return id.slice( 5 );
+	if ( id === "listening-toggle" ) id = status.listeningControl?.suspended ? "mic-off" : "voice";
+	if ( id === "listening-restart" ) id = "listen-restart";
+	if ( id === "session-check" ) id = "status";
+	if ( id === "guide-eyes-lock" ) id = status.headGuide?.eyesLocked ? "guide-lock" : "eye-line";
 	const key = id === "toggle" ? status.scrolling ? "pause" : "play" : id === "scroll-mode" ? status.scrollMode === "voice" ? "voice" : "steady" : id === "head-guide-fullscreen" ? status.showHeadGuide && status.headGuideFullscreen ? "restore" : "fullscreen" : ( { restart: "top", "previous-section": "previous", "next-section": "next" }[id] ?? id );
 	return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ GLYPHS[key] ?? GLYPHS.help }</svg>`;
 }

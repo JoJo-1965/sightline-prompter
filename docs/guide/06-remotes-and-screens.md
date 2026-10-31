@@ -137,7 +137,7 @@ The buttons can't be changed yet; choosing your own is on the roadmap.
 
 ## Stream Deck
 
-For the Sightline 1.1.0 release candidate, private companion **0.2.0 source** extends the installed **0.1.9**, which includes
+For the frozen Sightline 1.1.0 test build, private companion **0.2.0** extends **0.1.9**, which includes
 **Record take (OBS)** and **Finish recording (OBS)**. Enable OBS and allow
 recording controls in Sightline first. The keys show confirmed recording
 state; a disconnected state stays unknown. Play/Pause, section stops and
@@ -234,9 +234,9 @@ For the latest public Sightline release, use **About > Check for updates**.
 The private plugin has no public update feed yet; install the supplied test
 build. Marketplace updates apply once a real listing is live.
 
-## Stream Deck operator controls (0.2.0 development)
+## Stream Deck operator controls (0.2.0)
 
-These controls require the matching updated Sightline 1.1 candidate, not just
+These controls require the matching updated Sightline 1.1 build, not just
 a compatible version number. Neither new package has been installed yet.
 
 - **Listening:** choose session off/on or Restart listening. Off pauses voice
@@ -269,7 +269,7 @@ After a failure, select that key/dial in Stream Deck to read its full reason.
 The Compact preset starts with Top, Previous, Start / Pause and Next.
 **Customise** on the pad opens **Settings > Controls > Pad**.
 
-Choose **Compact**, **Reading** or **Studio**, then **Use preset**, or add
+Choose **Compact**, **Reading**, **Studio** or **Framing & checks**, then **Use preset**, or add
 individual functions from the list. Presets replace your selection; Compact
 resets it. Up to 36 buttons can include markers, Keeper/Scrap, speed, text
 size, mirror axes, guide, OBS and script slots. Drag selected buttons to
@@ -284,6 +284,36 @@ for layouts with nine or more selected buttons. Order stays the same.
 Buttons reflect the current state. Empty slots
 are disabled; OBS controls appear only when OBS and recording permission
 are enabled, and require a connection. Long pads can scroll within the screen.
+
+**Framing & checks** adds guide visibility/fullscreen, **Adjust guide**, eye lock,
+ideal visibility, restoring Actual, listening off/on and recovery, **Session
+check**, sound check and OBS recording. Existing layouts stay as you chose them;
+add just the buttons you need if you prefer. Their symbols match the plugin.
+
+**Adjust guide** opens a panel on the device you are using, including the phone.
+Use **Eyes** for centre/level and arrow nudges, lock the eyes, then **Outline**
+for independent edges, width, height and overall size. **Compare** has background
+and line opacity, ideal visibility and **Match saved ideal**. Matching restores
+Actual and unlocks the eyes; it does not overwrite Ideal. These are manual
+references, not camera tracking. The guide must be visible before adjustment.
+
+![Fitting the outline from the phone with locked eyes](images/phone-guide-outline.png)
+
+**Session check** opens local script, listening, guide and enabled OBS status,
+plus reasons for unavailable selected controls. The full PC checklist can be
+opened while prompting is paused. It does not validate the recorded picture,
+sound or sync. **Listening off** stops recognition/voice following for the
+session and leaves OBS recording; **On** honours the saved command preference.
+Sound check and scratch audio use the microphone separately.
+
+**Finish recording** requires a one-second hold by default. Release early to
+cancel; a lost connection, changed recording or removed permission cancels too.
+With a keyboard, hold Enter or Space. **Controls > Pad > Hold Finish recording**
+changes the shared pad/phone preference; Stream Deck keeps its own per-key
+checkbox. The progress bar measures the hold, not OBS completion. Read the
+reported OBS state afterwards. Ordinary Play/Pause never finishes the OBS file.
+
+![Framing and session controls in phone landscape](images/phone-framing-landscape.png)
 
 ![Choosing and arranging pad and phone buttons](images/settings-pad.png)
 
@@ -346,11 +376,11 @@ unchanged status to assistive technology.
 
 ![A phone command acknowledged separately from the prompter state](images/phone-feedback.png)
 
-In the next candidate, rotating to landscape uses the available width and
+In 1.1.0, rotating to landscape uses the available width and
 shorter buttons: the 12-button Studio layout fits in two rows on typical
 phone screens. Portrait keeps its large touch targets. The footer has extra
 space above browser controls, and long layouts remain scrollable. This is
-development work for 1.1.0-rc.1; the installed RC14 still has the earlier layout.
+included in the frozen build; RC14 has the earlier layout.
 
 ![Compact landscape layout with all twelve Studio buttons](images/phone-landscape.png)
 

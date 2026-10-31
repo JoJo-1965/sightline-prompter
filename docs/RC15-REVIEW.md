@@ -1,26 +1,45 @@
-# Sightline 1.1.0-rc.1 for review
+# Sightline 1.1.0 frozen build for acceptance
 
-**Stream Deck 0.2.0 additions, not packaged/installed:** listening controls,
+**Stream Deck 0.2.0 additions:** listening controls,
 session status/error guidance, optional one-second Finish recording hold and
 head-guide adjustment dials/profiles. Existing installed 0.1.9 remains usable;
 the new controls require the matching updated app capabilities. Strict Elgato
 submission validation passes. Hardware acceptance and publication stay pending.
 
-The next release is **1.1.0**. Its first candidate is **1.1.0-rc.1**, replacing
-the planned RC15 name. The installed **1.0.7-rc.14** stays unchanged. Earlier
+The frozen pair is **Sightline 1.1.0 + private Stream Deck 0.2.0**, prepared as
+local final test packages. Building does not install either package. Earlier
 1.0.7 RC identifiers are test history, not published releases. This document
-keeps its existing filename so previous review links continue to work.
+keeps its filename so previous review links continue to work.
 
-Source metadata now reports **1.1.0-rc.1**. Version checks recognise later
+Source metadata now reports **1.1.0**. Version checks recognise later
 candidates and the final 1.1.0 release; plugin 0.1.9 compatibility is checked
 against the new name. Offline installer-help checks also cover the illustrated
-workflow pages. These are preparation changes, not a packaged candidate.
+workflow pages. The [freeze record](BUILD-FREEZE-1.1.0.md) defines scope and gates.
 
-Updated 31 October 2026. **1.1.0-rc.1 has not been built or installed.** The work
-is on `codex/obs-integration`; the installed RC14 remains available for testing.
+Updated 31 October 2026. The work is on `codex/obs-integration`;
+the installed RC14 remains available until an explicit installation.
 Publication, merging, tagging and website deployment remain on hold.
 
 ## Changes ready to review
+
+### Shared pad and phone controls
+
+Both surfaces now offer listening off/on and recovery, session status, eye
+lock, ideal visibility and restoring Actual from the saved Ideal. **Adjust
+guide** opens local Eyes, Outline and Compare tabs on either device. Absolute
+slider values are bounded; locked eyes cannot move while fitting the edges.
+The optional **Framing & checks** preset keeps these controls together.
+
+Finish recording requires a server-checked one-second hold by default. Early
+release, lost connection, changed recording or removed permission cancels it;
+single-use tickets prevent replay. The shared pad/phone checkbox is separate
+from the plugin's per-key preference. Sending feedback and reported OBS state
+remain separate. Existing pad selections are preserved.
+
+Native pad/phone fixtures check matching order, guide controls, eye lock,
+listening, software status and short/full holds without real camera or OBS use.
+
+![Fitting the guide from the phone](guide/images/phone-guide-outline.png)
 
 ### Setup and session workflow
 

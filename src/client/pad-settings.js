@@ -20,6 +20,7 @@ export function createPadSettings( root, save ) {
 		painted = true;
 		page = Math.max( 0, Math.min( page, Math.ceil( layout.buttons.length / 3 ) - 1 ) );
 		field( "set-pad-columns" ).value = layout.columns;
+		field( "set-pad-hold-finish" ).checked = layout.holdToFinish !== false;
 		field( "set-pad-page" ).textContent = `${ page + 1 } of ${ Math.ceil( layout.buttons.length / 3 ) }`;
 		field( "set-pad-prev" ).disabled = page === 0;
 		field( "set-pad-next" ).disabled = ( page + 1 ) * 3 >= layout.buttons.length;
@@ -80,6 +81,11 @@ export function createPadSettings( root, save ) {
 	}
 	field( "set-pad-columns" ).addEventListener( "change", () => {
 		layout.columns = Number( field( "set-pad-columns" ).value );
+		commit();
+	} );
+	field( "set-pad-hold-finish" ).addEventListener( "change", () => {
+		if ( field( "set-pad-hold-finish" ).checked ) delete layout.holdToFinish;
+		else layout.holdToFinish = false;
 		commit();
 	} );
 	field( "set-pad-insert" ).addEventListener( "click", () => {

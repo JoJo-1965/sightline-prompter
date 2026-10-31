@@ -118,7 +118,7 @@ your settings, so **Export Settings** takes them to another computer.
 
 ## Voice commands: "Prompter, …"
 
-The private Stream Deck 0.2.0 development controls add session listening
+Stream Deck 0.2.0 and the shared pad/phone controls add session listening
 off/on and Restart listening. Turning off pauses voice following and stops
 that recognition listener while OBS continues recording. Turning on honours
 the saved preference: Always resumes wake listening; otherwise press Play.

@@ -96,6 +96,9 @@ The updated 1.1 candidate advertises `listening-toggle`, `listening-restart`,
 button controls available through the authenticated local API, including the
 Stream Deck key. They do not grant general settings access. Guide adjustment
 uses `{ action: "head-guide-adjust", value: { axis: "top", steps: 1 } }`;
+sliders may instead send `{ axis: "top", value: 1.2 }`, never both. Absolute
+ranges are X/Y −45 to 45 percentage points, shape axes 0.4–2, background 0–0.8
+and outline opacity 0.2–1. Values outside these ranges are refused.
 axes and step counts are checked, X/Y respect eye lock, and a hidden guide
 cannot be adjusted. Guide controls accept `adjust`, `eyes-lock`,
 `ideal-visible` or `reset-pose` as the value. They cannot overwrite the saved

@@ -1051,11 +1051,12 @@
         <fieldset data-tab="pad" id="set-pad-fieldset">
           <legend>Pad and phone buttons</legend>
           <p class="settings-live-note">Saved immediately. The phone uses the same buttons and order.</p>
-          <div class="pad-choice-add pad-toolbar" data-settings-control="set-pad-columns"><span class="settings-option-name"><label for="set-pad-columns">Columns</label></span><select id="set-pad-columns"><option>2</option><option>3</option><option selected>4</option><option>6</option></select><select id="set-pad-preset" aria-label="Button preset"><option value="compact">Compact (reset)</option><option value="reading">Reading</option><option value="studio">Studio</option></select><button type="button" id="set-pad-preset-use">Use preset</button></div>
+          <div class="pad-choice-add pad-toolbar" data-settings-control="set-pad-columns"><span class="settings-option-name"><label for="set-pad-columns">Columns</label></span><select id="set-pad-columns"><option>2</option><option>3</option><option selected>4</option><option>6</option></select><select id="set-pad-preset" aria-label="Button preset"><option value="compact">Compact (reset)</option><option value="reading">Reading</option><option value="studio">Studio</option><option value="framing">Framing &amp; checks</option></select><button type="button" id="set-pad-preset-use">Use preset</button></div>
           <div class="pad-choice-add"><select id="set-pad-add" aria-label="Button to add"></select><button type="button" id="set-pad-insert">Add button</button></div>
           <div id="set-pad-buttons" aria-label="Selected buttons"></div>
           <nav class="pad-choice-pages" aria-label="Selected button pages"><button type="button" id="set-pad-prev">Previous</button><span id="set-pad-page" role="status"></span><button type="button" id="set-pad-next">Next</button></nav>
           <p class="field-hint" data-essential>Drag to reorder, or use Earlier / Later.</p>
+          <label class="check-label"><input id="set-pad-hold-finish" type="checkbox" checked /> Hold Finish recording for one second (pad and phone)</label>
         </fieldset>
         <fieldset data-tab="streamdeck">
           <legend>Stream Deck</legend>

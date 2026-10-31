@@ -74,6 +74,8 @@ export function helpTabs( settings, notes = false ) {
 	tabs.push( { label: "Controls", sections: [ section( "Buttons and components", [
 		[ "Settings > Controls > Buttons & keys", "Choose an action, then press a key, clicker, pedal or controller button. Changes save immediately" ],
 		[ "Custom keys", "Plain keys and Shift combinations override the defaults shown here. System shortcuts stay reserved. Mappings stop during typing, editing and Settings" ],
+		[ "Controls > Pad", "Framing & checks adds local guide fitting, eye lock, ideal reference, listening and session status on pad and phone" ],
+		...( settings.obsEnabled && settings.obsControls ? [ [ "Finish recording hold", "Pad and phone require one second by default. Release early to cancel; Stream Deck has its own per-key setting" ] ] : [] ),
 		[ "Reset defaults", "Restores controller buttons and clears custom keys; Stream Deck profiles stay separate" ],
 		[ "Settings > Components", "Install, repair or remove the offline speech model and AI kit; check Node.js for AI commands" ]
 	] ) ] } );

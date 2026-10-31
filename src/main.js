@@ -1640,6 +1640,7 @@ app.whenReady().then( async () => {
 	// The prompter's state, for GET /status and the GET /events stream.
 	const remoteStatus = () => ( {
 		appVersion: app.getVersion(),
+		scriptLoaded: !!currentFilePath,
 		streamDeckApi: streamDeckContract(),
 		file: currentFilePath,
 		slot: activeSlot + 1,
@@ -1665,9 +1666,11 @@ app.whenReady().then( async () => {
 		commands: REMOTE_COMMANDS
 	} );
 	const remoteListeners = new Set();
+	const controlObservers = new Set();
 	let lastPublished = "";
 	// Tell every listener when something they can show has changed.
 	function publishRemoteState() {
+		for ( const observe of controlObservers ) observe();
 		if ( !remoteListeners.size ) return;
 		const state = remoteStatus();
 		const text = JSON.stringify( state );
@@ -1850,12 +1853,14 @@ app.whenReady().then( async () => {
 		win.webContents.send( "remoteInfo", remoteInfo() );
 	}
 
-	function runPadCommand( id ) {
-		const request = controlAction( id );
+	function runPadCommand( id, value ) {
+		const request = controlAction( id, value );
 		const view = controlView( id, remoteStatus() );
-		if ( !request || view.disabled || view.hidden ) return;
+		if ( !request || !view || view.disabled || view.hidden ) throw new Error( view?.reason || "This control is unavailable" );
 		if ( request.slot ) win.webContents.send( "menuSwitchSlot", request.slot - 1 );
-		else win.webContents.send( "remoteCommand", request.action );
+		else if ( request.action === "head-guide-adjust" ) framingGuide.adjust( request.value );
+		else if ( request.action === "head-guide-control" ) framingGuide.control( request.value );
+		else win.webContents.send( "remoteCommand", request.action, request.value );
 	}
 	controlPad = createPad( {
 		dir: __dirname,
@@ -1867,6 +1872,7 @@ app.whenReady().then( async () => {
 		saveSettings: partial => updateSettings( partial )
 	} );
 	controlPad.apply();
+	controlObservers.add( controlPad.observeControls );
 	framingGuide = createHeadGuide( {
 		dir: __dirname, prompter: win, getSettings: () => settings,
 		restackUtilities: () => utilityWindows?.restack(),
@@ -2027,6 +2033,9 @@ app.whenReady().then( async () => {
 				}
 			} );
 			phoneServer.phonePort = wanted;
+			const server = phoneServer;
+			controlObservers.add( server.observeControls );
+			server.once( "close", () => controlObservers.delete( server.observeControls ) );
 		}
 		await sendPhoneInfo();
 	}

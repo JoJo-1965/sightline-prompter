@@ -3,8 +3,21 @@
 
 const padEl = document.getElementById( "pad" );
 const grip = document.getElementById( "pad-grip" );
-import { createControlButtons } from "./control-buttons.js";
-const render = createControlButtons( document.getElementById( "pad-buttons" ), id => window.pad.command( id ) );
+import { createControlSurface } from "./control-surface.js";
+const feedback = document.getElementById( "pad-feedback" );
+const checked = ( result ) => {
+	if ( result?.error ) throw new Error( result.error );
+	return result;
+};
+const render = createControlSurface( document.getElementById( "pad-buttons" ), {
+	command: async ( id, value ) => checked( await window.pad.command( id, value ) ),
+	hold: { begin: async () => checked( await window.pad.hold( "begin" ) ), cancel: token => window.pad.hold( "cancel", token ) },
+	panel: shown => window.pad.panel( shown ),
+	feedback: ( text, error ) => {
+		feedback.textContent = text;
+		feedback.classList.toggle( "error", error === true );
+	}
+} );
 document.getElementById( "pad-customise" ).addEventListener( "click", () => window.pad.customise() );
 document
 	.getElementById( "pad-close" )

@@ -12,18 +12,21 @@ complex builds come later.
 
 ## Where it stands (31 October 2026)
 
-**Next release: 1.1.0. Next candidate: 1.1.0-rc.1**, replacing the planned RC15
-name. Neither has been packaged or published. The installed 1.0.7-rc.14 stays
-unchanged, and the earlier RC identifiers below remain test history.
-Stream Deck 0.1.9 remains compatible; the public app is still 1.0.6.
+**Frozen for final acceptance: Sightline 1.1.0 + private Stream Deck 0.2.0.**
+Local packages do not update installed copies. The earlier RC identifiers below
+remain test history. Plugin 0.1.9 remains compatible for existing controls;
+the public app is still 1.0.6. See the [freeze record](docs/BUILD-FREEZE-1.1.0.md).
 
-**Stream Deck additions for review:** private plugin 0.2.0 source adds a
+**Stream Deck additions for acceptance:** private plugin 0.2.0 adds a
 listening toggle/recovery key, software session status with error guidance,
 optional hold-to-finish and head-guide adjustment dials. Eye-position lock
 keeps outline fitting anchored; opt-in + and + XL Guide profiles are included.
 Related actions share settings, leaving 30 visible actions and preserving
 saved UUIDs. Strict Marketplace-manifest validation passes; physical hardware
-acceptance and submission remain. No new package or installation is made.
+acceptance and submission remain. The shared pad/phone now includes listening,
+session checks, eye lock, ideal-reference controls and local Eyes/Outline/Compare
+adjustments, with an opt-in Framing & checks preset. Finish recording uses a
+default one-second hold; each interface retains its own hold preference.
 
 **Local Windows release candidate:** RC1 established the feature baseline.
 RC2 refreshed the documentation and added reusable acceptance samples.
@@ -71,9 +74,9 @@ RC13 completes the customisable pad (#56), shares its layout with the phone,
 and adds bounded listening recovery, immediate wake-word changes and opt-in tracing.
 RC14 puts support logs and the optional word trace in **About > Debug**, with
 the trace off by default and a visible nearby-conversation warning.
-**1.1.0-rc.1 work in progress:** compact phone landscape controls are built and
+**Included in 1.1.0:** compact phone landscape controls are built and
 checked in portrait/landscape previews. Studio uses six columns and two rows,
-with extra footer spacing. No 1.1.0-rc.1 has been packaged or installed yet.
+with extra footer spacing. The final pair is frozen for local acceptance.
 The same review batch adds API/import layout validation, structured XML
 exports, phone command acknowledgements and the session capture override (57).
 Components (47) now also checks optional OBS/Stream Deck applications and
@@ -124,9 +127,9 @@ move to Done only when released.
 | --- | --- | --- | --- | --- |
 | 58 | **Setup and session workflow** | ★★ | S | Built for review: seven Settings groups, named Components subtabs, Getting started, Session check and confirmed Restore defaults/restart. Reset clears preferences, layouts, slots and pairings while retaining components, files and service keys; blocks recording/maintenance and reopens onboarding. Frequent controls stay on the toolbar/pad. RC14 is unchanged |
 | 59 | **Optional OBS setup assistant** | ★★ | M | Built for review: choose configured camera/mic, folder and canvas; review before creating a separate profile and three scenes. Existing setups retained, idle-only writes, expiring plan and restoration on partial failure. Guide distinguishes settings from actual native 4K, clean-camera/WAV outputs and physical sync; recording acceptance remains |
-| 30 | **Script health in the editor** | ★ | S | Built for review: current/unsaved text, section word/time estimates, pace/target context, long sentences and similar-word-start prompts, plus section navigation. Shared rendering excludes unspoken directions/headings/commands and includes quoted speech. Heuristics are suggestions; no script rewrite or save. Native editor checks pass; not packaged |
+| 30 | **Script health in the editor** | ★ | S | Included in frozen 1.1.0: current/unsaved text, section word/time estimates, pace/target context, long sentences and similar-word-start prompts, plus section navigation. Shared rendering excludes unspoken directions/headings/commands and includes quoted speech. Heuristics are suggestions; no script rewrite or save. Native editor checks pass; final acceptance pending |
 | 28 | **Rehearsal coach** | ★★ | M | Built for review: per-take pace, qualified sentence coverage/reread prompts and optional recognised filler/repetition aggregates. Counting defaults off, uses existing active voice following only and adds no transcript/audio. Tools, take summary, saved Recordings, CLI/API and additive edit-pack report. Native/simulated speech checks pass; normal-voice acceptance remains |
-| 47 | **Components manager** | ★★ | M | Built for review: Components manages the optional offline model and bundled AI kit with status, Install/Reinstall/Remove and a separate Node.js check. Named subtabs also check OBS and Stream Deck. Voice has model repair/removal; the first-run offer remains. Failed repairs preserve previous files. Standalone kit and native Settings checks pass; not packaged yet |
+| 47 | **Components manager** | ★★ | M | Included in frozen 1.1.0: Components manages the optional offline model and bundled AI kit with status, Install/Reinstall/Remove and a separate Node.js check. Named subtabs also check OBS and Stream Deck. Voice has model repair/removal; the first-run offer remains. Failed repairs preserve previous files. Standalone kit and native Settings checks pass; final acceptance pending |
 | 40 | **Choose your buttons and keys** | ★★ | S–M | Built for review: Controls > Buttons & keys learns plain keys/Shift combinations and controller buttons with shared pad actions, device overrides, pages, immediate saving and reset. Reserved shortcuts remain intact; typing, editing and Settings suspend actions. Native key and simulated button checks pass; physical controller/pedal acceptance remains |
 | 57 | **Debug capture override** | ★★ | S | Built for the next candidate: Debug permits all existing and newly opened windows in captures, with a persistent warning and phone notice. Session-only; restores current normal preferences and resets on restart. Native policy, lifecycle and restore checks pass; awaiting review and packaging |
 | 56 | **Customisable virtual pad and phone layout** | ★★ | M | Built in RC13: select up to 36 functions, drag or use Earlier/Later to reorder, choose columns and Compact/Reading/Studio presets. Pad and phone share choices/order and Stream Deck artwork. Hardware profiles remain independent. Native pad, portrait phone, persistence and permission checks pass; physical iPhone acceptance remains |

@@ -4,6 +4,8 @@ const settings = { showHeadGuide: true, headGuideX: 0, headGuideY: -2, headGuide
 assert.deepEqual( guideAdjustment( settings, { axis: "x", steps: 3 } ), { headGuideX: 0.75 } );
 assert.deepEqual( guideAdjustment( settings, { axis: "top", steps: -3 } ), { headGuideTop: 1.07 } );
 assert.deepEqual( guideAdjustment( settings, { axis: "background", steps: 1 } ), { headGuideBackground: 0.02 } );
+assert.deepEqual( guideAdjustment( settings, { axis: "background", value: 0 } ), { headGuideBackground: 0 } );
+assert.deepEqual( guideAdjustment( settings, { axis: "top", value: 1.25 } ), { headGuideTop: 1.25 } );
 assert.deepEqual( guideAdjustment( { ...settings, headGuideOpacity: NaN }, { axis: "opacity", steps: -1 } ), { headGuideOpacity: 0.73 } );
 assert.deepEqual( guideAdjustment( { ...settings, headGuideTop: 1.99 }, { axis: "top", steps: 20 } ), { headGuideTop: 2 } );
 assert.deepEqual( guideAdjustment( { ...settings, headGuideEyesLocked: true }, { axis: "width", steps: 2 } ), { headGuideWidth: 1.02 } );

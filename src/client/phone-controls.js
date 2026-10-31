@@ -1,5 +1,4 @@
-import { createControlButtons } from "./control-buttons.js";
-import { controlView } from "./control-actions.js";
+import { createControlSurface } from "./control-surface.js";
 const key = new URLSearchParams( location.search ).get( "k" ) ?? "";
 const headers = { "X-Sightline-Key": key };
 const state = document.getElementById( "state" );
@@ -8,7 +7,6 @@ let busy = false;
 const setText = ( element, text ) => {
 	if ( element.textContent !== text ) element.textContent = text;
 };
-const pending = new Set();
 const feedback = document.getElementById( "command-feedback" );
 let feedbackTimer;
 function showFeedback( text, error = false ) {
@@ -28,38 +26,27 @@ async function request( url, options = {}, readJson = false ) {
 		if ( !readJson ) return response;
 		if ( !response.ok ) throw new Error( "Status unavailable" );
 		return await response.json();
+	} catch ( error ) {
+		error.noReply = true;
+		throw error;
 	} finally {
 		clearTimeout( timeout );
 	}
 }
-function markPending() {
-	for ( const button of document.querySelectorAll( "#phone-buttons button" ) ) {
-		const active = pending.has( button.dataset.action );
-		button.setAttribute( "aria-busy", String( active ) );
-		if ( active ) button.disabled = true;
-	}
+async function post( url ) {
+	const response = await request( url, { method: "POST", headers } );
+	const result = await response.json();
+	if ( !response.ok ) throw new Error( result.error || "This control is unavailable" );
+	return result;
 }
-const render = createControlButtons( document.getElementById( "phone-buttons" ), async ( id ) => {
-	if ( pending.has( id ) ) return;
-	const label = controlView( id, last )?.label ?? "Command";
-	pending.add( id );
-	markPending();
-	showFeedback( `Sending ${ label }…` );
-	navigator.vibrate?.( 15 );
-	try {
-		const response = await request( `/command?action=${ encodeURIComponent( id ) }`, { method: "POST", headers } );
-		if ( !response.ok ) {
-			showFeedback( `${ label } unavailable`, true );
-			return;
-		}
-		showFeedback( `${ label } sent` );
-	} catch {
-		offline();
-		showFeedback( `${ label }: no reply`, true );
-	} finally {
-		pending.delete( id );
+const render = createControlSurface( document.getElementById( "phone-buttons" ), {
+	command: async ( id, value ) => {
+		navigator.vibrate?.( 15 );
+		await post( `/command?action=${ encodeURIComponent( id ) }${ value === undefined ? "" : `&value=${ encodeURIComponent( JSON.stringify( value ) ) }` }` );
 		await poll();
-	}
+	},
+	hold: { begin: () => post( "/hold?phase=begin" ), cancel: token => post( `/hold?phase=cancel&token=${ encodeURIComponent( token ) }` ) },
+	feedback: showFeedback
 } );
 function offline() {
 	state.textContent = "Can't reach the prompter";
@@ -78,7 +65,6 @@ async function poll() {
 		setText( document.getElementById( "obs-status" ), !last.obs?.enabled ? "" : last.obs.connection === "connected" ? `OBS ${ last.obs.recording ?? "status unknown" }` : "OBS disconnected · recording status unknown" );
 		document.getElementById( "capture-note" ).hidden = !last.captureOverride;
 		render( last.padLayout, last );
-		markPending();
 	} catch {
 		offline();
 	} finally {

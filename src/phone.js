@@ -7,9 +7,10 @@ import crypto from "node:crypto";
 import os from "node:os";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { CONTROL_ACTIONS, controlView } from "./client/control-actions.js";
+import { CONTROL_ACTIONS } from "./client/control-actions.js";
+import { createControlDispatcher } from "./control-dispatch.js";
 
-export const PHONE_COMMANDS = CONTROL_ACTIONS.map( a => a.id );
+export const PHONE_COMMANDS = [ ...CONTROL_ACTIONS.map( a => a.id ), "guide-adjust" ];
 
 const MAX_BAD_TRIES = 20;
 
@@ -56,6 +57,7 @@ export function startPhoneServer( {
 	onError
 } ) {
 	const badTries = new Map();
+	const controls = createControlDispatcher( { getStatus, onCommand } );
 	const server = http.createServer( async ( req, res ) => {
 		const send = ( status, type, body ) => {
 			res.writeHead( status, {
@@ -78,7 +80,7 @@ export function startPhoneServer( {
 			const url = new URL( req.url, "http://phone" );
 			// Only these generic UI assets are public; scripts, state and commands
 			// still require the pairing key. Never resolve arbitrary URL paths.
-			const asset = /^\/assets\/(pad\.css|control-actions\.js|control-buttons\.js|control-icons\.js|phone-controls\.js)$/.exec( url.pathname );
+			const asset = /^\/assets\/(pad\.css|control-actions\.js|control-buttons\.js|control-icons\.js|phone-controls\.js|control-surface\.js|guide-values\.js)$/.exec( url.pathname );
 			if ( req.method === "GET" && asset ) return send( 200, asset[1].endsWith( ".css" ) ? "text/css" : "text/javascript", await readFile( path.join( path.dirname( pagePath ), asset[1] ), "utf8" ) );
 			if ( url.pathname === "/favicon.ico" ) return send( 204, "text/plain", "" );
 			const given = url.searchParams.get( "k" ) ?? req.headers["x-sightline-key"];
@@ -102,23 +104,32 @@ export function startPhoneServer( {
 				);
 			}
 			if ( req.method === "GET" && url.pathname === "/status" ) {
+				controls.observe();
 				return json( 200, getStatus() );
 			}
+			if ( req.method === "POST" && url.pathname === "/hold" ) return json( 200, controls.hold( url.searchParams.get( "phase" ), url.searchParams.get( "token" ) ) );
 			if ( req.method === "POST" && url.pathname === "/command" ) {
 				const action = url.searchParams.get( "action" );
 				if ( !PHONE_COMMANDS.includes( action ) )
 					return json( 400, { error: "Unknown action" } );
-				const view = controlView( action, getStatus() );
-				if ( view.hidden || view.disabled ) return json( 409, { error: "This control is unavailable" } );
-				onCommand( action );
+				const raw = url.searchParams.get( "value" );
+				if ( raw?.length > 512 ) return json( 400, { error: "Control value is too large" } );
+				let value;
+				try {
+					value = raw == null ? undefined : JSON.parse( raw );
+				} catch {
+					return json( 400, { error: "Control value must be JSON" } );
+				}
+				await controls.command( action, value );
 				return json( 200, { ok: true } );
 			}
 			return json( 404, { error: "Not found" } );
 		} catch ( err ) {
-			json( 500, { error: err.message } );
+			json( err.status ?? 400, { error: err.message } );
 		}
 	} );
 	server.on( "error", err => onError?.( err ) );
+	server.observeControls = controls.observe;
 	server.listen( port, "0.0.0.0" );
 	return server;
 }

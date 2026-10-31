@@ -93,6 +93,8 @@ of both the composed camera recording and the separate clean camera file.
 
 I will check the recorded picture afterwards. {stop}
 
+[Optional pad/phone check while stopped: use Framing & checks in Controls > Pad. Open Adjust guide, align Eyes, lock them and fit Outline. Compare can show the saved Ideal or restore Actual without changing it. Session check reports software state only. Listening off/on must leave OBS recording. Restore your usual layout afterwards.]
+
 ## Section 5 · Going off script {target: 0:30}
 
 I am about to leave the script for a short demonstration. OBS and scratch
