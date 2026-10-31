@@ -2,6 +2,11 @@
 
 ## Built for the next candidate, not yet packaged
 
+- [x] Script health (#30): current editor text, section estimates, long-sentence
+  and similar-word-start prompts, with section navigation and no rewrite/save.
+- [x] Rehearsal coach (#28): per-take pace, qualified sentence/reread review,
+  optional aggregate filler counts and additive CLI/API/edit-pack reports.
+
 - [x] Components manager (#47): model and AI-kit status, Install/Reinstall/
   Remove, separate Node check, bundled standalone tools and model busy guards.
 - [x] Button mappings (#40): learn local keys and controller buttons, choose

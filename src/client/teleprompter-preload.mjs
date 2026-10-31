@@ -35,6 +35,7 @@ contextBridge.exposeInMainWorld( "electron", {
 	onMenuLayout: callback => on( "menuLayout", callback ),
 	onMenuVoice: callback => on( "menuVoice", callback ),
 	onMenuSoundCheck: callback => on( "menuSoundCheck", callback ),
+	onMenuReview: callback => on( "menuReview", callback ),
 	onRemoteCommand: callback => on( "remoteCommand", callback ),
 	sendRendererStatus: status => ipcRenderer.send( "rendererStatus", status ),
 	// On-device voice scrolling (speech.js)
@@ -124,6 +125,7 @@ contextBridge.exposeInMainWorld( "electron", {
 	onMenuSaveAs: callback => ipcRenderer.on( "menuSaveAs", () => callback() ),
 	onNewFile: callback => ipcRenderer.on( "newFile", () => callback() ),
 	previewMarkdown: markdown => ipcRenderer.send( "previewMarkdown", markdown ),
+	scriptReviewHtml: markdown => ipcRenderer.invoke( "scriptReviewHtml", markdown ),
 	reloadContent: () => ipcRenderer.send( "reloadContent" ),
 
 	// Auto-scroll IPC

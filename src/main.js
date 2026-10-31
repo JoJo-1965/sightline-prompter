@@ -171,6 +171,7 @@ const defaultSettings = {
 	showPad: false, // the floating control pad (View menu, Ctrl+Shift+P)
 	padLayout: null, // shared button selection/order for the pad and phone
 	inputMappings: null, // null uses the default controller buttons; keys override locally
+	coachFillers: false, // optional recognised filler/repetition counts in voice takes
 	showHeadGuide: false,
 	headGuideBounds: null,
 	utilityWindowBounds: {},
@@ -218,7 +219,7 @@ const defaultSettings = {
 };
 
 // Settings that a settings file or the remote API may not change.
-const PROTECTED_SETTINGS = [ "remoteControl", "remotePort", "remoteDeleteRecordings", "streamDeck", "phoneRemote", "phonePort", "obsEnabled", "obsHost", "obsPort", "obsControls", "obsMarkers", "obsRecordedSlate", "traceCommands" ];
+const PROTECTED_SETTINGS = [ "remoteControl", "remotePort", "remoteDeleteRecordings", "streamDeck", "phoneRemote", "phonePort", "obsEnabled", "obsHost", "obsPort", "obsControls", "obsMarkers", "obsRecordedSlate", "traceCommands", "coachFillers" ];
 
 // Take logs, one per script per day: the recordings library (recordings.js).
 const takeLogFolder = () => path.join( app.getPath( "userData" ), "take-logs" );
@@ -1856,6 +1857,11 @@ app.whenReady().then( async () => {
 		}
 	} );
 	ipcMain.on( "copyAiPrompt", () => copyAiPrompt( win ) );
+	ipcMain.handle( "scriptReviewHtml", async ( event, text ) => {
+		if ( event.sender !== win.webContents || typeof text !== "string" ) throw new Error( "Script text required" );
+		if ( text.length > 2e6 ) throw new Error( "Review scripts smaller than 2 MB" );
+		return convertMarkdown( text );
+	} );
 
 	ipcMain.on( "openGoogleDoc", async ( _event, link ) => {
 		try {

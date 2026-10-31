@@ -91,9 +91,10 @@ and companion work before choosing a version or building. Finish the current
 batch and its supporting updates, then check for new messages before packaging.
 Planned roadmap work and physical acceptance checks stay separately identified.
 
-**Next development:** signing (27) awaits the arrangements below; rehearsal
-coaching (28) and automatic updates (29) remain planned. Components (47) and
-input mappings (40) are built for review, absent from installed RC14. Zoom (53) and Teams (54)
+**Next development:** signing (27) awaits the arrangements below; automatic
+updates (29) and the remaining lower-priority items stay planned. Script health
+(30), rehearsal coaching (28), components (47) and input mappings (40) are built
+for review, absent from installed RC14. Zoom (53) and Teams (54)
 remain investigations. No new compulsory script directives are needed.
 
 ## Built, awaiting acceptance and publication
@@ -103,6 +104,8 @@ move to Done only when released.
 
 | # | Item | Value | Size | RC status |
 | --- | --- | --- | --- | --- |
+| 30 | **Script health in the editor** | ★ | S | Built for review: current/unsaved text, section word/time estimates, pace/target context, long sentences and similar-word-start prompts, plus section navigation. Shared rendering excludes unspoken directions/headings/commands and includes quoted speech. Heuristics are suggestions; no script rewrite or save. Native editor checks pass; not packaged |
+| 28 | **Rehearsal coach** | ★★ | M | Built for review: per-take pace, qualified sentence coverage/reread prompts and optional recognised filler/repetition aggregates. Counting defaults off, uses existing active voice following only and adds no transcript/audio. Tools, take summary, saved Recordings, CLI/API and additive edit-pack report. Native/simulated speech checks pass; normal-voice acceptance remains |
 | 47 | **Components manager** | ★★ | M | Built for review: About > Components manages the optional offline model and bundled AI kit with status, Install/Reinstall/Remove and a separate Node.js check. Voice also has model repair/removal; the first-run offer remains. Failed repairs preserve previous files. Standalone kit and native Settings checks pass; not packaged yet |
 | 40 | **Choose your buttons and keys** | ★★ | S–M | Built for review: Controls > Buttons & keys learns plain keys/Shift combinations and controller buttons with shared pad actions, device overrides, pages, immediate saving and reset. Reserved shortcuts remain intact; typing, editing and Settings suspend actions. Native key and simulated button checks pass; physical controller/pedal acceptance remains |
 | 57 | **Debug capture override** | ★★ | S | Built for the next candidate: About > Debug permits all existing and newly opened windows in captures, with a persistent warning and phone notice. Session-only; restores current normal preferences and resets on restart. Native policy, lifecycle and restore checks pass; awaiting review and packaging |
@@ -120,11 +123,9 @@ waits for the signing arrangements and Joanne's accounts; it is not in this RC.
 | #   | Item | Value | Size | Notes |
 | --- | ---- | ----- | ---- | ----- |
 | 27  | **Code signing for Windows and Mac:** no more "unknown publisher" warnings | ★★★ | S | Moved up from Later. Needs a code-signing certificate and an Apple Developer account (Joanne's decision) |
-| 28  | **Rehearsal coach:** after a practice run, pace by section, lines skipped, "um"s and sentences you stumbled on, all on the computer | ★★ | M | Same speech engine as voice scrolling |
 | 29  | **Automatic updates:** new versions download and install themselves, so users get fixes without reinstalling | ★★ | M | Moved up from Later. Best done with code signing (27), which Mac updates need |
 | 53 | **Optional Zoom controls:** investigate microphone, camera and bringing the meeting forward from Sightline, with phone, voice and control-window actions | ★ | To assess | Joanne requested, 29 Oct. Feasibility first: Zoom's [Plugin SDK](https://developers.zoom.us/docs/plugin-sdk/) connects native Windows/macOS companion apps to the installed Zoom Workplace client. Assess permissions, distribution and dependable state feedback before implementation. Off by default; independent of normal prompting. Not built or scheduled for release |
 | 54 | **Optional Teams controls:** investigate microphone, camera and bringing the meeting forward from Sightline | ★ | To assess | Joanne requested, 29 Oct. [Elgato reports](https://www.elgato.com/us/en/explorer/products/stream-deck/control-microsoft-teams-meetings-with-stream-deck/) the previous third-party API was discontinued. Keyboard shortcuts require Teams to be in the foreground and do not verify mic/camera state. Assess a maintainable approach; show unverified actions as command sent, not confirmed state. Off by default; not built or scheduled for release |
-| 30  | **Script health check in the editor:** reading time per section, and flags on sentences too long for one breath and on tongue-twisters | ★ | S | |
 | 31  | **Scripts folder sync:** choose a OneDrive, Dropbox or other folder, and scripts saved there from another computer appear in Sightline | ★ | S | |
 | 32  | **Advance slides at cue words:** when you say a slide-cue phrase, press the next-slide key in PowerPoint or Keynote, for live talks and webinars | ★ | M | Builds on the slide-cue highlighting that's already there |
 | 34  | **Record a quick take:** webcam and microphone recording inside Sightline, one file per take, named and rated from the take log, for people with no recording software | ★ | L | Joanne's idea, 28 Oct. Not for masters: browser-engine encoding is fine for reference copies but below Riverside's local 4K quality |

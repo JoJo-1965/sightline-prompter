@@ -16,6 +16,31 @@ For the development OBS workflow, [From recording to the editor](https://github.
 is the illustrated checklist for setup, retakes, keeper choices and collecting
 the master recordings alongside each module's pack.
 
+## Rehearsal review (next candidate)
+
+`rehearsal-coach.json` is an additive, derived report. It includes `version`,
+`basis` and `takes`. Each take identifies its section, take number, status,
+rating, duration, `pace` (the existing definitions below), `coverageAvailable`,
+`matched`, `total`, optional `fillers` and `lines`.
+
+Each line retains its sentence ID, zero-based section, word-index range and
+text, adding `matched`, `total`, `status` and `rereads`. Status is `matched`,
+`partly-matched`, `not-matched`, `outside-read-range` or `unavailable`. No word
+timing means unavailable, not missed speech. Coverage uses saved alignment,
+including the aligner's interpolation; it is not an independent transcript audit.
+Partial starts/unreached tails and recognition errors must not become automatic cuts.
+
+When explicitly enabled during voice following, a take adds `speechReview`:
+`engine`, `chunks`, `recognisedWords`, a `fillers` count map and `repeatedPairs`.
+The coach exposes the same aggregate as `fillers`; absent/older data gives
+null. Counts cover enabled active periods only, after command filtering and
+outside holds/mute. They add no transcript or audio, and may include scripted
+fillers or miss sounds omitted by the recogniser. Rereads/repetition may be
+deliberate. Never change a keeper choice from coaching estimates alone.
+
+The UI and `sightline.mjs coach [script] [date] --json` use the same definitions.
+Existing CSV columns, take fields and edit choices retain their meanings.
+
 ## The clock
 
 Every time is in **seconds on the session clock**. Time 0 is the first
@@ -83,6 +108,7 @@ included or excluded the guide; inspect the recorded picture.
 | `takes.csv` | One row per take: section, title, take, start, end, duration, status, rating, slate, use, wall-clock times, markers, then its pace (below) |
 | `sentences.csv` | One row per sentence per take: when it was said, how many of its words were said, whether it's complete, any words missing, and its text |
 | `words.csv` | One row per word said: section, take, sentence, word index, the word as written, start, end |
+| `rehearsal-coach.json` | Derived per-take pace, sentence alignment/reread prompts and optional aggregate filler/repetition counts; never an automatic edit decision |
 | `edit-marks.csv` and `edit-marks.json` | Places worth knowing about, in time order (below) |
 | `captions.srt` and `captions.vtt` | Captions for every take, on the session clock, in the script's own wording and spelling, at most two lines of about 42 characters |
 | `scratch-audio/` | Scratch audio files, if it was on (see [Scratch audio](#scratch-audio)) |

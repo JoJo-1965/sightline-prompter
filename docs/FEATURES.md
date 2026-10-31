@@ -188,6 +188,14 @@ The whole workflow is in the guide:
 
 ## Scrolling and pacing
 
+- **Rehearsal coach, next candidate:** saved-take pace, sentence alignment
+  coverage, lines outside the matched reading range and logged rereads.
+  Optional recognised filler/repetition counts default off and collect only
+  during active voice following. No extra mic listener, transcript or audio.
+  Recognition errors and deliberate wording can affect the results; the
+  coach does not score speakers or change keeper choices. Available in the
+  take summary, Tools, Recordings, CLI/API and additive edit-pack report.
+
 - **Steady scrolling** at a set words per minute, with ↑ and ↓ to adjust it on
   the fly, and a countdown before it starts.
 - **Section targets** (`{target: 1:20}` or `{wpm: 140}`) set the pace section
@@ -245,6 +253,12 @@ The whole workflow is in the guide:
   beep.
 
 ## Scripts
+
+- **Script health, next candidate:** editor button and Tools review window.
+  Uses current unsaved text, with per-section word/time estimates, section
+  pace/targets, timed-pause information, long-sentence prompts and similar
+  word starts to try aloud. Spoken quoted directions count; headings,
+  unspoken directions, code and commands do not. Nothing rewrites the script.
 
 - Opens **Word, rich text, plain text, PDF and Google Docs links** as well as
   Markdown and HTML. PDFs have their paragraphs and headings rebuilt; Google

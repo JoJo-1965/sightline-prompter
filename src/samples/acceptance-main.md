@@ -2,6 +2,8 @@
 
 # Sightline acceptance · module A
 
+[OPTIONAL REVIEW. In the next candidate, use Script health in the editor before reading. After recording, use Rehearsal in the review panel. Filler counts need a separate opt-in under Settings > Recording > Takes. These review tools are not in RC14.]
+
 [SETUP FIRST. Read the Release-candidate acceptance test in Help > User Guide before recording. Use the OBS profile in Stream Deck, voice scrolling and your normal camera and microphone positions. Leave the prompter paused until you are ready.]
 
 [Check OBS is connected and recording controls are allowed. Prepare the recorded slate, choose Flash and beep, and enable scratch audio. The script does not enable these settings for you.]

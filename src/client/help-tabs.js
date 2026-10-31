@@ -37,6 +37,11 @@ export function helpTabs( settings, notes = false ) {
 	if ( notes ) readingSections.push( get( "Notes" ) );
 	if ( settings.scrollMode === "voice" ) readingSections.push( get( "Voice scroll sync" ) );
 	const recording = [ takes ];
+	recording.push( section( "Rehearsal review", [
+		[ "Tools > Script & rehearsal review", "Review finished takes: pace, sentence alignment and logged rereads. Unmatched text is not proof of a missed line" ],
+		[ "Recordings > Coach", "Review an earlier saved session; its edit pack also includes rehearsal-coach.json" ],
+		[ "Recording > Takes", "Optional recognised filler/repetition counts during voice following only; off by default, with no extra transcript/audio" ]
+	] ) );
 	if ( settings.obsEnabled ) {
 		const rows = [
 			[ "Settings > Recording > OBS connection", "Saved address, port and protected password; Apply, then Test saved connection" ],

@@ -126,6 +126,14 @@ advertising trackers. That does not mean every feature is offline:
 - Update checks contact GitHub with a version-bearing request. They are
   enabled by default and can be switched off; updates are not installed
   automatically.
+- Optional rehearsal filler/repetition counting defaults off. When enabled
+  in Recording > Takes, it uses recognised words already supplied by your
+  selected voice engine during active following, after command filtering and
+  outside holds/mute. Only counts are added to takes and edit packs, not an
+  extra transcript or audio file. It starts no extra listener. Recognition
+  and existing heard-log behaviour otherwise remain as described above;
+  Deepgram still sends audio online if you selected it. Script-health review
+  processes the current script/editor draft locally and never saves it itself.
 - The local speech model is downloaded from Hugging Face when requested.
   Reinstall downloads it again. The optional AI kit is copied from the app
   into its own managed local folder; installing it does not enable the API or

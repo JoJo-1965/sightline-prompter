@@ -73,6 +73,11 @@ the total spoken time at the script's pace, and anything you weren't sure of.
 To put the script straight into the prompter, use the `sightline-session`
 skill (`load` into a slot).
 
+In the next candidate, the editor's **Script health…** checks unsaved text,
+estimates section delivery time and flags long sentences/similar word starts.
+It is an optional editorial aid, not a directive validator or a reason to
+invent compulsory markup. Keep using the script checker above.
+
 ## Don't
 
 - Don't change the Sightline app or its repo: it's only read for the spec and

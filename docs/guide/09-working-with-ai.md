@@ -127,14 +127,33 @@ to cut the chosen take of each section together, in script order. With the
 [slate](05-recording-a-take.md#the-slate) turned on, every take's times line
 up with the recording from the first beep or flash.
 
+## Review a rehearsal
+
+The next candidate's edit pack adds `rehearsal-coach.json`. The recordings
+API includes the same report as `coach` when you read a saved recording.
+From the source folder or installed AI kit:
+
+```
+node scripts/sightline.mjs coach "My script" 2026-10-31 --json
+```
+
+It returns per-take pace, sentence alignment coverage, logged rereads and
+optional aggregate filler/repetition counts. Unmatched text can reflect
+recognition errors or intentional changes. Missing word timings mean
+unavailable coverage, not missed lines. Do not change keeper choices or cut
+footage solely from coaching estimates. `coachFillers` is protected from
+settings imports/API writes; the user enables it in Recording > Takes.
+
 ## Coming next
 
 The [roadmap](https://github.com/JoJo-1965/sightline-prompter/blob/main/ROADMAP.md) takes this further, in this order:
 
-- **Settings in its own window** (48), regrouped into more tabs, for
-  prompter monitors and second screens.
 - **Code signing** (27), so the installers don't trigger security warnings.
-- **Choose your own buttons** (40) for clickers, pedals and game controllers.
+- **Automatic updates** (29), alongside signing.
+
+Already built for candidate review: separate Settings (48), custom buttons
+(40), component/AI-kit installation (47), editor script health (30) and the
+rehearsal coach (28). They are not all in the installed RC14 yet.
 
 Already built: script lines that switch the microphone off for a demo
 (`{listen: off}`), commands in the script (`{prompter: …}`), and sound checks

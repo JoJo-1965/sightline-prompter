@@ -9,6 +9,7 @@
 
 const MIN_TAKE_SECONDS = 1.5;
 import { obsPosition } from "./obs-position.js";
+import { fillCounts } from "./script-health.js";
 
 const round = n => Math.round( n * 10 ) / 10;
 
@@ -58,6 +59,8 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [],
 			restarts: [],
 			offScript: [],
 			words: [],
+			speechReview: null,
+			reviewPrevious: null,
 			rereads: [],
 			rating: null,
 			slate: null,
@@ -114,6 +117,7 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [],
 			// ad-lib, a demo, questions) with the microphone off: { start, end }.
 			offScript: done.offScript.map( o => ( { start: o.start, end: o.end ?? since( end ) } ) ),
 			words: done.words,
+			speechReview: done.speechReview,
 			rereads: done.rereads,
 			sentences: sectionSentences( done.section - 1 ),
 			// The microphone's level over the take, as Sightline heard it:
@@ -195,6 +199,21 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [],
 				current.words.push( { i, w, t } );
 			}
 			if ( current.words.length % 10 < list.length ) version++;
+		},
+
+		// Optional aggregate counts only. No extra transcript or audio is retained.
+		reviewWords( words, engine = "local" ) {
+			if ( !current || !words.length ) return;
+			const review = current.speechReview ??= { engine, chunks: 0, recognisedWords: 0, fillers: {}, repeatedPairs: 0 };
+			review.chunks++;
+			review.recognisedWords += words.length;
+			for ( const [ word, count ] of Object.entries( fillCounts( words ) ) ) review.fillers[word] = ( review.fillers[word] ?? 0 ) + count;
+			for ( const word of words ) {
+				const key = word.toLowerCase().replace( /[^\p{L}\p{N}]/gu, "" );
+				if ( key.length > 1 && key === current.reviewPrevious ) review.repeatedPairs++;
+				if ( key ) current.reviewPrevious = key;
+			}
+			version++;
 		},
 
 		// label: the {marker: Label} name, or null. at: when, in ms (default

@@ -31,6 +31,42 @@ target, pace and result.
 Rehearsing? **Use these times as targets** writes each time into the script as
 `{target: m:ss}`, so your next take is paced to match your rehearsal.
 
+## Rehearsal coaching
+
+The next candidate adds **Rehearsal** in **Tools > Script & rehearsal review…**.
+Pause prompting before opening it. Choose a finished take to see speaking and
+overall pace, its target, sentence coverage and logged rereads. The latest
+finished take is selected first. The take summary has **Rehearsal coach…**;
+**Files > Recordings > Coach…** opens the report for an earlier saved session.
+The report identifies whether it is showing the current or a saved session.
+
+**Partly matched** and **Not matched** mean the voice aligner did not place
+all those script words. Recognition errors, paraphrasing and deliberate cuts
+can cause that too. **Outside the matched reading range** includes unreached
+text and partial starts. These are not confirmed missed lines. Rereads can be
+intentional. With steady scrolling, or older takes without word/sentence data,
+the report says alignment is unavailable instead of inventing missed lines.
+
+For optional filler feedback, open **Settings > Recording > Takes** and enable
+**Count recognised fillers and repeated words during voice takes**, then Apply.
+It defaults off and cannot be enabled by importing settings or through the API.
+It counts recognised **um, uh, erm and er** candidates and adjacent repeated
+word pairs, including across recogniser chunks. It uses your selected speech
+engine, starts no extra listener, and saves aggregate counts only: no extra
+transcript or audio. Deepgram remains online if you selected it.
+
+Counts cover only enabled, active voice periods. Commands, holds, off-script
+mute and commands-only listening are excluded. Engines may omit fillers;
+zero does not prove none were spoken, and scripted fillers can be counted.
+The coach gives no performance score and never changes keeper choices.
+
+The edit pack includes **rehearsal-coach.json**. The same report is available
+through the recordings API and `sightline.mjs coach … --json`.
+
+![Pace, coverage and optional recognised filler counts](images/rehearsal-coach.png)
+
+![Explicit opt-in for aggregate rehearsal counts](images/settings-coaching.png)
+
 ## Markers and retakes
 
 - Press **B** to drop a marker at the reading line when you fluff a line.

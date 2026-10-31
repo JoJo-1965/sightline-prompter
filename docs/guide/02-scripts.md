@@ -1,5 +1,29 @@
 # Writing scripts
 
+## Script health before you read
+
+In the next candidate, **Script health…** on the editor toolbar opens the
+**Script health** tab of **Script & rehearsal review**. It checks your current
+editor text, including unsaved changes, without saving or rewriting it.
+Outside the editor, use **Tools > Script & rehearsal review…** and select
+**Script health** to review the current rendered script.
+
+Choose a section and a default pace between 60 and 300 wpm. Section `{wpm}`
+values override that default. The reading estimate counts written body words;
+headings, unspoken `[directions]`, code and app directives do not count.
+Quoted `[Say: "words"]` do count. Section targets are shown alongside the
+estimate. Timed pauses are listed separately because they count down only in
+steady mode; stops, your own beats and ad-libs have no predictable duration.
+Notes-mode estimates cover written body text, not the words you improvise.
+
+Sentences of **30 words or more** get a prompt to consider a breath or a
+shorter sentence. Several similar word starts get a **try it aloud** prompt.
+These simple English spelling heuristics are suggestions, not errors or a
+pronunciation test. **Open section in editor** returns to that section without
+changing your text. Longer result lists use Previous/Next; Refresh checks again.
+
+![Section reading time and editorial prompts](images/script-health.png)
+
 ## File types
 
 ### Samples and safe copies

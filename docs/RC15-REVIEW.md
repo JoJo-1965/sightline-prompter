@@ -1,10 +1,40 @@
 # Next-candidate batch for review
 
-Prepared 30 October 2026. **RC15 has not been built or installed.** The work
+Updated 31 October 2026. **RC15 has not been built or installed.** The work
 is on `codex/obs-integration`; the installed RC14 remains available for testing.
 Publication, merging, tagging and website deployment remain on hold.
 
 ## Changes ready to review
+
+### Script health and rehearsal coach
+
+Roadmap **30** adds **Script health…** in the editor, using current text
+including unsaved changes. It gives per-section word/time estimates, pace
+and targets, timed-pause information and optional delivery prompts for long
+sentences or similar word starts. It excludes non-spoken directions, headings,
+code and commands, includes quoted directions, and can return to the section.
+
+![Script health in the editor](guide/images/script-health.png)
+
+Roadmap **28** adds **Rehearsal** in the same review window, plus take-summary
+and Recordings entry points. It shows finished-take pace, sentence coverage,
+unmatched/unreached wording and logged rereads. Recognition estimates do not
+change keepers or editing choices. The optional recognised filler/repetition
+counts default off, use active voice following only, and add no new listener,
+transcript or audio. The preference is protected from API/import changes.
+
+![Rehearsal feedback](guide/images/rehearsal-coach.png)
+
+![Optional aggregate counting](guide/images/settings-coaching.png)
+
+`rehearsal-coach.json`, the recordings API and the CLI `coach` verb share the
+same derived report. Existing CSV columns and edit choices keep their meanings.
+Native checks cover the editor, unsaved text, speech exclusions, section jump,
+tab accessibility and saved takes. A silent generated stream/stub recogniser
+checks command filtering, holds, mute and commands-only exclusion. No real
+microphone, speaker, camera or OBS recording is used by those checks.
+
+### Other changes in this batch
 
 | Change | Result |
 | --- | --- |
@@ -60,6 +90,13 @@ recorded the guide; inspect the recorded picture.
 ![Studio layout in landscape](guide/images/phone-landscape.png)
 
 ## Verification
+
+- Script/rehearsal unit checks cover editorial estimates, qualified coverage,
+  missing data, aggregate counts, CLI output and additive exports. The native
+  editor test includes a silent generated stream/stub recogniser to verify
+  command, hold, mute and commands-only exclusion without real media capture.
+- Trusted Settings input verifies default-off coaching counts, Apply and
+  opt-out. API/import protection is checked alongside the existing permissions.
 
 - Unit checks cover settings validation, protected fields, structured JSON/XML
   round trips, capture-policy restoration, new windows and close cleanup.

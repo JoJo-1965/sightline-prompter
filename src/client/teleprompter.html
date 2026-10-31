@@ -476,6 +476,21 @@
     <div id="cb-progress-text"></div>
     <div id="on-air" class="hidden" role="status">ON AIR</div>
     <div id="pacing" class="hidden" role="status" aria-live="polite"></div>
+    <div id="script-review" class="modal hidden">
+      <div class="modal-content review-content" role="dialog" aria-modal="true" aria-labelledby="review-title">
+        <h3 id="review-title">Script &amp; rehearsal review</h3>
+        <div class="help-tabs" role="tablist" aria-label="Review topics"><button type="button" id="review-health-tab" data-review-tab="health" role="tab" aria-controls="review-panel">Script health</button><button type="button" id="review-coach-tab" data-review-tab="coach" role="tab" aria-controls="review-panel">Rehearsal</button></div>
+        <div id="review-panel" role="tabpanel" aria-labelledby="review-health-tab">
+          <p id="review-source" class="field-hint"></p>
+          <label id="review-pace">Default pace <input id="review-wpm" type="number" min="60" max="300" value="145" required /> wpm (section pace overrides)</label>
+          <label><span id="review-item-label">Section</span> <select id="review-item"></select></label>
+          <p id="review-overview" role="status" aria-live="polite"></p>
+          <div id="review-body"></div>
+        </div>
+        <nav id="review-pages" class="pad-choice-pages" aria-label="Review result pages"><button type="button" id="review-prev">Previous</button><span id="review-page" role="status"></span><button type="button" id="review-next">Next</button></nav>
+        <div class="modal-actions"><button type="button" id="review-refresh">Refresh</button><button type="button" id="review-close" class="primary">Close</button></div>
+      </div>
+    </div>
     <div id="take-summary" class="modal hidden">
       <div class="modal-content summary-content" role="dialog" aria-modal="true" aria-labelledby="take-summary-title">
         <h3 id="take-summary-title">How the take went</h3>
@@ -491,6 +506,7 @@
         <p class="field-hint" id="take-summary-targets-hint">Rehearsing? <strong>Use these times as targets</strong> writes each time into the script as <code>{target: m:ss}</code> (to the nearest 5 seconds), replacing any target that section had. Sections you started part-way through are left alone.</p>
         <div class="modal-actions">
           <button id="take-summary-export" type="button">Export take log…</button>
+          <button id="take-summary-coach" type="button">Rehearsal coach…</button>
           <button id="take-summary-targets" type="button">Use these times as targets</button>
           <button id="take-summary-close" type="button" class="primary">Close</button>
         </div>
@@ -536,6 +552,7 @@
           </div>
           <div class="modal-actions">
             <button id="recording-back" type="button">← All recordings</button>
+            <button id="recording-coach" type="button">Coach…</button>
             <button id="recording-delete" type="button" class="danger">Delete…</button>
             <button id="recording-zip" type="button">Export as zip…</button>
             <button id="recording-export" type="button" class="primary">Export edit pack…</button>
@@ -577,6 +594,7 @@
       <div id="editor-toolbar">
         <span class="toolbar-dirty hidden" id="toolbar-dirty">●</span>
         <span class="toolbar-filename" id="toolbar-filename">No file open</span>
+        <button id="btn-script-health" type="button">Script health…</button>
         <button id="btn-save" class="primary">Save</button>
         <button id="btn-save-as">Save As</button>
         <button id="btn-cancel">Cancel</button>
@@ -680,6 +698,11 @@
             >Countdown before scrolling (seconds)
             <input id="set-countdown" type="range" min="0" max="10" step="1" />
           </label>
+        </fieldset>
+        <fieldset data-tab="recording">
+          <legend>Rehearsal coaching</legend>
+          <label class="check"><input id="set-coach-fillers" type="checkbox" /> Count recognised fillers and repeated words during voice takes</label>
+          <p class="field-hint" data-essential>Off by default. Saves counts with the take, without extra transcripts or audio. Uses the speech engine you selected; it never starts another listener. Commands and held/off-script periods are excluded. Recognition may omit fillers or count scripted wording. Apply saves this choice.</p>
         </fieldset>
         <fieldset data-tab="recording">
           <legend>Slate</legend>

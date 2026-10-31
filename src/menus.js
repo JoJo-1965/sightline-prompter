@@ -55,6 +55,7 @@ export function buildMenus( browserWindow, {
 			item( "Reset speed", "menuAdjustAutoScrollSpeed", "CmdOrCtrl+\\", "reset" )
 		] },
 		{ label: "Tools", submenu: [
+			item( "Script & rehearsal review…", "menuReview" ),
 			item( "Sound check", "menuSoundCheck", "CmdOrCtrl+Shift+D" ),
 			{ label: "Head guide / unlock (Ctrl+Shift+H)", type: "checkbox", checked: !!settings.showHeadGuide, click: () => toggleHeadGuide?.() },
 			{ label: "Guide fullscreen / restore (Ctrl+Alt+H)", type: "checkbox", checked: !!settings.showHeadGuide && !!settings.headGuideFullscreen, click: () => toggleHeadGuideFullscreen?.() },

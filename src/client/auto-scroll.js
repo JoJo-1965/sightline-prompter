@@ -282,6 +282,7 @@ export async function startAutoScroll( {
 	onScroll,
 	onFollow = null, // ({ from, to, start, end, ranges }): script words passed, and when they were said
 	onHeard = null, // ({ heard, final, from, to, script }): every chunk heard, for the heard log
+	onReview = null, // command-filtered word deltas, only during active voice following
 	onCommand = null,
 	onWake = () => {}, // the wake word was heard
 	onMiss = () => {}, // ( words ): what followed it wasn't a command
@@ -348,7 +349,8 @@ export async function startAutoScroll( {
 				script: wordIndex.ranges.slice( from, to + 1 ).map( r => r.toString().trim() ).join( " " )
 			} );
 		};
-		const words = wordFixer.join( takeCommands ? takeCommands( heard, final ) : heard );
+		const spoken = takeCommands ? takeCommands( heard, final ) : heard;
+		const words = wordFixer.join( spoken );
 		if ( !followScript || held || !words.length ) {
 			logHeard( before );
 			return;
@@ -374,6 +376,7 @@ export async function startAutoScroll( {
 				} );
 			}
 		}
+		if ( !muted ) onReview?.( { words: spoken, engine } );
 		onStatus?.( {
 			type: "transcript",
 			wordIdx: newPos,

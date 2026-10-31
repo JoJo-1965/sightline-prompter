@@ -236,3 +236,14 @@ distinguish Sightline's input from another app's recording fader.
 - Don't send take logs, scripts or packs to any online service unless the
   user asks: they hold the user's script.
 - Don't change Sightline's settings unless the user asks.
+
+## Review a rehearsal (next candidate)
+
+`node "<sightline>/scripts/sightline.mjs" coach "Script name" yyyy-mm-dd --json`
+reads the saved session's per-take pace, sentence coverage/rereads and optional
+recognised filler/repetition counts. The edit pack has the same report in
+`rehearsal-coach.json`; GET /recording adds `coach`. Unmatched lines can be
+recognition errors, deliberate changes or partial readings. No word timings
+means unavailable coverage, not missed speech. Never change keepers or make
+automatic cuts solely from this report. Filler counting defaults off and is
+protected from API/import changes; the user enables it in Recording > Takes.

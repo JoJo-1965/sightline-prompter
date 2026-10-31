@@ -132,6 +132,23 @@ actual build versions, recording filenames, pack folders and any existing
 OBS audio offset with the results. A ready indicator, successful install or
 browser acknowledgement is not proof of a correct physical recording.
 
+## Script health and rehearsal feedback in the next candidate
+
+1. Open the acceptance script in the editor and select **Script health…**.
+   Check the section estimate, then make an unsaved wording change and Refresh.
+   The review should update without saving. A flagged sentence's **Open section
+   in editor** should return you to its section without rewriting it.
+2. If wanted, enable recognised filler/repetition counts in **Recording > Takes**
+   and Apply before a voice rehearsal. Read normally; include a deliberate
+   repeat, a small wording change and a pause. Finish the take before review.
+3. Open **Tools > Script & rehearsal review… > Rehearsal**. Inspect pace,
+   qualified coverage/reread prompts and any recognised filler candidates.
+   Compare them with the recording. Engines can omit fillers or misalign words;
+   do not treat zero/missing matches as proof. Keeper choices must stay intact.
+4. Export the pack and confirm `rehearsal-coach.json` is present. Reopen the
+   saved session through **Recordings > Coach…**. With counting off, no new
+   filler aggregates should be added; existing saved counts remain available.
+
 ## Optional components and custom inputs in the next candidate
 
 These additions are absent from installed RC14. After an approved build:

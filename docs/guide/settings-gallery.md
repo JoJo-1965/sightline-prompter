@@ -74,7 +74,14 @@ Mirroring has one Settings home here, alongside the window and monitor controls.
 
 ### Takes
 
-![Slate and take display](images/settings-recording.png)
+The next candidate adds optional recognised filler/repetition counts. The
+choice defaults off and is saved with Apply. It starts no additional listener.
+
+![Optional rehearsal aggregate counting](images/settings-coaching.png)
+
+![Coaching preference and slate, first page](images/settings-recording.png)
+
+![Take display and capture controls, second page](images/settings-recording-page-2.png)
 
 ### Audio
 

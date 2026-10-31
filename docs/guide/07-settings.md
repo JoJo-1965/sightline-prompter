@@ -53,6 +53,7 @@ without disappearing as you move the pointer onto it.
 | | Spacing | Margins, line spacing, reading line and alignment |
 | | Screens | Beam-splitter mirroring, prompter monitor, Keep on top, eye-line strip and keeping controls visible |
 | **Recording** | Takes | Slate, ON AIR display, countdown beep, capture protection and click-through |
+| | Takes: rehearsal coaching | Optional recognised filler/repetition counts during active voice following; Apply to save |
 | | Audio | Scratch audio, loudness per take and keeping the sound-check meter visible |
 | **Controls** | Pad | Select and arrange shared pad/phone buttons, columns and presets |
 | | Buttons & keys | Learn local keys, clicker/pedal inputs and controller buttons; choose actions and reset |

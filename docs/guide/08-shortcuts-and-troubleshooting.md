@@ -10,6 +10,12 @@ reproduce it, then switch tracing off. See [Listening recovery](03-scrolling-and
 **Customise** on the pad. Selection and order are shared; Stream Deck
 profiles keep their physical key assignments.
 
+**Reviewing delivery:** **Script health…** in the editor checks current text,
+including unsaved changes. **Tools > Script & rehearsal review…** has the
+same check and a Rehearsal tab for finished takes. **Recordings > Coach…**
+reviews a saved session. Pause prompting first. Missing alignment is not proof
+of missed speech, and optional filler counting must be enabled for future takes.
+
 ## Keyboard shortcuts
 
 **Ctrl+Alt+H** (Cmd+Alt+H on Mac) toggles the head guide between borderless

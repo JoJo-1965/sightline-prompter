@@ -3,6 +3,7 @@ import { markdown } from "@codemirror/lang-markdown";
 import { languages } from "@codemirror/language-data";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { Compartment, EditorState } from "@codemirror/state";
+import { sectionLine } from "./script-health.js";
 
 const access = new Compartment();
 const editorAccess = readOnly => [ EditorState.readOnly.of( readOnly ), EditorView.editable.of( !readOnly ), EditorView.contentAttributes.of( { "aria-readonly": String( readOnly ), tabindex: "0" } ) ];
@@ -68,4 +69,10 @@ export function getEditorContent( view ) {
 export function getCursorLine( view ) {
 	const pos = view.state.selection.main.head;
 	return view.state.doc.lineAt( pos ).number;
+}
+
+export function selectSection( view, section ) {
+	const anchor = view.state.doc.line( sectionLine( view.state.doc.toString(), section ) ).from;
+	view.dispatch( { selection: { anchor }, effects: EditorView.scrollIntoView( anchor, { y: "start" } ) } );
+	view.focus();
 }

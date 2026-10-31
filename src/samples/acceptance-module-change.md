@@ -38,3 +38,5 @@ guide in the picture. Scratch audio should still be available independently.
 [A15. At the stop press Keeper, then Finish recording on Stream Deck. Wait for OBS to confirm it is stopped. Do not use Play / Pause as a recording-stop key.]
 
 I am ready to finish the recording. {stop}
+
+[AFTER RECORDING. In the next candidate, open Tools > Script & rehearsal review. Compare lines marked for review with the recording before deciding what needs another take. The edit pack includes rehearsal-coach.json.]

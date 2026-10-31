@@ -20,6 +20,10 @@ import { createMappingSettings } from "./mapping-settings.js";
 import { keyInput, normaliseMappings, mappedAction, createButtonEdges } from "./input-mappings.js";
 import { controlAction, controlView } from "./control-actions.js";
 import { createComponentSettings } from "./component-settings.js";
+import { healthSections } from "./health-script-dom.js";
+import { scriptHealth } from "./script-health.js";
+import { rehearsalCoach } from "./rehearsal-coach.js";
+import { createScriptReview } from "./script-review.js";
 import {
 	startSteadyScroll,
 	stopSteadyScroll,
@@ -152,6 +156,8 @@ let syncPadSettings = () => {};
 let mappingSettings = null;
 let componentSettings = null;
 let modelMaintenance = false;
+let scriptReview = null;
+let reviewedRecording = null;
 let cuePhrases = [];
 let lastScriptHtml = null;
 let sourceSnapshot = null;
@@ -592,6 +598,7 @@ function loadEditorContent( content, filePath, access = {} ) {
 		window.EditorModule.setEditorReadOnly( editorView, editorReadOnly );
 	} else {
 		editorView = window.EditorModule.createEditor( editorDiv, rawContent, () => {
+			scriptReview?.changed();
 			if ( !isDirty && !isLoadingContent ) {
 				setDirty( true );
 			}
@@ -1509,6 +1516,9 @@ async function beginVoice( engine, deepgramKey ) {
 			onScroll: handleAutoScrollPosition,
 			onFollow: logSpokenWords,
 			onHeard: entry => window.electron.appendHeardLog( entry ),
+			onReview: ( { words, engine: usedEngine } ) => {
+				if ( settings.coachFillers === true && !offScript && !cuePaused ) recording.reviewWords( words, usedEngine );
+			},
 			wordFixes: settings.wordFixes ?? [],
 			soundAlike: settings.soundAlike !== false,
 			commandWords: settings.commandWords ?? [],
@@ -2553,6 +2563,7 @@ async function openSettings() {
 	field( "set-voice-commands" ).value = settings.voiceCommands ?? "voice";
 	field( "set-wake-word" ).value = settings.wakeWord ?? "prompter";
 	field( "set-scratch-audio" ).checked = settings.scratchAudio === true;
+	field( "set-coach-fillers" ).checked = settings.coachFillers === true;
 	field( "set-take-loudness" ).value = settings.takeLoudness ?? "voice";
 	field( "set-sound-check-takes" ).checked = settings.soundCheckDuringTakes === true;
 	field( "set-sound-alike" ).checked = settings.soundAlike !== false;
@@ -2938,6 +2949,7 @@ async function saveSettingsPage( close = true ) {
 		voiceCommands: field( "set-voice-commands" ).value,
 		wakeWord: field( "set-wake-word" ).value,
 		scratchAudio: field( "set-scratch-audio" ).checked,
+		coachFillers: field( "set-coach-fillers" ).checked,
 		takeLoudness: field( "set-take-loudness" ).value,
 		soundCheckDuringTakes: field( "set-sound-check-takes" ).checked,
 		soundAlike: field( "set-sound-alike" ).checked,
@@ -3798,6 +3810,9 @@ function renderTools() {
 			[ "⛶", "Guide fullscreen / restore", "Ctrl+Alt+H", () => window.electron.headGuide( "fullscreen" ) ],
 			[ "★", "Keeper", "K", () => rateTake( "keeper" ) ],
 			[ "✗", "Scrap take", "Shift+K", () => rateTake( "scrap" ) ]
+		] ],
+		[ "Review", [
+			[ "▤", "Script & rehearsal review…", "", () => openScriptReview(), { disabled: isScrolling() } ]
 		] ],
 		[ "Quick adjustments", [
 			[ "▤", "Spacing and mirror…", "Ctrl+Shift+K", () => toggleLayoutView( "layout" ) ],
@@ -6100,6 +6115,10 @@ function closeTakeSummary() {
 
 onClick( "take-summary-close", closeTakeSummary );
 onClick( "take-summary-export", () => window.electron.exportTakeLog() );
+onClick( "take-summary-coach", () => {
+	closeTakeSummary();
+	openScriptReview( "coach" );
+} );
 // The saved log for this script and day, so take numbers carry on.
 window.electron.onTakeLog( ( saved ) => {
 	recording.load( saved );
@@ -6217,6 +6236,10 @@ field( "recording-title" ).addEventListener( "change", e => updateOpenRecording(
 field( "recording-note" ).addEventListener( "change", e => updateOpenRecording( { note: e.target.value } ) );
 field( "recording-processed" ).addEventListener( "change", e => updateOpenRecording( { processed: e.target.checked } ) );
 onClick( "recording-back", showRecordingsList );
+onClick( "recording-coach", async () => {
+	const saved = await window.electron.recordings( "read", { id: openRecordingId } );
+	if ( saved?.coach ) openScriptReview( "coach", { ...saved.coach, sourceLabel: `Saved recording: ${ saved.title ?? saved.id }` } );
+} );
 onClick( "recording-export", async () => {
 	const { saved } = await window.electron.recordings( "export", { id: openRecordingId } );
 	if ( saved ) showToast( `Edit pack saved: ${ saved }`, 2500 );
@@ -6332,6 +6355,28 @@ document.addEventListener( "mousemove", ( e ) => {
 } );
 
 window.electron.onToast( text => showToast( text ) );
+
+function openScriptReview( tab = isEditMode ? "health" : "coach", saved = null ) {
+	if ( isScrolling() || autoScrollStarting || slating ) {
+		showToast( "Pause prompting before opening the review" );
+		return;
+	}
+	reviewedRecording = saved;
+	scriptReview.open( tab );
+}
+scriptReview = createScriptReview( field( "script-review" ), {
+	health: async ( wpm ) => {
+		const html = isEditMode && editorView ? await window.electron.scriptReviewHtml( window.EditorModule.getEditorContent( editorView ) ) : lastScriptHtml ?? md.innerHTML;
+		const parsed = healthSections( html );
+		return { ...scriptHealth( parsed.sections, wpm ), notes: parsed.notes || pointsMode(), sourceLabel: isEditMode ? "Current editor text, including unsaved changes" : "Current script" };
+	},
+	coach: async () => reviewedRecording ?? rehearsalCoach( recording.data() ),
+	canJump: () => isEditMode && !!editorView,
+	jump: section => window.EditorModule.selectSection( editorView, section )
+} );
+onClick( "btn-script-health", () => openScriptReview( "health" ) );
+window.electron.onMenuReview( () => openScriptReview() );
+makeMovable( field( "script-review" ).querySelector( ".review-content" ), field( "review-title" ), "script-review" );
 
 // Controller actions use the same guards as the pad; no synthetic key events.
 const buttonEdges = createButtonEdges();

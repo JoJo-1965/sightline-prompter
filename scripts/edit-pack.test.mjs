@@ -86,7 +86,7 @@ assert.equal( takeCues( old )[0].text.startsWith( "Have you ever" ), true );
 const pack = editPack( data, "# brief" );
 assert.deepEqual( Object.keys( pack ).sort(), [
 	"README.md", "captions.srt", "captions.vtt", "edit-marks.csv", "edit-marks.json",
-	"sentences.csv", "take-log.json", "takes.csv", "words.csv"
+	"rehearsal-coach.json", "sentences.csv", "take-log.json", "takes.csv", "words.csv"
 ] );
 assert.match( pack["words.csv"], /^section,take,sentence,word_index,word,start,end\r\n1,1,1,1,Have,3,3\.2\r\n/ );
 assert.match( pack["sentences.csv"], /1,1,yes,2,4\.6,[\d.]+,3,4,no,us,Most of us have\./ );

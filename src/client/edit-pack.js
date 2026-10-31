@@ -8,6 +8,7 @@
 // them. See docs/EDIT-PACK.md.
 
 import { pickTakes, takeLogCsv, timedWords, PAUSE } from "./take-log.js";
+import { rehearsalCoach } from "./rehearsal-coach.js";
 
 export { timedWords };
 
@@ -245,6 +246,7 @@ export function editPack( data, readme = "" ) {
 	const marks = ( data.takes ?? [] ).flatMap( take =>
 		takeMarks( take ).map( m => ( { section: take.section, take: take.take, ...m } ) ) );
 	const files = {
+		"rehearsal-coach.json": JSON.stringify( rehearsalCoach( data ), null, 2 ),
 		// Sections worked out again, so a log saved before the pace was added has it too.
 		"take-log.json": JSON.stringify( { ...data, sections: pickTakes( data.takes ?? [] ) }, null, 2 ),
 		"takes.csv": takeLogCsv( data ),

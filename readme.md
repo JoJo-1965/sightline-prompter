@@ -257,9 +257,20 @@ The batch also adds **About > Components** for model/AI-kit installation,
 repair and removal, plus a Node.js check. **Controls > Buttons & keys** learns
 keyboard, clicker, pedal and controller inputs, with action choices and reset.
 The batch is awaiting review; RC15 has not been built or installed.
+It now includes **Script health** in the editor and a **Rehearsal** review tab:
+section reading estimates, delivery prompts, take pace, alignment coverage and
+logged rereads. Recognised filler/repetition counts are optional aggregates
+attached to voice takes; no extra listener, transcript or audio is added.
 The latest published app remains **1.0.6**. No tag, merge, Marketplace publication or
 website deployment is part of this candidate.
 
+- **Review before and after a take:** **Script health…** in the editor checks
+  current text, including unsaved changes. It estimates section reading time,
+  flags sentences of 30 words or more and suggests trying similar word starts
+  aloud. **Tools > Script & rehearsal review…** and **Recordings > Coach…**
+  show take pace, unmatched sentence words and logged rereads. These are review
+  prompts, not proof of a delivery error. Optional filler counts are under
+  **Recording > Takes**; `rehearsal-coach.json` travels with the edit pack.
 - **Components in one place:** **Settings > About > Components** shows the
   offline speech model, bundled AI kit and Node.js status. Install, Reinstall
   and Remove manage Sightline's own copies; Node.js uses its own installer.
