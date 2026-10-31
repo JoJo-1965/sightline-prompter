@@ -8,7 +8,7 @@ In the next candidate, OBS topics are under **Settings > Recording**. On **OBS r
 **Prepare recorded slate** explains any unmet prerequisite, then displays
 progress, readiness or errors beside the button. Apply permission changes first.
 
-**1.0.7 release candidate: built, not publicly released.** These instructions
+**1.1.0 release candidate: built, not publicly released.** These instructions
 describe roadmap item 52 in the local Windows test build. Use the private
 Stream Deck **0.1.9** companion for the recording keys. The published 1.0.6
 app does not contain this OBS integration. Follow the

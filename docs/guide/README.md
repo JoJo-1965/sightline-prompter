@@ -10,10 +10,13 @@ the take, and the take log goes back to your AI for the edit. See
 The script floats over your screen, close to the webcam, and scrolls at a
 steady pace or follows your voice.
 
-**1.0.7 release candidate:** this guide describes the local Windows candidate,
+**1.1.0 release candidate:** this guide describes the local Windows candidate,
 including OBS recording, the head guide and regrouped Settings. The published
 download is still **1.0.6**, whose bundled guide describes its earlier menus.
 The companion Stream Deck test plugin is **0.1.9** and remains private.
+The next build is **1.1.0-rc.1** (not yet packaged), replacing the planned
+RC15 name. The installed app stays **1.0.7-rc.14**. RC1–RC14 below describe
+that earlier preview series; no public 1.0.7 release was made.
 RC1 established the feature baseline; RC2 refreshes the bundled documentation
 and adds the reusable acceptance samples. RC3 adds compatibility reporting in
 Sightline and the plugin. These are local test builds, not public releases.

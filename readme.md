@@ -25,7 +25,7 @@ audio is a timing reference; OBS or your usual tool supplies the production mast
 > Everything from the original still works. See the [change log](#change-log)
 > for the details, and **Help > About** in the app for credits.
 
-**Testing 1.0.7:** this branch contains the local Windows release candidate,
+**Testing 1.1.0:** this branch contains the local Windows release candidate,
 with OBS support, the head guide and the Settings/help updates. Use the private
 Stream Deck 0.1.9 companion and the [acceptance walkthrough](docs/guide/14-acceptance-test.md).
 The latest public download remains 1.0.6; candidate builds are not published.
@@ -226,7 +226,13 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ## Change log
 
-### 1.0.7 release candidate (30 October 2026; unpublished)
+### 1.1.0 (in development; unpublished)
+
+The next candidate is **1.1.0-rc.1**, replacing the planned RC15 name. It has
+not been packaged or installed. The existing installation remains
+**1.0.7-rc.14**; identifiers below describe that earlier preview series.
+The latest public release is still **1.0.6**. Stream Deck **0.1.9** remains
+the matching companion. Scripts and additive edit-pack formats remain compatible.
 
 **Local Windows acceptance build:** RC1 established the feature baseline;
 RC2 refreshed its bundled help and added the reusable acceptance samples.
@@ -256,7 +262,7 @@ complete destination/version after an explicitly requested installation.
 The batch also adds top-level **Components** for model/AI-kit installation,
 repair and removal, plus a Node.js check. **Controls > Buttons & keys** learns
 keyboard, clicker, pedal and controller inputs, with action choices and reset.
-The batch is awaiting review; RC15 has not been built or installed.
+The batch is awaiting review; 1.1.0-rc.1 has not been built or installed.
 It now includes **Script health** in the editor and a **Rehearsal** review tab:
 section reading estimates, delivery prompts, take pace, alignment coverage and
 logged rereads. Recognised filler/repetition counts are optional aggregates
@@ -264,6 +270,9 @@ attached to voice takes; no extra listener, transcript or audio is added.
 The latest published app remains **1.0.6**. No tag, merge, Marketplace publication or
 website deployment is part of this candidate.
 
+- **Candidate versioning:** development now reports **1.1.0-rc.1**. Update
+  checks recognise a later RC or the final 1.1.0 release correctly; installed
+  1.0.7 previews remain traceable and published 1.0.6 history is retained.
 - **Review before and after a take:** **Script health…** in the editor checks
   current text, including unsaved changes. It estimates section reading time,
   flags sentences of 30 words or more and suggests trying similar word starts

@@ -137,7 +137,7 @@ The buttons can't be changed yet; choosing your own is on the roadmap.
 
 ## Stream Deck
 
-For the Sightline 1.0.7 release candidate, private companion test build **0.1.9** includes
+For the Sightline 1.1.0 release candidate, private companion test build **0.1.9** includes
 **Record take (OBS)** and **Finish recording (OBS)**. Enable OBS and allow
 recording controls in Sightline first. The keys show confirmed recording
 state; a disconnected state stays unknown. Play/Pause, section stops and
@@ -320,7 +320,7 @@ In the next candidate, rotating to landscape uses the available width and
 shorter buttons: the 12-button Studio layout fits in two rows on typical
 phone screens. Portrait keeps its large touch targets. The footer has extra
 space above browser controls, and long layouts remain scrollable. This is
-development work for RC15; the installed RC14 still has the earlier layout.
+development work for 1.1.0-rc.1; the installed RC14 still has the earlier layout.
 
 ![Compact landscape layout with all twelve Studio buttons](images/phone-landscape.png)
 

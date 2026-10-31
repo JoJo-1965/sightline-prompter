@@ -1,6 +1,9 @@
 # Release-candidate acceptance test
 
-**Windows Sightline 1.0.7 release candidate + private Stream Deck 0.1.9.**
+**Windows Sightline 1.1.0 release candidate + private Stream Deck 0.1.9.**
+The next build is **1.1.0-rc.1**, replacing the planned RC15. It has not yet
+been packaged or installed. The existing installation is **1.0.7-rc.14**;
+the RC1–RC14 notes below describe that earlier preview series.
 RC1 established the feature baseline. RC2 updates the bundled help and adds
 both acceptance scripts to **Files (☰) > Sample scripts**.
 RC3 adds compatibility reporting with plugin 0.1.9; older candidates do not

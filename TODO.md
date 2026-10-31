@@ -29,7 +29,7 @@
 
 - [x] Compact phone landscape layout: preserve button order, use four or six
   columns, fit Studio in two rows and add browser-safe footer spacing.
-  Portrait/landscape previews checked; real iPhone acceptance follows RC15.
+  Portrait/landscape previews checked; real iPhone acceptance follows 1.1.0-rc.1.
 
 - [x] Accept and validate `padLayout` through the API and JSON/XML imports,
   preserving structured values and protected permissions. Changes are live.
@@ -43,7 +43,7 @@
 
 ## Before packaging
 
-- [ ] Joanne reviews this batch in [RC15 review](docs/RC15-REVIEW.md).
+- [ ] Joanne reviews this batch in [1.1.0-rc.1 review](docs/RC15-REVIEW.md).
 - [ ] Check the conversation queue again immediately before any RC build.
 
 ## After an approved installation

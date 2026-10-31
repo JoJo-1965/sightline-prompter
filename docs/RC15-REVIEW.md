@@ -1,6 +1,16 @@
-# Next-candidate batch for review
+# Sightline 1.1.0-rc.1 for review
 
-Updated 31 October 2026. **RC15 has not been built or installed.** The work
+The next release is **1.1.0**. Its first candidate is **1.1.0-rc.1**, replacing
+the planned RC15 name. The installed **1.0.7-rc.14** stays unchanged. Earlier
+1.0.7 RC identifiers are test history, not published releases. This document
+keeps its existing filename so previous review links continue to work.
+
+Source metadata now reports **1.1.0-rc.1**. Version checks recognise later
+candidates and the final 1.1.0 release; plugin 0.1.9 compatibility is checked
+against the new name. Offline installer-help checks also cover the illustrated
+workflow pages. These are preparation changes, not a packaged candidate.
+
+Updated 31 October 2026. **1.1.0-rc.1 has not been built or installed.** The work
 is on `codex/obs-integration`; the installed RC14 remains available for testing.
 Publication, merging, tagging and website deployment remain on hold.
 

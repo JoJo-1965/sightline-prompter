@@ -12,6 +12,11 @@ complex builds come later.
 
 ## Where it stands (31 October 2026)
 
+**Next release: 1.1.0. Next candidate: 1.1.0-rc.1**, replacing the planned RC15
+name. Neither has been packaged or published. The installed 1.0.7-rc.14 stays
+unchanged, and the earlier RC identifiers below remain test history.
+Stream Deck 0.1.9 remains compatible; the public app is still 1.0.6.
+
 **Local Windows release candidate:** RC1 established the feature baseline.
 RC2 refreshed the documentation and added reusable acceptance samples.
 **1.0.7-rc.3** adds local compatibility checks and version reporting with
@@ -58,9 +63,9 @@ RC13 completes the customisable pad (#56), shares its layout with the phone,
 and adds bounded listening recovery, immediate wake-word changes and opt-in tracing.
 RC14 puts support logs and the optional word trace in **About > Debug**, with
 the trace off by default and a visible nearby-conversation warning.
-**RC15 work in progress:** compact phone landscape controls are built and
+**1.1.0-rc.1 work in progress:** compact phone landscape controls are built and
 checked in portrait/landscape previews. Studio uses six columns and two rows,
-with extra footer spacing. No RC15 has been packaged or installed yet.
+with extra footer spacing. No 1.1.0-rc.1 has been packaged or installed yet.
 The same review batch adds API/import layout validation, structured XML
 exports, phone command acknowledgements and the session capture override (57).
 Components (47) now also checks optional OBS/Stream Deck applications and
@@ -118,7 +123,7 @@ move to Done only when released.
 | 57 | **Debug capture override** | ★★ | S | Built for the next candidate: Debug permits all existing and newly opened windows in captures, with a persistent warning and phone notice. Session-only; restores current normal preferences and resets on restart. Native policy, lifecycle and restore checks pass; awaiting review and packaging |
 | 56 | **Customisable virtual pad and phone layout** | ★★ | M | Built in RC13: select up to 36 functions, drag or use Earlier/Later to reorder, choose columns and Compact/Reading/Studio presets. Pad and phone share choices/order and Stream Deck artwork. Hardware profiles remain independent. Native pad, portrait phone, persistence and permission checks pass; physical iPhone acceptance remains |
 | 48 | **Settings in its own window**, plus movable F1 Help | ★★ | M | Built in RC8: independent upright windows, native title-bar dragging across screens, saved geometry, stable sizes, paged Settings, live controls, Apply/Save/Cancel and unsaved-change guards on window/app close. Native window and inline-fallback tests pass; manual acceptance remains |
-| 52 | **Optional OBS integration** | ★★★ | M | Built in the Windows 1.0.7 candidate: authenticated connection, status-only/recording permissions, confirmed Record take/Finish, optional chapters, recorded slate and edit-pack references. Default off; ordinary prompting, stops, retakes and On air leave OBS recording. Physical workflow validation and evidence review remain. No separate OBS plugin is needed; optional dock/scene switching are later scope |
+| 52 | **Optional OBS integration** | ★★★ | M | Built in the Windows 1.1.0 candidate: authenticated connection, status-only/recording permissions, confirmed Record take/Finish, optional chapters, recorded slate and edit-pack references. Default off; ordinary prompting, stops, retakes and On air leave OBS recording. Physical workflow validation and evidence review remain. No separate OBS plugin is needed; optional dock/scene switching are later scope |
 | 55 | **Floating head-position guide** | ★★ | S | Built in the candidate: manual Ideal/Actual comparison, movement/scaling, Centre/Beside placements, chromeless fullscreen/restore, lock, voice on/off, hotkeys and Stream Deck. Separate from OBS sources, with capture protection enabled. It does not detect faces; actual exclusion depends on the chosen capture method and needs recording verification |
 | 39 | **Stream Deck companion** | ★★★ | M | Private 0.1.9 test build: 27 key actions, 5 dials, 18 standard/OBS profiles, recording and guide controls, buttons-only pairing and refreshed studio artwork. Physical keys, states and the model profile need acceptance. Marketplace listing is not live; add its real link to app/guide/readme/site only after listing |
 

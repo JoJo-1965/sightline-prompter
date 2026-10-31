@@ -41,7 +41,7 @@ reviewed plan. Do not create profiles through unrelated automation or claim
 that a 4K canvas proves native capture or that MKV mic tracks are separate WAVs.
 Read docs/guide/15-obs-setup.md for the clean-output and physical-test steps.
 
-### Optional OBS integration (1.0.7 release candidate)
+### Optional OBS integration (1.1.0 release candidate)
 
 The user must enable the integration in **Settings > Recording > OBS connection**
 and allow controls in **Recording > OBS recording** themselves. These settings

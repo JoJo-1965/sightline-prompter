@@ -5,13 +5,13 @@ import path from "node:path";
 import { buildInstallerHelp } from "./build-installer-help.mjs";
 
 const out = await fs.mkdtemp( path.join( os.tmpdir(), "sightline-installer-help-" ) );
-await buildInstallerHelp( process.cwd(), out, "1.0.7-rc.9" );
+await buildInstallerHelp( process.cwd(), out, "1.1.0-rc.1" );
 let checked = 0;
 const broken = [];
 for ( const file of await fs.readdir( out, { recursive: true } ) ) {
 	if ( !file.endsWith( ".html" ) ) continue;
 	const html = await fs.readFile( path.join( out, file ), "utf8" );
-	assert.ok( html.includes( "Installed version 1.0.7-rc.9" ), file );
+	assert.ok( html.includes( "Installed version 1.1.0-rc.1" ), file );
 	assert.ok( !/<script[\s>]/i.test( html ), "Offline help needs no JavaScript" );
 	for ( const [ , ref ] of html.matchAll( /(?:href|src)="([^"]+)"/g ) ) {
 		if ( /^[a-z]+:|^#|^\/\//i.test( ref ) ) continue;

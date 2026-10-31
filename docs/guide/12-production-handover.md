@@ -1,6 +1,6 @@
 # From recording to the editor
 
-**1.0.7 release candidate: not publicly released.** This workflow includes the optional
+**1.1.0 release candidate: not publicly released.** This workflow includes the optional
 OBS connection and head-position guide. Physical camera lip sync, normal
 speech commands and the Stream Deck recording keys still need hands-on checks.
 

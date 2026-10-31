@@ -5,6 +5,7 @@ import { startRemoteServer } from "../src/remote.js";
 
 assert.equal( versionAtLeast( "0.1.9.0", "0.1.9" ), true );
 assert.equal( versionAtLeast( "1.0.7-rc.3", "1.0.6" ), true );
+assert.equal( versionAtLeast( "1.1.0-rc.1", "1.0.6" ), true );
 assert.equal( versionAtLeast( "0.1.4", "0.1.5" ), false );
 for ( const value of [ null, "", "unknown", "0.1", "<script>", "1".repeat( 80 ) ] ) assert.equal( versionAtLeast( value, "0.1.5" ), false );
 let clock = 1000;
@@ -27,7 +28,7 @@ const server = startRemoteServer( {
 	port: 0, token: "full-test-key", buttonToken: "button-test-key",
 	buttonRoutes: new Set( [ "GET /status", "POST /stream-deck/hello" ] ),
 	routes: {
-		"GET /status": () => ( { appVersion: "1.0.7-rc.3", streamDeckApi: streamDeckContract(), commands: [ "play" ] } ),
+		"GET /status": () => ( { appVersion: "1.1.0-rc.1", streamDeckApi: streamDeckContract(), commands: [ "play" ] } ),
 		"POST /stream-deck/hello": body => peer.hello( body ),
 		"POST /settings": () => {
 			settingsTouched = true;

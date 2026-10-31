@@ -1,6 +1,6 @@
 # Settings
 
-**1.0.7 release candidate:** this regrouping is built and awaiting acceptance. For the published
+**1.1.0 release candidate:** this regrouping is built and awaiting acceptance. For the published
 1.0.6 layout, use the guide bundled with that app.
 
 Open **⚙ Settings** on the top bar or press **Ctrl+,** (**Cmd+,** on Mac).
@@ -18,6 +18,9 @@ override is active.
 There are seven groups, with a second row of focused topics. Each setting has
 one home. Script files, recordings and settings import/export are in the
 **Files menu (☰)**; live tools are under **Tools** on the top bar.
+
+About shows the source/build version. A candidate such as 1.1.0-rc.1 recognises
+the later final 1.1.0 as an update. Nothing installs automatically.
 
 [Browse the full Settings screenshot gallery](settings-gallery.md) for every
 topic and page. The same gallery opens from the guide's contents and works

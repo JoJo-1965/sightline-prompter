@@ -1,6 +1,6 @@
 # Sightline Prompter: what it adds to Electron Teleprompter
 
-**Release-candidate status, 30 October 2026:** the Windows 1.0.7 candidate
+**Release-candidate status, 31 October 2026:** the Windows 1.1.0 candidate
 contains the OBS integration (52), head guide (55), production exports,
 voice tuning and Settings/help updates described below. The matching private
 Stream Deck plugin is 0.1.9 (39). These features are built and awaiting final
@@ -355,7 +355,7 @@ The whole workflow is in the guide:
   own Wi-Fi, protected by the code in the QR. It follows the pad's button
   selection and order with larger touch targets. Both reuse Stream Deck
   artwork and actions; hardware profiles stay independent.
-  Development for RC15 adds a compact landscape layout: four or six columns
+  Development for 1.1.0-rc.1 adds a compact landscape layout: four or six columns
   with the same order, two rows for Studio, and browser-safe footer spacing.
   Taps have separate sending/accepted feedback, with clear refusal or missing
   acknowledgement states and no automatic command replay.
@@ -421,7 +421,7 @@ The whole workflow is in the guide:
 
 ## Help and installers
 
-- **Optional OBS integration** (1.0.7 candidate): **Settings > Recording > OBS connection**
+- **Optional OBS integration** (1.1.0 candidate): **Settings > Recording > OBS connection**
   and **OBS recording**,
   off by default; status-only or recording control; Record take and Finish
   recording from Sightline, its control window, phone and voice commands;

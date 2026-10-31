@@ -42,7 +42,7 @@ body{display:block;height:auto}nav{padding:16px 24px;background:var(--panel);dis
 	for ( const [ file, markdown ] of pages ) await render( file.replace( /\.md$/, ".html" ), markdown );
 	await fs.copyFile( path.join( root, "LICENSE" ), path.join( out, "LICENSE" ) );
 	await fs.copyFile( path.join( root, "docs/script-directives.json" ), path.join( out, "docs/script-directives.json" ) );
-	for ( const folder of [ "docs/images", "docs/guide/images" ] ) {
+	for ( const folder of [ "docs/images", "docs/guide/images", "docs/design/images" ] ) {
 		await fs.cp( path.join( root, folder ), path.join( out, folder ), { recursive: true } );
 	}
 }
