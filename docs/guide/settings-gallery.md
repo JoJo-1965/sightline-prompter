@@ -1,6 +1,6 @@
 # Settings screenshot gallery
 
-Development preview · 31 October 2026. These images show the OBS test branch;
+Frozen 1.1.0 test preview · 31 October 2026. These images show the acceptance branch;
 the release remains on hold. The panel stays the same size across topics.
 RC8 gives Settings and Help their own movable windows. The controls shown
 below are retained; drag the native title bar to use another screen.

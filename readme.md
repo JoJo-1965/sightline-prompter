@@ -1,20 +1,23 @@
 # Sightline Prompter
 
-![Sightline Prompter, the free, open-source teleprompter that works with your AI: a prompter window highlights the sentence being read and says: Stopped, say Prompter, go. For Windows, Mac and Linux, and works offline.](docs/images/hero.png)
+![Sightline Prompter: your words, at your pace. Illustration of a highlighted sentence and a script stop. Free and open source for Windows, Mac and Linux; AI is optional.](docs/images/hero.png)
 
-**The teleprompter that works with your AI.** A free, open-source, see-through
-desktop teleprompter for content creators and learning and development teams
-who record to camera at a desk or in a studio. Your AI assistant writes the
-script and its directions, Sightline follows your voice through the take, and
-the take log goes back to your AI for the edit. Speech recognition runs on
-your own computer. Windows, macOS and Linux.
+**Your words. Your pace.** A free, open-source, see-through desktop teleprompter
+for speakers, content creators and learning teams recording to camera. Keep
+your script near the lens, see the slides or call behind it, and choose voice
+following or a steady pace. Windows, macOS and Linux.
+
+**By a speaker, for speakers. By a content creator, for content creators.**
+Built by Joanne Lockwood with Claude Code, from David Neal's Electron
+Teleprompter. AI is optional: write your own script, or use your assistant to
+prepare one, control prompting through the local API and interpret the edit pack.
 
 **Sightline works alongside your recording tool.** Keep recording with the
 tools you already use (OBS, Riverside, Zoom, Teams, your camera or your
-phone). Sightline sits alongside them and gathers what they can't: accurate
-timings for every take, section and word, your retakes, markers and ratings,
-and a slate to line them all up with the recording. Optional microphone scratch
-audio is a timing reference; OBS or your usual tool supplies the production master.
+phone). Sightline adds section and take timings, word-alignment estimates,
+retakes, markers and keeper ratings for your editor. A slate and optional scratch
+audio help align that information with the recording. OBS or your usual tool
+supplies the production master; scratch audio is a timing reference.
 
 **[Download the latest release](https://github.com/JoJo-1965/sightline-prompter/releases/latest)** · [Installing it, and the security warnings](docs/guide/01-getting-started.md#installing-sightline) · [Privacy, terms and accessibility](docs/POLICIES.md) · [User guide](docs/guide/README.md) · [Working with AI](docs/guide/09-working-with-ai.md) · [Everything it adds](docs/FEATURES.md) · [joannelockwood.co.uk/sightline](https://joannelockwood.co.uk/sightline)
 
@@ -25,20 +28,20 @@ audio is a timing reference; OBS or your usual tool supplies the production mast
 > Everything from the original still works. See the [change log](#change-log)
 > for the details, and **Help > About** in the app for credits.
 
-**Testing 1.1.0:** this branch contains the local Windows release candidate,
+**Frozen for testing: Sightline 1.1.0 + private Stream Deck 0.2.0.** This branch contains the local Windows build,
 with OBS support, the head guide and the Settings/help updates. Use the private
 Stream Deck companion and the [acceptance walkthrough](docs/guide/14-acceptance-test.md).
-Private plugin 0.2.0 source adds listening recovery, session status, protected
+Private plugin 0.2.0 adds listening recovery, session status, protected
 Finish recording and head-guide dials; installed 0.1.9 retains its existing controls.
 The latest public download remains 1.0.6; candidate builds are not published.
 
-## Built around AI for the content creators of today
+## Optional AI, from script to edit
 
 | Step       | What your AI does                                                         | What Sightline does                                                                                        |
 | ---------- | ------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | **Write**  | Writes the script, with sections, target times, stops and countdowns      | **Help > Copy the AI Script Prompt** gives it the instructions, and a checker validates the result         |
 | **Record** | Loads the script and runs the prompter through a local API, if you let it | Follows your voice, holds at every `{stop}`, takes "Prompter, …" commands, and logs every take            |
-| **Edit**   | Lists your recordings and fetches the edit pack, then chooses the takes   | Keeps every session in **File > Recordings**: each take, every word with its timing, edit marks, captions |
+| **Edit**   | Fetches the edit pack and helps review takes in your external editing workflow | Keeps take/section timings, recognised word alignments, edit marks and draft captions in **Files > Recordings** |
 
 - **Scripts that direct the prompter.** The [AI Script Prompt](docs/AI-SCRIPT-BRIEF.md)
   works with ChatGPT, Claude, Gemini or Copilot. The script that comes back has
@@ -55,14 +58,17 @@ The latest public download remains 1.0.6; candidate builds are not published.
   word with when you said it, sentences, edit marks and captions, and the take
   to use for each section. Every session is kept in **File > Recordings**, and
   an agent can list them and fetch any pack itself.
-- **Private by design.** Voice recognition runs offline on your own computer,
-  so nothing you say is sent anywhere.
+- **Local recognition by default.** After the model download, it works offline.
+  Choosing Deepgram sends audio to that service; sharing files with your AI is
+  a separate choice. Recognised text and optional scratch audio can be saved locally.
 
 The whole workflow is in the guide: [Working with AI](docs/guide/09-working-with-ai.md).
 
-**In development** ([roadmap](ROADMAP.md)): optional OBS recording controls,
-a recorded slate and a separate head-position guide. Signed installers are
-also on the roadmap.
+**Included in the unpublished 1.1.0 test build:** optional OBS recording controls,
+a recorded slate, head-position guide, script/rehearsal review and shared pad/phone
+controls. Physical acceptance remains. Signed installers are on the [roadmap](ROADMAP.md).
+
+[One-page overview](docs/marketing/ONE-PAGER.md) · [Audiences, messages and supported claims](docs/marketing/POSITIONING.md)
 
 ## Features
 
@@ -236,6 +242,12 @@ Preparing them does not update an installed copy. Earlier RC identifiers below
 are test history; the latest public app is still **1.0.6**. Existing plugin
 **0.1.9** controls remain compatible. Scripts and additive edit-pack formats
 remain compatible too. See the [freeze record](docs/BUILD-FREEZE-1.1.0.md).
+
+- **Documentation review:** the guide index now names the frozen 1.1.0/0.2.0
+  pair. Overview and marketing copy make AI optional, distinguish estimated
+  alignment from exact recording times, explain scratch audio and qualify
+  capture behaviour. Installation help separates reputation warnings from
+  malware/damage alerts. A one-pager and audience/message reference are included.
 
 - **Pad and phone operator controls:** both now include listening off/on and
   recovery, a local session check, eye locking, ideal-reference controls and

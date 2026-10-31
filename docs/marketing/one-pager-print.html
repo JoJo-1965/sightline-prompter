@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sightline Prompter — printable one-page overview</title>
+<style>
+@page { size: A4; margin: 0; }
+* { box-sizing: border-box; }
+body { margin: 0; color: #12243a; background: #e8ecf1; font: 10.4pt/1.4 "Segoe UI", Arial, sans-serif; }
+main { width: 210mm; min-height: 297mm; margin: auto; padding: 14mm 15mm 11mm; background: white; border-top: 3mm solid #bf8b2c; }
+h1, h2, h3, p, li { text-wrap: balance; }
+h1, h2, h3, .tagline, .origin { text-wrap: balance; }
+h1 { margin: 0; font: 700 28pt/1.1 Georgia, serif; }
+.eyebrow { margin: 0 0 3mm; font-size: 8pt; text-transform: uppercase; letter-spacing: 1.3px; color: #77551d; }
+.tagline { margin: 2mm 0; font: 700 23pt/1.15 Georgia, serif; color: #926a22; }
+.lead { font-size: 12pt; margin: 3mm 0; }
+.origin { margin: 3mm 0 5mm; font-weight: 600; font-size: 10pt; }
+.hero { display: grid; grid-template-columns: 1.05fr 1fr; gap: 6mm; align-items: center; }
+.hero img { width: 100%; border-radius: 3mm; }
+.hero p { margin: 0; }
+.columns { display: grid; grid-template-columns: 1fr 1fr; gap: 7mm; margin-top: 5mm; }
+h2 { font-size: 12pt; margin: 0 0 2mm; }
+h3 { font-size: 10.5pt; margin: 3mm 0 1mm; }
+p { margin: 0 0 2mm; }
+ul { margin: 0 0 3mm; padding-left: 4.5mm; }
+li { margin-bottom: 2mm; }
+.status { margin: 5mm 0 4mm; padding: 3mm 4mm; background: #edf3f7; border-left: 1mm solid #37727c; font-size: 9pt; }
+.cta { padding-top: 3mm; border-top: 1px solid #d4dde5; }
+a { color: #185b70; text-decoration: none; overflow-wrap: anywhere; }
+.cta a { display: block; font-weight: 600; margin: 1mm 0; }
+footer { margin-top: 4mm; font-size: 7.5pt; color: #46556a; }
+@media print { body { background: white; } main { margin: 0; } }
+@media screen and (max-width: 800px) { main { width: 100%; min-height: 0; padding: 24px; } .hero, .columns { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body><main>
+<header>
+<p class="eyebrow">Free · Open source · MIT licence</p>
+<h1>Sightline Prompter</h1>
+<p class="tagline">Your words. Your pace.</p>
+<p class="lead">A see-through desktop teleprompter for speakers, content creators and learning teams recording to camera.</p>
+<p class="origin">By a speaker, for speakers. By a content creator, for content creators.</p>
+</header>
+<div class="hero">
+<p>Keep your script near the lens while seeing the slides or call behind it. Choose voice following or a steady pace. Pause, retake and mark a keeper without losing the thread.</p>
+<img src="../guide/images/running.png" alt="Sightline showing a highlighted script sentence and pacing controls.">
+</div>
+<div class="columns">
+<section>
+<h2>From script to handover</h2>
+<ul>
+<li><strong>Prepare:</strong> open Markdown, Word, PDF or a Google Docs link. Add optional sections, stops, beat marks and markers.</li>
+<li><strong>Present:</strong> use voice, phone, keyboard or a floating pad. Fit text, contrast and mirroring to your setup.</li>
+<li><strong>Review:</strong> hand over take references, keeper choices and estimated word alignment with your master recordings.</li>
+</ul>
+<h3>AI is optional</h3>
+<p>Write your own script, or use your chosen assistant for preparation, local control or interpreting an edit pack. The local rehearsal checks do not require generative AI.</p>
+</section>
+<section>
+<h2>Frozen 1.1.0 test workflow</h2>
+<p>Optional OBS controls, a recorded-slate route and a manual Ideal/Actual head guide. Shared pad/phone fitting, listening and session checks. Script health and rehearsal review.</p>
+<p>Private Stream Deck 0.2.0 adds guide dials, listening recovery and an optional one-second hold to finish recording.</p>
+<h3>Your recording tool stays</h3>
+<p>OBS or your usual recorder supplies production video/audio. Optional microphone scratch audio helps with sync. Check timing, captions and capture exclusion on your setup; the guide is manual.</p>
+</section>
+</div>
+<div class="status"><strong>31 October 2026:</strong> public download <strong>1.0.6</strong>. <strong>1.1.0 + private plugin 0.2.0</strong> are frozen for final acceptance, not publicly released. Marketplace submission is pending. The app targets Windows, macOS and Linux; the frozen installer is Windows. Stream Deck is for Windows/macOS.</div>
+<div class="cta">
+<p><strong>Free, and always will be.</strong> No Sightline account or subscription. Local speech works offline after the model download. Optional Deepgram sends audio online; AI services have their own terms.</p>
+<a href="https://joannelockwood.co.uk/sightline">joannelockwood.co.uk/sightline</a>
+<a href="https://github.com/JoJo-1965/sightline-prompter">github.com/JoJo-1965/sightline-prompter</a>
+</div>
+<footer>Built by Joanne Lockwood with Claude Code. Adapted and enhanced by Joanne Lockwood from SEE Change Happen Ltd, based on Electron Teleprompter by David Neal. MIT licence. Feedback and ideas welcome through GitHub Issues.</footer>
+</main></body>
+</html>

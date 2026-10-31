@@ -1,0 +1,55 @@
+# Sightline Prompter
+
+[Printable one-page PDF](sightline-one-pager.pdf)
+
+## Your words. Your pace.
+
+A free, open-source, see-through desktop teleprompter for speakers, content
+creators and learning teams recording to camera.
+
+**By a speaker, for speakers. By a content creator, for content creators.**
+
+Keep your script near the lens while seeing the slides or call behind it.
+Choose a steady pace or let the script follow your voice. Pause, retake and
+mark a keeper without losing the thread of what you wanted to say.
+
+### From preparation to handover
+
+- **Prepare:** open Markdown, Word, PDF or a Google Docs link. Add optional
+  sections, stops, beat marks and named markers. AI can help write the script;
+  it is not required.
+- **Present:** use voice commands, a phone remote, keyboard or floating pad.
+  Adjust text, contrast and mirroring to fit your screen or beam-splitter rig.
+- **Review:** keep section/take references, markers, keeper choices and
+  estimated word alignment in an edit pack for your external editing workflow.
+
+### In the frozen 1.1.0 test build
+
+Optional OBS recording controls, a recorded-slate route and a manual Ideal/Actual
+head guide support a studio workflow. Shared pad/phone controls add local guide
+fitting, listening controls and session checks. Script health and rehearsal
+review offer local checks and estimates. Private Stream Deck 0.2.0 adds guide
+dials, listening/recovery and an optional one-second hold to finish recording.
+
+**Release status, 31 October 2026:** public download **1.0.6**; **1.1.0 + private
+plugin 0.2.0** are frozen for final acceptance and are not publicly released.
+Marketplace submission is pending. The app targets Windows, macOS and Linux;
+the frozen installer is Windows. Stream Deck is for Windows and macOS.
+
+### Know what you are getting
+
+Free under the MIT licence, and always will be. No Sightline account or
+subscription. Local speech works offline after the model download; optional
+Deepgram sends audio online. Your chosen AI service has its own terms.
+
+Keep your usual recorder for production video and audio. Sightline can save
+optional microphone scratch audio for sync; timing and captions need review.
+The head guide is manual, and capture exclusion must be checked on your setup.
+
+**Explore and download:** <https://joannelockwood.co.uk/sightline>
+
+**Source and public releases:** <https://github.com/JoJo-1965/sightline-prompter>
+
+Built by Joanne Lockwood with Claude Code. Adapted and enhanced by Joanne
+Lockwood from SEE Change Happen Ltd, based on Electron Teleprompter by David
+Neal. MIT licence. Feedback and ideas are welcome through GitHub Issues.

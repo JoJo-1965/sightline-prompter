@@ -83,7 +83,7 @@ permissions you have enabled. The head guide is independent of OBS.
 
 ## Components
 
-In the next candidate, **Components** is a top-level group. Its named subtabs
+In 1.1.0, **Components** is a top-level group. Its named subtabs
 keep each optional part's status beside its actions, without numbered component
 pages. **Debug** also has its own top-level group.
 

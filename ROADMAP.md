@@ -17,6 +17,10 @@ Local packages do not update installed copies. The earlier RC identifiers below
 remain test history. Plugin 0.1.9 remains compatible for existing controls;
 the public app is still 1.0.6. See the [freeze record](docs/BUILD-FREEZE-1.1.0.md).
 
+Documentation revision 1 adds the [help/marketing audit](docs/marketing/AUDIT-2026-10-31.md),
+corrected version/feature claims and a printable overview. Feature scope stays
+frozen; revised artifacts keep their own source record and checksums.
+
 **Stream Deck additions for acceptance:** private plugin 0.2.0 adds a
 listening toggle/recovery key, software session status with error guidance,
 optional hold-to-finish and head-guide adjustment dials. Eye-position lock

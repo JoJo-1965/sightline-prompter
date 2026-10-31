@@ -1,9 +1,9 @@
 # Sightline Prompter: what it adds to Electron Teleprompter
 
-**Release-candidate status, 31 October 2026:** the Windows 1.1.0 candidate
+**Frozen test-build status, 31 October 2026:** Windows Sightline 1.1.0
 contains the OBS integration (52), head guide (55), production exports,
 voice tuning and Settings/help updates described below. The matching private
-Stream Deck plugin is 0.1.9 (39). These features are built and awaiting final
+Stream Deck plugin is 0.2.0 (39). These features are built and awaiting final
 acceptance; the published release remains 1.0.6. RC2 refreshes RC1's bundled
 documentation and acceptance samples. RC3 adds a local version handshake,
 required/recommended versions and capability guards, shown in Settings >
@@ -119,10 +119,12 @@ macOS and Linux. Your AI writes the script and its directions, Sightline
 follows your voice through the take, and the take log goes back to your AI
 for the edit.
 
-Sightline doesn't record video or audio, and isn't meant to replace OBS,
-Riverside, Zoom or your camera. It sits alongside them and gathers what they
-can't: accurate timings for every take, section and word, retakes, markers
-and ratings, and a slate to line them up with the recording.
+Sightline does not record production video. Keep OBS, Riverside, Zoom or your
+camera for the master recording. Sightline adds section/take timings,
+word-alignment estimates, retakes, markers and ratings for the edit. Optional
+scratch audio records the microphone as a sync reference. A slate reaches an
+OBS recording only through a prepared recorded source or another verified
+capture route; check the actual recorded picture and sound.
 
 This page lists what's new. The [change log](../readme.md#change-log) has the
 details, and the [user guide](guide/README.md) shows every screen.

@@ -2,9 +2,14 @@
 
 This folder comes from Sightline Prompter (**File > Export Edit Pack…**, or
 **Export edit pack…** on a session in **File > Recordings**). It describes one recording session of one script: every take of every section,
-when each script word was said, the sentences, places worth cutting, and
+its script-word alignment estimates, sentences, places worth reviewing, and
 captions in the script's own wording. It's written for an editor, or for an
 AI editing and assembly agent, to cut the recording with.
+
+Word timing and alignment are recognition-derived estimates, sometimes
+interpolated. Draft captions and suggested takes need editorial review. An edit
+pack does not render a finished video; use it alongside the master recordings
+in your external editing workflow. Physical lip sync needs a recorded reference.
 
 Sightline doesn't record the video. The recording comes from whatever was
 used (OBS, Riverside, Zoom, a camera); this pack is what the prompter knew

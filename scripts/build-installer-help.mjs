@@ -10,7 +10,7 @@ export async function buildInstallerHelp( root, out, version ) {
 	const css = await fs.readFile( path.join( root, "src/client/guide.css" ), "utf8" );
 	const readme = await fs.readFile( path.join( root, "readme.md" ), "utf8" );
 	const pages = new Map( [ [ "readme.md", readme ], [ "ROADMAP.md", await fs.readFile( path.join( root, "ROADMAP.md" ), "utf8" ) ] ] );
-	for ( const folder of [ "docs", "docs/guide" ] ) {
+	for ( const folder of [ "docs", "docs/guide", "docs/marketing" ] ) {
 		for ( const name of await fs.readdir( path.join( root, folder ) ) ) {
 			if ( name.endsWith( ".md" ) ) pages.set( `${ folder }/${ name }`, await fs.readFile( path.join( root, folder, name ), "utf8" ) );
 		}
@@ -45,6 +45,7 @@ body{display:block;height:auto}nav{padding:16px 24px;background:var(--panel);dis
 	for ( const folder of [ "docs/images", "docs/guide/images", "docs/design/images" ] ) {
 		await fs.cp( path.join( root, folder ), path.join( out, folder ), { recursive: true } );
 	}
+	for ( const name of [ "sightline-one-pager.pdf", "one-pager-preview.png" ] ) await fs.copyFile( path.join( root, "docs/marketing", name ), path.join( out, "docs/marketing", name ) );
 }
 
 export default async function beforePack( context ) {

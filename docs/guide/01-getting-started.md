@@ -2,7 +2,7 @@
 
 ## Set up once, check before a session
 
-In the next candidate, a new profile opens **Get ready with Sightline**.
+In 1.1.0, a new profile opens **Get ready with Sightline**.
 Choose prompting and microphone settings, try a sample, and optionally set up
 OBS, controls or your AI. Skip optional parts with **Later**. Reopen it from
 **Help > Getting started…**, or the Getting started button in F1 Help.
@@ -49,13 +49,13 @@ Silent installations do not open these pages.
 
 ### The security warnings, and how to get past them
 
-Sightline's installers aren't code-signed yet. Signing costs money every year
-and Sightline is free, so your browser and your computer can't check who made
-it, and they warn you. The warnings are about the missing signature, not
-about anything found in the file. The source is
-[public](https://github.com/JoJo-1965/sightline-prompter), and the installers
-are built from it by GitHub, so anyone can check what's in them. You only need
-to do this once; updates are the same.
+Sightline's installers are currently unsigned. That can trigger publisher or
+download-reputation warnings. A warning is not proof that a file is safe or
+unsafe: check its source and the specific message. Use the
+[official releases](https://github.com/JoJo-1965/sightline-prompter/releases),
+or a test package supplied by Joanne, and compare supplied checksums.
+Public installers are built by GitHub; local acceptance packages are built
+separately and have a build manifest. Your organisation's device policy applies.
 
 **Downloading (any browser)**
 
@@ -71,13 +71,14 @@ Microsoft Defender SmartScreen shows this the first time you run the
 installer. Choose **More info**, check it says *Sightline-Prompter-Setup*, then
 **Run anyway**. It won't ask again for that version.
 
-- **"Smart App Control blocked an app"** (some new Windows 11 computers): this
-  one has no Run anyway. Smart App Control only allows signed apps, so
-  Sightline can't run while it's on. You can turn it off in **Windows
-  Security > App & browser control > Smart App Control settings**, but you
-  can't turn it back on without resetting Windows, so think before you do.
-- **Your antivirus quarantines it**: restore it from the antivirus's
-  quarantine and mark it as allowed. Download it only from the link above.
+- **"Smart App Control blocked an app"**: this is a different control from
+  SmartScreen and may offer no per-app bypass. Follow your organisation's
+  policy or ask its administrator. See Microsoft's
+  [current Smart App Control guidance](https://support.microsoft.com/en-gb/windows/security/threat-malware-protection/smart-app-control-frequently-asked-questions).
+- **Your antivirus quarantines it**: keep it quarantined while checking the
+  exact detection, source and hash. Report the details through the project's
+  support route; a detection should not be dismissed merely because the app
+  is unsigned. Do not disable antivirus to install Sightline.
 
 **Mac: "Apple could not verify Sightline Prompter"**
 
@@ -92,15 +93,12 @@ macOS shows this the first time you open the app (older versions say it's
 On macOS 14 and earlier, right-clicking the app in Applications and choosing
 **Open** does the same.
 
-If the Mac says *Sightline Prompter is damaged and can't be opened*, it isn't
-damaged: macOS says this about some unsigned apps downloaded from the
-internet. Move it to Applications, open **Terminal** and paste:
-
-```
-xattr -cr "/Applications/Sightline Prompter.app"
-```
-
-Press Return, then open Sightline as usual.
+If the Mac says the app is damaged, cannot be checked, or contains malware,
+do not assume those messages mean the same thing. Re-download from the
+official release and check Apple's
+[guidance for apps from outside the App Store](https://support.apple.com/en-gb/102445).
+Use the normal Privacy & Security exception only when you have verified the
+source and chosen to trust it. macOS hardware testing for this build is deferred.
 
 **Linux** doesn't warn. If the AppImage won't start, make sure it's
 executable; some distributions also need `libfuse2`.

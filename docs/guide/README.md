@@ -1,22 +1,20 @@
 # Sightline Prompter user guide
 
-Sightline Prompter is a see-through teleprompter for recording to camera,
-built to work with AI. It's made for content creators and learning and
-development teams recording at a desk or in a studio: your AI assistant
-writes the script and its directions, Sightline follows your voice through
-the take, and the take log goes back to your AI for the edit. See
+Sightline Prompter is a see-through teleprompter for speakers, content creators
+and learning teams recording to camera. Choose voice following or a steady
+pace, keep your words near the lens and collect take information for the edit.
+AI is optional, for writing scripts, local control and external editing. See
 [Working with AI](09-working-with-ai.md).
 
 The script floats over your screen, close to the webcam, and scrolls at a
 steady pace or follows your voice.
 
-**1.1.0 release candidate:** this guide describes the local Windows candidate,
+**Frozen test pair: Sightline 1.1.0 + private Stream Deck 0.2.0.** This guide describes the local Windows build,
 including OBS recording, the head guide and regrouped Settings. The published
 download is still **1.0.6**, whose bundled guide describes its earlier menus.
-The companion Stream Deck test plugin is **0.1.9** and remains private.
-The next build is **1.1.0-rc.1** (not yet packaged), replacing the planned
-RC15 name. The installed app stays **1.0.7-rc.14**. RC1–RC14 below describe
-that earlier preview series; no public 1.0.7 release was made.
+The packages are prepared for final acceptance, not public release. Preparing
+them does not update an installed copy. Earlier **1.0.7-rc.1–rc.14** names below
+are test history; no public 1.0.7 release was made.
 RC1 established the feature baseline; RC2 refreshes the bundled documentation
 and adds the reusable acceptance samples. RC3 adds compatibility reporting in
 Sightline and the plugin. These are local test builds, not public releases.

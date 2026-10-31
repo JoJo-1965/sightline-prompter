@@ -1,6 +1,6 @@
 # Remotes and second screens
 
-In the next candidate, **Settings > Components** lists Stream Deck
+In 1.1.0, **Settings > Components** lists Stream Deck
 as optional software, with its installer, **Locate** and **Check again**.
 It checks the app and Sightline plugin files separately. **Controls > Stream
 Deck > Check compatibility** confirms the running plugin; unconfirmed versions
@@ -393,7 +393,7 @@ networks.
 
 ## Choose your buttons and keys
 
-For the next candidate, open **Settings > Controls > Buttons & keys**. Choose
+In 1.1.0, open **Settings > Controls > Buttons & keys**. Choose
 an action, select **Press a key or button…**, then press your clicker, pedal,
 keyboard key or controller button once. Escape cancels; learning times out
 after 15 seconds. Assigning an existing input replaces its action. Changes

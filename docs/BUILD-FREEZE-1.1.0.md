@@ -6,6 +6,12 @@ No tag, merge, public upload, Marketplace submission or website deployment is
 part of this freeze. The plugin repository stays private. Building a package
 does not install it over an existing copy.
 
+**Documentation revision 1:** a separate delivery refresh corrects help/version
+labels and reviewed marketing claims, adds the one-pager and audience reference,
+and bundles that material offline. See the [audit](marketing/AUDIT-2026-10-31.md).
+The original frozen packages are retained; refreshed checksums identify the new
+documentation build. Prompting, recording and control behaviour is unchanged.
+
 The app includes the work in the [batch review](RC15-REVIEW.md): recording and
 edit-pack improvements, OBS tools, guide fitting, component checks, onboarding,
 script/rehearsal reviews, settings/help redesign and shared controls. The final
