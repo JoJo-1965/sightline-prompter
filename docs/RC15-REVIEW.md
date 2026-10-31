@@ -6,12 +6,35 @@ Publication, merging, tagging and website deployment remain on hold.
 
 ## Changes ready to review
 
-**Workflow review:** Joanne has asked to replace numbered component pages with
-named subtabs, promote Components/Debug, distinguish onboarding from frequent
-use, and add an optional OBS setup assistant. The
-[workflow proposal and mock-ups](SETTINGS-WORKFLOW-PROPOSAL.md) address this
-direction. These wider navigation/onboarding/OBS-setup changes are proposed,
-not implemented; the availability checks below are built and tested.
+### Setup and session workflow
+
+The [approved workflow](SETTINGS-WORKFLOW-PROPOSAL.md) is implemented for review:
+Components and Debug have top-level groups; each component has a named subtab;
+OBS connection, recording and setup sit together under Recording. The stable
+Settings frame and existing draft/save behaviour remain.
+
+New users get **Get ready with Sightline**, reopenable from Help. **Tools >
+Session check…** links to script review, sound, framing, enabled OBS, sync and
+controls, with qualified status rather than invented hardware passes.
+
+The [OBS setup assistant](guide/15-obs-setup.md) chooses configured sources,
+folder and canvas, then requires review before creating a separate profile and
+three scenes. It retains previous setups, guards active outputs and stale plans,
+and attempts selection restoration after partial failure. It starts no recording.
+Unit checks use a simulated OBS service; native UI checks use an isolated IPC
+fixture. No user OBS setup was changed. Real capture mode, encoder performance,
+clean outputs and physical sync remain acceptance checks.
+
+![First-use checklist](guide/images/getting-started.png)
+
+![Session checks](guide/images/session-check.png)
+
+Validation passed: the full unit suite, production-app regression, native
+utility-window suite, empty-profile/restart offer check, packaged standalone
+AI kit and changed-file lint. Native checks cover all 27 Settings topics,
+stable sizing without scrolling, checklist links, review before OBS apply,
+duplicate-tap prevention and restoration. The website preview builds locally
+with 517 pages. These checks start no camera recording or user OBS setup.
 
 ### Component availability
 
@@ -24,16 +47,16 @@ the responsibility of its own updater.
 Dependent controls grey out with visible reasons and retain their saved values.
 AI kit readiness does not block other API clients or the built-in reviews.
 Remote OBS configuration stays available without a local installation. Existing
-enabled integrations can always be disabled. The longer Components topic uses
-pages, with a focus fix for explanatory pages that contain no active controls.
+enabled integrations can always be disabled. Named Components subtabs keep each
+part's status and actions together without numbered component pages.
 
 Unit checks cover missing, portable and removed apps, plugin manifests, Flatpak
 and dependency rules. Native checks cover disabled options, preserved drafts,
 setup navigation and remote OBS. No installer was run and RC14 is unchanged.
 
-![Optional application checks](guide/images/settings-components-apps.png)
+![Optional OBS application checks](guide/images/settings-component-obs.png)
 
-![Separate Stream Deck app and plugin checks](guide/images/settings-components-streamdeck.png)
+![Separate Stream Deck app and plugin checks](guide/images/settings-component-streamdeck.png)
 
 ![Disabled controls with retained draft values](guide/images/settings-ai-unavailable.png)
 
@@ -70,21 +93,21 @@ microphone, speaker, camera or OBS recording is used by those checks.
 | Change | Result |
 | --- | --- |
 | Shared pad layouts | The local settings API and actual JSON/XML imports update the pad and phone live. Action IDs are filtered, duplicates removed and column counts validated. Invalid layouts are rejected before other settings change. Protected permissions remain protected. |
-| Debug capture override, roadmap 57 | **Settings > About > Debug > Allow all windows to be captured** permits captures of open and newly opened windows, including the head guide. It applies immediately and has desktop/phone warnings. Turning it off restores current normal rules; a full restart clears it. No saved capture preference is changed. |
+| Debug capture override, roadmap 57 | **Settings > Debug > Allow all windows to be captured** permits captures of open and newly opened windows, including the head guide. It applies immediately and has desktop/phone warnings. Turning it off restores current normal rules; a full restart clears it. No saved capture preference is changed. |
 | Phone feedback | A tap shows Sending, then the button name and sent when the request is accepted. The app's actual section, prompting and OBS state are shown separately. Refused requests show unavailable; missing acknowledgements show no reply. Pending duplicate taps are suppressed, requests have a timeout and commands are never automatically replayed. |
 | Phone landscape | The Studio selection uses six columns and two rows in short landscape windows. Button order is retained, portrait targets remain large and the footer has extra browser spacing. Long layouts remain scrollable. |
 | Installation route | A plan-first helper verifies the manifest/hash, preserves spaces in the complete destination, elevates the installer directly when Run is requested and verifies its installed version/location afterwards. The native directory-parser fixture installs nothing. |
 
 ### Components and custom inputs
 
-Roadmap **47** adds **About > Components**: optional offline model and AI kit,
+Roadmap **47** adds **Components**: optional offline model and AI kit,
 Install/Reinstall/Remove, and a separate Node.js check. The app bundles the
 standalone checker, command tool, skills, briefs and examples; no clone or npm
 install is needed. Reinstall stages a fresh copy. Failed downloads leave the
 existing model available; removal asks first and uses the system bin. Model
 maintenance requires prompting and recording to be stopped.
 
-![Components in Settings](guide/images/settings-components.png)
+![AI kit component in Settings](guide/images/settings-component-kit.png)
 
 Roadmap **40** adds **Controls > Buttons & keys**: choose an action and press
 an input. Assignments save immediately. Plain keys/Shift combinations stay

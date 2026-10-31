@@ -55,6 +55,7 @@ export function buildMenus( browserWindow, {
 			item( "Reset speed", "menuAdjustAutoScrollSpeed", "CmdOrCtrl+\\", "reset" )
 		] },
 		{ label: "Tools", submenu: [
+			item( "Session check…", "menuWorkflow", undefined, "session" ),
 			item( "Script & rehearsal review…", "menuReview" ),
 			item( "Sound check", "menuSoundCheck", "CmdOrCtrl+Shift+D" ),
 			{ label: "Head guide / unlock (Ctrl+Shift+H)", type: "checkbox", checked: !!settings.showHeadGuide, click: () => toggleHeadGuide?.() },
@@ -77,6 +78,7 @@ export function buildMenus( browserWindow, {
 			] }, separator, item( "Close", "menuWindowControl", "CmdOrCtrl+W", "close" )
 		] },
 		{ label: "Help", submenu: [
+			item( "Getting started…", "menuWorkflow", undefined, "start" ),
 			{ label: "User guide", accelerator: "Shift+F1", click: () => openGuide?.() }, item( "Help and shortcuts", "menuHelp", "F1" ),
 			{ label: "Copy the AI script prompt", click: () => copyAiPrompt?.() }, separator,
 			{ label: "Support Sightline (Joanne's tip jar)…", click: () => shell.openExternal( SUPPORT_URL ) },

@@ -1,5 +1,21 @@
 # Getting started
 
+## Set up once, check before a session
+
+In the next candidate, a new profile opens **Get ready with Sightline**.
+Choose prompting and microphone settings, try a sample, and optionally set up
+OBS, controls or your AI. Skip optional parts with **Later**. Reopen it from
+**Help > Getting started…**, or the Getting started button in F1 Help.
+
+![First-use checklist with optional tools](images/getting-started.png)
+
+**Tools > Session check…** is the shorter pre-recording checklist: script,
+sound, framing, enabled OBS, sync and controls. Its links open the existing
+tools and settings. **Refresh** updates known status; a test recording is
+still needed to confirm the captured picture and sound.
+
+![Pre-recording checks and direct links](images/session-check.png)
+
 ## Installing Sightline
 
 Sightline is free. Download the installer for your computer from the

@@ -13,9 +13,9 @@ Opening Settings brings it forward and focuses its controls.
 **“Prompter, what can I say?”** also has its own movable window in RC10.
 Settings, both help windows and Guide adjustments follow **Hide from capture**;
 turn it off to take support screenshots. The head-guide overlay stays protected
-unless the session-only **About > Debug > Allow all windows to be captured**
+unless the session-only **Debug > Allow all windows to be captured**
 override is active.
-There are five groups, with a second row of focused topics. Each setting has
+There are seven groups, with a second row of focused topics. Each setting has
 one home. Script files, recordings and settings import/export are in the
 **Files menu (☰)**; live tools are under **Tools** on the top bar.
 
@@ -55,27 +55,34 @@ without disappearing as you move the pointer onto it.
 | **Recording** | Takes | Slate, ON AIR display, countdown beep, capture protection and click-through |
 | | Takes: rehearsal coaching | Optional recognised filler/repetition counts during active voice following; Apply to save |
 | | Audio | Scratch audio, loudness per take and keeping the sound-check meter visible |
+| | OBS connection | Enable OBS, address, port, protected password and the saved-connection test |
+| | OBS recording | Start/stop permission, chapters and preparing the recorded slate |
+| | OBS setup | Optional separate profile/scenes assistant and configuration guide |
 | **Controls** | Pad | Select and arrange shared pad/phone buttons, columns and presets |
 | | Buttons & keys | Learn local keys, clicker/pedal inputs and controller buttons; choose actions and reset |
 | | Phone | Enable the phone remote, scan its QR code or replace its code |
 | | Stream Deck | Enable the companion plugin's buttons-only connection and open its guide |
 | | AI & API | Enable local automation, port, token, recording-delete permission and AI setup help |
-| | OBS connection | Enable OBS, address, port, protected password and the saved-connection test |
-| | OBS recording | Start/stop permission, chapters and preparing the recorded slate |
+| **Components** | Speech model | Install, repair or remove the offline speech model |
+| | AI kit | Install, repair, remove or open the standalone agent kit |
+| | Node.js | Check the runtime for kit commands and open its supplier installer |
+| | OBS | Installation check, supplier installer and custom location |
+| | Stream Deck | Elgato app and Sightline plugin installation checks |
+| **Debug** | Debug | Support logs, capture override and optional command-word tracing |
 | **About** | About | Version, a link to credits, updates and support |
-| | Components | Install, repair or remove the offline model and AI kit; check Node.js |
-| | Debug | Debug logging, support-log export and optional command-word tracing |
 
 OBS settings stay discoverable while disabled so you can configure them.
-Both OBS topics are together under **Controls**. Recording keeps the
-prompter's own Takes and Audio choices. **Prepare recorded slate** explains
+OBS connection, recording and setup are together under **Recording**.
+**Prepare recorded slate** explains
 any unmet prerequisite beside the button and shows progress or errors in Settings.
 Recording commands in Help and the live recording controls still follow the
 permissions you have enabled. The head guide is independent of OBS.
 
 ## Components
 
-In the next candidate, **About > Components** shows each optional part:
+In the next candidate, **Components** is a top-level group. Its named subtabs
+keep each optional part's status beside its actions, without numbered component
+pages. **Debug** also has its own top-level group.
 
 - **Offline speech model:** Install downloads about 73 MB. Reinstall downloads
   a fresh copy to staging; an incomplete download leaves the previous model
@@ -118,11 +125,23 @@ Removal asks first. Component actions apply immediately, independently of
 Settings Apply/Cancel. The existing first-run model download offer remains.
 Installing the AI kit does not enable the API or alter your assistant.
 
-![Optional components and their installation controls](images/settings-components.png)
+![AI kit with its own named component subtab](images/settings-component-kit.png)
 
-![Node.js and optional OBS installation checks](images/settings-components-apps.png)
+![Node.js availability and installer](images/settings-component-node.png)
 
-![Stream Deck app and Sightline plugin checks](images/settings-components-streamdeck.png)
+![Stream Deck app and Sightline plugin checks](images/settings-component-streamdeck.png)
+
+## Setup and session checks
+
+**Help > Getting started…** opens the first-use checklist. Optional tools can
+be skipped; a new profile sees it automatically. **Tools > Session check…**
+links to existing script, sound, framing, enabled OBS, sync and control tools.
+Refresh after changing settings. Status describes configuration and connection
+evidence; it does not certify your recorded camera or microphone.
+
+**Recording > OBS setup** opens the optional separate-profile assistant and
+[configuration guide](15-obs-setup.md). Review its plan before Create. Existing
+setups remain available, and recording/streaming/replay must be stopped.
 
 The API controls below are off in a draft. The saved service stays on until
 Apply; the grey controls retain their values.
@@ -284,7 +303,7 @@ downloads or installs automatically.
 **Help > About**. Copyright and attribution live there, with no repeated
 messages in the Files menu or the Settings overview.
 
-**About > Debug > Debug mode** adds detail to the local support log. **Save a log for support…**
+**Debug > Debug mode** adds detail to the local support log. **Save a log for support…**
 creates a file containing the version, system and enabled features, excluding
 scripts, keys, audio and command-word traces. It sends nothing itself.
 
@@ -297,7 +316,7 @@ It does not enable command-word tracing or change the saved capture preferences.
 This control is not exported or available through the settings API.
 
 The separate **Trace command words to the local heard log** checkbox is also
-under **About > Debug**. It is off by default and does not require Debug mode.
+under **Debug**. It is off by default and does not require Debug mode.
 Apply saves the choice. This saves recognised text for investigating mishearings;
 with Always listening it may include nearby conversation while stopped or off air.
 Turn it off afterwards. Health and recovery logs contain no spoken words.

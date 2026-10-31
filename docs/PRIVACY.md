@@ -55,7 +55,7 @@ Local recognition processes microphone audio before it knows whether you
 said the wake word. It is not listening only after you say "Prompter".
 By default the commands-only listener does not write a heard log; voice
 following does. **Trace command words to the local heard log**, in
-**Settings > About > Debug**, explicitly enables recognised-text
+**Settings > Debug**, explicitly enables recognised-text
 diagnostics for commands-only listening. It is off by default. When enabled,
 it can save recognised conversation while stopped or off air. Turn it off
 after troubleshooting. This option does not record audio. Automatic recovery
@@ -199,7 +199,7 @@ Disable remotes you do not need, and check what you share with an agent.
 
 ## When you contact or support the project
 
-The optional **Settings > About > Debug > Allow all windows to be captured**
+The optional **Settings > Debug > Allow all windows to be captured**
 control lets screenshots and recording tools capture every Sightline window,
 including the head guide. It is off by default, applies for the current session
 and shows a persistent warning. Turning it off restores the normal capture

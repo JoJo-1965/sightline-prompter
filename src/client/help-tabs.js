@@ -34,6 +34,10 @@ export function helpTabs( settings, notes = false ) {
 	const takes = { section: "Takes, markers and exports", keys: scrolling.keys.filter( ( [ combos ] ) => takeKeys.has( combos[0] ) ) };
 	const display = { ...get( "Window" ), keys: get( "Window" ).keys.filter( ( [ combos ] ) => !guideKeys.has( combos[0] ) ) };
 	const readingSections = [ reading ];
+	readingSections.push( section( "Prepare a session", [
+		[ "Help > Getting started", "Choose your initial setup or reopen it later; optional tools can be skipped" ],
+		[ "Tools > Session check", "Links to script, sound, framing, enabled recording and sync checks; Refresh updates known status" ]
+	] ) );
 	if ( notes ) readingSections.push( get( "Notes" ) );
 	if ( settings.scrollMode === "voice" ) readingSections.push( get( "Voice scroll sync" ) );
 	const recording = [ takes ];
@@ -45,6 +49,7 @@ export function helpTabs( settings, notes = false ) {
 	if ( settings.obsEnabled ) {
 		const rows = [
 			[ "Settings > Recording > OBS connection", "Saved address, port and protected password; Apply, then Test saved connection" ],
+			[ "Recording > OBS setup", "Review a separate profile/scenes plan using configured sources, with OBS outputs stopped; physical recording checks remain" ],
 			[ "Status only", "Read recording status without starting or stopping OBS" ],
 			[ "Edit pack", "Confirmed recording paths and observations stay in the take log" ],
 			[ "Disable OBS", "Disconnects Sightline; leaves an existing OBS recording running" ]
@@ -69,7 +74,7 @@ export function helpTabs( settings, notes = false ) {
 		[ "Settings > Controls > Buttons & keys", "Choose an action, then press a key, clicker, pedal or controller button. Changes save immediately" ],
 		[ "Custom keys", "Plain keys and Shift combinations override the defaults shown here. System shortcuts stay reserved. Mappings stop during typing, editing and Settings" ],
 		[ "Reset defaults", "Restores controller buttons and clears custom keys; Stream Deck profiles stay separate" ],
-		[ "Settings > About > Components", "Install, repair or remove the offline speech model and AI kit; check Node.js for AI commands" ]
+		[ "Settings > Components", "Install, repair or remove the offline speech model and AI kit; check Node.js for AI commands" ]
 	] ) ] } );
 	if ( settings.voiceCommands !== "off" ) tabs.push( { label: "Voice", sections: voiceHelpTabs( settings ).flatMap( t => t.sections ) } );
 	return tabs;

@@ -29,7 +29,7 @@ choose **Download**. Or open **Settings > Prompting > Voice** (or the Voice pane
 click **Download speech model**.
 It's a one-off download of about 73 MB, and progress is shown as it goes.
 In the next candidate, the same Voice page also has Reinstall and Remove.
-**Settings > About > Components** lists the model and the optional AI kit,
+**Settings > Components** lists the model and the optional AI kit,
 with their status and maintenance controls. Stop prompting and recording
 before repairing/removing the model; a failed repair keeps the old copy.
 After that, voice scrolling works with no internet connection at all.
@@ -154,7 +154,7 @@ listening badge, for a deliberate retry. The Commands page shows its state.
 Recovery events go in the support log without spoken words or audio.
 
 For a missed wake word, enable **Trace command words to the local heard log**
-in **Settings > About > Debug**, then Apply and reproduce it. This is **off by default**.
+in **Settings > Debug**, then Apply and reproduce it. This is **off by default**.
 It saves recognised text during commands-only listening, including while
 stopped, and may include nearby conversation. Turn it off afterwards.
 Entries use `mode: "commands"`; ordinary voice entries use `mode: "voice"`.

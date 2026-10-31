@@ -12,7 +12,7 @@ export function createUtilityWindows( { dir, prompter, getSettings, saveSettings
 	let dirty = false;
 	let focused = null;
 	let timer;
-	const kinds = [ "settings", "help", "voicehelp" ];
+	const kinds = [ "settings", "help", "voicehelp", "workflow", "obssetup" ];
 	const kindOf = ( url, frameName ) => kinds.find( kind => url === `${ host }?panel=${ kind }` && frameName === `sightline-${ kind }` );
 	const restack = () => {
 		for ( const [ kind, win ] of [ ...windows ].sort( ( [ a ], [ b ] ) => Number( a === focused ) - Number( b === focused ) ) ) {
@@ -73,7 +73,7 @@ export function createUtilityWindows( { dir, prompter, getSettings, saveSettings
 			const kind = kindOf( url, frameName );
 			if ( !kind ) return null;
 			const area = screen.getDisplayMatching( prompter.getBounds() ).workArea;
-			const size = kind === "settings" ? { width: 676, height: 599 } : kind === "voicehelp" ? { width: 776, height: 639 } : { width: 996, height: 679 };
+			const size = [ "settings", "workflow", "obssetup" ].includes( kind ) ? { width: 676, height: 599 } : kind === "voicehelp" ? { width: 776, height: 639 } : { width: 996, height: 679 };
 			const candidate = getSettings().utilityWindowBounds?.[kind];
 			const saved = candidate && [ "x", "y", "width", "height" ].every( key => Number.isFinite( candidate[key] ) ) && candidate.width >= 380 && candidate.height >= 420 ? candidate : null;
 			const bounds = fitInside( saved ?? { ...size, x: Math.round( area.x + ( area.width - size.width ) / 2 ), y: Math.round( area.y + ( area.height - size.height ) / 2 ) }, area );

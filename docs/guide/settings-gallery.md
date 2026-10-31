@@ -1,6 +1,6 @@
 # Settings screenshot gallery
 
-Development preview · 30 October 2026. These images show the OBS test branch;
+Development preview · 31 October 2026. These images show the OBS test branch;
 the release remains on hold. The panel stays the same size across topics.
 RC8 gives Settings and Help their own movable windows. The controls shown
 below are retained; drag the native title bar to use another screen.
@@ -12,7 +12,14 @@ below are retained; drag the native title bar to use another screen.
 [Read the illustrated Settings guide](07-settings.md) for what each choice does.
 
 Jump to [Prompting](settings-gallery.md#prompting), [Appearance](settings-gallery.md#appearance),
-[Recording](settings-gallery.md#recording), [Controls](settings-gallery.md#controls) or [About](settings-gallery.md#about).
+[Recording](settings-gallery.md#recording), [Controls](settings-gallery.md#controls),
+[Components](settings-gallery.md#components), [Debug](settings-gallery.md#debug) or [About](settings-gallery.md#about).
+
+## Setup and session check
+
+![Reopenable first-use checklist](images/getting-started.png)
+
+![Pre-session links to existing tools](images/session-check.png)
 
 ## Prompting
 
@@ -87,6 +94,25 @@ choice defaults off and is saved with Apply. It starts no additional listener.
 
 ![Scratch audio, loudness and sound checks](images/settings-audio.png)
 
+### OBS connection
+
+![OBS connection under Recording](images/settings-obs.png)
+
+### OBS recording
+
+![OBS permissions and recorded-slate guidance](images/settings-obs-recording.png)
+
+### OBS setup
+
+![Optional OBS setup and configuration guide](images/settings-obs-setup.png)
+
+The [setup assistant](15-obs-setup.md) inspects configured sources and requires
+a reviewed plan before creating a separate profile and scene collection.
+
+![OBS setup choices with illustrative sources](images/obs-setup-choices.png)
+
+![Review before creating a separate setup](images/obs-setup-review.png)
+
 ## Controls
 
 ### Pad and phone layout
@@ -119,32 +145,25 @@ The example QR below is for illustration; scan the code in your own Settings.
 
 ![AI and local automation](images/settings-remotes.png)
 
-### OBS connection
+## Components
 
-![OBS connection under Controls](images/settings-obs.png)
+Each optional component has its own named subtab. Installer links open the
+supplier's website; Locate supports portable/custom copies. There are no
+numbered component pages.
 
-### OBS recording
+![Offline speech model](images/settings-component-model.png)
 
-![OBS recording permissions and visible slate setup guidance](images/settings-obs-recording.png)
+![AI agent kit](images/settings-component-kit.png)
 
-## About
+![Node.js runtime check](images/settings-component-node.png)
 
-![Version, support and updates](images/settings-about.png)
+![OBS application check](images/settings-component-obs.png)
 
-### Components
-
-![Offline model, AI kit and Node.js status](images/settings-components.png)
-
-Component pages keep each app's status and actions together. Installer links
-open the supplier's website; Locate supports portable/custom copies.
-
-![Node.js and optional OBS checks](images/settings-components-apps.png)
-
-![Optional Stream Deck and separate plugin detection](images/settings-components-streamdeck.png)
+![Stream Deck application and plugin checks](images/settings-component-streamdeck.png)
 
 ![Unavailable API controls retain draft values until Apply](images/settings-ai-unavailable.png)
 
-### Debug
+## Debug
 
 Command-word tracing is off by default. The warning stays visible beside its
 checkbox; health and recovery logging needs no spoken words.
@@ -157,3 +176,7 @@ shown below; the prompter also keeps a warning visible with a Turn off button.
 ![Capture override enabled](images/settings-debug-capture.png)
 
 ![Persistent capture warning](images/capture-override-notice.png)
+
+## About
+
+![Version, support and updates](images/settings-about.png)

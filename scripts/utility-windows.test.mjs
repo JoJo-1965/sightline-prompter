@@ -37,6 +37,16 @@ child.stdout.resume();
 const pause = ms => new Promise( r => setTimeout( r, ms ) );
 const clients = [];
 const errors = [];
+async function savedSettings( matches ) {
+	for ( let n = 0; n < 50; n++ ) {
+		try {
+			const settings = JSON.parse( await fs.readFile( path.join( profile, "app-state.json" ), "utf8" ) ).settings;
+			if ( matches( settings ) ) return settings;
+		} catch { /* The asynchronous state writer may still be replacing the file. */ }
+		await pause( 100 );
+	}
+	throw new Error( "Settings were not persisted" );
+}
 async function target( fragment ) {
 	for ( let n = 0; n < 70; n++ ) {
 		try {
@@ -143,7 +153,7 @@ try {
 	assert.equal( words.includes( "smile" ) || words.includes( "point" ) || words.includes( "say" ), false );
 	assert.ok( words.includes( "welcome" ) && words.includes( "back" ) );
 	await main.until( "document.body.style.getPropertyValue('--direction-scale')==='1.25'" );
-	const savedAppearance = JSON.parse( await fs.readFile( path.join( profile, "app-state.json" ), "utf8" ) ).settings;
+	const savedAppearance = await savedSettings( value => value.directionScale === 1.25 && value.directionColour === "" );
 	assert.equal( savedAppearance.directionScale, 1.25 );
 	assert.equal( savedAppearance.directionColour, "" );
 	await main.evaluate( "window.electron.saveSettings({directions:'dim',directionScale:1,headingScale:1,headingFont:'same',scriptFont:'default',theme:'default'})" );
@@ -184,7 +194,7 @@ try {
 	const voiceModelShot = await settings.call( "Page.captureScreenshot", { format: "png" } );
 	await fs.writeFile( path.join( artifacts, "settings-voice.png" ), Buffer.from( voiceModelShot.data, "base64" ) );
 	await main.evaluate( "window.electron.speechModelStatus()" );
-	await settings.evaluate( "document.getElementById('settings-topic-components').click()" );
+	await settings.evaluate( "document.getElementById('settings-topic-component-kit').click()" );
 	await settings.until( "document.getElementById('component-kit-status').textContent.includes('Not installed') && !document.getElementById('component-node-status').textContent.includes('Checking')" );
 	assert.equal( await settings.evaluate( "document.getElementById('component-kit-open').disabled" ), true, "An absent kit cannot open an absent folder" );
 	assert.match( await settings.evaluate( "document.getElementById('component-kit-commands').textContent" ), /install the AI agent kit/ );
@@ -218,15 +228,13 @@ try {
 	await settings.evaluate( "document.getElementById('set-remote').checked=true;document.getElementById('set-remote-delete').checked=false;document.getElementById('set-remote').dispatchEvent(new Event('change',{bubbles:true}));document.getElementById('settings-apply').click()" );
 	await settings.until( "!document.getElementById('set-remote-copy').disabled" );
 	await settings.evaluate( "document.getElementById('set-remote-components').click()" );
-	await settings.until( "document.getElementById('settings-topic-components').getAttribute('aria-selected')==='true'" );
-	for ( let page = 0; page < 8; page++ ) {
-		await pause( 120 );
+	await settings.until( "document.getElementById('settings-topic-component-kit').getAttribute('aria-selected')==='true'" );
+	for ( const topic of [ "model", "kit", "node", "obs", "streamdeck" ] ) {
+		await settings.evaluate( `document.getElementById('settings-topic-component-${ topic }').click()` );
+		await pause( 160 );
+		assert.equal( await settings.evaluate( "document.querySelector('.settings-pagination').getClientRects().length" ), 0, "Components uses named subtabs without numbered overflow pages" );
 		const externalShot = await settings.call( "Page.captureScreenshot", { format: "png" } );
-		await fs.writeFile( path.join( artifacts, `settings-components-page-${ page + 1 }.png` ), Buffer.from( externalShot.data, "base64" ) );
-		if ( await settings.evaluate( "document.querySelector('.settings-pagination').hasAttribute('data-settings-overflow') || document.querySelector('.settings-pagination button:last-child').disabled" ) ) break;
-		const beforePage = await settings.evaluate( "document.querySelector('.settings-pagination span').textContent" );
-		await settings.evaluate( "document.querySelector('.settings-pagination button:last-child').click()" );
-		await settings.until( `document.querySelector('.settings-pagination span').textContent!==${ JSON.stringify( beforePage ) }` );
+		await fs.writeFile( path.join( artifacts, `settings-component-${ topic }.png` ), Buffer.from( externalShot.data, "base64" ) );
 	}
 	await settings.evaluate( "document.getElementById('settings-topic-obs').click()" );
 	await settings.until( "!document.getElementById('set-obs-installation').textContent.startsWith('Checking')" );
@@ -392,13 +400,13 @@ try {
 	assert.equal( ( await protection() ).find( w => w.url.includes( "panel=settings" ) ).protected, false, "Settings is capturable when Hide from capture is off" );
 	console.log( "PASS: phone QR decodes in the native Settings window and opens its real remote." );
 	await settings.evaluate( "document.getElementById('settings-topic-obs-recording').click()" );
-	assert.equal( await settings.evaluate( "document.querySelector('[data-settings-group=controls]').getAttribute('aria-selected')" ), "true" );
+	assert.equal( await settings.evaluate( "document.querySelector('[data-settings-group=recording]').getAttribute('aria-selected')" ), "true" );
 	assert.equal( await settings.evaluate( "document.getElementById('set-obs-prepare-slate').disabled" ), true );
 	assert.match( await settings.evaluate( "document.getElementById('set-obs-slate-status').textContent" ), /Enable OBS integration/ );
 	await settings.evaluate( "document.getElementById('set-obs-enabled').checked=true;document.getElementById('set-obs-enabled').dispatchEvent(new Event('change',{bubbles:true}))" );
 	assert.match( await settings.evaluate( "document.getElementById('set-obs-slate-status').textContent" ), /Apply your OBS changes/ );
 	await settings.evaluate( "document.getElementById('set-obs-enabled').checked=false;document.getElementById('set-obs-enabled').dispatchEvent(new Event('change',{bubbles:true}))" );
-	console.log( "PASS: OBS topics live under Controls; disabled slate setup and unsaved OBS changes have visible guidance." );
+	console.log( "PASS: OBS topics live under Recording; disabled slate setup and unsaved OBS changes have visible guidance." );
 	await settings.evaluate( "document.querySelector('[data-settings-group=appearance]').click();document.querySelector('[data-tab=display]').click()" );
 	assert.equal( await settings.evaluate( "document.querySelectorAll('.mirror-pills').length" ), 1, "Mirroring has one Settings home" );
 	assert.equal( await settings.evaluate( "document.querySelector('.mirror-pills').closest('fieldset').dataset.tab" ), "display" );
@@ -445,7 +453,7 @@ try {
 	await settings.evaluate( "document.querySelector('[data-settings-group=prompting]').click();document.querySelector('[data-tab=scrolling]').click();document.querySelector('[data-tab=scrolling]').focus()" );
 	const picture = await settings.call( "Page.captureScreenshot", { format: "png" } );
 	await fs.writeFile( path.join( artifacts, "floating-settings.png" ), Buffer.from( picture.data, "base64" ) );
-	for ( const topic of [ "commands", "reading", "background", "layout", "display", "recording", "audio", "pad", "streamdeck", "remotes", "obs", "obs-recording", "about", "debug" ] ) {
+	for ( const topic of [ "scrolling", "script", "commands", "reading", "background", "aids", "layout", "display", "recording", "audio", "pad", "streamdeck", "remotes", "obs", "obs-recording", "obs-setup", "about", "debug" ] ) {
 		await settings.evaluate( `document.getElementById('settings-topic-${ topic }').click();document.getElementById('settings-topic-${ topic }').focus()` );
 		await settings.evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
 		for ( let page = 1; page < 8; page++ ) {
@@ -706,6 +714,44 @@ try {
 	await main.evaluate( "listenerModule.stopAutoScroll()" );
 	await main.evaluate( "Promise.all(virtualCaptures.map(c=>c.close()));delete navigator.mediaDevices.getUserMedia" );
 	console.log( "PASS: real audio-worklet pipeline with generated silent-route audio; silence stays healthy, worker stall recovers, hold/position persist, mute/off stay off and a changed wake word works immediately." );
+	// Native workflow windows, using an explicit UI-only OBS fixture. The
+	// transaction itself is covered by obs-setup.test, without the user's OBS.
+	await native.evaluate( "process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron').BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().includes('teleprompter.html')).webContents.send('menuWorkflow','start')" );
+	const workflow = await connect( "panel=workflow" );
+	await workflow.until( "document.querySelectorAll('#workflow-rows .workflow-row').length===4" );
+	assert.equal( await workflow.evaluate( "typeof window.electron" ), "undefined" );
+	const startShot = await workflow.call( "Page.captureScreenshot", { format: "png" } );
+	await fs.writeFile( path.join( artifacts, "getting-started.png" ), Buffer.from( startShot.data, "base64" ) );
+	await workflow.evaluate( "[...document.querySelectorAll('#workflow-rows button')].find(b=>b.textContent==='Choose controls…').click()" );
+	await settings.until( "document.getElementById('settings-topic-pad').getAttribute('aria-selected')==='true'" );
+	await native.evaluate( "process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron').BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().includes('teleprompter.html')).webContents.send('menuWorkflow','session')" );
+	await workflow.until( "document.getElementById('workflow-title').textContent==='Session check'&&document.getElementById('workflow-rows').textContent.includes('Sync reference')" );
+	const sessionShot = await workflow.call( "Page.captureScreenshot", { format: "png" } );
+	await fs.writeFile( path.join( artifacts, "session-check.png" ), Buffer.from( sessionShot.data, "base64" ) );
+	await workflow.evaluate( "document.getElementById('workflow-close').click()" );
+	await native.evaluate( String.raw`(()=>{const {ipcMain}=process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron');globalThis.workflowSetupRequests=[];ipcMain.removeHandler('obsSetup');ipcMain.handle('obsSetup',async(_e,action,value)=>{workflowSetupRequests.push(action);if(action==='inspect')return{ok:true,result:{cameras:[{inputName:'Camera'}],microphones:[{inputName:'Rode mic'}],presentations:[]}};if(action==='folder')return{ok:true,directoryLabel:'Example recordings'};if(action==='plan')return{ok:true,result:{id:'reviewed-fixture',name:'Sightline Academy',directory:'Example recordings',camera:'Camera',microphone:'Rode mic',presentation:'Add later',width:3840,height:2160,fps:30,scenes:['Camera','Camera and presentation','Presentation and camera'],notes:['4K canvas; verify native camera capture.','Existing profiles stay intact.','Test the recording before production.']}};if(action==='apply'){if(value!=='reviewed-fixture')throw Error('Wrong plan');await new Promise(r=>setTimeout(r,150));return{ok:true,result:{ok:true,name:'Sightline Academy'}};}return{ok:true,result:{ok:true}};});return true;})()` );
+	await native.evaluate( "process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron').BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().includes('teleprompter.html')).webContents.send('menuWorkflow','start')" );
+	await workflow.until( "document.getElementById('workflow-title').textContent==='Get ready with Sightline'&&[...document.querySelectorAll('#workflow-rows button')].some(b=>b.textContent==='Set up OBS…')" );
+	await workflow.evaluate( "[...document.querySelectorAll('#workflow-rows button')].find(b=>b.textContent==='Set up OBS…').click()" );
+	const setupWindow = await connect( "panel=obssetup" );
+	await setupWindow.until( "document.getElementById('setup-status')?.textContent.includes('Choose configured')" );
+	assert.equal( await setupWindow.evaluate( "document.getElementById('setup-review').disabled" ), true );
+	await setupWindow.evaluate( "document.getElementById('setup-camera').value='Camera';document.getElementById('setup-camera').dispatchEvent(new Event('change'));document.getElementById('setup-microphone').value='Rode mic';document.getElementById('setup-microphone').dispatchEvent(new Event('change'));document.getElementById('setup-folder').click()" );
+	await setupWindow.until( "!document.getElementById('setup-review').disabled" );
+	const setupShot = await setupWindow.call( "Page.captureScreenshot", { format: "png" } );
+	await fs.writeFile( path.join( artifacts, "obs-setup-choices.png" ), Buffer.from( setupShot.data, "base64" ) );
+	await setupWindow.evaluate( "document.getElementById('setup-review').click()" );
+	await setupWindow.until( "!document.getElementById('setup-apply').disabled&&!document.getElementById('setup-review-panel').hidden" );
+	assert.equal( await native.evaluate( "workflowSetupRequests.includes('apply')" ), false, "Reviewing never applies OBS setup" );
+	const planShot = await setupWindow.call( "Page.captureScreenshot", { format: "png" } );
+	await fs.writeFile( path.join( artifacts, "obs-setup-review.png" ), Buffer.from( planShot.data, "base64" ) );
+	await setupWindow.evaluate( "document.getElementById('setup-apply').click();document.getElementById('setup-apply').click()" );
+	await setupWindow.until( "document.getElementById('setup-result').textContent.includes('is selected in OBS')" );
+	assert.equal( await native.evaluate( "workflowSetupRequests.filter(a=>a==='apply').length" ), 1, "Duplicate create taps do not apply twice" );
+	await setupWindow.evaluate( "document.getElementById('setup-restore').click()" );
+	await setupWindow.until( "document.getElementById('setup-status').textContent.includes('Previous OBS profile')" );
+	await setupWindow.evaluate( "document.getElementById('setup-close').click()" );
+	console.log( "PASS: native Getting started/session checks, direct setup navigation, reviewed OBS plan, single apply and previous-selection restoration (isolated fixture)." );
 	assert.deepEqual( errors, [] );
 	// Apply cleared the earlier draft; make a fresh one for the exit guard check.
 	await settings.evaluate( "document.getElementById('settings-topic-scrolling').click();document.getElementById('set-countdown').focus();document.getElementById('set-countdown').select()" );

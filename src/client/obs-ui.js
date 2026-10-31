@@ -12,6 +12,7 @@ export function obsStatusText( state ) {
 export function obsActionBlock( state, name, { busy = false, canStart = true } = {} ) {
 	if ( name !== "start" && name !== "stop" ) return null;
 	if ( !state?.enabled ) return "OBS integration is disabled";
+	if ( state.setupBusy ) return "OBS setup is in progress";
 	if ( !state.controls ) return "OBS is in status-only mode";
 	if ( state.connection !== "connected" ) return "OBS is not connected; recording status is unknown";
 	if ( busy ) return "An OBS command is still waiting for confirmation";
@@ -24,7 +25,7 @@ export function obsActionBlock( state, name, { busy = false, canStart = true } =
 
 export function obsSlateSetupBlock( state, settings, busy = false ) {
 	if ( busy ) return "Waiting for OBS confirmation…";
-	if ( !state?.enabled ) return "Enable OBS integration in Controls > OBS connection, then Apply.";
+	if ( !state?.enabled ) return "Enable OBS integration in Recording > OBS connection, then Apply.";
 	if ( !state.controls ) return "Allow Sightline to start and stop OBS recordings, then Apply.";
 	if ( !settings.obsRecordedSlate ) return "Tick Include the slate in the OBS recording, then Apply.";
 	if ( state.connection !== "connected" ) return "Connect OBS and use Test saved connection first.";
@@ -56,6 +57,11 @@ export function createObsUi( { getSettings, canStart, onStart, onFinish, onChang
 	bar.append( label, start, finish );
 	document.body.append( bar );
 	function paint() {
+		const localSetup = [ "127.0.0.1", "localhost", "::1", "[::1]" ].includes( ( getSettings().obsHost ?? "127.0.0.1" ).toLowerCase() );
+		const setupReason = !state.enabled || state.connection !== "connected" ? "Enable local OBS, Apply and test its connection first." : !localSetup ? "The assistant needs local OBS. Remote OBS can use the configuration guide." : state.recording !== "stopped" || state.setupBusy ? "Finish the current OBS operation before opening setup." : null;
+		field( "setup-open" ).disabled = !!setupReason;
+		field( "setup-open" ).setAttribute( "aria-describedby", "set-obs-setup-status" );
+		field( "setup-status" ).textContent = setupReason ?? "Ready to inspect configured sources. Recording, streaming and replay buffer must stay stopped. Review the plan before creating it.";
 		const installBlock = obsInstallBlock( installation, field( "host" ).value, state.connection === "connected" && field( "host" ).value === ( getSettings().obsHost ?? "127.0.0.1" ) );
 		field( "installation" ).textContent = installBlock ?? ( state.connection === "connected" ? "OBS connection confirmed. Recording controls still need your permission." : installation?.installed ? "OBS Studio is installed. Start OBS and enable its WebSocket server, then Apply and test." : "Using an OBS address on another computer. Apply and test the connection." );
 		field( "enabled" ).disabled = !!installBlock && !field( "enabled" ).checked;
@@ -65,7 +71,7 @@ export function createObsUi( { getSettings, canStart, onStart, onFinish, onChang
 			field( id ).disabled = !optionsReady;
 			field( id ).setAttribute( "aria-describedby", "set-obs-installation" );
 		}
-		const recordingBlock = installBlock ?? ( !field( "enabled" ).checked ? "Enable OBS in Controls > OBS connection to use recording options." : !field( "controls" ).checked ? "Allow recording controls to use chapters and the recorded slate." : null );
+		const recordingBlock = installBlock ?? ( !field( "enabled" ).checked ? "Enable OBS in Recording > OBS connection to use recording options." : !field( "controls" ).checked ? "Allow recording controls to use chapters and the recorded slate." : null );
 		field( "recording-availability" ).textContent = recordingBlock ?? "Recording options are available. Apply changes before using them; the saved connection must be confirmed.";
 		for ( const id of [ "markers", "recorded-slate" ] ) {
 			field( id ).disabled = !!recordingBlock;
@@ -77,7 +83,7 @@ export function createObsUi( { getSettings, canStart, onStart, onFinish, onChang
 		bar.classList.toggle( "obs-recording", state.recording === "recording" && state.connection === "connected" );
 		label.textContent = obsStatusText( state );
 		field( "status" ).textContent = [ obsStatusText( state ), state.error, state.enabled && !state.controls ? "Status only" : "", state.markers && !state.chapters ? "Chapters unavailable until a supported OBS connection is confirmed" : "" ].filter( Boolean ).join( " · " );
-		const ready = state.enabled && state.connection === "connected" && state.controls && !busy;
+		const ready = state.enabled && state.connection === "connected" && state.controls && !busy && !state.setupBusy;
 		start.disabled = !ready || !canStart();
 		finish.disabled = !ready || ![ "recording", "paused" ].includes( state.recording );
 		start.hidden = finish.hidden = !state.controls;

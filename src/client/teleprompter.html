@@ -448,7 +448,7 @@
       <div class="modal-content help-content">
         <h3>Help and shortcuts</h3>
         <p class="field-hint">
-          New here? <button type="button" id="help-guide" class="link-button">Open the user guide</button>
+          New here? <button type="button" id="help-getting-started" class="link-button">Getting started</button> · <button type="button" id="help-guide" class="link-button">Open the user guide</button>
           (Shift+F1): every feature, with pictures.
           <button type="button" id="help-ai-prompt" class="link-button">Copy the AI script prompt</button>
           for your writing assistant.
@@ -664,6 +664,35 @@
             Save
           </button>
         </div>
+      </div>
+    </div>
+    <div id="workflow-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="workflow-title">
+      <div class="modal-content workflow-content">
+        <h3 id="workflow-title">Get ready with Sightline</h3>
+        <div id="workflow-rows" class="workflow-body"></div>
+        <p id="workflow-status" class="field-hint" role="status" aria-live="polite"></p>
+        <div class="workflow-footer"><button type="button" id="workflow-guide">User guide</button><button type="button" id="workflow-refresh">Refresh checks</button><button type="button" id="workflow-close">Later</button><button type="button" id="workflow-sample" class="primary">Open a sample script</button></div>
+      </div>
+    </div>
+    <div id="obs-setup-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="setup-title">
+      <div class="modal-content workflow-content">
+        <h3 id="setup-title">Set up OBS for Sightline</h3>
+        <div class="workflow-tabs" role="tablist" aria-label="OBS setup stages"><button type="button" role="tab" aria-controls="setup-choices-panel" data-setup-stage="choices" id="setup-choices-tab">Choices</button><button type="button" role="tab" aria-controls="setup-review-panel" data-setup-stage="review" id="setup-review-tab">Review plan</button><button type="button" role="tab" aria-controls="setup-result-panel" data-setup-stage="result" id="setup-result-tab">Result</button></div>
+        <div class="workflow-body">
+          <section data-setup-panel="choices" id="setup-choices-panel" role="tabpanel" aria-labelledby="setup-choices-tab">
+            <label class="workflow-option">New profile name <input id="setup-name" value="Sightline Academy" maxlength="60"></label>
+            <label class="workflow-option">Camera source <select id="setup-camera"></select></label>
+            <label class="workflow-option">Microphone source <select id="setup-microphone"></select></label>
+            <label class="workflow-option">Presentation source <select id="setup-presentation"></select></label>
+            <label class="workflow-option">Canvas and output <select id="setup-height"><option value="2160">4K canvas · 3840 × 2160, 30 fps</option><option value="1080">1080p canvas · 1920 × 1080, 30 fps</option></select></label>
+            <div class="workflow-option"><span>Recording folder</span><button type="button" id="setup-folder">Choose folder…</button><span id="setup-directory" class="field-hint">Not chosen</span></div>
+            <p class="field-hint">Reuses OBS device settings. Check the camera's native resolution separately. Presentation is optional.</p>
+          </section>
+          <section data-setup-panel="review" id="setup-review-panel" role="tabpanel" aria-labelledby="setup-review-tab" hidden><div id="setup-plan"></div></section>
+          <section data-setup-panel="result" id="setup-result-panel" role="tabpanel" aria-labelledby="setup-result-tab" hidden><p id="setup-result"></p><button type="button" id="setup-restore" hidden>Use previous setup</button></section>
+        </div>
+        <p id="setup-status" class="field-hint" role="status" aria-live="polite">Connect local OBS to inspect its configured sources.</p>
+        <div class="workflow-footer"><button type="button" id="setup-guide">Configuration guide</button><button type="button" id="setup-connection">Connection…</button><button type="button" id="setup-refresh">Refresh sources</button><button type="button" id="setup-review">Review plan</button><button type="button" id="setup-apply" class="primary" hidden>Create separate setup</button><button type="button" id="setup-close">Close</button></div>
       </div>
     </div>
     <div id="settings-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="settings-title">
@@ -1082,11 +1111,11 @@
           <p class="field-hint">In OBS 28 or later: Tools &gt; WebSocket Server Settings. Enable its server and authentication. No additional OBS plugin is needed. Use 127.0.0.1 for OBS on this computer. Remote connections use unencrypted WebSocket: use a trusted network. The password is kept separately using your operating system's protected storage.</p>
           <p id="set-obs-status" role="status" aria-live="polite">OBS disabled</p>
           <button type="button" id="set-obs-test">Test saved connection</button>
-          <p class="field-hint" data-essential>Apply changes before testing. Recording permissions and the recorded slate are in Controls > OBS recording.</p>
+          <p class="field-hint" data-essential>Apply changes before testing. Recording permissions and the recorded slate are in Recording > OBS recording.</p>
         </fieldset>
         <fieldset data-tab="obs-recording">
           <legend>OBS recording and sync</legend>
-          <p id="set-obs-recording-availability" class="field-hint" data-essential role="status" aria-live="polite">Connect OBS in Controls > OBS connection first. These permissions apply when OBS integration is enabled.</p>
+          <p id="set-obs-recording-availability" class="field-hint" data-essential role="status" aria-live="polite">Connect OBS in Recording > OBS connection first. These permissions apply when OBS integration is enabled.</p>
           <label class="check"><input id="set-obs-controls" type="checkbox" /> Allow Sightline to start and stop OBS recordings</label>
           <p class="field-hint">Leave this off for status only. Normal Play, Pause, Again and On air do not start or stop OBS. Record take waits for OBS to confirm recording before starting the prompter.</p>
           <label class="check"><input id="set-obs-markers" type="checkbox" /> Send section starts and named markers as OBS chapters</label>
@@ -1107,20 +1136,26 @@
           <nav class="pad-choice-pages" aria-label="Mapping pages"><button type="button" id="set-map-prev">Previous</button><span id="set-map-page" role="status"></span><button type="button" id="set-map-next">Next</button></nav>
           <p class="field-hint">Key mappings use physical key positions. Controller mappings match the device name; identical controllers share them. A held button fires once. Settings, editing and typing suspend actions. Remove an entry to leave that input unused; Do nothing overrides a generic controller mapping. Reset restores the original buttons. Stream Deck keeps its own profile settings.</p>
         </fieldset>
-        <fieldset data-tab="components" id="set-components-model">
+        <fieldset data-tab="obs-setup">
+          <legend>Guided OBS setup</legend>
+          <p class="field-hint" data-essential>Create a separate profile and scene collection using camera and microphone sources already configured in OBS. Review the plan before creating it. Existing setups are retained.</p>
+          <p class="settings-about-actions"><button type="button" id="set-obs-setup-open">Set up OBS…</button><button type="button" id="set-obs-setup-guide">Configuration guide</button></p>
+          <p class="field-hint" id="set-obs-setup-status" data-essential role="status" aria-live="polite">Enable the local OBS connection and Apply first. OBS recording, streaming and replay buffer must be stopped. Setup never starts recording.</p>
+        </fieldset>
+        <fieldset data-tab="component-model" id="set-components-model">
           <legend>Offline speech model</legend>
           <p id="component-speech-status" class="field-hint" role="status" aria-live="polite">Checking…</p>
           <div class="button-row"><button type="button" id="component-speech-install">Install</button><button type="button" id="component-speech-reinstall">Reinstall</button><button type="button" id="component-speech-remove">Remove…</button></div>
           <p class="field-hint">Optional 73 MB download for offline voice following and commands. Reinstall fetches a fresh copy and keeps the old one if the download fails. Remove moves it to your system bin. Stop prompting and recording first; command listening resumes afterwards if the model is available.</p>
         </fieldset>
-        <fieldset data-tab="components" id="set-components-kit">
+        <fieldset data-tab="component-kit" id="set-components-kit">
           <legend>AI agent kit</legend>
           <p id="component-kit-status" class="field-hint" role="status" aria-live="polite">Checking…</p>
           <div class="button-row"><button type="button" id="component-kit-install">Install</button><button type="button" id="component-kit-reinstall">Reinstall</button><button type="button" id="component-kit-remove">Remove…</button><button type="button" id="component-kit-open" aria-describedby="component-kit-commands">Open folder</button></div>
           <p id="component-kit-commands" class="field-hint" data-essential role="status" aria-live="polite">Checking local AI kit commands…</p>
           <p class="field-hint">Copies the authoring and session skills, checker and command tool from this app. No repository clone or npm install needed. Open the folder for START-HERE. Reinstall replaces this managed copy; keep your own files elsewhere. Remove moves it to the system bin. Your assistant's own settings and API permissions stay as you set them.</p>
         </fieldset>
-        <fieldset data-tab="components">
+        <fieldset data-tab="component-node">
           <legend>Node.js for AI commands</legend>
           <div>
           <p id="component-node-status" class="field-hint" role="status" aria-live="polite">Checking…</p>
@@ -1128,15 +1163,15 @@
           </div>
           <p class="field-hint">Node.js 22.16 or later runs the AI kit commands. The desktop app and offline voice engine work without it. Install Node.js from its own website, then restart Sightline and check again.</p>
         </fieldset>
-        <fieldset data-tab="components">
+        <fieldset data-tab="component-obs">
           <legend>OBS Studio (optional)</legend>
           <div>
           <p id="component-obs-status" class="field-hint" data-essential role="status" aria-live="polite">Checking…</p>
           <div class="button-row"><a href="https://obsproject.com/download" target="_blank">Install / reinstall OBS</a><button type="button" id="component-obs-locate">Locate…</button><button type="button" id="component-obs-check">Check again</button></div>
           </div>
-          <p class="field-hint">Uses OBS's own installer. Locate accepts a portable or custom installation. OBS on another computer needs its address under Controls > OBS connection.</p>
+          <p class="field-hint">Uses OBS's own installer. Locate accepts a portable or custom installation. OBS on another computer needs its address under Recording > OBS connection.</p>
         </fieldset>
-        <fieldset data-tab="components">
+        <fieldset data-tab="component-streamdeck">
           <legend>Stream Deck (optional)</legend>
           <div>
           <p id="component-streamdeck-status" class="field-hint" data-essential role="status" aria-live="polite">Checking…</p>

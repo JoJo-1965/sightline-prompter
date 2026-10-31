@@ -121,7 +121,7 @@ so on). You still see it.
 Settings, keyboard Help, voice-command help and Guide adjustments follow this
 preference too, including changes while they are open. Turn it off to capture
 these windows for support. The head-guide overlay keeps its own protection.
-For a deliberate demo or support recording, **Settings > About > Debug >
+For a deliberate demo or support recording, **Settings > Debug >
 Allow all windows to be captured** temporarily overrides every window's
 protection, including the guide. Its banner stays visible until you turn it
 off; quitting resets the override without changing your saved preferences.

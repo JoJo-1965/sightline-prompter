@@ -11,7 +11,7 @@ Controls > Stream Deck and the plugin's Test connection. Unreported legacy
 versions are unconfirmed, not assumed current. See the
 [test walkthrough](guide/14-acceptance-test.md) and [roadmap](../ROADMAP.md).
 
-**Development navigation:** five Settings groups with focused subtabs, a Files
+**Development navigation:** seven Settings groups with focused subtabs, a Files
 menu for input/output and a Tools menu for live recording and operator tools.
 Duplicate file operations and Display preferences have been removed from
 Settings. The top bar keeps live controls and Steady/Voice switching; native
@@ -25,7 +25,7 @@ labelled; pending changes show Unsaved changes, with Apply and Save & close.
 See the
 [Settings map](guide/07-settings.md).
 
-The next batch also includes **About > Components**: offline model and AI kit
+The next batch also includes **Components**: offline model and AI kit
 status, Install/Reinstall/Remove, and a separate Node.js availability check.
 The kit runs without cloning the repository or installing npm dependencies.
 Components also detects optional OBS/Stream Deck applications and the Sightline
@@ -40,6 +40,18 @@ replacement, immediate saving, three-entry pages and reset. Held/reconnected
 buttons do not repeat; typing, editing and Settings suspend actions. Plain
 keys and Shift combinations can be assigned; system shortcuts stay reserved.
 These additions are source changes for review, absent from installed RC14.
+
+The setup/session workflow (58) separates occasional configuration from live
+recording: first-use **Getting started**, reopenable from Help; **Tools >
+Session check** before recording; named Components subtabs and top-level Debug.
+OBS connection, recording and setup are together under Recording. Components
+has no numbered overflow pages; the Settings frame remains stable.
+
+The optional [OBS setup assistant](guide/15-obs-setup.md) (59) reuses configured
+camera/mic sources, offers a folder and 1080p/4K canvas, then shows a plan.
+Only Create applies a separate profile and three scenes. It retains previous
+setups, requires idle outputs and starts no recording. Actual capture mode,
+encoder quality, clean camera/WAV and sync need a physical recording test.
 
 The development guide includes [From recording to the editor](guide/12-production-handover.md):
 an illustrated session checklist covering setup, framing, a short test,
@@ -300,7 +312,7 @@ The whole workflow is in the guide:
   window with a draggable title bar, saved geometry and stable grouped tabs.
 - **Mirroring in one Settings topic:** **Appearance > Screens** holds both
   beam-splitter toggles. The toolbar mirrors stay available and in sync.
-- **OBS connection and recording together under Controls:** recorded-slate
+- **OBS connection, recording and setup together under Recording:** recorded-slate
   preparation shows prerequisites, progress, readiness and errors in Settings.
 - **Clear OBS button states:** dark controls with readable enabled/disabled
   labels and a visible focus outline. Settings and help stay above their
@@ -318,8 +330,8 @@ The whole workflow is in the guide:
   disabled-feature help stays hidden.
 - **Check for updates** on Settings > About, and a quiet check at start-up
   (can be turned off). Nothing downloads by itself.
-- **Settings in five groups:** Prompting, Appearance, Recording, Controls and
-  About, with focused subtabs and shared live controls. File operations stay
+- **Settings in seven groups:** Prompting, Appearance, Recording, Controls,
+  Components, Debug and About, with focused subtabs and shared live controls. File operations stay
   in Files; settings still import/export as JSON or XML.
 - **Layout and Voice panels** for changes while the script runs. Drag them,
   or Settings, by the title to anywhere in the window.
@@ -340,7 +352,7 @@ The whole workflow is in the guide:
   with the same order, two rows for Studio, and browser-safe footer spacing.
   Taps have separate sending/accepted feedback, with clear refusal or missing
   acknowledgement states and no automatic command replay.
-- **Session capture override:** About > Debug can temporarily permit every
+- **Session capture override:** Debug can temporarily permit every
   window, including the head guide, in screenshots and demo recordings.
   A persistent warning and phone notice show when it is active; turning it
   off restores the latest normal rules. Quitting resets it.
@@ -348,7 +360,7 @@ The whole workflow is in the guide:
   processing without moving the script or changing its hold. Silence and
   intentional listening-off do not cause restarts. Retries are bounded, with
   a manual Restart listening button and live state. Optional local word tracing
-  lives in **Settings > About > Debug**, alongside support logs. It is off by
+  lives in **Settings > Debug**, alongside support logs. It is off by
   default, independent of Debug mode, and warns about nearby conversation.
 - **Control window** for a second screen: an upright, live copy of the script
   with big buttons. Click any line to move the prompter there. Its broadcast
@@ -402,7 +414,7 @@ The whole workflow is in the guide:
 
 ## Help and installers
 
-- **Optional OBS integration** (1.0.7 candidate): **Settings > Controls > OBS connection**
+- **Optional OBS integration** (1.0.7 candidate): **Settings > Recording > OBS connection**
   and **OBS recording**,
   off by default; status-only or recording control; Record take and Finish
   recording from Sightline, its control window, phone and voice commands;

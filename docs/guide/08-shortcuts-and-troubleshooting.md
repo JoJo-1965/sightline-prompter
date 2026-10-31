@@ -3,7 +3,7 @@
 **Wake word sometimes stops responding:** check **Settings > Prompting >
 Commands**. Audio/engine faults recover automatically with bounded retries;
 use **Restart listening** or click the listening badge for a manual retry.
-To investigate a misheard word, enable the optional local command-word trace in **Settings > About > Debug**,
+To investigate a misheard word, enable the optional local command-word trace in **Settings > Debug**,
 reproduce it, then switch tracing off. See [Listening recovery](03-scrolling-and-voice.md#if-listening-stops-responding).
 
 **Changing pad or phone buttons:** use **Settings > Controls > Pad**, or
@@ -86,7 +86,7 @@ See [voice input checks](03-scrolling-and-voice.md#if-ordinary-words-or-whole-li
 reloading keeps your scripts and settings, but loses unsaved changes in the
 editor. Hangs, crashes and errors are noted in `sightline.log` in Sightline's
 folder (`%APPDATA%\Sightline Prompter` on Windows). To report it, turn on
-**Settings > About > Debug > Debug mode**, make it happen again, then use **Save a log
+**Settings > Debug > Debug mode**, make it happen again, then use **Save a log
 for support…** and attach the file.
 
 **A voice command isn't heard.** Say "Prompter", then the command, then stop

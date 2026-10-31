@@ -24,11 +24,30 @@ RC13 adds custom pad/phone layouts and bounded listening recovery. Under
 **Controls > Pad**, choose Reading or Studio, reorder a button and check that
 the phone shows the same order. **Prompting > Commands** shows listening
 state and Restart listening; command-word tracing is off by default.
-RC14 moves the optional trace to **About > Debug**, alongside support logs.
+RC14 moves the optional trace to **Debug**, alongside support logs.
 Enable it only to investigate a mishearing, Apply, then turn it off afterwards.
 It can capture nearby conversation while Always listening is enabled.
 
 The public app remains **1.0.6**. The candidate and plugin are private test builds.
+
+### Additional checks for the next candidate
+
+RC14 does not yet include this batch. After the next candidate is approved
+and installed, check the seven Settings groups and the five named Components
+subtabs; each component should keep its status and actions together. OBS
+connection/recording/setup belong under Recording. Confirm the Settings frame
+stays the same size without scrolling and your draft survives navigation.
+
+Reopen **Getting started** from Help, then use **Tools > Session check…**.
+Try its links and Refresh. Disabled OBS should have no session recording row;
+known configuration must not be labelled as a passed physical recording test.
+
+The optional [OBS setup assistant](15-obs-setup.md) can be inspected without
+applying it. On a disposable setup, review the chosen camera/mic, folder,
+canvas and new names before Create. Confirm existing setups remain available,
+the previous selection can be restored, and recording/streaming/replay block
+creation. Verify native capture quality, clean outputs and physical sync in
+actual files before using the result for production.
 
 Allow about **15 minutes** for setup and the recording walkthrough. Read
 ordinary text aloud and square-bracket instructions silently. The numbered
@@ -49,7 +68,7 @@ A mouse fallback does not prove a physical Stream Deck key works.
 
 ## Preflight
 
-1. In **Settings > Controls > OBS connection**, enable the connection,
+1. In **Settings > Recording > OBS connection**, enable the connection,
    Apply and test it. In **OBS recording**, allow recording controls.
    These permissions must be chosen in Settings; the scripts do not enable them.
    In **Controls > Stream Deck**, choose **Check compatibility** and confirm
@@ -153,7 +172,7 @@ browser acknowledgement is not proof of a correct physical recording.
 
 These additions are absent from installed RC14. After an approved build:
 
-1. Open **About > Components**. Check the model status and Node.js result.
+1. Open **Components**. Check the model status and Node.js result.
    Install the AI kit, open its folder and run the checker on your own script.
    Reinstall should refresh the managed copy. Removal must ask first; Cancel
    should leave it installed. Stop prompting/recording before model changes.

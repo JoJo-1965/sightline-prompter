@@ -1,6 +1,10 @@
 # Recording with OBS Studio
 
-In RC10 both OBS topics are under **Settings > Controls**. On **OBS recording**,
+For an optional separate profile and scene collection, see the
+[OBS setup assistant and configuration guide](15-obs-setup.md). Setup is a
+one-time choice; normal prompting and retakes need no setup commands.
+
+In the next candidate, OBS topics are under **Settings > Recording**. On **OBS recording**,
 **Prepare recorded slate** explains any unmet prerequisite, then displays
 progress, readiness or errors beside the button. Apply permission changes first.
 
@@ -15,7 +19,7 @@ the audio and video recording; Sightline handles the script, takes and edit
 information. You do not need a separate OBS plugin, Stream Deck or MCP server.
 
 The next candidate checks for a local OBS installation before enabling local
-setup. If it is missing, **About > Components** provides OBS's installer link,
+setup. If it is missing, **Components** provides OBS's installer link,
 **Locate** for portable/custom copies, and **Check again**. Entering another
 computer's OBS address keeps remote setup available. Installed software is
 separate from a confirmed WebSocket connection and recording permissions.
@@ -29,7 +33,7 @@ For the session checklist and which files to send to Production, follow
 
 1. In OBS Studio 28 or later, open **Tools > WebSocket Server Settings**.
    Enable the server and authentication. Note its port and password.
-2. In Sightline, open **Settings > Controls > OBS connection**. Tick **Enable OBS integration**.
+2. In Sightline, open **Settings > Recording > OBS connection**. Tick **Enable OBS integration**.
 3. Use **127.0.0.1** for OBS on this computer. Enter OBS's port (normally
    **4455**) and password, then click **Apply**.
 4. Click **Test saved connection**. Test uses the saved values; apply any
@@ -59,7 +63,7 @@ the same information in its control window. A lost connection shows
 RC11 gives **Record take** and **Finish recording** explicit dark styles with
 readable disabled labels and a clear keyboard-focus outline.
 
-In **Settings > Controls > OBS recording**, enable recording controls to get **Record take** and **Finish recording**
+In **Settings > Recording > OBS recording**, enable recording controls to get **Record take** and **Finish recording**
 beside the script, in the control window and on the phone remote:
 
 - **Record take** checks OBS first. If OBS is stopped, it asks it to record,
@@ -99,7 +103,7 @@ enabled. It uses OBS's included Browser source, not the protected head guide.
 
 1. Stop recording and streaming in OBS.
 2. In **Settings > Recording > Takes > Slate**, choose **Flash and beep** or **Flash**.
-3. In **Settings > Controls > OBS recording**, tick **Include the slate in the OBS recording**,
+3. In **Settings > Recording > OBS recording**, tick **Include the slate in the OBS recording**,
    then **Apply** and **Prepare recorded slate**.
 4. Preparation adds or updates only **Sightline recorded sync** above the
    current scene. It leaves your camera, microphone, profile and scene choice

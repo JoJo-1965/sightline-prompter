@@ -25,6 +25,8 @@ import { healthSections } from "./health-script-dom.js";
 import { scriptHealth } from "./script-health.js";
 import { rehearsalCoach } from "./rehearsal-coach.js";
 import { createScriptReview } from "./script-review.js";
+import { createWorkflow } from "./workflow.js";
+import { createObsSetupUi } from "./obs-setup-ui.js";
 import {
 	startSteadyScroll,
 	stopSteadyScroll,
@@ -157,6 +159,10 @@ let syncPadSettings = () => {};
 let mappingSettings = null;
 let componentSettings = null;
 let componentAvailability = null;
+let componentStatus = null;
+let phoneStatus = null;
+let workflow = null;
+let obsSetupUi = null;
 let modelMaintenance = false;
 let scriptReview = null;
 let reviewedRecording = null;
@@ -2533,7 +2539,7 @@ function markSettingsDirty( event ) {
 
 // Each step of opening Settings goes in sightline.log, so if it freezes, the
 // last line says where. (Looking into a freeze on Joanne's computer.)
-// (main.js only keeps them in debug mode, Settings > About > Debug.)
+// (main.js only keeps them in debug mode, Settings > Debug.)
 const settingsTrail = step => window.electron.debugLog?.( `settings: ${ step }` );
 
 uiElement( "settings-save-log" )?.addEventListener( "click", async () => {
@@ -3085,6 +3091,8 @@ window.electron.onUtilityPanelClose( ( kind, quit ) => {
 	if ( kind === "settings" ) requestCloseSettings( quit ? () => window.electron.windowControl( "close" ) : null );
 	if ( kind === "help" ) closeHelp();
 	if ( kind === "voicehelp" ) hideVoiceHelp();
+	if ( kind === "workflow" ) workflow?.close();
+	if ( kind === "obssetup" ) obsSetupUi?.close();
 } );
 window.electron.getSettings();
 // --- Layout: margins, line spacing, alignment, edge fade ---
@@ -3816,6 +3824,9 @@ function renderTools() {
 		] ],
 		[ "Review", [
 			[ "▤", "Script & rehearsal review…", "", () => openScriptReview(), { disabled: isScrolling() } ]
+		] ],
+		[ "Prepare a session", [
+			[ "✓", "Session check…", "", () => workflow.open( "session" ), { disabled: isScrolling() } ]
 		] ],
 		[ "Quick adjustments", [
 			[ "▤", "Spacing and mirror…", "Ctrl+Shift+K", () => toggleLayoutView( "layout" ) ],
@@ -5034,6 +5045,7 @@ onClick( "set-remote-copy", async () => {
 onClick( "set-remote-new", () => window.electron.newRemoteToken() );
 
 window.electron.onPhoneInfo( ( info ) => {
+	phoneStatus = info;
 	const status = uiElement( "set-phone-status" );
 	const connect = uiElement( "set-phone-connect" );
 	if ( !status || !connect ) return;
@@ -5054,6 +5066,7 @@ mappingSettings = createMappingSettings( settingsModal, partial => window.electr
 mappingSettings.sync( settings.inputMappings );
 componentAvailability = createComponentAvailability( settingsModal, { navigate: name => showSettingsTab( name ) } );
 componentSettings = createComponentSettings( settingsModal, { onStatus: ( status ) => {
+	componentStatus = status;
 	componentAvailability.components( status );
 	obsUi.installation( status.obs ?? null );
 }, toast: text => showToast( text, 4500 ), changeModel: async ( action ) => {
@@ -5081,7 +5094,7 @@ settingsModal.addEventListener( "keydown", ( event ) => {
 }, true );
 const settingsNavigation = createSettingsNavigation( settingsModal, { onShow: ( name ) => {
 	if ( name !== "buttons" ) mappingSettings.cancel();
-	if ( [ "components", "remotes", "streamdeck", "obs", "obs-recording" ].includes( name ) ) componentSettings.refresh();
+	if ( name.startsWith( "component-" ) || [ "remotes", "streamdeck", "obs", "obs-recording", "obs-setup" ].includes( name ) ) componentSettings.refresh();
 	settingsTrail( `tab ${ name }` );
 	if ( LAYOUT_TABS.includes( name ) ) borrowLayoutPanel();
 	settingsBox?.scrollTo( 0, 0 );
@@ -6387,6 +6400,33 @@ scriptReview = createScriptReview( field( "script-review" ), {
 	canJump: () => isEditMode && !!editorView,
 	jump: section => window.EditorModule.selectSection( editorView, section )
 } );
+const navigateWorkflowSettings = async ( topic ) => {
+	await openSettings();
+	showSettingsTab( topic );
+};
+workflow = createWorkflow( field( "workflow-modal" ), {
+	getState: async () => {
+		await componentSettings.refresh();
+		return { settings, components: componentStatus, obs: obsUi.state(), microphone: micSelect?.selectedOptions[0]?.textContent, guideShown: !!headGuideState?.shown, scriptTitle: slotState.slots[slotState.active]?.name, phone: phoneStatus };
+	},
+	navigate: async topic => topic === "obs-setup" ? obsSetupUi.open() : navigateWorkflowSettings( topic ),
+	act: ( action ) => {
+		if ( action === "sound" ) toggleSoundCheck();
+		else if ( action === "guide" ) window.electron.headGuide( "show" );
+		else openScriptReview( "health" );
+	},
+	isBusy: () => isScrolling() || autoScrollStarting || slating,
+	toast: showToast
+} );
+obsSetupUi = createObsSetupUi( field( "obs-setup-modal" ), { navigate: navigateWorkflowSettings, isBusy: () => isScrolling() || autoScrollStarting || slating, toast: showToast } );
+onClick( "set-obs-setup-open", () => obsSetupUi.open() );
+onClick( "set-obs-setup-guide", () => window.electron.openGuide( "15-obs-setup.md" ) );
+onClick( "help-getting-started", () => {
+	closeHelp();
+	workflow.open( "start" );
+} );
+window.electron.onMenuWorkflow( mode => workflow.open( mode ) );
+window.electron.onGettingStartedOffer( () => workflow.open( "start" ) );
 onClick( "btn-script-health", () => openScriptReview( "health" ) );
 window.electron.onMenuReview( () => openScriptReview() );
 makeMovable( field( "script-review" ).querySelector( ".review-content" ), field( "review-title" ), "script-review" );

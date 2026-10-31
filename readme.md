@@ -248,12 +248,12 @@ mirroring under Screens and honours capture preferences for helper windows;
 use four or six columns, with all 12 Studio buttons in two rows. Portrait
 keeps its large controls, and footer spacing accounts for browser controls.
 The same batch adds live API/JSON/XML pad-layout changes, phone sending/sent
-feedback and a session-only capture override in **About > Debug**. Invalid
+feedback and a session-only capture override in **Debug**. Invalid
 layouts are rejected before other settings change; protected permissions stay
 local. The capture override has persistent desktop/phone warnings and resets
 on exit. A plan-first installation helper checks hashes and verifies the
 complete destination/version after an explicitly requested installation.
-The batch also adds **About > Components** for model/AI-kit installation,
+The batch also adds top-level **Components** for model/AI-kit installation,
 repair and removal, plus a Node.js check. **Controls > Buttons & keys** learns
 keyboard, clicker, pedal and controller inputs, with action choices and reset.
 The batch is awaiting review; RC15 has not been built or installed.
@@ -271,7 +271,16 @@ website deployment is part of this candidate.
   show take pace, unmatched sentence words and logged rereads. These are review
   prompts, not proof of a delivery error. Optional filler counts are under
   **Recording > Takes**; `rehearsal-coach.json` travels with the edit pack.
-- **Components in one place:** **Settings > About > Components** shows the
+- **Setup once, check each session:** Help > Getting started opens a first-use
+  checklist; Tools > Session check links to script review, sound, framing,
+  enabled OBS and sync checks. Settings now has top-level Components and Debug,
+  named component subtabs and OBS under Recording. The fixed frame remains.
+- **Optional OBS setup:** review configured camera/mic sources, folder and
+  1080p/4K canvas before creating a separate profile and three scenes. Existing
+  setups remain available; outputs must be stopped. The
+  [configuration guide](docs/guide/15-obs-setup.md) explains native camera mode,
+  clean-camera/WAV outputs and physical sync checks. Setup starts no recording.
+- **Components in one place:** **Settings > Components** shows the
   offline speech model, bundled AI kit and Node.js status. Install, Reinstall
   and Remove manage Sightline's own copies; Node.js uses its own installer.
   Voice settings also offer model repair/removal. A failed repair retains the
@@ -296,7 +305,7 @@ website deployment is part of this candidate.
   restarts with bounded retries, preserving position and hold. Silence and
   listening-off stay respected. **Prompting > Commands** shows state and
   Restart listening. The optional command-word trace is off by default and
-  lives under **Settings > About > Debug**, independently of Debug mode,
+  lives under **Settings > Debug**, independently of Debug mode,
   with a warning about nearby conversation and the usual Apply/Save controls.
   Applying a wake-word change updates an already-running listener too.
   Stopping during startup cancels cleanly; late messages from the old
@@ -311,7 +320,7 @@ website deployment is part of this candidate.
 - **Readable OBS controls:** Record take and Finish recording have dark
   backgrounds, clear outlines and readable text when enabled or disabled,
   with a visible keyboard-focus ring.
-- **OBS settings together:** **Controls > OBS connection** and **OBS recording**
+- **OBS settings together:** **Recording > OBS connection** and **OBS recording**
   sit alongside the other integrations. **Prepare recorded slate** explains
   why it is unavailable, then shows progress, readiness or an error in Settings.
 - **Phone QR and helper windows:** **Controls > Phone** displays its QR code
@@ -371,7 +380,7 @@ website deployment is part of this candidate.
   connections and unavailable actions are blocked. Older unreported versions
   stay unconfirmed; supported ordinary controls still work. This is a local
   compatibility check, not a guarantee that either app is the latest release.
-- **Optional OBS recording (52):** **Settings > Controls > OBS connection**
+- **Optional OBS recording (52):** **Settings > Recording > OBS connection**
   is off by default, with authenticated connection, saved-connection test
   and status-only operation. Allow controls in **OBS recording** for
   **Record take** and **Finish recording**, also available on the phone,
@@ -379,7 +388,7 @@ website deployment is part of this candidate.
   Ordinary Play/Pause, section stops, retakes, On air and module changes
   keep OBS recording. Disabling the integration leaves OBS alone.
 - **Recorded sync and production exports:** prepare an optional flash/tone
-  source in **Controls > OBS recording**, with OBS stopped and track 1
+  source in **Recording > OBS recording**, with OBS stopped and track 1
   included. Edit packs retain the exact script, guide snapshots, OBS
   observations, confirmed main filenames and estimated take/marker clock
   positions. Module changes save the outgoing take and scratch WAV before
@@ -399,8 +408,8 @@ website deployment is part of this candidate.
   actions, 5 dial actions and 18 standard/OBS profiles. It uses its own
   buttons-only connection. Physical key checks and Marketplace submission
   remain; no listing is live.
-- **Settings and navigation:** five groups with focused topics: Prompting,
-  Appearance, Recording, Controls and About. Appearance separates Text,
+- **Settings and navigation:** seven groups with focused topics: Prompting,
+  Appearance, Recording, Controls, Components, Debug and About. Appearance separates Text,
   Background, Reading aids, Spacing and Screens. The panel stays the same
   size; long topics and word lists use pages rather than scrolling. Files
   handles scripts, recordings and import/export; Tools holds live helpers.

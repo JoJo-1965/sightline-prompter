@@ -207,7 +207,7 @@ try {
 	await evaluate( "document.getElementById('tools-panel').dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}))" );
 	assert.equal( await evaluate( "document.activeElement.id" ), "cb-tools" );
 	await evaluate( "document.getElementById('cb-settings').focus();document.getElementById('cb-settings').click()" );
-	assert.deepEqual( await evaluate( "[...document.querySelectorAll('.settings-tabs button')].map(b=>b.textContent)" ), [ "Prompting", "Appearance", "Recording", "Controls", "About" ] );
+	assert.deepEqual( await evaluate( "[...document.querySelectorAll('.settings-tabs button')].map(b=>b.textContent)" ), [ "Prompting", "Appearance", "Recording", "Controls", "Components", "Debug", "About" ] );
 	assert.equal( await evaluate( "document.querySelectorAll('#settings-modal fieldset:not([data-tab])').length" ), 0 );
 	assert.equal( await evaluate( "[...document.querySelectorAll('#settings-modal fieldset')].every(f=>f.closest('[data-settings-page]'))" ), true );
 	assert.equal( await evaluate( "['set-opacity','set-reading-line','set-reading-marker','set-sentence','set-mirrored','set-file-open','set-file-save'].some(id=>document.getElementById(id))" ), false );
@@ -222,8 +222,8 @@ try {
 	await evaluate( "document.activeElement.dispatchEvent(new KeyboardEvent('keydown',{key:'Tab',bubbles:true}))" );
 	assert.equal( await evaluate( "document.activeElement.id" ), "settings-close" );
 	const visited = await evaluate( "(()=>{const results=[];for(const group of document.querySelectorAll('.settings-tabs button')){group.click();for(const topic of [...document.querySelectorAll('.settings-subtabs button')].filter(b=>!b.hidden)){topic.click();const page=document.getElementById(topic.getAttribute('aria-controls'));results.push({name:topic.dataset.tab,visible:page.getClientRects().length>0,fields:page.querySelectorAll('fieldset').length,one:[...document.querySelectorAll('[data-settings-page]')].filter(p=>p.getClientRects().length).length===1});}}return results;})()" );
-	assert.equal( visited.length, 22 );
-	assert.ok( visited.some( page => page.name === "components" ) && visited.some( page => page.name === "buttons" ), "Components and input mappings have their own reachable topics" );
+	assert.equal( visited.length, 27 );
+	assert.ok( visited.some( page => page.name === "component-kit" ) && visited.some( page => page.name === "buttons" ), "Components and input mappings have their own reachable topics" );
 	assert.ok( visited.every( page => page.visible && page.fields && page.one ), JSON.stringify( visited ) );
 	const semantics = await evaluate( "(()=>{const root=document.querySelector('.settings-content');return {unlabelled:[...root.querySelectorAll('input,select,textarea')].filter(e=>!e.getAttribute('aria-label')&&!e.getAttribute('aria-labelledby')&&![...(e.labels??[])].some(l=>l.textContent.trim())).map(e=>e.id||e.className),nested:root.querySelectorAll('label button,label input~input').length,oldCaption:root.textContent.includes('How this works'),colourScheme:getComputedStyle(root).colorScheme,interactiveTooltips:document.querySelectorAll('.settings-explanation a,.settings-explanation button').length};})()" );
 	assert.deepEqual( semantics.unlabelled, [], "Every settings control needs an accessible name" );

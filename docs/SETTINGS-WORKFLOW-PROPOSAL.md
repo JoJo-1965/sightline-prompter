@@ -1,7 +1,11 @@
 # A workflow for setup, recording and review
 
-Design proposal, 31 October 2026. These mock-ups are not implemented screens.
-The component detection work is built; no new RC has been packaged or installed.
+Approved design, 31 October 2026. The workflow is now implemented on the
+development branch. The images below remain the original design mock-ups;
+see the [actual Settings gallery](guide/settings-gallery.md),
+[Getting started](guide/01-getting-started.md) and
+[OBS setup guide](guide/15-obs-setup.md) for current screens and behaviour.
+No new RC has been packaged or installed.
 
 ## What needs correcting
 
@@ -70,5 +74,7 @@ what it configured from the extra clean-recording and WAV-extraction steps.
 Keep scratch audio independent. Use the existing explicit recorded-slate
 preparation and verify the captured picture/sound before calling sync ready.
 
-The assistant is proposed work, not built or validated. It will not modify the
-workstation's OBS configuration during this design review.
+The assistant is now built and tested against simulated OBS responses and an
+isolated native UI fixture. The workstation's OBS configuration remains
+unchanged. Device quality, actual clean outputs and physical sync still need
+recording acceptance before publication.

@@ -5,8 +5,8 @@ description: Use when working with Sightline Prompter around a recording session
 
 # Running a Sightline session: before, during and after
 
-**Where Sightline is:** the managed AI kit from **Settings > About > Components
-> Install > Open folder**, or the Sightline Prompter source folder, a clone of
+**Where Sightline is:** the managed AI kit from **Settings > Components
+> AI kit > Install > Open folder**, or the Sightline Prompter source folder, a clone of
 https://github.com/JoJo-1965/sightline-prompter. Use the `SIGHTLINE_HOME`
 environment variable if it's set; otherwise, if this skill sits in that
 repo's `skills` folder, it's two folders up; otherwise ask the user. Below,
@@ -24,10 +24,21 @@ from `remote-control.json`.
 
 ## Before: load the scripts
 
+For occasional configuration, Help > Getting started links to existing setup
+screens; Tools > Session check links to script review, sound, framing, enabled
+OBS and sync checks. Components and Debug are top-level Settings groups. These
+statuses cannot certify a captured camera or microphone. Refresh after changes.
+
+The optional native-only OBS setup assistant lives under Recording > OBS setup.
+It requires local OBS, configured sources, idle outputs and an explicitly
+reviewed plan. Do not create profiles through unrelated automation or claim
+that a 4K canvas proves native capture or that MKV mic tracks are separate WAVs.
+Read docs/guide/15-obs-setup.md for the clean-output and physical-test steps.
+
 ### Optional OBS integration (1.0.7 release candidate)
 
-The user must enable the integration in **Settings > Controls > OBS connection**
-and allow controls in **Controls > OBS recording** themselves. These settings
+The user must enable the integration in **Settings > Recording > OBS connection**
+and allow controls in **Recording > OBS recording** themselves. These settings
 are protected from the API and script files. Use the private Stream Deck
 0.1.9 companion for physical recording-key checks. The public 1.0.6 app does
 not contain OBS integration. See the [acceptance walkthrough](../../docs/guide/14-acceptance-test.md)
@@ -51,7 +62,7 @@ recording path after stop. Read [docs/EDIT-PACK.md](../../docs/EDIT-PACK.md)
 for fields and timing limits. The recording file is not included in the
 pack, and the observation times do not replace slate or audio sync.
 
-Optional recorded slates need a prepared source in **Settings > Controls > OBS recording** and
+Optional recorded slates need a prepared source in **Settings > Recording > OBS recording** and
 track 1 in the OBS recording. `recorded-sync.json` links browser acknowledgements
 to a section/take, the recording identifier, UTC times and log-clock `t`.
 Locate the actual flash in the file and map it to `t`; do not use the OBS
@@ -208,7 +219,7 @@ Publication remains held until all five production requirements are validated.
 Commands-only listener health is available as `listenerHealth` in status.
 Recovery is bounded and respects listening-off and script mute. The user can
 use Prompting > Commands > Restart listening. Command-word text tracing is
-off by default and must be explicitly enabled in Settings > About > Debug for troubleshooting;
+off by default and must be explicitly enabled in Settings > Debug for troubleshooting;
 entries have `mode: "commands"`. Do not enable it through automation. It may
 include surrounding conversation, so ask the user to switch it off afterwards.
 `padLayout` in status describes the shared phone/pad layout; hardware Stream
@@ -216,7 +227,7 @@ Deck profiles keep separate assignments. Configure layouts in Controls > Pad.
 The next candidate also accepts `padLayout` through POST /settings. Verify it
 appears in `applied` and read back status; RC14 silently dropped that object.
 `captureOverride` in status is diagnostic only. The user toggles it manually
-in Settings > About > Debug; do not enable it through automation. It resets
+in Settings > Debug; do not enable it through automation. It resets
 on app restart and may let the guide appear in a recording. Phone “sent”
 feedback acknowledges dispatch; use returned state to confirm the effect.
 
@@ -252,7 +263,7 @@ protected from API/import changes; the user enables it in Recording > Takes.
 
 Controls > AI & API reports readiness of the supplied kit commands, which need
 Node.js 22.16 or later and the kit. Other API clients do not need either.
-About > Components checks optional OBS/Stream Deck apps and the local plugin
+Components checks optional OBS/Stream Deck apps and the local plugin
 manifest. Installer/Locate links handle missing copies. Installed files do
 not confirm a live connection or the newest third-party version; retain the
 OBS connection and Stream Deck protocol checks. OBS on another computer needs

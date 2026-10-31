@@ -36,6 +36,9 @@ contextBridge.exposeInMainWorld( "electron", {
 	onMenuVoice: callback => on( "menuVoice", callback ),
 	onMenuSoundCheck: callback => on( "menuSoundCheck", callback ),
 	onMenuReview: callback => on( "menuReview", callback ),
+	onMenuWorkflow: callback => on( "menuWorkflow", callback ),
+	onGettingStartedOffer: callback => on( "gettingStartedOffer", callback ),
+	obsSetup: ( action, value ) => ipcRenderer.invoke( "obsSetup", action, value ),
 	onRemoteCommand: callback => on( "remoteCommand", callback ),
 	sendRendererStatus: status => ipcRenderer.send( "rendererStatus", status ),
 	// On-device voice scrolling (speech.js)

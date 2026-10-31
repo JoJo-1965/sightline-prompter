@@ -32,8 +32,8 @@ cut the right parts of that recording.
 These run on your computer, so they can check scripts, load them into
 Sightline and read its take logs.
 
-**1. Get the files.** In the next candidate, use **Settings > About > Components
-> AI agent kit > Install**, then **Open folder**. It copies the skills, briefs,
+**1. Get the files.** In the next candidate, use **Settings > Components
+> AI kit > Install**, then **Open folder**. It copies the skills, briefs,
 samples, checker and command tool from the installed app. No clone or npm
 install is needed. Read START-HERE.md and use that kit folder below wherever
 the instructions say clone. The Components page checks for Node.js 22.16 or

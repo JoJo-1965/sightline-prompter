@@ -2,6 +2,7 @@
 // Never stream, change scenes, pause or stop an output as a side effect.
 import { createHash, randomUUID } from "node:crypto";
 import { recordedSlateRoute } from "./obs-slate-route.js";
+import { createObsSetup } from "./obs-setup.js";
 
 export function obsAddress( host = "127.0.0.1", port = 4455 ) {
 	if ( typeof host !== "string" || !host.trim() || /[\s/@?#\\]/.test( host.trim() ) ) throw new Error( "Enter an OBS hostname or IP address, without a URL or path" );
@@ -29,15 +30,18 @@ export function createObs( { onState = () => {}, WebSocketClass = globalThis.Web
 	let changingScenes = false;
 	let counter = 0;
 	let recordingBusy = false;
+	let setupBusy = false;
+	let setup = null;
 	let recordRevision = 0;
 	let recordTransition = null;
 	const pending = new Map();
-	const snapshot = () => ( { ...state, controls: config.controls, markers: config.markers } );
+	const snapshot = () => ( { ...state, controls: config.controls, markers: config.markers, setupBusy } );
 	const publish = ( partial ) => {
 		state = { ...state, ...partial, observedAt: new Date().toISOString() };
 		onState( snapshot() );
 	};
 	function clearConnection() {
+		setup = null;
 		generation++;
 		clearTimeout( retry );
 		clearTimeout( handshake );
@@ -162,7 +166,7 @@ export function createObs( { onState = () => {}, WebSocketClass = globalThis.Web
 						clearTimeout( item.timer );
 						pending.delete( d.requestId );
 						if ( d.requestStatus?.result ) item.resolve( d.responseData ?? {} );
-						else item.reject( new Error( `OBS rejected ${ d.requestType }; check OBS and the recording format` ) );
+						else item.reject( Object.assign( new Error( `OBS rejected ${ d.requestType }; check OBS and the recording format` ), { obsComment: d.requestStatus?.comment } ) );
 					} else if ( op === 5 ) {
 						if ( d.eventType === "CurrentSceneCollectionChanging" ) changingScenes = true;
 						if ( d.eventType === "CurrentSceneCollectionChanged" ) changingScenes = false;
@@ -196,10 +200,35 @@ export function createObs( { onState = () => {}, WebSocketClass = globalThis.Web
 	}
 	return {
 		state: snapshot,
+		async setup( action, value ) {
+			if ( ![ "inspect", "plan", "apply", "restore" ].includes( action ) ) throw new Error( "Unknown OBS setup action" );
+			if ( setupBusy || recordingBusy ) throw new Error( "Wait for the current OBS operation to finish" );
+			if ( !setup ) {
+				const epoch = generation;
+				const allowed = () => {
+					if ( epoch !== generation || !config.enabled || state.connection !== "connected" ) throw new Error( "Connect OBS and review the setup again" );
+				};
+				setup = createObsSetup( { request: async ( type, data ) => {
+					allowed();
+					return request( type, data );
+				}, allowed } );
+			}
+			if ( action === "inspect" ) return setup.inspect();
+			if ( action === "plan" ) return setup.plan( value.choices, value.directory );
+			setupBusy = true;
+			publish( {} );
+			try {
+				return action === "apply" ? await setup.apply( value ) : await setup.restore();
+			} finally {
+				setupBusy = false;
+				publish( {} );
+				refresh().catch( () => {} );
+			}
+		},
 		async slateRoute( url, prepare = false ) {
 			const current = generation;
 			const guarded = ( type, data ) => {
-				if ( current !== generation || !config.enabled || !config.controls || !config.recordedSlate || changingScenes ) throw new Error( "Enable OBS recording controls and the recorded slate before preparing it" );
+				if ( current !== generation || !config.enabled || !config.controls || !config.recordedSlate || changingScenes || setupBusy ) throw new Error( "Enable OBS recording controls and the recorded slate before preparing it" );
 				return request( type, data );
 			};
 			return recordedSlateRoute( guarded, url, prepare );
@@ -218,6 +247,7 @@ export function createObs( { onState = () => {}, WebSocketClass = globalThis.Web
 		},
 		async command( action, label = "" ) {
 			if ( !config.enabled ) throw new Error( "OBS integration is disabled" );
+			if ( setupBusy ) throw new Error( "Wait for OBS setup to finish" );
 			if ( action === "test" ) return state.connection === "connected" ? refresh() : connect();
 			if ( !config.controls ) throw new Error( "OBS is in status-only mode" );
 			if ( state.connection !== "connected" || changingScenes ) throw new Error( "OBS is not ready; check its connection" );

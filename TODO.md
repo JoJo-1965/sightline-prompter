@@ -1,13 +1,13 @@
 # TODO
 
-## Workflow design to review before wider changes
-
-- [ ] Named Components subtabs and direct Components/Debug access, replacing
-  numbered component pages (58). See the workflow proposal and mock-ups.
-- [ ] First-use checklist and session-check entry point (58).
-- [ ] Optional separate OBS profile/scenes setup assistant and guide (59).
-
 ## Built for the next candidate, not yet packaged
+
+- [x] Setup/session workflow (58): named component subtabs, top-level
+  Components/Debug, OBS under Recording, first-use checklist and Session check.
+- [x] OBS setup assistant (59): configured-source choices, folder picker,
+  reviewed separate profile/scene plan, idle guards, retained old setups and
+  configuration guide. Actual device quality, clean outputs and sync still
+  require a recording test. No user OBS setup has been changed by this work.
 
 - [x] Component prerequisites: optional OBS/Stream Deck discovery, separate plugin
   checks, supplier installers/Locate and clear grey-control reasons. Preserve

@@ -1,6 +1,6 @@
 # Remotes and second screens
 
-In the next candidate, **Settings > About > Components** lists Stream Deck
+In the next candidate, **Settings > Components** lists Stream Deck
 as optional software, with its installer, **Locate** and **Check again**.
 It checks the app and Sightline plugin files separately. **Controls > Stream
 Deck > Check compatibility** confirms the running plugin; unconfirmed versions
@@ -108,7 +108,7 @@ recordings do not include it. It normally requests capture protection, even if
 the prompter's Hide from capture setting is off. Protection for full-display
 recording depends on the capture method and platform: verify a short recording
 first. It does not track your face, access the camera or record audio/video.
-The session-only **About > Debug > Allow all windows to be captured** override
+The session-only **Debug > Allow all windows to be captured** override
 also permits the guide to be captured. Turn it off before ordinary recording;
 the normal rules are restored and quitting clears the override.
 

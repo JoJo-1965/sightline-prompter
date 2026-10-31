@@ -588,6 +588,10 @@ const createWindow = ( state ) => {
 		sendSlots();
 		sendWindowState();
 		win.webContents.send( "cuePhrases", cuePhrases );
+		if ( state.showGettingStarted ) {
+			state.showGettingStarted = false;
+			win.webContents.send( "gettingStartedOffer" );
+		}
 	} );
 
 	function sendSettings() {
@@ -637,6 +641,25 @@ const createWindow = ( state ) => {
 			return { ok: true, state: obsSnapshot() };
 		} catch ( error ) {
 			return { ok: false, error: error.message, state: obsSnapshot() };
+		}
+	} );
+	let setupDirectory = null;
+	ipcMain.handle( "obsSetup", async ( event, action, value ) => {
+		if ( event.sender !== win.webContents ) return { ok: false, error: "Use OBS setup from Sightline" };
+		try {
+			if ( !settings.obsEnabled || ![ "127.0.0.1", "localhost", "::1", "[::1]" ].includes( settings.obsHost.toLowerCase() ) ) throw new Error( "Enable and connect OBS on this computer first. Remote OBS can use the configuration guide." );
+			if ( action === "folder" ) {
+				const chosen = await dialog.showOpenDialog( utilityWindows.dialogParent(), { title: "OBS recording folder", properties: [ "openDirectory", "createDirectory" ] } );
+				if ( chosen.canceled ) return { ok: true, cancelled: true };
+				await fs.access( chosen.filePaths[0], 2 );
+				setupDirectory = chosen.filePaths[0];
+				return { ok: true, directoryLabel: path.basename( setupDirectory ) };
+			}
+			if ( action === "plan" && !setupDirectory ) throw new Error( "Choose a recording folder first" );
+			const result = await obs.setup( action, action === "plan" ? { choices: value, directory: setupDirectory } : value );
+			return { ok: true, result };
+		} catch ( error ) {
+			return { ok: false, error: error.message };
 		}
 	} );
 	ipcMain.handle( "saveObsSettings", async ( event, options ) => {
@@ -1426,7 +1449,9 @@ app.whenReady().then( async () => {
 		logProblem( `Start-up details failed: ${ err.message }` );
 	}
 	if ( !firstInstance ) return;
+	const firstLaunch = !existsSync( path.join( app.getPath( "userData" ), "app-state.json" ) );
 	const state = await stateManager.readAppState();
+	state.showGettingStarted = firstLaunch;
 	obsCredentials = createObsCredentials( app.getPath( "userData" ), safeStorage );
 	currentFontSize = state.fontSize || defaultConfig.fontSize;
 	currentOpacity = state.opacity ?? defaultConfig.opacity;

@@ -33,8 +33,8 @@ The latest published app is still **1.0.6**. Work remains on
 `codex/obs-integration`; no merge, tag, public release, Marketplace submission
 or website deployment is authorised by preparing or testing this candidate.
 
-**Settings and help are built:** Prompting, Appearance, Recording, Controls
-and About have focused topics. Files handles input/output and Tools holds
+**Settings and help are built:** Prompting, Appearance, Recording, Controls,
+Components, Debug and About have focused topics. Files handles input/output and Tools holds
 live helpers. The Settings panel is stable across topics; pages replace
 scrolling. Approved mini help pills, explicit labels, draft/save feedback and
 validation are included. F1 and voice help use grouped tabs and follow enabled
@@ -48,7 +48,7 @@ Getting Started, bundled as offline pages matching the installed version.
 RC10 fixes the phone QR in native Settings, puts mirroring only under Screens,
 makes voice-command help movable and applies the capture preference live to
 Settings, both help windows and Guide adjustments. The guide overlay stays protected.
-Both OBS topics now sit together under Controls. Recorded-slate setup explains
+OBS connection, recording and setup now sit together under Recording. Recorded-slate setup explains
 blocked prerequisites and reports its progress and errors in Settings.
 RC11 improves contrast on the OBS status buttons and gives Settings and both
 help windows native ownership so they stay above the fullscreen prompter.
@@ -109,11 +109,13 @@ move to Done only when released.
 
 | # | Item | Value | Size | RC status |
 | --- | --- | --- | --- | --- |
+| 58 | **Setup and session workflow** | ★★ | S | Built for review: seven Settings groups, named Components subtabs without numbered component pages, first-use Getting started and Tools > Session check. Frequent recording controls stay on the toolbar/pad. RC14 is unchanged |
+| 59 | **Optional OBS setup assistant** | ★★ | M | Built for review: choose configured camera/mic, folder and canvas; review before creating a separate profile and three scenes. Existing setups retained, idle-only writes, expiring plan and restoration on partial failure. Guide distinguishes settings from actual native 4K, clean-camera/WAV outputs and physical sync; recording acceptance remains |
 | 30 | **Script health in the editor** | ★ | S | Built for review: current/unsaved text, section word/time estimates, pace/target context, long sentences and similar-word-start prompts, plus section navigation. Shared rendering excludes unspoken directions/headings/commands and includes quoted speech. Heuristics are suggestions; no script rewrite or save. Native editor checks pass; not packaged |
 | 28 | **Rehearsal coach** | ★★ | M | Built for review: per-take pace, qualified sentence coverage/reread prompts and optional recognised filler/repetition aggregates. Counting defaults off, uses existing active voice following only and adds no transcript/audio. Tools, take summary, saved Recordings, CLI/API and additive edit-pack report. Native/simulated speech checks pass; normal-voice acceptance remains |
-| 47 | **Components manager** | ★★ | M | Built for review: About > Components manages the optional offline model and bundled AI kit with status, Install/Reinstall/Remove and a separate Node.js check. Voice also has model repair/removal; the first-run offer remains. Failed repairs preserve previous files. Standalone kit and native Settings checks pass; not packaged yet |
+| 47 | **Components manager** | ★★ | M | Built for review: Components manages the optional offline model and bundled AI kit with status, Install/Reinstall/Remove and a separate Node.js check. Named subtabs also check OBS and Stream Deck. Voice has model repair/removal; the first-run offer remains. Failed repairs preserve previous files. Standalone kit and native Settings checks pass; not packaged yet |
 | 40 | **Choose your buttons and keys** | ★★ | S–M | Built for review: Controls > Buttons & keys learns plain keys/Shift combinations and controller buttons with shared pad actions, device overrides, pages, immediate saving and reset. Reserved shortcuts remain intact; typing, editing and Settings suspend actions. Native key and simulated button checks pass; physical controller/pedal acceptance remains |
-| 57 | **Debug capture override** | ★★ | S | Built for the next candidate: About > Debug permits all existing and newly opened windows in captures, with a persistent warning and phone notice. Session-only; restores current normal preferences and resets on restart. Native policy, lifecycle and restore checks pass; awaiting review and packaging |
+| 57 | **Debug capture override** | ★★ | S | Built for the next candidate: Debug permits all existing and newly opened windows in captures, with a persistent warning and phone notice. Session-only; restores current normal preferences and resets on restart. Native policy, lifecycle and restore checks pass; awaiting review and packaging |
 | 56 | **Customisable virtual pad and phone layout** | ★★ | M | Built in RC13: select up to 36 functions, drag or use Earlier/Later to reorder, choose columns and Compact/Reading/Studio presets. Pad and phone share choices/order and Stream Deck artwork. Hardware profiles remain independent. Native pad, portrait phone, persistence and permission checks pass; physical iPhone acceptance remains |
 | 48 | **Settings in its own window**, plus movable F1 Help | ★★ | M | Built in RC8: independent upright windows, native title-bar dragging across screens, saved geometry, stable sizes, paged Settings, live controls, Apply/Save/Cancel and unsaved-change guards on window/app close. Native window and inline-fallback tests pass; manual acceptance remains |
 | 52 | **Optional OBS integration** | ★★★ | M | Built in the Windows 1.0.7 candidate: authenticated connection, status-only/recording permissions, confirmed Record take/Finish, optional chapters, recorded slate and edit-pack references. Default off; ordinary prompting, stops, retakes and On air leave OBS recording. Physical workflow validation and evidence review remain. No separate OBS plugin is needed; optional dock/scene switching are later scope |
@@ -128,8 +130,6 @@ waits for the signing arrangements and Joanne's accounts; it is not in this RC.
 | #   | Item | Value | Size | Notes |
 | --- | ---- | ----- | ---- | ----- |
 | 27  | **Code signing for Windows and Mac:** no more "unknown publisher" warnings | ★★★ | S | Moved up from Later. Needs a code-signing certificate and an Apple Developer account (Joanne's decision) |
-| 58 | **Setup and session workflow:** first-use checklist, session checks and named component subtabs; make Components/Debug easy to find and keep frequent tools together | ★★ | To assess | Requested 31 Oct. [Workflow mock-ups](docs/SETTINGS-WORKFLOW-PROPOSAL.md) prepared; wider navigation/onboarding changes are not implemented. Replace numbered component pages; retain the stable frame and no Settings scrolling |
-| 59 | **Optional OBS setup assistant:** create a separate profile and scene collection with chosen camera, mic, output folder and a configuration guide | ★★ | To assess | Requested 31 Oct. Included in the workflow mock-up; not built. Review before applying, keep existing profiles, require idle OBS, validate device modes and distinguish separate tracks from actual clean-camera/WAV outputs |
 | 29  | **Automatic updates:** new versions download and install themselves, so users get fixes without reinstalling | ★★ | M | Moved up from Later. Best done with code signing (27), which Mac updates need |
 | 53 | **Optional Zoom controls:** investigate microphone, camera and bringing the meeting forward from Sightline, with phone, voice and control-window actions | ★ | To assess | Joanne requested, 29 Oct. Feasibility first: Zoom's [Plugin SDK](https://developers.zoom.us/docs/plugin-sdk/) connects native Windows/macOS companion apps to the installed Zoom Workplace client. Assess permissions, distribution and dependable state feedback before implementation. Off by default; independent of normal prompting. Not built or scheduled for release |
 | 54 | **Optional Teams controls:** investigate microphone, camera and bringing the meeting forward from Sightline | ★ | To assess | Joanne requested, 29 Oct. [Elgato reports](https://www.elgato.com/us/en/explorer/products/stream-deck/control-microsoft-teams-meetings-with-stream-deck/) the previous third-party API was discontinued. Keyboard shortcuts require Teams to be in the foreground and do not verify mic/camera state. Assess a maintainable approach; show unverified actions as command sent, not confirmed state. Off by default; not built or scheduled for release |
