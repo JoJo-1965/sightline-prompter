@@ -32,8 +32,20 @@ cut the right parts of that recording.
 These run on your computer, so they can check scripts, load them into
 Sightline and read its take logs.
 
-**1. Get the files.** Install [Node.js](https://nodejs.org/) 22 or later,
-then clone the repo somewhere that suits you:
+**1. Get the files.** In the next candidate, use **Settings > About > Components
+> AI agent kit > Install**, then **Open folder**. It copies the skills, briefs,
+samples, checker and command tool from the installed app. No clone or npm
+install is needed. Read START-HERE.md and use that kit folder below wherever
+the instructions say clone. The Components page checks for Node.js 22.16 or
+later; Node.js is needed for these commands, not for normal prompting.
+
+**Controls > AI & API** reports whether these supplied command tools are
+ready and links to Components when setup is missing. The API itself works
+with other clients without Node.js or the kit. Its token controls become
+available after enabling the API and applying the change.
+
+With the current public release, or if you prefer working from source,
+install [Node.js](https://nodejs.org/) 22.16 or later, then clone the repository:
 
 ```
 git clone https://github.com/JoJo-1965/sightline-prompter.git
@@ -76,7 +88,7 @@ spec, the checker and the `sightline` command.
 
 ## Letting an AI run the prompter
 
-On **Settings > Remotes**, under **AI and remote control**:
+On **Settings > Controls > AI & API**, under **AI and remote control**:
 
 - Tick **Let an AI assistant or script on this computer load scripts and
   control the teleprompter**, and save. It's off until you do.

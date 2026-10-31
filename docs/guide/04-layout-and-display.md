@@ -2,13 +2,32 @@
 
 ## The Layout panel
 
-The panel has three views, each with its own button on the control bar:
-**Layout** (**Ctrl+Shift+K**) for spacing, **Reading** for opacity and reading
-aids, and **Recording** for the recording and script options. Click the same
-button again to close it. Changes show straight away, so you can see them on
-the script. Drag the panel by its title to move it out of the way (the Voice
-panel too); double-click the title to put it back. The same controls are on the **Layout**, **Reading** and
-**Recording** tabs of Settings.
+**Edit**, immediately left of **Tools** on the toolbar, opens the current
+script's editor. Samples open as read-only source. **Tools** opens below its
+button, with its edges kept inside the window.
+
+The top toolbar has separate **left/right** and **top/bottom** mirror icons.
+Each stays lit while its axis is on; click again to turn it off. Both can be
+on together. The Layout and Reading toggles, keyboard and remote controls
+stay in step with these buttons.
+
+![Toolbar with independent left/right and top/bottom mirror icons](images/control-bar.png)
+
+Every visible toolbar slider keeps a small label above it: **Speed** in steady
+mode, **Response** in voice mode, **Text size**, and **Background**. **Response**
+sets how quickly voice scrolling follows you. The background label changes
+to **On-air BG** while on air. Hover for more detail. Narrow windows retain
+these labels; the Tools panels provide sliders hidden to make room.
+
+The **Tools** button opens quick adjustments: **Spacing and mirror**
+(**Ctrl+Shift+K**), **Text and colour**, **Take display**, and **Voice and
+microphone**. Changes show straight away. Drag a panel by its title to move
+it out of the way; double-click the title to recentre it.
+
+Settings reuses these controls in **Appearance** under **Text**, **Background**,
+**Reading aids**, **Spacing** and **Screens**, plus **Recording > Takes** and
+**Prompting > Script**. There is
+one copy of each control; closing Settings returns it to the quick panel.
 
 ![The Layout panel](images/layout-panel.png)
 
@@ -20,7 +39,7 @@ panel too); double-click the title to put it back. The same controls are on the 
   of the time. Off air the window is solid, like any other; on air the
   backing goes almost clear (7% to start with), so you can see your slides or the
   call behind the words while you read. The control
-  bar's Backing slider changes whichever is in use: its label reads **On air**
+  bar's Background slider changes whichever is in use: its label reads **On-air BG**
   while you are.
 - **Margins** keep the text narrow, so your eyes stay near the camera. The top
   and bottom margins fade the text out near the edges.
@@ -39,6 +58,11 @@ panel too); double-click the title to put it back. The same controls are on the 
 
 ## Reading aids
 
+The separate **Appearance > Reading aids** topic brings these choices together.
+Fonts are in **Appearance > Text**, and colour themes are in **Appearance > Background**.
+
+![Reading aids grouped together in Settings](images/settings-aids.png)
+
 - **Theme**: standard, yellow on dark, high contrast or soft cream.
 - **Font**: standard, Atkinson Hyperlegible, OpenDyslexic or Verdana. Some
   people find Atkinson Hyperlegible or OpenDyslexic easier to read.
@@ -46,28 +70,37 @@ panel too); double-click the title to put it back. The same controls are on the 
   example Standard headings with OpenDyslexic text, where the dyslexia font
   makes big headings hard to read. **Same as the text** (the default) follows
   the Font above.
+- **Comment size and Comment colour**: adjust `[square-bracket directions]`
+  independently of headings. Their font follows **Heading font**. Size is
+  40–150% of the usual comment size: at 100%, Dimmed comments remain smaller
+  than the script, while Normal comments match it. Choose a colour with the
+  swatch; **Theme** restores the usual colour. Quoted words you read aloud
+  keep their script style. Visibility remains in **Prompting > Script**;
+  notes such as `[smile]` stay outside word counts, speech tracking and timing.
 - **Text effect**: an outline or a shadow on the text, for busy backgrounds.
 - **Focus band**: dims the lines away from the reading line, with a strength
   setting.
 - **Sentence highlight**: lights the sentence you're on (see
   [Scrolling and voice](03-scrolling-and-voice.md)).
 
-## Settings > Display
+## Settings > Appearance > Screens
 
-![Settings > Display](images/settings-display.png)
+![Window, monitor and eye-line settings under Appearance > Screens](images/settings-display.png)
 
-Text size, backing, the reading line, how notes in [brackets] show (dimmed,
-hidden or normal), the reading-line marker, the sentence highlight, mirroring,
-always on top, the prompter monitor and eye-line mode.
+Window and monitor placement, Keep on top and the eye-line strip. Fonts and
+heading size are in **Appearance > Text**; backing and colours are in
+**Appearance > Background**. Highlights are in **Appearance > Reading aids**;
+the reading line is in **Appearance > Spacing**. Mirroring is in **Appearance > Screens**. Delivery directions are in
+**Prompting > Script**.
 
 ## Mirroring
 
 For beam-splitter rigs, where you read the screen through angled glass,
-mirror the prompter. In the Layout panel (the Layout and Reading views), two
+mirror the prompter. In **Settings > Appearance > Screens > Beam-splitter mirroring**, two
 buttons do it: **↔ Left–right** (most beam splitters) and **↕ Up–down**. Each
 stays lit while it's on; click it again to turn it off. Both lit mirrors both
-ways, and the panel stays open. **Ctrl+M** and the **Mirror** button on the
-control bar step through off, ↔, ↕ and both. The control bar, the pad and the control window stay
+ways, and the panel stays open. **Ctrl+M** steps through off, ↔, ↕ and both.
+The control bar, the pad and the control window stay
 readable.
 
 For the clearest camera image through the glass, set **Background** to 100%
@@ -77,13 +110,21 @@ and **Text brightness** to about 70% in the Reading view.
 
 **Ctrl+L** shrinks the prompter to a strip at the top centre of the screen,
 right under the webcam. Its width, height and reading line are set separately
-on **Settings > Display**.
+on **Settings > Appearance > Screens**.
 
 ## Keeping the prompter off recordings
 
 Tick **Hide from screen capture** in the Layout panel, and the prompter won't
 show up in screen shares or screen recordings (Zoom, Teams, Riverside, OBS and
 so on). You still see it.
+
+Settings, keyboard Help, voice-command help and Guide adjustments follow this
+preference too, including changes while they are open. Turn it off to capture
+these windows for support. The head-guide overlay keeps its own protection.
+For a deliberate demo or support recording, **Settings > About > Debug >
+Allow all windows to be captured** temporarily overrides every window's
+protection, including the guide. Its banner stays visible until you turn it
+off; quitting resets the override without changing your saved preferences.
 
 **Click-through** (**Ctrl+Shift+X**) lets clicks on the script go to the
 window behind, so you can work in another app with the script on top.

@@ -2,7 +2,11 @@ import { EditorView, basicSetup } from "codemirror";
 import { markdown } from "@codemirror/lang-markdown";
 import { languages } from "@codemirror/language-data";
 import { oneDark } from "@codemirror/theme-one-dark";
-import { EditorState } from "@codemirror/state";
+import { Compartment, EditorState } from "@codemirror/state";
+import { sectionLine } from "./script-health.js";
+
+const access = new Compartment();
+const editorAccess = readOnly => [ EditorState.readOnly.of( readOnly ), EditorView.editable.of( !readOnly ), EditorView.contentAttributes.of( { "aria-readonly": String( readOnly ), tabindex: "0" } ) ];
 
 const editorTheme = EditorView.theme( {
 	"&": {
@@ -21,12 +25,13 @@ const editorTheme = EditorView.theme( {
 	}
 } );
 
-export function createEditor( parent, content, onChange ) {
+export function createEditor( parent, content, onChange, readOnly = false ) {
 	const view = new EditorView( {
 		state: EditorState.create( {
 			doc: content,
 			extensions: [
 				basicSetup,
+				access.of( editorAccess( readOnly ) ),
 				markdown( { codeLanguages: languages } ),
 				oneDark,
 				editorTheme,
@@ -41,6 +46,10 @@ export function createEditor( parent, content, onChange ) {
 		parent
 	} );
 	return view;
+}
+
+export function setEditorReadOnly( view, readOnly ) {
+	view.dispatch( { effects: access.reconfigure( editorAccess( readOnly ) ) } );
 }
 
 export function setEditorContent( view, content ) {
@@ -60,4 +69,10 @@ export function getEditorContent( view ) {
 export function getCursorLine( view ) {
 	const pos = view.state.selection.main.head;
 	return view.state.doc.lineAt( pos ).number;
+}
+
+export function selectSection( view, section ) {
+	const anchor = view.state.doc.line( sectionLine( view.state.doc.toString(), section ) ).from;
+	view.dispatch( { selection: { anchor }, effects: EditorView.scrollIntoView( anchor, { y: "start" } ) } );
+	view.focus();
 }

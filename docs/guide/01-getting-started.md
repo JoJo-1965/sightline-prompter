@@ -16,6 +16,16 @@ Sightline is free. Download the installer for your computer from the
 Not sure which Mac you have? Apple menu > **About This Mac**: **Chip** means
 Apple silicon, **Processor** means Intel.
 
+**Windows installer finish page (RC9):** choose **Run Sightline Prompter**,
+**Read release notes** and/or **Read Getting Started guide**, then **Finish**.
+Run is ticked initially; the two reading options start unticked. Each works
+independently, including opening both documents without starting Sightline.
+The documents open in your browser from the installed files and work offline.
+They include the installed version number and links to the bundled user guide.
+Silent installations do not open these pages.
+
+![The Windows installer's finish choices](images/installer-finish.png)
+
 ### The security warnings, and how to get past them
 
 Sightline's installers aren't code-signed yet. Signing costs money every year
@@ -108,25 +118,23 @@ From left to right:
 
 | Control                      | What it does                                                                                                             |
 | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| **☰**                       | The main menu, in fold-up groups: Script, Playback, Display, Window, Settings and Help                                   |
-| **Open**, **Save**, **Edit** | Open a script, save it, or edit it in the built-in editor                                                                |
+| **☰ Files**                 | New/Open, recent and sample scripts, Edit/Save, Recordings, edit-pack export, settings-file import/export and Quit |
 | **1** to **9**               | Script slots. Each slot holds a script and remembers your place, so you can swap between them (**Ctrl+1** to **Ctrl+9**) |
 | **⏮**                        | Back to the top                                                                                                          |
 | **▶**                        | Start or pause scrolling (**Space**)                                                                                     |
 | **On air**                   | Go on air by hand (**Ctrl+Shift+A**): the on-air backing and the ON AIR light. It lights red whenever you're on air, including while scrolling |
 | **Speed**                    | Words per minute for steady scrolling                                                                                    |
 | **Size**, **Backing**        | Text size, and how solid the dark background behind the text is                                                          |
-| **Layout**, **Reading**, **Recording** | The Layout panel, in three views: spacing; opacity and reading aids; recording and script options |
-| **Mirror**                   | Mirroring for beam-splitter glass: click to step through off, ↔ horizontal, ↕ vertical and ↔↕ both (**Ctrl+M**) |
-| **Voice**                    | The Voice panel                                                                                                          |
+| **Steady / Voice**            | Switch the scrolling mode; the label shows the current mode |
+| **Tools**                     | Sound check, head guide, keeper/scrap, quick display and voice panels, control pad and control window |
 | **?**, **⚙**                 | Help and Settings                                                                                                        |
 | **— ▢ ⛶ ✕**                  | Minimise, maximise, full screen and close                                                                                |
 
 In a narrower window the bar makes room by dropping, in turn, the units, the
 slider labels and the number boxes (**On air** becomes a red record dot), then
-**Edit**, **Save** and **⚙**, the empty slots, and last **Reading**,
-**Recording** and **Mirror**. Everything is still on the ☰ menu, in Settings or
-on a shortcut.
+the restart button, empty slots and the size/backing sliders. **Files, Tools,
+Settings and Help stay available.** Settings and shortcuts give access to the
+additional adjustments.
 
 ## The progress bar
 
@@ -143,12 +151,12 @@ click can't jump a take: pause first. Turn the bar off in the Layout panel.
 
 Opening one group folds the others away, so the menu stays short. Click
 anywhere else to close it. **Quit Sightline** is always at the bottom (also
-**Ctrl+W**, or **✕** on the control bar), and below it the line with the
-version and a link to **About**.
+**Ctrl+W**, or **✕** on the control bar). Copyright and attribution are on
+the About page: **Help > About**, or **Settings > About > Credits and licence**.
 
 ## Your first take
 
-1. Click **Open** (or drop a file onto the window) and choose a script. The
+1. Choose **☰ Files > Script > Open script…**, press **Ctrl+O**, or drop a file onto the window. The
    first time you run the app it opens a short welcome script that shows you
    around.
 2. Set the **Speed** to your usual pace. 140 to 150 words per minute suits most

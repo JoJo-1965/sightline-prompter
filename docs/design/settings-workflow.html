@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sightline workflow proposal</title>
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; padding: 24px; background: #17191f; color: #eff1f4; font: 14px/1.45 system-ui, sans-serif; }
+h1 { font-size: 22px; margin: 0 0 6px; text-wrap: balance; }
+h2 { font-size: 18px; margin: 0; }
+h3 { font-size: 15px; margin: 0 0 8px; }
+p { text-wrap: pretty; margin: 8px 0; }
+.intro { max-width: 660px; margin-bottom: 24px; color: #c4ccd7; }
+.frame { width: 660px; height: 560px; padding: 20px; border: 1px solid #4b535f; border-radius: 10px; background: #292d34; display: flex; flex-direction: column; margin-bottom: 28px; }
+.head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.muted { color: #bac4d1; font-size: 12px; }
+.badge { color: #9ed4f4; font-size: 11px; border: 1px solid #66839c; border-radius: 12px; padding: 3px 8px; }
+button, select { font: inherit; font-size: 12px; padding: 7px 10px; border: 1px solid #687586; border-radius: 4px; color: #f2f4f8; background: #363d47; }
+button:focus-visible, select:focus-visible { outline: 2px solid #a1dcff; outline-offset: 2px; }
+button:disabled { color: #a9b1bd; opacity: .65; }
+button.primary { background: #006fc0; border-color: #4898da; }
+.tabs { display: flex; gap: 5px; border-bottom: 1px solid #525b68; padding-bottom: 10px; margin-bottom: 12px; }
+.tabs button { padding: 6px 7px; background: transparent; border-color: transparent; }
+.tabs .active, .subtabs .active { background: #24465e; border-color: #99cceb; color: #e4f5ff; }
+.subtabs { display: flex; gap: 6px; margin-bottom: 18px; }
+.card { border: 1px solid #56606e; border-radius: 6px; padding: 14px; margin: 0 0 12px; }
+.row { display: flex; align-items: center; gap: 12px; margin: 10px 0; }
+.row > :first-child { flex: 1; }
+.good { color: #99dfb0; }
+.optional { color: #c3cbd5; }
+.pill { color: #b6e4ff; font-size: 11px; border: 1px solid #7595ae; border-radius: 10px; padding: 0 5px; margin-left: 5px; }
+.footer { margin-top: auto; display: flex; align-items: center; gap: 8px; padding-top: 12px; }
+.footer .muted { margin-right: auto; }
+.checklist .row { padding: 9px 0; border-bottom: 1px solid #424b57; }
+.checklist .row:last-child { border: 0; }
+.path { color: #a6d8f7; font-size: 12px; }
+</style>
+<h1>Sightline: prepare, record, review</h1>
+<p class="intro">Design mock-ups. Example statuses only; no software has been installed and no OBS settings have been changed.</p>
+<section class="frame" id="getting-started">
+  <div class="head"><h2>Get ready with Sightline</h2><span class="badge">First use · optional checklist</span></div>
+  <p>Start with your words and microphone. Add recording and remote controls when you need them.</p>
+  <div class="checklist">
+    <div class="row"><span><strong>Prompting and microphone</strong><br><span class="muted">Choose steady scrolling or voice following</span></span><button>Choose setup…</button></div>
+    <div class="row"><span><strong>OBS recording</strong><br><span class="muted">Optional profile, scenes and recording guide</span></span><button>Set up OBS…</button></div>
+    <div class="row"><span><strong>Your controls</strong><br><span class="muted">Pad, phone or a Stream Deck</span></span><button>Choose controls…</button></div>
+    <div class="row"><span><strong>Work with your AI</strong><br><span class="muted">Optional authoring skills and automation tools</span></span><button>Set up my AI…</button></div>
+  </div>
+  <p class="muted">Reopen this checklist from Help. Optional items can be skipped.</p>
+  <div class="footer"><span class="muted">Next time: Tools › Session check</span><button>Later</button><button class="primary">Open a sample script</button></div>
+</section>
+<section class="frame" id="components">
+  <div class="head"><h2>Settings</h2><span class="badge">Occasional setup</span></div>
+  <nav class="tabs" aria-label="Settings areas"><button>Prompting</button><button>Appearance</button><button>Recording</button><button>Controls</button><button class="active">Components</button><button>Debug</button><button>About</button></nav>
+  <nav class="subtabs" aria-label="Components"><button>Speech model</button><button>AI kit</button><button>Node.js</button><button>OBS</button><button class="active">Stream Deck</button></nav>
+  <div class="card">
+    <h3>Stream Deck <span class="pill" aria-label="Help">?</span></h3>
+    <p class="good">✓ Elgato app installed</p>
+    <p class="good">✓ Sightline plugin connection compatible</p>
+    <p class="muted">Installation and connection are separate checks. Use Elgato’s updater for app updates.</p>
+    <div class="row"><span><button>Install / reinstall…</button> <button>Locate…</button></span><button>Check again</button></div>
+  </div>
+  <p class="path">Connection permissions live in Controls › Stream Deck.</p>
+  <button style="align-self:flex-start">Open connection settings…</button>
+  <div class="footer"><span class="muted">Example status · design preview</span><button>Cancel</button><button>Apply</button><button class="primary">Save &amp; close</button></div>
+</section>
+<section class="frame" id="obs-setup">
+  <div class="head"><h2>Set up OBS for Sightline</h2><span class="badge">Optional assistant · proposal</span></div>
+  <p class="path">Recording › OBS setup</p>
+  <p>Create a separate profile and scene collection. Review the plan before applying it.</p>
+  <div class="card">
+    <h3>Your recording setup</h3>
+    <div class="row"><label for="kind">Main use</label><select id="kind"><option>Camera and e-learning</option><option>Presentation recording</option></select></div>
+    <div class="row"><label for="camera">Camera</label><select id="camera"><option>Choose camera…</option></select></div>
+    <div class="row"><label for="mic">Microphone</label><select id="mic"><option>Choose microphone…</option></select></div>
+    <div class="row"><span>Recording folder</span><button>Choose folder…</button></div>
+  </div>
+  <p class="muted">Plan: 4K where the camera supports it; camera/presentation scenes; separate mic routing. The guide explains clean camera masters and WAV output.</p>
+  <p class="muted">OBS must be stopped. The head guide stays outside OBS sources. Setup never starts recording.</p>
+  <div class="footer"><span class="muted">Existing profiles will be kept</span><button>Configuration guide</button><button class="primary" disabled>Review setup plan</button></div>
+</section>
+</html>

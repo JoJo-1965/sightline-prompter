@@ -4,6 +4,12 @@
 
 [First, two sound checks. Stay quiet for the room, then read the card for your voice. Space carries on after each.]
 
+[Optional OBS workflow: prepare the recorded slate before recording.
+Find it in Settings > Recording > OBS recording.
+It puts its own flash and tone into OBS; keep scratch audio as well.
+Ordinary stops and retakes leave OBS recording.
+No extra script directives are needed.]
+
 {soundcheck: room}
 
 {soundcheck: voice}
@@ -33,7 +39,7 @@ Good. You can also just say "go", or press Space or your clicker.
 
 ## Talking to it as you go {target: 0:35}
 
-[Try each command as you reach it. Say "Prompter", then the command, then stop for a moment.]
+[Try each command as you reach it. Say "Prompter", leave a brief beat, then say the command and stop. Finish within four seconds of the acknowledgement; otherwise say "Prompter" again.]
 
 If you lose your place, say "Prompter, resync" and keep reading. It finds you
 anywhere in the script. [Say: "Prompter, resync".]
@@ -51,6 +57,8 @@ the one to use. Not happy? "Prompter, scrap that". [Say: "Prompter, keeper".] {s
 
 ## Finding your way {target: 0:30}
 
+[Optional camera framing: say Prompter guide on. In Adjust, move and scale Actual position to match your preview, then Save as ideal. The dashed Ideal position stays fixed while you check a new position. Say Prompter guide off to hide the guide. This is a manual check, without face tracking.]
+
 {marker: Finding your way} Forgotten a command? Say "Prompter, what can I say?" and they all
 appear on the screen. [Say: "Prompter, what can I say?"]
 
@@ -60,7 +68,7 @@ marker" or press Shift+B, and you read on from the last marker, here at the
 start of this part, without starting the whole section again.
 
 If "Prompter" comes up in your scripts, choose a different wake word in
-Settings, under Voice: Computer, Teleprompter or Director. {stop}
+Settings, under Prompting, Commands: Computer, Teleprompter or Director. {stop}
 
 ## Off script {target: 0:30}
 

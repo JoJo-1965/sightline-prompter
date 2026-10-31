@@ -3,14 +3,9 @@
 
 const padEl = document.getElementById( "pad" );
 const grip = document.getElementById( "pad-grip" );
-const toggle = document.getElementById( "pad-toggle" );
-const toggleLabel = document.getElementById( "pad-toggle-label" );
-
-for ( const button of document.querySelectorAll( "button[data-action]" ) ) {
-	button.addEventListener( "click", () =>
-		window.pad.command( button.dataset.action )
-	);
-}
+import { createControlButtons } from "./control-buttons.js";
+const render = createControlButtons( document.getElementById( "pad-buttons" ), id => window.pad.command( id ) );
+document.getElementById( "pad-customise" ).addEventListener( "click", () => window.pad.customise() );
 document
 	.getElementById( "pad-close" )
 	.addEventListener( "click", () => window.pad.close() );
@@ -21,21 +16,13 @@ window.pad.onMirror( ( mode ) => {
 } );
 
 window.pad.onStatus( ( status ) => {
-	const running = !!status?.scrolling;
-	toggle.classList.toggle( "running", running );
-	toggleLabel.textContent = running ? "Pause" : "Start";
-	toggle.title = running ? "Pause" : "Start";
-	const unit = status?.points ? "point" : "section";
-	document.getElementById( "pad-prev" ).title = `Previous ${ unit }`;
-	document.getElementById( "pad-next" ).title = `Next ${ unit }`;
-	for ( const button of document.querySelectorAll( "button[data-action]" ) ) {
-		button.disabled = !!status?.editing;
-	}
+	render( status.padLayout, status );
 } );
 
 // Drag by the grip. Screen coordinates are unaffected by the mirror flip.
 let drag = null;
 grip.addEventListener( "pointerdown", ( event ) => {
+	if ( event.target.closest( "button" ) ) return;
 	drag = {
 		dx: event.screenX - window.screenX,
 		dy: event.screenY - window.screenY

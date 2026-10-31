@@ -1,5 +1,8 @@
 # Recording a take
 
+For the development OBS workflow, see [From recording to the editor](12-production-handover.md):
+setup, a short test, retakes, keeper choices and the complete handover.
+
 ## The pacing light
 
 While the script scrolls, a light at the bottom shows how you're doing against
@@ -28,6 +31,42 @@ target, pace and result.
 Rehearsing? **Use these times as targets** writes each time into the script as
 `{target: m:ss}`, so your next take is paced to match your rehearsal.
 
+## Rehearsal coaching
+
+The next candidate adds **Rehearsal** in **Tools > Script & rehearsal review…**.
+Pause prompting before opening it. Choose a finished take to see speaking and
+overall pace, its target, sentence coverage and logged rereads. The latest
+finished take is selected first. The take summary has **Rehearsal coach…**;
+**Files > Recordings > Coach…** opens the report for an earlier saved session.
+The report identifies whether it is showing the current or a saved session.
+
+**Partly matched** and **Not matched** mean the voice aligner did not place
+all those script words. Recognition errors, paraphrasing and deliberate cuts
+can cause that too. **Outside the matched reading range** includes unreached
+text and partial starts. These are not confirmed missed lines. Rereads can be
+intentional. With steady scrolling, or older takes without word/sentence data,
+the report says alignment is unavailable instead of inventing missed lines.
+
+For optional filler feedback, open **Settings > Recording > Takes** and enable
+**Count recognised fillers and repeated words during voice takes**, then Apply.
+It defaults off and cannot be enabled by importing settings or through the API.
+It counts recognised **um, uh, erm and er** candidates and adjacent repeated
+word pairs, including across recogniser chunks. It uses your selected speech
+engine, starts no extra listener, and saves aggregate counts only: no extra
+transcript or audio. Deepgram remains online if you selected it.
+
+Counts cover only enabled, active voice periods. Commands, holds, off-script
+mute and commands-only listening are excluded. Engines may omit fillers;
+zero does not prove none were spoken, and scripted fillers can be counted.
+The coach gives no performance score and never changes keeper choices.
+
+The edit pack includes **rehearsal-coach.json**. The same report is available
+through the recordings API and `sightline.mjs coach … --json`.
+
+![Pace, coverage and optional recognised filler counts](images/rehearsal-coach.png)
+
+![Explicit opt-in for aggregate rehearsal counts](images/settings-coaching.png)
+
 ## Markers and retakes
 
 - Press **B** to drop a marker at the reading line when you fluff a line.
@@ -46,7 +85,7 @@ Rehearsing? **Use these times as targets** writes each time into the script as
 ## The slate
 
 The slate gives the edit a sync point at the start of every take, in place of a
-clap. Turn it on in **Settings > Scrolling**, under **Slate at the start of
+clap. Turn it on in **Settings > Recording > Takes**, under **Slate at the start of
 each take**:
 
 - **Flash and beep**: the screen flashes white and beeps, then shows the
@@ -67,7 +106,7 @@ flash in the recording: every take's times line up from there.
 
 ## Scratch audio for syncing
 
-Tick **Record a scratch audio track for syncing** in **Settings > Scrolling**
+Tick **Record a scratch audio track for syncing** in **Settings > Recording > Audio**
 and Sightline records the microphone to a plain audio file while the prompter
 runs, from just before the first slate until you stop. It's not a recording
 to use, only a reference: an editor, or an editing tool, lines your real
@@ -88,7 +127,7 @@ when there is one.
 
 **The sound-check meter** shows your microphone at the bottom left of the
 prompter, to check it before a take. Turn it on and off with **Sound check**
-in the Voice panel, **Ctrl+Shift+D**, or ☰ > Playback.
+in the Voice panel, **Ctrl+Shift+D**, or Tools.
 
 - **The bar** is the level, from -60 dBFS (empty) to 0 (full): green for
   speech, amber when it's getting loud (from -18 dBFS), red near the top (from
@@ -102,10 +141,10 @@ in the Voice panel, **Ctrl+Shift+D**, or ☰ > Playback.
   it under your voice.
 
 The meter hides while a take runs, so it doesn't distract you; tick
-**Settings > Voice > Keep the sound-check meter on screen during takes** to
+**Settings > Recording > Audio > Keep the sound-check meter on screen during takes** to
 keep it.
 
-**Loudness for each take** (Settings > Scrolling) measures the mic through
+**Loudness for each take** (Settings > Recording > Audio) measures the mic through
 every take: its loudness, its loudest peak and the room's background noise.
 When a take ends with a problem, a message says so, such as *Section 2, take
 1: the mic clipped (peak -0.3 dBFS)*. The problems are:
@@ -176,7 +215,7 @@ scrolling has no word timings, since nothing is listening to the script.
 
 ## The edit pack
 
-**File > Export Edit Pack…** (also ☰ > Playback) turns the take log into
+**File > Export Edit Pack…** (also Files (☰) > Recording files) turns the take log into
 everything an editor, or an AI editing agent, needs to cut the recording.
 Choose a folder and Sightline makes a new one inside it, named after the
 script and the date, holding:
@@ -199,7 +238,7 @@ plain files on your computer.
 
 ## Recordings
 
-**File > Recordings…** (**Ctrl+Shift+R**, also ☰ > Playback) lists every
+**File > Recordings…** (**Ctrl+Shift+R**, also Files (☰) > Recording files) lists every
 recording session, newest first: one per script per day, with its date, takes,
 keepers and length. Choose one to see its takes, which take of each section
 the edit will use, and how long the edit comes to.

@@ -1,114 +1,22 @@
-html,
-body {
-  margin: 0;
-  height: 100%;
-  overflow: hidden;
-  background: transparent;
-  font-family: "Segoe UI", system-ui, sans-serif;
-  user-select: none;
-}
-
-#pad {
-  box-sizing: border-box;
-  display: flex;
-  align-items: stretch;
-  gap: 4px;
-  height: 100%;
-  padding: 6px;
-  border-radius: 14px;
-  background: rgba(24, 24, 28, 0.92);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  color: #f2f2f2;
-  transform-origin: 50% 50%;
-}
-
-/* Over the prompter, the pad flips with it so it reads right in the glass. */
-#pad.mirror-horizontal {
-  transform: scaleX(-1);
-}
-#pad.mirror-vertical {
-  transform: scaleY(-1);
-}
-#pad.mirror-both {
-  transform: scale(-1, -1);
-}
-
-#pad-grip {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  cursor: grab;
-  fill: rgba(255, 255, 255, 0.55);
-  touch-action: none;
-}
-#pad-grip.dragging {
-  cursor: grabbing;
-}
-
-button {
-  flex: 1 1 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  min-width: 0;
-  padding: 4px 2px;
-  border: 0;
-  border-radius: 9px;
-  background: rgba(255, 255, 255, 0.08);
-  color: inherit;
-  font: inherit;
-  font-size: 12px;
-  cursor: pointer;
-}
-button:hover {
-  background: rgba(255, 255, 255, 0.18);
-}
-button:active {
-  background: rgba(255, 255, 255, 0.28);
-}
-button:focus-visible {
-  outline: 2px solid #ffd166;
-  outline-offset: 1px;
-}
-button:disabled {
-  opacity: 0.4;
-  cursor: default;
-}
-button svg {
-  width: 22px;
-  height: 22px;
-  fill: currentColor;
-}
-
-button.primary {
-  flex-grow: 1.3;
-  background: #2e7d32;
-}
-button.primary:hover {
-  background: #388e3c;
-}
-button.primary.running {
-  background: #b23b3b;
-}
-button.primary.running:hover {
-  background: #c44848;
-}
-.icon-pause,
-.running .icon-play {
-  display: none;
-}
-.running .icon-pause {
-  display: block;
-}
-
-button.close {
-  flex: 0 0 26px;
-  background: transparent;
-}
-button.close svg {
-  width: 16px;
-  height: 16px;
-}
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; background: transparent; font-family: "Segoe UI", system-ui, sans-serif; user-select: none; }
+#pad { display: flex; flex-direction: column; height: 100%; padding: 6px; border-radius: 12px; background: rgba(24,24,28,.97); border: 1px solid #667080; color: #f2f2f2; }
+#pad.mirror-horizontal { transform: scaleX(-1); }
+#pad.mirror-vertical { transform: scaleY(-1); }
+#pad.mirror-both { transform: scale(-1,-1); }
+header { display: flex; align-items: center; gap: 6px; padding-bottom: 6px; font-size: 12px; }
+header > span { flex: 1; cursor: grab; touch-action: none; }
+header.dragging { cursor: grabbing; }
+button { background: #303744; border: 1px solid #788599; border-radius: 7px; color: #f5f7fa; font: inherit; cursor: pointer; }
+button:hover:not(:disabled) { background: #435169; }
+button:focus-visible { outline: 2px solid #ffd54a; outline-offset: -3px; }
+button:disabled { color: #bac4d2; background: #252a33; cursor: default; }
+button[hidden] { display: none !important; }
+.control-grid { display: grid; grid-template-columns: repeat(var(--pad-columns,4),minmax(0,1fr)); align-content: start; gap: 5px; min-height: 0; overflow-y: auto; }
+.control-grid button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; min-height: 66px; padding: 5px 3px; font-size: 12px; line-height: 1.15; text-wrap: balance; }
+.control-icon { font-size: 22px; line-height: 1; }
+.control-icon svg { display: block; width: 24px; height: 24px; }
+.control-grid button.active { border-color: #8fd3ff; background: #28465a; }
+.control-grid button.primary { background: #24692c; border-color: #83c58b; }
+.control-grid button.primary.active { background: #843434; border-color: #f0a0a0; }

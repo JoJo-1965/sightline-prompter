@@ -58,7 +58,7 @@ before you see it.
 
 ## 2. Record: let the AI run the prompter
 
-On **Settings > Remotes**, tick **Let an AI assistant or script on this
+On **Settings > Controls > AI & API**, tick **Let an AI assistant or script on this
 computer load scripts and control the teleprompter**. Sightline then listens
 on `127.0.0.1` (this computer only) and writes its address and a secret token
 to `remote-control.json` in its settings folder:
@@ -73,18 +73,23 @@ that file and sends each request with the header
 
 | Request           | What it does                                                         |
 | ----------------- | -------------------------------------------------------------------- |
-| `GET /status`     | The current script, slot, speed, progress and slots                  |
+| `GET /status`     | The script, slot, speed, progress, supported commands, appVersion and streamDeckApi contract |
 | `POST /load-text` | Save a script it wrote and open it `{ text, name, slot }`            |
 | `POST /open`      | Open a script file `{ path, slot }`                                  |
 | `POST /command`   | `play`, `pause`, `next-section`, `go-to-section`, `set-wpm`, `marker`, `keeper`, `scrap` and more; for buttons, `on-air`, `mirror`, `mirror-h`, `mirror-v`, `bigger`, `smaller`, `layout`, `reading`, `recording`, `eye-line`, `click-through`, `sound-check`, `scroll-mode` (steady or voice), `pad` and `control` (the pad and control window open or closed), and `scroll` or `backing` with a number of steps |
 | `GET /events`     | A live stream (server-sent events) of the state, sent again each time something changes: playing, on air, mirror, slot, section, time left, speed, backing |
 | `POST /slot`      | Switch to a slot `{ slot }`                                          |
-| `POST /settings`  | Change display settings                                              |
+| `POST /stream-deck/hello` | Local plugin version report `{ pluginVersion, protocolVersion }`; requires Stream Deck enabled, works with its restricted key, grants no settings or OBS permissions |
+| `POST /settings`  | Change display settings and the shared pad layout (next candidate)    |
 | `GET /recordings` | Every recording session, newest first, with its id                  |
 | `GET /recording?id=…` | One session: its takes and which ones the edit uses            |
 | `GET /recording/pack?id=…` | A session's edit pack, as `{ files: { name: contents } }` |
 | `POST /recording/update` | Name it, add a note or mark it processed `{ id, title, note, processed }` |
 | `POST /recording/delete` | To the Recycle Bin `{ id }`, only if you tick **Let it delete recordings too** |
+
+Use the advertised commands for feature support. A version absent from an older
+response is unknown; the local compatibility exchange is not proof of a particular
+plugin's identity or that the installed app is the latest public release.
 
 It's off by default. Requests from web pages are refused, the API can't
 switch itself on, and **New token** locks out anything that had the old one.
@@ -122,14 +127,33 @@ to cut the chosen take of each section together, in script order. With the
 [slate](05-recording-a-take.md#the-slate) turned on, every take's times line
 up with the recording from the first beep or flash.
 
+## Review a rehearsal
+
+The next candidate's edit pack adds `rehearsal-coach.json`. The recordings
+API includes the same report as `coach` when you read a saved recording.
+From the source folder or installed AI kit:
+
+```
+node scripts/sightline.mjs coach "My script" 2026-10-31 --json
+```
+
+It returns per-take pace, sentence alignment coverage, logged rereads and
+optional aggregate filler/repetition counts. Unmatched text can reflect
+recognition errors or intentional changes. Missing word timings mean
+unavailable coverage, not missed lines. Do not change keeper choices or cut
+footage solely from coaching estimates. `coachFillers` is protected from
+settings imports/API writes; the user enables it in Recording > Takes.
+
 ## Coming next
 
 The [roadmap](https://github.com/JoJo-1965/sightline-prompter/blob/main/ROADMAP.md) takes this further, in this order:
 
-- **Settings in its own window** (48), regrouped into more tabs, for
-  prompter monitors and second screens.
 - **Code signing** (27), so the installers don't trigger security warnings.
-- **Choose your own buttons** (40) for clickers, pedals and game controllers.
+- **Automatic updates** (29), alongside signing.
+
+Already built for candidate review: separate Settings (48), custom buttons
+(40), component/AI-kit installation (47), editor script health (30) and the
+rehearsal coach (28). They are not all in the installed RC14 yet.
 
 Already built: script lines that switch the microphone off for a demo
 (`{listen: off}`), commands in the script (`{prompter: …}`), and sound checks

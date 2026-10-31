@@ -64,6 +64,7 @@ export function createScratchRecorder() {
 				window.electron.scratchAudioData( pcm.buffer );
 			};
 			source.connect( blocks ).connect( silent ).connect( ctx.destination );
+			await ctx.resume();
 		},
 		async stop( keep = true ) {
 			if ( !ctx ) return null;

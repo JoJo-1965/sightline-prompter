@@ -25,7 +25,7 @@ back a section. {pause}
 
 ## Making it comfortable {target: 0:30}
 
-[Open the Layout button in the control bar.]
+[Open Tools, then Spacing and mirror.]
 
 Size makes the text bigger or smaller. Text opacity and Background change how
 see-through the script is. They're separate, so you can have solid text on a
@@ -39,7 +39,7 @@ your camera. {pause}
 
 ## Your scripts {target: 0:25}
 
-Open a script with the Open button, or drop a file onto this window. Word,
+Open a script from the Files menu, or drop a file onto this window. Word,
 rich text, plain text and markdown all work.
 
 You have nine slots. Control and a number, one to nine, swaps between them,
@@ -58,7 +58,7 @@ There's one at the end of every section in this script. They set the target
 pace for each section, where to stop until you say "Prompter, go", and where
 to count down and carry on by itself.
 
-To check them, tick Show directives in the Layout panel. {pause}
+To check them, open Settings, Prompting, Script, then tick Show directives. {pause}
 
 ## Recording setups {target: 0:35}
 
@@ -84,7 +84,8 @@ countdowns. {pause}
 
 ## That's the tour {target: 0:15}
 
-Press F1 at any time for all the keyboard shortcuts. The menu button, top left,
-has everything else, including more sample scripts to practise with.
+Press F1 for keyboard shortcuts. Files, at the top left, opens your scripts
+and exports. Tools opens recording helpers. Settings groups your preferences
+by task, with focused topics underneath.
 
 Have a great recording. {pause}

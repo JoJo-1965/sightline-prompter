@@ -5,7 +5,8 @@ description: Use when writing, rewriting or checking a script to be read from Si
 
 # Writing a Sightline Prompter script
 
-**Where Sightline is:** the Sightline Prompter source folder, a clone of
+**Where Sightline is:** the managed AI kit from **Settings > About > Components
+> Install > Open folder**, or the Sightline Prompter source folder, a clone of
 https://github.com/JoJo-1965/sightline-prompter. Use the `SIGHTLINE_HOME`
 environment variable if it's set; otherwise, if this skill sits in that
 repo's `skills` folder, it's two folders up; otherwise ask the user. Below,
@@ -24,7 +25,7 @@ working from memory:
    `single-take.md`, `voice-and-stops.md` (`{stop}` and countdowns) and
    `talking-points.md`.
 
-If there's no clone, the brief and spec are at
+If neither a kit nor a clone is available, the brief and spec are at
 https://github.com/JoJo-1965/sightline-prompter/tree/main/docs; write to them,
 and say the checker couldn't be run.
 
@@ -71,6 +72,11 @@ the total spoken time at the script's pace, and anything you weren't sure of.
 
 To put the script straight into the prompter, use the `sightline-session`
 skill (`load` into a slot).
+
+In the next candidate, the editor's **Script health…** checks unsaved text,
+estimates section delivery time and flags long sentences/similar word starts.
+It is an optional editorial aid, not a directive validator or a reason to
+invent compulsory markup. Keep using the script checker above.
 
 ## Don't
 

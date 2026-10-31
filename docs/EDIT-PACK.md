@@ -12,11 +12,39 @@ while you read, with timings to line up with it. If the user turned on
 scratch audio, `scratch-audio/` holds a plain microphone recording to help
 line them up (see [Scratch audio](#scratch-audio)).
 
+For the development OBS workflow, [From recording to the editor](https://github.com/JoJo-1965/sightline-prompter/blob/codex/obs-integration/docs/guide/12-production-handover.md)
+is the illustrated checklist for setup, retakes, keeper choices and collecting
+the master recordings alongside each module's pack.
+
+## Rehearsal review (next candidate)
+
+`rehearsal-coach.json` is an additive, derived report. It includes `version`,
+`basis` and `takes`. Each take identifies its section, take number, status,
+rating, duration, `pace` (the existing definitions below), `coverageAvailable`,
+`matched`, `total`, optional `fillers` and `lines`.
+
+Each line retains its sentence ID, zero-based section, word-index range and
+text, adding `matched`, `total`, `status` and `rereads`. Status is `matched`,
+`partly-matched`, `not-matched`, `outside-read-range` or `unavailable`. No word
+timing means unavailable, not missed speech. Coverage uses saved alignment,
+including the aligner's interpolation; it is not an independent transcript audit.
+Partial starts/unreached tails and recognition errors must not become automatic cuts.
+
+When explicitly enabled during voice following, a take adds `speechReview`:
+`engine`, `chunks`, `recognisedWords`, a `fillers` count map and `repeatedPairs`.
+The coach exposes the same aggregate as `fillers`; absent/older data gives
+null. Counts cover enabled active periods only, after command filtering and
+outside holds/mute. They add no transcript or audio, and may include scripted
+fillers or miss sounds omitted by the recogniser. Rereads/repetition may be
+deliberate. Never change a keeper choice from coaching estimates alone.
+
+The UI and `sightline.mjs coach [script] [date] --json` use the same definitions.
+Existing CSV columns, take fields and edit choices retain their meanings.
+
 ## The clock
 
 Every time is in **seconds on the session clock**. Time 0 is the first
-**slate**: the white flash and beep at the start of the first take (Settings >
-Scrolling > Slate). If no slate was used, 0 is when the first take started.
+**slate**: the white flash and beep at the start of the first take (Settings > Recording > Takes > Slate). If no slate was used, 0 is when the first take started.
 
 To line the pack up with a recording, find the first slate's flash or beep in
 the video (a white frame and a short tone), and subtract that time:
@@ -30,7 +58,7 @@ recordings that carry a time of day instead.
 
 ## Scratch audio
 
-With **Settings > Scrolling > Record a scratch audio track for syncing** on,
+With **Settings > Recording > Audio > Record a scratch audio track for syncing** on,
 Sightline records the microphone while the prompter runs, as a sync reference
 only. `take-log.json` lists the files in `audio` (added in this version;
 older logs have none):
@@ -69,12 +97,18 @@ the earlier one, and the place is marked as a **reread**.
 
 ## The files
 
+Guide snapshots add a `captureOverride` flag. When the session-only debug
+override was on, `captureStatus` says the guide may have been recorded.
+This is a capture-policy record, not proof that a particular OBS source
+included or excluded the guide; inspect the recorded picture.
+
 | File | What's in it |
 | ---- | ------------ |
 | `take-log.json` | Everything, as Sightline saved it: takes, their words, sentences, markers, ratings and slates, plus `sections` with the take to use for each |
 | `takes.csv` | One row per take: section, title, take, start, end, duration, status, rating, slate, use, wall-clock times, markers, then its pace (below) |
 | `sentences.csv` | One row per sentence per take: when it was said, how many of its words were said, whether it's complete, any words missing, and its text |
 | `words.csv` | One row per word said: section, take, sentence, word index, the word as written, start, end |
+| `rehearsal-coach.json` | Derived per-take pace, sentence alignment/reread prompts and optional aggregate filler/repetition counts; never an automatic edit decision |
 | `edit-marks.csv` and `edit-marks.json` | Places worth knowing about, in time order (below) |
 | `captions.srt` and `captions.vtt` | Captions for every take, on the session clock, in the script's own wording and spelling, at most two lines of about 42 characters |
 | `scratch-audio/` | Scratch audio files, if it was on (see [Scratch audio](#scratch-audio)) |
@@ -149,7 +183,7 @@ earlier ones changed.
 
 ## Loudness
 
-With **Settings > Scrolling > Loudness for each take** on (in voice scrolling
+With **Settings > Recording > Audio > Loudness for each take** on (in voice scrolling
 by default), each take has `loudness` in `take-log.json` (added in this
 version; null when it wasn't measured), and the same in the last columns of
 `takes.csv`:
@@ -230,7 +264,7 @@ its file name, such as `M2 Intro 2026-10-28`.
   recordings` lists the sessions with their ids, `recording <id>` shows one,
   and `recording-pack <id> [folder]` writes its pack. `processed <id>` marks
   it as edited when you're done, and `name` and `note` label it.
-- **Local API** (the app open, with **Settings > Remotes** ticked):
+- **Local API** (the app open, with automation enabled in **Settings > Controls > AI & API**):
   `GET /recordings`, `GET /recording?id=…`, `GET /recording/pack?id=…`
   (the files as `{ files: { name: contents } }`, with any scratch audio as
   `audio`: where each file is on this computer and its place on the clock) and
@@ -240,3 +274,93 @@ its file name, such as `M2 Intro 2026-10-28`.
 
 A session's name, note and processed time come back as `title`, `note` and
 `processed`; they never change the take log itself.
+
+## OBS recording references (development branch)
+
+When optional OBS integration is enabled, `take-log.json` has an additive
+`obs` array. It is empty when no OBS recording has been observed for the
+session. Existing fields and CSV columns are unchanged.
+
+Each observation carries `recordingId` (a locally generated association,
+not an OBS file ID), `connection`, `recording` (`recording`, `paused`,
+`stopped` or null for unknown), `outputPath` (or null), `outputDuration`
+(milliseconds reported by OBS), `observedAt` (UTC), and `t` (seconds from
+the Sightline log start when the observation was noted).
+
+Repeated status polls do not add entries unless the state or file reference
+changes. An output path is normally supplied when OBS finishes recording.
+Export after that confirmation to include it. The path belongs to the OBS
+computer; the video itself is not copied into the pack. Earlier exports,
+are not automatically rewritten. Within the same app session, the recording
+ledger also updates saved logs for earlier scripts that referenced the same
+recording. A deleted log is not recreated.
+
+New takes add `obsStart` and `obsEnd`; markers and take-start/end events add
+an `obs` reference. Each includes `recordingId`, estimated `seconds` into the
+recording, the sample time and age, and a timing-quality description.
+`obsRecordings` links that identifier to the confirmed filename and observed
+state transitions. Stale or disconnected clocks, and unverified offsets
+after automatic file splitting, have null positions. They are not exact
+edit points. Reopening Sightline does not recover a missing association.
+
+## Recorded OBS sync references (development branch)
+
+When enabled and prepared in Settings > Controls > OBS recording, a dedicated browser source puts
+the slate's flash and optional 1 kHz/250 ms tone into the current recorded
+scene. It is independent of the protected head guide and the local prompter
+slate. `recordedSync` in `take-log.json`, and the optional `recorded-sync.json`,
+retain each reference's ID, section/take, requested/rendered/completed UTC
+times, log-clock `t`, route, source, scene and canvas, audio track, recording
+identifier and recent estimated OBS clock position. The standalone manifest
+resolves the main output path from the recording ledger after OBS stops.
+Failed requests remain `status: failed`; a successful browser response is
+`browser-acknowledged`, not a claim that the file was verified. No audio or
+video is embedded in this manifest.
+
+Match the reference to its flash in the actual file. If its log time is `t`
+and the flash is at file time `f`, use `file time = log time + (f - t)` for
+that module, checking additional references for drift. The observed OBS
+clock can differ from file presentation time; do not silently treat it as
+exact. The recorded flash and browser tone need not arrive simultaneously,
+and neither measures physical camera lip sync. Use the microphone soundtrack
+and a visible clap for that check. Separate Source Record camera/WAV files
+have their own clock and filenames, which this manifest does not discover.
+
+## Recording-script snapshots (development branch)
+
+Each take's `scriptSnapshotId` identifies the version present when it began.
+The pack includes `script-snapshots.json` and numbered rendered HTML copies,
+with section IDs and slide-cue phrases. Verified original bytes are stored
+as base64 with SHA-256; UTF-8 Markdown, text and HTML originals are also
+exported as readable files. Binary source documents remain recoverable from
+the base64 bytes. A source changed during conversion is not marked verified.
+Later edits to the original file do not replace the snapshot already read.
+
+`head-guide.json` contains per-take snapshots of the separate guide: actual
+and ideal head poses, visibility, window bounds, fullscreen state and saved
+Centre/Beside placements. Capture-route status is explicitly unverified
+until the actual OBS output has been checked. The guide is not added as an
+OBS source. No video or camera frames are embedded in these snapshots.
+
+The actual `pose` and `ideal` pose can include additive `width` and `height`
+ratios alongside `x`, `y` and `scale`: `1` is the original proportion,
+`1.25` is 25% wider or taller. Missing width/height in older logs mean `1`.
+The outline scales around the eye centre `(500, 155)` in the guide's
+`1000 × 562.5` viewBox; position offsets use percentages of that viewBox.
+The eye marks retain their spacing while the head outline changes shape or size.
+`eyesLocked` records the manual position lock, separate from click-through
+`locked`. These are session preferences, not automatic measurements of a face.
+
+RC7 adds `top`, `bottom`, `left` and `right` ratios to both poses; each defaults
+to `1` in older logs. Before applying the existing width/height and scale
+transforms around `(500,155)`, the ellipse edges are `155 - 89*top`,
+`155 + 153*bottom`, `500 - 86*left` and `500 + 86*right`. These factors reshape
+only the outline; the eye marks keep their position and spacing. `background`
+is the separate dimming-layer opacity (0–0.8); `opacity` remains outline opacity.
+`controlsShown` records whether the separate adjustment window was visible.
+Changing its visibility does not alter the recorded guide geometry or lock.
+
+Do not treat these observations as a continuous or frame-accurate timecode
+map. Connection loss can leave gaps or unknown file associations. Use the
+slate or scratch audio for precise synchronisation, and preserve uncertain
+associations rather than guessing a filename or offset.

@@ -1,6 +1,46 @@
 # Writing scripts
 
+## Script health before you read
+
+In the next candidate, **Script health…** on the editor toolbar opens the
+**Script health** tab of **Script & rehearsal review**. It checks your current
+editor text, including unsaved changes, without saving or rewriting it.
+Outside the editor, use **Tools > Script & rehearsal review…** and select
+**Script health** to review the current rendered script.
+
+Choose a section and a default pace between 60 and 300 wpm. Section `{wpm}`
+values override that default. The reading estimate counts written body words;
+headings, unspoken `[directions]`, code and app directives do not count.
+Quoted `[Say: "words"]` do count. Section targets are shown alongside the
+estimate. Timed pauses are listed separately because they count down only in
+steady mode; stops, your own beats and ad-libs have no predictable duration.
+Notes-mode estimates cover written body text, not the words you improvise.
+
+Sentences of **30 words or more** get a prompt to consider a breath or a
+shorter sentence. Several similar word starts get a **try it aloud** prompt.
+These simple English spelling heuristics are suggestions, not errors or a
+pronunciation test. **Open section in editor** returns to that section without
+changing your text. Longer result lists use Previous/Next; Refresh checks again.
+
+![Section reading time and editorial prompts](images/script-health.png)
+
 ## File types
+
+### Samples and safe copies
+
+Open a sample from **Files (☰) > Sample scripts**. **Edit script** or **Ctrl+E**
+shows its source with a **Sample · read-only** label. You can select and copy
+the text; typing, Save and rehearsal-target updates cannot change a sample.
+Choose **Save a copy…**, select another folder, then edit and save your copy
+normally. Clearing a slot removes its reference; it does not delete the file.
+
+**Clear this slot** always asks **Clear slot N?**, names the script and defaults
+to **Cancel**. Cancel or Escape keeps it. To reopen a cleared script, use
+**Files > Open recent**, **Open script**, or **Sample scripts** for a sample.
+
+![Sample source in the read-only editor, with Save a copy](images/sample-read-only.png)
+
+### Supported formats
 
 Sightline opens Markdown (`.md`, `.markdown`), plain text (`.txt`), Word
 (`.docx`), rich text (`.rtf`), PDF (`.pdf`) and web pages (`.html`, `.htm`).
@@ -47,7 +87,7 @@ with a line like `=== SECTION ===` in plain text. Sections let you:
 Anything in square brackets is a note to you, the speaker, such as
 `[smile]` or `[Say: "Section one". Pause.]`. Notes are shown dimmed, so they
 don't get read out by mistake. Any `"quoted words"` inside a note stay bright,
-because you do say those. Settings > Display can show notes normally, or hide
+because you do say those. Settings > Prompting > Script can show notes normally, or hide
 them.
 
 Voice scrolling and the sentence highlight both ignore notes.

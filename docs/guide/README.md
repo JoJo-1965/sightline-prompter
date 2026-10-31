@@ -10,6 +10,18 @@ the take, and the take log goes back to your AI for the edit. See
 The script floats over your screen, close to the webcam, and scrolls at a
 steady pace or follows your voice.
 
+**1.0.7 release candidate:** this guide describes the local Windows candidate,
+including OBS recording, the head guide and regrouped Settings. The published
+download is still **1.0.6**, whose bundled guide describes its earlier menus.
+The companion Stream Deck test plugin is **0.1.9** and remains private.
+RC1 established the feature baseline; RC2 refreshes the bundled documentation
+and adds the reusable acceptance samples. RC3 adds compatibility reporting in
+Sightline and the plugin. These are local test builds, not public releases.
+RC9 adds optional offline release notes and Getting Started reading at the end
+of Windows installation, independently of opening the app.
+RC10 fixes the phone QR in Settings, moves mirroring to Screens and makes
+voice help movable. Helper windows now follow Hide from capture.
+
 ![The prompter with the control bar, mid-take](images/running.png)
 
 ## Contents
@@ -24,6 +36,10 @@ steady pace or follows your voice.
 8. [Shortcuts and troubleshooting](08-shortcuts-and-troubleshooting.md)
 9. [Working with AI](09-working-with-ai.md): AI-written scripts, letting an AI run the prompter, the take log and edit pack, and what's coming next
 10. [Setting up your AI](10-setting-up-your-ai.md): Claude Code, Codex, ChatGPT, Claude or Gemini, and the AI and remote control settings
+11. [Recording with OBS](11-obs.md): optional connection, recording controls, chapters and file references (development branch)
+12. [Production handover](12-production-handover.md): setup, framing, a short test, retakes, keeper choices and the files to hand over (development branch)
+13. [Settings screenshot gallery](settings-gallery.md): all five groups, every topic and the extra pages, including contextual help (development branch)
+14. [Release-candidate acceptance test](14-acceptance-test.md): the matching builds, two sample scripts, physical checks and the evidence to keep
 
 Inside the app, open this guide from **Help > User Guide** or the **?** menu.
 **F1** shows the keyboard shortcuts.

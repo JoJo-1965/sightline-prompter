@@ -61,6 +61,11 @@
 	background: #6da0ff;
 }
 
+#editor-toolbar button:disabled {
+	opacity: 0.5;
+	cursor: default;
+}
+
 #editor {
 	flex: 1;
 	overflow: hidden;

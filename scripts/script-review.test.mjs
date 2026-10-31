@@ -1,0 +1,52 @@
+import assert from "node:assert/strict";
+import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
+import { spawnSync } from "node:child_process";
+import { scriptHealth, fillCounts, sectionLine } from "../src/client/script-health.js";
+import { rehearsalCoach } from "../src/client/rehearsal-coach.js";
+import { createTakeLog } from "../src/client/take-log.js";
+import { editPack } from "../src/client/edit-pack.js";
+
+const health = scriptHealth( [ { section: 1, blocks: [ "A short sentence.", "Seven sleek swans swim swiftly.", Array( 35 ).fill( "word" ).join( " " ) + "." ], wpm: 120, target: 30, pauses: 5 } ] );
+assert.equal( health.words, 43 );
+assert.equal( health.sections[0].readingSeconds, 22 );
+assert.deepEqual( health.sections[0].findings.map( finding => finding.kind ), [ "word-starts", "long" ] );
+assert.equal( scriptHealth( [ { blocks: [ "Very very very very good." ] } ] ).findings, 0, "Repetition alone is not called a tongue twister" );
+assert.equal( sectionLine( "---\n## Metadata\n---\n```md\n## Example\n```\n## Real section\n", 1 ), 7 );
+assert.deepEqual( fillCounts( [ "um", "um", "Uh,", "erm", "umbrella", "further" ] ), { um: 2, uh: 1, erm: 1 } );
+let now = Date.now();
+const sentences = [ { s: 0, section: 0, from: 0, to: 3, text: "Here are four words." }, { s: 1, section: 0, from: 4, to: 6, text: "Not reached yet." } ];
+const log = createTakeLog( { clock: () => now, sentences: () => sentences } );
+log.tick( { active: true, index: 0, title: "Opening", advanced: true, target: 30 } );
+log.words( [ { i: 0, w: "Here", at: now }, { i: 2, w: "four", at: now + 500 }, { i: 3, w: "words", at: now + 2000 } ] );
+log.reviewWords( [ "um", "Here", "are", "are" ] );
+log.reviewWords( [ "are", "uh" ] );
+now += 10000;
+log.tick( { active: false, index: 0 } );
+const data = log.data();
+const take = rehearsalCoach( data ).takes[0];
+assert.equal( take.matched, 3 );
+assert.equal( take.total, 7 );
+assert.equal( take.lines[0].status, "partly-matched" );
+assert.equal( take.lines[1].status, "outside-read-range", "Unreached tail is not called a missed line" );
+assert.equal( take.fillers.repeatedPairs, 2, "Counts span recogniser chunks" );
+assert.deepEqual( take.fillers.fillers, { um: 1, uh: 1 } );
+assert.equal( JSON.stringify( data ).includes( "\"are\"" ), false, "Aggregate counts do not add recognised transcript words" );
+const old = rehearsalCoach( { takes: [ { ...data.takes[0], words: [], speechReview: null } ] } ).takes[0];
+assert.equal( old.coverageAvailable, false );
+assert.equal( old.fillers, null );
+assert.ok( old.lines.every( line => line.status === "unavailable" ) );
+assert.deepEqual( JSON.parse( editPack( data )["rehearsal-coach.json"] ).takes[0].fillers.fillers, { um: 1, uh: 1 } );
+assert.equal( data.takes[0].rating, null, "Coaching never chooses or changes keepers" );
+const folder = await fs.mkdtemp( path.join( os.tmpdir(), "sightline-coach-cli-" ) );
+try {
+	await fs.mkdir( path.join( folder, "take-logs" ) );
+	await fs.writeFile( path.join( folder, "take-logs", "Review 2026-10-31.json" ), JSON.stringify( data ) );
+	const result = spawnSync( process.execPath, [ "scripts/sightline.mjs", "coach", "Review", "2026-10-31", "--json" ], { env: { ...process.env, SIGHTLINE_SETTINGS: folder }, encoding: "utf8" } );
+	assert.equal( result.status, 0, result.stderr );
+	assert.equal( JSON.parse( result.stdout ).takes[0].matched, 3 );
+} finally {
+	await fs.rm( folder, { recursive: true, force: true } );
+}
+console.log( "PASS: script estimates, editorial heuristics, partial alignment, optional aggregate counts and additive coach exports" );

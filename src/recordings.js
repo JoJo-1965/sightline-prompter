@@ -8,6 +8,7 @@ import path from "node:path";
 import zlib from "node:zlib";
 import { editPack } from "./client/edit-pack.js";
 import { pickTakes } from "./client/take-log.js";
+import { rehearsalCoach } from "./client/rehearsal-coach.js";
 
 const LIBRARY = "library.json";
 
@@ -124,7 +125,7 @@ export async function readRecording( dir, id ) {
 		markers: t.markerList?.length ?? t.markers?.length ?? 0,
 		restarts: t.restarts?.length ?? 0
 	} ) );
-	return { ...summarise( id, log, library[id], mtime.toISOString() ), takeList: takes };
+	return { ...summarise( id, log, library[id], mtime.toISOString() ), takeList: takes, coach: rehearsalCoach( log ) };
 }
 
 // Name, note and processed: null or "" clears one.

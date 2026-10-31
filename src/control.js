@@ -3,10 +3,13 @@
 // and the pad's buttons. Clicking a line in the copy moves the prompter there.
 
 import { app, BrowserWindow, ipcMain, screen } from "electron";
+import { protectWindow } from "./capture-policy.js";
 import path from "node:path";
 import { fitInside } from "./utils/fit.js";
 
 const CONTROL_COMMANDS = [
+	"obs-record",
+	"obs-finish",
 	"toggle",
 	"restart",
 	"previous-section",
@@ -116,7 +119,7 @@ export function createControl( {
 		} );
 		// No app menu here: its shortcuts act on the prompter (Ctrl+W would close it).
 		control.removeMenu();
-		control.setContentProtection( !!getSettings().hideFromCapture );
+		protectWindow( control, !!getSettings().hideFromCapture );
 		control.loadFile( path.join( dir, "client", "control.html" ) );
 		control.once( "ready-to-show", () => {
 			if ( !control ) return;
@@ -170,7 +173,7 @@ export function createControl( {
 	function apply() {
 		if ( getSettings().showControl ) open();
 		else if ( control ) close();
-		control?.setContentProtection( !!getSettings().hideFromCapture );
+		protectWindow( control, !!getSettings().hideFromCapture );
 	}
 
 	function sendStatus( next ) {

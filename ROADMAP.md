@@ -10,43 +10,129 @@ complex builds come later.
 - **Value:** ★★★ changes recording day · ★★ clearly better · ★ nice to have
 - **Size:** **S** about a day · **M** a few days · **L** a week or more, for a person. Built with Claude Code, most take minutes to an hour, plus testing
 
-## Where it stands (29 October 2026)
+## Where it stands (31 October 2026)
 
-**v1.0.6 is the latest release** (29 October 2026): notes mode (49), pace per
-take (43), rehearsal results (44), named markers (45), restarts from a marker
-(46), the choice of wake word, the recordings library (36), teach it your words
-(20), countdowns as beat marks in voice mode, off script and commands in the
-script (35), scratch audio (33), the sound-check meter (41), loudness per take
-(42), sound checks in the script (50), the control window's broadcast row, the
-local API for buttons with a Stream Deck setting, always-listen for the wake
-word, and Joanne's tip jar. 1.0.3 to 1.0.5 added the edit pack (26), the
-clickable progress bar (37), check for updates (38) and skills for Claude Code
-and Codex.
+**Local Windows release candidate:** RC1 established the feature baseline.
+RC2 refreshed the documentation and added reusable acceptance samples.
+**1.0.7-rc.3** adds local compatibility checks and version reporting with
+the matching private Stream Deck plugin **0.1.9**. Unsupported actions and
+known protocol/minimum-version mismatches are blocked; legacy versions stay
+unconfirmed rather than being described as up to date.
+**1.0.7-rc.4** retains compact labels above every visible toolbar slider,
+including Response in voice mode and the on-air background state.
+**1.0.7-rc.5** adds independent head-guide Width/Height fitting around fixed
+eye marks, an eye-position lock and saved/exported shape proportions.
+**1.0.7-rc.6** adds Edit beside Tools, anchors the Tools dropdown to its button,
+and centres Settings on opening and window resize. Manual dragging still works.
+**1.0.7-rc.7** adds a separate guide-adjustments window, available over a
+fullscreen or locked guide. Fit eye centre/level, then independent top/bottom
+and left/right edges. Separate Background and Outline sliders improve contrast.
+**1.0.7-rc.8** moves Settings and F1 Help into independent upright windows,
+with saved geometry, stable tab sizes and the existing unsaved-change checks.
+The latest published app is still **1.0.6**. Work remains on
+`codex/obs-integration`; no merge, tag, public release, Marketplace submission
+or website deployment is authorised by preparing or testing this candidate.
 
-**The Stream Deck plugin (39)** is built as its own project and waits for
-Joanne's test on her Stream Decks and the Marketplace listing. Its GitHub repo
-(JoJo-1965/sightline-streamdeck) is set up, private until launch.
+**Settings and help are built:** Prompting, Appearance, Recording, Controls
+and About have focused topics. Files handles input/output and Tools holds
+live helpers. The Settings panel is stable across topics; pages replace
+scrolling. Approved mini help pills, explicit labels, draft/save feedback and
+validation are included. F1 and voice help use grouped tabs and follow enabled
+modes. The approved screenshots are in the offline guide and website preview.
+RC3 also fixes help-frame resizing, adds independent toolbar mirrors and a
+labelled Files > Settings entry, confirms slot clearing, and protects sample
+source with a read-only editor and Save a copy.
+RC8 also completes the separate-window implementation of 48, now awaiting acceptance.
+RC9 adds independent Windows installer finish choices for release notes and
+Getting Started, bundled as offline pages matching the installed version.
+RC10 fixes the phone QR in native Settings, puts mirroring only under Screens,
+makes voice-command help movable and applies the capture preference live to
+Settings, both help windows and Guide adjustments. The guide overlay stays protected.
+Both OBS topics now sit together under Controls. Recorded-slate setup explains
+blocked prerequisites and reports its progress and errors in Settings.
+RC11 improves contrast on the OBS status buttons and gives Settings and both
+help windows native ownership so they stay above the fullscreen prompter.
+RC12 adds independent size and colour for square-bracket delivery comments
+under Appearance > Text, following Heading font while retaining speech exclusions.
+RC13 completes the customisable pad (#56), shares its layout with the phone,
+and adds bounded listening recovery, immediate wake-word changes and opt-in tracing.
+RC14 puts support logs and the optional word trace in **About > Debug**, with
+the trace off by default and a visible nearby-conversation warning.
+**RC15 work in progress:** compact phone landscape controls are built and
+checked in portrait/landscape previews. Studio uses six columns and two rows,
+with extra footer spacing. No RC15 has been packaged or installed yet.
+The same review batch adds API/import layout validation, structured XML
+exports, phone command acknowledgements and the session capture override (57).
+Components (47) now also checks optional OBS/Stream Deck applications and
+plugin files, with installer/Locate links and visible dependency reasons.
+Disabled controls retain their preferences; remote OBS and general API clients
+remain independent of local-only prerequisites. Script health (30) and the
+rehearsal coach (28) are also built for this review batch.
+The install helper plans the intended destination first and verifies it after
+an explicitly requested install. Correcting the live installation location
+waits for that later installation. See the [batch review](docs/RC15-REVIEW.md).
 
-**Next, for 1.0.7:** Settings in its own window (48), built like the pad and
-regrouped. The policies (51) were approved for publication on 29 October.
-After that: code signing (27, which needs Joanne's accounts), 47 the
-components list and 40 choose your own buttons. The full list, in order, is under
-[To do](#to-do); everything built is under [Done](#done).
+The [acceptance walkthrough](docs/guide/14-acceptance-test.md) and two bundled
+sample scripts cover natural voice, physical Stream Deck controls, stops,
+retakes, the guide/projector stack and a continuous two-module recording.
+The illustrated [production handover](docs/guide/12-production-handover.md)
+explains what to collect afterwards.
+
+| Academy requirement | Evidence already checked | Acceptance still required |
+| --- | --- | --- |
+| Exact recording script | Unit checks and real two-module rehearsal retained each module's source snapshot | Match the final test's scripts, section identities and slide note |
+| OBS recording files and take clocks | Confirmed main filename across three takes/two modules; additive clock references and measured digital file offset | Review final logs and keeper/marker positions; clock estimates are not frame-accurate |
+| Session guide and metadata | Ideal/Actual poses, placements and window snapshots persist; tested camera-source route excluded the guide | Real projector order, physical controls and exclusion in the chosen recorded files |
+| Separate clean camera and microphone | Separate 4K/30 outputs, independent 48 kHz/24-bit PCM and sample-identical WAV extraction checked | Confirm the normal camera/mic route and retain the actual clean/main pair |
+| Recorded picture/sound reference | Prepared OBS source, additive manifest and actual digital flash/tone file checks passed | Early/late physical claps and normal speech; digital slate delay is not lip sync |
+
+**Windows accessibility:** keyboard/layout and labelled-control automation
+passed. Manual NVDA, Magnifier and OS high-contrast checks remain. macOS and
+VoiceOver testing are deferred to a future Mac tester, not a gate for this
+Windows candidate. See the [Settings audit](docs/SETTINGS-UX-AUDIT.md).
+
+**Before another RC:** reconcile pending conversation requests, unfinished fixes
+and companion work before choosing a version or building. Finish the current
+batch and its supporting updates, then check for new messages before packaging.
+Planned roadmap work and physical acceptance checks stay separately identified.
+
+**Next development:** signing (27) awaits the arrangements below; automatic
+updates (29) and the remaining lower-priority items stay planned. Script health
+(30), rehearsal coaching (28), components (47) and input mappings (40) are built
+for review, absent from installed RC14. Zoom (53) and Teams (54)
+remain investigations. No new compulsory script directives are needed.
+
+## Built, awaiting acceptance and publication
+
+These are implemented in the candidate, not new development tasks. They
+move to Done only when released.
+
+| # | Item | Value | Size | RC status |
+| --- | --- | --- | --- | --- |
+| 30 | **Script health in the editor** | ★ | S | Built for review: current/unsaved text, section word/time estimates, pace/target context, long sentences and similar-word-start prompts, plus section navigation. Shared rendering excludes unspoken directions/headings/commands and includes quoted speech. Heuristics are suggestions; no script rewrite or save. Native editor checks pass; not packaged |
+| 28 | **Rehearsal coach** | ★★ | M | Built for review: per-take pace, qualified sentence coverage/reread prompts and optional recognised filler/repetition aggregates. Counting defaults off, uses existing active voice following only and adds no transcript/audio. Tools, take summary, saved Recordings, CLI/API and additive edit-pack report. Native/simulated speech checks pass; normal-voice acceptance remains |
+| 47 | **Components manager** | ★★ | M | Built for review: About > Components manages the optional offline model and bundled AI kit with status, Install/Reinstall/Remove and a separate Node.js check. Voice also has model repair/removal; the first-run offer remains. Failed repairs preserve previous files. Standalone kit and native Settings checks pass; not packaged yet |
+| 40 | **Choose your buttons and keys** | ★★ | S–M | Built for review: Controls > Buttons & keys learns plain keys/Shift combinations and controller buttons with shared pad actions, device overrides, pages, immediate saving and reset. Reserved shortcuts remain intact; typing, editing and Settings suspend actions. Native key and simulated button checks pass; physical controller/pedal acceptance remains |
+| 57 | **Debug capture override** | ★★ | S | Built for the next candidate: About > Debug permits all existing and newly opened windows in captures, with a persistent warning and phone notice. Session-only; restores current normal preferences and resets on restart. Native policy, lifecycle and restore checks pass; awaiting review and packaging |
+| 56 | **Customisable virtual pad and phone layout** | ★★ | M | Built in RC13: select up to 36 functions, drag or use Earlier/Later to reorder, choose columns and Compact/Reading/Studio presets. Pad and phone share choices/order and Stream Deck artwork. Hardware profiles remain independent. Native pad, portrait phone, persistence and permission checks pass; physical iPhone acceptance remains |
+| 48 | **Settings in its own window**, plus movable F1 Help | ★★ | M | Built in RC8: independent upright windows, native title-bar dragging across screens, saved geometry, stable sizes, paged Settings, live controls, Apply/Save/Cancel and unsaved-change guards on window/app close. Native window and inline-fallback tests pass; manual acceptance remains |
+| 52 | **Optional OBS integration** | ★★★ | M | Built in the Windows 1.0.7 candidate: authenticated connection, status-only/recording permissions, confirmed Record take/Finish, optional chapters, recorded slate and edit-pack references. Default off; ordinary prompting, stops, retakes and On air leave OBS recording. Physical workflow validation and evidence review remain. No separate OBS plugin is needed; optional dock/scene switching are later scope |
+| 55 | **Floating head-position guide** | ★★ | S | Built in the candidate: manual Ideal/Actual comparison, movement/scaling, Centre/Beside placements, chromeless fullscreen/restore, lock, voice on/off, hotkeys and Stream Deck. Separate from OBS sources, with capture protection enabled. It does not detect faces; actual exclusion depends on the chosen capture method and needs recording verification |
+| 39 | **Stream Deck companion** | ★★★ | M | Private 0.1.9 test build: 27 key actions, 5 dials, 18 standard/OBS profiles, recording and guide controls, buttons-only pairing and refreshed studio artwork. Physical keys, states and the model profile need acceptance. Marketplace listing is not live; add its real link to app/guide/readme/site only after listing |
 
 ## To do
 
-In the order they'll be built: value for the time first. 27 needs certificates bought, so it waits for Joanne's go.
+Work still to develop, ordered by value for the time. Code signing (27)
+waits for the signing arrangements and Joanne's accounts; it is not in this RC.
 
 | #   | Item | Value | Size | Notes |
 | --- | ---- | ----- | ---- | ----- |
 | 27  | **Code signing for Windows and Mac:** no more "unknown publisher" warnings | ★★★ | S | Moved up from Later. Needs a code-signing certificate and an Apple Developer account (Joanne's decision) |
-| 47  | **Components list:** Settings > About lists each extra part with its status and Install, Reinstall and Remove: the speech model, and an AI agent kit (the skills, the script checker and the sightline command) installed from the app without cloning the repo, with a check for Node.js. Settings > Voice gets Reinstall and Remove beside the speech model, and the first run offers to download it | ★★ | M | Joanne asked, 28 Oct: show what's installed, with install and reinstall buttons. In the app rather than an installer tickbox, because only the Windows installer could have one |
-| 48  | **Settings in its own window:** Settings opens as an ordinary window you can drag to any screen, upright even when the prompter is mirrored, and it reopens where you left it. Changes still show on the prompter straight away. Useful when the prompter is full screen on a prompter monitor such as the Elgato, where Settings now opens inside it, mirrored | ★★ | M | Joanne asked, 28 Oct. Today Settings is a dialog inside the prompter window, so it can't leave it. The Layout and Voice panels could follow later. **Deferred to 1.0.7 (29 Oct).** Moving the existing dialog into a window opened by the page doesn't work: Electron gives a window opened from a local file an anonymous origin and no link back (tried 29 Oct). **Build it like the floating pad and control window** (Joanne's suggestion): its own page and script, reading the settings when it opens and saving through main, which already sends them to the prompter; the live Layout, Reading and Recording tabs send each change as it's made, as the pad does with speed. **While it's rebuilt, regroup it** (Joanne, 29 Oct): more tabs or sub-tabs, less scrolling: Voice has recognition, commands, the wake word, the mic and both Your words lists; Scrolling has the slate, scratch audio and loudness (a Recording tab?). **Meanwhile:** the control window's broadcast row (1.0.6) covers the recording and broadcast settings from a second monitor, Joanne's actual need with the Elgato Prompter |
-| 40  | **Choose your own buttons:** a key map for game controllers, foot pedals, clickers and keyboard shortcuts (Settings > Remotes): pick any action (start and pause, sections, speed, markers, keeper or scrap, on air, again) for each button or key, with a "press the button now" way to set it, and a reset to the defaults | ★★ | S–M | Joanne's idea, 28 Oct. Today the controller buttons and pedal keys are fixed. The Stream Deck plugin (39) can use the same list of actions |
-| 39  | **Stream Deck plugin (keys, dials and the pedal):** an Elgato Stream Deck plugin that drives Sightline through the local API. **Keys:** start and pause, back to the top, previous and next section, On air, marker, keeper and scrap, slots 1 to 9, Mirror, the Layout, Reading and Recording panels, eye-line mode and click-through, each showing its state (On air lit red, ▶ or ❚❚, the mirror mode, the slot that's open). **Dials and touch strip (Stream Deck +):** turn for speed, text size, backing (and background on air) or to scroll through the script by hand, press to reset or to start and pause, with the value and the section and time left on the strip. **Stream Deck Pedal:** the same actions on its three pedals, set up out of the box as previous section, start and pause, and next section (or hold for "Prompter, again" and marker), so the prompter can be run hands-free while you hold notes or a product. Other USB pedals already work when they send keys; the Elgato pedal only talks to the Stream Deck software, so it needs the plugin. Needs the API to push changes (a WebSocket on the same token) so the keys stay in step with the prompter, the phone remote and voice commands; set up from Settings > Remotes with a pairing code, no typing tokens | ★★★ | M | Joanne's idea, 28 Oct. Fits the Elgato Prompter setup; published on the Elgato Marketplace as well as GitHub. Shares the push channel with 36. Comes with a **sample profile** to load, for each Stream Deck size and the pedal (Joanne asked, 28 Oct). Joanne has three Stream Decks to test on; the pedal still needs one to test. **Built 28 Oct, not yet released:** the app side (`GET /events` and the button commands) is in Sightline; the plugin is its own project (`sightline-streamdeck`, SDK 3, DRM-ready) with 19 keys and 5 dials, two-state toggles, drawn icons, and sample profiles for the Mini, Stream Deck, Neo, XL, +, + XL and Pedal. It finds Sightline through remote-control.json, so there's no pairing code to type. Still to do: Joanne's test on her Stream Decks and the Marketplace listing (her Maker account); the GitHub repo (JoJo-1965/sightline-streamdeck) is set up, private until launch. **Before the Marketplace listing:** a contemporary make-over of the key, dial and plugin icons, so they say "wow", not "meh" (Joanne, 29 Oct), then retake the Marketplace gallery from them. **On launch day, put the Marketplace link in:** the Sightline page's Stream Deck section (joannelockwood.co.uk/sightline#stream-deck, where everything else points), guide 06 > Stream Deck, the plugin's README (Install), FEATURES.md and the readme (drop "coming to"), and the change log |
-| 28  | **Rehearsal coach:** after a practice run, pace by section, lines skipped, "um"s and sentences you stumbled on, all on the computer | ★★ | M | Same speech engine as voice scrolling |
+| 58 | **Setup and session workflow:** first-use checklist, session checks and named component subtabs; make Components/Debug easy to find and keep frequent tools together | ★★ | To assess | Requested 31 Oct. [Workflow mock-ups](docs/SETTINGS-WORKFLOW-PROPOSAL.md) prepared; wider navigation/onboarding changes are not implemented. Replace numbered component pages; retain the stable frame and no Settings scrolling |
+| 59 | **Optional OBS setup assistant:** create a separate profile and scene collection with chosen camera, mic, output folder and a configuration guide | ★★ | To assess | Requested 31 Oct. Included in the workflow mock-up; not built. Review before applying, keep existing profiles, require idle OBS, validate device modes and distinguish separate tracks from actual clean-camera/WAV outputs |
 | 29  | **Automatic updates:** new versions download and install themselves, so users get fixes without reinstalling | ★★ | M | Moved up from Later. Best done with code signing (27), which Mac updates need |
-| 30  | **Script health check in the editor:** reading time per section, and flags on sentences too long for one breath and on tongue-twisters | ★ | S | |
+| 53 | **Optional Zoom controls:** investigate microphone, camera and bringing the meeting forward from Sightline, with phone, voice and control-window actions | ★ | To assess | Joanne requested, 29 Oct. Feasibility first: Zoom's [Plugin SDK](https://developers.zoom.us/docs/plugin-sdk/) connects native Windows/macOS companion apps to the installed Zoom Workplace client. Assess permissions, distribution and dependable state feedback before implementation. Off by default; independent of normal prompting. Not built or scheduled for release |
+| 54 | **Optional Teams controls:** investigate microphone, camera and bringing the meeting forward from Sightline | ★ | To assess | Joanne requested, 29 Oct. [Elgato reports](https://www.elgato.com/us/en/explorer/products/stream-deck/control-microsoft-teams-meetings-with-stream-deck/) the previous third-party API was discontinued. Keyboard shortcuts require Teams to be in the foreground and do not verify mic/camera state. Assess a maintainable approach; show unverified actions as command sent, not confirmed state. Off by default; not built or scheduled for release |
 | 31  | **Scripts folder sync:** choose a OneDrive, Dropbox or other folder, and scripts saved there from another computer appear in Sightline | ★ | S | |
 | 32  | **Advance slides at cue words:** when you say a slide-cue phrase, press the next-slide key in PowerPoint or Keynote, for live talks and webinars | ★ | M | Builds on the slide-cue highlighting that's already there |
 | 34  | **Record a quick take:** webcam and microphone recording inside Sightline, one file per take, named and rated from the take log, for people with no recording software | ★ | L | Joanne's idea, 28 Oct. Not for masters: browser-engine encoding is fine for reference copies but below Riverside's local 4K quality |

@@ -16,6 +16,7 @@
 //   node scripts/sightline.mjs pack [script name] [date] [output folder]
 //   node scripts/sightline.mjs heard [script name] [date]       (what voice scrolling misheard)
 //   node scripts/sightline.mjs pace [script name] [date] [--json]  (also "rehearsal": each section's pace and every take's)
+//   node scripts/sightline.mjs coach [script name] [date] [--json]  (alignment review and optional filler counts)
 //   node scripts/sightline.mjs recordings [--json]             (every recording session, newest first, with its id)
 //   node scripts/sightline.mjs recording <id>                  (one session: its takes and which the edit uses)
 //   node scripts/sightline.mjs recording-pack <id> [output folder]
@@ -32,6 +33,7 @@ import { fileURLToPath } from "node:url";
 import { editPack } from "../src/client/edit-pack.js";
 import { pickTakes, takePace } from "../src/client/take-log.js";
 import { heardReport, printHeardReport } from "./heard-report.mjs";
+import { rehearsalCoach } from "../src/client/rehearsal-coach.js";
 import { listRecordings, readRecording, recordingPack, updateRecording } from "../src/recordings.js";
 
 const here = path.dirname( fileURLToPath( import.meta.url ) );
@@ -150,6 +152,21 @@ try {
 			console.log( "\nsection,take,status,rating,duration,words,spoken_seconds,speaking_seconds,speaking_wpm,overall_wpm,target_seconds,vs_target_seconds" );
 			for ( const t of takes ) {
 				console.log( [ t.section, t.take, t.status, t.rating ?? "", t.duration ?? "", t.words ?? "", t.spokenSeconds ?? "", t.speakingSeconds ?? "", t.speakingWpm ?? "", t.overallWpm ?? "", t.targetSeconds ?? "", t.vsTargetSeconds ?? "" ].join( "," ) );
+			}
+			break;
+		}
+		case "coach": {
+			const [ name, day ] = args.filter( arg => arg !== "--json" );
+			const file = await findTakeLog( name, day );
+			const report = rehearsalCoach( JSON.parse( fs.readFileSync( file, "utf8" ) ) );
+			if ( args.includes( "--json" ) ) print( report );
+			else {
+				console.log( report.basis );
+				for ( const take of report.takes ) {
+					console.log( `S${ take.section } take ${ take.take } (${ take.status }): ${ take.coverageAvailable ? `${ take.matched }/${ take.total } words matched` : "no sentence alignment" }; ${ take.pace?.speakingWpm ?? "–" } wpm speaking` );
+					console.log( take.fillers ? `  Recognised filler candidates: ${ JSON.stringify( take.fillers.fillers ) }; repeated-word pairs: ${ take.fillers.repeatedPairs }` : "  Filler counting was off or unavailable." );
+					for ( const line of take.lines.filter( item => item.status !== "matched" || item.rereads ) ) console.log( `  ${ line.status }: ${ line.text }${ line.rereads ? ` (${ line.rereads } reread)` : "" }` );
+				}
 			}
 			break;
 		}

@@ -74,6 +74,19 @@ body {
   max-width: 820px;
 }
 
+#page p,
+#page li,
+#page td {
+  text-wrap: pretty;
+}
+
+#page h1,
+#page h2,
+#page h3,
+#contents a {
+  text-wrap: balance;
+}
+
 h1 {
   margin-top: 0;
   font-size: 28px;

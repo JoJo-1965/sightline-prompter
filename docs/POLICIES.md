@@ -20,6 +20,9 @@ Happen Ltd, based on Electron Teleprompter by David Neal.
   following can save recognised words as text and script-word timings.
 - **Always** wake-word listening can run while stopped or off air. Turning
   voice commands off does not turn off other microphone features.
+- Optional **Trace command words** saves recognised text during commands-only
+  listening, including while stopped. It is off by default; enable it only
+  for troubleshooting and turn it off afterwards.
 - Optional scratch audio records the microphone for synchronisation,
   including off-script passages. It can be included in an edit pack.
 - Deepgram sends audio to an online service when you choose it. Its data
