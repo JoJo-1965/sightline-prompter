@@ -69,7 +69,7 @@ without disappearing as you move the pointer onto it.
 | | OBS | Installation check, supplier installer and custom location |
 | | Stream Deck | Elgato app and Sightline plugin installation checks |
 | **Debug** | Debug | Support logs, capture override and optional command-word tracing |
-| **About** | About | Version, a link to credits, updates and support |
+| **About** | About | Version, credits, updates, support and Restore defaults |
 
 OBS settings stay discoverable while disabled so you can configure them.
 OBS connection, recording and setup are together under **Recording**.
@@ -132,6 +132,27 @@ Installing the AI kit does not enable the API or alter your assistant.
 ![Stream Deck app and Sightline plugin checks](images/settings-component-streamdeck.png)
 
 ## Setup and session checks
+
+For a clean start, use **Settings > About > Restore defaults…**. A confirmation
+explains the reset before anything changes. Sightline restarts with shipped
+preferences and opens Getting started. It clears layouts, shortcuts, slot
+assignments, recent-file history, pairings and remembered window positions;
+integrations start disabled. Open your existing scripts again when ready.
+
+Installed components and their remembered locations stay. Script files,
+recordings, scratch audio and saved service keys stay too; OBS profiles and
+scenes are untouched. Phone and Stream Deck pairing details are renewed, so
+reconnect them after enabling their integrations. The last setup is kept
+locally as `app-state.before-defaults.json`; it may contain service keys, so
+keep it private. This is a support backup, not a shareable settings export.
+
+Cancel leaves the setup unchanged. Save or close the script editor and pause
+prompting first. Reset is blocked during component maintenance or OBS
+recording/setup, including paused recordings or an enabled connection whose
+recording state cannot be confirmed. Pending take data is saved before restart.
+Unsaved Settings drafts are discarded only after confirmation.
+
+![Restore defaults under About, alongside its preservation note](images/settings-defaults.png)
 
 **Help > Getting started…** opens the first-use checklist. Optional tools can
 be skipped; a new profile sees it automatically. **Tools > Session check…**

@@ -179,4 +179,7 @@ shown below; the prompter also keeps a warning visible with a Turn off button.
 
 ## About
 
-![Version, support and updates](images/settings-about.png)
+Restore defaults asks before resetting preferences and restarting onboarding.
+Installed components, scripts, recordings and service keys are retained.
+
+![Restore defaults and its preservation note](images/settings-defaults.png)

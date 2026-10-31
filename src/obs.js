@@ -35,7 +35,7 @@ export function createObs( { onState = () => {}, WebSocketClass = globalThis.Web
 	let recordRevision = 0;
 	let recordTransition = null;
 	const pending = new Map();
-	const snapshot = () => ( { ...state, controls: config.controls, markers: config.markers, setupBusy } );
+	const snapshot = () => ( { ...state, controls: config.controls, markers: config.markers, setupBusy, recordingBusy } );
 	const publish = ( partial ) => {
 		state = { ...state, ...partial, observedAt: new Date().toISOString() };
 		onState( snapshot() );

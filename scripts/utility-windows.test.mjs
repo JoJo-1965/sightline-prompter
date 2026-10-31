@@ -486,6 +486,7 @@ try {
 	await main.evaluate( "(async()=>{const {showVoiceHelp}=await import('./teleprompter.js');await showVoiceHelp();})()" );
 	const voiceHelp = await connect( "panel=voicehelp" );
 	await voiceHelp.until( "!!document.querySelector('#voice-help-list [role=tab]')" );
+	for ( let n = 0; n < 50 && !( await panelOwners() ).every( w => w.owner && w.top ); n++ ) await pause( 100 );
 	assert.ok( ( await panelOwners() ).every( w => w.owner && w.top ), "Settings and both help windows stay above their prompter owner" );
 	assert.equal( await voiceHelp.evaluate( "typeof window.electron" ), "undefined" );
 	const voiceBounds = await voiceHelp.evaluate( "({x:window.screenX,y:window.screenY})" );
@@ -502,7 +503,9 @@ try {
 	await voiceHelp.call( "Page.bringToFront" );
 	const voicePicture = await voiceHelp.call( "Page.captureScreenshot", { format: "png" } );
 	await fs.writeFile( path.join( artifacts, "floating-voice-help.png" ), Buffer.from( voicePicture.data, "base64" ) );
-	await main.evaluate( "window.electron.saveSettings({showHeadGuide:true});window.electron.headGuide('adjust')" );
+	await main.evaluate( "window.electron.onHeadGuideState(s=>globalThis.captureGuideState=s);window.electron.saveSettings({showHeadGuide:true})" );
+	await main.until( "globalThis.captureGuideState?.shown" );
+	await main.evaluate( "window.electron.headGuide('adjust')" );
 	await connect( "controls=1" );
 	for ( const enabled of [ false, true, false ] ) {
 		await settings.evaluate( `(()=>{document.querySelector('[data-settings-group=recording]').click();document.querySelector('[data-tab=recording]').click();const capture=document.getElementById('lp-hide-capture');capture.checked=${ enabled };capture.dispatchEvent(new Event('change',{bubbles:true}));})()` );
@@ -511,7 +514,6 @@ try {
 		for ( const fragment of [ "panel=settings", "panel=help", "panel=voicehelp", "controls=1" ] ) assert.equal( states.find( w => w.url.includes( fragment ) )?.protected, enabled, `${ fragment } follows Hide from capture=${ enabled } live` );
 		assert.equal( states.find( w => w.url.includes( "head-guide.html" ) && !w.url.includes( "controls=1" ) )?.protected, true, "The head guide overlay always remains protected" );
 	}
-	await main.evaluate( "window.electron.onHeadGuideState(s=>globalThis.captureGuideState=s)" );
 	const normalPolicies = await protection();
 	const priorDraft = await settings.evaluate( "document.getElementById('settings-applied').textContent" );
 	await revealDebugControl( "set-capture-override" );

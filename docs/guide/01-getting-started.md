@@ -9,6 +9,11 @@ OBS, controls or your AI. Skip optional parts with **Later**. Reopen it from
 
 ![First-use checklist with optional tools](images/getting-started.png)
 
+To recreate the shipped setup, use **Settings > About > Restore defaults…**.
+After confirmation Sightline restarts into this checklist. Installed components,
+script files, recordings and service keys remain. Preferences, layouts, slots
+and pairings reset; integrations start off. See [Settings](07-settings.md).
+
 **Tools > Session check…** is the shorter pre-recording checklist: script,
 sound, framing, enabled OBS, sync and controls. Its links open the existing
 tools and settings. **Refresh** updates known status; a test recording is

@@ -38,6 +38,7 @@ contextBridge.exposeInMainWorld( "electron", {
 	onMenuReview: callback => on( "menuReview", callback ),
 	onMenuWorkflow: callback => on( "menuWorkflow", callback ),
 	onGettingStartedOffer: callback => on( "gettingStartedOffer", callback ),
+	restoreDefaults: () => ipcRenderer.invoke( "restoreDefaults" ),
 	obsSetup: ( action, value ) => ipcRenderer.invoke( "obsSetup", action, value ),
 	onRemoteCommand: callback => on( "remoteCommand", callback ),
 	sendRendererStatus: status => ipcRenderer.send( "rendererStatus", status ),

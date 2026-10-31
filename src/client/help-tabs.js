@@ -36,6 +36,7 @@ export function helpTabs( settings, notes = false ) {
 	const readingSections = [ reading ];
 	readingSections.push( section( "Prepare a session", [
 		[ "Help > Getting started", "Choose your initial setup or reopen it later; optional tools can be skipped" ],
+		[ "Settings > About > Restore defaults", "Confirms a restart into initial setup. Components, scripts, recordings and service keys stay; preferences and pairings reset" ],
 		[ "Tools > Session check", "Links to script, sound, framing, enabled recording and sync checks; Refresh updates known status" ]
 	] ) );
 	if ( notes ) readingSections.push( get( "Notes" ) );

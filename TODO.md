@@ -4,6 +4,9 @@
 
 - [x] Setup/session workflow (58): named component subtabs, top-level
   Components/Debug, OBS under Recording, first-use checklist and Session check.
+- [x] Restore shipped defaults and restart onboarding, with confirmation,
+  private settings backup and retained components/files/keys. Active recording,
+  editing and maintenance block reset. Native isolated-profile checks pass.
 - [x] OBS setup assistant (59): configured-source choices, folder picker,
   reviewed separate profile/scene plan, idle guards, retained old setups and
   configuration guide. Actual device quality, clean outputs and sync still

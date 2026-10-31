@@ -13,6 +13,13 @@ Components and Debug have top-level groups; each component has a named subtab;
 OBS connection, recording and setup sit together under Recording. The stable
 Settings frame and existing draft/save behaviour remain.
 
+**About > Restore defaults…** adds a confirmed restart into onboarding with
+shipped preferences. Components, script files, recordings and service keys are
+retained; layouts, shortcuts, slots, recent history and pairings reset. All
+integrations start off. The previous app state is backed up locally and take
+data is flushed before restart. Native tests confirm cancellation, reset,
+component/file/key retention and onboarding after reopening an isolated profile.
+
 New users get **Get ready with Sightline**, reopenable from Help. **Tools >
 Session check…** links to script review, sound, framing, enabled OBS, sync and
 controls, with qualified status rather than invented hardware passes.

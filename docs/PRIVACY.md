@@ -118,6 +118,12 @@ Deepgram key and remote-control keys are stored in local application state;
 connection discovery files also contain keys. Protect your computer account
 and backups. Do not share the whole settings folder as a support attachment.
 
+**Restore defaults** retains installed components, script files, recordings
+and saved service keys. It clears preferences and pairings and disables
+integrations. Before restarting into onboarding it keeps the previous state
+locally as `app-state.before-defaults.json`. That backup may contain service
+keys; protect it like the original state file and do not share it with support.
+
 ## Connections you choose
 
 Sightline has no project account system and no built-in usage analytics or

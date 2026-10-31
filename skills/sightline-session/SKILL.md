@@ -29,6 +29,12 @@ screens; Tools > Session check links to script review, sound, framing, enabled
 OBS and sync checks. Components and Debug are top-level Settings groups. These
 statuses cannot certify a captured camera or microphone. Refresh after changes.
 
+About > Restore defaults is a native, confirmed restart into onboarding. It
+retains installed components, script files, recordings and service keys, but
+clears preferences, slots and pairings and disables integrations. It is not an
+API action. Never use it as a routine fix or trigger it without the user's
+explicit reset request; it blocks recording, editing and component maintenance.
+
 The optional native-only OBS setup assistant lives under Recording > OBS setup.
 It requires local OBS, configured sources, idle outputs and an explicitly
 reviewed plan. Do not create profiles through unrelated automation or claim

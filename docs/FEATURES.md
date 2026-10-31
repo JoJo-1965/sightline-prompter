@@ -47,6 +47,13 @@ Session check** before recording; named Components subtabs and top-level Debug.
 OBS connection, recording and setup are together under Recording. Components
 has no numbered overflow pages; the Settings frame remains stable.
 
+**About > Restore defaults** offers a confirmed restart into onboarding with
+shipped preferences. Layouts, shortcuts, slots, recent history and pairings
+reset; integrations start off. Installed components/locations, script files,
+recordings, scratch audio and service keys stay. It saves pending take data,
+keeps a private local settings backup and blocks active recording, editing or
+component maintenance. No OBS profiles or scenes are modified.
+
 The optional [OBS setup assistant](guide/15-obs-setup.md) (59) reuses configured
 camera/mic sources, offers a folder and 1080p/4K canvas, then shows a plan.
 Only Create applies a separate profile and three scenes. It retains previous

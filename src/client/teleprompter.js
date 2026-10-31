@@ -4774,6 +4774,7 @@ function sendStatus() {
 	window.electron.sendRendererStatus( {
 		obs: obsUi.state(),
 		scrolling: isScrolling(),
+		preparing: autoScrollStarting || slating,
 		onAir: onAir(),
 		backing: Math.round( liveBacking() * 100 ),
 		panel: layoutPanel?.classList.contains( "hidden" ) === false ? layoutView : null,
@@ -5108,6 +5109,27 @@ uiElement( "settings-about-guide" )?.addEventListener( "click", () => {
 	window.electron.openGuide();
 } );
 uiElement( "settings-about-support" )?.addEventListener( "click", () => window.open( SUPPORT_URL ) );
+onClick( "settings-restore-defaults", async () => {
+	const button = field( "settings-restore-defaults" );
+	const status = field( "settings-restore-defaults-status" );
+	if ( isScrolling() || autoScrollStarting || slating || isEditMode || isDirty ) {
+		status.textContent = "Pause prompting and save or close the script editor before resetting.";
+		return;
+	}
+	button.disabled = true;
+	status.textContent = "Waiting for your confirmation…";
+	let restarting = false;
+	try {
+		const result = await window.electron.restoreDefaults();
+		restarting = result.restarting === true;
+		status.textContent = result.cancelled ? "Cancelled. Your setup is unchanged." : result.ok ? "Restarting into initial setup…" : result.error;
+	} catch ( error ) {
+		status.textContent = `Restore could not finish: ${ error.message }`;
+	} finally {
+		if ( !restarting ) changingRecordingScript = false;
+		button.disabled = false;
+	}
+} );
 for ( const link of document.querySelectorAll( "a.support-link" ) ) link.href = SUPPORT_URL;
 
 function showSettingsTab( name ) {

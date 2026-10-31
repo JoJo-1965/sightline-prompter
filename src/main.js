@@ -24,6 +24,7 @@ import { settingsValues } from "./settings-values.js";
 import { readScriptSnapshot } from "./script-snapshot.js";
 import { createSpeech } from "./speech.js";
 import { createAgentKit, nodeStatus } from "./components.js";
+import { createDefaultsRestore, shippedState, resetBlocked } from "./restore-defaults.js";
 import { createExternalComponents } from "./external-components.js";
 import { normaliseMappings } from "./client/input-mappings.js";
 import { createGuide } from "./guide.js";
@@ -398,6 +399,8 @@ let utilityWindows = null;
 let obs = null;
 let obsPassword = "";
 let obsCredentials = null;
+let restoringDefaults = false;
+let stateWrites = Promise.resolve();
 let recordedSlate = null;
 let recordedSlateUrl = null;
 function syncObsSettings() {
@@ -416,6 +419,7 @@ function addRecentFile( filePath ) {
 }
 
 const saveState = async ( win ) => {
+	if ( restoringDefaults ) return;
 	// In eye-line mode, maximised or full screen, remember the normal window so it comes back.
 	let bounds;
 	if ( settings.eyeLine && normalBounds ) {
@@ -426,7 +430,7 @@ const saveState = async ( win ) => {
 		bounds = win.getBounds();
 	}
 
-	stateManager.writeAppState( {
+	const snapshot = structuredClone( {
 		width: bounds.width,
 		height: bounds.height,
 		x: bounds.x,
@@ -446,6 +450,8 @@ const saveState = async ( win ) => {
 		slots,
 		activeSlot
 	} );
+	stateWrites = stateWrites.catch( () => {} ).then( () => stateManager.writeAppState( snapshot ) );
+	return stateWrites;
 };
 
 function eyeLineBounds( win ) {
@@ -811,8 +817,8 @@ const createWindow = ( state ) => {
 		}
 		sendSettings();
 		refreshMenus();
-		await saveState( win );
 		onSettingsChanged();
+		await saveState( win );
 	}
 
 	win.on( "close", async ( event ) => {
@@ -1417,6 +1423,7 @@ const createWindow = ( state ) => {
 		clearSlot,
 		windowControl,
 		updateSettings,
+		flushRecordingBeforeScriptChange,
 		sendSettings,
 		sendSlots
 	};
@@ -1451,7 +1458,7 @@ app.whenReady().then( async () => {
 	if ( !firstInstance ) return;
 	const firstLaunch = !existsSync( path.join( app.getPath( "userData" ), "app-state.json" ) );
 	const state = await stateManager.readAppState();
-	state.showGettingStarted = firstLaunch;
+	state.showGettingStarted = firstLaunch || state.showGettingStarted === true;
 	obsCredentials = createObsCredentials( app.getPath( "userData" ), safeStorage );
 	currentFontSize = state.fontSize || defaultConfig.fontSize;
 	currentOpacity = state.opacity ?? defaultConfig.opacity;
@@ -1507,6 +1514,7 @@ app.whenReady().then( async () => {
 		clearSlot,
 		windowControl,
 		updateSettings,
+		flushRecordingBeforeScriptChange,
 		sendSettings,
 		sendSlots
 	} = createWindow( state );
@@ -1869,6 +1877,43 @@ app.whenReady().then( async () => {
 	const kitFolder = path.join( app.getPath( "userData" ), "ai-kit" );
 	const kit = createAgentKit( { source: app.getAppPath(), folder: kitFolder, version: app.getVersion(), trash: target => shell.trashItem( target ) } );
 	const externalComponents = createExternalComponents( { folder: app.getPath( "userData" ) } );
+	let previousResetState = null;
+	const restoreDefaults = createDefaultsRestore( {
+		blocked: async () => {
+			if ( settings.obsEnabled && obs.state().connection === "connected" && !obs.state().setupBusy && !obs.state().recordingBusy ) await obs.command( "test" );
+			return resetBlocked( { renderer: rendererStatus, obs: obs.state(), obsEnabled: settings.obsEnabled, dirty: hasUnsavedChanges, maintaining: speech.status().downloading || kit.busy } );
+		},
+		confirm: async () => ( await dialog.showMessageBox( utilityWindows.dialogParent(), {
+			type: "warning", title: "Restore shipped defaults", message: "Restore defaults and start setup again?",
+			detail: "Sightline will restart with shipped preferences, layouts and shortcuts. Slot assignments, recent-file history and pairings are cleared; integrations start off. Unsaved Settings changes are discarded. Installed components, script files, recordings and saved service keys stay. A local settings backup is kept. OBS profiles and scenes are not changed.",
+			buttons: [ "Cancel", "Restore defaults and restart" ], defaultId: 0, cancelId: 0, noLink: true
+		} ) ).response === 1,
+		flush: flushRecordingBeforeScriptChange,
+		settle: async () => {
+			await saveState( win );
+			restoringDefaults = true;
+			await stateWrites;
+			previousResetState = await fs.readFile( path.join( app.getPath( "userData" ), "app-state.json" ), "utf8" );
+		},
+		replace: async () => {
+			await fs.writeFile( path.join( app.getPath( "userData" ), "app-state.before-defaults.json" ), previousResetState );
+			await stateManager.writeAppState( shippedState( defaultConfig, currentDeepgramApiKey, { remoteToken: newToken(), streamDeckToken: newToken(), phoneKey: newPhoneKey() } ) );
+		},
+		clearUi: () => win.webContents.session.clearStorageData( { storages: [ "localstorage" ] } ),
+		restart: () => {
+			app.relaunch();
+			isClosing = true;
+			// Close the owner first: reusable utility windows intercept direct
+			// app.quit() to hide themselves, which can cancel an application quit.
+			setImmediate( () => win.close() );
+		},
+		rollback: async () => {
+			if ( previousResetState !== null ) await stateManager.writeAppState( JSON.parse( previousResetState ) );
+			restoringDefaults = false;
+			previousResetState = null;
+		}
+	} );
+	ipcMain.handle( "restoreDefaults", event => event.sender === win.webContents ? restoreDefaults() : { ok: false, error: "Use Restore defaults in Sightline Settings." } );
 	ipcMain.handle( "components", async ( event, component, action ) => {
 		if ( event.sender !== win.webContents ) return { error: "Unavailable" };
 		try {

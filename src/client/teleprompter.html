@@ -1205,6 +1205,12 @@
           </p>
         </fieldset>
 
+        <fieldset data-tab="about" id="set-defaults-fieldset">
+          <legend>Start afresh</legend>
+          <button type="button" id="settings-restore-defaults" aria-describedby="settings-restore-defaults-note">Restore defaults…</button>
+          <p id="settings-restore-defaults-note" class="field-hint" data-essential>Restart with shipped preferences and initial setup. Clears layouts, shortcuts, slots and pairings. Keeps installed components, script files, recordings and service keys. Asks before resetting.</p>
+          <p id="settings-restore-defaults-status" class="field-hint" role="status" aria-live="polite"></p>
+        </fieldset>
         <fieldset data-tab="debug" id="set-capture-fieldset">
           <legend>Screen capture</legend>
           <label class="check"><input id="set-capture-override" type="checkbox" aria-describedby="set-capture-override-note" /> Allow all windows to be captured</label>

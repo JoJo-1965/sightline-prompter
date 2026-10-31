@@ -38,6 +38,12 @@ subtabs; each component should keep its status and actions together. OBS
 connection/recording/setup belong under Recording. Confirm the Settings frame
 stays the same size without scrolling and your draft survives navigation.
 
+On a disposable profile, **About > Restore defaults…** should offer Cancel as
+the initial choice. Cancel must preserve the setup. Confirm only when you want
+to clear preferences, layouts, slots and pairings and restart onboarding.
+Installed components, original script files, recordings and service keys must
+remain. Do not run this check on a production setup you want to keep configured.
+
 Reopen **Getting started** from Help, then use **Tools > Session check…**.
 Try its links and Refresh. Disabled OBS should have no session recording row;
 known configuration must not be labelled as a passed physical recording test.

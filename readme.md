@@ -275,6 +275,12 @@ website deployment is part of this candidate.
   checklist; Tools > Session check links to script review, sound, framing,
   enabled OBS and sync checks. Settings now has top-level Components and Debug,
   named component subtabs and OBS under Recording. The fixed frame remains.
+- **Start afresh:** **Settings > About > Restore defaults…** confirms before
+  restarting into onboarding with shipped preferences. Layouts, shortcuts,
+  slots, recent history and pairings reset; integrations start off. Installed
+  components, scripts, recordings and service keys stay. A private local
+  settings backup is kept; recording, editing and component maintenance block
+  reset until safe.
 - **Optional OBS setup:** review configured camera/mic sources, folder and
   1080p/4K canvas before creating a separate profile and three scenes. Existing
   setups remain available; outputs must be stopped. The

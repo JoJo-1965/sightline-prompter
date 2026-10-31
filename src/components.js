@@ -80,5 +80,7 @@ export function createAgentKit( { source, folder, version, trash = target => fs.
 			working = false;
 		}
 	}
-	return { status, change };
+	return { status, change, get busy() {
+		return working;
+	} };
 }
