@@ -22,6 +22,8 @@ function check( file ) {
 	const add = ( level, line, text ) => problems.push( { level, line, text } );
 	let raw = fs.readFileSync( file, "utf8" );
 	if ( raw.startsWith( BOM ) ) raw = raw.slice( 1 );
+	// Production comments are notes, not executable instructions; retain line numbers.
+	raw = raw.replace( /<!--[\s\S]*?-->/g, text => text.replace( /[^\r\n]/g, " " ) );
 	const lines = raw.split( /\r?\n/ );
 	// YAML front matter (between --- lines) holds settings, not directives.
 	let inFront = lines[0]?.trim() === "---";

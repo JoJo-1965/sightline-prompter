@@ -1,5 +1,18 @@
 # Script directives
 
+## Next-preview additions
+
+HTML comments `<!-- ... -->` show production notes while paused and hide them
+during delivery. Their entire contents, including quotes and braces, stay
+outside speech tracking, timing and directive execution. Keep short `[smile]`
+cues inline. No compulsory directives are added.
+
+Optional `{record: on}`, `{record: off}`, `{record: pause}` and `{record: resume}`
+require enabled OBS recording controls. On/resume before the first spoken word
+runs on Play; inline commands run as reading reaches them. Off/pause also hold
+prompting. Loading never triggers recording. Normal stops keep continuous OBS
+recording running unless the user selects linked recording in Settings.
+
 Status: **syntax agreed** (27 October 2026): `[ ]` for the speaker, `{ }` for the app. **Built:** hiding, `{pause}`, `{pause: ns}`, `{marker}`, and section and inline `{wpm}` and `{target}` for steady scrolling. Also built: the pacing light, talking points (`{mode: points}`) and the script checker (`npm run check-script`). Parts of this are built in roadmap
 items 6 (cue pause) and 8 to 10 (pacing).
 

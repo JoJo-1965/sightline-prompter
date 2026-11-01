@@ -1,7 +1,8 @@
 # Settings screenshot gallery
 
-Source preview · 1 November 2026. Appearance images include the next update's
-Theme tab, independent line spacing and roomier rows; other topics show 1.1.0.
+Source preview · 1 November 2026. Updated images include independent spacing,
+visible slate choices, linked recording, destination labels and unified Stream
+Deck setup. These next-preview changes are unpublished.
 The panel stays the same size across topics.
 RC8 gives Settings and Help their own movable windows. The controls shown
 below are retained; drag the native title bar to use another screen.
@@ -148,7 +149,9 @@ The example QR below is for illustration; scan the code in your own Settings.
 
 ### Stream Deck
 
-![Stream Deck connection](images/settings-streamdeck.png)
+Installation, plugin checks and pairing share this single Controls topic.
+
+![Stream Deck setup and connection](images/settings-streamdeck.png)
 
 ### AI and API
 
@@ -167,8 +170,6 @@ numbered component pages.
 ![Node.js runtime check](images/settings-component-node.png)
 
 ![OBS application check](images/settings-component-obs.png)
-
-![Stream Deck application and plugin checks](images/settings-component-streamdeck.png)
 
 ![Unavailable API controls retain draft values until Apply](images/settings-ai-unavailable.png)
 

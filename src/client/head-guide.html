@@ -61,12 +61,14 @@
 <button type="button" data-place="centre">Centre window</button>
 <button type="button" data-place="beside">Beside prompter</button>
 </div>
-</details>
-<p id="pose-value"></p>
 <button type="button" id="save-ideal">Save as ideal</button>
 <button type="button" id="reset-pose" title="Restore the saved ideal shape and position, and unlock the eyes">Back to ideal</button>
 <button type="button" id="ideal-visible">Show ideal</button>
 <p>Solid: Actual · Dashed: saved Ideal. Manual reference; no face tracking.</p>
+</details>
+<p id="pose-value"></p>
+<div class="reference-actions"><button type="button" id="save-reference">Save recording reference</button><button type="button" id="restore-reference" disabled>Restore saved position</button></div>
+<p id="reference-status" role="status">No recording reference saved. Ideal stays unchanged.</p>
 <button type="button" id="adjust-close">Done · hide adjustments</button>
 </div>
 <div id="stage">

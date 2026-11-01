@@ -55,3 +55,7 @@ summary { cursor: pointer; color: #9fdbf4; font-size: 12px; text-wrap: pretty; }
 .placements { margin-top: 9px; }
 #lock-eyes, #save-ideal, #reset-pose, #ideal-visible, #adjust-close { margin-top: 8px; min-height: 28px; }
 summary:focus-visible { outline: 2px solid #fbd86c; outline-offset: 2px; }
+.reference-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.reference-actions button { min-height: 30px; text-wrap: pretty; }
+.controls-only .shape-control { margin-top: 6px; }
+.controls-only .shape-range { margin-top: 1px; }

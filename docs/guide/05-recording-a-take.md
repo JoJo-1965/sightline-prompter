@@ -1,5 +1,19 @@
 # Recording a take
 
+## Preparation in the next preview
+
+**Slate at the start of each take** uses visible Off, Flash and beep, and Flash only
+choices. A local flash alone is a rehearsal cue; use a confirmed recorded
+route or visible claps for production sync.
+
+Sound checks advise rather than force gain changes. Compare voice level with
+room noise: increasing gain can amplify both. **Continue anyway** records your
+acceptance with the measured result. An unavailable microphone remains a
+separate failure; accepting a warning cannot create missing audio.
+
+HTML production comments return while paused and disappear during delivery;
+short `[smile]` cues remain inline. Starting brings the first spoken line into view.
+
 For the development OBS workflow, see [From recording to the editor](12-production-handover.md):
 setup, a short test, retakes, keeper choices and the complete handover.
 

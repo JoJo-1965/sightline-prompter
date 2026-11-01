@@ -105,6 +105,13 @@ try {
 	await main.evaluate( "document.querySelector('#voice-offer button:last-child')?.click();document.getElementById('cb-settings').click()" );
 	const settings = await connect( "panel=settings" );
 	await settings.until( "!!document.getElementById('set-countdown')" );
+	await settings.evaluate( "document.getElementById('settings-topic-recording').click()" );
+	await settings.until( "!!document.querySelector('input[name=slate-choice]')" );
+	await settings.evaluate( "document.querySelector('input[name=slate-choice][value=beep]').click();document.getElementById('settings-apply').click()" );
+	await savedSettings( s => s.slate === "beep" );
+	await settings.evaluate( "document.querySelector('input[name=slate-choice][value=off]').click();document.getElementById('settings-apply').click()" );
+	await savedSettings( s => s.slate === "off" );
+	console.log( "PASS: native visible slate choices select, Apply and persist instead of relying on a popup dropdown." );
 	const revealDebugControl = async ( id ) => {
 		await settings.evaluate( "document.getElementById('settings-topic-debug').click()" );
 		for ( let n = 0; n < 8; n++ ) {
@@ -282,7 +289,9 @@ try {
 	await settings.until( "!document.getElementById('set-remote-copy').disabled" );
 	await settings.evaluate( "document.getElementById('set-remote-components').click()" );
 	await settings.until( "document.getElementById('settings-topic-component-kit').getAttribute('aria-selected')==='true'" );
-	for ( const topic of [ "model", "kit", "node", "obs", "streamdeck" ] ) {
+	assert.equal( await settings.evaluate( "document.getElementById('settings-topic-component-streamdeck')" ), null, "Stream Deck has one home under Controls" );
+	assert.equal( await settings.evaluate( "document.getElementById('component-streamdeck-status').closest('[data-settings-page]').dataset.settingsPage" ), "streamdeck" );
+	for ( const topic of [ "model", "kit", "node", "obs" ] ) {
 		await settings.evaluate( `document.getElementById('settings-topic-component-${ topic }').click()` );
 		await pause( 160 );
 		assert.equal( await settings.evaluate( "document.querySelector('.settings-pagination').getClientRects().length" ), 0, "Components uses named subtabs without numbered overflow pages" );
@@ -559,7 +568,17 @@ try {
 	await main.evaluate( "window.electron.onHeadGuideState(s=>globalThis.captureGuideState=s);window.electron.saveSettings({showHeadGuide:true})" );
 	await main.until( "globalThis.captureGuideState?.shown" );
 	await main.evaluate( "window.electron.headGuide('adjust')" );
-	await connect( "controls=1" );
+	const guideControls = await connect( "controls=1" );
+	await guideControls.until( "typeof document.getElementById('save-reference')?.onclick==='function'" );
+	await guideControls.evaluate( "document.getElementById('save-reference').click()" );
+	await guideControls.until( "!document.getElementById('restore-reference').disabled" );
+	const reference = await savedSettings( s => !!s.headGuideReference );
+	await main.evaluate( "window.electron.saveSettings({headGuideX:9,headGuideY:8})" );
+	await savedSettings( s => s.headGuideX === 9 );
+	await guideControls.evaluate( "document.getElementById('restore-reference').click()" );
+	const restoredReference = await savedSettings( s => s.headGuideX === reference.headGuideReference.pose.x && s.headGuideY === reference.headGuideReference.pose.y );
+	assert.deepEqual( restoredReference.headGuideIdeal, reference.headGuideIdeal, "Recording reference must not overwrite ideal" );
+	console.log( "PASS: saved actual recording reference restores position independently of the ideal template." );
 	for ( const enabled of [ false, true, false ] ) {
 		await settings.evaluate( `(()=>{document.querySelector('[data-settings-group=recording]').click();document.querySelector('[data-tab=recording]').click();const capture=document.getElementById('lp-hide-capture');capture.checked=${ enabled };capture.dispatchEvent(new Event('change',{bubbles:true}));})()` );
 		await pause( 150 );

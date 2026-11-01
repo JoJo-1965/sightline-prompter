@@ -1,5 +1,25 @@
 # Recording with OBS Studio
 
+## Linked recording in the next unpublished preview
+
+Continuous recording is the default: prompting stops and retakes leave OBS
+running. Opt in with **Recording > OBS recording > Follow prompter start,
+pauses and finish** while OBS is stopped. Recording controls must also be enabled.
+Play starts/resumes recording and waits for confirmation; prompting pauses
+request recording pauses. The final stop or script end requests recording finish.
+Unsupported pause formats show an error and leave prompting held. Test your format.
+
+Explicit **Prompter, record on / off / pause / resume** works with permission
+regardless of linked mode. Optional `{record: on}` or `{record: resume}` before
+the first spoken line runs on Play. Inline `{record: pause}` and `{record: off}`
+also hold prompting. Loading a script never executes recording commands;
+commands inside production comments never execute.
+
+The persistent pill shows **OBS OFF** green, **OBS RECORDING** red, **OBS PAUSED**
+orange or **OBS UNKNOWN** grey, including when the toolbar hides. OFF requires
+confirmation; disconnection means UNKNOWN. Disabling OBS hides these features
+and their help. Historical instructions below describe continuous mode.
+
 For an optional separate profile and scene collection, see the
 [OBS setup assistant and configuration guide](15-obs-setup.md). Setup is a
 one-time choice; normal prompting and retakes need no setup commands.

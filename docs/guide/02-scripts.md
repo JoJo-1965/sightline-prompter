@@ -1,5 +1,15 @@
 # Writing scripts
 
+## Production notes in the next preview
+
+Use `<!-- Check framing and remember to press Record. -->` for preparation
+and edit instructions in Markdown/HTML scripts. They show before starting and
+between takes, then hide during delivery. Short cues such as `[smile]` remain
+inline. Neither kind adds spoken words or executes commands. Keep spoken lines
+outside production comments, including anything in quotation marks.
+Optional recording directives are covered in [Recording with OBS](11-obs.md).
+Ordinary scripts and retakes need no new directives.
+
 ## Script health before you read
 
 In the next candidate, **Script health…** on the editor toolbar opens the

@@ -743,14 +743,15 @@
         </fieldset>
         <fieldset data-tab="recording">
           <legend>Slate</legend>
-          <label class="row"
-            >Slate at the start of each take
-            <select id="set-slate">
-              <option value="off">Off</option>
-              <option value="beep">Flash and beep</option>
-              <option value="flash">Flash only</option>
-            </select>
-          </label>
+          <div class="settings-control-row" data-settings-control="set-slate">
+            <span class="settings-option-name" id="slate-choice-label">Slate at the start of each take</span>
+            <input id="set-slate" type="hidden" value="off" aria-label="Slate selection" />
+            <div class="settings-radio-choices" role="radiogroup" aria-labelledby="slate-choice-label">
+              <label><input type="radio" name="slate-choice" value="off" checked /> Off</label>
+              <label><input type="radio" name="slate-choice" value="beep" /> Flash and beep</label>
+              <label><input type="radio" name="slate-choice" value="flash" /> Flash only</label>
+            </div>
+          </div>
           <p class="field-hint">A sync point for the edit. Before each take the screen flashes white and shows the section and take number for a second; with the beep, your microphone records it too. The take log notes when each slate went off, so every take can be lined up with the recording. Start reading after the beep.</p>
         </fieldset>
         <fieldset data-tab="audio">
@@ -768,7 +769,7 @@
               <option value="off">Off</option>
             </select>
           </label>
-          <p class="field-hint">Measures your microphone through each take: its loudness, its loudest peak and the room's background noise. A take that clipped, was very quiet or had a noisy room gets a warning as it ends, in the take summary and in the take log and edit pack. It's the mic as Sightline hears it, before OBS or Riverside process it, so treat it as a guide.</p>
+          <p class="field-hint">Measures your microphone through each take: its loudness, its loudest peak and the room's background noise. A take that clipped, was very quiet or had a noisy room gets a warning as it ends, in the take summary and in the take log and edit pack. It's the mic as Sightline hears it, before your recording software processes it, so treat it as a guide.</p>
         </fieldset>
 
         <fieldset data-tab="voice">
@@ -1086,7 +1087,6 @@
           <p class="settings-about-actions">
             <button type="button" id="set-stream-deck-check">Check compatibility</button>
             <button type="button" id="set-remote-streamdeck">Stream Deck in the guide</button>
-            <button type="button" id="set-stream-deck-components">Components…</button>
           </p>
           <p id="set-stream-deck-installation" class="field-hint" data-essential role="status" aria-live="polite">Checking for Stream Deck…</p>
           <p id="set-stream-deck-status" class="field-hint" data-essential role="status" aria-live="polite">Checking the saved connection…</p>
@@ -1131,7 +1131,9 @@
         <fieldset data-tab="obs-recording">
           <legend>OBS recording and sync</legend>
           <p id="set-obs-recording-availability" class="field-hint" data-essential role="status" aria-live="polite">Connect OBS in Recording > OBS connection first. These permissions apply when OBS integration is enabled.</p>
-          <label class="check"><input id="set-obs-controls" type="checkbox" /> Allow Sightline to start and stop OBS recordings</label>
+          <label class="check"><input id="set-obs-controls" type="checkbox" /> Allow Sightline to start, stop, pause and resume OBS recording</label>
+          <label class="check"><input id="set-obs-follow-prompter" type="checkbox" /> Link recording to prompting</label>
+          <p class="field-hint" data-essential>Off: keep recording through prompting pauses and retakes. On: start with a take, pause/resume with prompting, and finish at script end. Choose before recording. OBS must support pausing in its selected recording format.</p>
           <p class="field-hint">Leave this off for status only. Normal Play, Pause, Again and On air do not start or stop OBS. Record take waits for OBS to confirm recording before starting the prompter.</p>
           <label class="check"><input id="set-obs-markers" type="checkbox" /> Send section starts and named markers as OBS chapters</label>
           <p class="field-hint">Needs recording controls and a supported OBS version and recording format, such as Hybrid MP4. Chapter failures leave prompting and recording running.</p>
@@ -1186,14 +1188,14 @@
           </div>
           <p class="field-hint">Uses OBS's own installer. Locate accepts a portable or custom installation. OBS on another computer needs its address under Recording > OBS connection.</p>
         </fieldset>
-        <fieldset data-tab="component-streamdeck">
+        <fieldset data-tab="streamdeck">
           <legend>Stream Deck (optional)</legend>
           <div>
           <p id="component-streamdeck-status" class="field-hint" data-essential role="status" aria-live="polite">Checking…</p>
           <div class="button-row"><a href="https://www.elgato.com/ww/en/s/downloads" target="_blank">Install / reinstall Stream Deck</a><button type="button" id="component-streamdeck-locate">Locate…</button><button type="button" id="component-streamdeck-check">Check again</button></div>
           <p id="component-streamdeck-plugin" class="field-hint" data-essential>Plugin connection not confirmed.</p>
           </div>
-          <p class="field-hint">The Elgato app and Sightline plugin are separate installs. Use Controls > Stream Deck for the setup guide and live version check. The plugin remains privately distributed during testing.</p>
+          <p class="field-hint">The Elgato app and Sightline plugin are separate installs. Installation and connection controls are together here under Controls > Stream Deck.</p>
         </fieldset>
         <fieldset data-tab="about" class="settings-about">
           <legend>Sightline Prompter</legend>

@@ -1,5 +1,11 @@
 # Sightline Prompter: what it adds to Electron Teleprompter
 
+**Next unpublished preview:** optional linked recording and explicit recorder
+voice/script commands; a persistent state pill; production comments that hide
+during delivery; advisory sound-check acceptance; separate saved Actual framing
+references; one Stream Deck settings home and preview pairing; destination
+labels and visible slate choices. Awaiting Joanne's recording acceptance test.
+
 **Sightline 1.1.0, released 31 October 2026:** includes OBS integration (52),
 the manual head guide (55), production exports, voice tuning, component checks,
 onboarding, script/rehearsal review and the Settings/help updates below.

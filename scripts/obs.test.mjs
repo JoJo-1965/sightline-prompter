@@ -71,6 +71,8 @@ class FakeSocket extends EventTarget {
 			if ( !server.stopping ) server.active = false;
 			responseData = { outputPath: "/recordings/test.mp4" };
 		}
+		if ( result && d.requestType === "PauseRecord" ) server.paused = true;
+		if ( result && d.requestType === "ResumeRecord" ) server.paused = false;
 		if ( d.requestType === "GetRecordStatus" ) {
 			if ( server.starting > 0 && --server.starting === 0 ) server.active = true;
 			if ( server.stopping > 0 && --server.stopping === 0 ) server.active = false;
@@ -109,6 +111,19 @@ try {
 	assert.equal( obs.state().recording, "recording" );
 	await obs.command( "start" );
 	assert.equal( server.requests.filter( x => x === "StartRecord" ).length, 1, "a retake uses the current recording" );
+	await obs.command( "pause" );
+	assert.equal( obs.state().recording, "paused" );
+	assert.equal( obs.state().recordingId, id );
+	const pauseRequests = server.requests.filter( x => x === "PauseRecord" ).length;
+	await obs.command( "pause" );
+	assert.equal( server.requests.filter( x => x === "PauseRecord" ).length, pauseRequests, "Pausing twice is idempotent" );
+	await obs.command( "resume" );
+	assert.equal( obs.state().recording, "recording" );
+	assert.equal( obs.state().recordingId, id );
+	server.reject = "PauseRecord";
+	await assert.rejects( obs.command( "pause" ), /rejected/ );
+	assert.equal( obs.state().recording, "recording", "An unsupported pause must not pretend OBS paused" );
+	server.reject = null;
 	await obs.command( "marker", "Setup" );
 	assert.ok( server.requests.includes( "CreateRecordChapter" ) );
 	server.reject = "CreateRecordChapter";

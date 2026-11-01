@@ -1,5 +1,14 @@
 # Sightline Prompter roadmap
 
+## Recording feedback batch — unpublished preview
+
+Built for validation: production comments, first-line positioning, advisory
+sound-check acceptance, Actual framing references, clearer navigation/slate
+choices, one Stream Deck setup and preview pairing. Optional linked recording
+and explicit voice/script recording commands keep continuous as the default.
+Native fixtures cover UI and recorder transitions. Joanne's camera, microphone,
+pause-compatible recording format and final handover remain the live acceptance test.
+
 What's planned and in which order. Joanne approved every item on 27 October
 2026, apart from the one on hold. The [change log in the README](readme.md#change-log)
 records what has shipped.

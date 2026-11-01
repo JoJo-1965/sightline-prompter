@@ -1,11 +1,21 @@
 # Remotes and second screens
 
-In 1.1.0, **Settings > Components** lists Stream Deck
-as optional software, with its installer, **Locate** and **Check again**.
+In the next preview, **Settings > Controls > Stream Deck** is the single home
+for optional installation, **Locate**, **Check again**, pairing and compatibility.
+The published 1.1.0 layout also lists installation under Components.
 It checks the app and Sightline plugin files separately. **Controls > Stream
 Deck > Check compatibility** confirms the running plugin; unconfirmed versions
 are never described as up to date. A missing local app greys out its enable
 box, while the setup guide and installation controls remain available.
+
+**Save recording reference** stores Actual position, eye lock and overlay bounds
+without changing Ideal. **Restore saved position** recalls the actual outline;
+the take log and edit pack retain that reference. It restores the shape, not
+the window. Adjustments initially open toward the bottom, clear of the prompter
+toolbar; drag their title bar to keep them elsewhere.
+
+The local preview launcher can pair Stream Deck with its own profile. Close
+the preview normally to restore installed-app discovery. Run one prompter at a time.
 
 ## Head-position guide (development)
 

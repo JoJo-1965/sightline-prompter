@@ -243,6 +243,24 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ### Unreleased
 
+- **Recording workflow preview:** optional linked OBS recording starts with Play,
+  pauses/resumes with prompting and finishes at the script end. Continuous is
+  the default. Explicit **record on / off / pause / resume** voice commands and
+  optional `{record: …}` directives require OBS permission. A persistent pill
+  shows OFF, RECORDING, PAUSED or UNKNOWN.
+- **Production preparation:** `<!-- production comments -->` show while paused
+  and hide during delivery; short `[smile]` cues remain inline. Both stay outside
+  speech tracking. Sound checks offer **Continue anyway**, logging measurements
+  and acceptance without forcing microphone gain.
+- **Recording framing reference:** save and restore Actual position separately
+  from Ideal; the edit pack keeps both. Guide adjustments initially open below
+  the prompter toolbar and retain their movable position.
+- **Navigation and pairing:** Previous/Next name destinations and disable at
+  the bounds. Slate choices use visible radio controls. Stream Deck setup and
+  pairing share **Controls > Stream Deck**. The preview launcher temporarily
+  pairs the plugin, restoring installed-app discovery on normal exit. Moving
+  the pointer away from the toolbar hides it promptly.
+
 - **Windows app name:** Task Manager shows **Sightline Prompter**, replacing
   the long product description in the executable metadata. This takes effect
   when you run the updated build.

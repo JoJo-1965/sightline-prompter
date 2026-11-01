@@ -38,8 +38,21 @@ export function createSettingsPages( modal ) {
 	function choose( n, focus = false ) {
 		index = Math.max( 0, Math.min( pages.length - 1, n ) );
 		paint( pages[index] ?? [] );
-		previous.disabled = index === 0;
-		next.disabled = index === pages.length - 1;
+		previous.disabled = !pages.length || index <= 0;
+		next.disabled = !pages.length || index >= pages.length - 1;
+		const destination = ( page ) => {
+			const item = page?.find( el => el.matches( "h4, h5, [data-settings-control]" ) || el.querySelector( "[data-settings-control]" ) ) ?? page?.[0];
+			const label = item?.querySelector( ".settings-option-name label" ) ?? item?.querySelector( "legend" );
+			return ( label?.textContent ?? ( item?.matches( "h4, h5" ) ? item.textContent : item?.closest( "fieldset" )?.querySelector( "legend" )?.textContent ) ?? "Settings" ).replace( /\s+/g, " " ).trim();
+		};
+		const previousLabel = previous.disabled ? "← Previous" : `← ${ destination( pages[index - 1] ) }`;
+		const nextLabel = next.disabled ? "Next →" : `${ destination( pages[index + 1] ) } →`;
+		if ( previous.textContent !== previousLabel ) previous.textContent = previousLabel;
+		if ( next.textContent !== nextLabel ) next.textContent = nextLabel;
+		previous.setAttribute( "aria-label", previous.disabled ? "No previous page" : `Previous: ${ destination( pages[index - 1] ) }` );
+		next.setAttribute( "aria-label", next.disabled ? "No next page" : `Next: ${ destination( pages[index + 1] ) }` );
+		previous.title = previous.getAttribute( "aria-label" );
+		next.title = next.getAttribute( "aria-label" );
 		const first = pages[index]?.[0];
 		let heading = pages[index]?.find( item => item.matches( "h4, h5" ) ) ?? first;
 		while ( heading && !heading.matches( "h4, h5, legend" ) ) heading = heading.previousElementSibling;
@@ -70,6 +83,7 @@ export function createSettingsPages( modal ) {
 		if ( fits() ) {
 			pages = [];
 			index = 0;
+			previous.disabled = next.disabled = true;
 			return;
 		}
 		const items = [];
@@ -107,8 +121,12 @@ export function createSettingsPages( modal ) {
 		queued = true;
 		modal.ownerDocument.defaultView.requestAnimationFrame( layout );
 	}
-	previous.addEventListener( "click", () => choose( index - 1, true ) );
-	next.addEventListener( "click", () => choose( index + 1, true ) );
+	previous.addEventListener( "click", () => {
+		if ( !previous.disabled ) choose( index - 1, true );
+	} );
+	next.addEventListener( "click", () => {
+		if ( !next.disabled ) choose( index + 1, true );
+	} );
 	window.addEventListener( "resize", schedule );
 	modal.addEventListener( "utility-resize", schedule );
 	modal.addEventListener( "input", schedule );

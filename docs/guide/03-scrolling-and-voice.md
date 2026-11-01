@@ -1,5 +1,13 @@
 # Scrolling and voice
 
+## Recording commands in the next preview
+
+With OBS integration and recording controls enabled, say the wake word, then
+**record on**, **record off**, **record pause** or **record resume**. Off and
+pause also hold prompting. These commands disappear from help when OBS controls
+are disabled. Normal **go**, **pause** and **again** remain available; their
+recording behaviour follows the optional [linked mode](11-obs.md).
+
 Choose **Steady / Voice** on the top bar, or use **Settings > Prompting >
 Scrolling**. **Tools > Voice and microphone** opens the quick voice panel.
 

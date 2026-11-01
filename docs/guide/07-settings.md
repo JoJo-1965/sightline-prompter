@@ -29,7 +29,9 @@ offline in the app.
 Settings keeps the same width and height across every tab and page. It only
 reduces the available content space when you resize the Settings window.
 There is no scrolling. Longer topics use **Previous / Next**, with the current
-section and page number shown between them. Smaller windows use more pages;
+section and page number shown between them. In the next preview, enabled
+buttons name destinations and unavailable directions are disabled. Hover or
+focus for the full destination label. Smaller windows use more pages;
 your draft stays intact as you move between them. Word lists use pages too.
 
 The small raised **?** pill sits beside the option it explains, with a larger
@@ -103,7 +105,7 @@ pages. **Debug** also has its own top-level group.
 - **OBS Studio:** checks the usual installation folders and running portable
   copies. Install / reinstall opens OBS's own download page. **Locate** remembers
   a custom installation; **Check again** detects later removal too.
-- **Stream Deck:** checks the Elgato application and looks for the Sightline
+- **Stream Deck (Controls in the next preview):** checks the Elgato application and looks for the Sightline
   plugin manifest. Its installer is separate from the plugin. **Controls >
   Stream Deck > Check compatibility** confirms the live plugin version and
   protocol; finding installed files alone does not confirm a working connection.
@@ -133,7 +135,7 @@ Installing the AI kit does not enable the API or alter your assistant.
 
 ![Node.js availability and installer](images/settings-component-node.png)
 
-![Stream Deck app and Sightline plugin checks](images/settings-component-streamdeck.png)
+Stream Deck installation and plugin checks now share **Controls > Stream Deck**.
 
 ## Setup and session checks
 
