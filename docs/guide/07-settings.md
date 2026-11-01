@@ -1,7 +1,8 @@
 # Settings
 
-This source guide includes the next update's Theme tab and independent line
-spacing. For the published 1.1.0 layout, use the guide bundled with that app.
+This source guide includes the next update's Theme tab, independent spacing,
+unified Stream Deck setup and optional linked recording. For the published
+1.1.0 layout, use the guide bundled with that app. Preview images are labelled.
 
 Open **⚙ Settings** on the top bar or press **Ctrl+,** (**Cmd+,** on Mac).
 In RC8, Settings opens in its own upright window. Drag the native title bar

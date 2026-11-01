@@ -17,7 +17,7 @@ You are writing a script that a person will read aloud from **Sightline
 Prompter**, a teleprompter. Write the spoken words in plain, natural prose and
 use the mark-up below. Follow every rule exactly.
 
-## 1. Three kinds of text
+## 1. Text for delivery, preparation and control
 
 **Next-preview option:** use `<!-- production notes -->` for setup and editing
 instructions. They show paused and hide during delivery; nothing inside is

@@ -32,8 +32,8 @@ See the
 **Components** includes offline model and AI kit
 status, Install/Reinstall/Remove, and a separate Node.js availability check.
 The kit runs without cloning the repository or installing npm dependencies.
-Components also detects optional OBS/Stream Deck applications and the Sightline
-plugin manifest, with official installer links and a portable/custom **Locate**
+Components detects optional dependencies. The preview moves Stream Deck app and
+plugin checks into its Controls topic, with installer links and a portable/custom **Locate**
 option. Missing dependencies have grey controls and visible explanations;
 preferences are retained. Local kit-command readiness stays separate from
 general API access. Remote OBS needs no local installation, and live plugin
@@ -43,7 +43,7 @@ inputs from clickers/pedals, with the pad's action choices, duplicate-input
 replacement, immediate saving, three-entry pages and reset. Held/reconnected
 buttons do not repeat; typing, editing and Settings suspend actions. Plain
 keys and Shift combinations can be assigned; system shortcuts stay reserved.
-These additions are source changes for review, absent from installed RC14.
+These controls are included in the published 1.1.0 baseline.
 
 The setup/session workflow (58) separates occasional configuration from live
 recording: first-use **Getting started**, reopenable from Help; **Tools >
@@ -69,13 +69,13 @@ an illustrated session checklist covering setup, framing, a short test,
 retakes, keeper choices and collecting the master files alongside each edit
 pack. It is available offline through **Help > User Guide**.
 
-The private Stream Deck companion test build **0.1.9** includes OBS Record take
+The published Stream Deck companion **0.2.0** includes OBS Record take
 and Finish recording keys, confirmed-state feedback and optional recording
 layouts for each model. The OBS development app enforces saved permissions
-and waits for actual recording state changes. These additions are unreleased;
-all five production requirements remain the publication gate.
+and waits for actual recording state changes. The preview adds optional linked
+recording; hardware checks remain specific to each user's recording route.
 
-The development app also has an optional recorded OBS slate: Prepare adds a
+Sightline also has an optional recorded OBS slate: Prepare adds a
 dedicated flash/tone source to the current scene, with acknowledgements and
 estimated file-clock references in the edit pack. A cached transparent page
 keeps the source blank after Sightline closes. Module changes flush the old
@@ -98,7 +98,7 @@ preview behind the guide (0–80%, initially 12%); **Outline** controls line
 opacity separately, and the dashed Ideal reference is brighter. Shape and
 background settings persist between scripts and in the edit-pack snapshots.
 
-**In development:** a floating head-position guide for camera framing, with
+**Included in 1.1.0:** a floating head-position guide for camera framing, with
 an eye line, head/shoulder outline, adjustable size/opacity/colour, saved
 placement, click-through lock, global Ctrl+Shift+H hotkey and Stream Deck
 OFF/ON/LOCK action. Separate from OBS scenes; capture protection stays on.

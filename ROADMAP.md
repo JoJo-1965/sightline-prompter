@@ -2,6 +2,12 @@
 
 ## Recording feedback batch — unpublished preview
 
+Documentation follow-through covers the shared guide/wiki content, native help
+and Settings explanations, refreshed screenshots, reusable recording demos,
+the promo's Markdown/HTML/PDF reader and staged JL page/FAQ/carousel copy.
+The separate GitHub wiki is disabled; the shared guide remains canonical.
+The website branch is prepared for review, with no live deployment.
+
 Built for validation: production comments, first-line positioning, advisory
 sound-check acceptance, Actual framing references, clearer navigation/slate
 choices, one Stream Deck setup and preview pairing. Optional linked recording

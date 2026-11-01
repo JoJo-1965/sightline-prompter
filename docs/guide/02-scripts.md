@@ -5,8 +5,9 @@
 Use `<!-- Check framing and remember to press Record. -->` for preparation
 and edit instructions in Markdown/HTML scripts. They show before starting and
 between takes, then hide during delivery. Short cues such as `[smile]` remain
-inline. Neither kind adds spoken words or executes commands. Keep spoken lines
-outside production comments, including anything in quotation marks.
+inline. Unquoted cues stay outside speech tracking; quoted words in a `[Say:
+"..."]` direction are spoken. Production comments are never spoken or executable.
+Keep all spoken lines outside production comments, including quotations.
 Optional recording directives are covered in [Recording with OBS](11-obs.md).
 Ordinary scripts and retakes need no new directives.
 

@@ -206,6 +206,8 @@ every recognition error. This option saves no audio.
 | **close** (or cancel, never mind) | Hides that list |
 | **record take** (or start recording) | Optional OBS integration: confirm recording, then start prompting. Requires enabled OBS recording controls |
 | **finish recording** (or stop recording) | Optional OBS integration: stop prompting and finish the OBS recording |
+| **record on / record off** | Next preview, with OBS recording permission: explicitly start or finish recording; off holds prompting |
+| **record pause / record resume** | Next preview: pause or resume the existing recording; pause holds prompting. Check your format supports pausing |
 
 In RC10, **“Prompter, what can I say?”** opens a separate upright window.
 Drag its title bar onto another screen; its position and size are remembered.

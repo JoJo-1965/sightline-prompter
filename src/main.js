@@ -357,8 +357,9 @@ const stateManager = stateFactory( defaultConfig );
 export const SAMPLE_SCRIPTS = [
 	{ file: "welcome.md", label: "Welcome tour" },
 	{ file: "voice-and-stops.md", label: "Voice control, stops and countdowns" },
-	{ file: "acceptance-main.md", label: "RC acceptance: module A" },
-	{ file: "acceptance-module-change.md", label: "RC acceptance: module B" },
+	{ file: "recording-preview.md", label: "Recording preview: preparation, modes and handover" },
+	{ file: "acceptance-main.md", label: "Recording walkthrough: module A" },
+	{ file: "acceptance-module-change.md", label: "Recording walkthrough: module B" },
 	{ file: "batch-module.md", label: "Batch recording, section by section" },
 	{ file: "single-take.md", label: "Single continuous take" },
 	{ file: "notes.md", label: "Notes, a page at a time" },

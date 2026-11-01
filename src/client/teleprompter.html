@@ -752,7 +752,7 @@
               <label><input type="radio" name="slate-choice" value="flash" /> Flash only</label>
             </div>
           </div>
-          <p class="field-hint">A sync point for the edit. Before each take the screen flashes white and shows the section and take number for a second; with the beep, your microphone records it too. The take log notes when each slate went off, so every take can be lined up with the recording. Start reading after the beep.</p>
+            <p class="field-hint">A rehearsal cue before each take: a white flash with the section and take number, plus an optional beep. The take log notes its time. For recording sync, use a confirmed recorded-slate route or visible claps; a flash seen only on the prompter does not prove picture-and-sound sync. Start reading after the cue.</p>
         </fieldset>
         <fieldset data-tab="audio">
           <legend>Audio references and levels</legend>
@@ -1132,9 +1132,9 @@
           <legend>OBS recording and sync</legend>
           <p id="set-obs-recording-availability" class="field-hint" data-essential role="status" aria-live="polite">Connect OBS in Recording > OBS connection first. These permissions apply when OBS integration is enabled.</p>
           <label class="check"><input id="set-obs-controls" type="checkbox" /> Allow Sightline to start, stop, pause and resume OBS recording</label>
+            <p class="field-hint">Leave recording controls off for status only. With permission, Record take waits for confirmed recording before prompting. Explicit record on, off, pause and resume voice commands and script directives use the same permission.</p>
           <label class="check"><input id="set-obs-follow-prompter" type="checkbox" /> Link recording to prompting</label>
-          <p class="field-hint" data-essential>Off: keep recording through prompting pauses and retakes. On: start with a take, pause/resume with prompting, and finish at script end. Choose before recording. OBS must support pausing in its selected recording format.</p>
-          <p class="field-hint">Leave this off for status only. Normal Play, Pause, Again and On air do not start or stop OBS. Record take waits for OBS to confirm recording before starting the prompter.</p>
+            <p class="field-hint" data-essential>Off: start and finish recording explicitly; prompting pauses and retakes leave it running. On: Play starts/resumes recording, prompting pauses pause it, and script end finishes it. Choose before recording and test pause support in your recording format.</p>
           <label class="check"><input id="set-obs-markers" type="checkbox" /> Send section starts and named markers as OBS chapters</label>
           <p class="field-hint">Needs recording controls and a supported OBS version and recording format, such as Hybrid MP4. Chapter failures leave prompting and recording running.</p>
             <label class="check" title="Choose Flash or Flash and beep in Settings > Recording > Takes, then prepare this source"><input id="set-obs-recorded-slate" type="checkbox" /> Include the slate in the OBS recording</label>

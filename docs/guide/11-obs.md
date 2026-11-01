@@ -3,8 +3,8 @@
 ## Linked recording in the next unpublished preview
 
 Continuous recording is the default: prompting stops and retakes leave OBS
-running. Opt in with **Recording > OBS recording > Follow prompter start,
-pauses and finish** while OBS is stopped. Recording controls must also be enabled.
+running. Opt in with **Recording > OBS recording > Link recording to prompting**
+while OBS is stopped. Recording controls must also be enabled.
 Play starts/resumes recording and waits for confirmation; prompting pauses
 request recording pauses. The final stop or script end requests recording finish.
 Unsupported pause formats show an error and leave prompting held. Test your format.
@@ -18,27 +18,26 @@ commands inside production comments never execute.
 The persistent pill shows **OBS OFF** green, **OBS RECORDING** red, **OBS PAUSED**
 orange or **OBS UNKNOWN** grey, including when the toolbar hides. OFF requires
 confirmation; disconnection means UNKNOWN. Disabling OBS hides these features
-and their help. Historical instructions below describe continuous mode.
+and their help. The baseline instructions below describe continuous mode.
 
 For an optional separate profile and scene collection, see the
 [OBS setup assistant and configuration guide](15-obs-setup.md). Setup is a
 one-time choice; normal prompting and retakes need no setup commands.
 
-In the next candidate, OBS topics are under **Settings > Recording**. On **OBS recording**,
+OBS topics are under **Settings > Recording**. On **OBS recording**,
 **Prepare recorded slate** explains any unmet prerequisite, then displays
 progress, readiness or errors beside the button. Apply permission changes first.
 
-**1.1.0 release candidate: built, not publicly released.** These instructions
-describe roadmap item 52 in the local Windows test build. Use the private
-Stream Deck **0.1.9** companion for the recording keys. The published 1.0.6
-app does not contain this OBS integration. Follow the
-[acceptance test](14-acceptance-test.md) before approving the recording workflow.
+**Published baseline: Sightline 1.1.0 + Stream Deck 0.2.0.** Linked recording,
+explicit record on/off/pause/resume commands and the new pill belong to the
+next unpublished preview. Check your build before testing them. Use the
+[acceptance walkthrough](14-acceptance-test.md) for your recording route.
 
 Sightline connects to OBS Studio's built-in WebSocket interface. OBS handles
 the audio and video recording; Sightline handles the script, takes and edit
 information. You do not need a separate OBS plugin, Stream Deck or MCP server.
 
-The next candidate checks for a local OBS installation before enabling local
+Sightline checks for a local OBS installation before enabling local
 setup. If it is missing, **Components** provides OBS's installer link,
 **Locate** for portable/custom copies, and **Check again**. Entering another
 computer's OBS address keeps remote setup available. Installed software is
@@ -76,7 +75,7 @@ the default is this computer. There is no automatic network discovery.
 
 ## Watch status, or enable recording controls
 
-Leave **Allow Sightline to start and stop OBS recordings** off for status
+Leave recording controls off for status
 only. Sightline shows whether OBS is recording, paused or stopped, with
 the same information in its control window. A lost connection shows
 **recording status unknown**; it does not claim the recording stopped.
@@ -92,9 +91,9 @@ beside the script, in the control window and on the phone remote:
   An OBS recording paused externally must be resumed in OBS first.
 - **Finish recording** stops prompting and asks OBS to finish its recording.
   If confirmation fails, inspect OBS before assuming recording has stopped.
-- **Play, Pause, Again and On air** keep their existing behaviour. They
-  do not start, pause or stop OBS. You can pause or repeat sections while
-  OBS makes one continuous recording.
+- **Continuous mode:** Play, Pause, Again and On air keep their existing
+  behaviour. Prompting pauses and retakes leave OBS recording. The preview's
+  optional **Link recording to prompting** setting changes this coupling.
 
 With voice commands listening, say **"Prompter, record take"** or
 **"Prompter, finish recording"**, using your selected wake word. In a
@@ -105,7 +104,7 @@ They do not enable the integration themselves.
 The local API accepts `obs-record` and `obs-finish` as command actions,
 subject to the same saved permissions. Request acceptance means the action
 was dispatched, not that OBS has confirmed it: inspect `status.obs`.
-The private companion Stream Deck test build **0.1.9** includes **Record take
+The companion Stream Deck **0.2.0** includes **Record take
 (OBS)** and **Finish recording (OBS)** keys. They use these same permissions
 and show stopped, recording, paused, confirming or unknown. Unsupported,
 disabled and status-only app states block recording requests. These keys
@@ -113,8 +112,9 @@ are separate from ordinary Play/Pause and On air.
 
 Each model has a separate sample profile ending in **OBS**, selected
 explicitly with **Use the OBS recording profile** on a key's settings page.
-Standard layouts keep their assignments. This is development code, not a
-public Marketplace release. See [Stream Deck setup](06-remotes-and-screens.md#stream-deck).
+Standard layouts keep their assignments. The plugin download is attached to
+the app release; its source stays private and Marketplace listing is pending.
+See [Stream Deck setup](06-remotes-and-screens.md#stream-deck).
 
 ## Put the slate into the recording
 

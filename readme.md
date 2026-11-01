@@ -71,9 +71,10 @@ to check your own recording setup.
 
 The whole workflow is in the guide: [Working with AI](docs/guide/09-working-with-ai.md).
 
-**Included in the unpublished 1.1.0 test build:** optional OBS recording controls,
+**Included in published 1.1.0:** optional OBS recording controls,
 a recorded slate, head-position guide, script/rehearsal review and shared pad/phone
-controls. Physical acceptance remains. Signed installers are on the [roadmap](ROADMAP.md).
+controls. Check your capture and sync route before production. Signed installers
+are on the [roadmap](ROADMAP.md).
 
 [One-page overview](docs/marketing/ONE-PAGER.md) · [Audiences, messages and supported claims](docs/marketing/POSITIONING.md)
 
@@ -243,6 +244,9 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ### Unreleased
 
+- **Documentation and demos:** refreshed recording help, Settings explanations,
+  screenshot gallery, acceptance samples and AI session guidance. Published
+  1.1.0/0.2.0 instructions are distinguished from the next recording preview.
 - **Recording workflow preview:** optional linked OBS recording starts with Play,
   pauses/resumes with prompting and finishes at the script end. Continuous is
   the default. Explicit **record on / off / pause / resume** voice commands and

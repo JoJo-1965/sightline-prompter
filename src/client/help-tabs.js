@@ -63,7 +63,7 @@ export function helpTabs( settings, notes = false ) {
 		if ( settings.obsControls ) rows.splice( 2, 0,
 			[ "Record take", "Confirm OBS recording before starting the prompter's normal slate/countdown" ],
 			[ "Finish recording", "Pause prompting, stop OBS and retain its confirmed file path" ],
-			[ "Linked recording", "Recording > OBS recording: opt in to start with Play, pause/resume with prompting, and stop at the end. Continuous is the default" ],
+			[ "Link recording to prompting", "Recording > OBS recording: opt in to start with Play, pause/resume with prompting, and stop at the end. Continuous is the default" ],
 			[ "Record on / off / pause / resume", "Explicit voice commands or optional {record: …} directives. Requires recording permission; directives never run on load" ],
 			[ "Recording pill", "OFF green · RECORDING red · PAUSED orange · UNKNOWN grey. Remains visible when the toolbar hides" ] );
 		if ( settings.obsControls && settings.obsMarkers ) rows.push( [ "Chapters", "Optional section/marker chapters, where the OBS format supports them" ] );

@@ -8,6 +8,11 @@
 
 ## Writing scripts for Sightline
 
+The published pair is Sightline 1.1.0 and Stream Deck 0.2.0. Source documents
+marked next preview include optional linked recording, explicit record commands,
+production comments and saved Actual framing references. These are unpublished.
+The user guide is the maintained documentation source; no separate wiki is enabled.
+
 - [AI script brief](docs/AI-SCRIPT-BRIEF.md): instructions to paste into any script-writing AI
 - [Script directives spec](docs/SCRIPT-DIRECTIVES.md): `{curly}` directives for the app, `[square]` notes for the speaker
 - [Machine-readable directive definition](docs/script-directives.json)
