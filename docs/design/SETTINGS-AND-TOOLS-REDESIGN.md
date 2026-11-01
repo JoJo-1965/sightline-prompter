@@ -21,7 +21,7 @@ starts with those jobs, then gives occasional configuration a permanent home.
 | --- | --- | --- |
 | Appearance controls are hard to find | Comment was renamed and moved; related typography still spans Text, Spacing and Directions. | One Text and directions workspace, with four explicit text targets. Search accepts comment, cue, instruction and production note. |
 | Production-note controls disappear | In the running Preview 03 Settings document, the production-note fieldset existed but its size/colour/spacing inputs were absent. | Give Settings stable ownership of its controls. Tools shares their values and actions rather than moving the same DOM nodes between panels. Reproduce the handoff sequence before claiming a fix. |
-| Theme buttons appear inactive | Reported in the same preview; the picker was missing. Isolated tests had passed and did not reproduce this actual-use sequence. | The swatch always shows the effective colour. Theme visibly selects theme inheritance, updates the swatch and resets only the selected target. |
+| Theme buttons appear inactive | The app preview lost its picker; the mock also labelled a colour reset simply Theme, making it look like a theme chooser. | Use theme explicitly restores the selected text colour. Choose theme opens Theme and background, where the selected palette visibly changes the script preview. |
 | Note formatting is incomplete | Independent font choice and an italic option were not implemented. | All four text targets use the same complete typography component, including font, size, colour, bold, italic and line spacing. |
 | Controls move onto other pages | Pagination measures whatever fits at the current window height. | Fixed named sections with explicit membership. Resizing never reallocates a control to another section. |
 | Navigation text wraps or spills | Conflicting wrapping rules and long generated destination labels. | Remove generated page navigation. Choose a named section directly. Keep section names short and show the current location. |
@@ -45,7 +45,7 @@ Section selectors instead of squeezing or clipping the navigation.
 | Prepare to record | Reading; Directions; Layout; Framing; Sound; Recorder | A route into the actual controls, with current state and a return to the checklist. No second copy of settings. |
 | Reading | Mode and pace | Steady/Voice/Notes, steady WPM, responsiveness link, start countdown and script pacing. |
 | Reading | Text and directions | Spoken script, headings, inline directions and production notes. Complete typography controls for each target. |
-| Reading | Background | Off-air/on-air backing, text opacity and brightness. Theme choice is here, with a link from typography. |
+| Reading | Theme and background | Theme palette, off-air/on-air backing, text opacity and brightness. Choose theme links here from typography. |
 | Reading | Layout | Alignment, margins, reading-line position and text-area preview. Line spacing lives with typography. |
 | Reading | Reading aids | Sentence highlight, focus band/strength, reading marker, progress/time and text edge. |
 | Reading | Screens and mirroring | Display selection, fullscreen, always on top, horizontal/vertical mirror, eye-line strip and click-through. |
@@ -81,14 +81,14 @@ discoverability. Tools is the quick operating surface, not another settings map.
 | --- | --- |
 | Slider and number | Same value, same unit, same bounds and step; arrows and keyboard work identically. Values outside range show an inline explanation. |
 | Size | Explicitly labelled relative size. Script is the base; other targets state their relationship to it. Dimming never silently changes font size. |
-| Colour | Effective swatch, colour picker and Theme button on every text target. A selected Theme button means inheritance; a custom colour clears that state. |
+| Colour | Effective swatch, colour picker and Use theme button on every text target. A selected button means inheritance; a custom colour clears that state. Choose theme opens the palette selector. |
 | Font | Same selector on every target. Follow script is an explicit option for headings/directions/notes. A missing font is identified and a fallback is shown. |
 | Text style | Matching Bold and Italic toggle buttons, with visible selected state, accessible names and keyboard operation. |
 | Line spacing | A percentage of the selected text target's font size everywhere. Paragraph spacing, if later added, must be a different control. |
 | Visibility | Explicit choices with a local preview. Inline cue visibility is separate from the automatic paused/delivering behaviour of production notes. |
 | Switch | Stable On/Off state, clear label and optional contextual help. A missing dependency shows a reason and a setup link. |
 | Action | A verb that says what will happen. Connect, Test, Install and Start recording are actions, not preference switches. |
-| Reset | Reset this section affects only that section. Theme affects only colour. Restore defaults is a separately confirmed whole-app action. |
+| Reset | Reset this section affects only that section. Use theme resets only the selected text colour. Changing the palette preserves custom colours. Restore defaults is a separately confirmed whole-app action. |
 | Help | The same small ? pill beside the label; hover, focus and click/touch reveal the same explanation. |
 
 ## Typography completeness

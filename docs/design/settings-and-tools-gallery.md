@@ -9,7 +9,7 @@ recorder or external service.
 
 ## Production notes
 
-One complete formatting component: Font, Size, Colour with Theme reset,
+One complete formatting component: Font, Size, Colour with Use theme reset,
 Bold, Italic and Line spacing. The selected target is always named. The preview
 can switch between paused and reading states.
 
@@ -21,6 +21,14 @@ The same controls, in the same order. Visibility affects inline cues; it does
 not change the automatic behaviour of production notes.
 
 ![Inline directions use the same formatting controls](images/typography-inline-directions.png)
+
+## Theme and background
+
+Choose theme opens the palette selector from text formatting. The four
+palettes change the script preview; custom text colours are preserved.
+Use theme removes a custom colour for the selected text type only.
+
+![Theme selection updates the script preview](images/theme-and-background.png)
 
 ## Prepare to record
 
@@ -49,6 +57,8 @@ internal settings scrolling.
 
 The prototype was checked at 1280 × 820, 1024 × 600, 680 × 600 and 576 × 539.
 All 33 sections and four formatting targets fit the content area. Tools stayed
-inside the viewport in all three groups. Font, italic, swatch/Theme state,
+inside the viewport in all three groups. Font, italic, swatch/Use theme state,
 paired size inputs, note hiding, search and pending-change handling were
-checked. These checks validate the mock, not the still-unfinished application.
+checked. All four theme palettes, per-target colour resets and Apply/Cancel
+were checked, including opening the downloaded HTML file directly. These
+checks validate the mock, not the still-unfinished application.
