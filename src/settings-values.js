@@ -6,6 +6,10 @@ import { normaliseMappings } from "./client/input-mappings.js";
 export function settingsValues( values, defaults, protectedKeys = [] ) {
 	if ( !values || typeof values !== "object" || Array.isArray( values ) ) throw Object.assign( new Error( "Settings must be an object" ), { status: 400 } );
 	const known = pickKnown( values, defaults );
+	for ( const [ key, min, max ] of [ [ "productionNoteScale", 0.4, 2 ], [ "productionNoteLineHeight", 1, 2.5 ] ] ) {
+		if ( Object.hasOwn( known, key ) && ( known[key] < min || known[key] > max ) ) throw Object.assign( new Error( `${ key } must be between ${ min } and ${ max }` ), { status: 400 } );
+	}
+	if ( Object.hasOwn( known, "productionNoteColour" ) && known.productionNoteColour !== "" && !/^#[\da-f]{6}$/i.test( known.productionNoteColour ) ) throw Object.assign( new Error( "productionNoteColour must be a six-digit hex colour or empty for Theme" ), { status: 400 } );
 	if ( Object.hasOwn( defaults, "inputMappings" ) && Object.hasOwn( values, "inputMappings" ) ) {
 		try {
 			known.inputMappings = values.inputMappings === null ? null : normaliseMappings( values.inputMappings );

@@ -123,12 +123,13 @@ Reference: [Layout and display](guide/04-layout-and-display.md) and [Settings](g
 | Capability | Availability | Options and behaviour | Dependencies and limits |
 | --- | --- | --- | --- |
 | Theme settings | Included | Dedicated Theme subtab; Standard, Yellow on dark, High contrast and Soft cream. | The dedicated subtab is a preview addition. |
-| Custom colours | Included | Text, background, heading and comment colour controls. | Legibility still depends on the content behind a translucent window. |
+| Colours and themes | Included | Preset script/heading themes and a custom square-bracket direction colour. | This baseline does not offer arbitrary body, heading or background colour pickers. |
 | Text and heading fonts | Included | Standard, Atkinson Hyperlegible, OpenDyslexic and Verdana; separate heading choice or follow text. | Font preference is personal and is not an accessibility certification. |
 | Script text size | Included | Toolbar and settings adjustment, with remote and voice size actions. | Available reading area depends on window dimensions and margins. |
 | Heading size | Included | Heading scale independent of the body text. | Long headings can require rewording or a smaller scale. |
-| Comment appearance | Included | Independent comment colour and size; font follows headings. | Short inline directions and long notes serve different purposes. |
-| Independent line spacing | Included | Separate script, heading and comment line spacing; preview addition. | Adjust each against the actual reading window and text size. |
+| Inline direction appearance | Included | Independent square-bracket direction colour and size; font follows headings. | These controls apply to inline directions, not long HTML production notes. |
+| Production note appearance | Limited | Preview 02 uses a fixed smaller style for long production notes. | Separate note controls and complete font/italic choices are under review; they are not supported features of this baseline. |
+| Independent line spacing | Included | Separate script, heading and inline-direction line spacing; preview addition. | Production-note line spacing is fixed in this baseline. |
 | Alignment and margins | Included | Left or centred text; side, top and bottom margin controls. | Extreme settings can reduce the usable reading area. |
 | Background and text visibility | Included | Background opacity, separate on-air backing and text brightness. | Overlay appearance does not change the underlying video content. |
 | Text edge | Optional | None, outline or shadow to separate words from a busy background. | Preview against the intended slides, call or camera picture. |

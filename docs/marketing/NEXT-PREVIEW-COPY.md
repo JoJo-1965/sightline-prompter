@@ -12,6 +12,11 @@ reference, balance voice level with room noise and choose whether the recorder
 continues through retakes or follows the prompter. Explicit recording voice
 commands and optional script directives use the same saved permissions.
 
+**Directions appearance follow-up:** Appearance > Directions gives short inline
+cues and long production notes their own size, colour and line spacing. They
+share Heading font, with separate Theme colour resets. Production notes still
+hide during delivery; quoted spoken cues retain the script's appearance.
+
 **Carousel inserts:**
 
 1. Prepare — visible notes and a saved Actual reference, separate from Ideal.

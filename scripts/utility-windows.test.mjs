@@ -24,7 +24,7 @@ const apiListener = net.createServer();
 await new Promise( resolve => apiListener.listen( 0, "127.0.0.1", resolve ) );
 const apiPort = apiListener.address().port;
 await new Promise( resolve => apiListener.close( resolve ) );
-await fs.writeFile( file, `# Framing check\n\n## Welcome [point]\n\n[smile] These are spoken words. [Say: "Welcome back"]\n\n[${ "Pause and check your posture before reading the next part of this demonstration. ".repeat( 8 ) }]\n\n${ "These words help check a floating panel while prompting continues. ".repeat( 150 ) }` );
+await fs.writeFile( file, `# Framing check\n\n## Welcome [point] <!-- Header preparation only -->\n\n[smile] These are spoken words. [Say: "Welcome back"]\n\n[${ "Pause and check your posture before reading the next part of this demonstration. ".repeat( 8 ) }]\n\n<!-- ${ "Preparation notes are silent, including quoted words like \"unspoken\". ".repeat( 8 ) } -->\n\n${ "These words help check a floating panel while prompting continues. ".repeat( 150 ) }` );
 await fs.writeFile( path.join( profile, "app-state.json" ), JSON.stringify( { width: 1100, height: 900, fontSize: 2, opacity: 1, recentFiles: [ file ], settings: { lineHeight: 1.6, voiceCommands: "off", scrollMode: "steady", scratchAudio: false, takeLoudness: "off", countdown: 0, slate: "off", debugMode: false, checkUpdates: false, obsEnabled: false, phoneRemote: true, phonePort, remoteControl: true, remotePort: apiPort, hideFromCapture: false } } ) );
 const env = { ...process.env };
 delete env.ELECTRON_RUN_AS_NODE;
@@ -128,7 +128,10 @@ try {
 	assert.match( await settings.evaluate( "document.getElementById('set-trace-commands-note').textContent" ), /nearby conversation/ );
 	assert.equal( await main.evaluate( "document.getElementById('settings-modal')===null" ), true, "Settings is in a different native window" );
 	assert.equal( await settings.evaluate( "typeof window.electron" ), "undefined", "Utility host has no privileged bridge" );
-	await settings.evaluate( "document.getElementById('settings-topic-reading').click()" );
+	await settings.evaluate( "document.getElementById('settings-topic-directions').click()" );
+	assert.equal( await settings.evaluate( "document.getElementById('lp-direction-scale').closest('fieldset').id" ), "set-directions-host" );
+	assert.equal( await settings.evaluate( "document.getElementById('lp-production-scale').closest('fieldset').id" ), "set-production-notes-host" );
+	assert.equal( await settings.evaluate( "document.getElementById('set-directions').closest('[data-settings-page]').dataset.settingsPage" ), "directions" );
 	const commentStyle = () => main.evaluate( "(()=>{const style=s=>{const c=getComputedStyle(document.querySelector(s));return {size:parseFloat(c.fontSize),colour:c.color,font:c.fontFamily,display:c.display};};return {comment:style('#md p .dir-text'),headingComment:style('#md h2 .dir-text'),heading:style('#md h2'),spoken:style('#md .say')};})()" );
 	const originalStyle = await commentStyle();
 	await settings.evaluate( "(()=>{const c=document.getElementById('lp-direction-scale');c.focus();c.value=1.25;c.dispatchEvent(new Event('input',{bubbles:true}));c.dispatchEvent(new Event('change',{bubbles:true}));})()" );
@@ -149,6 +152,50 @@ try {
 	assert.equal( styled.comment.font, styled.heading.font, "Comments follow Heading font" );
 	assert.notEqual( styled.comment.font, styled.spoken.font );
 	assert.equal( styled.comment.colour, "rgb(255, 213, 74)", "Chosen colour also applies in high contrast" );
+	const noteStyle = () => main.evaluate( "(()=>{const style=s=>{const c=getComputedStyle(document.querySelector(s));return {size:parseFloat(c.fontSize),colour:c.color,font:c.fontFamily,line:parseFloat(c.lineHeight)/parseFloat(c.fontSize),opacity:c.opacity,display:c.display};};return {body:style('#md > .production-note'),heading:style('#md h2 .production-note')};})()" );
+	let notes = await noteStyle();
+	assert.equal( notes.body.size, notes.heading.size, "Production note size is independent of a heading container" );
+	assert.equal( notes.body.font, styled.heading.font, "Both kinds of silent directions follow Heading font" );
+	const originalNote = notes.body;
+	const setLive = async ( id, value ) => {
+		await settings.evaluate( "document.getElementById('settings-topic-directions').click()" );
+		for ( let n = 0; n < 8; n++ ) {
+			await settings.evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
+			if ( await settings.evaluate( "document.querySelector('.settings-pagination button:first-child').disabled" ) ) break;
+			await settings.evaluate( "document.querySelector('.settings-pagination button:first-child').click()" );
+		}
+		for ( let n = 0; n < 8; n++ ) {
+			await settings.evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
+			if ( await settings.evaluate( `document.getElementById('${ id }').getClientRects().length>0` ) ) break;
+			await settings.evaluate( "document.querySelector('.settings-pagination button:last-child').click()" );
+		}
+		assert.equal( await settings.evaluate( `document.getElementById('${ id }').getClientRects().length>0` ), true, `${ id } is reachable without scrolling` );
+		await settings.evaluate( `(()=>{const c=document.getElementById('${ id }');c.focus();c.value=${ JSON.stringify( value ) };c.dispatchEvent(new Event('input',{bubbles:true}));c.dispatchEvent(new Event('change',{bubbles:true}));})()` );
+	};
+	await setLive( "lp-production-scale", 1.5 );
+	await setLive( "lp-production-line-height", 2.2 );
+	await setLive( "lp-production-colour", "#aaddff" );
+	await main.until( "document.body.style.getPropertyValue('--production-note-colour')==='#aaddff' && document.body.style.getPropertyValue('--production-note-line-height')==='2.2'" );
+	notes = await noteStyle();
+	assert.ok( Math.abs( notes.body.size - originalNote.size * 1.5 ) < 0.01 );
+	assert.ok( Math.abs( notes.body.line - 2.2 ) < 0.01 );
+	assert.equal( notes.body.colour, "rgb(170, 221, 255)" );
+	assert.equal( notes.body.opacity, "1", "High contrast does not dim the chosen note colour" );
+	assert.deepEqual( await commentStyle(), styled, "Production note controls do not restyle inline or spoken text" );
+	await savedSettings( s => s.productionNoteScale === 1.5 && s.productionNoteLineHeight === 2.2 && s.productionNoteColour === "#aaddff" );
+	await setLive( "set-directions", "hide" );
+	await main.until( "document.body.classList.contains('directions-hide')" );
+	assert.equal( ( await noteStyle() ).body.display, "block", "Hiding inline directions does not hide preparation notes" );
+	await settings.evaluate( "document.getElementById('lp-production-theme').click()" );
+	await main.until( "!document.body.style.getPropertyValue('--production-note-colour')" );
+	assert.equal( await settings.evaluate( "document.getElementById('lp-production-theme').getAttribute('aria-pressed')" ), "true" );
+	assert.equal( ( await commentStyle() ).comment.colour, "rgb(255, 213, 74)", "Production Theme reset leaves the inline colour alone" );
+	await main.evaluate( "(async()=>{const {setProductionNotesActive}=await import('./production-notes.js');setProductionNotesActive(document.getElementById('md'),true);})()" );
+	assert.equal( ( await noteStyle() ).body.display, "none", "Production notes hide during delivery whatever their appearance" );
+	await main.evaluate( "(async()=>{const {setProductionNotesActive}=await import('./production-notes.js');setProductionNotesActive(document.getElementById('md'),false);})()" );
+	assert.equal( ( await noteStyle() ).body.display, "block" );
+	await setLive( "set-directions", "dim" );
+	console.log( "PASS: separate inline/production controls, live visibility, independent size/colour/spacing, font inheritance, high contrast, note hiding and persisted preferences." );
 	await settings.evaluate( "document.getElementById('lp-direction-theme').click()" );
 	await main.until( "!document.body.style.getPropertyValue('--direction-colour')" );
 	assert.equal( ( await commentStyle() ).comment.colour, "rgb(200, 200, 200)", "Theme restores the accessible high-contrast colour" );
@@ -159,6 +206,7 @@ try {
 	const words = await main.evaluate( "(async()=>{const {buildWordIndex}=await import('./word-index.js');return buildWordIndex(document.getElementById('md')).words;})()" );
 	assert.equal( words.includes( "smile" ) || words.includes( "point" ) || words.includes( "say" ), false );
 	assert.ok( words.includes( "welcome" ) && words.includes( "back" ) );
+	assert.equal( words.includes( "preparation" ) || words.includes( "unspoken" ), false, "Production notes, including quoted contents, stay out of speech tracking" );
 	await main.until( "document.body.style.getPropertyValue('--direction-scale')==='1.25'" );
 	const savedAppearance = await savedSettings( value => value.directionScale === 1.25 && value.directionColour === "" );
 	assert.equal( savedAppearance.directionScale, 1.25 );
@@ -169,7 +217,7 @@ try {
 	const spacingStyle = () => main.evaluate( "(()=>{const ratio=s=>{const c=getComputedStyle(document.querySelector(s));return +(parseFloat(c.lineHeight)/parseFloat(c.fontSize)).toFixed(3);};return {script:ratio('#md p:not(.direction-only)'),heading:ratio('#md h1'),comment:ratio('#md .direction-only .dir-text'),quoted:ratio('#md .say'),commentHeight:document.querySelector('#md .direction-only').getBoundingClientRect().height};})()" );
 	assert.deepEqual( ( ( { script, heading, comment, quoted } ) => ( { script, heading, comment, quoted } ) )( await spacingStyle() ), { script: 1.6, heading: 1.6, comment: 1.6, quoted: 1.6 }, "Legacy spacing is retained before any independent adjustment" );
 	const setSpacing = async ( id, value ) => {
-		await settings.evaluate( "document.getElementById('settings-topic-layout').click()" );
+		await settings.evaluate( `document.getElementById('settings-topic-${ id.startsWith( "lp-direction-" ) ? "directions" : "layout" }').click()` );
 		for ( let n = 0; n < 8; n++ ) {
 			await settings.evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
 			if ( await settings.evaluate( `document.getElementById('${ id }').getClientRects().length>0` ) ) break;
@@ -206,7 +254,7 @@ try {
 	assert.equal( spaced.script, 2.1 );
 	assert.equal( spaced.quoted, 2.1 );
 	await savedSettings( s => s.lineHeight === 2.1 && s.headingLineHeight === 1.1 && s.directionLineHeight === 1 );
-	for ( const [ topic, name ] of [ [ "layout", "settings-layout" ], [ "theme", "settings-theme" ], [ "reading", "settings-reading" ] ] ) {
+	for ( const [ topic, name ] of [ [ "layout", "settings-layout" ], [ "theme", "settings-theme" ], [ "reading", "settings-reading" ], [ "directions", "settings-directions" ] ] ) {
 		await settings.evaluate( `document.getElementById('settings-topic-${ topic }').click();document.getElementById('settings-topic-${ topic }').focus()` );
 		await settings.evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
 		if ( topic === "theme" ) {
@@ -214,9 +262,20 @@ try {
 			assert.equal( await settings.evaluate( "document.querySelectorAll('[data-settings-page=background] #lp-theme').length" ), 0 );
 			await settings.evaluate( "const c=document.getElementById('lp-theme');c.value='cream';c.dispatchEvent(new Event('change',{bubbles:true}))" );
 			await main.until( "document.body.classList.contains('theme-cream')" );
+			await settings.evaluate( "document.getElementById('lp-theme').focus()" );
+			await settings.call( "Input.dispatchKeyEvent", { type: "keyDown", key: "ArrowUp", code: "ArrowUp" } );
+			await settings.call( "Input.dispatchKeyEvent", { type: "keyUp", key: "ArrowUp", code: "ArrowUp" } );
+			await main.until( "document.body.classList.contains('theme-contrast')" );
+			assert.notEqual( await settings.evaluate( "document.getElementById('settings-applied').textContent" ), "Unsaved changes", "A trusted live Theme change does not create a pending draft" );
 		}
 		const shot = await settings.call( "Page.captureScreenshot", { format: "png" } );
 		await fs.writeFile( path.join( artifacts, `${ name }.png` ), Buffer.from( shot.data, "base64" ) );
+		if ( topic === "directions" ) {
+			await settings.evaluate( "document.querySelector('.settings-pagination button:last-child').click()" );
+			await settings.evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
+			const nextShot = await settings.call( "Page.captureScreenshot", { format: "png" } );
+			await fs.writeFile( path.join( artifacts, "settings-production-notes.png" ), Buffer.from( nextShot.data, "base64" ) );
+		}
 	}
 	console.log( "PASS: legacy spacing migration, independent script/heading/comment line boxes, quoted speech, saved values and dedicated Theme topic." );
 	await settings.evaluate( "document.querySelector('[data-settings-group=controls]').click();document.querySelector('[data-tab=phone]').click();document.getElementById('set-phone-qr').removeAttribute('src')" );
@@ -492,6 +551,10 @@ try {
 	await settings.until( "document.getElementById('settings-applied').textContent==='Saved'" );
 	console.log( "PASS: native Settings window, trusted typing, draft retention, native Close guard and Apply." );
 	const size = await settings.evaluate( "(()=>{const r=document.querySelector('.settings-content').getBoundingClientRect();return {width:r.width,height:r.height};})()" );
+	const checkPagination = async () => {
+		const result = await settings.evaluate( "(()=>{const nav=document.querySelector('.settings-pagination');if(!nav.getClientRects().length)return [];const visible=[...nav.children].map(n=>n.getBoundingClientRect());const errors=[];if(visible.some((r,i)=>i&&r.left<visible[i-1].right-1))errors.push('footer columns overlap');for(const label of nav.querySelectorAll('.settings-page-label'))if(getComputedStyle(label).whiteSpace!=='nowrap'||getComputedStyle(label).textWrapMode!=='nowrap')errors.push('destination wraps');for(const arrow of nav.querySelectorAll('.settings-page-arrow')){const a=arrow.getBoundingClientRect(),b=arrow.closest('button').getBoundingClientRect();if(a.left<b.left||a.right>b.right||a.top<b.top||a.bottom>b.bottom)errors.push('arrow spills');}const count=nav.querySelector('.settings-page-count').getBoundingClientRect(),status=nav.querySelector('[role=status]').getBoundingClientRect();if(count.left<status.left||count.right>status.right)errors.push('page count spills');return errors;})()" );
+		assert.deepEqual( result, [], "Destination labels, arrows and page count stay inside their footer columns" );
+	};
 	for ( const group of await settings.evaluate( "[...document.querySelectorAll('[data-settings-group]')].map(b=>b.dataset.settingsGroup)" ) ) {
 		await settings.evaluate( `document.querySelector('[data-settings-group=${ group }]').click()` );
 		for ( const tab of await settings.evaluate( "[...document.querySelectorAll('.settings-subtabs [data-tab]')].filter(b=>!b.hidden).map(b=>b.dataset.tab)" ) ) {
@@ -515,10 +578,15 @@ try {
 	await settings.evaluate( "document.querySelector('[data-settings-group=prompting]').click();document.querySelector('[data-tab=scrolling]').click();document.querySelector('[data-tab=scrolling]').focus()" );
 	const picture = await settings.call( "Page.captureScreenshot", { format: "png" } );
 	await fs.writeFile( path.join( artifacts, "floating-settings.png" ), Buffer.from( picture.data, "base64" ) );
-	for ( const topic of [ "scrolling", "script", "commands", "reading", "background", "aids", "layout", "display", "recording", "audio", "pad", "streamdeck", "remotes", "obs", "obs-recording", "obs-setup", "about", "debug" ] ) {
+	for ( const topic of [ "scrolling", "script", "commands", "theme", "reading", "directions", "background", "aids", "layout", "display", "recording", "audio", "pad", "streamdeck", "remotes", "obs", "obs-recording", "obs-setup", "about", "debug" ] ) {
 		await settings.evaluate( `document.getElementById('settings-topic-${ topic }').click();document.getElementById('settings-topic-${ topic }').focus()` );
 		await settings.evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
+		for ( let n = 0; n < 8; n++ ) {
+			if ( await settings.evaluate( "document.querySelector('.settings-pagination button:first-child').disabled" ) ) break;
+			await settings.evaluate( "document.querySelector('.settings-pagination button:first-child').click()" );
+		}
 		for ( let page = 1; page < 8; page++ ) {
+			await checkPagination();
 			const shot = await settings.call( "Page.captureScreenshot", { format: "png" } );
 			await fs.writeFile( path.join( artifacts, `settings-${ topic }${ page === 1 ? "" : `-page-${ page }` }.png` ), Buffer.from( shot.data, "base64" ) );
 			if ( !await settings.evaluate( "document.querySelector('.settings-pagination').getClientRects().length && !document.querySelector('.settings-pagination button:last-child').disabled" ) ) break;
@@ -532,6 +600,8 @@ try {
 		await settings.evaluate( `document.querySelector('[data-settings-group=${ group }]').click()` );
 		for ( const tab of await settings.evaluate( "[...document.querySelectorAll('.settings-subtabs [data-tab]')].filter(b=>!b.hidden).map(b=>b.dataset.tab)" ) ) {
 			await settings.evaluate( `document.querySelector('.settings-subtabs [data-tab=${ tab }]').click()` );
+			await settings.evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
+			await checkPagination();
 			await settings.evaluate( "new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))" );
 			await settings.until( "document.querySelector('.settings-content').scrollHeight<=document.querySelector('.settings-content').clientHeight+1" );
 			assert.equal( await settings.evaluate( "document.querySelector('.settings-content').scrollHeight<=document.querySelector('.settings-content').clientHeight+1" ), true, `No scrolling in smaller ${ tab }` );
@@ -847,6 +917,8 @@ try {
 		await fresh.until( "!!document.getElementById('capture-override-note') && !!document.getElementById('cb-settings')" );
 		await fresh.evaluate( "window.electron.onCaptureOverride(v=>globalThis.freshCaptureState=v);window.electron.getCaptureOverride()" );
 		await fresh.until( "globalThis.freshCaptureState===false" );
+		await fresh.until( "document.body.style.getPropertyValue('--production-note-scale')==='1.5' && document.body.style.getPropertyValue('--production-note-line-height')==='2.2'" );
+		assert.equal( await fresh.evaluate( "document.body.style.getPropertyValue('--production-note-colour')" ), "", "Production Theme reset persists through restart" );
 		assert.equal( await fresh.evaluate( "document.getElementById('capture-override-note').classList.contains('hidden')" ), true, "Capture override resets after a full restart" );
 		assert.equal( JSON.parse( await fs.readFile( path.join( profile, "app-state.json" ), "utf8" ) ).settings.captureOverride, undefined );
 		await fresh.evaluate( "setTimeout(()=>window.electron.windowControl('close'),50);true" );

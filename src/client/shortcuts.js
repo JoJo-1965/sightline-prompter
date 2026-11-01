@@ -31,7 +31,8 @@ export const SHORTCUTS = [
 			[ [ "Ctrl+Shift+0" ], "Reset the backing" ],
 			[ [ "Ctrl+M" ], "Mirror: off → horizontal → vertical → both" ],
 			[ [ "Toolbar mirror icons" ], "Toggle left/right and top/bottom independently; lit means on" ],
-			[ [ "Ctrl+Shift+K" ], "Layout: margins, separate script/heading/comment spacing, alignment" ],
+			[ [ "Ctrl+Shift+K" ], "Layout: margins, line spacing and alignment" ],
+			[ [ "Appearance > Directions" ], "Separate inline direction and production note size, colour and line spacing" ],
 			[ [ "Settings > Appearance > Theme" ], "Choose script colours; Text has fonts and Background has transparency" ]
 		]
 	},
@@ -64,7 +65,8 @@ export const SHORTCUTS = [
 	{
 		section: "Script mark-up",
 		keys: [
-			[ [ "[ ]" ], "A note to you, the speaker: shown dimmed. \"Quoted words\" inside stay bright" ],
+			[ [ "[ ]" ], "Inline delivery directions: normal, dimmed or hidden; quoted words remain spoken" ],
+			[ [ "<!-- … -->" ], "Long production notes: shown while paused, hidden during delivery; everything inside stays silent" ],
 			[ [ "{ }" ], "An instruction to the app: hidden while you read" ],
 			[ [ "{pause}" ], "Stop scrolling here until you press Space or the clicker" ],
 			[ [ "{pause: 3s}" ], "Stop for 3 seconds, then carry on (a mark in voice mode)" ],

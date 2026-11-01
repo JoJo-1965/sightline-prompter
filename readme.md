@@ -250,6 +250,20 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ### Unreleased
 
+**Review status:** Preview 03 has reported missing-control and navigation
+problems. See the [known issues](docs/PREVIEW-03-KNOWN-ISSUES.md) and the
+[Settings/Tools design review](docs/design/SETTINGS-AND-TOOLS-REDESIGN.md).
+The mock's independent font and italic controls are proposals, not app features.
+
+- **Directions and preparation notes:** **Appearance > Directions** gives
+  `[inline directions]` and `<!-- production notes -->` separate size, colour
+  and line-spacing controls. Both follow Heading font. Inline visibility saves
+  immediately; production notes still hide during delivery. Theme changes no
+  longer create an unnecessary pending-settings prompt. Note size is independent
+  of a heading container, and High contrast keeps note colours clear.
+- **Settings navigation labels:** Previous/Next keep destination names on one
+  line, with arrows and page count protected from overflow. Long names shorten
+  with an ellipsis; hover or keyboard/screen-reader help retains the full name.
 - **Documentation and demos:** refreshed recording help, Settings explanations,
   screenshot gallery, acceptance samples and AI session guidance. Published
   1.1.0/0.2.0 instructions are distinguished from the next recording preview.
@@ -275,7 +289,8 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
   the long product description in the executable metadata. This takes effect
   when you run the updated build.
 - **Independent line spacing:** **Settings > Appearance > Spacing** has separate
-  controls for script, headings and square-bracket comments. Existing profiles
+  controls for script and headings; inline directions and production notes
+  have their own controls under **Appearance > Directions**. Existing profiles
   retain their previous spacing until you adjust it. Quoted spoken directions
   keep script spacing.
 - **Theme and clearer Settings:** **Appearance > Theme** has its own named tab.

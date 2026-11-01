@@ -154,8 +154,11 @@ const defaultSettings = {
 	headingLineHeight: 1.3,
 	directionLineHeight: 1.3,
 	headingScale: 1, // section headings, as a share of their usual size next to the text
-	directionScale: 1, // delivery comments, independently of headings
+	directionScale: 1, // inline directions, independently of headings and production notes
 	directionColour: "", // empty follows the theme and direction visibility choice
+	productionNoteScale: 1, // preparation notes, relative to their usual smaller size
+	productionNoteLineHeight: 1.4,
+	productionNoteColour: "", // empty follows the script theme
 	textOpacity: 1, // script text only; the controls stay solid
 	backingOnAir: 0.07, // backing while on air: nearly see-through (Backing is the level off air)
 	textBrightness: 1, // dims the script without making it see-through

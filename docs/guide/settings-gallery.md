@@ -65,6 +65,16 @@ Jump to [Prompting](settings-gallery.md#prompting), [Appearance](settings-galler
 
 ![Text and background visibility](images/settings-background.png)
 
+### Directions
+
+The current unpublished follow-up separates inline cues from long production
+notes. Each group has its own size, colour and line spacing. Both follow
+Heading font; production notes still hide during delivery.
+
+![Inline directions and their visibility controls](images/settings-directions.png)
+
+![Production notes with independent appearance controls](images/settings-directions-page-2.png)
+
 ### Reading aids
 
 ![Reading aids](images/settings-aids.png)

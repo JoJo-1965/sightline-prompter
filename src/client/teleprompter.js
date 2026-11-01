@@ -2653,7 +2653,7 @@ function numberValue( id, min, max, fallback ) {
 // Reading and Recording tabs apply as you go, so they don't count.
 let settingsDirty = false;
 let afterSettingsClose = null;
-const LIVE_TABS = "#set-layout-host, #set-reading-host, #set-background-host, #set-aids-host, #set-display-host, #set-recording-host, #set-script-host, #set-pad-fieldset, #set-capture-fieldset, #set-mapping-fieldset";
+const LIVE_TABS = "#set-layout-host, #set-theme-host, #set-reading-host, #set-directions-host, #set-production-notes-host, #set-background-host, #set-aids-host, #set-display-host, #set-recording-host, #set-script-host, #set-pad-fieldset, #set-capture-fieldset, #set-mapping-fieldset";
 
 field( "set-capture-override" )?.addEventListener( "change", event => window.electron.setCaptureOverride( event.target.checked ) );
 field( "capture-override-off" )?.addEventListener( "click", () => window.electron.setCaptureOverride( false ) );
@@ -3243,6 +3243,9 @@ const LAYOUT_DEFAULTS = {
 	headingScale: 1,
 	directionScale: 1,
 	directionColour: "",
+	productionNoteScale: 1,
+	productionNoteLineHeight: 1.4,
+	productionNoteColour: "",
 	textOpacity: 1,
 	textBrightness: 1,
 	backingOnAir: 0.07,
@@ -3269,8 +3272,12 @@ function applyLayout() {
 		settings.headingScale ?? LAYOUT_DEFAULTS.headingScale
 	);
 	style.setProperty( "--direction-scale", settings.directionScale ?? LAYOUT_DEFAULTS.directionScale );
+	style.setProperty( "--production-note-scale", settings.productionNoteScale ?? LAYOUT_DEFAULTS.productionNoteScale );
+	style.setProperty( "--production-note-line-height", settings.productionNoteLineHeight ?? LAYOUT_DEFAULTS.productionNoteLineHeight );
 	if ( /^#[\da-f]{6}$/i.test( settings.directionColour ?? "" ) ) style.setProperty( "--direction-colour", settings.directionColour );
 	else style.removeProperty( "--direction-colour" );
+	if ( /^#[\da-f]{6}$/i.test( settings.productionNoteColour ?? "" ) ) style.setProperty( "--production-note-colour", settings.productionNoteColour );
+	else style.removeProperty( "--production-note-colour" );
 	style.setProperty(
 		"--text-opacity",
 		settings.textOpacity ?? LAYOUT_DEFAULTS.textOpacity
@@ -4317,11 +4324,13 @@ const LAYOUT_FIELDS = [
 	[ "lp-margin-x", "marginX", v => `${ v }%` ],
 	[ "lp-margin-top", "marginTop", v => `${ v }%` ],
 	[ "lp-margin-bottom", "marginBottom", v => `${ v }%` ],
-	[ "lp-line-height", "lineHeight", v => `${ Number( v ).toFixed( 2 ) }×` ],
-	[ "lp-heading-line-height", "headingLineHeight", v => `${ Number( v ).toFixed( 2 ) }×` ],
-	[ "lp-direction-line-height", "directionLineHeight", v => `${ Number( v ).toFixed( 2 ) }×` ],
+	[ "lp-line-height", "lineHeight", v => `${ Math.round( v * 100 ) }%` ],
+	[ "lp-heading-line-height", "headingLineHeight", v => `${ Math.round( v * 100 ) }%` ],
+	[ "lp-direction-line-height", "directionLineHeight", v => `${ Math.round( v * 100 ) }%` ],
+	[ "lp-production-line-height", "productionNoteLineHeight", v => `${ Math.round( v * 100 ) }%` ],
 	[ "lp-heading-scale", "headingScale", v => `${ Math.round( v * 100 ) }%` ],
 	[ "lp-direction-scale", "directionScale", v => `${ Math.round( v * 100 ) }%` ],
+	[ "lp-production-scale", "productionNoteScale", v => `${ Math.round( v * 100 ) }%` ],
 	[ "lp-text-opacity", "textOpacity", v => `${ Math.round( v * 100 ) }%` ],
 	[ "lp-backing-on-air", "backingOnAir", v => `${ Math.round( v * 100 ) }%` ],
 	[ "lp-text-brightness", "textBrightness", v => `${ Math.round( v * 100 ) }%` ],
@@ -4359,6 +4368,8 @@ function syncLayoutPanel() {
 	field( "lp-heading-font" ).value = settings.headingFont ?? "same";
 	field( "lp-direction-colour" ).value = settings.directionColour || "#c8c8c8";
 	field( "lp-direction-theme" ).setAttribute( "aria-pressed", String( !settings.directionColour ) );
+	field( "lp-production-colour" ).value = settings.productionNoteColour || "#c8c8c8";
+	field( "lp-production-theme" ).setAttribute( "aria-pressed", String( !settings.productionNoteColour ) );
 	field( "lp-on-air" ).checked = settings.onAirLight !== false;
 	field( "lp-pacing" ).checked = settings.showPacing !== false;
 	field( "lp-points" ).checked = !!settings.pointsMode;
@@ -4370,13 +4381,16 @@ function syncLayoutPanel() {
 }
 
 if ( uiElement( "layout-panel" ) ) {
-	field( "lp-direction-colour" ).addEventListener( "input", () => {
-		settings.directionColour = field( "lp-direction-colour" ).value;
-		applyLayout();
-		syncLayoutPanel();
-	} );
-	field( "lp-direction-colour" ).addEventListener( "change", () => window.electron.saveSettings( { directionColour: field( "lp-direction-colour" ).value } ) );
-	onClick( "lp-direction-theme", () => window.electron.saveSettings( { directionColour: "" } ) );
+	for ( const [ name, key ] of [ [ "direction", "directionColour" ], [ "production", "productionNoteColour" ] ] ) {
+		field( `lp-${ name }-colour` ).addEventListener( "input", () => {
+			settings[key] = field( `lp-${ name }-colour` ).value;
+			applyLayout();
+			syncLayoutPanel();
+		} );
+		field( `lp-${ name }-colour` ).addEventListener( "change", () => window.electron.saveSettings( { [key]: field( `lp-${ name }-colour` ).value } ) );
+		onClick( `lp-${ name }-theme`, () => window.electron.saveSettings( { [key]: "" } ) );
+	}
+	field( "set-directions" ).addEventListener( "change", () => window.electron.saveSettings( { directions: field( "set-directions" ).value } ) );
 	for ( const [ id, key ] of LAYOUT_FIELDS ) {
 		field( id ).addEventListener( "input", () => {
 			settings[key] = Number( field( id ).value );
@@ -5303,13 +5317,14 @@ function showSettingsTab( name ) {
 // away), moved into Settings while it is open and put back when it closes.
 const layoutPanel = uiElement( "layout-panel" );
 const layoutHost = uiElement( "set-layout-host" );
-// Settings shows the Layout panel's groups over three tabs, so none runs
-// below the fold: spacing on Layout, opacity and reading aids on Reading,
-// recording and script options on Recording.
+// Each live appearance control has one settings home. Directions and long
+// preparation notes have separate fieldsets under the Directions topic.
 const layoutHosts = {
 	layout: layoutHost,
 	theme: uiElement( "set-theme-host" ),
 	reading: uiElement( "set-reading-host" ),
+	directions: uiElement( "set-directions-host" ),
+	"production-notes": uiElement( "set-production-notes-host" ),
 	background: uiElement( "set-background-host" ),
 	aids: uiElement( "set-aids-host" ),
 	display: uiElement( "set-display-host" ),
@@ -5384,11 +5399,14 @@ function borrowLayoutPanel() {
 			continue;
 		}
 		const id = el.dataset.settingsControl ?? el.querySelector( "input[id], select[id]" )?.id;
-		const destination = [ "lp-font", "lp-heading-font", "lp-heading-scale", "lp-direction-scale", "lp-direction-colour" ].includes( id ) ? "reading" : id === "lp-theme" ? "theme" : [ "lp-marker", "lp-sentence", "lp-progress" ].includes( id ) ? "aids" : id === "lp-pinned" ? "display" : id === "lp-summary" ? "recording" : spacing ? "layout" : tab;
+		const destination = id?.startsWith( "lp-production-" ) ? "production-notes" : id?.startsWith( "lp-direction-" ) ? "directions" : [ "lp-font", "lp-heading-font", "lp-heading-scale" ].includes( id ) ? "reading" : id === "lp-theme" ? "theme" : [ "lp-marker", "lp-sentence", "lp-progress" ].includes( id ) ? "aids" : id === "lp-pinned" ? "display" : id === "lp-summary" ? "recording" : spacing ? "layout" : tab;
 		( layoutHosts[destination] ?? layoutHost ).append( el );
 	}
-	for ( const id of [ "lp-font", "lp-heading-font", "lp-heading-scale", "lp-direction-scale", "lp-direction-colour" ] ) {
+	for ( const id of [ "lp-font", "lp-heading-font", "lp-heading-scale" ] ) {
 		layoutHosts.reading.append( field( id ).closest( "[data-settings-control]" ) );
+	}
+	for ( const [ host, prefix ] of [ [ layoutHosts.directions, "direction" ], [ layoutHosts["production-notes"], "production" ] ] ) {
+		for ( const suffix of [ "scale", "colour", "line-height" ] ) host.append( field( `lp-${ prefix }-${ suffix }` ).closest( "[data-settings-control]" ) );
 	}
 	field( "lp-done" )?.classList.add( "hidden" );
 	syncControls();
@@ -6757,7 +6775,13 @@ const NUMBER_BOXES = {
 		scale: 100,
 		unit: "%",
 		word: "percent",
-		name: "Comment size"
+		name: "Inline direction size"
+	} ),
+	"lp-production-scale": () => ( {
+		scale: 100,
+		unit: "%",
+		word: "percent",
+		name: "Production note size"
 	} ),
 	"lp-line-height": () => ( {
 		scale: 100,
@@ -6775,7 +6799,13 @@ const NUMBER_BOXES = {
 		scale: 100,
 		unit: "%",
 		word: "percent",
-		name: "Comment line spacing"
+		name: "Inline direction line spacing"
+	} ),
+	"lp-production-line-height": () => ( {
+		scale: 100,
+		unit: "%",
+		word: "percent",
+		name: "Production note line spacing"
 	} ),
 	"lp-reading-line": () => ( {
 		scale: 1,

@@ -10,6 +10,11 @@ voice/script commands; a persistent state pill; production comments that hide
 during delivery; advisory sound-check acceptance; separate saved Actual framing
 references; one Stream Deck settings home and preview pairing; destination
 labels and visible slate choices. Awaiting Joanne's recording acceptance test.
+The directions follow-up adds **Appearance > Directions** with separate inline
+direction and production note size, colour and line spacing.
+Preview 03 has reported missing-control issues; see the
+[review status](PREVIEW-03-KNOWN-ISSUES.md). The later font/style redesign is
+a proposal, not an implemented feature.
 
 **Sightline 1.1.0, released 31 October 2026:** includes OBS integration (52),
 the manual head guide (55), production exports, voice tuning, component checks,
@@ -29,7 +34,7 @@ modal focus containment and focus return are covered by app checks. Settings
 keeps a consistent width and height without scrolling: longer topics and word lists use labelled
 Previous/Next pages. Small raised ? pills beside options support hover,
 keyboard and touch, with Escape to dismiss. Appearance separates Text,
-Theme, Background, Reading aids, Spacing and Screens. Immediate-save controls are
+Theme, Directions, Background, Reading aids, Spacing and Screens. Immediate-save controls are
 labelled; pending changes show Unsaved changes, with Apply and Save & close.
 See the
 [Settings map](guide/07-settings.md).
@@ -436,13 +441,16 @@ The whole workflow is in the guide:
 - **Fonts** including Atkinson Hyperlegible, OpenDyslexic and Verdana, with a
   separate **heading font** and **heading size**, so big headings stay
   readable with a dyslexia font.
-- **Delivery-comment styling:** square-bracket notes have independent size
-  and colour in **Settings > Appearance > Text**, and follow Heading font.
-  A Theme button restores their usual colour. Spoken quotations keep the
-  script style; delivery notes remain outside tracking, word counts and timing.
+- **Directions and production-note styling:** **Appearance > Directions** has
+  separate size, colour and line spacing for `[inline directions]` and
+  `<!-- production notes -->`. Both follow Heading font; each has its own Theme
+  colour reset. Inline visibility saves immediately. Production notes hide
+  during delivery, including their quoted contents; quoted spoken words in
+  inline directions keep the script style and remain spoken.
 - Independent text opacity, background opacity and text brightness, margins
   that fade out at the edges and alignment. **Appearance > Spacing** has separate
-  script, heading and comment line spacing; quotes to read aloud retain script
+  script and heading line spacing; direction/note spacing has its own home.
+  Quotes to read aloud retain script
   spacing. Settings uses aligned rows with space between labels and controls.
 
 ## Help and installers

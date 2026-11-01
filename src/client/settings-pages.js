@@ -10,12 +10,31 @@ export function createSettingsPages( modal ) {
 	nav.setAttribute( "aria-label", "Pages in this settings topic" );
 	const previous = document.createElement( "button" );
 	previous.type = "button";
-	previous.textContent = "← Previous";
+	const previousName = document.createElement( "span" );
+	previousName.className = "settings-page-label";
+	previousName.textContent = "Previous";
+	const previousArrow = document.createElement( "span" );
+	previousArrow.className = "settings-page-arrow";
+	previousArrow.textContent = "←";
+	previousArrow.setAttribute( "aria-hidden", "true" );
+	previous.append( previousArrow, previousName );
 	const status = document.createElement( "span" );
 	status.setAttribute( "role", "status" );
+	const statusName = document.createElement( "span" );
+	statusName.className = "settings-page-label";
+	const statusCount = document.createElement( "span" );
+	statusCount.className = "settings-page-count";
+	status.append( statusName, statusCount );
 	const next = document.createElement( "button" );
 	next.type = "button";
-	next.textContent = "Next →";
+	const nextName = document.createElement( "span" );
+	nextName.className = "settings-page-label";
+	nextName.textContent = "Next";
+	const nextArrow = document.createElement( "span" );
+	nextArrow.className = "settings-page-arrow";
+	nextArrow.textContent = "→";
+	nextArrow.setAttribute( "aria-hidden", "true" );
+	next.append( nextName, nextArrow );
 	nav.append( previous, status, next );
 	footer.before( nav );
 	let pages = [];
@@ -42,13 +61,15 @@ export function createSettingsPages( modal ) {
 		next.disabled = !pages.length || index >= pages.length - 1;
 		const destination = ( page ) => {
 			const item = page?.find( el => el.matches( "h4, h5, [data-settings-control]" ) || el.querySelector( "[data-settings-control]" ) ) ?? page?.[0];
+			const groupName = item?.closest( "fieldset" )?.dataset.settingsPageLabel;
+			if ( groupName ) return groupName;
 			const label = item?.querySelector( ".settings-option-name label" ) ?? item?.querySelector( "legend" );
 			return ( label?.textContent ?? ( item?.matches( "h4, h5" ) ? item.textContent : item?.closest( "fieldset" )?.querySelector( "legend" )?.textContent ) ?? "Settings" ).replace( /\s+/g, " " ).trim();
 		};
-		const previousLabel = previous.disabled ? "← Previous" : `← ${ destination( pages[index - 1] ) }`;
-		const nextLabel = next.disabled ? "Next →" : `${ destination( pages[index + 1] ) } →`;
-		if ( previous.textContent !== previousLabel ) previous.textContent = previousLabel;
-		if ( next.textContent !== nextLabel ) next.textContent = nextLabel;
+		const previousLabel = previous.disabled ? "Previous" : destination( pages[index - 1] );
+		const nextLabel = next.disabled ? "Next" : destination( pages[index + 1] );
+		if ( previousName.textContent !== previousLabel ) previousName.textContent = previousLabel;
+		if ( nextName.textContent !== nextLabel ) nextName.textContent = nextLabel;
 		previous.setAttribute( "aria-label", previous.disabled ? "No previous page" : `Previous: ${ destination( pages[index - 1] ) }` );
 		next.setAttribute( "aria-label", next.disabled ? "No next page" : `Next: ${ destination( pages[index + 1] ) }` );
 		previous.title = previous.getAttribute( "aria-label" );
@@ -59,7 +80,12 @@ export function createSettingsPages( modal ) {
 		const rawTitle = heading?.textContent.trim() ?? first?.closest( "fieldset" ).querySelector( "legend" ).textContent.trim() ?? "Settings";
 		const title = rawTitle === rawTitle.toUpperCase() ? rawTitle[0] + rawTitle.slice( 1 ).toLowerCase() : rawTitle;
 		const label = `${ title } · ${ index + 1 } of ${ pages.length }`;
-		if ( status.textContent !== label ) status.textContent = label;
+		if ( status.getAttribute( "aria-label" ) !== label ) {
+			statusName.textContent = `${ title } ·`;
+			statusCount.textContent = `${ index + 1 } of ${ pages.length }`;
+			status.setAttribute( "aria-label", label );
+			status.title = label;
+		}
 		box.scrollTop = 0;
 		if ( focus ) {
 			const first = pages[index]?.flatMap( item => [ item, ...item.querySelectorAll( "input, select, button, textarea" ) ] )
@@ -101,7 +127,16 @@ export function createSettingsPages( modal ) {
 		let chunk = [];
 		for ( let n = 0; n < items.length; n++ ) {
 			const bundle = [ items[n] ];
-			if ( items[n].matches( "h4, h5" ) && items[n + 1] ) bundle.push( items[++n] );
+			const set = items[n].closest( "fieldset[data-settings-keep-together]" );
+			const group = set ? items.slice( n ).filter( item => item.closest( "fieldset" ) === set ) : [];
+			if ( group.length > 1 ) {
+				paint( group );
+				if ( fits() ) {
+					bundle.splice( 0, 1, ...group );
+					n += group.length - 1;
+				}
+			}
+			if ( bundle.length === 1 && items[n].matches( "h4, h5" ) && items[n + 1] ) bundle.push( items[++n] );
 			if ( items[n + 1]?.classList.contains( "settings-help-anchor" ) ) bundle.push( items[++n] );
 			paint( [ ...chunk, ...bundle ] );
 			if ( chunk.length && !fits() ) {
@@ -169,17 +204,20 @@ export function addSettingsHelp( modal ) {
 		[ "set-wake-word", "Say the wake word, leave a brief beat, then finish your command within four seconds. For example: Prompter, section one. Applying a new wake word refreshes the listener immediately." ],
 		[ "set-pad-columns", "The floating pad and phone share selected buttons and their order. Narrow phones use two columns; short landscape screens use four or six. Stream Deck profiles keep their own assignments. Presets replace the selection; Compact resets it. OBS buttons appear only when OBS and recording controls are enabled." ],
 		[ "set-voice-speed", "Responsiveness changes how quickly the display catches up with recognised speech. Increase it if the text lags; reduce it if movement feels abrupt. It does not change your target speaking pace or microphone sensitivity." ],
-		[ "set-directions", "Delivery notes such as [smile] and [point] guide your performance. They stay out of speech tracking, word counts and timing. Hiding a direction still keeps any quoted words that you are meant to read aloud." ],
+		[ "set-directions", "Inline directions such as [smile] and [point] guide your performance. Unquoted directions stay out of speech tracking, word counts and timing. Quoted words that you are meant to read aloud remain visible and spoken. This visibility control does not hide production notes; those appear while paused and hide during delivery. Changes save immediately." ],
 		[ "lp-bg-opacity", "The saved background level while off air. Switching ON AIR uses Background on air instead. Higher percentages give a more opaque background; lower percentages reveal more of the window behind Sightline." ],
 		[ "lp-backing-on-air", "The saved background level while ON AIR is enabled. A low percentage lets you see more of your camera preview, slides or call through the prompting window." ],
 		[ "lp-heading-scale", "Scales titles and section headings relative to their usual size. Reduce this if headings take up too much room after increasing the size of the words you read." ],
-		[ "lp-line-height", "Space between lines of spoken script, as a percentage of its font size. Heading and comment line spacing have their own controls. Paragraph gaps stay as written." ],
-		[ "lp-heading-line-height", "Space between wrapped lines of a title or heading, independently of script and comment spacing. Heading size and font are in Appearance > Text." ],
-		[ "lp-direction-line-height", "Space between wrapped lines of square-bracket comments. Comments-only paragraphs can be tighter than the spoken script. Inline comments share the line with neighbouring words; quoted words to read aloud retain script spacing." ],
-		[ "lp-theme", "Choose Standard, Yellow on dark, High contrast or Soft cream for the script. The controls keep their usual colours. Background controls transparency and brightness; Text controls fonts and comment colour." ],
+		[ "lp-line-height", "Space between lines of spoken script, as a percentage of its font size. Heading spacing is separate. Inline directions and production notes have their own spacing controls in Appearance > Directions. Paragraph gaps stay as written." ],
+		[ "lp-heading-line-height", "Space between wrapped lines of a title or heading, independently of script, inline directions and production notes. Heading size and font are in Appearance > Text." ],
+		[ "lp-direction-line-height", "Space between wrapped lines of square-bracket inline directions. Direction-only paragraphs can be tighter than the spoken script. Directions within a spoken line share space with neighbouring words; quoted words to read aloud retain script spacing. Production note spacing is separate." ],
+		[ "lp-production-line-height", "Space between lines of long production notes written as HTML comments. 100% is one note-font height; 140% is the usual spacing. Script, heading and inline direction spacing are independent. Notes hide during delivery and remain excluded from speech tracking." ],
+		[ "lp-theme", "Choose Standard, Yellow on dark, High contrast or Soft cream for the script. The controls keep their usual colours. Background controls transparency and brightness; Text controls fonts. Inline direction and production note colours are in Appearance > Directions." ],
 		[ "lp-heading-font", "Choose a separate font for titles and section headings. Same as the text follows your body font; choosing another font changes the headings while keeping the body font you selected." ],
-		[ "lp-direction-scale", "Scales square-bracket delivery comments such as [smile], independently of heading size. 100% keeps their usual size: smaller when Dimmed, full size when Normal. Comments use Heading font. Quoted words to read aloud keep the script style." ],
-		[ "lp-direction-colour", "Choose a colour for square-bracket delivery comments. Theme restores the usual Dimmed or Normal colour, including high contrast. Hidden comments stay hidden. Quoted words to read aloud keep their normal colour." ],
+		[ "lp-direction-scale", "Scales square-bracket inline directions such as [smile], independently of headings and production notes. 100% keeps their usual size: smaller when Dimmed, full size when Normal. Directions use Heading font. Quoted words to read aloud keep the script style." ],
+		[ "lp-direction-colour", "Choose a colour for square-bracket inline directions. Theme restores the usual Dimmed or Normal colour, including high contrast. Hidden directions stay hidden. Quoted words to read aloud and production notes keep their own colours." ],
+		[ "lp-production-scale", "Scales long production notes independently of headings and inline directions. 100% keeps their usual size, 55% of the script text. The range is 40–200% of that usual note size. Notes use Heading font and hide during delivery. Their quoted words are silent too." ],
+		[ "lp-production-colour", "Choose a colour for production notes only. Theme follows the surrounding script theme again. This does not change square-bracket inline directions or spoken text. High contrast removes note dimming so the chosen colour stays clear." ],
 		[ "lp-hide-capture", "Asks supported capture tools to exclude the prompter, Settings, keyboard and voice Help, and guide adjustments. Turn it off to capture these windows for support. The head guide overlay stays protected independently. Whole-screen and third-party capture can behave differently; check with a short test recording." ],
 		[ "lp-click-through", "Mouse clicks pass to the application behind Sightline. Use Ctrl+Shift+X to turn click-through off again, or use the control window or Stream Deck." ],
 		[ "lp-points", "Show speaking notes one page at a time. H1 headings or {page} divide pages; H2 headings are points within a page. Next and Back change pages instead of scrolling through a script." ]

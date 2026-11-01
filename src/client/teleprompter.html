@@ -212,8 +212,12 @@
         <input id="lp-heading-line-height" type="range" min="1" max="2.5" step="0.05" />
       </label>
       <label class="lp-row"
-        >Comment line spacing <output id="lp-direction-line-height-value"></output>
+        >Inline direction line spacing <output id="lp-direction-line-height-value"></output>
         <input id="lp-direction-line-height" type="range" min="1" max="2.5" step="0.05" />
+      </label>
+      <label class="lp-row"
+        >Production note line spacing <output id="lp-production-line-height-value"></output>
+        <input id="lp-production-line-height" type="range" min="1" max="2.5" step="0.05" />
       </label>
       <h5 class="lp-sub">Spacing</h5>
       <label class="lp-row"
@@ -233,8 +237,12 @@
         <input id="lp-heading-scale" type="range" min="0.4" max="1.5" step="0.05" />
       </label>
       <label class="lp-row"
-        >Comment size <output id="lp-direction-scale-value"></output>
+        >Inline direction size <output id="lp-direction-scale-value"></output>
         <input id="lp-direction-scale" type="range" min="0.4" max="1.5" step="0.05" />
+      </label>
+      <label class="lp-row"
+        >Production note size <output id="lp-production-scale-value"></output>
+        <input id="lp-production-scale" type="range" min="0.4" max="2" step="0.05" />
       </label>
       <label class="lp-row"
         >Reading line <output id="lp-reading-line-value"></output>
@@ -284,10 +292,17 @@
         <select id="lp-heading-font"><option value="same">Same as the text</option><option value="default">Standard</option><option value="atkinson">Atkinson Hyperlegible</option><option value="opendyslexic">OpenDyslexic</option><option value="verdana">Verdana</option></select>
       </div>
       <div class="lp-row lp-inline" data-settings-control="lp-direction-colour">
-        <span class="settings-option-name"><label for="lp-direction-colour">Comment colour</label></span>
+        <span class="settings-option-name"><label for="lp-direction-colour">Inline direction colour</label></span>
         <span class="direction-colour-controls">
           <input id="lp-direction-colour" type="color" value="#c8c8c8" />
-          <button type="button" id="lp-direction-theme" aria-pressed="true" title="Use the theme's comment colour">Theme</button>
+          <button type="button" id="lp-direction-theme" aria-pressed="true" title="Use the theme's inline direction colour">Theme</button>
+        </span>
+      </div>
+      <div class="lp-row lp-inline" data-settings-control="lp-production-colour">
+        <span class="settings-option-name"><label for="lp-production-colour">Production note colour</label></span>
+        <span class="direction-colour-controls">
+          <input id="lp-production-colour" type="color" value="#c8c8c8" />
+          <button type="button" id="lp-production-theme" aria-pressed="true" title="Use the theme's production note colour">Theme</button>
         </span>
       </div>
       <h5 class="lp-sub">Recording</h5>
@@ -936,16 +951,22 @@
             />
           </label>
         </fieldset>
-        <fieldset data-tab="script">
-          <legend>Delivery directions</legend>
+        <fieldset data-tab="directions" id="set-directions-host" data-settings-keep-together data-settings-page-label="Inline directions">
+          <legend>Inline directions [ … ]</legend>
+          <p class="settings-live-note">Saved immediately as you adjust.</p>
           <label class="row"
-            >[Directions]
+            >Visibility
             <select id="set-directions">
               <option value="dim">Dimmed</option>
               <option value="hide">Hidden (quoted words still shown)</option>
               <option value="normal">Normal</option>
             </select>
           </label>
+        </fieldset>
+        <fieldset data-tab="directions" id="set-production-notes-host" data-settings-keep-together data-settings-page-label="Production notes">
+          <legend>Production notes &lt;!-- … --&gt;</legend>
+          <p class="settings-live-note">Saved immediately as you adjust.</p>
+          <p class="field-hint">Long preparation instructions in HTML comments appear while paused and hide during delivery. Their size, colour and line spacing are separate from inline directions. Both use Heading font from Text; neither adds words to speech tracking. Quoted words inside production notes stay silent too.</p>
         </fieldset>
         <fieldset data-tab="display">
           <legend>Window and monitor</legend>

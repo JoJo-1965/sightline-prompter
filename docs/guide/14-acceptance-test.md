@@ -40,6 +40,13 @@ earlier test history and do not describe today's installed version.
 7. Accept a sound-check warning with Continue anyway. Check the measured result
    and acceptance in the take log. Keep scratch audio and inspect the exported
    script, recording-clock references and saved guide reference together.
+8. In the directions appearance follow-up, open **Appearance > Directions**.
+   Adjust inline directions, then production notes: each has separate size,
+   colour and line spacing. Reset one colour to Theme without changing the
+   other. Hide inline directions and check paused production notes remain.
+   Start prompting: production notes hide, quoted inline speech stays readable.
+   Restart the app and check the saved appearance. Settings must keep its size
+   with no scrolling, and live changes must not ask to save a pending draft.
 
 ## Earlier RC history
 RC1 established the feature baseline. RC2 updates the bundled help and adds
@@ -69,7 +76,8 @@ RC14 moves the optional trace to **Debug**, alongside support logs.
 Enable it only to investigate a mishearing, Apply, then turn it off afterwards.
 It can capture nearby conversation while Always listening is enabled.
 
-The public app remains **1.0.6**. The candidate and plugin are private test builds.
+At that earlier RC stage the public app was **1.0.6** and the candidates were
+private test builds. Today's published baseline is **1.1.0 / 0.2.0**, as above.
 
 ### Additional checks for the next candidate
 
