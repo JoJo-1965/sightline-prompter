@@ -8,6 +8,10 @@ an authorised local agent, configure and control it. Optional script directions
 steer its operation. AI remains optional. See
 [Working with AI](09-working-with-ai.md).
 
+For a detailed comparison of the current preview's capabilities, see the
+[reviewer feature grid](../FEATURE-GRID.md), including separate Stream Deck
+and OBS sections, available options, dependencies and qualifications.
+
 The script floats over your screen, close to the webcam, and scrolls at a
 steady pace or follows your voice.
 

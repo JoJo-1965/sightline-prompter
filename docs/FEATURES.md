@@ -1,5 +1,10 @@
 # Sightline Prompter: what it adds to Electron Teleprompter
 
+For a detailed reviewer comparison, use the [Preview 02 feature grid](FEATURE-GRID.md),
+with dedicated Stream Deck and OBS sections, configuration choices, dependencies
+and limits. A [searchable view](FEATURE-GRID.html) and [comparison CSV](FEATURE-GRID.csv)
+are generated from the same tables.
+
 **Next unpublished preview:** optional linked recording and explicit recorder
 voice/script commands; a persistent state pill; production comments that hide
 during delivery; advisory sound-check acceptance; separate saved Actual framing

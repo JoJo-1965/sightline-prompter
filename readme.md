@@ -44,6 +44,12 @@ to check your own recording setup.
 
 ## Optional AI, from script to edit
 
+**Reviewing the current preview?** The [detailed feature grid](docs/FEATURE-GRID.md)
+groups its capabilities, options and requirements, with dedicated Stream Deck
+and OBS sections. Browse the [searchable grid](docs/FEATURE-GRID.html) or use
+the [comparison CSV](docs/FEATURE-GRID.csv). It describes unpublished Preview 02;
+the published download above remains Sightline 1.1.0.
+
 | Step       | What your AI does                                                         | What Sightline does                                                                                        |
 | ---------- | ------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | **Write**  | Writes the script, with sections, target times, stops and countdowns      | **Help > Copy the AI Script Prompt** gives it the instructions, and a checker validates the result         |
