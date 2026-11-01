@@ -202,6 +202,19 @@
           <button type="button" data-axis="v" aria-pressed="false" title="Mirror top to bottom. Click again to turn it off">↕ Up–down</button>
         </div>
       </div>
+      <h5 class="lp-sub">Line spacing</h5>
+      <label class="lp-row"
+        >Script line spacing <output id="lp-line-height-value"></output>
+        <input id="lp-line-height" type="range" min="1" max="2.5" step="0.05" />
+      </label>
+      <label class="lp-row"
+        >Heading line spacing <output id="lp-heading-line-height-value"></output>
+        <input id="lp-heading-line-height" type="range" min="1" max="2.5" step="0.05" />
+      </label>
+      <label class="lp-row"
+        >Comment line spacing <output id="lp-direction-line-height-value"></output>
+        <input id="lp-direction-line-height" type="range" min="1" max="2.5" step="0.05" />
+      </label>
       <h5 class="lp-sub">Spacing</h5>
       <label class="lp-row"
         >Left / right margin <output id="lp-margin-x-value"></output>
@@ -214,10 +227,6 @@
       <label class="lp-row"
         >Bottom margin <output id="lp-margin-bottom-value"></output>
         <input id="lp-margin-bottom" type="range" min="0" max="60" step="1" />
-      </label>
-      <label class="lp-row"
-        >Line spacing <output id="lp-line-height-value"></output>
-        <input id="lp-line-height" type="range" min="1" max="2.5" step="0.05" />
       </label>
       <label class="lp-row" title="Section headings, as a share of their usual size next to the text. Lower it if headings grow too big when you make the text larger"
         >Heading size <output id="lp-heading-scale-value"></output>
@@ -263,7 +272,7 @@
         <select id="lp-text-effect"><option value="none">None</option><option value="outline">Outline</option><option value="shadow">Shadow</option></select>
       </div>
       <div class="lp-row lp-inline">
-        Colours
+        Colour theme
         <select id="lp-theme"><option value="default">Standard</option><option value="yellow">Yellow on dark</option><option value="contrast">High contrast</option><option value="cream">Soft cream</option></select>
       </div>
       <div class="lp-row lp-inline">
@@ -878,6 +887,12 @@
         <fieldset data-tab="reading" id="set-reading-host">
           <legend>Script appearance</legend>
           <p class="settings-live-note">Saved immediately as you adjust.</p>
+        </fieldset>
+
+        <fieldset data-tab="theme" id="set-theme-host">
+          <legend>Script theme</legend>
+          <p class="settings-live-note">Saved immediately as you adjust.</p>
+          <p class="field-hint" data-essential>Choose script colours here. Fonts are in Text; transparency is in Background.</p>
         </fieldset>
 
         <fieldset data-tab="background" id="set-background-host">

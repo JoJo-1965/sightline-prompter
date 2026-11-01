@@ -1,7 +1,7 @@
 # Settings
 
-**1.1.0 release candidate:** this regrouping is built and awaiting acceptance. For the published
-1.0.6 layout, use the guide bundled with that app.
+This source guide includes the next update's Theme tab and independent line
+spacing. For the published 1.1.0 layout, use the guide bundled with that app.
 
 Open **⚙ Settings** on the top bar or press **Ctrl+,** (**Cmd+,** on Mac).
 In RC8, Settings opens in its own upright window. Drag the native title bar
@@ -50,10 +50,11 @@ without disappearing as you move the pointer onto it.
 | | Commands | When to listen, wake word, listener state and Restart listening |
 | | Your words | Script synonyms, command synonyms, sound-alike matching, suggestions and Teach |
 | | Script | Notes mode, pacing, script directions, slide cues and directive display |
-| **Appearance** | Text | Body and heading fonts, heading size, comment size/colour and text-size preview |
-| | Background | Text opacity, backing on/off air, brightness and colour theme |
+| **Appearance** | Theme | Standard, yellow on dark, high contrast or soft cream script colours |
+| | Text | Body and heading fonts, heading size, comment size/colour and text-size preview |
+| | Background | Text opacity, backing on/off air and brightness |
 | | Reading aids | Focus band, text edge, reading-line marker, sentence highlight and progress bar |
-| | Spacing | Margins, line spacing, reading line and alignment |
+| | Spacing | Independent script, heading and comment line spacing, margins, reading line and alignment |
 | | Screens | Beam-splitter mirroring, prompter monitor, Keep on top, eye-line strip and keeping controls visible |
 | **Recording** | Takes | Slate, ON AIR display, countdown beep, capture protection and click-through |
 | | Takes: rehearsal coaching | Optional recognised filler/repetition counts during active voice following; Apply to save |
@@ -172,7 +173,13 @@ Apply; the grey controls retain their values.
 
 ![Grey API controls with a visible draft explanation](images/settings-ai-unavailable.png)
 
-## Fonts, backing and reading aids
+## Theme, fonts, spacing and reading aids
+
+**Appearance > Theme** is the first Appearance topic. Choose **Standard**,
+**Yellow on dark**, **High contrast** or **Soft cream**. It changes script
+colours; the controls keep their own colours. Changes save immediately.
+
+![Script colour themes on their own named tab](images/settings-theme.png)
 
 Open **Appearance > Text** for the body font, heading font, heading size,
 comment size/colour and text-size preview. Square-bracket comments follow
@@ -184,11 +191,28 @@ from the text-size preview saved with Apply or Save & close.
 
 ![Script fonts, heading size and independent comment size and colour](images/settings-reading.png)
 
-**Appearance > Background** holds visibility, brightness and colour choices.
+**Appearance > Background** holds visibility and brightness.
 Use Background for the off-air level and Background on air for the level used
 when ON AIR is enabled. Both values are remembered.
 
 ![Separate off-air and on-air backing controls](images/settings-background.png)
+
+**Appearance > Spacing** has **Script line spacing**, **Heading line spacing**
+and **Comment line spacing**. Each is 100–250% of that text's font size and
+saves immediately. Changing one leaves the other two alone. Existing profiles
+start with their previous shared spacing; Reset layout restores the shipped
+values for all three.
+
+Comment spacing applies to wrapped square-bracket notes. A comments-only
+paragraph can be tighter than the script. Inline notes share a line with the
+surrounding words; quotations intended to be spoken keep script spacing.
+These controls change line spacing, not gaps between paragraphs.
+
+![Separate script, heading and comment line spacing](images/settings-layout.png)
+
+Labels, sliders and inputs use aligned rows with more vertical space. The
+Settings frame stays fixed; longer topics use the existing Previous/Next
+controls rather than scrolling or shrinking the text.
 
 **Appearance > Reading aids** holds the focus band, text edge, reading-line
 marker, sentence highlight and progress bar. [Layout and display](04-layout-and-display.md)

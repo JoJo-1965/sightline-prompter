@@ -182,6 +182,13 @@ function recordingScriptSnapshot() {
 function renderScript( html ) {
 	md.innerHTML = html;
 	decorateScript( md, { cuePhrases, highlight: settings.highlightCues } );
+	// A comments-only paragraph has no body-text line box holding it open.
+	for ( const paragraph of md.querySelectorAll( "p" ) ) {
+		const onlyComments = [ ...paragraph.childNodes ].every( node =>
+			node.nodeType === Node.TEXT_NODE ? !node.textContent.trim() : node.nodeType === Node.ELEMENT_NODE && node.matches( ".direction" )
+		);
+		paragraph.classList.toggle( "direction-only", onlyComments && !!paragraph.querySelector( ".direction" ) );
+	}
 	scriptDirectives = readDirectives( md );
 	liveMarkers = [];
 	tagSections();
@@ -3132,6 +3139,8 @@ const LAYOUT_DEFAULTS = {
 	marginTop: 0,
 	marginBottom: 0,
 	lineHeight: 1.3,
+	headingLineHeight: 1.3,
+	directionLineHeight: 1.3,
 	headingScale: 1,
 	directionScale: 1,
 	directionColour: "",
@@ -3154,6 +3163,8 @@ function applyLayout() {
 		"--line-height",
 		settings.lineHeight ?? LAYOUT_DEFAULTS.lineHeight
 	);
+	style.setProperty( "--heading-line-height", settings.headingLineHeight ?? LAYOUT_DEFAULTS.headingLineHeight );
+	style.setProperty( "--direction-line-height", settings.directionLineHeight ?? LAYOUT_DEFAULTS.directionLineHeight );
 	style.setProperty(
 		"--heading-scale",
 		settings.headingScale ?? LAYOUT_DEFAULTS.headingScale
@@ -4200,6 +4211,8 @@ const LAYOUT_FIELDS = [
 	[ "lp-margin-top", "marginTop", v => `${ v }%` ],
 	[ "lp-margin-bottom", "marginBottom", v => `${ v }%` ],
 	[ "lp-line-height", "lineHeight", v => `${ Number( v ).toFixed( 2 ) }×` ],
+	[ "lp-heading-line-height", "headingLineHeight", v => `${ Number( v ).toFixed( 2 ) }×` ],
+	[ "lp-direction-line-height", "directionLineHeight", v => `${ Number( v ).toFixed( 2 ) }×` ],
 	[ "lp-heading-scale", "headingScale", v => `${ Math.round( v * 100 ) }%` ],
 	[ "lp-direction-scale", "directionScale", v => `${ Math.round( v * 100 ) }%` ],
 	[ "lp-text-opacity", "textOpacity", v => `${ Math.round( v * 100 ) }%` ],
@@ -5184,6 +5197,7 @@ const layoutHost = uiElement( "set-layout-host" );
 // recording and script options on Recording.
 const layoutHosts = {
 	layout: layoutHost,
+	theme: uiElement( "set-theme-host" ),
 	reading: uiElement( "set-reading-host" ),
 	background: uiElement( "set-background-host" ),
 	aids: uiElement( "set-aids-host" ),
@@ -5259,7 +5273,7 @@ function borrowLayoutPanel() {
 			continue;
 		}
 		const id = el.dataset.settingsControl ?? el.querySelector( "input[id], select[id]" )?.id;
-		const destination = [ "lp-font", "lp-heading-font", "lp-heading-scale", "lp-direction-scale", "lp-direction-colour" ].includes( id ) ? "reading" : id === "lp-theme" ? "background" : [ "lp-marker", "lp-sentence", "lp-progress" ].includes( id ) ? "aids" : id === "lp-pinned" ? "display" : id === "lp-summary" ? "recording" : spacing ? "layout" : tab;
+		const destination = [ "lp-font", "lp-heading-font", "lp-heading-scale", "lp-direction-scale", "lp-direction-colour" ].includes( id ) ? "reading" : id === "lp-theme" ? "theme" : [ "lp-marker", "lp-sentence", "lp-progress" ].includes( id ) ? "aids" : id === "lp-pinned" ? "display" : id === "lp-summary" ? "recording" : spacing ? "layout" : tab;
 		( layoutHosts[destination] ?? layoutHost ).append( el );
 	}
 	for ( const id of [ "lp-font", "lp-heading-font", "lp-heading-scale", "lp-direction-scale", "lp-direction-colour" ] ) {
@@ -6621,7 +6635,19 @@ const NUMBER_BOXES = {
 		scale: 100,
 		unit: "%",
 		word: "percent",
-		name: "Line spacing"
+		name: "Script line spacing"
+	} ),
+	"lp-heading-line-height": () => ( {
+		scale: 100,
+		unit: "%",
+		word: "percent",
+		name: "Heading line spacing"
+	} ),
+	"lp-direction-line-height": () => ( {
+		scale: 100,
+		unit: "%",
+		word: "percent",
+		name: "Comment line spacing"
 	} ),
 	"lp-reading-line": () => ( {
 		scale: 1,

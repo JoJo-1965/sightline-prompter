@@ -18,7 +18,7 @@ modal focus containment and focus return are covered by app checks. Settings
 keeps a consistent width and height without scrolling: longer topics and word lists use labelled
 Previous/Next pages. Small raised ? pills beside options support hover,
 keyboard and touch, with Escape to dismiss. Appearance separates Text,
-Background, Reading aids, Spacing and Screens. Immediate-save controls are
+Theme, Background, Reading aids, Spacing and Screens. Immediate-save controls are
 labelled; pending changes show Unsaved changes, with Apply and Save & close.
 See the
 [Settings map](guide/07-settings.md).
@@ -420,7 +420,8 @@ The whole workflow is in the guide:
 
 - Sentence highlight, a **focus band** that dims the lines away from the
   reading line, and a **text edge** for reading over busy backgrounds.
-- **Colour themes:** standard, yellow on dark, high contrast and soft cream.
+- **Colour themes:** standard, yellow on dark, high contrast and soft cream,
+  in the dedicated **Settings > Appearance > Theme** topic.
 - **Fonts** including Atkinson Hyperlegible, OpenDyslexic and Verdana, with a
   separate **heading font** and **heading size**, so big headings stay
   readable with a dyslexia font.
@@ -429,7 +430,9 @@ The whole workflow is in the guide:
   A Theme button restores their usual colour. Spoken quotations keep the
   script style; delivery notes remain outside tracking, word counts and timing.
 - Independent text opacity, background opacity and text brightness, margins
-  that fade out at the edges, line spacing and alignment.
+  that fade out at the edges and alignment. **Appearance > Spacing** has separate
+  script, heading and comment line spacing; quotes to read aloud retain script
+  spacing. Settings uses aligned rows with space between labels and controls.
 
 ## Help and installers
 

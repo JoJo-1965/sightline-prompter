@@ -12,6 +12,11 @@ complex builds come later.
 
 ## Where it stands (31 October 2026)
 
+**Post-release changes, awaiting publication:** Windows executable naming,
+independent script/heading/comment line spacing, a dedicated Appearance > Theme
+topic and roomier Settings rows. These are separate from the published 1.1.0
+freeze; no new release has been tagged.
+
 **Released: Sightline 1.1.0 + Stream Deck 0.2.0.** The app release includes the
 plugin installer; the plugin source repository stays private. Marketplace
 submission remains separate. Earlier RC identifiers are test history. Existing

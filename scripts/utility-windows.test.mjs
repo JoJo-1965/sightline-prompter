@@ -24,8 +24,8 @@ const apiListener = net.createServer();
 await new Promise( resolve => apiListener.listen( 0, "127.0.0.1", resolve ) );
 const apiPort = apiListener.address().port;
 await new Promise( resolve => apiListener.close( resolve ) );
-await fs.writeFile( file, `# Framing check\n\n## Welcome [point]\n\n[smile] These are spoken words. [Say: "Welcome back"]\n\n${ "These words help check a floating panel while prompting continues. ".repeat( 150 ) }` );
-await fs.writeFile( path.join( profile, "app-state.json" ), JSON.stringify( { width: 1100, height: 900, fontSize: 2, opacity: 1, recentFiles: [ file ], settings: { voiceCommands: "off", scrollMode: "steady", scratchAudio: false, takeLoudness: "off", countdown: 0, slate: "off", debugMode: false, checkUpdates: false, obsEnabled: false, phoneRemote: true, phonePort, remoteControl: true, remotePort: apiPort, hideFromCapture: false } } ) );
+await fs.writeFile( file, `# Framing check\n\n## Welcome [point]\n\n[smile] These are spoken words. [Say: "Welcome back"]\n\n[${ "Pause and check your posture before reading the next part of this demonstration. ".repeat( 8 ) }]\n\n${ "These words help check a floating panel while prompting continues. ".repeat( 150 ) }` );
+await fs.writeFile( path.join( profile, "app-state.json" ), JSON.stringify( { width: 1100, height: 900, fontSize: 2, opacity: 1, recentFiles: [ file ], settings: { lineHeight: 1.6, voiceCommands: "off", scrollMode: "steady", scratchAudio: false, takeLoudness: "off", countdown: 0, slate: "off", debugMode: false, checkUpdates: false, obsEnabled: false, phoneRemote: true, phonePort, remoteControl: true, remotePort: apiPort, hideFromCapture: false } } ) );
 const env = { ...process.env };
 delete env.ELECTRON_RUN_AS_NODE;
 const child = spawn( require( "electron" ), [ ".", "--inspect=0", `--user-data-dir=${ profile }`, `--remote-debugging-port=${ port }`, "--disable-renderer-backgrounding", "--disable-backgrounding-occluded-windows", "--disable-features=CalculateNativeWinOcclusion" ], { cwd: root, env, windowsHide: true, stdio: [ "ignore", "pipe", "pipe" ] } );
@@ -159,6 +159,59 @@ try {
 	await main.evaluate( "window.electron.saveSettings({directions:'dim',directionScale:1,headingScale:1,headingFont:'same',scriptFont:'default',theme:'default'})" );
 	await main.until( "document.body.style.getPropertyValue('--direction-scale')==='1' && document.body.classList.contains('directions-dim')" );
 	console.log( "PASS: independent comment size/colour, heading font, theme reset, saved preferences and speech exclusions in native Settings." );
+	const spacingStyle = () => main.evaluate( "(()=>{const ratio=s=>{const c=getComputedStyle(document.querySelector(s));return +(parseFloat(c.lineHeight)/parseFloat(c.fontSize)).toFixed(3);};return {script:ratio('#md p:not(.direction-only)'),heading:ratio('#md h1'),comment:ratio('#md .direction-only .dir-text'),quoted:ratio('#md .say'),commentHeight:document.querySelector('#md .direction-only').getBoundingClientRect().height};})()" );
+	assert.deepEqual( ( ( { script, heading, comment, quoted } ) => ( { script, heading, comment, quoted } ) )( await spacingStyle() ), { script: 1.6, heading: 1.6, comment: 1.6, quoted: 1.6 }, "Legacy spacing is retained before any independent adjustment" );
+	const setSpacing = async ( id, value ) => {
+		await settings.evaluate( "document.getElementById('settings-topic-layout').click()" );
+		for ( let n = 0; n < 8; n++ ) {
+			await settings.evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
+			if ( await settings.evaluate( `document.getElementById('${ id }').getClientRects().length>0` ) ) break;
+			await settings.evaluate( "document.querySelector('.settings-pagination button:last-child').click()" );
+		}
+		await settings.evaluate( `(()=>{const c=document.getElementById('${ id }');c.focus();c.value=${ value };c.dispatchEvent(new Event('input',{bubbles:true}));c.dispatchEvent(new Event('change',{bubbles:true}));})()` );
+	};
+	await setSpacing( "lp-line-height", 2.1 );
+	await main.until( "document.body.style.getPropertyValue('--line-height')==='2.1'" );
+	let spaced = await spacingStyle();
+	assert.equal( spaced.script, 2.1 );
+	assert.equal( spaced.quoted, 2.1 );
+	assert.equal( spaced.heading, 1.6 );
+	assert.equal( spaced.comment, 1.6 );
+	const priorCommentHeight = spaced.commentHeight;
+	await setSpacing( "lp-heading-line-height", 1.1 );
+	await main.until( "document.body.style.getPropertyValue('--heading-line-height')==='1.1'" );
+	spaced = await spacingStyle();
+	assert.equal( spaced.heading, 1.1 );
+	assert.equal( spaced.script, 2.1 );
+	assert.equal( spaced.commentHeight, priorCommentHeight );
+	await setSpacing( "lp-direction-line-height", 2.3 );
+	await main.until( "document.body.style.getPropertyValue('--direction-line-height')==='2.3'" );
+	spaced = await spacingStyle();
+	assert.equal( spaced.comment, 2.3 );
+	assert.equal( spaced.script, 2.1 );
+	assert.equal( spaced.heading, 1.1 );
+	assert.ok( spaced.commentHeight > priorCommentHeight, "Wrapped comments really gain line spacing" );
+	const expandedCommentHeight = spaced.commentHeight;
+	await setSpacing( "lp-direction-line-height", 1 );
+	await main.until( "document.body.style.getPropertyValue('--direction-line-height')==='1'" );
+	spaced = await spacingStyle();
+	assert.ok( spaced.commentHeight < expandedCommentHeight && spaced.commentHeight < priorCommentHeight, "Comments can also be tighter than the script" );
+	assert.equal( spaced.script, 2.1 );
+	assert.equal( spaced.quoted, 2.1 );
+	await savedSettings( s => s.lineHeight === 2.1 && s.headingLineHeight === 1.1 && s.directionLineHeight === 1 );
+	for ( const [ topic, name ] of [ [ "layout", "settings-layout" ], [ "theme", "settings-theme" ], [ "reading", "settings-reading" ] ] ) {
+		await settings.evaluate( `document.getElementById('settings-topic-${ topic }').click();document.getElementById('settings-topic-${ topic }').focus()` );
+		await settings.evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
+		if ( topic === "theme" ) {
+			assert.equal( await settings.evaluate( "document.querySelectorAll('[data-settings-page=theme] #lp-theme').length" ), 1 );
+			assert.equal( await settings.evaluate( "document.querySelectorAll('[data-settings-page=background] #lp-theme').length" ), 0 );
+			await settings.evaluate( "const c=document.getElementById('lp-theme');c.value='cream';c.dispatchEvent(new Event('change',{bubbles:true}))" );
+			await main.until( "document.body.classList.contains('theme-cream')" );
+		}
+		const shot = await settings.call( "Page.captureScreenshot", { format: "png" } );
+		await fs.writeFile( path.join( artifacts, `${ name }.png` ), Buffer.from( shot.data, "base64" ) );
+	}
+	console.log( "PASS: legacy spacing migration, independent script/heading/comment line boxes, quoted speech, saved values and dedicated Theme topic." );
 	await settings.evaluate( "document.querySelector('[data-settings-group=controls]').click();document.querySelector('[data-tab=phone]').click();document.getElementById('set-phone-qr').removeAttribute('src')" );
 	await main.evaluate( "window.electron.getPhoneInfo()" );
 	await settings.until( "document.getElementById('set-phone-qr').complete && document.getElementById('set-phone-qr').naturalWidth===240" );

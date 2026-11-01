@@ -27,6 +27,10 @@ h4 { font-size: 115%; font-weight: bold; padding: 0; margin: 0 0 0.25em 0; }
 #md h3 { font-size: calc(125% * var(--heading-scale, 1)); }
 #md h4 { font-size: calc(115% * var(--heading-scale, 1)); }
 
+#md :is(h1, h2, h3, h4, h5, h6) {
+	line-height: var(--heading-line-height, var(--line-height));
+}
+
 a { color: #ffffffcc; }
 
 #resize-handle {
@@ -269,9 +273,15 @@ h2 {
 
 .direction {
 	font-style: italic;
+	line-height: 0;
+}
+
+#md p.direction-only {
+	line-height: 0;
 }
 
 .direction .dir-text {
+	line-height: var(--direction-line-height, var(--line-height));
 	color: var(--direction-colour, rgba(255, 255, 255, 0.4));
 	font-size: calc(var(--script-size, 1rem) * 0.8 * var(--direction-scale, 1));
 }
@@ -279,6 +289,7 @@ h2 {
 .direction .say {
 	color: #ffffff;
 	font-style: normal;
+	line-height: var(--line-height);
 }
 
 body.directions-normal .direction .dir-text {
@@ -598,7 +609,7 @@ body.eye-line #md {
 	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 	align-items: center;
 	gap: 0.75em;
-	margin: 0.4em 0;
+	margin: 10px 0;
 }
 
 .settings-control-row > :is(input, select) {
@@ -606,7 +617,16 @@ body.eye-line #md {
 }
 
 .settings-control-row:has(> .slider-with-box) {
-	display: block;
+	display: grid;
+}
+
+#settings-modal .settings-content .settings-control-range {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+	align-items: center;
+	gap: 12px;
+	min-height: 32px;
+	margin: 12px 0;
 }
 
 .settings-control-check {
@@ -614,7 +634,7 @@ body.eye-line #md {
 	align-items: flex-start;
 	gap: 6px;
 	min-height: 28px;
-	margin: 0.4em 0;
+	margin: 8px 0;
 }
 
 .settings-control-check > input[type="checkbox"] {
@@ -791,7 +811,8 @@ body.eye-line #md {
 	border: 1px solid #444;
 	border-radius: 6px;
 	margin: 0 0 0.75em 0;
-	padding: 0.5em 0.75em 0.75em;
+	padding: 10px 12px 12px;
+	line-height: 1.5;
 }
 
 .settings-content legend {
@@ -840,8 +861,9 @@ body.eye-line #md {
 }
 
 .settings-content .field-hint {
-	margin: 0.2em 0 0.4em;
+	margin: 6px 0 10px;
 	font-size: 12px;
+	line-height: 1.5;
 	color: #9a9a9a;
 }
 
@@ -1097,8 +1119,8 @@ body.controls-hidden * {
 :is(#set-layout-host, #set-reading-host, #set-recording-host) .lp-row {
 	display: flex;
 	flex-direction: column;
-	gap: 3px;
-	margin: 8px 0;
+	gap: 7px;
+	margin: 12px 0;
 }
 
 .panel .lp-row output,
@@ -2210,7 +2232,7 @@ body::-webkit-scrollbar,
 
 .panel .lp-sub,
 :is(#set-layout-host, #set-reading-host, #set-recording-host) .lp-sub {
-	margin: 12px 0 2px;
+	margin: 16px 0 6px;
 	font-size: 11px;
 	font-weight: 600;
 	letter-spacing: 0.06em;

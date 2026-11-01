@@ -241,6 +241,19 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ## Change log
 
+### Unreleased
+
+- **Windows app name:** Task Manager shows **Sightline Prompter**, replacing
+  the long product description in the executable metadata. This takes effect
+  when you run the updated build.
+- **Independent line spacing:** **Settings > Appearance > Spacing** has separate
+  controls for script, headings and square-bracket comments. Existing profiles
+  retain their previous spacing until you adjust it. Quoted spoken directions
+  keep script spacing.
+- **Theme and clearer Settings:** **Appearance > Theme** has its own named tab.
+  Settings rows have more breathing room and aligned controls; the panel keeps
+  its stable size, with no scrolling.
+
 ### 1.1.0 (31 October 2026)
 
 Released with **Stream Deck 0.2.0**. Earlier RC identifiers below are test

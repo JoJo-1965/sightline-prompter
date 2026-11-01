@@ -150,6 +150,8 @@ const defaultSettings = {
 	marginTop: 0, // % of the window height where text fades out
 	marginBottom: 0,
 	lineHeight: 1.3,
+	headingLineHeight: 1.3,
+	directionLineHeight: 1.3,
 	headingScale: 1, // section headings, as a share of their usual size next to the text
 	directionScale: 1, // delivery comments, independently of headings
 	directionColour: "", // empty follows the theme and direction visibility choice
@@ -1472,6 +1474,12 @@ app.whenReady().then( async () => {
 	streamDeckToken = state.streamDeckToken || newToken();
 	phoneKey = state.phoneKey || newPhoneKey();
 	settings = { ...defaultSettings, ...state.settings };
+	// Existing profiles used one spacing value for every kind of text.
+	for ( const key of [ "headingLineHeight", "directionLineHeight" ] ) {
+		if ( !Object.hasOwn( state.settings ?? {}, key ) ) {
+			settings[key] = settings.lineHeight * ( settings.scriptFont === "opendyslexic" ? 1.1 : 1 );
+		}
+	}
 	if ( settings.obsEnabled ) obsPassword = await obsCredentials.read();
 	normalBounds = state.normalBounds ?? null;
 	slots = Array.from( { length: SLOT_COUNT }, ( _, i ) =>

@@ -24,7 +24,7 @@ The **Tools** button opens quick adjustments: **Spacing and mirror**
 microphone**. Changes show straight away. Drag a panel by its title to move
 it out of the way; double-click the title to recentre it.
 
-Settings reuses these controls in **Appearance** under **Text**, **Background**,
+Settings reuses these controls in **Appearance** under **Theme**, **Text**, **Background**,
 **Reading aids**, **Spacing** and **Screens**, plus **Recording > Takes** and
 **Prompting > Script**. There is
 one copy of each control; closing Settings returns it to the quick panel.
@@ -43,7 +43,11 @@ one copy of each control; closing Settings returns it to the quick panel.
   while you are.
 - **Margins** keep the text narrow, so your eyes stay near the camera. The top
   and bottom margins fade the text out near the edges.
-- **Line spacing**, **alignment** (left or centred) and the **reading line**:
+- **Script, heading and comment line spacing** are independent, in
+  **Appearance > Spacing**. Each runs from 100% to 250% of its font size.
+  Wrapped comments can be tighter than the spoken text; spoken quotations
+  keep script spacing. Existing profiles retain their previous spacing.
+- **Alignment** (left or centred) and the **reading line**:
   where the line you're reading sits. Put it just under your webcam.
 - **Heading size**: section headings grow with the text, so if they get too
   big when you make the text larger, lower this. 100% is their usual size
@@ -59,7 +63,7 @@ one copy of each control; closing Settings returns it to the quick panel.
 ## Reading aids
 
 The separate **Appearance > Reading aids** topic brings these choices together.
-Fonts are in **Appearance > Text**, and colour themes are in **Appearance > Background**.
+Fonts are in **Appearance > Text**, and colour themes are in **Appearance > Theme**.
 
 ![Reading aids grouped together in Settings](images/settings-aids.png)
 
@@ -88,8 +92,8 @@ Fonts are in **Appearance > Text**, and colour themes are in **Appearance > Back
 ![Window, monitor and eye-line settings under Appearance > Screens](images/settings-display.png)
 
 Window and monitor placement, Keep on top and the eye-line strip. Fonts and
-heading size are in **Appearance > Text**; backing and colours are in
-**Appearance > Background**. Highlights are in **Appearance > Reading aids**;
+heading size are in **Appearance > Text**; backing is in **Appearance > Background**
+and colours are in **Appearance > Theme**. Highlights are in **Appearance > Reading aids**;
 the reading line is in **Appearance > Spacing**. Mirroring is in **Appearance > Screens**. Delivery directions are in
 **Prompting > Script**.
 

@@ -1,6 +1,7 @@
 # Settings screenshot gallery
 
-Sightline 1.1.0 · 31 October 2026. These images show the released Settings layout.
+Source preview · 1 November 2026. Appearance images include the next update's
+Theme tab, independent line spacing and roomier rows; other topics show 1.1.0.
 The panel stays the same size across topics.
 RC8 gives Settings and Help their own movable windows. The controls shown
 below are retained; drag the native title bar to use another screen.
@@ -51,6 +52,10 @@ Jump to [Prompting](settings-gallery.md#prompting), [Appearance](settings-galler
 
 ## Appearance
 
+### Theme
+
+![Script colour themes on a dedicated tab](images/settings-theme.png)
+
 ### Text
 
 ![Body font, heading font, heading size and text-size preview](images/settings-reading.png)
@@ -69,6 +74,8 @@ Jump to [Prompting](settings-gallery.md#prompting), [Appearance](settings-galler
 
 ![Spacing and alignment, second page](images/settings-layout-page-2.png)
 
+![Reading position and layout reset](images/settings-layout-page-3.png)
+
 ### Screens
 
 Mirroring has one Settings home here, alongside the window and monitor controls.
@@ -76,6 +83,8 @@ Mirroring has one Settings home here, alongside the window and monitor controls.
 ![Screen and eye-line settings, first page](images/settings-display.png)
 
 ![Screen and eye-line settings, second page](images/settings-display-page-2.png)
+
+![Eye-line strip size and reading position](images/settings-display-page-3.png)
 
 ## Recording
 

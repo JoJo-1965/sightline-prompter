@@ -31,7 +31,8 @@ export const SHORTCUTS = [
 			[ [ "Ctrl+Shift+0" ], "Reset the backing" ],
 			[ [ "Ctrl+M" ], "Mirror: off → horizontal → vertical → both" ],
 			[ [ "Toolbar mirror icons" ], "Toggle left/right and top/bottom independently; lit means on" ],
-			[ [ "Ctrl+Shift+K" ], "Layout: margins, line spacing, alignment" ]
+			[ [ "Ctrl+Shift+K" ], "Layout: margins, separate script/heading/comment spacing, alignment" ],
+			[ [ "Settings > Appearance > Theme" ], "Choose script colours; Text has fonts and Background has transparency" ]
 		]
 	},
 	{
