@@ -1,6 +1,10 @@
 # Sightline Prompter feature grid
 
 **Review basis: Recording Workflow Preview 02, documentation revision 2, 1 November 2026.**
+**Build version:** `1.1.0` · **Publication status:** Preview
+
+**Maintained source:** [Feature grid](https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/FEATURE-GRID.md)
+
 This grid describes the preview built from `647272d`, with companion Stream
 Deck plugin **0.2.0**. It includes the existing features and the unpublished
 preview additions. The public app release remains **1.1.0**; this document
@@ -372,10 +376,14 @@ Reference: [Privacy and accessibility policies](POLICIES.md) and [Acceptance wal
 
 ## Maintaining this grid
 
-The Markdown tables are the source for the HTML and CSV. Rebuild both with
+The Markdown tables and metadata are the source for HTML, CSV and JSON. Rebuild them with
 `node scripts/build-feature-grid.mjs` after editing a row. Check the guide and
 the running build before changing a capability's availability. Keep the build
 identifier above when this document is used as a review snapshot.
+
+Review this matrix with all deployment documentation. Follow the
+[deployment checklist](DEPLOYMENT-CHECKLIST.md), run the export check and sync
+the JL page/downloads before publication. Generated copies are not edited by hand.
 
 Reviewers should record their operating system, app/plugin versions, speech
 engine, camera/microphone, recording format and tested control surfaces in

@@ -1,10 +1,32 @@
 // The Markdown grid is the source; HTML and CSV are reviewable exports.
 import fs from "node:fs";
 import path from "node:path";
+import crypto from "node:crypto";
+import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve( path.dirname( fileURLToPath( import.meta.url ) ), ".." );
-const source = fs.readFileSync( path.join( root, "docs/FEATURE-GRID.md" ), "utf8" );
+const checking = process.argv.includes( "--check" );
+const staged = process.argv.includes( "--staged" );
+const normal = value => value.replace( /\r\n/g, "\n" );
+const read = file => normal( staged ? execFileSync( "git", [ "show", `:${ file }` ], { cwd: root, encoding: "utf8", stdio: [ "ignore", "pipe", "pipe" ] } ) : fs.readFileSync( path.join( root, file ), "utf8" ) );
+const source = read( "docs/FEATURE-GRID.md" );
+const basis = source.match( /\*\*Review basis:\s*(.+?)\*\*/ )?.[1]?.replace( /\.$/, "" );
+const date = basis?.match( /\d{1,2} [A-Za-z]+ \d{4}/ )?.[0];
+const sourceBuild = source.match( /built from\s+`([a-f\d]+)`/i )?.[1];
+const pluginRelease = source.match( /plugin\s+\*\*([^*]+)\*\*/i )?.[1];
+const appRelease = source.match( /public app release remains\s+\*\*([^*]+)\*\*/i )?.[1];
+const buildVersion = source.match( /\*\*Build version:\*\*\s*`([^`]+)`/ )?.[1];
+const publicationStatus = source.match( /\*\*Publication status:\*\*\s*(Preview|Released)/i )?.[1].toLowerCase();
+const sourceUrl = source.match( /\*\*Maintained source:\*\*\s*\[[^\]]+\]\((https:\/\/[^)]+)\)/ )?.[1];
+if ( ![ basis, date, sourceBuild, pluginRelease, appRelease, buildVersion, publicationStatus, sourceUrl ].every( Boolean ) ) throw new Error( "Feature grid needs review basis/date, build and publication status, source build, companion/public versions and maintained source URL." );
+if ( process.argv.includes( "--release" ) ) {
+	const version = JSON.parse( read( "package.json" ) ).version;
+	if ( buildVersion !== version ) throw new Error( `Grid build ${ buildVersion } does not describe package ${ version }` );
+	if ( !version.includes( "-" ) && publicationStatus !== "released" ) throw new Error( "A stable release cannot use a Preview feature grid. Review the matrix and mark its released build before tagging." );
+	if ( !version.includes( "-" ) && ( appRelease !== version || /preview/i.test( basis ) || !sourceUrl.includes( `/blob/v${ version }/` ) ) ) throw new Error( "Stable-release matrix needs the matching published version, released review basis and a maintained source link to its version tag." );
+	if ( process.env.GITHUB_REF_NAME?.startsWith( "v" ) && process.env.GITHUB_REF_NAME !== `v${ version }` ) throw new Error( "Version tag and package version differ." );
+}
 const availability = [ "Included", "Optional", "Dependent", "Limited", "Not included" ];
 const sections = [];
 let current = null;
@@ -35,9 +57,8 @@ for ( const match of source.matchAll( /\]\(([^)#]+)(?:#[^)]*)?\)/g ) ) {
 }
 const csvCell = value => `"${ value.replaceAll( "\"", "\"\"" ) }"`;
 const csv = [ [ "Review build", "Section", "Capability", "Availability", "Options and behaviour", "Dependencies and limits", "Reference", "Reviewer notes" ],
-	...sections.flatMap( section => section.rows.map( row => [ "Preview 02 / 647272d / Stream Deck 0.2.0", section.title, ...row, section.reference, "" ] ) )
+	...sections.flatMap( section => section.rows.map( row => [ `${ basis } / ${ sourceBuild } / Stream Deck ${ pluginRelease }`, section.title, ...row, section.reference, "" ] ) )
 ].map( row => row.map( csvCell ).join( "," ) ).join( "\r\n" );
-fs.writeFileSync( path.join( root, "docs/FEATURE-GRID.csv" ), `\uFEFF${ csv }\r\n` );
 const escape = value => value.replaceAll( "&", "&amp;" ).replaceAll( "<", "&lt;" ).replaceAll( ">", "&gt;" ).replaceAll( "\"", "&quot;" ).replaceAll( "'", "&#39;" );
 const inline = value => escape( value )
 	.replace( /`([^`]+)`/g, "<code>$1</code>" )
@@ -54,8 +75,8 @@ const body = sections.map( section => `<section id="${ section.id }" class="feat
 const html = `<!doctype html>
 <html lang="en-GB">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Sightline Prompter · Preview 02 feature grid</title>
-<meta name="description" content="Detailed reviewer feature grid for Sightline Prompter Preview 02, with separate Stream Deck and OBS sections, requirements and limitations.">
+<title>Sightline Prompter · feature grid</title>
+<meta name="description" content="Detailed reviewer feature grid for Sightline Prompter, with separate Stream Deck and OBS sections, requirements and limitations.">
 <style>
 :root{color-scheme:dark;--bg:#0c1420;--panel:#152232;--line:#40536b;--ink:#eef3fa;--muted:#c1cddd;--gold:#f1ce78;--link:#a6d5ff}
 *{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:1rem}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,Segoe UI,sans-serif}a{color:var(--link);text-underline-offset:.18em}p,td,th,li,label{overflow-wrap:anywhere;text-wrap:pretty}h1,h2,h3{line-height:1.2;text-wrap:balance}button,input,select{font:inherit}button,a,input,select{touch-action:manipulation}button,input,select{min-height:44px;border:1px solid #7e94ae;border-radius:8px;background:#1e3045;color:var(--ink);padding:.55rem .75rem}button{cursor:pointer}button:hover{background:#2a425d}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--gold);outline-offset:4px}main{max-width:1450px;padding:2.5rem 2rem 4rem;margin:auto}.eyebrow{letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-size:.8rem;font-weight:750;margin:0 0 .75rem}h1{font-size:clamp(2rem,4vw,3.5rem);margin:0 0 1rem;max-width:26ch}.intro{max-width:85ch;color:var(--muted)}.build{border-left:4px solid var(--gold);background:var(--panel);padding:1rem 1.2rem;margin:1.4rem 0;max-width:90ch}.build p{margin:.25rem 0}.links{display:flex;flex-wrap:wrap;gap:.4rem 1.5rem;margin:1rem 0 1.5rem}.links a{display:inline-flex;align-items:center;min-height:44px}.controls{padding:1.2rem;border:1px solid var(--line);border-radius:12px;background:var(--panel);display:grid;grid-template-columns:2fr 1.4fr 1fr auto;gap:1rem;align-items:end}.controls label{display:grid;gap:.4rem;font-size:.9rem;font-weight:650}.controls input,.controls select{width:100%;min-width:0}.result{margin:.75rem 0;color:var(--gold);font-weight:650}.legend{display:flex;flex-wrap:wrap;gap:.5rem 1.25rem;font-size:.9rem;color:var(--muted)}.legend p{margin:.25rem 0}.badge{display:inline-block;border:1px solid #71869d;border-radius:20px;padding:.15rem .6rem;font-size:.78rem;font-weight:700;white-space:nowrap}.included{background:#173e36;color:#c8f5e4;border-color:#609d86}.optional{background:#213d5b;color:#daecff;border-color:#6d95bc}.dependent{background:#423725;color:#ffdfaa;border-color:#b39767}.limited{background:#443144;color:#f2d9f5;border-color:#b58cba}.not-included{background:#303843;color:#e1e7ef;border-color:#929fae}.feature-section{margin-top:2.7rem;scroll-margin-top:1rem}.section-heading{display:flex;align-items:center;justify-content:space-between;gap:1rem}.section-heading h2{margin:0;font-size:1.55rem}.section-heading>a{font-size:.82rem;white-space:nowrap}.reference{color:var(--muted);font-size:.9rem;margin:.75rem 0 1rem}.table-wrap{border:1px solid var(--line);border-radius:10px;overflow:hidden}table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:.91rem}th,td{vertical-align:top;text-align:left;padding:.9rem 1rem;border-bottom:1px solid var(--line)}thead th{background:#203249;color:var(--gold);font-size:.82rem}thead th:nth-child(1){width:21%}thead th:nth-child(2){width:12%}thead th:nth-child(3){width:34%}thead th:nth-child(4){width:33%}tbody th{font-weight:650;background:#132030}tbody tr:nth-child(even) td{background:#111d2b}tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}td{color:#d9e3ef}code{font: .92em ui-monospace,Consolas,monospace;color:#ffe6ab;overflow-wrap:anywhere}.closing{margin-top:3rem;padding:1.25rem;background:var(--panel);border:1px solid var(--line);border-radius:12px;max-width:90ch}.closing h2{margin-top:0;font-size:1.3rem}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}[hidden]{display:none!important}
@@ -69,7 +90,7 @@ const html = `<!doctype html>
 <body><main id="top">
 <header><p class="eyebrow">Sightline Prompter · Reviewer reference</p><h1>The detailed feature grid</h1>
 <p class="intro">A traditional teleprompter with voice control, transparent reading, optional AI assistance and production handover. Browse ${ titles.length } capabilities in ${ sections.length } groups, including dedicated Stream Deck and OBS sections.</p>
-<div class="build"><p><strong>Review basis: Recording Workflow Preview 02 · revision 2</strong></p><p>1 November 2026 · app source <code>647272d</code> · Stream Deck companion <strong>0.2.0</strong></p><p>This is an unpublished preview. The public app release remains <strong>1.1.0</strong>. Availability describes support, not a passed hardware test.</p></div>
+<div class="build"><p><strong>Review basis: ${ escape( basis ) }</strong></p><p>App build ${ escape( buildVersion ) } · source <code>${ sourceBuild }</code> · Stream Deck companion <strong>${ escape( pluginRelease ) }</strong></p><p>${ publicationStatus === "preview" ? "This is an unpublished preview reference." : "This is a released-build reference." } The public app release reference is <strong>${ escape( appRelease ) }</strong>. Availability describes support, not a passed hardware test.</p></div>
 <div class="links"><a href="FEATURE-GRID.csv" download>Download comparison CSV</a><a href="FEATURE-GRID.md">Markdown source</a><a href="guide/README.md">Detailed user guide</a><a href="POLICIES.md">Privacy and accessibility</a></div></header>
 <div class="controls" role="search" aria-label="Filter feature grid">
 <label for="query">Find a feature<input type="search" id="query" placeholder="Try WAV, mirror, voice or guide" autocomplete="off"></label>
@@ -92,5 +113,20 @@ function reset(){query.value='';group.value='';status.value='';filter();}
 query.addEventListener('input',filter);group.addEventListener('change',filter);status.addEventListener('change',filter);document.querySelector('#reset').addEventListener('click',()=>{reset();query.focus();});document.querySelector('#print').addEventListener('click',()=>{reset();window.print();});
 </script></body></html>
 `;
-fs.writeFileSync( path.join( root, "docs/FEATURE-GRID.html" ), html );
-console.log( `Built ${ titles.length } capabilities in ${ sections.length } groups: docs/FEATURE-GRID.html and docs/FEATURE-GRID.csv` );
+const snapshot = { schemaVersion: 1, basis, date, sourceBuild, buildVersion, publicationStatus, appRelease, pluginRelease, sourceUrl, sourceSha256: crypto.createHash( "sha256" ).update( source ).digest( "hex" ), support: availability,
+	groups: sections.map( ( section, i ) => ( { id: `group-${ String( i + 1 ).padStart( 2, "0" ) }`, name: section.title.replace( /^\d{2} · /, "" ), references: [ ...section.reference.matchAll( /\[([^\]]+)\]\(([^)]+)\)/g ) ].map( m => ( { name: m[1], href: new URL( m[2], sourceUrl ).href } ) ), rows: section.rows.map( ( [ name, support, options, limits ] ) => ( { name, support, options, limits } ) ) } ) ) };
+const outputs = { "docs/FEATURE-GRID.html": html, "docs/FEATURE-GRID.csv": `\uFEFF${ csv }\r\n`, "docs/FEATURE-GRID.json": `${ JSON.stringify( snapshot, null, 2 ) }\n` };
+const stale = [];
+for ( const [ file, content ] of Object.entries( outputs ) ) {
+	if ( checking ) {
+		try {
+			if ( read( file ) !== normal( content ) ) stale.push( file );
+		} catch {
+			stale.push( file );
+		}
+	} else fs.writeFileSync( path.join( root, file ), content );
+}
+if ( stale.length ) {
+	console.error( `Stale feature-grid exports: ${ stale.join( ", " ) }. Run node scripts/build-feature-grid.mjs and commit all outputs.` );
+	process.exitCode = 1;
+} else console.log( `${ checking ? "Checked" : "Built" } ${ titles.length } entries in ${ sections.length } groups: HTML, CSV and JSON are ${ checking ? "current" : "generated" }.` );

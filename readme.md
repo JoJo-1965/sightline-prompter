@@ -248,6 +248,11 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ## Change log
 
+The [deployment documentation checklist](docs/DEPLOYMENT-CHECKLIST.md) covers
+help, guide, screenshots, release notes, roadmap and the feature matrix/grids
+together. Generated references and the JL snapshot are checked before packaging
+and deployment.
+
 ### Unreleased
 
 **Review status:** Preview 03 has reported missing-control and navigation
