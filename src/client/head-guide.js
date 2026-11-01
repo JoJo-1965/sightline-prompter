@@ -66,7 +66,7 @@ for ( const axis of [ "x", "y" ] ) document.querySelector( `#eye-${ axis }` ).on
 document.querySelector( "#background" ).oninput = event => guide.action( "preferences", { background: Number( event.target.value ) / 100 } );
 document.querySelector( "#outline-opacity" ).oninput = event => guide.action( "preferences", { opacity: Number( event.target.value ) / 100 } );
 for ( const button of document.querySelectorAll( ".pose-arrows button" ) ) button.onclick = () => guide.action( "preferences", { x: pose.x + Number( button.dataset.x ?? 0 ), y: pose.y + Number( button.dataset.y ?? 0 ) } );
-for ( const name of [ "save-ideal", "reset-pose", "ideal-visible" ] ) document.getElementById( name ).onclick = () => guide.action( name );
+for ( const name of [ "save-ideal", "reset-pose", "ideal-visible", "save-reference", "restore-reference" ] ) document.getElementById( name ).onclick = () => guide.action( name );
 for ( const button of document.querySelectorAll( "[data-place]" ) ) button.onclick = () => guide.action( "place", button.dataset.place );
 document.querySelector( "#close" ).onclick = () => guide.action( "hide" );
 document.querySelector( "#lock" ).onclick = () => guide.action( "lock" );
@@ -98,6 +98,8 @@ guide.onState( ( value ) => {
 	pose = { x: value.x, y: value.y };
 	showPose( actualShape, value );
 	showPose( idealShape, value.ideal );
+	document.querySelector( "#restore-reference" ).disabled = !value.reference?.pose;
+	document.querySelector( "#reference-status" ).textContent = value.reference?.pose ? "Recording reference saved · Ideal unchanged" : "No recording reference saved. Ideal stays unchanged.";
 	idealShape.style.display = value.showIdeal ? "" : "none";
 	document.querySelector( "#ideal-visible" ).textContent = value.showIdeal ? "Hide ideal" : "Show ideal";
 	document.querySelector( "#pose-value" ).textContent = `X ${ value.x }% · Y ${ value.y }% · Size ${ Math.round( scale * 100 ) }%`;

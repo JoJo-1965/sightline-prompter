@@ -8,6 +8,10 @@ an authorised local agent, configure and control it. Optional script directions
 steer its operation. AI remains optional. See
 [Working with AI](09-working-with-ai.md).
 
+For a detailed comparison of the current preview's capabilities, see the
+[reviewer feature grid](../FEATURE-GRID.md), including separate Stream Deck
+and OBS sections, available options, dependencies and qualifications.
+
 The script floats over your screen, close to the webcam, and scrolls at a
 steady pace or follows your voice.
 
@@ -39,14 +43,20 @@ voice help movable. Helper windows now follow Hide from capture.
 8. [Shortcuts and troubleshooting](08-shortcuts-and-troubleshooting.md)
 9. [Working with AI](09-working-with-ai.md): AI-written scripts, letting an AI run the prompter, the take log and edit pack, and what's coming next
 10. [Setting up your AI](10-setting-up-your-ai.md): Claude Code, Codex, ChatGPT, Claude or Gemini, and the AI and remote control settings
-11. [Recording with OBS](11-obs.md): optional connection, recording controls, chapters and file references (development branch)
-12. [Production handover](12-production-handover.md): setup, framing, a short test, retakes, keeper choices and the files to hand over (development branch)
-13. [Settings screenshot gallery](settings-gallery.md): all seven groups, named component subtabs and contextual help (development branch)
-14. [Release-candidate acceptance test](14-acceptance-test.md): the matching builds, two sample scripts, physical checks and the evidence to keep
+11. [Recording with OBS](11-obs.md): connection, permissions, Continuous mode and next-preview linked recording
+12. [Production handover](12-production-handover.md): preparation, framing references, retakes and the files to hand over
+13. [Settings screenshot gallery](settings-gallery.md): grouped controls, named destinations and contextual help; preview images labelled
+14. [Recording acceptance walkthrough](14-acceptance-test.md): published baseline, next-preview checks and recording samples
 15. [OBS setup assistant](15-obs-setup.md): review a separate profile/scenes plan, preserve existing setups and verify 4K, clean audio and sync
 
 Inside the app, open this guide from **Help > User Guide** or the **?** menu.
 **F1** shows the keyboard shortcuts.
+
+**Source preview:** the next update adds production comments, saved Actual
+recording references and optional linked recording. Start with **Files > Sample
+scripts > Recording preview** and the acceptance checklist. These features are
+unpublished. This guide is also the canonical web documentation; a separate
+GitHub wiki is not enabled, avoiding a second copy of the instructions.
 
 [Privacy, terms, accessibility and voluntary support](../POLICIES.md)
 explain the microphone and local files, online services, your rights and

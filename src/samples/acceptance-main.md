@@ -2,23 +2,23 @@
 
 # Sightline acceptance · module A
 
-[OPTIONAL REVIEW. In the next candidate, use Script health in the editor before reading. After recording, use Rehearsal in the review panel. Filler counts need a separate opt-in under Settings > Recording > Takes. These review tools are not in RC14.]
+<!-- OPTIONAL REVIEW. In the next candidate, use Script health in the editor before reading. After recording, use Rehearsal in the review panel. Filler counts need a separate opt-in under Settings > Recording > Takes. These review tools are included in 1.1.0. -->
 
-[OPTIONAL SETUP CHECK. In the next candidate, Components has named subtabs for the speech model, AI kit, Node.js, OBS and Stream Deck. Debug is top-level; OBS connection/recording/setup are under Recording. Open Help > Getting started, then Tools > Session check. Each checklist link should open its existing tool or setting; Refresh should show the latest status. Finding an installed app does not confirm its connection. Do not apply the optional OBS setup assistant to a production configuration without reviewing its plan.]
+<!-- OPTIONAL SETUP CHECK. Components has named subtabs for the speech model, AI kit, Node.js and OBS. In the recording preview, Stream Deck setup has one home under Controls > Stream Deck. Debug is top-level; OBS connection/recording/setup are under Recording. Open Help > Getting started, then Tools > Session check. Each checklist link should open its existing tool or setting; Refresh should show the latest status. Finding an installed app does not confirm its connection. Do not apply the optional OBS setup assistant to a production configuration without reviewing its plan. -->
 
-[SETUP FIRST. Read the Release-candidate acceptance test in Help > User Guide before recording. Use the OBS profile in Stream Deck, voice scrolling and your normal camera and microphone positions. Leave the prompter paused until you are ready.]
+<!-- SETUP FIRST. Read the Recording acceptance walkthrough in Help > User Guide before recording. Choose Continuous mode for this two-module test: keep Link recording to prompting off. Use the OBS profile in Stream Deck, voice scrolling and your normal camera and microphone positions. Leave the prompter paused until you are ready. -->
 
-[Check OBS is connected and recording controls are allowed. Prepare the recorded slate, choose Flash and beep, and enable scratch audio. The script does not enable these settings for you.]
+<!-- Check OBS is connected and recording controls are allowed. Prepare the recorded slate, choose Flash and beep, and enable scratch audio. The script does not enable these settings for you. -->
 
-[A00. Before recording, choose Check compatibility in Settings > Controls > Stream Deck. Confirm Sightline 1.1.0-rc.1 and plugin 0.1.9 are reported as compatible. In Stream Deck, open a key's settings and check its connection result.]
+<!-- A00. Before recording, choose Check compatibility in Settings > Controls > Stream Deck. Confirm the running Sightline build and plugin 0.2.0 are reported as compatible. In Stream Deck, open a key's settings and check its connection result. -->
 
-[A00b. Before recording, open Settings from Files. Move its window by the native title bar, onto another screen if available. Close and reopen: it should remember its position. Change a draft setting and try closing: Keep editing must retain it; Apply must save without closing. F1 Help should also move independently and keep a stable frame across tabs. Mirror the prompter: Settings and Help must stay upright. Tools opens below its button; Edit beside it opens read-only sample source with Save a copy. In a spare slot try Clear, then Cancel: the sample must remain. Return here.]
+<!-- A00b. Before recording, open Settings from Files. Move its window by the native title bar, onto another screen if available. Close and reopen: it should remember its position. Change a draft setting and try closing: Keep editing must retain it; Apply must save without closing. F1 Help should also move independently and keep a stable frame across tabs. Mirror the prompter: Settings and Help must stay upright. Tools opens below its button; Edit beside it opens read-only sample source with Save a copy. In a spare slot try Clear, then Cancel: the sample must remain. Return here. -->
 
-[A00c. Before recording, check the phone QR appears under Controls > Phone after Apply. Mirroring belongs only under Appearance > Screens. Say "Prompter, what can I say?", drag its window aside and close it with "Prompter, close". Turn Hide from capture off if you need screenshots of Settings or either help window.]
+<!-- A00c. Before recording, check the phone QR appears under Controls > Phone after Apply. Mirroring belongs only under Appearance > Screens. Say "Prompter, what can I say?", drag its window aside and close it with "Prompter, close". Turn Hide from capture off if you need screenshots of Settings or either help window. -->
 
-[Use the Stream Deck Record take key to begin. Wait for confirmation and the slate. For the room check stay quiet; for the voice check read the card. After each result use Play / Pause to carry on.]
+<!-- Use the Stream Deck Record take key to begin. Wait for confirmation and the slate. For the room check stay quiet; for the voice check read the card. After each result use Play / Pause to carry on. -->
 
-[Throughout this test, Next section changes your place. If the prompter is still held afterwards, press Play / Pause once to begin reading that section. OBS must keep recording.]
+<!-- Throughout this test, Next section changes your place. If the prompter is still held afterwards, press Play / Pause once to begin reading that section. OBS must keep recording. -->
 
 {soundcheck: room}
 
@@ -26,7 +26,7 @@
 
 ## Section 1 · Camera and microphone reference {target: 0:30}
 
-[A01. Make three visible claps, about two seconds apart, with your hands in the camera picture. Keep the microphone in its usual position. These claps measure camera and microphone sync; the digital slate is a separate reference.]
+<!-- A01. Make three visible claps, about two seconds apart, with your hands in the camera picture. Keep the microphone in its usual position. These claps measure camera and microphone sync; the digital slate is a separate reference. -->
 
 This is the Sightline acceptance recording, module A. I am using my usual
 camera and microphone, and speaking at my normal level.
@@ -36,7 +36,7 @@ camera and microphone, and speaking at my normal level.
 Peter packed a purple paper bag. My lips should match these words in the
 recording. I would like a black decaf and a blueberry muffin, please.
 
-[A02. At the stop, wait five seconds. Sightline should hold while the OBS timer keeps moving. Use Stream Deck Next section to continue. Use Finish recording only at the end of module B.]
+<!-- A02. At the stop, wait five seconds. Sightline should hold while the OBS timer keeps moving. Use Stream Deck Next section to continue. Use Finish recording only at the end of module B. -->
 
 I will stop here while OBS keeps recording. {stop}
 
@@ -84,7 +84,7 @@ That is the end of this attempt. {stop}
 My guide is a manual framing reference. The ideal shape shows my preferred
 position, and the actual shape records the comparison I have set by hand.
 
-[A09. Open Guide adjustments on the prompter. Set eye centre and level first, then Lock eye position. Fit Top and Bottom, then Left and Right independently: both eye marks and the other edges must stay fixed. Try Background at 0% and 25%: the preview dims without fading the outlines. Save as ideal only if you want this new reference. Use the fullscreen key or Ctrl+Alt+H, then try Clean and Lock. Toggle Guide adjustments from the prompter and Tools without leaving fullscreen or unlocking the guide. Done hides only adjustments. Unlock the eyes to move Actual again. Check the projector stack and leave a small Actual adjustment for the module-change check.]
+<!-- A09. Open Guide adjustments on the prompter. Set eye centre and level first, then Lock eye position. Fit Top and Bottom, then Left and Right independently: both eye marks and the other edges must stay fixed. Try Background at 0% and 25%: the preview dims without fading the outlines. Save as ideal only if you want this new reference. Use the fullscreen key or Ctrl+Alt+H, then try Clean and Lock. Toggle Guide adjustments from the prompter and Tools without leaving fullscreen or unlocking the guide. Done hides only adjustments. Unlock the eyes to move Actual again. Check the projector stack and leave a small Actual adjustment for the module-change check. -->
 
 I can still see my preview and read the words. The guide should stay out
 of both the composed camera recording and the separate clean camera file.
@@ -93,14 +93,14 @@ of both the composed camera recording and the separate clean camera file.
 
 I will check the recorded picture afterwards. {stop}
 
-[Optional pad/phone check while stopped: use Framing & checks in Controls > Pad. Open Adjust guide, align Eyes, lock them and fit Outline. Compare can show the saved Ideal or restore Actual without changing it. Session check reports software state only. Listening off/on must leave OBS recording. Restore your usual layout afterwards.]
+<!-- Optional pad/phone check while stopped: use Framing & checks in Controls > Pad. Open Adjust guide, align Eyes, lock them and fit Outline. Compare can show the saved Ideal or restore Actual without changing it. Session check reports software state only. Listening off/on must leave OBS recording. Restore your usual layout afterwards. -->
 
 ## Section 5 · Going off script {target: 0:30}
 
 I am about to leave the script for a short demonstration. OBS and scratch
 audio should continue recording, although speech tracking will stop listening.
 
-[A10. At the off-script hold, talk for about ten seconds about your morning. Voice commands are deliberately unavailable here. Use Stream Deck Play / Pause to return to the script.]
+<!-- A10. At the off-script hold, talk for about ten seconds about your morning. Voice commands are deliberately unavailable here. Use Stream Deck Play / Pause to return to the script. -->
 
 Here comes the off-script part. {listen: off}
 
@@ -118,12 +118,12 @@ That completes the off-script check. {stop}
 
 ## Section 6 · Controls and module handover {target: 0:30}
 
-[A11. Toggle On air off and on using Stream Deck. The backing should use your saved levels and OBS should keep recording. Try Bigger text once, then Smaller text once. Leave voice mode selected.]
+<!-- A11. Toggle On air off and on using Stream Deck. The backing should use your saved levels and OBS should keep recording. Try Bigger text once, then Smaller text once. Leave voice mode selected. -->
 
 This is the end of module A. I have checked the reading controls without
 changing the OBS recording. The next script should keep the same camera file,
 the same recording clock and my session guide settings.
 
-[A12. At the stop select Script slot 2 on Stream Deck. On smaller profiles use Sightline's slot 2 button. Do not press Finish recording. Module B gives the final instructions.]
+<!-- A12. At the stop select Script slot 2 on Stream Deck. On smaller profiles use Sightline's slot 2 button. Do not press Finish recording. Module B gives the final instructions. -->
 
 I am handing over to the second module now. {stop}

@@ -1,7 +1,8 @@
 # Settings
 
-**1.1.0 release candidate:** this regrouping is built and awaiting acceptance. For the published
-1.0.6 layout, use the guide bundled with that app.
+This source guide includes the next update's Theme tab, independent spacing,
+unified Stream Deck setup and optional linked recording. For the published
+1.1.0 layout, use the guide bundled with that app. Preview images are labelled.
 
 Open **⚙ Settings** on the top bar or press **Ctrl+,** (**Cmd+,** on Mac).
 In RC8, Settings opens in its own upright window. Drag the native title bar
@@ -29,7 +30,9 @@ offline in the app.
 Settings keeps the same width and height across every tab and page. It only
 reduces the available content space when you resize the Settings window.
 There is no scrolling. Longer topics use **Previous / Next**, with the current
-section and page number shown between them. Smaller windows use more pages;
+section and page number shown between them. In the next preview, enabled
+buttons name destinations and unavailable directions are disabled. Hover or
+focus for the full destination label. Smaller windows use more pages;
 your draft stays intact as you move between them. Word lists use pages too.
 
 The small raised **?** pill sits beside the option it explains, with a larger
@@ -50,10 +53,12 @@ without disappearing as you move the pointer onto it.
 | | Commands | When to listen, wake word, listener state and Restart listening |
 | | Your words | Script synonyms, command synonyms, sound-alike matching, suggestions and Teach |
 | | Script | Notes mode, pacing, script directions, slide cues and directive display |
-| **Appearance** | Text | Body and heading fonts, heading size, comment size/colour and text-size preview |
-| | Background | Text opacity, backing on/off air, brightness and colour theme |
+| **Appearance** | Theme | Standard, yellow on dark, high contrast or soft cream script colours |
+| | Text | Body and heading fonts, heading size and text-size preview |
+| | Directions | Separate inline direction and production note size, colour and spacing; inline visibility |
+| | Background | Text opacity, backing on/off air and brightness |
 | | Reading aids | Focus band, text edge, reading-line marker, sentence highlight and progress bar |
-| | Spacing | Margins, line spacing, reading line and alignment |
+| | Spacing | Independent script and heading line spacing, margins, reading line and alignment |
 | | Screens | Beam-splitter mirroring, prompter monitor, Keep on top, eye-line strip and keeping controls visible |
 | **Recording** | Takes | Slate, ON AIR display, countdown beep, capture protection and click-through |
 | | Takes: rehearsal coaching | Optional recognised filler/repetition counts during active voice following; Apply to save |
@@ -102,7 +107,7 @@ pages. **Debug** also has its own top-level group.
 - **OBS Studio:** checks the usual installation folders and running portable
   copies. Install / reinstall opens OBS's own download page. **Locate** remembers
   a custom installation; **Check again** detects later removal too.
-- **Stream Deck:** checks the Elgato application and looks for the Sightline
+- **Stream Deck (Controls in the next preview):** checks the Elgato application and looks for the Sightline
   plugin manifest. Its installer is separate from the plugin. **Controls >
   Stream Deck > Check compatibility** confirms the live plugin version and
   protocol; finding installed files alone does not confirm a working connection.
@@ -132,7 +137,7 @@ Installing the AI kit does not enable the API or alter your assistant.
 
 ![Node.js availability and installer](images/settings-component-node.png)
 
-![Stream Deck app and Sightline plugin checks](images/settings-component-streamdeck.png)
+Stream Deck installation and plugin checks now share **Controls > Stream Deck**.
 
 ## Setup and session checks
 
@@ -172,23 +177,64 @@ Apply; the grey controls retain their values.
 
 ![Grey API controls with a visible draft explanation](images/settings-ai-unavailable.png)
 
-## Fonts, backing and reading aids
+## Theme, fonts, spacing and reading aids
 
-Open **Appearance > Text** for the body font, heading font, heading size,
-comment size/colour and text-size preview. Square-bracket comments follow
-Heading font, with independent size and colour. **Theme** resets their colour;
-the visibility choice remains in **Prompting > Script**. Quoted spoken words
-keep their script style. These appearance changes save immediately.
+**Appearance > Theme** is the first Appearance topic. Choose **Standard**,
+**Yellow on dark**, **High contrast** or **Soft cream**. It changes script
+colours; the controls keep their own colours. Changes save immediately.
+
+![Script colour themes on their own named tab](images/settings-theme.png)
+
+Open **Appearance > Text** for the body font, heading font, heading size
+and text-size preview. Direction and production-note controls have their own
+home under **Appearance > Directions**. Fonts and heading size save immediately.
 The visible notes distinguish changes saved immediately
 from the text-size preview saved with Apply or Save & close.
 
-![Script fonts, heading size and independent comment size and colour](images/settings-reading.png)
+![Script fonts, heading size and text-size preview](images/settings-reading.png)
 
-**Appearance > Background** holds visibility, brightness and colour choices.
+**Appearance > Directions** has two clearly named groups:
+
+- **Inline directions [ … ]:** visibility, size (40–150% of the usual cue
+  size), colour and line spacing. Normal, Dimmed and Hidden apply only to
+  square-bracket cues. Quoted words intended to be spoken retain script styling.
+- **Production notes &lt;!-- … --&gt;:** size (40–200% of the usual note size),
+  colour and line spacing. The usual note size is 55% of the script text.
+  Notes appear while paused and hide during delivery; even their quoted
+  contents stay outside speech tracking.
+
+Both groups follow Heading font and save immediately, including inline
+visibility. Each has its own **Theme** colour reset. Line spacing is 100–250%
+of that group's font size. High contrast removes production-note dimming.
+Changing a heading's size does not resize either kind of note.
+
+![Inline directions in their own appearance group](images/settings-directions.png)
+
+![Production notes with independent appearance controls](images/settings-directions-page-2.png)
+
+**Appearance > Background** holds visibility and brightness.
 Use Background for the off-air level and Background on air for the level used
 when ON AIR is enabled. Both values are remembered.
 
 ![Separate off-air and on-air backing controls](images/settings-background.png)
+
+**Appearance > Spacing** has **Script line spacing** and **Heading line spacing**.
+Inline direction and production note spacing are in **Appearance > Directions**.
+Each is 100–250% of that text's font size and saves immediately.
+Changing one leaves the others alone. Existing profiles
+start with their previous shared spacing; Reset layout restores the shipped
+values, including the separate production-note defaults.
+
+Direction spacing applies to wrapped square-bracket cues. A direction-only
+paragraph can be tighter than the script. Inline cues share a line with the
+surrounding words; quotations intended to be spoken keep script spacing.
+These controls change line spacing, not gaps between paragraphs.
+
+![Separate script and heading line spacing](images/settings-layout.png)
+
+Labels, sliders and inputs use aligned rows with more vertical space. The
+Settings frame stays fixed; longer topics use the existing Previous/Next
+controls rather than scrolling or shrinking the text.
 
 **Appearance > Reading aids** holds the focus band, text edge, reading-line
 marker, sentence highlight and progress bar. [Layout and display](04-layout-and-display.md)

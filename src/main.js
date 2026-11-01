@@ -34,6 +34,7 @@ import { editPack } from "./client/edit-pack.js";
 import { fitInside, keepTopReachable, sameRect } from "./utils/fit.js";
 import { isNewer } from "./utils/version.js";
 import { startRemoteServer, newToken } from "./remote.js";
+import { createStreamDeckDiscovery } from "./stream-deck-discovery.js";
 import { createStreamDeckPeer, streamDeckContract } from "./stream-deck-compatibility.js";
 import { heardReport } from "./heard-report.js";
 import { deleteRecording, listRecordings, readRecording, recordingAudio, recordingPack, updateRecording, zipFiles } from "./recordings.js";
@@ -150,9 +151,14 @@ const defaultSettings = {
 	marginTop: 0, // % of the window height where text fades out
 	marginBottom: 0,
 	lineHeight: 1.3,
+	headingLineHeight: 1.3,
+	directionLineHeight: 1.3,
 	headingScale: 1, // section headings, as a share of their usual size next to the text
-	directionScale: 1, // delivery comments, independently of headings
+	directionScale: 1, // inline directions, independently of headings and production notes
 	directionColour: "", // empty follows the theme and direction visibility choice
+	productionNoteScale: 1, // preparation notes, relative to their usual smaller size
+	productionNoteLineHeight: 1.4,
+	productionNoteColour: "", // empty follows the script theme
 	textOpacity: 1, // script text only; the controls stay solid
 	backingOnAir: 0.07, // backing while on air: nearly see-through (Backing is the level off air)
 	textBrightness: 1, // dims the script without making it see-through
@@ -194,6 +200,7 @@ const defaultSettings = {
 	headGuideX: 0,
 	headGuideY: 0,
 	headGuideIdeal: { x: 0, y: 0, scale: 1 },
+	headGuideReference: null,
 	headGuideShowIdeal: true,
 	headGuidePlacement: "centre",
 	headGuidePlacements: {},
@@ -214,6 +221,7 @@ const defaultSettings = {
 	obsHost: "127.0.0.1",
 	obsPort: 4455,
 	obsControls: false, // status only until explicitly allowed
+	obsFollowPrompter: false, // optional linked recording lifecycle
 	obsMarkers: false,
 	obsRecordedSlate: false,
 	phoneRemote: false, // phone remote over the home network (Settings > Phone remote)
@@ -221,7 +229,7 @@ const defaultSettings = {
 };
 
 // Settings that a settings file or the remote API may not change.
-const PROTECTED_SETTINGS = [ "remoteControl", "remotePort", "remoteDeleteRecordings", "streamDeck", "phoneRemote", "phonePort", "obsEnabled", "obsHost", "obsPort", "obsControls", "obsMarkers", "obsRecordedSlate", "traceCommands", "coachFillers" ];
+const PROTECTED_SETTINGS = [ "remoteControl", "remotePort", "remoteDeleteRecordings", "streamDeck", "phoneRemote", "phonePort", "obsEnabled", "obsHost", "obsPort", "obsControls", "obsFollowPrompter", "obsMarkers", "obsRecordedSlate", "traceCommands", "coachFillers" ];
 
 // Take logs, one per script per day: the recordings library (recordings.js).
 const takeLogFolder = () => path.join( app.getPath( "userData" ), "take-logs" );
@@ -352,8 +360,9 @@ const stateManager = stateFactory( defaultConfig );
 export const SAMPLE_SCRIPTS = [
 	{ file: "welcome.md", label: "Welcome tour" },
 	{ file: "voice-and-stops.md", label: "Voice control, stops and countdowns" },
-	{ file: "acceptance-main.md", label: "RC acceptance: module A" },
-	{ file: "acceptance-module-change.md", label: "RC acceptance: module B" },
+	{ file: "recording-preview.md", label: "Recording preview: preparation, modes and handover" },
+	{ file: "acceptance-main.md", label: "Recording walkthrough: module A" },
+	{ file: "acceptance-module-change.md", label: "Recording walkthrough: module B" },
 	{ file: "batch-module.md", label: "Batch recording, section by section" },
 	{ file: "single-take.md", label: "Single continuous take" },
 	{ file: "notes.md", label: "Notes, a page at a time" },
@@ -675,6 +684,7 @@ const createWindow = ( state ) => {
 			const host = String( options.host ?? "127.0.0.1" ).trim();
 			const port = Number( options.port );
 			obsAddress( host, port );
+			if ( Object.hasOwn( options, "followPrompter" ) && options.followPrompter !== settings.obsFollowPrompter && [ "recording", "paused" ].includes( obs.state().recording ) ) throw new Error( "Finish recording before changing linked recording mode" );
 			if ( options.password !== undefined || options.clearPassword ) {
 				const password = options.clearPassword ? "" : String( options.password );
 				if ( password.length > 4096 ) throw new Error( "OBS password is too long" );
@@ -683,7 +693,7 @@ const createWindow = ( state ) => {
 			}
 			if ( options.enabled && !obsPassword ) obsPassword = await obsCredentials.read();
 			if ( !options.enabled ) obsPassword = "";
-			await updateSettings( { obsEnabled: options.enabled === true, obsHost: host, obsPort: port, obsControls: options.controls === true, obsMarkers: options.markers === true, obsRecordedSlate: options.recordedSlate === true } );
+			await updateSettings( { obsEnabled: options.enabled === true, obsHost: host, obsPort: port, obsControls: options.controls === true, obsFollowPrompter: options.followPrompter ?? settings.obsFollowPrompter, obsMarkers: options.markers === true, obsRecordedSlate: options.recordedSlate === true } );
 			return { ok: true, hasPassword: await obsCredentials.hasSaved(), state: obsSnapshot() };
 		} catch ( error ) {
 			return { ok: false, error: error.message };
@@ -1472,6 +1482,12 @@ app.whenReady().then( async () => {
 	streamDeckToken = state.streamDeckToken || newToken();
 	phoneKey = state.phoneKey || newPhoneKey();
 	settings = { ...defaultSettings, ...state.settings };
+	// Existing profiles used one spacing value for every kind of text.
+	for ( const key of [ "headingLineHeight", "directionLineHeight" ] ) {
+		if ( !Object.hasOwn( state.settings ?? {}, key ) ) {
+			settings[key] = settings.lineHeight * ( settings.scriptFont === "opendyslexic" ? 1.1 : 1 );
+		}
+	}
 	if ( settings.obsEnabled ) obsPassword = await obsCredentials.read();
 	normalBounds = state.normalBounds ?? null;
 	slots = Array.from( { length: SLOT_COUNT }, ( _, i ) =>
@@ -1588,6 +1604,7 @@ app.whenReady().then( async () => {
 	const APP_DATA_LABEL = { win32: "%APPDATA%", darwin: "~/Library/Application Support" }[process.platform] ?? "~/.config";
 	const REMOTE_FILE_LABEL = REMOTE_FILE.replace( app.getPath( "appData" ), APP_DATA_LABEL );
 	const REMOTE_COMMANDS = [
+		"obs-on", "obs-off", "obs-pause", "obs-resume",
 		"obs-record",
 		"obs-finish",
 		"play",
@@ -1795,6 +1812,8 @@ app.whenReady().then( async () => {
 	// The Stream Deck plugin's key: the state, the live stream, the commands
 	// and the slots, nothing else (no scripts, settings or recordings).
 	const STREAM_DECK_FILE = path.join( app.getPath( "userData" ), "stream-deck.json" );
+	const streamDeckDiscovery = createStreamDeckDiscovery( { localFile: STREAM_DECK_FILE, standardFile: path.join( app.getPath( "appData" ), "Sightline Prompter", "stream-deck.json" ), claimCustom: process.argv.includes( "--pair-stream-deck-preview" ) } );
+	win.on( "closed", () => streamDeckDiscovery.release() );
 	const BUTTON_ROUTES = new Set( [ "GET /status", "POST /command", "POST /slot", "POST /stream-deck/hello" ] );
 	// Close the server now: open event streams (the Stream Deck) would otherwise keep it waiting.
 	const closeServer = server => new Promise( ( r ) => {
@@ -1817,6 +1836,7 @@ app.whenReady().then( async () => {
 	}
 
 	async function syncRemoteServer() {
+		if ( !settings.streamDeck ) streamDeckDiscovery.release();
 		if ( !settings.streamDeck ) streamDeckPeer.clear();
 		const on = settings.remoteControl || settings.streamDeck;
 		const wanted = on ? settings.remotePort : null;
@@ -1843,13 +1863,24 @@ app.whenReady().then( async () => {
 				}
 			} );
 			remoteServer.teleprompterKeys = keys;
+			await new Promise( ( resolve ) => {
+				if ( remoteServer.listening ) return resolve();
+				remoteServer.once( "listening", resolve );
+				remoteServer.once( "error", resolve );
+			} );
 		}
 		// Lets a local assistant, or the Stream Deck plugin, find the address and its key.
 		const url = remoteInfo().url;
 		if ( wanted && settings.remoteControl ) await fs.writeFile( REMOTE_FILE, JSON.stringify( { url, token: remoteToken }, null, 2 ) );
 		else await fs.rm( REMOTE_FILE, { force: true } );
-		if ( wanted && settings.streamDeck ) await fs.writeFile( STREAM_DECK_FILE, JSON.stringify( { url, token: streamDeckToken, appVersion: app.getVersion(), streamDeckApi: streamDeckContract() }, null, 2 ) );
-		else await fs.rm( STREAM_DECK_FILE, { force: true } );
+		if ( wanted && settings.streamDeck && remoteServer?.listening ) {
+			const descriptor = { url, token: streamDeckToken, appVersion: app.getVersion(), streamDeckApi: streamDeckContract() };
+			await fs.writeFile( STREAM_DECK_FILE, JSON.stringify( descriptor, null, 2 ) );
+			streamDeckDiscovery.publish( descriptor );
+		} else {
+			streamDeckDiscovery.release();
+			await fs.rm( STREAM_DECK_FILE, { force: true } );
+		}
 		win.webContents.send( "remoteInfo", remoteInfo() );
 	}
 

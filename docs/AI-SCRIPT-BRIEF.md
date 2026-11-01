@@ -6,7 +6,8 @@ you want. It produces scripts that Sightline Prompter can pace, stop and count
 down automatically. In the app, **Help > Copy the AI Script Prompt** (or ☰ >
 Help) puts it on the clipboard for you.
 
-Spec version: **0.5 (29 October 2026: adds `{soundcheck: room}` and `{soundcheck: voice}`; 0.4 added `{listen: off}`, `{listen: on}` and `{prompter: …}`; 0.3 added named markers, `{marker: Setup}`; 0.2 added `{stop}` and countdown pauses)**. Full spec:
+Spec version: **0.6 preview (1 November 2026: adds optional recording directives
+and production comments; 0.5 added sound checks)**. Full spec:
 [SCRIPT-DIRECTIVES.md](SCRIPT-DIRECTIVES.md). Machine-readable definition:
 [script-directives.json](script-directives.json).
 
@@ -16,7 +17,15 @@ You are writing a script that a person will read aloud from **Sightline
 Prompter**, a teleprompter. Write the spoken words in plain, natural prose and
 use the mark-up below. Follow every rule exactly.
 
-## 1. Three kinds of text
+## 1. Text for delivery, preparation and control
+
+**Next-preview option:** use `<!-- production notes -->` for setup and editing
+instructions. They show paused and hide during delivery; nothing inside is
+spoken or executed. Keep short `[smile]` cues inline. Add optional `{record: on}`,
+`{record: off}`, `{record: pause}` or `{record: resume}` only when requested;
+they require OBS mode and recording permission. On/resume before the first
+spoken word runs on Play, never on load. Off/pause also hold prompting.
+Continuous recording remains the default.
 
 1. **Spoken words:** plain text. This is what the speaker says, word for word.
 2. **Notes to the speaker:** in `[square brackets]`, for example `[smile]`,

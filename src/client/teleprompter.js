@@ -38,6 +38,7 @@ import {
 	WPM_STEP
 } from "./steady-scroll.js";
 import { decorateScript } from "./decorate.js";
+import { setProductionNotesActive } from "./production-notes.js";
 import { readDirectives, parseDirective, parseDuration } from "./directives.js";
 import { createTakeLog } from "./take-log.js";
 import { COMMANDS, wakeLabel } from "./voice-commands.js";
@@ -46,6 +47,7 @@ import { createScratchRecorder } from "./scratch-audio.js";
 import { createLevelMeter, soundCheckVerdict } from "./level-meter.js";
 import { SUPPORT_URL } from "./links.js";
 import { createObsUi } from "./obs-ui.js";
+import { createRecordingLink } from "./recording-link.js";
 import { createSettingsNavigation } from "./settings-navigation.js";
 import { addSettingsHelp, createSettingsPages } from "./settings-pages.js";
 import { uiElement, showPanelWindow, hidePanelWindow } from "./panel-windows.js";
@@ -133,6 +135,7 @@ const obsUi = createObsUi( {
 	onChange: () => sendStatus(),
 	toast: text => showToast( text, 4500 )
 } );
+const linkedRecording = createRecordingLink( { getSettings: () => settings, getState: () => obsUi.state(), command: action => obsUi.action( action, { prompt: false } ) } );
 let recordingSaved = 0; // the take log version last sent to be saved
 let recordingY = null; // reading line at the last tick, to see the text move on
 let pendingJumpReason = null; // "again" when a jump is a voice retake
@@ -182,6 +185,13 @@ function recordingScriptSnapshot() {
 function renderScript( html ) {
 	md.innerHTML = html;
 	decorateScript( md, { cuePhrases, highlight: settings.highlightCues } );
+	// A comments-only paragraph has no body-text line box holding it open.
+	for ( const paragraph of md.querySelectorAll( "p" ) ) {
+		const onlyComments = [ ...paragraph.childNodes ].every( node =>
+			node.nodeType === Node.TEXT_NODE ? !node.textContent.trim() : node.nodeType === Node.ELEMENT_NODE && node.matches( ".direction" )
+		);
+		paragraph.classList.toggle( "direction-only", onlyComments && !!paragraph.querySelector( ".direction" ) );
+	}
 	scriptDirectives = readDirectives( md );
 	liveMarkers = [];
 	tagSections();
@@ -1051,6 +1061,11 @@ function handleAutoScrollPosition( wordIdx, ranges ) {
 	if ( Date.now() - lastManualScrollTs < MANUAL_SCROLL_GRACE_MS ) return;
 	scrollToWord( wordIdx, ranges );
 	if ( pause ) pauseVoiceAt( pause );
+	else if ( wordIdx >= ranges.length - 1 ) {
+		autoScrollHandle?.setHold( true );
+		linkedRecording.finish();
+		showPausePill( 0 );
+	}
 }
 
 // --- Stops and timed pauses: {stop} or {pause}, and {pause: 5s} ---
@@ -1137,7 +1152,8 @@ function voicePauseCrossed( wordIdx, ranges ) {
 	voiceWordIdx = wordIdx;
 	if ( before === null || wordIdx <= before || autoScrollHandle?.isHeld() ) return null;
 	return directivePoints.pauses.find( ( pause ) => {
-		if ( pause.seconds ) return false;
+		if ( pause.seconds && !linkedRecording.enabled() ) return false;
+
 		const last = lastWordBefore( pause, ranges );
 		return last > before && last <= wordIdx;
 	} );
@@ -1145,7 +1161,27 @@ function voicePauseCrossed( wordIdx, ranges ) {
 
 // {prompter: slower} and the rest: run as the reading reaches them.
 const SCRIPT_COMMAND_LABELS = { slower: "slower", faster: "faster", bigger: "bigger text", smaller: "smaller text", marker: "marker" };
-function runScriptCommand( command ) {
+async function runScriptCommand( command ) {
+	if ( command.startsWith( "record:" ) ) {
+		if ( !settings.obsEnabled || !settings.obsControls ) return;
+		const resumeVoice = autoScrollActive && !autoScrollHandle?.isHeld();
+		const resumeSteady = isSteadyRunning();
+		autoScrollHandle?.setHold( true );
+		if ( resumeSteady ) stopSteadyScroll();
+		const action = command.slice( 7 );
+		const ok = await obsUi.action( { on: "start", off: "stop", pause: "pause", resume: "resume" }[action], { prompt: false } );
+		if ( ok && [ "on", "resume" ].includes( action ) ) {
+			if ( resumeVoice ) autoScrollHandle?.setHold( false );
+			if ( resumeSteady ) startSteadyScroll( { el: md, wordsPerMinute: settings.steadyWpm, onFinished: () => linkedRecording.finish() } );
+		} else if ( resumeSteady ) {
+			cuePaused = true;
+			cueWasStop = true;
+			showPausePill( 0 );
+		} else if ( resumeVoice ) {
+			showPausePill( 0 );
+		}
+		return;
+	}
 	runRemoteAction( command );
 	showToast( `Script: ${ SCRIPT_COMMAND_LABELS[command] ?? command }`, 1500 );
 }
@@ -1183,6 +1219,15 @@ function drawCheckCard( { title, line = "", count = null, result = null, done = 
 		if ( result.advice ) add( "div", "sc-advice", result.advice );
 	}
 	if ( done ) {
+		const proceed = add( "button", "sc-continue", result && ![ "good", "quiet", "ok" ].includes( result.verdict ) ? "Continue anyway" : "Continue" );
+		proceed.type = "button";
+		proceed.addEventListener( "click", () => {
+			if ( !scriptCheck?.done ) return;
+			recording.soundCheck( { ...scriptCheck.measured, kind: scriptCheck.kind, verdict: result?.verdict, advice: result?.advice ?? "", accepted: true }, sectionIndexAt( readingLineY() ) );
+			if ( autoScrollActive ) carryOnFromVoiceCheck();
+			else if ( cuePaused ) resumeFromCue();
+			else endScriptSoundCheck();
+		} );
 		const wake = wakeLabel( settings.wakeWord );
 		add( "div", "sc-hint", autoScrollActive
 			? `Space or “${ wake }, go” to carry on · “${ wake }, again” to check again`
@@ -1223,6 +1268,7 @@ async function startScriptSoundCheck( kind, pause = null ) {
 	} );
 	if ( scriptCheck !== run ) return;
 	const measured = levelMeter.measure( from, Date.now() );
+	run.measured = measured;
 	const result = soundCheckVerdict( kind, measured );
 	recording.soundCheck( {
 		kind,
@@ -1257,12 +1303,13 @@ function openingSoundCheck() {
 
 // Voice scrolling, carrying on from a sound check: the next check, or back to
 // following the script.
-function carryOnFromVoiceCheck() {
+async function carryOnFromVoiceCheck() {
 	const next = nextSoundCheck( scriptCheck?.pause );
 	if ( next ) {
 		pauseVoiceAt( next );
 		return;
 	}
+	if ( !await prepareReading() ) return;
 	clearPausePill();
 	autoScrollHandle?.setHold( false );
 	setIndicator( "Listening" );
@@ -1313,7 +1360,7 @@ function backOnScript() {
 	setIndicator( "Listening" );
 }
 
-function pauseVoiceAt( pause ) {
+async function pauseVoiceAt( pause ) {
 	if ( !autoScrollHandle ) return;
 	if ( pause.listen === "off" ) {
 		goOffScript( pause );
@@ -1328,11 +1375,49 @@ function pauseVoiceAt( pause ) {
 	}
 	autoScrollHandle.setHold( true );
 	cancelScroll();
-	showPausePill( pause.seconds, () => {
+	const atEnd = !directivePoints.wordTops.some( y => y > pause.y + 2 );
+	if ( atEnd ) await linkedRecording.finish();
+	else await linkedRecording.pause();
+	showPausePill( pause.seconds, async () => {
 		if ( !autoScrollActive || !autoScrollHandle ) return;
+		if ( !await prepareReading() ) return;
 		autoScrollHandle.setHold( false );
 		setIndicator( "Listening" );
 	} );
+}
+
+let preparingRead = false;
+let readingRequest = 0;
+async function prepareReading() {
+	if ( preparingRead ) return false;
+	preparingRead = true;
+	const request = readingRequest;
+	try {
+		// A recording directive before the first spoken word runs on Play,
+		// never while loading or previewing a script.
+		if ( settings.obsEnabled && settings.obsControls && window.scrollY < 4 ) {
+			const { ranges } = buildWordIndex( md );
+			const spoken = ranges.filter( range => !range.startContainer.parentElement?.closest( "h1, h2, h3, h4, h5, h6" ) );
+			for ( const c of directivePoints.prompterCommands ) {
+				if ( [ "record:on", "record:resume" ].includes( c.command ) && lastWordBefore( c, spoken ) < 0 ) {
+					if ( !await obsUi.action( c.command === "record:on" ? "start" : "resume", { prompt: false } ) ) return false;
+				}
+			}
+		}
+		if ( !await linkedRecording.start() ) {
+			showToast( "Recording was not confirmed. Check OBS before starting the take.", 5000 );
+			return false;
+		}
+		if ( request !== readingRequest ) {
+			linkedRecording.pause();
+			return false;
+		}
+		setProductionNotesActive( md, true, { alignFirst: window.scrollY < 4, readingAnchor: getReadingAnchor() } );
+		measureDirectives( buildWordIndex( md ).ranges );
+		return true;
+	} finally {
+		preparingRead = false;
+	}
 }
 
 async function startAutoScrollSession() {
@@ -1358,6 +1443,7 @@ async function startAutoScrollSession() {
 		);
 		return;
 	}
+	if ( !openingSoundCheck() && !await prepareReading() ) return;
 	autoScrollStarting = true;
 	pendingDeepgramKey = null;
 	// From the top, a pause after the first few words still counts.
@@ -1559,8 +1645,10 @@ async function beginVoice( engine, deepgramKey ) {
 }
 
 async function stopAutoScrollSession() {
+	readingRequest++;
 	if ( !autoScrollActive && !autoScrollStarting ) return;
 	autoScrollActive = false;
+	linkedRecording.pause();
 	autoScrollStarting = false;
 	autoScrollHandle = null;
 	offScript = null;
@@ -1858,9 +1946,10 @@ function resetPrompter() {
 	showToast( "Reset: back to the top, speed and clock reset", 2500 );
 }
 
-function runVoiceCommand( id, value ) {
+async function runVoiceCommand( id, value ) {
 	if ( isEditMode ) return;
-	if ( id === "obs-record" || id === "obs-finish" ) {
+	if ( id.startsWith( "obs-" ) ) {
+		if ( !settings.obsEnabled || !settings.obsControls ) return;
 		runRemoteAction( id );
 		return;
 	}
@@ -1891,12 +1980,14 @@ function runVoiceCommand( id, value ) {
 		if ( holdPauseCountdown() ) return;
 		if ( voice ) {
 			autoScrollHandle.setHold( true );
+			linkedRecording.pause();
 			cancelScroll();
 			setIndicator( `Paused · say “${ wakeLabel( settings.wakeWord ) }, go”` );
 		} else if ( isScrolling() ) runRemoteAction( "pause" );
 	} else if ( id === "go" ) {
 		if ( voice && scriptCheck ) carryOnFromVoiceCheck();
 		else if ( voice ) {
+			if ( !await prepareReading() ) return;
 			clearPausePill();
 			autoScrollHandle.setHold( false );
 			setIndicator( "Listening" );
@@ -2072,18 +2163,22 @@ function hideCountdown() {
 	countdownEl?.classList.add( "hidden" );
 }
 
-function startSteadySession() {
+async function startSteadySession() {
 	if ( isEditMode ) {
 		alert( "Exit the editor before starting to scroll." );
 		return;
 	}
+	if ( !openingSoundCheck() && !await prepareReading() ) return;
 	const begin = () => {
 		hideCountdown();
 		afterSlate( () => {
 			startSteadyScroll( {
 				el: md,
 				wordsPerMinute: settings.steadyWpm,
-				onFinished: () => setIndicator( null )
+				onFinished: () => {
+					setIndicator( null );
+					linkedRecording.finish();
+				}
 			} );
 			startCueTracking();
 			feedTakeLog( true );
@@ -2109,6 +2204,8 @@ function startSteadySession() {
 }
 
 function stopSteadySession() {
+	readingRequest++;
+	linkedRecording.pause();
 	hideSlate();
 	clearCuePause();
 	hideCountdown();
@@ -2117,6 +2214,11 @@ function stopSteadySession() {
 }
 
 function toggleAutoScrollSession() {
+	if ( preparingRead ) {
+		readingRequest++;
+		linkedRecording.pause();
+		return;
+	}
 	if ( pointsMode() ) {
 		togglePoints();
 		return;
@@ -2551,7 +2653,7 @@ function numberValue( id, min, max, fallback ) {
 // Reading and Recording tabs apply as you go, so they don't count.
 let settingsDirty = false;
 let afterSettingsClose = null;
-const LIVE_TABS = "#set-layout-host, #set-reading-host, #set-background-host, #set-aids-host, #set-display-host, #set-recording-host, #set-script-host, #set-pad-fieldset, #set-capture-fieldset, #set-mapping-fieldset";
+const LIVE_TABS = "#set-layout-host, #set-theme-host, #set-reading-host, #set-directions-host, #set-production-notes-host, #set-background-host, #set-aids-host, #set-display-host, #set-recording-host, #set-script-host, #set-pad-fieldset, #set-capture-fieldset, #set-mapping-fieldset";
 
 field( "set-capture-override" )?.addEventListener( "change", event => window.electron.setCaptureOverride( event.target.checked ) );
 field( "capture-override-off" )?.addEventListener( "click", () => window.electron.setCaptureOverride( false ) );
@@ -2596,6 +2698,7 @@ async function openSettings() {
 	field( "set-steady-wpm" ).value = settings.steadyWpm;
 	field( "set-countdown" ).value = settings.countdown;
 	field( "set-slate" ).value = settings.slate ?? "off";
+	for ( const radio of settingsModal.querySelectorAll( "input[name=slate-choice]" ) ) radio.checked = radio.value === field( "set-slate" ).value;
 	field( "set-voice-speed" ).value = autoScrollSpeed;
 	field( "set-voice-engine" ).value = usesLocalVoice() ? "local" : "deepgram";
 	field( "set-voice-commands" ).value = settings.voiceCommands ?? "voice";
@@ -3064,6 +3167,9 @@ async function saveSettingsPage( close = true ) {
 }
 
 if ( settingsModal ) {
+	for ( const radio of settingsModal.querySelectorAll( "input[name=slate-choice]" ) ) radio.addEventListener( "change", () => {
+		if ( radio.checked ) field( "set-slate" ).value = radio.value;
+	} );
 	// Preview text size while its slider moves. Backing uses the shared live control.
 	field( "set-font-size" ).addEventListener( "input", e =>
 		setFontSize( Number( e.target.value ), false )
@@ -3132,9 +3238,14 @@ const LAYOUT_DEFAULTS = {
 	marginTop: 0,
 	marginBottom: 0,
 	lineHeight: 1.3,
+	headingLineHeight: 1.3,
+	directionLineHeight: 1.3,
 	headingScale: 1,
 	directionScale: 1,
 	directionColour: "",
+	productionNoteScale: 1,
+	productionNoteLineHeight: 1.4,
+	productionNoteColour: "",
 	textOpacity: 1,
 	textBrightness: 1,
 	backingOnAir: 0.07,
@@ -3154,13 +3265,19 @@ function applyLayout() {
 		"--line-height",
 		settings.lineHeight ?? LAYOUT_DEFAULTS.lineHeight
 	);
+	style.setProperty( "--heading-line-height", settings.headingLineHeight ?? LAYOUT_DEFAULTS.headingLineHeight );
+	style.setProperty( "--direction-line-height", settings.directionLineHeight ?? LAYOUT_DEFAULTS.directionLineHeight );
 	style.setProperty(
 		"--heading-scale",
 		settings.headingScale ?? LAYOUT_DEFAULTS.headingScale
 	);
 	style.setProperty( "--direction-scale", settings.directionScale ?? LAYOUT_DEFAULTS.directionScale );
+	style.setProperty( "--production-note-scale", settings.productionNoteScale ?? LAYOUT_DEFAULTS.productionNoteScale );
+	style.setProperty( "--production-note-line-height", settings.productionNoteLineHeight ?? LAYOUT_DEFAULTS.productionNoteLineHeight );
 	if ( /^#[\da-f]{6}$/i.test( settings.directionColour ?? "" ) ) style.setProperty( "--direction-colour", settings.directionColour );
 	else style.removeProperty( "--direction-colour" );
+	if ( /^#[\da-f]{6}$/i.test( settings.productionNoteColour ?? "" ) ) style.setProperty( "--production-note-colour", settings.productionNoteColour );
+	else style.removeProperty( "--production-note-colour" );
 	style.setProperty(
 		"--text-opacity",
 		settings.textOpacity ?? LAYOUT_DEFAULTS.textOpacity
@@ -3545,7 +3662,7 @@ function refreshControlsVisibility() {
 	clearTimeout( idleTimer );
 	const pinned = !!settings.controlsPinned;
 	document.body.classList.toggle( "controls-pinned", pinned );
-	if ( pinned || panelOpen() || controlBar?.matches( ":hover" ) ) {
+	if ( pinned || panelOpen() || controlBar?.matches( ":hover" ) || ( controlBar?.contains( document.activeElement ) && document.activeElement?.matches( ":focus-visible" ) ) ) {
 		document.body.classList.remove( "controls-hidden" );
 		return;
 	}
@@ -3555,6 +3672,7 @@ function refreshControlsVisibility() {
 				!settings.controlsPinned
 				&& !panelOpen()
 				&& !controlBar?.matches( ":hover" )
+				&& !( controlBar?.contains( document.activeElement ) && document.activeElement?.matches( ":focus-visible" ) )
 			) {
 				document.body.classList.add( "controls-hidden" );
 			}
@@ -3564,7 +3682,14 @@ function refreshControlsVisibility() {
 	);
 }
 
-function showControls() {
+function showControls( event ) {
+	const focused = controlBar?.contains( document.activeElement ) && document.activeElement?.matches( ":focus-visible" );
+	const farAway = event?.type === "mousemove" && event.clientY > ( controlBar?.getBoundingClientRect().bottom ?? 48 ) + window.innerHeight * 0.1;
+	if ( farAway && !settings.controlsPinned && !panelOpen() && !focused ) {
+		clearTimeout( idleTimer );
+		document.body.classList.add( "controls-hidden" );
+		return;
+	}
 	document.body.classList.remove( "controls-hidden" );
 	updateProgress();
 	refreshControlsVisibility();
@@ -4199,9 +4324,13 @@ const LAYOUT_FIELDS = [
 	[ "lp-margin-x", "marginX", v => `${ v }%` ],
 	[ "lp-margin-top", "marginTop", v => `${ v }%` ],
 	[ "lp-margin-bottom", "marginBottom", v => `${ v }%` ],
-	[ "lp-line-height", "lineHeight", v => `${ Number( v ).toFixed( 2 ) }×` ],
+	[ "lp-line-height", "lineHeight", v => `${ Math.round( v * 100 ) }%` ],
+	[ "lp-heading-line-height", "headingLineHeight", v => `${ Math.round( v * 100 ) }%` ],
+	[ "lp-direction-line-height", "directionLineHeight", v => `${ Math.round( v * 100 ) }%` ],
+	[ "lp-production-line-height", "productionNoteLineHeight", v => `${ Math.round( v * 100 ) }%` ],
 	[ "lp-heading-scale", "headingScale", v => `${ Math.round( v * 100 ) }%` ],
 	[ "lp-direction-scale", "directionScale", v => `${ Math.round( v * 100 ) }%` ],
+	[ "lp-production-scale", "productionNoteScale", v => `${ Math.round( v * 100 ) }%` ],
 	[ "lp-text-opacity", "textOpacity", v => `${ Math.round( v * 100 ) }%` ],
 	[ "lp-backing-on-air", "backingOnAir", v => `${ Math.round( v * 100 ) }%` ],
 	[ "lp-text-brightness", "textBrightness", v => `${ Math.round( v * 100 ) }%` ],
@@ -4239,6 +4368,8 @@ function syncLayoutPanel() {
 	field( "lp-heading-font" ).value = settings.headingFont ?? "same";
 	field( "lp-direction-colour" ).value = settings.directionColour || "#c8c8c8";
 	field( "lp-direction-theme" ).setAttribute( "aria-pressed", String( !settings.directionColour ) );
+	field( "lp-production-colour" ).value = settings.productionNoteColour || "#c8c8c8";
+	field( "lp-production-theme" ).setAttribute( "aria-pressed", String( !settings.productionNoteColour ) );
 	field( "lp-on-air" ).checked = settings.onAirLight !== false;
 	field( "lp-pacing" ).checked = settings.showPacing !== false;
 	field( "lp-points" ).checked = !!settings.pointsMode;
@@ -4250,13 +4381,16 @@ function syncLayoutPanel() {
 }
 
 if ( uiElement( "layout-panel" ) ) {
-	field( "lp-direction-colour" ).addEventListener( "input", () => {
-		settings.directionColour = field( "lp-direction-colour" ).value;
-		applyLayout();
-		syncLayoutPanel();
-	} );
-	field( "lp-direction-colour" ).addEventListener( "change", () => window.electron.saveSettings( { directionColour: field( "lp-direction-colour" ).value } ) );
-	onClick( "lp-direction-theme", () => window.electron.saveSettings( { directionColour: "" } ) );
+	for ( const [ name, key ] of [ [ "direction", "directionColour" ], [ "production", "productionNoteColour" ] ] ) {
+		field( `lp-${ name }-colour` ).addEventListener( "input", () => {
+			settings[key] = field( `lp-${ name }-colour` ).value;
+			applyLayout();
+			syncLayoutPanel();
+		} );
+		field( `lp-${ name }-colour` ).addEventListener( "change", () => window.electron.saveSettings( { [key]: field( `lp-${ name }-colour` ).value } ) );
+		onClick( `lp-${ name }-theme`, () => window.electron.saveSettings( { [key]: "" } ) );
+	}
+	field( "set-directions" ).addEventListener( "change", () => window.electron.saveSettings( { directions: field( "set-directions" ).value } ) );
 	for ( const [ id, key ] of LAYOUT_FIELDS ) {
 		field( id ).addEventListener( "input", () => {
 			settings[key] = Number( field( id ).value );
@@ -4990,6 +5124,10 @@ function jumpSection( step ) {
 }
 
 function runRemoteAction( action, value ) {
+	if ( [ "obs-on", "obs-off", "obs-pause", "obs-resume" ].includes( action ) ) {
+		if ( !settings.obsEnabled || !settings.obsControls ) return;
+		return obsUi.action( { "obs-on": "start", "obs-off": "stop", "obs-pause": "pause", "obs-resume": "resume" }[action], { prompt: action === "obs-off" || action === "obs-pause" } );
+	}
 	if ( action === "listening-toggle" ) return toggleSessionListening();
 	if ( action === "listening-restart" ) return restartListening();
 	if ( action === "session-check" ) return workflow?.open( "session" );
@@ -5179,12 +5317,14 @@ function showSettingsTab( name ) {
 // away), moved into Settings while it is open and put back when it closes.
 const layoutPanel = uiElement( "layout-panel" );
 const layoutHost = uiElement( "set-layout-host" );
-// Settings shows the Layout panel's groups over three tabs, so none runs
-// below the fold: spacing on Layout, opacity and reading aids on Reading,
-// recording and script options on Recording.
+// Each live appearance control has one settings home. Directions and long
+// preparation notes have separate fieldsets under the Directions topic.
 const layoutHosts = {
 	layout: layoutHost,
+	theme: uiElement( "set-theme-host" ),
 	reading: uiElement( "set-reading-host" ),
+	directions: uiElement( "set-directions-host" ),
+	"production-notes": uiElement( "set-production-notes-host" ),
 	background: uiElement( "set-background-host" ),
 	aids: uiElement( "set-aids-host" ),
 	display: uiElement( "set-display-host" ),
@@ -5259,11 +5399,14 @@ function borrowLayoutPanel() {
 			continue;
 		}
 		const id = el.dataset.settingsControl ?? el.querySelector( "input[id], select[id]" )?.id;
-		const destination = [ "lp-font", "lp-heading-font", "lp-heading-scale", "lp-direction-scale", "lp-direction-colour" ].includes( id ) ? "reading" : id === "lp-theme" ? "background" : [ "lp-marker", "lp-sentence", "lp-progress" ].includes( id ) ? "aids" : id === "lp-pinned" ? "display" : id === "lp-summary" ? "recording" : spacing ? "layout" : tab;
+		const destination = id?.startsWith( "lp-production-" ) ? "production-notes" : id?.startsWith( "lp-direction-" ) ? "directions" : [ "lp-font", "lp-heading-font", "lp-heading-scale" ].includes( id ) ? "reading" : id === "lp-theme" ? "theme" : [ "lp-marker", "lp-sentence", "lp-progress" ].includes( id ) ? "aids" : id === "lp-pinned" ? "display" : id === "lp-summary" ? "recording" : spacing ? "layout" : tab;
 		( layoutHosts[destination] ?? layoutHost ).append( el );
 	}
-	for ( const id of [ "lp-font", "lp-heading-font", "lp-heading-scale", "lp-direction-scale", "lp-direction-colour" ] ) {
+	for ( const id of [ "lp-font", "lp-heading-font", "lp-heading-scale" ] ) {
 		layoutHosts.reading.append( field( id ).closest( "[data-settings-control]" ) );
+	}
+	for ( const [ host, prefix ] of [ [ layoutHosts.directions, "direction" ], [ layoutHosts["production-notes"], "production" ] ] ) {
+		for ( const suffix of [ "scale", "colour", "line-height" ] ) host.append( field( `lp-${ prefix }-${ suffix }` ).closest( "[data-settings-control]" ) );
 	}
 	field( "lp-done" )?.classList.add( "hidden" );
 	syncControls();
@@ -5420,12 +5563,16 @@ let lastCue = null; // the pause just handled
 const handledCues = new Set(); // pauses already handled on this pass
 const handledCommands = new Set(); // {prompter: …} already run on this pass
 
-function pauseAtCue( pause ) {
+async function pauseAtCue( pause ) {
 	stopSteadyScroll();
 	cuePaused = true;
 	cueWasStop = !pause.seconds;
 	lastCue = pause;
 	handledCues.add( pause );
+	if ( !pause.soundcheck ) {
+		if ( !directivePoints.wordTops.some( y => y > pause.y + 2 ) ) await linkedRecording.finish();
+		else await linkedRecording.pause();
+	}
 	showPausePill( pause.seconds, resumeFromCue );
 	if ( pause.soundcheck ) startScriptSoundCheck( pause.soundcheck, pause );
 	if ( pause.listen === "off" ) {
@@ -5436,13 +5583,14 @@ function pauseAtCue( pause ) {
 	syncCommandListening();
 }
 
-function resumeFromCue() {
+async function resumeFromCue() {
 	// Room then voice: straight on to the next check.
 	const nextCheck = lastCue?.soundcheck ? nextSoundCheck( lastCue ) : null;
 	if ( nextCheck ) {
 		pauseAtCue( nextCheck );
 		return;
 	}
+	if ( !await prepareReading() ) return;
 	clearPausePill();
 	cuePaused = false;
 	syncCommandListening();
@@ -5455,7 +5603,10 @@ function resumeFromCue() {
 		startSteadyScroll( {
 			el: md,
 			wordsPerMinute: settings.steadyWpm,
-			onFinished: () => setIndicator( null )
+			onFinished: () => {
+				setIndicator( null );
+				linkedRecording.finish();
+			}
 		} );
 		// Just before the pause that was handled, so another pause on the same
 		// line (a countdown and then a stop) still counts. After {listen: off},
@@ -5661,6 +5812,7 @@ function goToPoint( index ) {
 	if ( index > last ) {
 		// Past the last section: the talk is over.
 		if ( pointsRunning ) togglePoints();
+		linkedRecording.finish();
 		return;
 	}
 	pointsIndex = Math.max( 0, index );
@@ -5668,8 +5820,10 @@ function goToPoint( index ) {
 	updateOnAir();
 }
 
-function togglePoints() {
+async function togglePoints() {
+	if ( !pointsRunning && !await prepareReading() ) return;
 	pointsRunning = !pointsRunning;
+	if ( !pointsRunning ) linkedRecording.pause();
 	setIndicator( pointsRunning ? "Notes · timing" : null );
 	updateOnAir();
 	updatePlayButton();
@@ -5971,6 +6125,12 @@ function takeLogged( take ) {
 
 function feedTakeLog( active ) {
 	if ( changingRecordingScript ) return;
+	const delivering = !scriptCheck && !cuePaused && !autoScrollStarting && ( isSteadyRunning() || pointsRunning || ( autoScrollActive && !autoScrollHandle?.isHeld() ) );
+	if ( setProductionNotesActive( md, delivering, { readingAnchor: getReadingAnchor() } ) ) {
+		const { ranges } = buildWordIndex( md );
+		measureDirectives( ranges );
+		recalculateSteady();
+	}
 	syncScratchAudio( active );
 	syncLevelMeter( active );
 	// Waiting for the slate: the take opens after it, so it gets the slate.
@@ -6615,13 +6775,37 @@ const NUMBER_BOXES = {
 		scale: 100,
 		unit: "%",
 		word: "percent",
-		name: "Comment size"
+		name: "Inline direction size"
+	} ),
+	"lp-production-scale": () => ( {
+		scale: 100,
+		unit: "%",
+		word: "percent",
+		name: "Production note size"
 	} ),
 	"lp-line-height": () => ( {
 		scale: 100,
 		unit: "%",
 		word: "percent",
-		name: "Line spacing"
+		name: "Script line spacing"
+	} ),
+	"lp-heading-line-height": () => ( {
+		scale: 100,
+		unit: "%",
+		word: "percent",
+		name: "Heading line spacing"
+	} ),
+	"lp-direction-line-height": () => ( {
+		scale: 100,
+		unit: "%",
+		word: "percent",
+		name: "Inline direction line spacing"
+	} ),
+	"lp-production-line-height": () => ( {
+		scale: 100,
+		unit: "%",
+		word: "percent",
+		name: "Production note line spacing"
 	} ),
 	"lp-reading-line": () => ( {
 		scale: 1,

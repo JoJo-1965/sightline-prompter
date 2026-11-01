@@ -51,6 +51,15 @@ jobs:
       - name: Test
         run: pnpm test
 
+      - name: Check feature grid and documentation exports
+        run: |
+          pnpm test:feature-grid
+          pnpm check:feature-grid
+
+      - name: Check release feature reference
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: pnpm check:release-docs
+
       - name: Build installer
         run: pnpm dist
         env:

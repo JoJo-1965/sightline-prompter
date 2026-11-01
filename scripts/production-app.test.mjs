@@ -18,6 +18,7 @@ const mock = new WebSocketServer( { host: "127.0.0.1", port: 0 } );
 await new Promise( r => mock.on( "listening", r ) );
 const port = mock.address().port;
 let active = false;
+let paused = false;
 let connections = 0;
 let authOK = false;
 const requests = [];
@@ -35,12 +36,17 @@ mock.on( "connection", ( socket ) => {
 		requests.push( d.requestType );
 		let responseData = {};
 		if ( d.requestType === "GetVersion" ) responseData = { availableRequests: [ "CreateRecordChapter" ] };
-		if ( d.requestType === "StartRecord" ) active = true;
+		if ( d.requestType === "StartRecord" ) {
+			active = true;
+			paused = false;
+		}
+		if ( d.requestType === "PauseRecord" ) paused = true;
+		if ( d.requestType === "ResumeRecord" ) paused = false;
 		if ( d.requestType === "StopRecord" ) {
 			active = false;
 			responseData = { outputPath: "/recordings/sightline-smoke.mp4" };
 		}
-		if ( d.requestType === "GetRecordStatus" ) responseData = { outputActive: active, outputPaused: false, outputDuration: 3000 };
+		if ( d.requestType === "GetRecordStatus" ) responseData = { outputActive: active, outputPaused: active && paused, outputDuration: 3000 };
 		socket.send( JSON.stringify( { op: 7, d: { requestId: d.requestId, requestType: d.requestType, requestStatus: { result: true }, responseData } } ) );
 	} );
 } );
@@ -132,6 +138,20 @@ try {
 	assert.ok( directions.text.includes( "smile" ) && directions.text.includes( "point" ) );
 	assert.equal( directions.sentences.join( " " ), "Hello there. More words." );
 	console.log( "PASS: delivery notes remain visible but stay out of speech alignment, counts and exported sentences." );
+	const productionNotes = await evaluate( `(async()=>{
+		const {decorateScript}=await import('./decorate.js');const {buildWordIndex}=await import('./word-index.js');const {setProductionNotesActive}=await import('./production-notes.js');
+		const root=document.createElement('div');root.id='md';root.style.cssText='font-size:32px;padding-top:1100px';
+		root.innerHTML='<p><!-- Prepare the recording. {record: off} [Say: "Not spoken"] --></p><p>[smile] These words are spoken.</p>';
+		document.body.append(root);decorateScript(root);const words=buildWordIndex(root).words;const visible=getComputedStyle(root.querySelector('.production-note')).display!=='none';
+		setProductionNotesActive(root,true,{alignFirst:true});const hidden=getComputedStyle(root.querySelector('.production-note')).display==='none';
+		const spoken=buildWordIndex(root).ranges[0];const y=spoken.getBoundingClientRect().top;
+		setProductionNotesActive(root,false);const shift=spoken.getBoundingClientRect().top-y;const restored=getComputedStyle(root.querySelector('.production-note')).display!=='none';root.remove();window.scrollTo(0,0);
+		return {words,visible,hidden,restored,y,shift};})()` );
+	assert.deepEqual( productionNotes.words, [ "these", "words", "are", "spoken" ] );
+	assert.ok( productionNotes.visible && productionNotes.hidden && productionNotes.restored );
+	assert.ok( Math.abs( productionNotes.y - 900 * 0.33 ) < 2, "First spoken line aligns below long preparation notes" );
+	assert.ok( Math.abs( productionNotes.shift ) < 2, "Showing paused notes preserves the spoken line" );
+	console.log( "PASS: production comments hide during delivery, return paused, exclude all enclosed commands/speech and preserve the reading line." );
 	const compatibilityConfig = JSON.parse( await fs.readFile( path.join( profile, "stream-deck.json" ), "utf8" ) );
 	assert.equal( compatibilityConfig.streamDeckApi.protocolVersion, 1 );
 	const compatibilityResponse = await fetch( compatibilityConfig.url + "/stream-deck/hello", {
@@ -760,6 +780,42 @@ try {
 	await evaluate( "document.getElementById('btn-cancel').click()" );
 	await until( "!document.body.classList.contains('editing')" );
 	console.log( "PASS: samples open read-only, typing and direct saves cannot alter them, and personal scripts remain editable." );
+	// The user's recorder is never contacted: all four actions use this fixture.
+	await evaluate( "window.electron.saveObsSettings({enabled:true,host:'127.0.0.1',port:" + port + ",controls:true,followPrompter:true,markers:true,recordedSlate:false})" );
+	await command( "restart" );
+	await pause( 150 );
+	await command( "play" );
+	await until( "window.electron.obs('status').then(r=>r.state.recording==='recording')" );
+	await until( "document.getElementById('obs-status').textContent.includes('OBS RECORDING')" );
+	const linkedId = ( await evaluate( "window.electron.obs('status')" ) ).state.recordingId;
+	await command( "pause" );
+	await until( "window.electron.obs('status').then(r=>r.state.recording==='paused')" );
+	await until( "document.getElementById('obs-status').textContent.includes('OBS PAUSED')" );
+	await command( "play" );
+	await until( "window.electron.obs('status').then(r=>r.state.recording==='recording')" );
+	assert.equal( ( await evaluate( "window.electron.obs('status')" ) ).state.recordingId, linkedId );
+	await command( "pause" );
+	await until( "window.electron.obs('status').then(r=>r.state.recording==='paused')" );
+	await evaluate( "window.electron.obs('stop')" );
+	await until( "document.getElementById('obs-status').textContent.includes('OBS OFF')" );
+	await evaluate( "window.electron.saveObsSettings({enabled:true,host:'127.0.0.1',port:" + port + ",controls:true,followPrompter:false,markers:true,recordedSlate:false})" );
+	console.log( "PASS: linked Play/pause/resume waits for recorder confirmation; pause retains file identity and all three recording pill states update." );
+	const directiveScript = path.join( profile, "explicit-recording.md" );
+	await fs.writeFile( directiveScript, `# Recording directive\n\n<!-- Remember to press Record. {record: off} -->\n\n{record: on}\n\n## A section\n\n${ "These are spoken words for a recording directive check. ".repeat( 60 ) }` );
+	const startsBeforeLoad = requests.filter( r => r === "StartRecord" ).length;
+	await fetch( automation.url + "/open", { method: "POST", headers: { Authorization: `Bearer ${ automation.token }`, "Content-Type": "application/json" }, body: JSON.stringify( { path: directiveScript } ) } );
+	await until( "document.getElementById('md').textContent.includes('Recording directive')" );
+	await pause( 250 );
+	assert.equal( requests.filter( r => r === "StartRecord" ).length, startsBeforeLoad, "Loading a recording directive must not execute it" );
+	await command( "play" );
+	await until( "window.electron.obs('status').then(r=>r.state.recording==='recording')" );
+	await until( "document.getElementById('md').classList.contains('take-reading')" );
+	assert.equal( requests.filter( r => r === "StartRecord" ).length, startsBeforeLoad + 1 );
+	await command( "pause" );
+	await until( "!document.getElementById('md').classList.contains('take-reading')" );
+	assert.equal( active, true, "Continuous mode leaves recording running during a prompting pause" );
+	await evaluate( "window.electron.obs('stop')" );
+	console.log( "PASS: real Markdown production comments render, recording directives wait for Play, and continuous-mode pauses keep recording." );
 	await evaluate( "window.electron.obs('start')" );
 	assert.ok( active );
 	const stops = requests.filter( r => r === "StopRecord" ).length;

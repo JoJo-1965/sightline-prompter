@@ -6,13 +6,15 @@
 //     "quoted words" inside them stay bright, because those are spoken
 //   - slide-cue phrases from cues.yaml are highlighted in script order
 
+import { decorateProductionNotes } from "./production-notes.js";
+
 const QUOTE_REGEX = /("[^"]+"|“[^”]+”)/;
 
 function textNodes( root, skipSelector ) {
 	const nodes = [];
 	const walker = document.createTreeWalker( root, NodeFilter.SHOW_TEXT, {
 		acceptNode: n =>
-			skipSelector && n.parentElement?.closest( skipSelector )
+			n.parentElement?.closest( [ skipSelector, ".production-note" ].filter( Boolean ).join( ", " ) )
 				? NodeFilter.FILTER_REJECT
 				: NodeFilter.FILTER_ACCEPT
 	} );
@@ -80,7 +82,8 @@ const KNOWN_DIRECTIVES = new Set( [
 	"page",
 	"listen",
 	"prompter",
-	"soundcheck"
+	"soundcheck",
+	"record"
 ] );
 const DIRECTIVE_REGEX = /(?<!\\)\{[^{}\n]*\}/g;
 
@@ -266,6 +269,7 @@ export function decorateScript(
 	root,
 	{ cuePhrases = [], highlight = true } = {}
 ) {
+	decorateProductionNotes( root );
 	promoteSectionParagraphs( root );
 	wrapAppDirectives( root );
 	numberSections( root );

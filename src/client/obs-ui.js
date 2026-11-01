@@ -10,7 +10,7 @@ export function obsStatusText( state ) {
 }
 
 export function obsActionBlock( state, name, { busy = false, canStart = true } = {} ) {
-	if ( name !== "start" && name !== "stop" ) return null;
+	if ( ![ "start", "stop", "pause", "resume" ].includes( name ) ) return null;
 	if ( !state?.enabled ) return "OBS integration is disabled";
 	if ( state.setupBusy ) return "OBS setup is in progress";
 	if ( !state.controls ) return "OBS is in status-only mode";
@@ -20,6 +20,7 @@ export function obsActionBlock( state, name, { busy = false, canStart = true } =
 	if ( name === "start" && state.recording === "paused" ) return "OBS recording is paused; resume it in OBS first";
 	if ( name === "start" && !canStart ) return "Stop the prompter, exit the editor and check voice setup before Record take";
 	if ( name === "stop" && state.recording === "stopped" ) return "OBS is already stopped";
+	if ( [ "pause", "resume" ].includes( name ) && state.recording === "stopped" ) return "Start OBS recording first";
 	return null;
 }
 
@@ -77,11 +78,17 @@ export function createObsUi( { getSettings, canStart, onStart, onFinish, onChang
 			field( id ).disabled = !!recordingBlock;
 			field( id ).setAttribute( "aria-describedby", "set-obs-recording-availability" );
 		}
+		field( "follow-prompter" ).disabled = !!recordingBlock || [ "recording", "paused" ].includes( state.recording );
 		field( "test" ).disabled = !!installBlock || !state.enabled || busy;
 		field( "test" ).title = installBlock ?? ( !state.enabled ? "Enable OBS and Apply before testing the saved connection" : "Test the saved OBS connection" );
 		bar.classList.toggle( "hidden", !state.enabled );
 		bar.classList.toggle( "obs-recording", state.recording === "recording" && state.connection === "connected" );
 		label.textContent = obsStatusText( state );
+		const known = state.connection === "connected" && [ "stopped", "recording", "paused" ].includes( state.recording );
+		label.textContent = known ? `OBS ${ { stopped: "OFF", recording: "RECORDING", paused: "PAUSED" }[state.recording] }` : "OBS UNKNOWN";
+		label.className = "obs-recording-pill";
+		label.dataset.recording = known ? state.recording : "unknown";
+		label.title = obsStatusText( state );
 		field( "status" ).textContent = [ obsStatusText( state ), state.error, state.enabled && !state.controls ? "Status only" : "", state.markers && !state.chapters ? "Chapters unavailable until a supported OBS connection is confirmed" : "" ].filter( Boolean ).join( " · " );
 		const ready = state.enabled && state.connection === "connected" && state.controls && !busy && !state.setupBusy;
 		start.disabled = !ready || !canStart();
@@ -98,31 +105,33 @@ export function createObsUi( { getSettings, canStart, onStart, onFinish, onChang
 		paint();
 		onChange( state );
 	}
-	async function action( name ) {
-		const blocked = name === "slate-prepare" ? ( unsavedSlateOptions() ? "Apply your OBS changes before preparing the recorded slate." : obsSlateSetupBlock( state, getSettings(), busy ) ) : obsActionBlock( state, name, { busy, canStart: name !== "start" || canStart() } );
+	async function action( name, { prompt = true } = {} ) {
+		const blocked = name === "slate-prepare" ? ( unsavedSlateOptions() ? "Apply your OBS changes before preparing the recorded slate." : obsSlateSetupBlock( state, getSettings(), busy ) ) : obsActionBlock( state, name, { busy, canStart: name !== "start" || !prompt || canStart() } );
 		if ( blocked ) {
 			if ( name === "slate-prepare" ) field( "slate-status" ).textContent = blocked;
 			toast( blocked );
-			return;
+			return false;
 		}
-		if ( busy ) return;
+		if ( busy ) return false;
 		busy = true;
 		preparingSlate = name === "slate-prepare";
 		if ( preparingSlate ) slateFeedback = null;
 		paint();
 		onChange( state );
 		try {
-			if ( name === "stop" ) onFinish();
+			if ( ( name === "stop" || name === "pause" ) && prompt ) onFinish();
 			const result = await window.electron.obs( name );
 			if ( result.state ) receive( result.state );
 			if ( !result.ok ) throw new Error( result.error );
-			if ( name === "start" && state.enabled && state.connection === "connected" && state.recording === "recording" ) onStart();
+			if ( ( name === "start" || name === "resume" ) && prompt && state.enabled && state.connection === "connected" && state.recording === "recording" ) onStart();
 			if ( name === "stop" ) toast( "OBS recording finished" );
 			if ( name === "test" ) toast( "OBS connection confirmed" );
 			if ( name === "slate-prepare" ) toast( "Recorded slate prepared in the current OBS scene" );
+			return true;
 		} catch ( error ) {
 			if ( name === "slate-prepare" ) slateFeedback = `Could not prepare the recorded slate: ${ error.message }`;
 			toast( error.message || "OBS could not confirm the request" );
+			return false;
 		} finally {
 			busy = false;
 			preparingSlate = false;
@@ -161,6 +170,7 @@ export function createObsUi( { getSettings, canStart, onStart, onFinish, onChang
 			field( "host" ).value = settings.obsHost ?? "127.0.0.1";
 			field( "port" ).value = settings.obsPort ?? 4455;
 			field( "controls" ).checked = settings.obsControls === true;
+			field( "follow-prompter" ).checked = settings.obsFollowPrompter === true;
 			field( "markers" ).checked = settings.obsMarkers === true;
 			field( "recorded-slate" ).checked = settings.obsRecordedSlate === true;
 			field( "password" ).value = "";
@@ -177,6 +187,7 @@ export function createObsUi( { getSettings, canStart, onStart, onFinish, onChang
 				host: field( "host" ).value,
 				port: Number( field( "port" ).value ),
 				controls: field( "controls" ).checked,
+				followPrompter: field( "follow-prompter" ).checked,
 				markers: field( "markers" ).checked,
 				recordedSlate: field( "recorded-slate" ).checked,
 				...( password ? { password } : {} ),

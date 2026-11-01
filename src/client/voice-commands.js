@@ -25,6 +25,10 @@ export const WAKE_WORDS = {
 export const wakeLabel = key => ( WAKE_WORDS[key] ?? WAKE_WORDS.prompter ).label;
 
 export const COMMANDS = [
+	{ id: "obs-on", phrases: [ "record on", "recording on" ] },
+	{ id: "obs-off", phrases: [ "record off", "recording off" ] },
+	{ id: "obs-pause", phrases: [ "record pause", "recording pause" ] },
+	{ id: "obs-resume", phrases: [ "record resume", "recording resume" ] },
 	{ id: "guide-on", phrases: [ "guide on", "show guide", "show the guide", "head guide on" ] },
 	{ id: "guide-off", phrases: [ "guide off", "hide guide", "hide the guide", "head guide off" ] },
 	{ id: "obs-record", phrases: [ "record take", "start recording" ] },
@@ -183,6 +187,8 @@ export const COMMANDS = [
 export const COMMAND_HELP = [
 	[ "guide on · guide off", "Show or hide the head-position guide", "Guide" ],
 	[ "record take · finish recording", "OBS only, when enabled with recording controls" ],
+	[ "record on · record off", "Start or finish the recorder explicitly", "OBS" ],
+	[ "record pause · record resume", "Pause or resume the recorder explicitly", "OBS" ],
 	[ "pause", "Pause (stop, hold, wait)" ],
 	[ "go", "Start, or carry on (carry on, continue)" ],
 	[ "slower · faster", "Change the speed" ],

@@ -1,0 +1,1659 @@
+{
+  "schemaVersion": 1,
+  "basis": "Recording Workflow Preview 02, documentation revision 2, 1 November 2026",
+  "date": "1 November 2026",
+  "sourceBuild": "647272d",
+  "buildVersion": "1.1.0",
+  "publicationStatus": "preview",
+  "appRelease": "1.1.0",
+  "pluginRelease": "0.2.0",
+  "sourceUrl": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/FEATURE-GRID.md",
+  "sourceSha256": "ee066e7d31fa0e8cb8ad0a955ee0c0fd7e9412fb329dfbda43482a83ddec2712",
+  "support": [
+    "Included",
+    "Optional",
+    "Dependent",
+    "Limited",
+    "Not included"
+  ],
+  "groups": [
+    {
+      "id": "group-01",
+      "name": "Product, platform and installation",
+      "references": [
+        {
+          "name": "Getting started",
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/01-getting-started.md"
+        },
+        {
+          "name": "Policies",
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/POLICIES.md"
+        }
+      ],
+      "rows": [
+        {
+          "name": "Product type",
+          "support": "Included",
+          "options": "Desktop teleprompter with a translucent script overlay, voice control and production metadata.",
+          "limits": "A separate recording application or camera supplies the production video."
+        },
+        {
+          "name": "Price and account",
+          "support": "Included",
+          "options": "Sightline Prompter is free to download and use, with no required Sightline account or subscription.",
+          "limits": "Optional third-party services can have their own charges and accounts."
+        },
+        {
+          "name": "App source and licence",
+          "support": "Included",
+          "options": "Public GitHub source under the MIT licence; adapted from Electron Teleprompter.",
+          "limits": "Preserve applicable copyright and licence notices when redistributing."
+        },
+        {
+          "name": "Desktop platforms",
+          "support": "Included",
+          "options": "Windows, macOS Apple silicon and Intel, and Linux distribution targets.",
+          "limits": "Physical hardware validation varies by platform; macOS hardware and VoiceOver checks remain outstanding."
+        },
+        {
+          "name": "Local desktop operation",
+          "support": "Included",
+          "options": "Ordinary reading, editing and steady prompting run on the computer.",
+          "limits": "First downloads, updates, linked documents and online services require connectivity."
+        },
+        {
+          "name": "Packaged installation",
+          "support": "Included",
+          "options": "Downloadable desktop packages; Windows installer and app branding.",
+          "limits": "Signing and operating-system security prompts are described in the installation guide."
+        },
+        {
+          "name": "Windows process identity",
+          "support": "Included",
+          "options": "Short Sightline Prompter name in packaged Windows metadata; preview addition.",
+          "limits": "Existing installed releases need an updated build to change their process description."
+        },
+        {
+          "name": "Optional components",
+          "support": "Optional",
+          "options": "Component checks and setup for the offline speech model, AI agent kit and external integrations.",
+          "limits": "Detecting a component does not validate its hardware, permissions or complete configuration."
+        },
+        {
+          "name": "Missing dependency feedback",
+          "support": "Included",
+          "options": "Dependent controls explain missing components and offer the relevant setup route.",
+          "limits": "Available functions still depend on connection and permission state."
+        },
+        {
+          "name": "Update and compatibility checks",
+          "support": "Included",
+          "options": "Version information and app/plugin compatibility feedback.",
+          "limits": "A detected version is not automatic installation or a passed acceptance test."
+        }
+      ]
+    },
+    {
+      "id": "group-02",
+      "name": "Prompting, pace and navigation",
+      "references": [
+        {
+          "name": "Scrolling and voice",
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/03-scrolling-and-voice.md"
+        },
+        {
+          "name": "Recording a take",
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/05-recording-a-take.md"
+        }
+      ],
+      "rows": [
+        {
+          "name": "Steady scrolling",
+          "support": "Included",
+          "options": "Automatic scrolling at a chosen words-per-minute pace.",
+          "limits": "Timings are estimates and depend on the script and delivery."
+        },
+        {
+          "name": "Voice following",
+          "support": "Optional",
+          "options": "Advances through the script as recognised speech matches the words being read.",
+          "limits": "Requires microphone access and a configured local or online speech engine."
+        },
+        {
+          "name": "Page and talking-point mode",
+          "support": "Included",
+          "options": "Notes mode displays pages of talking points; headings or explicit page breaks divide them.",
+          "limits": "Pages advance through navigation controls rather than continuous speech alignment."
+        },
+        {
+          "name": "Start, pause and resume",
+          "support": "Included",
+          "options": "Toolbar, keyboard, voice and enabled remote controls.",
+          "limits": "Recorder behaviour is separately configured in the OBS section."
+        },
+        {
+          "name": "On air reading view",
+          "support": "Included",
+          "options": "A separate On air state changes the operator/reading presentation and configured backing.",
+          "limits": "On air describes the prompter view; use the confirmed recording pill to check the recorder."
+        },
+        {
+          "name": "Restart and return to top",
+          "support": "Included",
+          "options": "Return to the beginning; reset can also restore normal pace and clear the pacing clock.",
+          "limits": "Returning to top and starting a fresh timed run are distinct actions."
+        },
+        {
+          "name": "Section navigation",
+          "support": "Included",
+          "options": "Previous, next and numbered section jumps; section retakes.",
+          "limits": "Section boundaries come from the script structure."
+        },
+        {
+          "name": "Speed and responsiveness",
+          "support": "Included",
+          "options": "Change steady WPM or voice-following responsiveness during use.",
+          "limits": "Recognition accuracy and responsiveness are different concerns."
+        },
+        {
+          "name": "Start countdown",
+          "support": "Optional",
+          "options": "Set a countdown before prompting begins.",
+          "limits": "A countdown alone does not start an external recorder."
+        },
+        {
+          "name": "Section targets",
+          "support": "Optional",
+          "options": "Per-section WPM and target duration, plus script-wide pacing instructions.",
+          "limits": "Targets guide delivery; they do not guarantee the final running time."
+        },
+        {
+          "name": "Pace feedback",
+          "support": "Included",
+          "options": "Pacing light, elapsed time, progress and estimated time remaining.",
+          "limits": "Speech-derived figures require useful recognition data."
+        },
+        {
+          "name": "Sentence and reading position",
+          "support": "Optional",
+          "options": "Reading-line marker, sentence highlight and focus band.",
+          "limits": "These are reading aids rather than a measure of eye contact."
+        },
+        {
+          "name": "First spoken line at start",
+          "support": "Included",
+          "options": "Long preparation notes are removed from the delivery view and the first spoken line is positioned for reading; preview addition.",
+          "limits": "Use production comments for long instructions and pause to inspect them."
+        }
+      ]
+    },
+    {
+      "id": "group-03",
+      "name": "Speech recognition and voice commands",
+      "references": [
+        {
+          "name": "Speech engines and command phrases",
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/03-scrolling-and-voice.md"
+        }
+      ],
+      "rows": [
+        {
+          "name": "Offline speech recognition",
+          "support": "Optional",
+          "options": "On-computer recognition with a downloadable local model.",
+          "limits": "Initial component download and microphone permission are required; results depend on voice and environment."
+        },
+        {
+          "name": "Recognition language",
+          "support": "Limited",
+          "options": "The supplied offline Zipformer model and current recognition configuration use English.",
+          "limits": "Do not assume multilingual recognition because the external provider offers other languages."
+        },
+        {
+          "name": "Online speech recognition",
+          "support": "Dependent",
+          "options": "Optional Deepgram engine with the user's API key.",
+          "limits": "Requires internet access, a Deepgram account and its service terms; audio leaves the computer."
+        },
+        {
+          "name": "Microphone choice",
+          "support": "Included",
+          "options": "Select the input used for voice following and command recognition.",
+          "limits": "Device availability, drivers and operating-system permissions apply."
+        },
+        {
+          "name": "Listening modes",
+          "support": "Optional",
+          "options": "In voice mode, Always listening, or Off.",
+          "limits": "Always listening keeps microphone recognition active while prompting is stopped."
+        },
+        {
+          "name": "Wake word",
+          "support": "Optional",
+          "options": "Prompter, Computer, Teleprompter or Director.",
+          "limits": "Wake-word recognition is speech recognition, not guaranteed keyword detection."
+        },
+        {
+          "name": "Reading and display commands",
+          "support": "Optional",
+          "options": "Go, pause, slower, faster, bigger, smaller, back, next and return to top.",
+          "limits": "Enable command listening; several phrases have documented aliases."
+        },
+        {
+          "name": "Retake and edit commands",
+          "support": "Optional",
+          "options": "Again, marker, back to marker, keeper and scrap that.",
+          "limits": "Ratings and markers describe the take log; they do not cut video automatically."
+        },
+        {
+          "name": "Spoken section selection",
+          "support": "Optional",
+          "options": "Select numbered sections, including natural spoken numbers.",
+          "limits": "A section number can act as a spoken slate and a retake instruction."
+        },
+        {
+          "name": "Explicit recording commands",
+          "support": "Dependent",
+          "options": "Record take, finish recording, and record on, off, pause or resume; explicit recorder commands are a preview addition.",
+          "limits": "OBS integration and recording-control permission must be enabled."
+        },
+        {
+          "name": "Head-guide voice commands",
+          "support": "Optional",
+          "options": "Guide on and guide off request a definite visible or hidden state.",
+          "limits": "Controls the manual guide; it does not detect a face."
+        },
+        {
+          "name": "Voice recovery and resync",
+          "support": "Included",
+          "options": "Listener health/recovery events and a resync command to find the reading position.",
+          "limits": "Noise, silence, paraphrasing and lost recognition can still require intervention."
+        },
+        {
+          "name": "Recognition corrections",
+          "support": "Optional",
+          "options": "Personal word corrections and sound-alike handling for script alignment.",
+          "limits": "Corrections do not retrain the speech engine or guarantee command recognition."
+        },
+        {
+          "name": "Heard report and tracing",
+          "support": "Optional",
+          "options": "Inspect recognised words for troubleshooting; separate optional command-word tracing.",
+          "limits": "Tracing can capture nearby conversation while listening; it is off by default."
+        },
+        {
+          "name": "Command help",
+          "support": "Included",
+          "options": "Grouped What can I say window and contextual help.",
+          "limits": "Recording commands are shown only when the relevant OBS controls are enabled."
+        }
+      ]
+    },
+    {
+      "id": "group-04",
+      "name": "Script files, editor and library",
+      "references": [
+        {
+          "name": "Writing scripts",
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/02-scripts.md"
+        }
+      ],
+      "rows": [
+        {
+          "name": "Markdown and plain text",
+          "support": "Included",
+          "options": "Open `.md`, `.markdown` and `.txt` scripts.",
+          "limits": "Markdown structure provides the richest control over sections and directions."
+        },
+        {
+          "name": "Word and rich text",
+          "support": "Included",
+          "options": "Import `.docx` and `.rtf` documents.",
+          "limits": "Conversion creates a reading script; it is not a full word-processing layout editor."
+        },
+        {
+          "name": "PDF import",
+          "support": "Included",
+          "options": "Extract readable text from PDF files.",
+          "limits": "Image-only scans need OCR elsewhere; complex columns and layouts can require cleanup."
+        },
+        {
+          "name": "HTML import",
+          "support": "Included",
+          "options": "Open `.html` and `.htm` script files.",
+          "limits": "Imported content is for prompting, not a complete browser application."
+        },
+        {
+          "name": "Google Docs links",
+          "support": "Dependent",
+          "options": "Import accessible Google Docs content.",
+          "limits": "Sharing and internet access must permit retrieval; private account access is not implied."
+        },
+        {
+          "name": "Built-in Markdown editor",
+          "support": "Included",
+          "options": "CodeMirror editor, preview toggle, save, Save as and unsaved-change prompts.",
+          "limits": "The app does not replace a full collaborative document suite."
+        },
+        {
+          "name": "External editing",
+          "support": "Included",
+          "options": "Watch an opened file and refresh when it changes externally.",
+          "limits": "Watching pauses during built-in editing to avoid conflicting edits."
+        },
+        {
+          "name": "Script slots",
+          "support": "Included",
+          "options": "Nine quick-access slots, recent files and switching controls.",
+          "limits": "A slot points to its script; clearing a slot is separately confirmed."
+        },
+        {
+          "name": "Slot clearing protection",
+          "support": "Included",
+          "options": "Confirmation before clearing an occupied slot.",
+          "limits": "Keep source files backed up independently of slot assignments."
+        },
+        {
+          "name": "Sample scripts",
+          "support": "Included",
+          "options": "Welcome, voice/directive demonstrations and recording acceptance examples.",
+          "limits": "Samples are protected originals: view them and save a working copy to edit."
+        },
+        {
+          "name": "Recording preview sample",
+          "support": "Included",
+          "options": "Preparation, Continuous and linked recording, explicit commands and handover walkthrough; preview addition.",
+          "limits": "Exercise recorder controls only with the intended test setup connected."
+        },
+        {
+          "name": "Exact recording script",
+          "support": "Included",
+          "options": "Preserve the source actually used, including section IDs, slide cues and directions, in the edit pack.",
+          "limits": "The export is the recording snapshot, which can differ from a later file edit."
+        }
+      ]
+    },
+    {
+      "id": "group-05",
+      "name": "Script directions and production notes",
+      "references": [
+        {
+          "name": "Script directives",
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/SCRIPT-DIRECTIVES.md"
+        },
+        {
+          "name": "AI script brief",
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/AI-SCRIPT-BRIEF.md"
+        }
+      ],
+      "rows": [
+        {
+          "name": "Ordinary scripts",
+          "support": "Included",
+          "options": "Read a script without adding compulsory application directives.",
+          "limits": "Optional directions add workflow control when needed."
+        },
+        {
+          "name": "Sections and IDs",
+          "support": "Included",
+          "options": "Structured headings organise navigation, takes, targets and handover.",
+          "limits": "Stable section identity helps an editor match the recording script."
+        },
+        {
+          "name": "Short delivery cues",
+          "support": "Included",
+          "options": "Square-bracket notes such as `[smile]`, `[think]` or `[point]` remain available inline.",
+          "limits": "Unquoted direction words are excluded from spoken word counts and alignment."
+        },
+        {
+          "name": "Quoted spoken cues",
+          "support": "Included",
+          "options": "`[Say: \"Section one\"]` distinguishes words intended to be spoken.",
+          "limits": "Quoted words are included in the spoken script; do not use this form for silent instructions."
+        },
+        {
+          "name": "Long production comments",
+          "support": "Included",
+          "options": "HTML comments hold preparation instructions; visible while paused and hidden during delivery; preview addition.",
+          "limits": "All comment contents, including quoted words and directive examples, are excluded from speech tracking and command execution."
+        },
+        {
+          "name": "Direction display",
+          "support": "Optional",
+          "options": "Normal, dimmed or hidden bracket directions; quoted spoken words remain visible.",
+          "limits": "Long production comments follow the separate paused/delivering rule."
+        },
+        {
+          "name": "Manual script stops",
+          "support": "Included",
+          "options": "`{stop}` or `{pause}` holds prompting until the user continues.",
+          "limits": "Continuous recording keeps OBS running; linked recording changes that behaviour explicitly."
+        },
+        {
+          "name": "Timed pauses",
+          "support": "Included",
+          "options": "`{pause: 3s}` provides a timed beat.",
+          "limits": "In voice mode it is a visible pause cue rather than a forced timed scroll."
+        },
+        {
+          "name": "Named markers",
+          "support": "Included",
+          "options": "`{marker}` or `{marker: Setup}` creates a navigation and edit reference.",
+          "limits": "Marker positions are timing references, not verified frame-accurate cuts."
+        },
+        {
+          "name": "Off-script passages",
+          "support": "Optional",
+          "options": "`{listen: off}` and `{listen: on}` support ad-lib or demonstration passages.",
+          "limits": "The microphone is off in the off-script hold; manual continuation is required."
+        },
+        {
+          "name": "Script sound checks",
+          "support": "Optional",
+          "options": "`{soundcheck: room}` and `{soundcheck: voice}` request the appropriate check.",
+          "limits": "Measurement uses the selected input and the current acoustic conditions."
+        },
+        {
+          "name": "Script control commands",
+          "support": "Optional",
+          "options": "`{prompter: ...}` supports documented display, pace and marker actions.",
+          "limits": "Only documented commands are supported."
+        },
+        {
+          "name": "Script recording commands",
+          "support": "Dependent",
+          "options": "Optional `{record: on}`, `{record: off}`, `{record: pause}` and `{record: resume}`; preview addition.",
+          "limits": "Require enabled OBS recording controls; loading a script never executes them."
+        },
+        {
+          "name": "Pace, notes and page directives",
+          "support": "Optional",
+          "options": "Section WPM/targets, script pacing, `{mode: notes}` and `{page}`.",
+          "limits": "The script checker documents supported values and catches unknown directives."
+        }
+      ]
+    },
+    {
+      "id": "group-06",
+      "name": "Theme, typography and reading aids",
+      "references": [
+        {
+          "name": "Layout and display",
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/04-layout-and-display.md"
+        },
+        {
+          "name": "Settings",
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/07-settings.md"
+        }
+      ],
+      "rows": [
+        {
+          "name": "Theme settings",
+          "support": "Included",
+          "options": "Dedicated Theme subtab; Standard, Yellow on dark, High contrast and Soft cream.",
+          "limits": "The dedicated subtab is a preview addition."
+        },
+        {
+          "name": "Colours and themes",
+          "support": "Included",
+          "options": "Preset script/heading themes and a custom square-bracket direction colour.",
+          "limits": "This baseline does not offer arbitrary body, heading or background colour pickers."
+        },
+        {
+          "name": "Text and heading fonts",
+          "support": "Included",
+          "options": "Standard, Atkinson Hyperlegible, OpenDyslexic and Verdana; separate heading choice or follow text.",
+          "limits": "Font preference is personal and is not an accessibility certification."
+        },
+        {
+          "name": "Script text size",
+          "support": "Included",
+          "options": "Toolbar and settings adjustment, with remote and voice size actions.",
+          "limits": "Available reading area depends on window dimensions and margins."
+        },
+        {
+          "name": "Heading size",
+          "support": "Included",
+          "options": "Heading scale independent of the body text.",
+          "limits": "Long headings can require rewording or a smaller scale."
+        },
+        {
+          "name": "Inline direction appearance",
+          "support": "Included",
+          "options": "Independent square-bracket direction colour and size; font follows headings.",
+          "limits": "These controls apply to inline directions, not long HTML production notes."
+        },
+        {
+          "name": "Production note appearance",
+          "support": "Limited",
+          "options": "Preview 02 uses a fixed smaller style for long production notes.",
+          "limits": "Separate note controls and complete font/italic choices are under review; they are not supported features of this baseline."
+        },
+        {
+          "name": "Independent line spacing",
+          "support": "Included",
+          "options": "Separate script, heading and inline-direction line spacing; preview addition.",
+          "limits": "Production-note line spacing is fixed in this baseline."
+        },
+        {
+          "name": "Alignment and margins",
+          "support": "Included",
+          "options": "Left or centred text; side, top and bottom margin controls.",
+          "limits": "Extreme settings can reduce the usable reading area."
+        },
+        {
+          "name": "Background and text visibility",
+          "support": "Included",
+          "options": "Background opacity, separate on-air backing and text brightness.",
+          "limits": "Overlay appearance does not change the underlying video content."
+        },
+        {
+          "name": "Text edge",
+          "support": "Optional",
+          "options": "None, outline or shadow to separate words from a busy background.",
+          "limits": "Preview against the intended slides, call or camera picture."
+        },
+        {
+          "name": "Focus band",
+          "support": "Optional",
+          "options": "Dim text away from the reading line; adjustable strength.",
+          "limits": "Does not remove text from the script or edit pack."
+        },
+        {
+          "name": "Reading marker and progress",
+          "support": "Optional",
+          "options": "Reading-line position and marker, sentence highlight, progress and time-left display.",
+          "limits": "Display aids can be configured separately from the script content."
+        }
+      ]
+    },
+    {
+      "id": "group-07",
+      "name": "Windows, screens and capture",
+      "references": [
+        {
+          "name": "Layout and display",
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/04-layout-and-display.md"
+        },
+        {
+          "name": "Remotes and screens",
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/06-remotes-and-screens.md"
+        }
+      ],
+      "rows": [
+        {
+          "name": "Transparent content overlay",
+          "support": "Included",
+          "options": "Read over a video call, slides, camera/projector preview or other desktop content.",
+          "limits": "Sightline does not supply or embed the underlying call or presentation."
+        },
+        {
+          "name": "Always on top",
+          "support": "Optional",
+          "options": "Keep the prompter above ordinary application windows.",
+          "limits": "Operating-system window rules and other topmost windows can affect stacking."
+        },
+        {
+          "name": "Windowed and fullscreen use",
+          "support": "Included",
+          "options": "Size and position the prompter, or use a fullscreen reading view.",
+          "limits": "Multi-window arrangements need checking on the intended display."
+        },
+        {
+          "name": "Horizontal and vertical mirror",
+          "support": "Included",
+          "options": "Separate mirror controls, including toolbar icons.",
+          "limits": "Set the flips appropriate to the physical teleprompter glass or monitor."
+        },
+        {
+          "name": "Prompter monitor",
+          "support": "Optional",
+          "options": "Choose the display used for the reading window.",
+          "limits": "Requires the display to be connected and recognised by the operating system."
+        },
+        {
+          "name": "Eye-line strip",
+          "support": "Optional",
+          "options": "Compact reading strip with configurable screen height and reading-line position.",
+          "limits": "Lens alignment is a manual setup task."
+        },
+        {
+          "name": "Click-through",
+          "support": "Optional",
+          "options": "Let pointer interaction reach content beneath the overlay.",
+          "limits": "Use the documented shortcut or remote control to regain interaction."
+        },
+        {
+          "name": "Operator window",
+          "support": "Optional",
+          "options": "Separate upright controls and script/session status while the reading window is mirrored.",
+          "limits": "A second monitor is useful but not required."
+        },
+        {
+          "name": "Toolbar hiding",
+          "support": "Included",
+          "options": "Toolbar retreats when the pointer moves away; faster distance-based hiding is a preview addition.",
+          "limits": "Keyboard focus keeps controls available while they are in use."
+        },
+        {
+          "name": "Utility windows",
+          "support": "Included",
+          "options": "Separate Settings, help and command windows, with movable positioning.",
+          "limits": "Window stacking must still be checked in the user's chosen fullscreen arrangement."
+        },
+        {
+          "name": "Capture protection",
+          "support": "Limited",
+          "options": "Request that supported capture paths exclude Sightline utility/reading windows.",
+          "limits": "Platform, capture method and compositor determine the result; verify the actual recording."
+        },
+        {
+          "name": "Capture override for testing",
+          "support": "Optional",
+          "options": "Debug control allows capture of Sightline windows for demonstrations and diagnostics.",
+          "limits": "This intentionally removes protection; inspect every captured output before recording."
+        },
+        {
+          "name": "Small-screen layout",
+          "support": "Limited",
+          "options": "Grouped, paged settings avoid a changing-size settings panel.",
+          "limits": "A known 1024 × 600 preview issue can overlap guide access and OBS toolbar actions; queued for the next UI review."
+        }
+      ]
+    },
+    {
+      "id": "group-08",
+      "name": "Head positioning and framing reference",
+      "references": [
+        {
+          "name": "Head guide and controls",
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/06-remotes-and-screens.md"
+        },
+        {
+          "name": "Production handover",
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/12-production-handover.md"
+        }
+      ],
+      "rows": [
+        {
+          "name": "Floating head guide",
+          "support": "Optional",
+          "options": "Separate transparent framing window above a camera/projector view and below the prompter.",
+          "limits": "The underlying camera picture comes from another application."
+        },
+        {
+          "name": "Ideal and Actual outlines",
+          "support": "Included",
+          "options": "Distinct target framing and manually aligned actual framing.",
+          "limits": "Actual is a user-set reference, not a camera measurement."
+        },
+        {
+          "name": "Eye-line anchoring",
+          "support": "Included",
+          "options": "Set centre and eye level before adjusting the shape around the eyes.",
+          "limits": "Manual alignment must be repeated if camera framing changes."
+        },
+        {
+          "name": "Head-edge adjustment",
+          "support": "Included",
+          "options": "Adjust top, bottom, left and right independently.",
+          "limits": "Changes the outline, not the camera crop or the person's image."
+        },
+        {
+          "name": "Move and scale",
+          "support": "Included",
+          "options": "Horizontal/vertical position, overall size, width and height controls.",
+          "limits": "Shape adjustments are separate from moving the guide window itself."
+        },
+        {
+          "name": "Guide visibility",
+          "support": "Included",
+          "options": "Outline colour/opacity and background-opacity control.",
+          "limits": "A busy or bright camera picture may need stronger backing."
+        },
+        {
+          "name": "Guide templates",
+          "support": "Included",
+          "options": "Choose a session framing template and keep it across script/module changes.",
+          "limits": "A session setting is separate from script-specific directions."
+        },
+        {
+          "name": "Guide placements",
+          "support": "Included",
+          "options": "Centre and beside-panel placements, plus window positioning and sizing.",
+          "limits": "Beside panel refers to a guide placement alongside the reading area."
+        },
+        {
+          "name": "Fullscreen and chromeless guide",
+          "support": "Included",
+          "options": "Toggle the guide into and out of fullscreen; lock the adjustment view when ready.",
+          "limits": "Test stacking with the OBS projector and prompter on the chosen monitor."
+        },
+        {
+          "name": "Adjustment panel",
+          "support": "Included",
+          "options": "Movable controls; bottom placement avoids the main top toolbar by default; preview refinement.",
+          "limits": "Dense small-screen combinations still have the separate known toolbar issue."
+        },
+        {
+          "name": "Save Ideal",
+          "support": "Included",
+          "options": "Save the preferred target outline for repeatable framing.",
+          "limits": "This is distinct from saving an Actual reference for a recording."
+        },
+        {
+          "name": "Save and restore recording reference",
+          "support": "Included",
+          "options": "Save Actual position, dimensions and eye lock; restore without overwriting Ideal; preview addition.",
+          "limits": "Restoring the shape does not restore the physical camera, body or guide window."
+        },
+        {
+          "name": "Guide export metadata",
+          "support": "Included",
+          "options": "Record Ideal/Actual information, recording reference and guide window geometry in the edit pack.",
+          "limits": "Metadata describes the configured guide, not proof that it was absent from the video."
+        },
+        {
+          "name": "Keep guide out of output",
+          "support": "Limited",
+          "options": "Capture protection and a camera-source recording workflow keep the guide on the operator's screen.",
+          "limits": "No universal automatic guarantee; verify the recorded file and chosen capture source."
+        },
+        {
+          "name": "Automatic face or eye tracking",
+          "support": "Not included",
+          "options": "Actual framing is aligned by the user.",
+          "limits": "No automatic face detection, posture scoring or lens-gaze correction is claimed."
+        }
+      ]
+    },
+    {
+      "id": "group-09",
+      "name": "Keyboard, clickers and controllers",
+      "references": [
+        {
+          "name": "Remotes and screens",
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/06-remotes-and-screens.md"
+        },
+        {
+          "name": "Shortcuts",
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/08-shortcuts-and-troubleshooting.md"
+        }
+      ],
+      "rows": [
+        {
+          "name": "Keyboard control",
+          "support": "Included",
+          "options": "Start/pause, sections, markers, display actions and documented shortcuts.",
+          "limits": "Some shortcuts depend on focused windows; documented global shortcuts cover specific actions."
+        },
+        {
+          "name": "Presentation clickers",
+          "support": "Dependent",
+          "options": "Navigate using compatible keyboard-like presentation remotes.",
+          "limits": "Button codes vary by device and may need mapping."
+        },
+        {
+          "name": "Pedals and gamepads",
+          "support": "Dependent",
+          "options": "Map supported input events to prompter actions.",
+          "limits": "Hardware, drivers and device-event support vary."
+        },
+        {
+          "name": "Learn and customise input",
+          "support": "Optional",
+          "options": "Input mapping controls let users assign supported buttons to actions.",
+          "limits": "This is not a driver for every USB controller."
+        },
+        {
+          "name": "Editing input safeguards",
+          "support": "Included",
+          "options": "Reading-oriented mappings are suspended where editing requires ordinary input.",
+          "limits": "Check unusual remotes against the editor before live use."
+        },
+        {
+          "name": "Common action model",
+          "support": "Included",
+          "options": "Navigation, display, take and framing actions are shared across applicable control surfaces.",
+          "limits": "Available buttons and feedback depend on the surface and enabled features."
+        }
+      ]
+    },
+    {
+      "id": "group-10",
+      "name": "Floating pad and phone remote",
+      "references": [
+        {
+          "name": "Pad and phone setup",
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/06-remotes-and-screens.md"
+        }
+      ],
+      "rows": [
+        {
+          "name": "Floating control pad",
+          "support": "Optional",
+          "options": "Separate touch/mouse control window with selectable action buttons.",
+          "limits": "Enable and customise it in Settings > Controls > Pad."
+        },
+        {
+          "name": "Select and reorder actions",
+          "support": "Included",
+          "options": "Choose the supported actions and drag to arrange their order.",
+          "limits": "The layout uses a defined action catalogue, not arbitrary third-party plugins."
+        },
+        {
+          "name": "Pad column count",
+          "support": "Included",
+          "options": "Two, three, four or six columns.",
+          "limits": "Choose a count suitable for the available pad width."
+        },
+        {
+          "name": "Layout presets",
+          "support": "Included",
+          "options": "Compact, Reading, Studio, and Framing & checks presets.",
+          "limits": "Applying a preset replaces the current selected layout."
+        },
+        {
+          "name": "Reading buttons",
+          "support": "Included",
+          "options": "Start/pause, top, previous/next, pace, text and other supported reading actions.",
+          "limits": "State and button availability reflect the current session."
+        },
+        {
+          "name": "Production buttons",
+          "support": "Dependent",
+          "options": "Marker, keeper, scrap, sound check and recorder controls.",
+          "limits": "OBS actions need OBS permission; other actions follow their own microphone/session requirements."
+        },
+        {
+          "name": "Framing and listening buttons",
+          "support": "Included",
+          "options": "Guide visibility, fullscreen, available framing adjustments and listening controls.",
+          "limits": "No dial hardware is required to use equivalent button actions."
+        },
+        {
+          "name": "Phone browser remote",
+          "support": "Optional",
+          "options": "Open the supplied local-network URL or scan the QR code.",
+          "limits": "Phone and computer need network reachability; this is a browser controller, not a native phone app."
+        },
+        {
+          "name": "Shared phone/pad layout",
+          "support": "Included",
+          "options": "Phone uses the same selected actions and order as the desktop pad.",
+          "limits": "Change the shared configuration in Sightline."
+        },
+        {
+          "name": "Portrait and landscape",
+          "support": "Included",
+          "options": "Responsive button layout for phone orientation and screen size.",
+          "limits": "Long layouts can need scrolling; browser chrome reduces the usable height."
+        },
+        {
+          "name": "Live state and reconnect",
+          "support": "Included",
+          "options": "Prompting, section/progress and confirmed recorder status; connection recovery feedback.",
+          "limits": "A disconnected client cannot confirm current state; network delays can affect response."
+        },
+        {
+          "name": "Finish recording safeguard",
+          "support": "Optional",
+          "options": "Hold Finish recording for one second on pad and phone.",
+          "limits": "This safeguard applies to those surfaces, not every external control route."
+        },
+        {
+          "name": "Remote access security",
+          "support": "Included",
+          "options": "Token-based local-network access rather than an open public control page.",
+          "limits": "Treat a pairing URL/token as a control credential; this is not an internet relay service."
+        }
+      ]
+    },
+    {
+      "id": "group-11",
+      "name": "Stream Deck companion",
+      "references": [
+        {
+          "name": "Stream Deck installation, permissions and profiles",
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/06-remotes-and-screens.md#stream-deck"
+        }
+      ],
+      "rows": [
+        {
+          "name": "Companion plugin",
+          "support": "Dependent",
+          "options": "Sightline Stream Deck 0.2.0, paired with the app's supported control contract.",
+          "limits": "Requires Elgato Stream Deck software; the companion is an optional installation."
+        },
+        {
+          "name": "Supported desktop hosts",
+          "support": "Dependent",
+          "options": "Plugin host support for Windows and macOS.",
+          "limits": "The Linux app does not imply an official Elgato Linux host."
+        },
+        {
+          "name": "Keys, Mobile and Pedal",
+          "support": "Included",
+          "options": "Ready-made profiles for supported Stream Deck models, including Mobile and Pedal.",
+          "limits": "Requires the corresponding Elgato hardware/software entitlement where applicable."
+        },
+        {
+          "name": "Stream Deck + dials",
+          "support": "Included",
+          "options": "Dial-based controls for supported reading and framing adjustments.",
+          "limits": "Requires Stream Deck + and the appropriate action configuration."
+        },
+        {
+          "name": "Prompting and slots",
+          "support": "Included",
+          "options": "Play/pause, navigation, script slots, speed and display actions.",
+          "limits": "The companion controls loaded scripts; its restricted key does not grant script-file access."
+        },
+        {
+          "name": "Take and recording keys",
+          "support": "Dependent",
+          "options": "Record take and Finish recording, markers and take ratings.",
+          "limits": "OBS recording keys require app integration plus explicit recording-control permission."
+        },
+        {
+          "name": "Head-guide controls",
+          "support": "Included",
+          "options": "Show/hide, fullscreen and supported position/size/reference actions.",
+          "limits": "Adjusts the manual guide rather than a camera source."
+        },
+        {
+          "name": "Session listening controls",
+          "support": "Included",
+          "options": "Supported command-listening actions from assigned keys.",
+          "limits": "Microphone permissions and selected engine remain app responsibilities."
+        },
+        {
+          "name": "State on the keys",
+          "support": "Included",
+          "options": "Play/pause, On air, selected slot, section/time and confirmed recording state.",
+          "limits": "Unknown/disconnected recording state must not be treated as stopped."
+        },
+        {
+          "name": "Recording profiles",
+          "support": "Included",
+          "options": "Separate OBS recording layouts alongside ordinary prompting profiles.",
+          "limits": "The Pedal recording layout's last pedal finishes the whole recording file."
+        },
+        {
+          "name": "Discovery and pairing",
+          "support": "Included",
+          "options": "Enable once under Controls > Stream Deck; local discovery avoids manual token entry.",
+          "limits": "Preview pairing is separate from the normal installed app's discovery."
+        },
+        {
+          "name": "Permission separation",
+          "support": "Included",
+          "options": "Dedicated restricted companion credential, separate from general AI/API access.",
+          "limits": "No arbitrary settings, recording-file access or broad AI permission is granted."
+        },
+        {
+          "name": "Version compatibility",
+          "support": "Included",
+          "options": "App/plugin version reporting and required-feature compatibility feedback.",
+          "limits": "Use a matched app/plugin pair; successful installation is not hardware validation."
+        },
+        {
+          "name": "Distribution and source",
+          "support": "Limited",
+          "options": "Installer available with the app release; source repository remains private.",
+          "limits": "Elgato Marketplace submission is pending review, not an approved live listing."
+        }
+      ]
+    },
+    {
+      "id": "group-12",
+      "name": "OBS connection, recording and setup",
+      "references": [
+        {
+          "name": "Recording with OBS",
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/11-obs.md"
+        },
+        {
+          "name": "OBS setup assistant",
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/15-obs-setup.md"
+        }
+      ],
+      "rows": [
+        {
+          "name": "Standalone OBS connection",
+          "support": "Dependent",
+          "options": "Connect through OBS WebSocket with address, port and password.",
+          "limits": "Requires OBS with a compatible WebSocket server, enabled and reachable."
+        },
+        {
+          "name": "Optional integration",
+          "support": "Optional",
+          "options": "OBS support is off until enabled; dependent help and controls follow that state.",
+          "limits": "Ordinary prompting works without OBS."
+        },
+        {
+          "name": "Credentials",
+          "support": "Included",
+          "options": "Save the OBS password using supported operating-system protection; remove it from settings.",
+          "limits": "Operating-system credential protection availability and user profile apply."
+        },
+        {
+          "name": "Status versus control permission",
+          "support": "Included",
+          "options": "Observe recorder state separately from permission to start, stop, pause and resume.",
+          "limits": "Connecting alone does not authorise recorder commands."
+        },
+        {
+          "name": "Confirmed recording pill",
+          "support": "Included",
+          "options": "OFF green, RECORDING red, PAUSED orange and UNKNOWN grey; persistent preview addition.",
+          "limits": "Text accompanies colour; OBS-disabled mode hides it."
+        },
+        {
+          "name": "Record take",
+          "support": "Included",
+          "options": "Confirm OBS recording before starting the prompter.",
+          "limits": "Needs a healthy connection and recording-control permission."
+        },
+        {
+          "name": "Finish recording",
+          "support": "Included",
+          "options": "Finish the prompter session and request the end of the OBS recording.",
+          "limits": "Verify the acknowledged state and resolved file before handover."
+        },
+        {
+          "name": "Continuous recording",
+          "support": "Included",
+          "options": "Keep one OBS recording running through prompting holds, section stops and retakes.",
+          "limits": "Default behaviour; a prompter pause is not an OBS pause."
+        },
+        {
+          "name": "Linked recording",
+          "support": "Optional",
+          "options": "Link recording to prompting: confirmed start/resume, pauses with holds, finish at final stop/end; preview addition.",
+          "limits": "Enable with OBS stopped; requires recording permission and a pause-capable recording format."
+        },
+        {
+          "name": "Explicit recorder actions",
+          "support": "Included",
+          "options": "Record on, off, pause and resume through supported controls, voice or optional directives; preview addition.",
+          "limits": "OBS/format limitations apply; script loading alone cannot trigger recording."
+        },
+        {
+          "name": "Recording reminder",
+          "support": "Included",
+          "options": "Visible recording state and start/finish controls help distinguish prompting from recording.",
+          "limits": "A reminder or On air display is not proof of a running recorder."
+        },
+        {
+          "name": "Recording file and clock",
+          "support": "Included",
+          "options": "Log OBS recording starts/stops, pause/resume/restart events, file identity and reported time references.",
+          "limits": "File names and offsets remain unknown where OBS has not supplied enough information."
+        },
+        {
+          "name": "Take-to-file references",
+          "support": "Included",
+          "options": "Section starts, takes and markers link to OBS recording segments and clock positions.",
+          "limits": "Estimated timing and discontinuities are retained as such; inspect the media for precise edits."
+        },
+        {
+          "name": "OBS chapters",
+          "support": "Optional",
+          "options": "Send section starts and named markers as recording chapters.",
+          "limits": "Requires support from the OBS version, output format and recording state."
+        },
+        {
+          "name": "Recorded slate source",
+          "support": "Optional",
+          "options": "Prepare a browser-source picture/tone route for a reference in the recorded output.",
+          "limits": "Add it to the recorded scene and include the routed audio track; confirm it in a test file."
+        },
+        {
+          "name": "Setup assistant",
+          "support": "Optional",
+          "options": "Review and apply a separate OBS profile/scene collection using selected existing camera, mic and presentation sources.",
+          "limits": "Does not guess hardware; source types must be supported and configured first."
+        },
+        {
+          "name": "Output presets",
+          "support": "Optional",
+          "options": "Choose a 1080p or 3840 × 2160 4K canvas/output at 30 fps and an output folder.",
+          "limits": "A 4K canvas does not prove native 4K capture or adequate encoding performance."
+        },
+        {
+          "name": "Generated scene layout",
+          "support": "Included",
+          "options": "Camera and presentation layouts with selected microphone routed to tracks 1 and 2.",
+          "limits": "No head-guide/prompter capture source is added; track 2 in MKV is not a separate WAV."
+        },
+        {
+          "name": "Preserve existing OBS setup",
+          "support": "Included",
+          "options": "Review named changes, use a separate profile/collection and check setup results.",
+          "limits": "Restoration and recording quality must still be verified on the actual workstation."
+        },
+        {
+          "name": "Simultaneous clean-camera master",
+          "support": "Dependent",
+          "options": "Documented separate camera/microphone route using the Source Record filter.",
+          "limits": "Requires an additional OBS plugin and configuration; separate filenames are not discovered automatically."
+        },
+        {
+          "name": "Unprocessed mic master",
+          "support": "Dependent",
+          "options": "Preserve the mic before processing using the documented separate route; extract PCM to WAV as appropriate.",
+          "limits": "A composed OBS track or Sightline scratch WAV is not automatically an unprocessed production master."
+        }
+      ]
+    },
+    {
+      "id": "group-13",
+      "name": "Audio measurement and sync",
+      "references": [
+        {
+          "name": "Sound check and scratch audio",
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/05-recording-a-take.md"
+        },
+        {
+          "name": "Production handover",
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/12-production-handover.md"
+        }
+      ],
+      "rows": [
+        {
+          "name": "Microphone level display",
+          "support": "Optional",
+          "options": "Live sound-level information during applicable microphone use.",
+          "limits": "Measures the input as Sightline receives it, before another tool's later processing."
+        },
+        {
+          "name": "Room and voice checks",
+          "support": "Optional",
+          "options": "Separate checks for background noise and speech level.",
+          "limits": "Room conditions, microphone placement and hardware gain affect the result."
+        },
+        {
+          "name": "Advisory low-level handling",
+          "support": "Included",
+          "options": "Explain quiet/noisy/clipping conditions and allow Continue anyway; preview addition.",
+          "limits": "Increasing gain can also increase background noise; the user decides the compromise."
+        },
+        {
+          "name": "Per-take loudness",
+          "support": "Optional",
+          "options": "Voice-mode-only, Always during prompting, or Off.",
+          "limits": "Always mode opens the microphone during prompting; monitoring is not a mastering process."
+        },
+        {
+          "name": "Logged audio measures",
+          "support": "Included",
+          "options": "Loudness LUFS, peak dBFS, background noise, voice-above-noise and warnings.",
+          "limits": "Available only when measured; accepted warnings are retained with the session."
+        },
+        {
+          "name": "Scratch recording",
+          "support": "Optional",
+          "options": "Independent local microphone WAVs for timing and edit checks.",
+          "limits": "Scratch audio is a reference, not a guarantee of production quality or a replacement for the clean mic master."
+        },
+        {
+          "name": "Local take slate",
+          "support": "Optional",
+          "options": "Off, Flash and beep, or Flash only; visible choices in this preview.",
+          "limits": "A flash seen only on the operator display does not prove recorded camera/audio sync."
+        },
+        {
+          "name": "Recorded sync reference",
+          "support": "Dependent",
+          "options": "Slate IDs and known picture/tone routing into OBS, logged against takes.",
+          "limits": "The selected recorded scene and audio track must actually contain the reference."
+        },
+        {
+          "name": "Physical camera lip sync",
+          "support": "Limited",
+          "options": "Use visible/audible claps and inspect camera/mic recordings; compare later references for drift.",
+          "limits": "No automatic verified camera latency estimate or universal sync correction is claimed."
+        },
+        {
+          "name": "Sync adjustment",
+          "support": "Dependent",
+          "options": "Apply verified offsets in OBS or in the external edit workflow.",
+          "limits": "Sightline metadata is a timing aid; validate the result by looking and listening."
+        }
+      ]
+    },
+    {
+      "id": "group-14",
+      "name": "Takes, logs and production handover",
+      "references": [
+        {
+          "name": "Take log and edit pack",
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/05-recording-a-take.md"
+        },
+        {
+          "name": "Production handover",
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/12-production-handover.md"
+        }
+      ],
+      "rows": [
+        {
+          "name": "Session and section log",
+          "support": "Included",
+          "options": "Section/take IDs, start/end times, durations, UTC times and completion state.",
+          "limits": "Keep the recording media alongside the matching session export."
+        },
+        {
+          "name": "Retakes and restarts",
+          "support": "Included",
+          "options": "Record reruns, section restarts, skipped or stopped takes and edit markers.",
+          "limits": "A logged restart is not automatically the point an editor should cut."
+        },
+        {
+          "name": "Keeper and scrap choices",
+          "support": "Included",
+          "options": "Rate takes and preserve a preferred-use choice per section.",
+          "limits": "Choices are reviewable metadata, not destructive edits to media."
+        },
+        {
+          "name": "Take summary",
+          "support": "Included",
+          "options": "Review pace, target difference, completion and available sound/recognition feedback.",
+          "limits": "Results depend on the information captured for that take."
+        },
+        {
+          "name": "Saved recording browser",
+          "support": "Included",
+          "options": "Revisit saved sessions and export reports/edit packs.",
+          "limits": "The log browser is not a video editor or media-management system."
+        },
+        {
+          "name": "Core log exports",
+          "support": "Included",
+          "options": "`take-log.json` and `takes.csv`.",
+          "limits": "Field availability can differ between older and newer sessions."
+        },
+        {
+          "name": "Word and sentence detail",
+          "support": "Optional",
+          "options": "`words.csv` and `sentences.csv` with recognised timing and coverage.",
+          "limits": "Requires voice alignment; recognition errors and paraphrases affect coverage."
+        },
+        {
+          "name": "Edit marks",
+          "support": "Included",
+          "options": "`edit-marks.csv` and `edit-marks.json`, including markers, pauses and rereads where available.",
+          "limits": "Suggestions and recognition-derived boundaries need editorial review."
+        },
+        {
+          "name": "Draft captions",
+          "support": "Optional",
+          "options": "`captions.srt` and `captions.vtt`, built from available aligned speech/script data.",
+          "limits": "Review text and timing before publication; not a guaranteed verbatim transcript."
+        },
+        {
+          "name": "Script snapshot files",
+          "support": "Included",
+          "options": "`script-snapshots.json` plus numbered source snapshots tie words, IDs and cues to the recording.",
+          "limits": "Later edits to the source file do not replace the captured version."
+        },
+        {
+          "name": "Recorded sync export",
+          "support": "Included",
+          "options": "`recorded-sync.json` preserves reference IDs, routing and take/recording links.",
+          "limits": "Reference metadata does not certify the physical camera/microphone path."
+        },
+        {
+          "name": "Head-guide export",
+          "support": "Included",
+          "options": "`head-guide.json` includes Ideal, Actual, saved reference and window geometry.",
+          "limits": "Reference save/restore is a preview addition."
+        },
+        {
+          "name": "Rehearsal export",
+          "support": "Included",
+          "options": "`rehearsal-coach.json` provides the available coaching report.",
+          "limits": "No performance score or automatic keeper reassignment is produced."
+        },
+        {
+          "name": "Scratch WAV handover",
+          "support": "Optional",
+          "options": "Include available independent mic recordings with their session/timing references.",
+          "limits": "Audio exists only when scratch capture was enabled and succeeded."
+        },
+        {
+          "name": "External recording collection",
+          "support": "Limited",
+          "options": "Main OBS filename is resolved when reported; collect video, clean camera and clean mic masters separately.",
+          "limits": "The edit pack does not automatically locate or bundle every external recording file."
+        },
+        {
+          "name": "Automatic finished video",
+          "support": "Not included",
+          "options": "Logs and edit packs support a human or an external editing agent.",
+          "limits": "Sightline does not render a finished promotional film or automatically edit the production master."
+        }
+      ]
+    },
+    {
+      "id": "group-15",
+      "name": "Script review and rehearsal coaching",
+      "references": [
+        {
+          "name": "Script health",
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/02-scripts.md#script-health-before-you-read"
+        },
+        {
+          "name": "Rehearsal coaching",
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/05-recording-a-take.md#rehearsal-coaching"
+        }
+      ],
+      "rows": [
+        {
+          "name": "Script review",
+          "support": "Included",
+          "options": "Local review of script structure, reading load and supported directions before recording.",
+          "limits": "Rule-based feedback; no external generative AI is required."
+        },
+        {
+          "name": "Directive checking",
+          "support": "Included",
+          "options": "Check known directives and values, including sample scripts and AI-generated drafts.",
+          "limits": "A syntactically valid script still needs a delivery rehearsal."
+        },
+        {
+          "name": "Non-destructive suggestions",
+          "support": "Included",
+          "options": "Inspect findings and make deliberate edits in the script editor.",
+          "limits": "Review does not silently rewrite the script."
+        },
+        {
+          "name": "Rehearsal pace",
+          "support": "Included",
+          "options": "Compare speaking pace, overall pace and section target times for finished takes.",
+          "limits": "Speaking and overall WPM include pauses differently."
+        },
+        {
+          "name": "Coverage and rereads",
+          "support": "Optional",
+          "options": "View matched, partly matched, not matched and outside-range text, plus logged rereads.",
+          "limits": "These are aligner findings, not confirmed mistakes; steady takes can lack alignment."
+        },
+        {
+          "name": "Filler/repetition feedback",
+          "support": "Optional",
+          "options": "Count recognised um, uh, erm, er and adjacent repeated-word candidates.",
+          "limits": "Explicit opt-in; recognition can omit fillers or count intentional/scripted repetition."
+        },
+        {
+          "name": "Coaching data minimisation",
+          "support": "Included",
+          "options": "Filler feedback saves aggregate counts without starting an extra listener.",
+          "limits": "The selected engine's local/online processing still applies."
+        },
+        {
+          "name": "Current and saved reports",
+          "support": "Included",
+          "options": "Open rehearsal reports from the current take summary or an earlier recording.",
+          "limits": "Reports identify the session; unavailable measurements are not invented."
+        },
+        {
+          "name": "Performance grading",
+          "support": "Not included",
+          "options": "Feedback assists the speaker's own judgement.",
+          "limits": "No emotion, confidence, acting-quality or universal delivery score is claimed."
+        }
+      ]
+    },
+    {
+      "id": "group-16",
+      "name": "AI assistance and local automation",
+      "references": [
+        {
+          "name": "Working with AI and the local API",
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/09-working-with-ai.md"
+        },
+        {
+          "name": "Setting up your AI",
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/10-setting-up-your-ai.md"
+        }
+      ],
+      "rows": [
+        {
+          "name": "AI-optional workflow",
+          "support": "Included",
+          "options": "Write and run scripts yourself or work with a preferred external AI assistant.",
+          "limits": "No built-in cloud AI account is required for ordinary prompting."
+        },
+        {
+          "name": "AI script brief",
+          "support": "Included",
+          "options": "Copy documented instructions for sections, targets, cues, stops and optional control directives.",
+          "limits": "The chosen assistant generates the script; check its output before use."
+        },
+        {
+          "name": "Assistant choice",
+          "support": "Dependent",
+          "options": "ChatGPT, Claude, Gemini, Copilot or another assistant can prepare a compatible script.",
+          "limits": "Assistant capabilities, costs and privacy terms are external."
+        },
+        {
+          "name": "Local control API",
+          "support": "Optional",
+          "options": "Enable token-protected local endpoints to load scripts, select slots and issue supported commands.",
+          "limits": "Off by default; intended for authorised local tools, not public web pages."
+        },
+        {
+          "name": "Live automation feedback",
+          "support": "Included",
+          "options": "Status and event updates expose supported state and app/control-contract versions.",
+          "limits": "Clients need to handle connection loss, permissions and unsupported capabilities."
+        },
+        {
+          "name": "Configure through an agent",
+          "support": "Optional",
+          "options": "An authorised local agent can change supported settings and control prompting.",
+          "limits": "General API access is separate from the restricted Stream Deck credential."
+        },
+        {
+          "name": "Recording-data access",
+          "support": "Optional",
+          "options": "Authorised tools can retrieve saved-session and edit-pack information for editorial work.",
+          "limits": "Data access is not equivalent to an integrated video-editing engine."
+        },
+        {
+          "name": "Agent kit",
+          "support": "Optional",
+          "options": "Install the local command-line/helper kit and use its documented commands and reports.",
+          "limits": "Node.js is for the optional kit; packaged Sightline does not require a separate user Node installation."
+        },
+        {
+          "name": "Dependency checks",
+          "support": "Included",
+          "options": "Show whether required local components are available before offering dependent operations.",
+          "limits": "A detected runtime does not establish that an AI agent has been configured or authorised."
+        },
+        {
+          "name": "External AI edit assistance",
+          "support": "Dependent",
+          "options": "An editing agent can interpret takes, keeper choices, markers and timing exports.",
+          "limits": "Selecting or rendering a final edit depends on that external tool and human review."
+        },
+        {
+          "name": "Built-in generative AI/video editor",
+          "support": "Not included",
+          "options": "Sightline provides prompting, control and structured handover.",
+          "limits": "Script generation, synthetic narration and video rendering are external services/tools."
+        }
+      ]
+    },
+    {
+      "id": "group-17",
+      "name": "Settings, onboarding and help",
+      "references": [
+        {
+          "name": "Settings",
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/07-settings.md"
+        },
+        {
+          "name": "Screenshot gallery",
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/settings-gallery.md"
+        },
+        {
+          "name": "User guide",
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/README.md"
+        }
+      ],
+      "rows": [
+        {
+          "name": "Grouped settings",
+          "support": "Included",
+          "options": "Top-level task groups and focused subtabs separate prompting, appearance, recording and controls.",
+          "limits": "The detailed settings guide describes the current placement of each tool."
+        },
+        {
+          "name": "Stable settings panel",
+          "support": "Included",
+          "options": "Consistent width/height, grouped pages and no internal settings scrolling.",
+          "limits": "The screen must still accommodate the minimum usable dialog size."
+        },
+        {
+          "name": "Named page navigation",
+          "support": "Included",
+          "options": "Previous/Next name their destinations and disable at the bounds; preview addition.",
+          "limits": "Page navigation is used where one settings topic needs more space."
+        },
+        {
+          "name": "Contextual explanations",
+          "support": "Included",
+          "options": "Small question-mark pills beside options explain purpose and consequences.",
+          "limits": "Help should be checked against the selected mode and enabled components."
+        },
+        {
+          "name": "Apply, save and cancel",
+          "support": "Included",
+          "options": "Review changed settings, apply them and keep or cancel the dialog changes.",
+          "limits": "Some setup operations and permissions have their own explicit controls."
+        },
+        {
+          "name": "Onboarding and components",
+          "support": "Included",
+          "options": "First-use setup distinguishes component installation from everyday operation.",
+          "limits": "Components remain optional where the app can run without them."
+        },
+        {
+          "name": "Restore defaults",
+          "support": "Included",
+          "options": "Return preferences to the shipped starting setup and re-enter onboarding.",
+          "limits": "Does not uninstall components or delete the user's scripts and recording media."
+        },
+        {
+          "name": "Settings transfer",
+          "support": "Optional",
+          "options": "Import/export supported settings in JSON or XML, including structured pad layouts and word lists.",
+          "limits": "Secrets and sensitive opt-ins are not a way to bypass explicit permissions."
+        },
+        {
+          "name": "Settings access",
+          "support": "Included",
+          "options": "Toolbar settings control and a Settings item in the hamburger menu.",
+          "limits": "The menu remains an accessible route when toolbar icons are less obvious."
+        },
+        {
+          "name": "Grouped help",
+          "support": "Included",
+          "options": "Tabbed shortcuts and commands; relevant help follows enabled modes/features.",
+          "limits": "Disabled OBS features do not need to display unusable recording keys."
+        },
+        {
+          "name": "Built-in user guide",
+          "support": "Included",
+          "options": "Illustrated guide, settings screenshots, samples and recording acceptance walkthrough.",
+          "limits": "The shared source guide is canonical; a separate GitHub wiki is not enabled."
+        },
+        {
+          "name": "Credits and attribution",
+          "support": "Included",
+          "options": "Product credits and attribution grouped in About.",
+          "limits": "Third-party licence notices still accompany their relevant distributions."
+        },
+        {
+          "name": "Accessibility support",
+          "support": "Limited",
+          "options": "Keyboard access, readable fonts, contrast themes, contextual explanations and consistent panels.",
+          "limits": "Manual screen-reader/magnification checks remain; no full accessibility-conformance claim."
+        }
+      ]
+    },
+    {
+      "id": "group-18",
+      "name": "Privacy, diagnostics and review qualifications",
+      "references": [
+        {
+          "name": "Privacy and accessibility policies",
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/POLICIES.md"
+        },
+        {
+          "name": "Acceptance walkthrough",
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/14-acceptance-test.md"
+        }
+      ],
+      "rows": [
+        {
+          "name": "Local-first operation",
+          "support": "Included",
+          "options": "Scripts, settings and logs are held locally; local speech avoids a cloud recogniser.",
+          "limits": "Deepgram, document links and chosen external AI tools have their own network behaviour."
+        },
+        {
+          "name": "No required telemetry account",
+          "support": "Included",
+          "options": "No Sightline sign-in is required to prompt or create local take logs.",
+          "limits": "Elgato, online recognition and AI providers can have independent accounts/telemetry."
+        },
+        {
+          "name": "Local recording information",
+          "support": "Included",
+          "options": "Keep script snapshots, recognised timing, take choices and optional scratch audio for handover.",
+          "limits": "These files can contain personal or confidential content; manage them as production material."
+        },
+        {
+          "name": "Diagnostic logging",
+          "support": "Optional",
+          "options": "Debug events and listener health/recovery help investigate failures.",
+          "limits": "More detailed command-word tracing is separate and off by default."
+        },
+        {
+          "name": "Optional word tracing",
+          "support": "Optional",
+          "options": "Enable recognised command-word logging to investigate actual mishearings.",
+          "limits": "May include nearby speech; only enable it for the intended diagnostic period."
+        },
+        {
+          "name": "Recording-state honesty",
+          "support": "Included",
+          "options": "Confirmed stopped/recording/paused states are distinct from unknown/disconnected.",
+          "limits": "UI state cannot certify that the resulting picture/audio is usable."
+        },
+        {
+          "name": "Hardware acceptance",
+          "support": "Limited",
+          "options": "Walkthrough covers real camera, mic, controls, clean tracks, sync and output inspection.",
+          "limits": "Local automated tests do not replace camera/mic and physical-control testing."
+        },
+        {
+          "name": "Published versus preview",
+          "support": "Limited",
+          "options": "This grid covers Preview 02 and companion 0.2.0 together.",
+          "limits": "Do not compare the public 1.1.0 installer as though it already includes all preview additions."
+        },
+        {
+          "name": "Reviewer comparison scope",
+          "support": "Included",
+          "options": "Compare prompting, control, scripting, production handover, privacy and setup effort separately.",
+          "limits": "No competitor feature, price, performance ranking or endorsement is asserted here."
+        }
+      ]
+    }
+  ]
+}

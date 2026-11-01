@@ -202,6 +202,23 @@
           <button type="button" data-axis="v" aria-pressed="false" title="Mirror top to bottom. Click again to turn it off">↕ Up–down</button>
         </div>
       </div>
+      <h5 class="lp-sub">Line spacing</h5>
+      <label class="lp-row"
+        >Script line spacing <output id="lp-line-height-value"></output>
+        <input id="lp-line-height" type="range" min="1" max="2.5" step="0.05" />
+      </label>
+      <label class="lp-row"
+        >Heading line spacing <output id="lp-heading-line-height-value"></output>
+        <input id="lp-heading-line-height" type="range" min="1" max="2.5" step="0.05" />
+      </label>
+      <label class="lp-row"
+        >Inline direction line spacing <output id="lp-direction-line-height-value"></output>
+        <input id="lp-direction-line-height" type="range" min="1" max="2.5" step="0.05" />
+      </label>
+      <label class="lp-row"
+        >Production note line spacing <output id="lp-production-line-height-value"></output>
+        <input id="lp-production-line-height" type="range" min="1" max="2.5" step="0.05" />
+      </label>
       <h5 class="lp-sub">Spacing</h5>
       <label class="lp-row"
         >Left / right margin <output id="lp-margin-x-value"></output>
@@ -215,17 +232,17 @@
         >Bottom margin <output id="lp-margin-bottom-value"></output>
         <input id="lp-margin-bottom" type="range" min="0" max="60" step="1" />
       </label>
-      <label class="lp-row"
-        >Line spacing <output id="lp-line-height-value"></output>
-        <input id="lp-line-height" type="range" min="1" max="2.5" step="0.05" />
-      </label>
       <label class="lp-row" title="Section headings, as a share of their usual size next to the text. Lower it if headings grow too big when you make the text larger"
         >Heading size <output id="lp-heading-scale-value"></output>
         <input id="lp-heading-scale" type="range" min="0.4" max="1.5" step="0.05" />
       </label>
       <label class="lp-row"
-        >Comment size <output id="lp-direction-scale-value"></output>
+        >Inline direction size <output id="lp-direction-scale-value"></output>
         <input id="lp-direction-scale" type="range" min="0.4" max="1.5" step="0.05" />
+      </label>
+      <label class="lp-row"
+        >Production note size <output id="lp-production-scale-value"></output>
+        <input id="lp-production-scale" type="range" min="0.4" max="2" step="0.05" />
       </label>
       <label class="lp-row"
         >Reading line <output id="lp-reading-line-value"></output>
@@ -263,7 +280,7 @@
         <select id="lp-text-effect"><option value="none">None</option><option value="outline">Outline</option><option value="shadow">Shadow</option></select>
       </div>
       <div class="lp-row lp-inline">
-        Colours
+        Colour theme
         <select id="lp-theme"><option value="default">Standard</option><option value="yellow">Yellow on dark</option><option value="contrast">High contrast</option><option value="cream">Soft cream</option></select>
       </div>
       <div class="lp-row lp-inline">
@@ -275,10 +292,17 @@
         <select id="lp-heading-font"><option value="same">Same as the text</option><option value="default">Standard</option><option value="atkinson">Atkinson Hyperlegible</option><option value="opendyslexic">OpenDyslexic</option><option value="verdana">Verdana</option></select>
       </div>
       <div class="lp-row lp-inline" data-settings-control="lp-direction-colour">
-        <span class="settings-option-name"><label for="lp-direction-colour">Comment colour</label></span>
+        <span class="settings-option-name"><label for="lp-direction-colour">Inline direction colour</label></span>
         <span class="direction-colour-controls">
           <input id="lp-direction-colour" type="color" value="#c8c8c8" />
-          <button type="button" id="lp-direction-theme" aria-pressed="true" title="Use the theme's comment colour">Theme</button>
+          <button type="button" id="lp-direction-theme" aria-pressed="true" title="Use the theme's inline direction colour">Theme</button>
+        </span>
+      </div>
+      <div class="lp-row lp-inline" data-settings-control="lp-production-colour">
+        <span class="settings-option-name"><label for="lp-production-colour">Production note colour</label></span>
+        <span class="direction-colour-controls">
+          <input id="lp-production-colour" type="color" value="#c8c8c8" />
+          <button type="button" id="lp-production-theme" aria-pressed="true" title="Use the theme's production note colour">Theme</button>
         </span>
       </div>
       <h5 class="lp-sub">Recording</h5>
@@ -734,15 +758,16 @@
         </fieldset>
         <fieldset data-tab="recording">
           <legend>Slate</legend>
-          <label class="row"
-            >Slate at the start of each take
-            <select id="set-slate">
-              <option value="off">Off</option>
-              <option value="beep">Flash and beep</option>
-              <option value="flash">Flash only</option>
-            </select>
-          </label>
-          <p class="field-hint">A sync point for the edit. Before each take the screen flashes white and shows the section and take number for a second; with the beep, your microphone records it too. The take log notes when each slate went off, so every take can be lined up with the recording. Start reading after the beep.</p>
+          <div class="settings-control-row" data-settings-control="set-slate">
+            <span class="settings-option-name" id="slate-choice-label">Slate at the start of each take</span>
+            <input id="set-slate" type="hidden" value="off" aria-label="Slate selection" />
+            <div class="settings-radio-choices" role="radiogroup" aria-labelledby="slate-choice-label">
+              <label><input type="radio" name="slate-choice" value="off" checked /> Off</label>
+              <label><input type="radio" name="slate-choice" value="beep" /> Flash and beep</label>
+              <label><input type="radio" name="slate-choice" value="flash" /> Flash only</label>
+            </div>
+          </div>
+            <p class="field-hint">A rehearsal cue before each take: a white flash with the section and take number, plus an optional beep. The take log notes its time. For recording sync, use a confirmed recorded-slate route or visible claps; a flash seen only on the prompter does not prove picture-and-sound sync. Start reading after the cue.</p>
         </fieldset>
         <fieldset data-tab="audio">
           <legend>Audio references and levels</legend>
@@ -759,7 +784,7 @@
               <option value="off">Off</option>
             </select>
           </label>
-          <p class="field-hint">Measures your microphone through each take: its loudness, its loudest peak and the room's background noise. A take that clipped, was very quiet or had a noisy room gets a warning as it ends, in the take summary and in the take log and edit pack. It's the mic as Sightline hears it, before OBS or Riverside process it, so treat it as a guide.</p>
+          <p class="field-hint">Measures your microphone through each take: its loudness, its loudest peak and the room's background noise. A take that clipped, was very quiet or had a noisy room gets a warning as it ends, in the take summary and in the take log and edit pack. It's the mic as Sightline hears it, before your recording software processes it, so treat it as a guide.</p>
         </fieldset>
 
         <fieldset data-tab="voice">
@@ -880,6 +905,12 @@
           <p class="settings-live-note">Saved immediately as you adjust.</p>
         </fieldset>
 
+        <fieldset data-tab="theme" id="set-theme-host">
+          <legend>Script theme</legend>
+          <p class="settings-live-note">Saved immediately as you adjust.</p>
+          <p class="field-hint" data-essential>Choose script colours here. Fonts are in Text; transparency is in Background.</p>
+        </fieldset>
+
         <fieldset data-tab="background" id="set-background-host">
           <legend>Text and background visibility</legend>
           <p class="settings-live-note">Saved immediately as you adjust.</p>
@@ -920,16 +951,22 @@
             />
           </label>
         </fieldset>
-        <fieldset data-tab="script">
-          <legend>Delivery directions</legend>
+        <fieldset data-tab="directions" id="set-directions-host" data-settings-keep-together data-settings-page-label="Inline directions">
+          <legend>Inline directions [ … ]</legend>
+          <p class="settings-live-note">Saved immediately as you adjust.</p>
           <label class="row"
-            >[Directions]
+            >Visibility
             <select id="set-directions">
               <option value="dim">Dimmed</option>
               <option value="hide">Hidden (quoted words still shown)</option>
               <option value="normal">Normal</option>
             </select>
           </label>
+        </fieldset>
+        <fieldset data-tab="directions" id="set-production-notes-host" data-settings-keep-together data-settings-page-label="Production notes">
+          <legend>Production notes &lt;!-- … --&gt;</legend>
+          <p class="settings-live-note">Saved immediately as you adjust.</p>
+          <p class="field-hint">Long preparation instructions in HTML comments appear while paused and hide during delivery. Their size, colour and line spacing are separate from inline directions. Both use Heading font from Text; neither adds words to speech tracking. Quoted words inside production notes stay silent too.</p>
         </fieldset>
         <fieldset data-tab="display">
           <legend>Window and monitor</legend>
@@ -1071,7 +1108,6 @@
           <p class="settings-about-actions">
             <button type="button" id="set-stream-deck-check">Check compatibility</button>
             <button type="button" id="set-remote-streamdeck">Stream Deck in the guide</button>
-            <button type="button" id="set-stream-deck-components">Components…</button>
           </p>
           <p id="set-stream-deck-installation" class="field-hint" data-essential role="status" aria-live="polite">Checking for Stream Deck…</p>
           <p id="set-stream-deck-status" class="field-hint" data-essential role="status" aria-live="polite">Checking the saved connection…</p>
@@ -1116,8 +1152,10 @@
         <fieldset data-tab="obs-recording">
           <legend>OBS recording and sync</legend>
           <p id="set-obs-recording-availability" class="field-hint" data-essential role="status" aria-live="polite">Connect OBS in Recording > OBS connection first. These permissions apply when OBS integration is enabled.</p>
-          <label class="check"><input id="set-obs-controls" type="checkbox" /> Allow Sightline to start and stop OBS recordings</label>
-          <p class="field-hint">Leave this off for status only. Normal Play, Pause, Again and On air do not start or stop OBS. Record take waits for OBS to confirm recording before starting the prompter.</p>
+          <label class="check"><input id="set-obs-controls" type="checkbox" /> Allow Sightline to start, stop, pause and resume OBS recording</label>
+            <p class="field-hint">Leave recording controls off for status only. With permission, Record take waits for confirmed recording before prompting. Explicit record on, off, pause and resume voice commands and script directives use the same permission.</p>
+          <label class="check"><input id="set-obs-follow-prompter" type="checkbox" /> Link recording to prompting</label>
+            <p class="field-hint" data-essential>Off: start and finish recording explicitly; prompting pauses and retakes leave it running. On: Play starts/resumes recording, prompting pauses pause it, and script end finishes it. Choose before recording and test pause support in your recording format.</p>
           <label class="check"><input id="set-obs-markers" type="checkbox" /> Send section starts and named markers as OBS chapters</label>
           <p class="field-hint">Needs recording controls and a supported OBS version and recording format, such as Hybrid MP4. Chapter failures leave prompting and recording running.</p>
             <label class="check" title="Choose Flash or Flash and beep in Settings > Recording > Takes, then prepare this source"><input id="set-obs-recorded-slate" type="checkbox" /> Include the slate in the OBS recording</label>
@@ -1171,14 +1209,14 @@
           </div>
           <p class="field-hint">Uses OBS's own installer. Locate accepts a portable or custom installation. OBS on another computer needs its address under Recording > OBS connection.</p>
         </fieldset>
-        <fieldset data-tab="component-streamdeck">
+        <fieldset data-tab="streamdeck">
           <legend>Stream Deck (optional)</legend>
           <div>
           <p id="component-streamdeck-status" class="field-hint" data-essential role="status" aria-live="polite">Checking…</p>
           <div class="button-row"><a href="https://www.elgato.com/ww/en/s/downloads" target="_blank">Install / reinstall Stream Deck</a><button type="button" id="component-streamdeck-locate">Locate…</button><button type="button" id="component-streamdeck-check">Check again</button></div>
           <p id="component-streamdeck-plugin" class="field-hint" data-essential>Plugin connection not confirmed.</p>
           </div>
-          <p class="field-hint">The Elgato app and Sightline plugin are separate installs. Use Controls > Stream Deck for the setup guide and live version check. The plugin remains privately distributed during testing.</p>
+          <p class="field-hint">The Elgato app and Sightline plugin are separate installs. Installation and connection controls are together here under Controls > Stream Deck.</p>
         </fieldset>
         <fieldset data-tab="about" class="settings-about">
           <legend>Sightline Prompter</legend>

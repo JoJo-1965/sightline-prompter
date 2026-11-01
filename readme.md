@@ -44,6 +44,12 @@ to check your own recording setup.
 
 ## Optional AI, from script to edit
 
+**Reviewing the current preview?** The [detailed feature grid](docs/FEATURE-GRID.md)
+groups its capabilities, options and requirements, with dedicated Stream Deck
+and OBS sections. Browse the [searchable grid](docs/FEATURE-GRID.html) or use
+the [comparison CSV](docs/FEATURE-GRID.csv). It describes unpublished Preview 02;
+the published download above remains Sightline 1.1.0.
+
 | Step       | What your AI does                                                         | What Sightline does                                                                                        |
 | ---------- | ------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | **Write**  | Writes the script, with sections, target times, stops and countdowns      | **Help > Copy the AI Script Prompt** gives it the instructions, and a checker validates the result         |
@@ -71,9 +77,10 @@ to check your own recording setup.
 
 The whole workflow is in the guide: [Working with AI](docs/guide/09-working-with-ai.md).
 
-**Included in the unpublished 1.1.0 test build:** optional OBS recording controls,
+**Included in published 1.1.0:** optional OBS recording controls,
 a recorded slate, head-position guide, script/rehearsal review and shared pad/phone
-controls. Physical acceptance remains. Signed installers are on the [roadmap](ROADMAP.md).
+controls. Check your capture and sync route before production. Signed installers
+are on the [roadmap](ROADMAP.md).
 
 [One-page overview](docs/marketing/ONE-PAGER.md) · [Audiences, messages and supported claims](docs/marketing/POSITIONING.md)
 
@@ -240,6 +247,60 @@ the things a free app still costs, like code signing. There are no perks: Sightl
 Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ## Change log
+
+The [deployment documentation checklist](docs/DEPLOYMENT-CHECKLIST.md) covers
+help, guide, screenshots, release notes, roadmap and the feature matrix/grids
+together. Generated references and the JL snapshot are checked before packaging
+and deployment.
+
+### Unreleased
+
+**Review status:** Preview 03 has reported missing-control and navigation
+problems. See the [known issues](docs/PREVIEW-03-KNOWN-ISSUES.md) and the
+[Settings/Tools design review](docs/design/SETTINGS-AND-TOOLS-REDESIGN.md).
+The mock's independent font and italic controls are proposals, not app features.
+
+- **Directions and preparation notes:** **Appearance > Directions** gives
+  `[inline directions]` and `<!-- production notes -->` separate size, colour
+  and line-spacing controls. Both follow Heading font. Inline visibility saves
+  immediately; production notes still hide during delivery. Theme changes no
+  longer create an unnecessary pending-settings prompt. Note size is independent
+  of a heading container, and High contrast keeps note colours clear.
+- **Settings navigation labels:** Previous/Next keep destination names on one
+  line, with arrows and page count protected from overflow. Long names shorten
+  with an ellipsis; hover or keyboard/screen-reader help retains the full name.
+- **Documentation and demos:** refreshed recording help, Settings explanations,
+  screenshot gallery, acceptance samples and AI session guidance. Published
+  1.1.0/0.2.0 instructions are distinguished from the next recording preview.
+- **Recording workflow preview:** optional linked OBS recording starts with Play,
+  pauses/resumes with prompting and finishes at the script end. Continuous is
+  the default. Explicit **record on / off / pause / resume** voice commands and
+  optional `{record: …}` directives require OBS permission. A persistent pill
+  shows OFF, RECORDING, PAUSED or UNKNOWN.
+- **Production preparation:** `<!-- production comments -->` show while paused
+  and hide during delivery; short `[smile]` cues remain inline. Both stay outside
+  speech tracking. Sound checks offer **Continue anyway**, logging measurements
+  and acceptance without forcing microphone gain.
+- **Recording framing reference:** save and restore Actual position separately
+  from Ideal; the edit pack keeps both. Guide adjustments initially open below
+  the prompter toolbar and retain their movable position.
+- **Navigation and pairing:** Previous/Next name destinations and disable at
+  the bounds. Slate choices use visible radio controls. Stream Deck setup and
+  pairing share **Controls > Stream Deck**. The preview launcher temporarily
+  pairs the plugin, restoring installed-app discovery on normal exit. Moving
+  the pointer away from the toolbar hides it promptly.
+
+- **Windows app name:** Task Manager shows **Sightline Prompter**, replacing
+  the long product description in the executable metadata. This takes effect
+  when you run the updated build.
+- **Independent line spacing:** **Settings > Appearance > Spacing** has separate
+  controls for script and headings; inline directions and production notes
+  have their own controls under **Appearance > Directions**. Existing profiles
+  retain their previous spacing until you adjust it. Quoted spoken directions
+  keep script spacing.
+- **Theme and clearer Settings:** **Appearance > Theme** has its own named tab.
+  Settings rows have more breathing room and aligned controls; the panel keeps
+  its stable size, with no scrolling.
 
 ### 1.1.0 (31 October 2026)
 

@@ -1,5 +1,5 @@
 // OBS WebSocket v5, in main only. Disabled means no socket, timers or commands.
-// Never stream, change scenes, pause or stop an output as a side effect.
+// Recording actions require permission; never stream or change scenes.
 import { createHash, randomUUID } from "node:crypto";
 import { recordedSlateRoute } from "./obs-slate-route.js";
 import { createObsSetup } from "./obs-setup.js";
@@ -256,7 +256,7 @@ export function createObs( { onState = () => {}, WebSocketClass = globalThis.Web
 				await request( "CreateRecordChapter", { chapterName: String( label ).slice( 0, 120 ) || "Sightline marker" } );
 				return snapshot();
 			}
-			if ( action !== "start" && action !== "stop" ) throw new Error( "Unknown OBS action" );
+			if ( ![ "start", "stop", "pause", "resume" ].includes( action ) ) throw new Error( "Unknown OBS action" );
 			if ( recordingBusy ) throw new Error( "An OBS recording command is still waiting for confirmation" );
 			recordingBusy = true;
 			const current = generation;
@@ -269,7 +269,7 @@ export function createObs( { onState = () => {}, WebSocketClass = globalThis.Web
 					await refresh();
 					stillAllowed();
 					if ( state.recording === desired ) return;
-					if ( desired === "recording" && state.recording === "paused" ) throw new Error( "OBS recording is paused; resume it in OBS first" );
+					if ( action === "start" && desired === "recording" && state.recording === "paused" ) throw new Error( "OBS recording is paused; use Record resume" );
 					await new Promise( resolve => setTimeout( resolve, Math.max( 1, Math.min( 100, timeoutMs / 4 ) ) ) );
 				} while ( Date.now() < deadline );
 				publish( { recording: null, error: "OBS did not confirm the requested recording state" } );
@@ -282,7 +282,17 @@ export function createObs( { onState = () => {}, WebSocketClass = globalThis.Web
 					if ( state.recording === "paused" ) throw new Error( "OBS recording is paused; resume it in OBS first" );
 					if ( state.recording !== "recording" ) await request( "StartRecord" );
 					await waitForRecording( "recording" );
+				} else if ( action === "pause" || action === "resume" ) {
+					await refresh();
+					stillAllowed();
+					if ( state.recording === "stopped" ) throw new Error( "Start an OBS recording before pausing or resuming it" );
+					const desired = action === "pause" ? "paused" : "recording";
+					if ( state.recording !== desired ) await request( action === "pause" ? "PauseRecord" : "ResumeRecord" );
+					await waitForRecording( desired );
 				} else {
+					await refresh();
+					stillAllowed();
+					if ( state.recording === "stopped" ) return snapshot();
 					const result = await request( "StopRecord" );
 					stillAllowed();
 					publish( { outputPath: result.outputPath ?? state.outputPath } );

@@ -2,12 +2,12 @@
 
 # Sample: a modular script for batch recording
 
-[A sample for practising section-by-section recording. Each section has its
-own target, and ends with a pause, so you can stop, reset and go again.]
+<!-- A sample for practising section-by-section recording. Each section has its
+own target, and ends with a pause, so you can stop, reset and go again. -->
 
-[Two sound checks first. Room: stay quiet for five seconds. Voice: read the
+<!-- Two sound checks first. Room: stay quiet for five seconds. Voice: read the
 card at your normal level, and turn your mic up or down if it says so. Space
-carries on after each; "Prompter, again" checks again.]
+carries on after each; "Prompter, again" checks again. -->
 
 {soundcheck: room}
 

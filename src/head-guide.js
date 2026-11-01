@@ -23,6 +23,7 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 	const snapshot = () => ( { ...state(), shown: !!overlay, bounds: overlay?.getBounds() ?? getSettings().headGuideBounds ?? null, windowedBounds: normalBounds ?? getSettings().headGuideBounds ?? null, placement: getSettings().headGuidePlacement ?? "centre", placements: getSettings().headGuidePlacements ?? {}, displayId: overlay ? screen.getDisplayMatching( overlay.getBounds() ).id : null, captureOverride: captureOverride(), captureStatus: captureOverride() ? "Debug capture override on; guide may be recorded" : "Protected separate overlay; OBS capture route not verified" } );
 	const send = () => {
 		const value = snapshot();
+		value.reference = getSettings().headGuideReference ?? null;
 		value.controlsShown = controls?.isVisible() ?? false;
 		overlay?.webContents.send( "headGuideState", value );
 		controls?.webContents.send( "headGuideState", { ...value, controlsOnly: true } );
@@ -83,7 +84,13 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 		if ( !controls ) {
 			const area = screen.getDisplayMatching( prompter.getBounds() ).workArea;
 			const saved = getSettings().headGuideControlsBounds;
-			const bounds = fitInside( saved ?? { x: area.x + area.width - 400, y: area.y + 30, width: 390, height: 740 }, area );
+			const toolbarBottom = Math.max( area.y + 60, prompter.getBounds().y + 64 );
+			const height = Math.min( 740, Math.max( 420, area.y + area.height - toolbarBottom - 12 ) );
+			const bounds = fitInside( saved ?? { x: area.x + area.width - 400, y: area.y + area.height - height - 12, width: 390, height }, area );
+			if ( bounds.y < toolbarBottom && area.height >= 500 ) {
+				bounds.y = toolbarBottom;
+				bounds.height = Math.min( bounds.height, area.y + area.height - bounds.y );
+			}
 			controls = new BrowserWindow( { ...bounds, minWidth: Math.min( 350, area.width ), minHeight: Math.min( 460, area.height ), show: false, minimizable: false, maximizable: false, fullscreenable: false, autoHideMenuBar: true, title: "Guide adjustments", backgroundColor: "#15222b", webPreferences: { nodeIntegration: false, contextIsolation: true, sandbox: false, preload: path.join( dir, "client", "head-guide-preload.mjs" ) } } );
 			protectWindow( controls, !!getSettings().hideFromCapture );
 			controls.setAlwaysOnTop( true, "screen-saver" );
@@ -253,6 +260,13 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 			const pose = state();
 			saveSettings( { headGuideIdeal: guidePose( pose ), headGuideShowIdeal: true } );
 		}
+		if ( name === "save-reference" ) saveSettings( { headGuideReference: { savedAt: new Date().toISOString(), pose: guidePose( state() ), eyesLocked: state().eyesLocked, bounds: overlay?.getBounds() ?? null } } );
+		if ( name === "restore-reference" && getSettings().headGuideReference?.pose ) {
+			const reference = getSettings().headGuideReference;
+			const patch = { headGuideEyesLocked: reference.eyesLocked === true };
+			for ( const [ key, value ] of Object.entries( guidePose( reference.pose ) ) ) patch[`headGuide${ key[0].toUpperCase() }${ key.slice( 1 ) }`] = value;
+			saveSettings( patch );
+		}
 		if ( name === "ideal-visible" ) saveSettings( { headGuideShowIdeal: !state().showIdeal } );
 		if ( name === "reset-pose" ) {
 			const ideal = state().ideal;
@@ -286,7 +300,7 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 	prompter.on( "focus", restack );
 	return {
 		apply, toggle, toggleFullscreen, restack, isLocked: () => locked,
-		status: () => ( { ...state(), shown: !!overlay } ),
+		status: () => ( { ...state(), reference: getSettings().headGuideReference ?? null, shown: !!overlay } ),
 		adjust: value => saveSettings( guideAdjustment( getSettings(), value ) ),
 		control: remoteControl,
 		dispose() {

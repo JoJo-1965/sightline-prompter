@@ -1,5 +1,21 @@
 # Sightline Prompter: what it adds to Electron Teleprompter
 
+For a detailed reviewer comparison, use the [Preview 02 feature grid](FEATURE-GRID.md),
+with dedicated Stream Deck and OBS sections, configuration choices, dependencies
+and limits. A [searchable view](FEATURE-GRID.html) and [comparison CSV](FEATURE-GRID.csv)
+are generated from the same tables.
+
+**Next unpublished preview:** optional linked recording and explicit recorder
+voice/script commands; a persistent state pill; production comments that hide
+during delivery; advisory sound-check acceptance; separate saved Actual framing
+references; one Stream Deck settings home and preview pairing; destination
+labels and visible slate choices. Awaiting Joanne's recording acceptance test.
+The directions follow-up adds **Appearance > Directions** with separate inline
+direction and production note size, colour and line spacing.
+Preview 03 has reported missing-control issues; see the
+[review status](PREVIEW-03-KNOWN-ISSUES.md). The later font/style redesign is
+a proposal, not an implemented feature.
+
 **Sightline 1.1.0, released 31 October 2026:** includes OBS integration (52),
 the manual head guide (55), production exports, voice tuning, component checks,
 onboarding, script/rehearsal review and the Settings/help updates below.
@@ -18,7 +34,7 @@ modal focus containment and focus return are covered by app checks. Settings
 keeps a consistent width and height without scrolling: longer topics and word lists use labelled
 Previous/Next pages. Small raised ? pills beside options support hover,
 keyboard and touch, with Escape to dismiss. Appearance separates Text,
-Background, Reading aids, Spacing and Screens. Immediate-save controls are
+Theme, Directions, Background, Reading aids, Spacing and Screens. Immediate-save controls are
 labelled; pending changes show Unsaved changes, with Apply and Save & close.
 See the
 [Settings map](guide/07-settings.md).
@@ -26,8 +42,8 @@ See the
 **Components** includes offline model and AI kit
 status, Install/Reinstall/Remove, and a separate Node.js availability check.
 The kit runs without cloning the repository or installing npm dependencies.
-Components also detects optional OBS/Stream Deck applications and the Sightline
-plugin manifest, with official installer links and a portable/custom **Locate**
+Components detects optional dependencies. The preview moves Stream Deck app and
+plugin checks into its Controls topic, with installer links and a portable/custom **Locate**
 option. Missing dependencies have grey controls and visible explanations;
 preferences are retained. Local kit-command readiness stays separate from
 general API access. Remote OBS needs no local installation, and live plugin
@@ -37,7 +53,7 @@ inputs from clickers/pedals, with the pad's action choices, duplicate-input
 replacement, immediate saving, three-entry pages and reset. Held/reconnected
 buttons do not repeat; typing, editing and Settings suspend actions. Plain
 keys and Shift combinations can be assigned; system shortcuts stay reserved.
-These additions are source changes for review, absent from installed RC14.
+These controls are included in the published 1.1.0 baseline.
 
 The setup/session workflow (58) separates occasional configuration from live
 recording: first-use **Getting started**, reopenable from Help; **Tools >
@@ -63,13 +79,13 @@ an illustrated session checklist covering setup, framing, a short test,
 retakes, keeper choices and collecting the master files alongside each edit
 pack. It is available offline through **Help > User Guide**.
 
-The private Stream Deck companion test build **0.1.9** includes OBS Record take
+The published Stream Deck companion **0.2.0** includes OBS Record take
 and Finish recording keys, confirmed-state feedback and optional recording
 layouts for each model. The OBS development app enforces saved permissions
-and waits for actual recording state changes. These additions are unreleased;
-all five production requirements remain the publication gate.
+and waits for actual recording state changes. The preview adds optional linked
+recording; hardware checks remain specific to each user's recording route.
 
-The development app also has an optional recorded OBS slate: Prepare adds a
+Sightline also has an optional recorded OBS slate: Prepare adds a
 dedicated flash/tone source to the current scene, with acknowledgements and
 estimated file-clock references in the edit pack. A cached transparent page
 keeps the source blank after Sightline closes. Module changes flush the old
@@ -92,7 +108,7 @@ preview behind the guide (0–80%, initially 12%); **Outline** controls line
 opacity separately, and the dashed Ideal reference is brighter. Shape and
 background settings persist between scripts and in the edit-pack snapshots.
 
-**In development:** a floating head-position guide for camera framing, with
+**Included in 1.1.0:** a floating head-position guide for camera framing, with
 an eye line, head/shoulder outline, adjustable size/opacity/colour, saved
 placement, click-through lock, global Ctrl+Shift+H hotkey and Stream Deck
 OFF/ON/LOCK action. Separate from OBS scenes; capture protection stays on.
@@ -420,16 +436,22 @@ The whole workflow is in the guide:
 
 - Sentence highlight, a **focus band** that dims the lines away from the
   reading line, and a **text edge** for reading over busy backgrounds.
-- **Colour themes:** standard, yellow on dark, high contrast and soft cream.
+- **Colour themes:** standard, yellow on dark, high contrast and soft cream,
+  in the dedicated **Settings > Appearance > Theme** topic.
 - **Fonts** including Atkinson Hyperlegible, OpenDyslexic and Verdana, with a
   separate **heading font** and **heading size**, so big headings stay
   readable with a dyslexia font.
-- **Delivery-comment styling:** square-bracket notes have independent size
-  and colour in **Settings > Appearance > Text**, and follow Heading font.
-  A Theme button restores their usual colour. Spoken quotations keep the
-  script style; delivery notes remain outside tracking, word counts and timing.
+- **Directions and production-note styling:** **Appearance > Directions** has
+  separate size, colour and line spacing for `[inline directions]` and
+  `<!-- production notes -->`. Both follow Heading font; each has its own Theme
+  colour reset. Inline visibility saves immediately. Production notes hide
+  during delivery, including their quoted contents; quoted spoken words in
+  inline directions keep the script style and remain spoken.
 - Independent text opacity, background opacity and text brightness, margins
-  that fade out at the edges, line spacing and alignment.
+  that fade out at the edges and alignment. **Appearance > Spacing** has separate
+  script and heading line spacing; direction/note spacing has its own home.
+  Quotes to read aloud retain script
+  spacing. Settings uses aligned rows with space between labels and controls.
 
 ## Help and installers
 

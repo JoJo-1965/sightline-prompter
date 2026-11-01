@@ -24,7 +24,7 @@ The **Tools** button opens quick adjustments: **Spacing and mirror**
 microphone**. Changes show straight away. Drag a panel by its title to move
 it out of the way; double-click the title to recentre it.
 
-Settings reuses these controls in **Appearance** under **Text**, **Background**,
+Settings reuses these controls in **Appearance** under **Theme**, **Text**, **Directions**, **Background**,
 **Reading aids**, **Spacing** and **Screens**, plus **Recording > Takes** and
 **Prompting > Script**. There is
 one copy of each control; closing Settings returns it to the quick panel.
@@ -43,7 +43,13 @@ one copy of each control; closing Settings returns it to the quick panel.
   while you are.
 - **Margins** keep the text narrow, so your eyes stay near the camera. The top
   and bottom margins fade the text out near the edges.
-- **Line spacing**, **alignment** (left or centred) and the **reading line**:
+- **Script and heading line spacing** are independent, in
+  **Appearance > Spacing**. Inline direction and production note spacing
+  each have their own control in **Appearance > Directions**.
+  Each runs from 100% to 250% of its own font size.
+  Wrapped directions can be tighter than the spoken text; spoken quotations
+  keep script spacing. Existing profiles retain their previous spacing.
+- **Alignment** (left or centred) and the **reading line**:
   where the line you're reading sits. Put it just under your webcam.
 - **Heading size**: section headings grow with the text, so if they get too
   big when you make the text larger, lower this. 100% is their usual size
@@ -59,7 +65,7 @@ one copy of each control; closing Settings returns it to the quick panel.
 ## Reading aids
 
 The separate **Appearance > Reading aids** topic brings these choices together.
-Fonts are in **Appearance > Text**, and colour themes are in **Appearance > Background**.
+Fonts are in **Appearance > Text**, and colour themes are in **Appearance > Theme**.
 
 ![Reading aids grouped together in Settings](images/settings-aids.png)
 
@@ -70,13 +76,19 @@ Fonts are in **Appearance > Text**, and colour themes are in **Appearance > Back
   example Standard headings with OpenDyslexic text, where the dyslexia font
   makes big headings hard to read. **Same as the text** (the default) follows
   the Font above.
-- **Comment size and Comment colour**: adjust `[square-bracket directions]`
-  independently of headings. Their font follows **Heading font**. Size is
-  40–150% of the usual comment size: at 100%, Dimmed comments remain smaller
-  than the script, while Normal comments match it. Choose a colour with the
-  swatch; **Theme** restores the usual colour. Quoted words you read aloud
-  keep their script style. Visibility remains in **Prompting > Script**;
-  notes such as `[smile]` stay outside word counts, speech tracking and timing.
+- **Inline directions**: **Appearance > Directions** groups visibility,
+  size, colour and line spacing for `[square-bracket cues]`. Size is 40–150%
+  of their usual size: at 100%, Dimmed cues remain smaller than the script,
+  while Normal cues match it. Quoted words you read aloud keep their script
+  style and remain spoken. Unquoted cues such as `[smile]` stay outside word
+  counts, speech tracking and timing.
+- **Production notes**: a separate group on the same tab controls long
+  `<!-- preparation notes -->`. Their size runs from 40–200% of the usual
+  note size, which is 55% of the spoken script. Their colour and spacing are
+  independent of inline directions and headings. Notes show while paused,
+  hide during delivery and remain silent, including any quoted contents.
+  Both groups follow **Heading font**. Each colour swatch has its own **Theme**
+  reset, and all these controls save immediately.
 - **Text effect**: an outline or a shadow on the text, for busy backgrounds.
 - **Focus band**: dims the lines away from the reading line, with a strength
   setting.
@@ -88,8 +100,8 @@ Fonts are in **Appearance > Text**, and colour themes are in **Appearance > Back
 ![Window, monitor and eye-line settings under Appearance > Screens](images/settings-display.png)
 
 Window and monitor placement, Keep on top and the eye-line strip. Fonts and
-heading size are in **Appearance > Text**; backing and colours are in
-**Appearance > Background**. Highlights are in **Appearance > Reading aids**;
+heading size are in **Appearance > Text**; backing is in **Appearance > Background**
+and colours are in **Appearance > Theme**. Highlights are in **Appearance > Reading aids**;
 the reading line is in **Appearance > Spacing**. Mirroring is in **Appearance > Screens**. Delivery directions are in
 **Prompting > Script**.
 

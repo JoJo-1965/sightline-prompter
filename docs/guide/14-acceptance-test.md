@@ -1,6 +1,6 @@
-# Release-candidate acceptance test
+# Recording acceptance walkthrough
 
-**Frozen Windows Sightline 1.1.0 + private Stream Deck 0.2.0.**
+**Published baseline: Sightline 1.1.0 + Stream Deck 0.2.0.**
 The installed 0.1.9 remains compatible for its existing controls. Neither
 updated package is installed by preparing it. Add these checks after installation:
 
@@ -14,10 +14,41 @@ updated package is installed by preparing it. Add these checks after installatio
   all four edges. X/Y must stay fixed; ideal visibility and restore must
   preserve the saved ideal. Confirm the edit-pack guide metadata matches.
 
-The build versions are frozen at **1.1.0** and **0.2.0** for final acceptance;
-publication remains on hold. See the [freeze record](../BUILD-FREEZE-1.1.0.md).
-The existing installation is **1.0.7-rc.14** until explicitly updated;
-the RC1–RC14 notes below describe that earlier preview series.
+The next unpublished recording preview adds the checks below. Source and
+published guides can differ; check Help > About before following preview steps.
+The [freeze record](../BUILD-FREEZE-1.1.0.md) and RC1–RC14 notes retain the
+earlier test history and do not describe today's installed version.
+
+## Next-preview recording check
+
+1. With recording stopped, select a slate and Apply. Reopen Settings to confirm
+   it. Previous/Next must name their destination and disable at the bounds.
+   Stream Deck setup should have one home under Controls.
+2. Use the **Recording preview** sample. Long production comments show while
+   paused and hide during delivery; short cues stay visible. The first spoken
+   line should be ready when prompting starts. Comments add no spoken words.
+3. Save a recording reference, move Actual and restore it. Ideal must not change.
+   Keep the guide out of the production capture and confirm this in a real file.
+4. In Continuous mode, start recording, pause the prompter and retake a section.
+   OBS must keep recording. Use Finish recording explicitly at the end.
+5. With OBS stopped, enable **Link recording to prompting**. Play must confirm
+   recording first; pause/resume must retain its identity; reaching the final
+   stop finishes it. The chosen format must support pausing. Test a short file.
+6. Try “Prompter, record on”, “record pause”, “record resume” and “record off”.
+   Confirm the state pill, then test optional directives only in a disposable
+   recording. Loading a script must never start recording. OBS off hides its help.
+7. Accept a sound-check warning with Continue anyway. Check the measured result
+   and acceptance in the take log. Keep scratch audio and inspect the exported
+   script, recording-clock references and saved guide reference together.
+8. In the directions appearance follow-up, open **Appearance > Directions**.
+   Adjust inline directions, then production notes: each has separate size,
+   colour and line spacing. Reset one colour to Theme without changing the
+   other. Hide inline directions and check paused production notes remain.
+   Start prompting: production notes hide, quoted inline speech stays readable.
+   Restart the app and check the saved appearance. Settings must keep its size
+   with no scrolling, and live changes must not ask to save a pending draft.
+
+## Earlier RC history
 RC1 established the feature baseline. RC2 updates the bundled help and adds
 both acceptance scripts to **Files (☰) > Sample scripts**.
 RC3 adds compatibility reporting with plugin 0.1.9; older candidates do not
@@ -45,7 +76,8 @@ RC14 moves the optional trace to **Debug**, alongside support logs.
 Enable it only to investigate a mishearing, Apply, then turn it off afterwards.
 It can capture nearby conversation while Always listening is enabled.
 
-The public app remains **1.0.6**. The candidate and plugin are private test builds.
+At that earlier RC stage the public app was **1.0.6** and the candidates were
+private test builds. Today's published baseline is **1.1.0 / 0.2.0**, as above.
 
 ### Additional checks for the next candidate
 
@@ -92,9 +124,10 @@ checks identify a failure without needing to describe the whole session.
 
 ## Prepare the matching build
 
-Close Sightline before installing the candidate. Reopen it and check the
-version under **Help > About**. Install the private **0.1.9** plugin separately;
-its archive manifest uses the version **0.1.9.0**. Select the matching
+Close other Sightline copies before opening the preview. Check its build under
+**Help > About** and its local build notes. Use the published **0.2.0** plugin;
+its archive manifest uses **0.2.0.0**. Earlier 0.1.9 assignments remain supported.
+Select the matching
 **Sightline … OBS** profile in Stream Deck. Keep existing profiles.
 
 The required physical keys are **Record take**, **Play / Pause** and
@@ -207,7 +240,8 @@ browser acknowledgement is not proof of a correct physical recording.
 
 ## Optional components and custom inputs in the next candidate
 
-These additions are absent from installed RC14. After an approved build:
+These controls are included in 1.1.0. In the next recording preview, Stream Deck
+installation and pairing share Controls > Stream Deck. Check the running build:
 
 1. Open **Components**. Check the model status and Node.js result.
    Install the AI kit, open its folder and run the checker on your own script.

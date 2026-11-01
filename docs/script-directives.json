@@ -1,9 +1,9 @@
 {
 	"$comment": "Machine-readable definition of Sightline Prompter script directives. Human spec: SCRIPT-DIRECTIVES.md. AI brief: AI-SCRIPT-BRIEF.md.",
 	"name": "sightline-script-directives",
-	"version": "0.1.0",
+	"version": "0.6.0",
 	"status": "syntax agreed; implemented in the app (27 October 2026): pause, marker, wpm, target, pacing, mode",
-	"date": "2026-10-27",
+	"date": "2026-11-01",
 	"syntax": {
 		"directive": "{ name[: value] [, name[: value]]... }",
 		"directiveDelimiters": [
@@ -34,6 +34,11 @@
 		"inline": "Anywhere in the spoken text"
 	},
 	"directives": {
+		"record": {
+			"scopes": [ "inline" ],
+			"value": { "type": "enum", "values": [ "on", "off", "pause", "resume" ] },
+			"description": "Optional explicit OBS recording action. Requires OBS mode and recording controls. Executes only while reading reaches it, never on load. Off and pause hold prompting; use Play to continue. Unsupported pause requests leave prompting held with an error."
+		},
 		"pacing": {
 			"scopes": [
 				"script"
@@ -139,7 +144,7 @@
 					"voice"
 				]
 			},
-			"description": "A stop that checks the microphone first, in steady and voice scrolling. room: the room's background noise, measured for 5 seconds while the speaker stays quiet; quiet (below -55 dB), ok, or noisy (above -45 dB). voice: the speaker reads a line on the card at their normal level for 7 seconds; good, too quiet, loud or clipping, with how far to turn the mic's gain. The result shows on a card; \"Prompter, again\" or Check again measures again, and Space or \"Prompter, go\" carries on. Each result goes in the take log (soundChecks) and the edit pack. Put {soundcheck: room} then {soundcheck: voice} at the top of a recording script, on their own lines."
+			"description": "A stop that checks the microphone first, in steady and voice scrolling. room: the room's background noise, measured for 5 seconds while the speaker stays quiet; quiet (below -55 dB), ok, or noisy (above -45 dB). voice: the speaker reads a line on the card at their normal level for 7 seconds; good, too quiet, loud or clipping, with advice about voice and background noise. Continue anyway accepts a warning without forcing gain; the log retains acceptance and measurements. The result shows on a card; \"Prompter, again\" or Check again measures again, and Space or \"Prompter, go\" carries on. Each result goes in the take log (soundChecks) and the edit pack. Put {soundcheck: room} then {soundcheck: voice} at the top of a recording script, on their own lines."
 		},
 		"prompter": {
 			"scopes": [
@@ -177,6 +182,7 @@
 	"rules": [
 		"Curly braces are reserved for directives.",
 		"Square brackets never control the app; [Pause.] is only a note to the speaker.",
+		"HTML production comments show paused, hide during delivery and never supply spoken words or executable directives.",
 		"Unknown directives are hidden and flagged with a warning in the editor.",
 		"Use either target or wpm on a section, not both."
 	]

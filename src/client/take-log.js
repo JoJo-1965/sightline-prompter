@@ -281,7 +281,7 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [],
 		// A sound check the script asked for ({soundcheck: room} or {soundcheck:
 		// voice}): { kind, lufs, peak, noise, verdict, advice }, on the log's
 		// clock with the section it was in. Like the slate, it can start the log.
-		soundCheck( { kind, lufs = null, peak = null, noise = null, verdict, advice = "" }, index = -1 ) {
+		soundCheck( { kind, lufs = null, peak = null, noise = null, verdict, advice = "", accepted = false }, index = -1 ) {
 			const now = clock();
 			if ( !log.startedAt ) log.startedAt = new Date( now ).toISOString();
 			log.soundChecks.push( {
@@ -293,7 +293,8 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [],
 				peak,
 				noise,
 				verdict,
-				advice
+				advice,
+				accepted
 			} );
 			event( "soundcheck", { kind, verdict } );
 		},

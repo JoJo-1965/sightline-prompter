@@ -1,10 +1,10 @@
 // Keep the existing controls and saved values; give each topic a single home.
 export const SETTINGS_GROUPS = [
 	{ id: "prompting", label: "Prompting", pages: [ [ "scrolling", "Scrolling" ], [ "voice", "Voice" ], [ "commands", "Commands" ], [ "words", "Your words" ], [ "script", "Script" ] ] },
-	{ id: "appearance", label: "Appearance", pages: [ [ "reading", "Text" ], [ "background", "Background" ], [ "aids", "Reading aids" ], [ "layout", "Spacing" ], [ "display", "Screens" ] ] },
+	{ id: "appearance", label: "Appearance", pages: [ [ "theme", "Theme" ], [ "reading", "Text" ], [ "directions", "Directions" ], [ "background", "Background" ], [ "aids", "Reading aids" ], [ "layout", "Spacing" ], [ "display", "Screens" ] ] },
 	{ id: "recording", label: "Recording", pages: [ [ "recording", "Takes" ], [ "audio", "Audio" ], [ "obs", "OBS connection" ], [ "obs-recording", "OBS recording" ], [ "obs-setup", "OBS setup" ] ] },
 	{ id: "controls", label: "Controls", pages: [ [ "pad", "Pad" ], [ "buttons", "Buttons & keys" ], [ "phone", "Phone" ], [ "streamdeck", "Stream Deck" ], [ "remotes", "AI & API" ] ] },
-	{ id: "components", label: "Components", pages: [ [ "component-model", "Speech model" ], [ "component-kit", "AI kit" ], [ "component-node", "Node.js" ], [ "component-obs", "OBS" ], [ "component-streamdeck", "Stream Deck" ] ] },
+	{ id: "components", label: "Components", pages: [ [ "component-model", "Speech model" ], [ "component-kit", "AI kit" ], [ "component-node", "Node.js" ], [ "component-obs", "OBS" ] ] },
 	{ id: "debug", label: "Debug", pages: [ [ "debug", "Debug" ] ] },
 	{ id: "about", label: "About", pages: [ [ "about", "About" ] ] }
 ];
@@ -62,7 +62,7 @@ export function createSettingsNavigation( modal, { onShow = () => {} } = {} ) {
 		button.tabIndex = active ? 0 : -1;
 	};
 	function show( requested ) {
-		const alias = { files: "script", components: "component-model" }[requested] ?? requested;
+		const alias = { files: "script", components: "component-model", "component-streamdeck": "streamdeck" }[requested] ?? requested;
 		const name = parents.has( alias ) ? alias : "scrolling";
 		const group = parents.get( name );
 		remembered.set( group.id, name );

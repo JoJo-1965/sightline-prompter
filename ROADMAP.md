@@ -1,5 +1,27 @@
 # Sightline Prompter roadmap
 
+## Recording feedback batch — unpublished preview
+
+Documentation follow-through covers the shared guide/wiki content, native help
+and Settings explanations, refreshed screenshots, reusable recording demos,
+the promo's Markdown/HTML/PDF reader and staged JL page/FAQ/carousel copy.
+The separate GitHub wiki is disabled; the shared guide remains canonical.
+The website branch is prepared for review, with no live deployment.
+
+Built for validation: production comments, first-line positioning, advisory
+sound-check acceptance, Actual framing references, clearer navigation/slate
+choices, one Stream Deck setup and preview pairing. Optional linked recording
+and explicit voice/script recording commands keep continuous as the default.
+Native fixtures cover UI and recorder transitions. Joanne's camera, microphone,
+pause-compatible recording format and final handover remain the live acceptance test.
+
+**Directions follow-up, built for review:** Appearance > Directions separates
+inline directions and production notes, each with size, colour and line spacing.
+The visibility control has one home there and saves immediately. Theme's live
+save handling, note sizing inside headings, high-contrast note dimming and
+ambiguous Comment labels are corrected. JSON/XML and native-window checks cover
+independence, persistence, speech exclusion and hiding during delivery.
+
 What's planned and in which order. Joanne approved every item on 27 October
 2026, apart from the one on hold. The [change log in the README](readme.md#change-log)
 records what has shipped.
@@ -11,6 +33,11 @@ complex builds come later.
 - **Size:** **S** about a day · **M** a few days · **L** a week or more, for a person. Built with Claude Code, most take minutes to an hour, plus testing
 
 ## Where it stands (31 October 2026)
+
+**Post-release changes, awaiting publication:** Windows executable naming,
+independent script/heading/direction/production-note line spacing, a dedicated Appearance > Theme
+topic and roomier Settings rows. These are separate from the published 1.1.0
+freeze; no new release has been tagged.
 
 **Released: Sightline 1.1.0 + Stream Deck 0.2.0.** The app release includes the
 plugin installer; the plugin source repository stays private. Marketplace
