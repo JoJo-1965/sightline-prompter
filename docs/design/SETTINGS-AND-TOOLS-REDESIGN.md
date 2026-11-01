@@ -45,24 +45,26 @@ Section selectors instead of squeezing or clipping the navigation.
 | Prepare to record | Reading; Directions; Layout; Framing; Sound; Recorder | A route into the actual controls, with current state and a return to the checklist. No second copy of settings. |
 | Reading | Mode and pace | Steady/Voice/Notes, steady WPM, responsiveness link, start countdown and script pacing. |
 | Reading | Text and directions | Spoken script, headings, inline directions and production notes. Complete typography controls for each target. |
-| Reading | Theme and background | Theme palette, off-air/on-air backing, text opacity and brightness. Choose theme links here from typography. |
+| Reading | Theme and background | Built-in palettes, named custom themes, off-air/on-air backing, text opacity and brightness. Choose theme links here from typography. |
 | Reading | Layout | Alignment, margins, reading-line position and text-area preview. Line spacing lives with typography. |
 | Reading | Reading aids | Sentence highlight, focus band/strength, reading marker, progress/time and text edge. |
 | Reading | Screens and mirroring | Display selection, fullscreen, always on top, horizontal/vertical mirror, eye-line strip and click-through. |
 | Reading | Head guide | Session template, Ideal/Actual, eye lock, fit edges, saved recording reference, window position and capture state. Adjust guide opens its dedicated panel. |
-| Voice | Speech engine | Local model or Deepgram, readiness, service key and provider/privacy explanation. Installation links to Components. |
-| Voice | Microphone | Input selection, meter and device readiness. The same selected input is referenced by sound checks. |
+| Voice | Speech engine | Enable speech first, then local model or Deepgram, readiness, service key and provider/privacy explanation. Installation links to Components. |
+| Voice | Microphone | Enable input first, then input selection, meter and device readiness. The same selected input is referenced by sound checks. |
 | Voice | Commands | Listening mode, wake word, status, restart and command help. Recording commands follow enabled OBS permissions. |
 | Voice | Your words | Script corrections and command sound-alikes, search, select/edit one item and Teach. No height-driven redistribution of rows. |
 | Recording | Takes | Summary, pacing display, start beep, optional filler counts, markers and take-rating behaviour. |
 | Recording | Sound check | Room/voice checks, per-take loudness, advisory acceptance and sound-check display. |
 | Recording | Slate and sync | Local slate choices, scratch WAV references, recorded-slate route and sync limitations. |
-| Recording | OBS connection | Enable, installation/readiness, host/port, credentials, test and confirmed status. |
-| Recording | OBS recording | Permission, Continuous/Linked mode, pause capability, chapters and recorded-slate preparation. |
-| Recording | OBS setup | Review separate profile/scenes plan, folder and 1080p/4K choice; configuration guide. |
-| Controls | Pad and phone | Shared selected actions, ordering, presets, columns and hold-to-finish; phone pairing/QR is a named section within this workspace. |
-| Controls | Buttons and keys | Learn, assign, test, remove and restore supported mappings. Search/select a mapping instead of moving rows between pages. |
+| Controls | Pad and phone | Enable the floating pad; shared button layout appears when either the pad or phone is enabled. Selected actions, ordering, presets, columns and hold-to-finish. |
+| Controls | Phone remote | One phone enable switch; pairing URL/QR and renewal appear only when enabled. |
+| Controls | Keyboard and clickers | Enable custom keyboard-like input mappings, then learn, assign, test and restore. Core keyboard navigation remains available. |
+| Controls | Game controller | Its own enable switch, then compatible controller selection and button mappings. Separate from onscreen pad layout. |
 | Controls | Stream Deck | Install/readiness, enable, pair, compatibility and profile guide in one place. |
+| Controls | OBS integration | One OBS enable switch; connection details and other OBS sections appear only when enabled. Installation/readiness, host/port, credentials, test and confirmed status. |
+| Controls | OBS recording control | Permission, Continuous/Linked mode, pause capability, chapters and recorded-slate preparation. Hidden while OBS integration is disabled. |
+| Controls | OBS profile and scenes | Review a separate profile/scenes plan, folder and 1080p/4K choice; configuration guide. Hidden while OBS integration is disabled. |
 | Controls | AI and API | General local API permission, port, tokens, deletion permission and agent-kit links. Clearly separate from restricted companion control. |
 | Components | Getting started | Initial setup, installation checks and the route back into session preparation. |
 | Components | Installed components | Speech model, AI kit, Node.js and OBS readiness, install/repair/remove/locate actions. Stream Deck links to its single Controls home. |
@@ -74,6 +76,39 @@ Files retains Open, New, Save, Save as, slots, samples, import/export and
 recordings. The toolbar retains the small set of actions used while reading.
 Settings is available from both its standard icon and the Files menu for
 discoverability. Tools is the quick operating surface, not another settings map.
+
+## Enable first, configure second
+
+Every optional interface has one enable switch in its own settings home.
+While off, show its status, the switch and an installation/status link where
+needed. Hide configuration fields and actions. Turning it on reveals its
+configuration; turning it off preserves values and never uninstalls anything.
+The mock applies this to OBS, game controller, Stream Deck, phone, floating
+pad, custom keyboard/clicker mappings, speech, microphone and AI/API access.
+
+OBS configuration belongs under Controls, alongside other external interfaces.
+Recording keeps Sightline's take, sound-check, slate and sync preferences, plus
+a shortcut to the single OBS enable/configuration home. OBS recording/profile
+sections disappear from navigation and search while OBS integration is off.
+Speech command and word sections follow the same rule for speech features.
+
+Installed components remain discoverable in Components whether enabled or
+disabled. Its Open feature controls action links to the owning interface; it
+does not duplicate enable switches. Dependencies such as Node.js have install
+and readiness states, not a meaningless separate running/on/off state.
+
+The shared pad layout is configurable while either the floating pad or phone
+remote is enabled. Phone pairing has one enable home. Basic keyboard access
+is retained even when custom mappings are off. Hiding the head-guide window
+does not disable its show/unlock shortcut.
+
+Help uses the same feature state. The mock's fixed-size ? dialog hides Voice
+and recorder-command topics until their speech, microphone, listening and OBS
+permissions are enabled. Its controller list contains enabled interfaces only.
+Tools hides sound-check operations without microphone input and recorder
+operations without enabled OBS recording permission. Native implementation
+must also apply readiness/compatibility checks; this mock never verifies or
+starts external devices, services or recording.
 
 ## One control vocabulary
 
@@ -92,6 +127,41 @@ discoverability. Tools is the quick operating surface, not another settings map.
 | Help | The same small ? pill beside the label; hover, focus and click/touch reveal the same explanation. |
 
 ## Typography completeness
+
+### Saving a reading theme
+
+In the interactive mock, **Reading > Theme and background > Save current as…**
+captures the four text targets (font, size, colour, bold, italic and line
+spacing), inline-cue visibility, background colour, off-air/on-air backing,
+text opacity and brightness. Each saved appearance value has an editable UI
+control; production-note hiding during delivery is fixed behaviour, not a
+theme option. The background picker uses the same swatch/Use theme reset
+pattern as text colours. Paused and Reading previews show their respective
+backing opacity, and text opacity and brightness update the preview.
+It saves the values currently being previewed, including unapplied changes.
+Recorder, microphone, connection, script and window settings are excluded.
+Theme export is a reading-appearance preset, not a whole-UI setup export; pad
+layout, key mappings, window placement and recorder configuration are outside
+its scope.
+
+Named themes appear under **My saved themes** in the Script theme selector.
+Choosing one restores its formatting into the Settings preview. Apply keeps
+that look; Cancel restores the previous applied settings. Saving a named
+theme is an explicit library action, so Cancel does not delete that theme.
+Built-in palettes continue to change only palette colours and preserve
+custom text colours.
+
+The mock stores its theme library in this browser. Select **Download a copy
+for another laptop** when saving to keep a portable JSON file; **Import theme…**
+loads it into another browser or copy of the demo. Browser storage can differ
+between downloaded file paths. If storage is unavailable, the mock reports
+that a saved theme is limited to the current session. Imported values are
+validated, and duplicate names receive a suffix rather than replacing a theme.
+
+This is implemented in the mock only. Native app storage, theme management
+and integration with settings transfer remain implementation work.
+
+### Formatting targets
 
 One target selector exposes **Spoken script**, **Headings**, **Inline directions**
 and **Production notes**. Every target has Font, Size, Colour, Bold, Italic and
@@ -157,8 +227,9 @@ utility panel rather than clipping rows or reducing the text size.
 5. Build one preview with focused tests, screenshots and a clear acceptance list.
 6. Refresh help, guide, feature grid and staged JL copy from that verified build.
 
-The requested JL feature-grid page remains queued: a short main-page summary
-linking to a dedicated searchable page, with Markdown and CSV in the app repo
-and the website implementation in the JL repo. Preview-only formatting options
-must remain labelled until they exist in a tested build. No release, Marketplace
-submission or website deployment is authorised by this design review alone.
+The JL feature-grid summary and searchable page are implemented in draft
+branches, with maintained app exports and website sync checks; they are not
+deployed. Their reference remains the verified Preview 02 snapshot. Proposed
+controls remain excluded until implemented and verified in an app build. No
+release, Marketplace submission or website deployment is authorised by this
+design review alone.
