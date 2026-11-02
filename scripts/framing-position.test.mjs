@@ -1,0 +1,28 @@
+import assert from "node:assert/strict";
+import { audioCheckAdvice, checkedFramingReference, detectedPose, framingMatch } from "../src/client/framing-position.js";
+
+const target = { x: 0, y: 0, size: 100 };
+assert.equal( framingMatch( target, target ).kind, "green" );
+assert.equal( framingMatch( { ...target, x: 3 }, target ).kind, "amber" );
+assert.equal( framingMatch( { ...target, x: 8 }, target ).kind, "red" );
+assert.equal( framingMatch( null, target ).kind, "lost" );
+assert.equal( framingMatch( null, target ).aligned, false );
+assert.equal( framingMatch( null, target, { enabled: false, manual: true } ).aligned, true );
+assert.equal( framingMatch( { ...target, x: 8 }, target ).arrow, "←" );
+assert.equal( framingMatch( { ...target, x: 8 }, target, { mirror: true } ).arrow, "→" );
+assert.equal( framingMatch( { ...target, size: 125 }, target ).text, "Move a little further away" );
+assert.equal( audioCheckAdvice( { voice: -34, noise: -57, peak: -23 } ).usable, true );
+assert.equal( audioCheckAdvice( { voice: -34, noise: -57, peak: -23 } ).advisory, true );
+assert.equal( audioCheckAdvice( { voice: -90, noise: -95, peak: -85 } ).usable, false );
+assert.equal( audioCheckAdvice( { voice: -18, noise: -50, peak: -9 } ).advisory, false );
+assert.equal( detectedPose( { detections: [] } ), null );
+assert.equal( detectedPose( { detections: [ {}, {} ] } ), null );
+const reference = { target, audio: { voice: -18, noise: -50, peak: -9 }, camera: { deviceId: "fixture", label: "Fixture", width: 1280, height: 720 }, testReviewed: true, framingChecked: true };
+assert.throws( () => checkedFramingReference( { ...reference, testReviewed: false } ), /review/ );
+assert.throws( () => checkedFramingReference( { ...reference, target: { ...target, size: NaN } } ) );
+assert.throws( () => checkedFramingReference( { ...reference, audio: { ...reference.audio, peak: Infinity } } ) );
+const saved = checkedFramingReference( reference );
+reference.target.x = 8;
+assert.equal( saved.target.x, 0, "Saved targets are independent of future movement" );
+assert.equal( saved.camera.crop, "centre-16:9" );
+console.log( "PASS: framing thresholds, mirror arrows, lost/manual states, advisory audio and validated immutable references" );

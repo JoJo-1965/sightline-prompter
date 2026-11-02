@@ -484,6 +484,11 @@ export function createSettingsWorkspace( root, { getState, getGuideState = () =>
 		steps.append( button );
 	}
 	checklist.append( steps );
+	const prepareAction = el( "div", { className: "settings-inline-actions" } );
+	const prepareButton = el( "button", { id: "settings-prepare-recording", type: "button" }, "Prepare to record" );
+	prepareButton.addEventListener( "click", () => window.electron.prepareRecording() );
+	prepareAction.append( prepareButton );
+	checklist.append( prepareAction );
 	explain( "getting-started", "Getting started", "Start with steady scrolling and adjust the reading appearance. Enable optional controllers only when you want to use them; installation and readiness checks live in Optional components.", [ [ "Initial setup", "onboarding" ], [ "Getting started guide", "help" ], [ "Optional components", "components" ] ] );
 	const guide = section( "guide", "Head guide" );
 	const guideVisible = take( "set-head-guide-visible" );

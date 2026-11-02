@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sightline · Prepare to record</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self'; style-src 'self' 'unsafe-inline'; media-src 'self' blob:; img-src 'self' data: blob:; connect-src 'self'"><link rel="stylesheet" href="./pre-record.css">
+</head>
+<body>
+<div class="prototype"><span><strong>UAT preview</strong> · camera processing stays on this computer.</span><button id="return-script" type="button">Return to script</button></div>
+<header><div class="brand"><svg viewBox="0 0 32 36" aria-hidden="true"><rect x="1" y="2" width="30" height="32" rx="8" fill="#edc766"/><path d="m12 10 13 8-13 8z" fill="#20252d"/></svg><div><h1>Prepare to record</h1><p class="muted">Find your frame. Return to it between shots.</p></div></div><div class="session-state"><span id="session-chip" class="chip neutral"><i class="dot"></i>Setup in progress</span><button id="new-setup" type="button">New setup</button></div></header>
+<div class="workspace">
+<nav class="workflow" aria-label="Pre-record workflow"><h2>This recording</h2><ol id="steps"></ol><div class="return-link"><p id="saved-summary">No recording reference saved yet.</p><button id="return-break" type="button" disabled>Back after a break</button></div></nav>
+<main>
+<div class="intro"><div><h2 id="mode-title">Set up your recording</h2><p id="mode-copy">Align your head, check your audio and review a short test. Save the setup once you’re happy.</p></div></div>
+<div class="stage-grid">
+<div class="camera-column">
+<div class="camera-head"><strong>Camera preview · 16:9</strong><label><input type="checkbox" id="mirror" checked>Mirror view</label></div>
+<div class="capture-connect"><button id="connect-camera" type="button">Enable camera</button><label><span class="tiny muted">Camera or virtual camera</span><select id="camera-device" disabled><option value="default">Default camera</option></select></label></div><div class="camera" id="camera"><video id="camera-video" autoplay muted playsinline hidden></video><div id="camera-empty" class="camera-empty"><strong>Enable your camera</strong><p>Use your camera or a virtual-camera feed. Capture starts only when you choose Enable camera.</p></div>
+<svg viewBox="0 0 1000 562.5" id="camera-svg" hidden role="img" aria-label="Fixed framing reference over your camera preview">
+<defs><linearGradient id="wall" x2="0" y2="1"><stop stop-color="#405263"/><stop offset="1" stop-color="#273542"/></linearGradient><linearGradient id="skin" x1="0" x2="1"><stop stop-color="#cfae92"/><stop offset=".5" stop-color="#e5c7ac"/><stop offset="1" stop-color="#c19d83"/></linearGradient><linearGradient id="shirt" x2="0" y2="1"><stop stop-color="#486d87"/><stop offset="1" stop-color="#233d53"/></linearGradient><mask id="cutout" maskUnits="userSpaceOnUse"><rect width="1000" height="562.5" fill="white"/><g id="mask-hole"><ellipse cx="500" cy="180" rx="91" ry="132" fill="black"/><path d="M414 155C414 42 586 42 586 155C586 242 563 301 540 308L545 329Q632 347 703 459L740 563H260L297 459Q368 347 455 329L460 308C437 301 414 242 414 155Z" fill="black"/></g></mask></defs>
+<rect id="mask-tint" width="1000" height="562.5" mask="url(#cutout)" fill="#a7b2c0" opacity=".16"/>
+<g id="target-space"><g id="target"><ellipse class="mask-outline" cx="500" cy="180" rx="91" ry="132"/><path class="mask-outline" d="M460 300 455 329Q368 347 297 459M540 300 545 329Q632 347 703 459"/><path class="eye-line" d="M393 169h214M458 158v22m84-22v22"/><text class="mask-label" x="500" y="28" text-anchor="middle" id="target-label">Recording target</text></g></g>
+</svg>
+<span class="feed-label">Live camera · local processing</span><span id="clip-badge" class="clip-badge" hidden>Test recording</span>
+</div>
+<div class="camera-foot"><span id="framing-chip" class="chip bad"><i class="dot"></i>Outside reference</span><span class="tiny muted" id="reference-type">Guide: manual target</span></div>
+<div class="guidance" id="guidance" role="status" aria-live="polite"><strong><span id="direction-arrow" class="arrow">←</span><span id="direction-text">Move towards the reference</span></strong><p id="direction-detail">The target stays fixed while your detected position changes.</p></div>
+<div class="metrics" id="metrics"><div class="metric"><span>Eye centre</span><strong id="metric-x">Needs alignment</strong></div><div class="metric"><span>Eye height</span><strong id="metric-y">Needs alignment</strong></div><div class="metric"><span>Head size</span><strong id="metric-size">Move further away</strong></div></div>
+<p class="reference-note" id="reference-note">Manual adjustment remains available. Automatic detection adds position feedback to the guide.</p>
+</div>
+<section class="panel" id="step-panel" aria-labelledby="panel-title"></section>
+</div>
+<div id="message" class="status-message" role="status" aria-live="polite"></div>
+</main></div>
+<footer class="footer"><p>Your camera and microphone are used only after you enable them. Detection runs locally. Test clips and saved references stay in your Sightline profile.</p><button id="close-prepare" type="button">Return to script</button></footer>
+<script type="module" src="./pre-record.js"></script>
+</body></html>

@@ -1,5 +1,13 @@
 # Approved Settings and Tools implementation
 
+**UAT Preview 08, 2 November:** implements the approved pre-record composition
+with real local detection, manual fallback, audio measurement/advisory override,
+actual WebM test playback and fixed reference save/restore. Uses the bundled,
+pinned Apache-2.0 model/runtime. Joanne's existing headshot supplies only the
+synthetic camera fixture; no live camera or microphone was used by automation.
+Heading/action spacing is expanded at ordinary sizes and constrained at the
+smallest supported frame. Preview 07 fixes remain included.
+
 **Numeric patch, 2 November:** source `83ef675`, code reference `9d05dbb`.
 Whole/five-point controls, two-decimal fine readouts and retained stored precision
 pass pure and native checks, including the packaged executable. The approved

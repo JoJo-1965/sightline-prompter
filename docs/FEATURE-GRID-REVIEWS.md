@@ -1,5 +1,13 @@
 # Feature-matrix review record
 
+2 November 2026, UAT Preview 08: optional local head-position feedback,
+manual fallback, real audio measurement, reviewed local test recording and
+explicit fixed framing-reference save/restore are implemented using the
+approved mock composition. Four net capability rows are added (241 across
+18 groups). Revision 9 preserves the published app/plugin versions and marks
+all additions as preview-only. Help, samples, exports and the JL draft follow
+this UAT; physical camera/recorder/controller acceptance remains outstanding.
+
 2 November 2026, pre-record design approval: Joanne confirmed that the mock
 meets expectations. Recorded the approved source and interaction contract in
 design/PRE-RECORD-POC.md. This is design approval, with no new implemented

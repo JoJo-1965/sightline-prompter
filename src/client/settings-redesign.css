@@ -148,6 +148,16 @@ body:not(.utility-window) #settings-modal.settings-redesign .settings-content {w
 #settings-modal.settings-redesign .settings-cue-file input {width:100%;min-width:0;text-overflow:ellipsis;}
 #settings-modal.settings-redesign .settings-cue-file button {white-space:nowrap;overflow-wrap:normal;}
 #settings-modal.settings-redesign .settings-targets {margin-top:0;}
+#settings-modal.settings-redesign .settings-section-heading {margin-bottom:12px;}
+#settings-modal.settings-redesign .settings-targets {margin-bottom:14px;}
+#settings-modal.settings-redesign fieldset > legend {margin-bottom:10px;}
+#settings-modal.settings-redesign .settings-inline-actions {margin-top:12px;}
+#settings-modal.settings-redesign .settings-guide-subheading {margin-top:20px;margin-bottom:10px;}
+@media(max-height:560px){
+#settings-modal.settings-redesign .settings-section-heading {margin-bottom:8px;}
+#settings-modal.settings-redesign .settings-targets {margin-bottom:10px;}
+#settings-modal.settings-redesign .settings-guide-subheading {margin-top:14px;margin-bottom:8px;}
+}
 #settings-modal.settings-redesign .settings-option-name > span {font-weight:550;}
 #settings-modal.settings-redesign :is([hidden],.hidden) {display:none!important;}
 @media(max-width:760px),(max-height:610px) {
@@ -157,6 +167,10 @@ body:not(.utility-window) #settings-modal.settings-redesign .settings-content {w
 #settings-modal.settings-redesign .settings-interface-config > .field-hint:not([id]):not([data-essential]) {display:none;}
 }
 @media(max-height:560px) {
+#settings-modal.settings-redesign .settings-section-heading {margin-bottom:4px;}
+#settings-modal.settings-redesign .settings-targets {margin-bottom:4px;}
+#settings-modal.settings-redesign fieldset > legend {margin-bottom:0;}
+#settings-modal.settings-redesign .settings-control-row {min-height:38px;}
 #settings-modal.settings-redesign fieldset {margin-bottom:4px;}
 #settings-modal.settings-redesign .field-hint {margin:3px 0;font-size:11px;}
 #settings-modal.settings-redesign .settings-inline-actions {margin-top:5px;}

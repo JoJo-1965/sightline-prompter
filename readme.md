@@ -248,6 +248,12 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ## Change log
 
+- **UAT Preview 08 (unpublished):** preserves the signed-off Settings layout,
+  improves heading/action spacing and implements the approved Prepare to record
+  workflow. Real local face detection supplements manual framing; audio advice,
+  an actual reviewed test clip and explicit fixed-reference save support
+  consistent shots after a break. See [UAT checks](docs/PREVIEW-08.md).
+
 The [deployment documentation checklist](docs/DEPLOYMENT-CHECKLIST.md) covers
 help, guide, screenshots, release notes, roadmap and the feature matrix/grids
 together. Generated references and the JL snapshot are checked before packaging

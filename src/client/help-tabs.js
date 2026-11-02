@@ -37,6 +37,7 @@ export function helpTabs( settings, notes = false ) {
 	const display = { ...get( "Window" ), keys: get( "Window" ).keys.filter( ( [ combos ] ) => !guideKeys.has( combos[0] ) && !( combos[0] === "Ctrl+Shift+P" && settings.padEnabled === false ) && !( combos[0] === "Ctrl+Shift+D" && settings.microphoneEnabled === false ) ) };
 	const readingSections = [ reading ];
 	readingSections.push( section( "Prepare a session", [
+		[ "Tools > Prepare to record", "Local camera alignment, optional head detection, audio check and reviewed test clip; explicitly save or restore a fixed recording reference" ],
 		[ "Help > Getting started", "Choose your initial setup or reopen it later; optional tools can be skipped" ],
 		[ "Setup > Restore defaults", "Confirms a restart into initial setup. Components, scripts, recordings and service keys stay; preferences and pairings reset" ],
 		[ "Tools > Session check", "Links to script, sound, framing, enabled recording and sync checks; Refresh updates known status" ]

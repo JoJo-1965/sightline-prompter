@@ -4028,6 +4028,11 @@ function menuGroups() {
 
 let liveTools = null;
 function runTool( id ) {
+	if ( id === "prepare-recording" ) {
+		closePanels();
+		window.electron.prepareRecording();
+		return;
+	}
 	if ( id === "close-tools" ) {
 		closePanels();
 		return;

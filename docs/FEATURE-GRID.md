@@ -1,6 +1,6 @@
 # Sightline Prompter feature grid
 
-**Review basis: Settings Redesign Preview 07, documentation revision 8, 2 November 2026.**
+**Review basis: UAT Preview 08, documentation revision 9, 2 November 2026.**
 **Build version:** `1.1.0` · **Publication status:** Preview
 
 **Maintained source:** [Feature grid](https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/FEATURE-GRID.md)
@@ -167,7 +167,7 @@ Reference: [Layout and display](guide/04-layout-and-display.md) and [Remotes and
 
 ## 08 · Head positioning and framing reference
 
-Reference: [Head guide and controls](guide/06-remotes-and-screens.md) and [Production handover](guide/12-production-handover.md).
+Reference: [Prepare to record](guide/16-prepare-to-record.md), [Head guide and controls](guide/06-remotes-and-screens.md) and [Production handover](guide/12-production-handover.md).
 
 | Capability | Availability | Options and behaviour | Dependencies and limits |
 | --- | --- | --- | --- |
@@ -185,7 +185,11 @@ Reference: [Head guide and controls](guide/06-remotes-and-screens.md) and [Produ
 | Save and restore recording reference | Included | Save Actual position, dimensions and eye lock from Settings or adjustments; restore without overwriting Ideal; preview addition. | Restoring the shape does not restore the physical camera, body or guide window. |
 | Guide export metadata | Included | Record Ideal/Actual information, recording reference and guide window geometry in the edit pack. | Metadata describes the configured guide, not proof that it was absent from the video. |
 | Keep guide out of output | Limited | Capture protection and a camera-source recording workflow keep the guide on the operator's screen. | No universal automatic guarantee; verify the recorded file and chosen capture source. |
-| Automatic face or eye tracking | Not included | Actual framing is aligned by the user. | No automatic face detection, posture scoring or lens-gaze correction is claimed. |
+| Local position feedback | Optional | Real local face/eye detection in Prepare to record; fixed target, red/amber/green mask and correction arrows; preview addition. | Bundled model; one well-lit face near the camera. Grey means unavailable; no identity recognition or gaze correction. |
+| Pre-record workflow | Optional | Camera alignment, manual fallback, audio check, actual short test recording and reviewed reference save; preview addition. | Explicit camera/microphone enable. Does not start OBS or production recording. |
+| Lock current framing | Optional | Use detected eye centre and apparent size as a draft target; preview addition. | Does not replace the recording reference until the reviewed setup is explicitly saved. |
+| Return after a break | Optional | Restore the fixed target, match framing and recheck audio; preview addition. | Same camera and resolution; original target/test retained. No silent recalibration. |
+| Local test recording | Optional | Up to eight seconds of selected camera/microphone, actual WebM playback and picture/sound confirmation; preview addition. | Local profile storage; manual review and hardware UAT required. No guide is burned into the camera clip. |
 
 ## 09 · Keyboard, clickers and controllers
 

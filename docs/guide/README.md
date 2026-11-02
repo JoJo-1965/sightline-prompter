@@ -1,6 +1,6 @@
 # Sightline Prompter user guide
 
-This source guide now follows the unpublished **Settings Redesign Preview 05**.
+This source guide now follows the unpublished **UAT Preview 08**.
 The published 1.1.0 installer retains its bundled guide and previous layout.
 Use the preview folder/build manifest to identify the test package.
 
@@ -36,6 +36,10 @@ voice help movable. Helper windows now follow Hide from capture.
 ![The prompter with the control bar, mid-take](images/running.png)
 
 ## Contents
+
+[Prepare to record](16-prepare-to-record.md) adds local position feedback,
+audio measurement, a real test clip and a fixed reference for returning after
+a break. This is an unpublished preview addition.
 
 1. [Getting started](01-getting-started.md): installing it (and getting past the security warnings), the control bar, opening a script, your first take
 2. [Writing scripts](02-scripts.md): file types, sections, notes to yourself and instructions to the app

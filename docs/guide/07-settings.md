@@ -1,6 +1,6 @@
 # Settings
 
-This source guide describes **Settings Redesign Preview 07**, based on the
+This source guide describes **UAT Preview 08**, based on the
 approved interactive demo. It is an unpublished preview of Sightline 1.1.0.
 For the released app, use the guide bundled with its installer.
 
@@ -63,6 +63,9 @@ existing stored precision is retained until you adjust the value.
 
 **Session checklist** opens the existing preparation checks and links directly
 to script review, appearance and framing.
+
+Its **Prepare to record** action opens the real camera/audio/test workflow.
+See [Prepare to record](16-prepare-to-record.md).
 
 **Mode and pace** has one Mode selector offering
 Notes/page, Voice and Scroll. Voice shows response; Scroll shows WPM, script

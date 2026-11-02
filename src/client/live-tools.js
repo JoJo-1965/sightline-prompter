@@ -64,6 +64,7 @@ export function createLiveTools( panel, { getState, action, save, size, backing 
 			buttons.append( node );
 		};
 		if ( current === "prepare" ) {
+			button( "Prepare to record", "prepare-recording" );
 			button( "Session check", "session" );
 			button( "Review script", "review" );
 			button( state.guideShown ? "Hide head guide" : "Show head guide", "guide-toggle" );

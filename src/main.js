@@ -18,6 +18,7 @@ import { createPad } from "./pad.js";
 import { normalisePadLayout, controlAction, controlView } from "./client/control-actions.js";
 import { createControl } from "./control.js";
 import { createHeadGuide } from "./head-guide.js";
+import { createPreRecord } from "./pre-record.js";
 import { createUtilityWindows } from "./utility-windows.js";
 import { captureOverride, protectWindow, setCaptureOverride, trackCaptureWindow } from "./capture-policy.js";
 import { settingsValues } from "./settings-values.js";
@@ -206,6 +207,7 @@ const defaultSettings = {
 	headGuideY: 0,
 	headGuideIdeal: { x: 0, y: 0, scale: 1 },
 	headGuideReference: null,
+	preRecordMicrophone: "default",
 	headGuideShowIdeal: true,
 	headGuidePlacement: "centre",
 	headGuidePlacements: {},
@@ -234,7 +236,7 @@ const defaultSettings = {
 };
 
 // Settings that a settings file or the remote API may not change.
-const PROTECTED_SETTINGS = [ "remoteControl", "remotePort", "remoteDeleteRecordings", "streamDeck", "phoneRemote", "phonePort", "obsEnabled", "obsHost", "obsPort", "obsControls", "obsFollowPrompter", "obsMarkers", "obsRecordedSlate", "traceCommands", "coachFillers", "speechEnabled", "microphoneEnabled", "padEnabled", "gamepadEnabled", "keyboardMappingsEnabled" ];
+const PROTECTED_SETTINGS = [ "preRecordReference", "preRecordMicrophone", "remoteControl", "remotePort", "remoteDeleteRecordings", "streamDeck", "phoneRemote", "phonePort", "obsEnabled", "obsHost", "obsPort", "obsControls", "obsFollowPrompter", "obsMarkers", "obsRecordedSlate", "traceCommands", "coachFillers", "speechEnabled", "microphoneEnabled", "padEnabled", "gamepadEnabled", "keyboardMappingsEnabled" ];
 
 // Take logs, one per script per day: the recordings library (recordings.js).
 const takeLogFolder = () => path.join( app.getPath( "userData" ), "take-logs" );
@@ -1923,6 +1925,9 @@ app.whenReady().then( async () => {
 	} );
 	framingGuide.apply();
 	win.on( "closed", () => framingGuide.dispose() );
+	const preRecord = createPreRecord( { dir: __dirname, prompter: win, getSettings: () => settings, saveSettings: partial => updateSettings( partial ), busy: () => rendererStatus.scrolling === true || [ "recording", "paused" ].includes( obs.state().recording ) } );
+	win.on( "closed", () => preRecord.dispose() );
+	if ( process.argv.includes( "--prepare-recording" ) ) win.webContents.once( "did-finish-load", () => preRecord.open() );
 	const speech = createSpeech( { dir: __dirname, win, busy: () => !!rendererStatus.scrolling || [ "recording", "paused" ].includes( obs.state().recording ) } );
 	const kitFolder = path.join( app.getPath( "userData" ), "ai-kit" );
 	const kit = createAgentKit( { source: app.getAppPath(), folder: kitFolder, version: app.getVersion(), trash: target => shell.trashItem( target ) } );

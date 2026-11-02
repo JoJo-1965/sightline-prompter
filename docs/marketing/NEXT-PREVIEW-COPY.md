@@ -6,13 +6,17 @@ is approved. The published overview/PDF and public download remain 1.1.0/0.2.0.
 **Short line:** Prepare the shot, keep the words clear and control the recording
 your way.
 
+**UAT addition:** Local position feedback supplements manual fitting. Check
+voice against room noise, review a short recorded test and save a fixed
+reference to realign after a break. This is preview-only until accepted.
+
 **Overview:** Sightline keeps long preparation notes out of your delivery while
 short cues stay beside your words. Save your actual framing as a recording
 reference, balance voice level with room noise and choose whether the recorder
 continues through retakes or follows the prompter. Explicit recording voice
 commands and optional script directives use the same saved permissions.
 
-**Settings Redesign Preview 07:** configure spoken script, headings, inline cues
+**UAT Preview 08:** configure spoken script, headings, inline cues
 and production notes independently: font, size, colour, bold, italic and spacing.
 Choose backing colour and transparency, then save a portable reading theme.
 Named sections stay in one place; enabled interfaces reveal their configuration.
@@ -39,7 +43,8 @@ Keep the existing audiences: speakers and content creators; trainers, course
 authors and learning teams; people using a desk/studio or prompter rig. AI can
 prepare scripts and an authorised local agent can configure/control Sightline.
 AI remains optional. Do not imply that Sightline automatically edits a finished
-video, tracks faces, guarantees capture exclusion or measures physical lip sync.
+video, guarantees capture exclusion or measures physical lip sync. Local head
+position feedback is an unpublished UAT addition, not a released capability.
 
 The main app stays free and open source. Preserve the working QR, download
 address and attribution. Stream Deck's source remains private. Do not describe

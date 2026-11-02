@@ -12,7 +12,7 @@ const artifacts = path.resolve( process.env.SIGHTLINE_TEST_ARTIFACTS ?? path.joi
 await fs.writeFile( path.join( profile, "script.md" ), '# Settings preview\n\n## Welcome\n\n[smile] Read naturally, at your own pace.\n\n<!-- Preparation notes do not count as speech. -->\n\n' + 'This is a spoken script for checking the reading appearance.\n\n'.repeat( 30 ) );
 await fs.writeFile( path.join( profile, "app-state.json" ), JSON.stringify( { width: 1100, height: 760, fontSize: 3, opacity: 1, recentFiles: [ path.join( profile, "script.md" ) ], settings: { interfaceSettingsVersion: 1, readingAppearanceVersion: 1, speechEnabled: false, microphoneEnabled: false, padEnabled: false, gamepadEnabled: false, keyboardMappingsEnabled: false, voiceCommands: "off", scrollMode: "steady", scratchAudio: false, takeLoudness: "off", countdown: 0, slate: "off", debugMode: true, checkUpdates: false, obsEnabled: false, phoneRemote: false, remoteControl: false, streamDeck: false, hideFromCapture: false } } ) );
 const env = { ...process.env }; delete env.ELECTRON_RUN_AS_NODE;
-const child = spawn( process.env.SIGHTLINE_TEST_EXE ?? require( "electron" ), [ ...( process.env.SIGHTLINE_TEST_EXE ? [] : [ "." ] ), "--inspect=0", `--user-data-dir=${ profile }`, `--remote-debugging-port=${ port }`, "--disable-renderer-backgrounding" ], { cwd: root, env, windowsHide: true, stdio: [ "ignore", "pipe", "pipe" ] } );
+const child = spawn( process.env.SIGHTLINE_TEST_EXE ?? require( "electron" ), [ ...( process.env.SIGHTLINE_TEST_EXE ? [] : [ "." ] ), "--inspect=0", `--user-data-dir=${ profile }`, `--remote-debugging-port=${ port }`, "--disable-renderer-backgrounding", "--disable-features=CalculateNativeWinOcclusion" ], { cwd: root, env, windowsHide: true, stdio: [ "ignore", "pipe", "pipe" ] } );
 let stderr = ""; child.stderr.on( "data", data => stderr += data ); child.stdout.resume();
 const pause = ms => new Promise( resolve => setTimeout( resolve, ms ) );
 const sockets = [], errors = [];
@@ -216,12 +216,17 @@ try {
 	assert.equal( await settings.evaluate( 'document.querySelector("#set-pad-buttons .selected").textContent.includes("Marker")' ), true, "New pad actions have a named selection" );
 	await settings.evaluate( '[...document.querySelectorAll("#set-pad-buttons .selected button")].find(x=>x.textContent==="Earlier").click()' );
 	assert.equal( await settings.evaluate( '!!document.querySelector("#set-pad-buttons .selected")' ), true );
-	await main.evaluate( 'globalThis.savedSettingsGamepads=navigator.getGamepads;globalThis.settingsButtonDown=false;navigator.getGamepads=()=>[{id:"Fixture controller",index:0,connected:true,buttons:[{pressed:settingsButtonDown,value:settingsButtonDown?1:0}],axes:[]}]' );
+	await main.evaluate( 'globalThis.savedSettingsGamepads=navigator.getGamepads;globalThis.settingsButtonDown=false;globalThis.gamepadPolls=0;navigator.getGamepads=()=>{gamepadPolls++;return [{id:"Fixture controller",index:0,connected:true,buttons:[{pressed:settingsButtonDown,value:settingsButtonDown?1:0}],axes:[]}]}' );
+	for ( let n = 0; n < 50 && !( await main.evaluate( "gamepadPolls>0" ) ); n++ ) await pause( 100 );
+	assert.equal( await main.evaluate( "gamepadPolls>0" ), true, "Observe the released fixture button before pressing it" );
 	await settings.evaluate( 'document.querySelector("[data-tab=gamepad]").click();document.getElementById("set-gamepad-map-action").value="marker";document.getElementById("set-gamepad-map-learn").click()' );
 	await settings.call( "Page.bringToFront" ); await pause( 80 );
+	await settings.call( "Emulation.setFocusEmulationEnabled", { enabled: true } );
 	await main.evaluate( 'globalThis.settingsButtonDown=true' ); await pause( 150 );
-	assert.equal( await settings.evaluate( 'document.getElementById("set-gamepad-map-notice").textContent.includes("assigned to")' ), true, "Game controller has a working independent learning route" );
+	for ( let n = 0; n < 20 && !( await settings.evaluate( 'document.getElementById("set-gamepad-map-notice").textContent.includes("assigned to")' ) ); n++ ) await pause( 100 );
+	assert.equal( await settings.evaluate( 'document.getElementById("set-gamepad-map-notice").textContent.includes("assigned to")' ), true, "Game controller learning: " + await settings.evaluate( 'document.getElementById("set-gamepad-map-notice").textContent' ) );
 	await main.evaluate( 'navigator.getGamepads=globalThis.savedSettingsGamepads' );
+	await settings.call( "Emulation.setFocusEmulationEnabled", { enabled: false } );
 	await settings.evaluate( 'document.querySelector("[data-tab=typography]").click();document.querySelector("[data-text-target=script]").click();const size=document.getElementById("set-font-size");size.value=325;size.dispatchEvent(new Event("input",{bubbles:true}));document.querySelector("[data-tab=pad]").click()' );
 	assert.equal( await settings.evaluate( 'document.querySelector("#set-pad-buttons .selected").textContent.includes("Marker")' ), true, "Appearance previews retain unapplied pad edits" );
 	await main.evaluate( 'globalThis.originalSettingsMedia=navigator.mediaDevices.getUserMedia;navigator.mediaDevices.getUserMedia=async()=>{globalThis.settingsToneContext=new AudioContext();const tone=settingsToneContext.createOscillator(),output=settingsToneContext.createMediaStreamDestination();tone.connect(output);tone.start();globalThis.settingsMeterStream=output.stream;return output.stream}' );
@@ -351,8 +356,14 @@ try {
 	}
 	const image = await settings.call( "Page.captureScreenshot", { format: "png" } ); await fs.writeFile( path.join( artifacts, "01-settings.png" ), Buffer.from( image.data, "base64" ) );
 	await settings.evaluate( 'document.getElementById("settings-cancel").click()' );
-	await native.evaluate( "process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron').BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().includes('teleprompter.html')).setContentSize(480,300)" );
+	await native.evaluate( "process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron').BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().includes('teleprompter.html')).setContentSize(480,220)" );
+	await main.evaluate( "window.electron.resizeWindow(480,220)" );
+	for ( let n = 0; n < 30 && !( await main.evaluate( "innerWidth===480&&innerHeight===220" ) ); n++ ) await pause( 100 );
+	assert.equal( await main.evaluate( "innerWidth===480&&innerHeight===220" ), true, "Tools viewport: " + JSON.stringify( await native.evaluate( "process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron').BrowserWindow.getAllWindows().map(w=>({url:w.webContents.getURL(),size:w.getContentSize(),visible:w.isVisible(),min:w.isMinimized(),max:w.isMaximized()}))" ) ) );
+	await pause( 200 );
+	await main.call( "Page.bringToFront" );
 	await main.evaluate( 'document.getElementById("cb-tools").click()' );
+	console.log( "Tools fixture", await main.evaluate( '(()=>{const p=document.getElementById("tools-panel");return {size:[innerWidth,innerHeight],hidden:p?.classList.contains("hidden"),height:p?.scrollHeight,rect:p?.getBoundingClientRect().toJSON(),bar:document.getElementById("control-bar")?.offsetHeight}})()' ) );
 	const tools = await connect( "utility-window.html?panel=tools" ); await pause( 100 );
 	assert.equal( await tools.evaluate( '!!document.querySelector("#tools-panel.tools-redesign")&&!document.querySelector("#tools-panel").classList.contains("hidden")' ), true, "Tools uses its own window when the prompter is too short" );
 	assert.equal( await tools.evaluate( 'document.querySelector("#tools-panel").getBoundingClientRect().bottom<=innerHeight' ), true, "Floating Tools stays within its frame" );

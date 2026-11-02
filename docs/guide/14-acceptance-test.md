@@ -1,5 +1,9 @@
 # Recording acceptance walkthrough
 
+For UAT Preview 08, run the combined [morning review](../PREVIEW-08.md), including
+the [real preparation workflow](16-prepare-to-record.md). Existing Settings
+checks below remain required; capture feedback in one batch.
+
 **Published baseline: Sightline 1.1.0 + Stream Deck 0.2.0.**
 The installed 0.1.9 remains compatible for its existing controls. Neither
 updated package is installed by preparing it. Add these checks after installation:

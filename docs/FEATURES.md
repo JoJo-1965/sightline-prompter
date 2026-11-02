@@ -1,5 +1,11 @@
 # Sightline Prompter: what it adds to Electron Teleprompter
 
+**UAT Preview 08:** preserves the approved Settings composition and adds the
+approved preparation workflow with real local face detection, manual fallback,
+audio advice, an actual reviewed test clip and a fixed recording reference.
+Headings, subtabs and actions have more breathing room. See the
+[preparation guide](guide/16-prepare-to-record.md) and [UAT checklist](PREVIEW-08.md).
+
 **Settings Preview 07:** retains the approved combined layout: visible
 button subtabs, three context-aware reading modes, complete Head guide setup and
 recording-reference controls, width-based inline preview and a non-modal

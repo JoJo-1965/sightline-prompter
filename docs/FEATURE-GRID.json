@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "basis": "Settings Redesign Preview 07, documentation revision 8, 2 November 2026",
+  "basis": "UAT Preview 08, documentation revision 9, 2 November 2026",
   "date": "2 November 2026",
   "sourceBuild": "e4bf0f4",
   "buildVersion": "1.1.0",
@@ -8,7 +8,7 @@
   "appRelease": "1.1.0",
   "pluginRelease": "0.2.0",
   "sourceUrl": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/FEATURE-GRID.md",
-  "sourceSha256": "1811a54b7bf91629963e94dd943d7d5dbc582b8b172192065cb5e34d492d736c",
+  "sourceSha256": "40e6702aaf8df4f28846fd4708ae1872cc4c02d8a3e498a7b5a56a7306d2fc59",
   "support": [
     "Included",
     "Optional",
@@ -690,6 +690,10 @@
       "name": "Head positioning and framing reference",
       "references": [
         {
+          "name": "Prepare to record",
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/16-prepare-to-record.md"
+        },
+        {
           "name": "Head guide and controls",
           "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/06-remotes-and-screens.md"
         },
@@ -784,10 +788,34 @@
           "limits": "No universal automatic guarantee; verify the recorded file and chosen capture source."
         },
         {
-          "name": "Automatic face or eye tracking",
-          "support": "Not included",
-          "options": "Actual framing is aligned by the user.",
-          "limits": "No automatic face detection, posture scoring or lens-gaze correction is claimed."
+          "name": "Local position feedback",
+          "support": "Optional",
+          "options": "Real local face/eye detection in Prepare to record; fixed target, red/amber/green mask and correction arrows; preview addition.",
+          "limits": "Bundled model; one well-lit face near the camera. Grey means unavailable; no identity recognition or gaze correction."
+        },
+        {
+          "name": "Pre-record workflow",
+          "support": "Optional",
+          "options": "Camera alignment, manual fallback, audio check, actual short test recording and reviewed reference save; preview addition.",
+          "limits": "Explicit camera/microphone enable. Does not start OBS or production recording."
+        },
+        {
+          "name": "Lock current framing",
+          "support": "Optional",
+          "options": "Use detected eye centre and apparent size as a draft target; preview addition.",
+          "limits": "Does not replace the recording reference until the reviewed setup is explicitly saved."
+        },
+        {
+          "name": "Return after a break",
+          "support": "Optional",
+          "options": "Restore the fixed target, match framing and recheck audio; preview addition.",
+          "limits": "Same camera and resolution; original target/test retained. No silent recalibration."
+        },
+        {
+          "name": "Local test recording",
+          "support": "Optional",
+          "options": "Up to eight seconds of selected camera/microphone, actual WebM playback and picture/sound confirmation; preview addition.",
+          "limits": "Local profile storage; manual review and hardware UAT required. No guide is burned into the camera clip."
         }
       ]
     },

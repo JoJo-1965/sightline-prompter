@@ -23,6 +23,10 @@ still needed to confirm the captured picture and sound.
 
 ## Installing Sightline
 
+For the unpublished UAT workflow, open **Tools > Prepare > Prepare to record**.
+Align the shot, verify audio, review a real recorded test and explicitly save
+a reference. See [Prepare to record](16-prepare-to-record.md).
+
 Sightline is free. Download the installer for your computer from the
 [latest release](https://github.com/JoJo-1965/sightline-prompter/releases/latest), under **Assets**:
 
