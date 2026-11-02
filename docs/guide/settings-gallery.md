@@ -58,9 +58,16 @@ and save rules, use the [Settings guide](07-settings.md).
 
 ### Reading aids
 
+Focus band off hides its strength control and retains the chosen value.
+Every Reading aids control has a small ? explanation.
+
 [Open full size](images/settings-preview05-aids.png)
 
 ![Reading: Reading aids, Preview 05](images/settings-preview05-aids.png)
+
+[Focus band on](images/settings-preview05-aids-on.png) ·
+[Help on hover](images/settings-preview05-aids-help.png) ·
+[Slide cues and script tags](images/settings-preview05-aids-cues.png)
 
 ### Screens and mirroring
 

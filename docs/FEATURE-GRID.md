@@ -1,11 +1,11 @@
 # Sightline Prompter feature grid
 
-**Review basis: Settings Redesign Preview 05 numeric patch, documentation revision 5, 2 November 2026.**
+**Review basis: Settings Redesign Preview 05 Reading aids patch, documentation revision 6, 2 November 2026.**
 **Build version:** `1.1.0` · **Publication status:** Preview
 
 **Maintained source:** [Feature grid](https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/FEATURE-GRID.md)
 
-This grid describes the preview built from `9d05dbb`, with companion Stream
+This grid describes the preview built from `f47b4da`, with companion Stream
 Deck plugin **0.2.0**. It includes the existing features and the unpublished
 preview additions. The build manifest also records the packaging/documentation
 snapshot. The public app release remains **1.1.0**; this document
@@ -140,7 +140,7 @@ Reference: [Layout and display](guide/04-layout-and-display.md) and [Settings](g
 | Alignment and margins | Included | Left or centred text; side, top and bottom margin controls. | Extreme settings can reduce the usable reading area. |
 | Background and text visibility | Included | Editable backing colour, off-air/on-air opacity, text opacity and brightness; preview addition. | The appearance preview does not change the content behind the prompter. |
 | Text edge | Optional | None, outline or shadow to separate words from a busy background. | Preview against the intended slides, call or camera picture. |
-| Focus band | Optional | Dim text away from the reading line; adjustable strength. | Does not remove text from the script or edit pack. |
+| Focus band | Optional | Dim text away from the reading line; adjustable strength. | Strength is shown/enabled only while Focus band is on and retains its value when off. Does not remove text from the script or edit pack. |
 | Reading marker and progress | Optional | Reading-line position and marker, sentence highlight, progress and time-left display. | Display aids can be configured separately from the script content. |
 
 ## 07 · Windows, screens and capture
@@ -356,7 +356,7 @@ Reference: [Settings](guide/07-settings.md), [Screenshot gallery](guide/settings
 | Numeric controls | Included | Slider/number pairs share whole-number or five-point increments; fine readouts have at most two decimals; preview patch. | Display rounding preserves stored precision until the control is adjusted. |
 | Named section navigation | Included | Sidebar search and explicit sections, plus compact selectors; preview addition. | Disabled OBS recording/setup and speech children are excluded until their parent is enabled. |
 | Live Tools groups | Included | Prepare, Adjust and During take share saved values with Settings through separate controls; preview addition. | Live changes are immediate; a short prompter uses a utility window instead of clipping the menu. |
-| Contextual explanations | Included | Small question-mark pills beside options explain purpose and consequences. | Help should be checked against the selected mode and enabled components. |
+| Contextual explanations | Included | Small question-mark pills beside options explain purpose and consequences on hover, keyboard focus or click. Both Reading aids groups have explanations for every control. | Escape closes the explanation. Help follows the selected mode and enabled components. |
 | Apply, save and cancel | Included | Review changed settings, apply them and keep or cancel the dialog changes. | Some setup operations and permissions have their own explicit controls. |
 | Onboarding and components | Included | First-use setup distinguishes component installation from everyday operation. | Components remain optional where the app can run without them. |
 | Restore defaults | Included | Return preferences to the shipped starting setup and re-enter onboarding. | Does not uninstall components or delete the user's scripts and recording media. |

@@ -1,5 +1,9 @@
 # Sightline Prompter: what it adds to Electron Teleprompter
 
+Preview 05's Reading aids patch reveals Focus strength only when Focus band is
+on, retaining its value when off. Both aid groups now have small contextual
+help pills on every control.
+
 Preview 05's numeric patch gives slider/number pairs consistent whole-number
 or five-point steps. Fine readouts have at most two decimals. Display rounding
 preserves saved precision until adjustment; the signed-off layout is unchanged.

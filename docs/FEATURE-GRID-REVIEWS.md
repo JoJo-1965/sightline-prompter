@@ -1,5 +1,13 @@
 # Feature-matrix review record
 
+2 November 2026, Reading aids patch: Focus strength is shown/enabled only with
+Focus band on and retains its value when off. Reviewed every control in both
+Reading aids groups and added missing contextual explanations. Refreshed the
+off/on, help and cue-file screenshots; kept Browse/Clear labels unbroken.
+Matrix dependency/help rows and documentation revision 6 describe this patch.
+JL downloads use the same reviewed snapshot. Landing, FAQ, promo scripts,
+marketing and positioning require no claim changes; no publication is implied.
+
 2 November 2026, numeric patch: reviewed Settings, Tools, toolbar, head-guide
 and pad/phone numeric readouts. Added the numeric-controls row and revision 5.
 Help and changelog explain steps and retained stored precision. The current

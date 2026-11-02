@@ -255,6 +255,11 @@ and deployment.
 
 ### Unreleased
 
+**Preview 05 Reading aids patch:** Focus strength appears only with Focus band
+on and retains its value when switched off. Small ? pills explain every control
+in Reading indicators and Slide cues and script tags. Cue-file buttons keep
+their labels on one line.
+
 **Preview 05 numeric patch:** slider/number pairs use consistent whole-number
 or five-point steps. Fine head alignment and toolbar readouts show at most two
 decimals. Rendering a rounded value does not rewrite an existing preference.

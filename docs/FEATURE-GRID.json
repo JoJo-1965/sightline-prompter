@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "basis": "Settings Redesign Preview 05 numeric patch, documentation revision 5, 2 November 2026",
+  "basis": "Settings Redesign Preview 05 Reading aids patch, documentation revision 6, 2 November 2026",
   "date": "2 November 2026",
-  "sourceBuild": "9d05dbb",
+  "sourceBuild": "f47b4da",
   "buildVersion": "1.1.0",
   "publicationStatus": "preview",
   "appRelease": "1.1.0",
   "pluginRelease": "0.2.0",
   "sourceUrl": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/FEATURE-GRID.md",
-  "sourceSha256": "2c607fdfaba86c0ff38d20f7efb8926980c8eed30f4ef60dce3e4091519f998c",
+  "sourceSha256": "5393e029e43c629d84890b34a69bc0d272a664867b18332573cae74385bb97d0",
   "support": [
     "Included",
     "Optional",
@@ -569,7 +569,7 @@
           "name": "Focus band",
           "support": "Optional",
           "options": "Dim text away from the reading line; adjustable strength.",
-          "limits": "Does not remove text from the script or edit pack."
+          "limits": "Strength is shown/enabled only while Focus band is on and retains its value when off. Does not remove text from the script or edit pack."
         },
         {
           "name": "Reading marker and progress",
@@ -1574,8 +1574,8 @@
         {
           "name": "Contextual explanations",
           "support": "Included",
-          "options": "Small question-mark pills beside options explain purpose and consequences.",
-          "limits": "Help should be checked against the selected mode and enabled components."
+          "options": "Small question-mark pills beside options explain purpose and consequences on hover, keyboard focus or click. Both Reading aids groups have explanations for every control.",
+          "limits": "Escape closes the explanation. Help follows the selected mode and enabled components."
         },
         {
           "name": "Apply, save and cancel",

@@ -2,6 +2,10 @@
 
 ## Recording feedback batch — unpublished preview
 
+Reading aids follow-up: Focus strength follows the Focus band switch and keeps
+its saved value when off. Both aid groups have contextual ? help. Native hover,
+dependency and compact-layout checks cover the patch; screenshots are refreshed.
+
 Numeric-control follow-up: bounded display precision and matching slider/number
 steps are implemented and checked without changing the signed-off layout.
 

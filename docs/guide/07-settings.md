@@ -112,7 +112,10 @@ Line spacing lives with each typography target.
 
 **Reading aids** uses named choices for reading indicators versus slide cues
 and directive tags. Sentence highlight, progress/time, marker, focus band,
-strength and text edge stay together.
+strength and text edge stay together. **Focus strength** appears only while
+**Focus band** is on; switching the band off retains the selected strength.
+Small **?** pills explain every control in both groups. Hover, focus with the
+keyboard or click a pill to read its explanation; Escape closes it.
 
 **Screens and mirroring** uses named Window/mirroring and Eye-line strip
 choices. Set the monitor, always on top, toolbar visibility, capture protection,
