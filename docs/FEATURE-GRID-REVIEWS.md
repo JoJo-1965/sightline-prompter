@@ -1,5 +1,11 @@
 # Feature-matrix review record
 
+2 November 2026, pre-record design approval: Joanne confirmed that the mock
+meets expectations. Recorded the approved source and interaction contract in
+design/PRE-RECORD-POC.md. This is design approval, with no new implemented
+capability, package, help or JL claim. The supported-feature matrix remains on
+Preview 07, documentation revision 8, until a real implementation is validated.
+
 2 November 2026, pre-record PoC: a separate browser mock explores optional
 head-position feedback alongside manual fitting, audio checks, a test clip and
 saved framing for returning after a break. Tracking, camera, audio and clips

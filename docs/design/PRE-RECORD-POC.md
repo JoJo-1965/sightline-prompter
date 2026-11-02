@@ -1,5 +1,26 @@
 # Pre-record workflow PoC
 
+## Design approval
+
+Joanne confirmed on 2 November 2026: “The mock preview meets my expectations.”
+The approved interactive source is `pre-record-poc.html` at `3f94df5`. Preserve
+its composition and interaction as the implementation reference, rather than
+treating approval as a feature checklist or substituting a different layout.
+
+Approved scope: good initial framing and consistent placement after a break;
+optional red/amber/green cutout feedback and movement arrows, grey when tracking
+is unavailable, alongside the existing manual adjustments. Lock current sets a
+draft target. The pre-record sequence checks framing and audio, reviews a test,
+then explicitly saves the reference. Returning restores the original target;
+it does not silently replace it. Saved references persist, with an explicit
+new-setup/replacement path. Audio advisory results allow informed continuation.
+
+This approval records the design outcome. The PoC remains simulated; real
+detection, camera routing, audio and recorder integration are not implemented
+by this approval entry. Preview 07 and its separate pending PC layout review
+remain unchanged. Any implementation must preserve the approved behaviour and
+be verified against the mock before handover.
+
 Design experiment requested by Joanne, 2 November 2026. It supplements manual
 guide adjustment with optional automatic position feedback. It has two jobs:
 establish good framing, and restore the same position after a break for
