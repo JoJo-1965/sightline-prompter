@@ -1,3 +1,5 @@
+import { steppedControlNumber } from "./numeric-controls.js";
+
 export function createLiveTools( panel, { getState, action, save, size, backing } ) {
 	let current = "prepare";
 	let signature = "";
@@ -70,7 +72,7 @@ export function createLiveTools( panel, { getState, action, save, size, backing 
 			if ( state.padEnabled ) button( "Control pad", "pad" );
 			button( "Settings", "settings" );
 		} else if ( current === "adjust" ) {
-			const row = ( label, value, min, max, unit, change ) => {
+			const row = ( label, value, min, max, unit, change, step = 1 ) => {
 				const line = doc.createElement( "label" );
 				line.className = "tools-range";
 				const name = doc.createElement( "span" );
@@ -79,14 +81,14 @@ export function createLiveTools( panel, { getState, action, save, size, backing 
 				range.type = "range";
 				range.min = min;
 				range.max = max;
-				range.step = "1";
-				range.value = value;
+				range.step = step;
+				range.value = steppedControlNumber( value, { min, max, step } );
 				const number = doc.createElement( "input" );
 				number.type = "number";
 				number.min = min;
 				number.max = max;
-				number.step = "1";
-				number.value = value;
+				number.step = step;
+				number.value = range.value;
 				number.setAttribute( "aria-label", `${ label } ${ unit }` );
 				const apply = ( v ) => {
 					if ( !Number.isFinite( v ) || v < min || v > max ) {
@@ -94,19 +96,20 @@ export function createLiveTools( panel, { getState, action, save, size, backing 
 						return;
 					}
 					number.setCustomValidity( "" );
-					range.value = number.value = v;
-					change( v );
+					const next = steppedControlNumber( v, { min, max, step } );
+					range.value = number.value = next;
+					change( next );
 				};
 				range.addEventListener( "input", () => apply( Number( range.value ) ) );
-				number.addEventListener( "change", () => apply( Number( number.value ) ) );
+				number.addEventListener( "change", () => apply( number.valueAsNumber ) );
 				const suffix = doc.createElement( "span" );
 				suffix.textContent = unit;
 				line.append( name, range, number, suffix );
 				body.append( line );
 			};
-			row( "Text size", state.fontSize * 100, 100, 800, "%", value => size( value / 100 ) );
+			row( "Text size", state.fontSize * 100, 100, 800, "%", value => size( value / 100 ), 5 );
 			row( state.onAir ? "On-air backing" : "Off-air backing", state.opacity * 100, 0, 100, "%", value => backing( value / 100 ) );
-			row( "Line spacing", Math.round( ( state.lineHeight ?? 1.3 ) * 100 ), 100, 250, "%", value => save( { lineHeight: value / 100 } ) );
+			row( "Line spacing", Math.round( ( state.lineHeight ?? 1.3 ) * 100 ), 100, 250, "%", value => save( { lineHeight: value / 100 } ), 5 );
 			button( "Themes and text", "typography" );
 			button( "Layout and margins", "layout" );
 			button( "Guide adjustments", "guide-adjust" );

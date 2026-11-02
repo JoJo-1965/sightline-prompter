@@ -2,6 +2,9 @@
 
 ## Recording feedback batch — unpublished preview
 
+Numeric-control follow-up: bounded display precision and matching slider/number
+steps are implemented and checked without changing the signed-off layout.
+
 Preview 05 restores the signed-off Settings composition. Layout fidelity,
 preview-only example controls and compact behaviour are checked separately
 from the recording workflow. The public release remains unchanged.

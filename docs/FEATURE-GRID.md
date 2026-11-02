@@ -1,6 +1,6 @@
 # Sightline Prompter feature grid
 
-**Review basis: Settings Redesign Preview 05, documentation revision 4, 2 November 2026.**
+**Review basis: Settings Redesign Preview 05 numeric patch, documentation revision 5, 2 November 2026.**
 **Build version:** `1.1.0` · **Publication status:** Preview
 
 **Maintained source:** [Feature grid](https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/FEATURE-GRID.md)
@@ -353,6 +353,7 @@ Reference: [Settings](guide/07-settings.md), [Screenshot gallery](guide/settings
 | Grouped settings | Included | Top-level task groups and focused subtabs separate prompting, appearance, recording and controls. | The detailed settings guide describes the current placement of each tool. |
 | Stable settings panel | Included | Stable frame, eight areas and 34 named sections, permanent controls and no internal scrolling; preview addition. | Resizing never reallocates a setting to another page. A minimum usable window is required. |
 | Settings draft consistency | Included | Appearance previews; Apply persists, Save and close persists/closes, Cancel restores the last applied look; preview addition. | Explicit component installation, theme-library save/import, pairing reset and device tests are separate actions. |
+| Numeric controls | Included | Slider/number pairs share whole-number or five-point increments; fine readouts have at most two decimals; preview patch. | Display rounding preserves stored precision until the control is adjusted. |
 | Named section navigation | Included | Sidebar search and explicit sections, plus compact selectors; preview addition. | Disabled OBS recording/setup and speech children are excluded until their parent is enabled. |
 | Live Tools groups | Included | Prepare, Adjust and During take share saved values with Settings through separate controls; preview addition. | Live changes are immediate; a short prompter uses a utility window instead of clipping the menu. |
 | Contextual explanations | Included | Small question-mark pills beside options explain purpose and consequences. | Help should be checked against the selected mode and enabled components. |

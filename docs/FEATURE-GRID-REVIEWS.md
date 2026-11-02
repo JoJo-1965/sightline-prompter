@@ -1,5 +1,11 @@
 # Feature-matrix review record
 
+2 November 2026, numeric patch: reviewed Settings, Tools, toolbar, head-guide
+and pad/phone numeric readouts. Added the numeric-controls row and revision 5.
+Help and changelog explain steps and retained stored precision. The current
+gallery's whole-number examples retain the same appearance; no layout, icon,
+marketing-positioning or release-status change is introduced.
+
 Review the matrix with help, guides, screenshots, changelog, roadmap and JL
 copy for every app or companion deployment. Update rows when behaviour,
 options, controls, requirements or limits change. Otherwise record the

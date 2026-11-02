@@ -38,6 +38,10 @@ another Settings edit does not undo those actions.
 The small **?** pill explains the adjacent option. Hover, focus or click/tap
 it. An open explanation takes the first Esc; Settings stays open.
 Sliders have matching numeric values, units and keyboard adjustment.
+Text size, line spacing, voice response and WPM use five-point increments.
+Margins, opacity, countdown and reading positions use whole values. Fine head
+alignment displays at most two decimals. Sliders and number boxes agree;
+existing stored precision is retained until you adjust the value.
 
 ## Areas and sections
 

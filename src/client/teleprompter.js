@@ -1,3 +1,4 @@
+import { roundControlNumber } from "./numeric-controls.js";
 import {
 	startAutoScroll,
 	stopAutoScroll,
@@ -6703,8 +6704,8 @@ function attachNumberBox( range, getSpec ) {
 		const scale = spec.scale;
 		num.min = tidy( Number( range.min ) * scale );
 		num.max = tidy( Number( range.max ) * scale );
-		num.step = tidy( Number( range.step ) * scale );
-		const shown = tidy( read() * scale );
+		num.step = roundControlNumber( Number( range.step ) * scale );
+		const shown = roundControlNumber( read() * scale );
 		if ( num.ownerDocument.activeElement !== num ) num.value = shown;
 		unit.textContent = spec.unit;
 		const label = spec.name;
@@ -6740,7 +6741,7 @@ function attachNumberBox( range, getSpec ) {
 		range.dispatchEvent( new Event( "input", { bubbles: true } ) );
 		if ( commit ) range.dispatchEvent( new Event( "change", { bubbles: true } ) );
 		refresh();
-		num.value = tidy( read() * spec.scale );
+		num.value = roundControlNumber( read() * spec.scale );
 	};
 	const nudge = ( steps, commit ) => {
 		const spec = getSpec();

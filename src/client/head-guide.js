@@ -1,4 +1,5 @@
 import { guidePose, guideOutline } from "./guide-pose.js";
+import { roundControlNumber } from "./numeric-controls.js";
 
 const guide = window.headGuide;
 const svg = document.querySelector( "svg" );
@@ -62,7 +63,12 @@ document.querySelector( "#adjust-close" ).onclick = () => guide.action( "adjust-
 document.addEventListener( "keydown", ( event ) => {
 	if ( controlsOnly && event.key === "Escape" ) guide.action( "adjust-hide" );
 } );
-for ( const axis of [ "x", "y" ] ) document.querySelector( `#eye-${ axis }` ).onchange = event => guide.action( "preferences", { [axis]: event.target.valueAsNumber } );
+for ( const axis of [ "x", "y" ] ) document.querySelector( `#eye-${ axis }` ).onchange = ( event ) => {
+	const value = roundControlNumber( event.target.valueAsNumber );
+	if ( !Number.isFinite( value ) ) return;
+	event.target.value = value;
+	guide.action( "preferences", { [axis]: value } );
+};
 document.querySelector( "#background" ).oninput = event => guide.action( "preferences", { background: Number( event.target.value ) / 100 } );
 document.querySelector( "#outline-opacity" ).oninput = event => guide.action( "preferences", { opacity: Number( event.target.value ) / 100 } );
 for ( const button of document.querySelectorAll( ".pose-arrows button" ) ) button.onclick = () => guide.action( "preferences", { x: pose.x + Number( button.dataset.x ?? 0 ), y: pose.y + Number( button.dataset.y ?? 0 ) } );
@@ -88,7 +94,7 @@ guide.onState( ( value ) => {
 	for ( const axis of [ "x", "y" ] ) {
 		const input = document.querySelector( `#eye-${ axis }` );
 		input.disabled = eyesLocked;
-		if ( document.activeElement !== input ) input.value = value[axis];
+		if ( document.activeElement !== input ) input.value = roundControlNumber( value[axis] );
 	}
 	for ( const axis of [ "scale", "width", "height", "top", "bottom", "left", "right" ] ) {
 		const percent = Math.round( value[axis] * 100 );
@@ -102,7 +108,7 @@ guide.onState( ( value ) => {
 	document.querySelector( "#reference-status" ).textContent = value.reference?.pose ? "Recording reference saved · Ideal unchanged" : "No recording reference saved. Ideal stays unchanged.";
 	idealShape.style.display = value.showIdeal ? "" : "none";
 	document.querySelector( "#ideal-visible" ).textContent = value.showIdeal ? "Hide ideal" : "Show ideal";
-	document.querySelector( "#pose-value" ).textContent = `X ${ value.x }% · Y ${ value.y }% · Size ${ Math.round( scale * 100 ) }%`;
+	document.querySelector( "#pose-value" ).textContent = `X ${ roundControlNumber( value.x ) }% · Y ${ roundControlNumber( value.y ) }% · Size ${ Math.round( scale * 100 ) }%`;
 	document.querySelector( "#opacity" ).value = value.opacity * 100;
 	document.querySelector( "#outline-opacity" ).value = value.opacity * 100;
 	document.querySelector( "#outline-opacity-value" ).value = `${ Math.round( value.opacity * 100 ) }%`;

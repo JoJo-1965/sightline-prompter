@@ -255,6 +255,10 @@ and deployment.
 
 ### Unreleased
 
+**Preview 05 numeric patch:** slider/number pairs use consistent whole-number
+or five-point steps. Fine head alignment and toolbar readouts show at most two
+decimals. Rendering a rounded value does not rewrite an existing preference.
+
 **Preview 05 layout correction:** restores the signed-off expanding left list,
 central controls, dedicated right preview, header search and fixed footer.
 Compact examples never operate the recorder. Matched-reference screenshots

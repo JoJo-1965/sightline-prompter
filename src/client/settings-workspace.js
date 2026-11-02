@@ -2,6 +2,7 @@ import { prepareSettingsControls } from "./settings-controls.js";
 import { READING_FONTS, READING_PALETTES, TEXT_TARGETS, TEXT_FIELDS, appearanceFromSettings, captureReadingTheme, settingsFromTheme } from "./reading-appearance.js";
 import { INTERFACES, interfaceEnabled } from "./interface-state.js";
 import { createSettingsPreview } from "./settings-preview.js";
+import { roundControlNumber, steppedControlNumber } from "./numeric-controls.js";
 
 // Forms are assembled once, before their controllers attach. Settings keeps
 // ownership for its lifetime; Tools never borrows any of these nodes.
@@ -60,6 +61,10 @@ export function createSettingsWorkspace( root, { getState, stage, navigate, toas
 		const descriptor = { control, key, kind, ...extra };
 		bindings.set( control.id, descriptor );
 		const change = () => {
+			if ( kind === "number" && extra.number ) {
+				control.value = steppedControlNumber( control.value, extra );
+				extra.number.value = control.value;
+			}
 			let value = kind === "check" ? control.checked : kind === "number" ? Number( control.value ) / ( extra.scale ?? 1 ) : control.value;
 			if ( kind === "number" && !Number.isFinite( value ) ) return;
 			if ( key === "audioDeviceId" ) value ||= null;
@@ -73,28 +78,28 @@ export function createSettingsWorkspace( root, { getState, stage, navigate, toas
 		input.type = "range";
 		input.min = min;
 		input.max = max;
-		input.step = "any";
+		input.step = step;
 		input.dataset.pairedNumber = "true";
 		input.setAttribute( "aria-label", label );
 		const value = row( host, label, input, help );
-		const number = el( "input", { id: `${ id }-number`, type: "number", min, max, step: "any" } );
+		const number = el( "input", { id: `${ id }-number`, type: "number", min, max, step } );
 		number.setAttribute( "aria-label", `${ label } (${ unit })` );
 		value.append( number, el( "span", { className: "settings-unit" }, unit ) );
-		const descriptor = bind( input, key, "number", { scale, preview, number } );
+		const descriptor = bind( input, key, "number", { scale, preview, number, min, max, step } );
 		const set = ( n ) => {
 			if ( !Number.isFinite( n ) || n < min || n > max ) {
 				number.setCustomValidity( `Choose ${ min }–${ max } ${ unit }` );
 				return;
 			}
 			number.setCustomValidity( "" );
-			input.value = number.value = Math.round( n * 1000 ) / 1000;
+			input.value = number.value = steppedControlNumber( n, descriptor );
 			input.dispatchEvent( new Event( "input", { bubbles: true } ) );
 		};
 		input.addEventListener( "input", () => {
 			number.value = input.value;
 			number.setCustomValidity( "" );
 		} );
-		number.addEventListener( "change", () => set( Number( number.value ) ) );
+		number.addEventListener( "change", () => set( number.valueAsNumber ) );
 		for ( const control of [ input, number ] ) control.addEventListener( "keydown", ( event ) => {
 			if ( ![ "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight" ].includes( event.key ) ) return;
 			event.preventDefault();
@@ -169,7 +174,7 @@ export function createSettingsWorkspace( root, { getState, stage, navigate, toas
 		const f = TEXT_FIELDS[target];
 		const fontId = ( { script: "lp-font", headings: "lp-heading-font", inline: "lp-direction-font", production: "lp-production-font" } )[target];
 		choice( panel, fontId, "Font", f.font, Object.entries( READING_FONTS ).filter( ( [ id ] ) => target !== "script" || id !== "same" ), true, "Choose a font for this text type. Follow script follows the spoken font. Other fonts must be installed on this computer." );
-		range( panel, ( { script: "set-font-size", headings: "lp-heading-scale", inline: "lp-direction-scale", production: "lp-production-scale" } )[target], "Size", target === "script" ? "fontSize" : f.size, { min: target === "script" ? 100 : 10, max: target === "script" ? 800 : target === "production" ? 200 : 400, scale: f.scale, help: target === "headings" ? "Section-heading size relative to the script; titles retain their larger hierarchy." : target === "script" ? "The same base text size as the main toolbar. 300% is the usual starting size." : "Size relative to the spoken script. Visibility and dimming do not change it." } );
+		range( panel, ( { script: "set-font-size", headings: "lp-heading-scale", inline: "lp-direction-scale", production: "lp-production-scale" } )[target], "Size", target === "script" ? "fontSize" : f.size, { step: 5, min: target === "script" ? 100 : 10, max: target === "script" ? 800 : target === "production" ? 200 : 400, scale: f.scale, help: target === "headings" ? "Section-heading size relative to the script; titles retain their larger hierarchy." : target === "script" ? "The same base text size as the main toolbar. 300% is the usual starting size." : "Size relative to the spoken script. Visibility and dimming do not change it." } );
 		colour( panel, `lp-${ target === "headings" ? "heading" : target === "inline" ? "direction" : target }-colour`, "Colour", f.colour, target );
 		const styles = el( "div", { className: "settings-style-buttons" } );
 		for ( const [ name, key ] of [ [ "Bold", f.bold ], [ "Italic", f.italic ] ] ) {
@@ -179,7 +184,7 @@ export function createSettingsWorkspace( root, { getState, stage, navigate, toas
 			styles.append( toggle );
 		}
 		row( panel, "Style", styles );
-		range( panel, ( { script: "lp-line-height", headings: "lp-heading-line-height", inline: "lp-direction-line-height", production: "lp-production-line-height" } )[target], "Line spacing", f.spacing, { min: 100, max: 250, scale: 100, help: "Line spacing as a percentage of this text type’s font height. Paragraph gaps remain as written." } );
+		range( panel, ( { script: "lp-line-height", headings: "lp-heading-line-height", inline: "lp-direction-line-height", production: "lp-production-line-height" } )[target], "Line spacing", f.spacing, { step: 5, min: 100, max: 250, scale: 100, help: "Line spacing as a percentage of this text type’s font height. Paragraph gaps remain as written." } );
 		if ( target === "inline" ) choice( panel, "set-directions", "Visibility", "directions", [ [ "normal", "Normal" ], [ "dim", "Dimmed" ], [ "hide", "Hidden" ] ], true );
 		panel.append( el( "p", { className: "settings-inline-note" }, target === "production" ? "Production notes show while paused and hide during delivery. Everything inside stays silent, including quoted words." : target === "inline" ? "Short cues stay beside your words. Quoted words intended for speech keep the spoken-script style." : "The same font, size, colour, style and spacing pattern is used for every text target." ) );
 	}
@@ -234,7 +239,7 @@ export function createSettingsWorkspace( root, { getState, stage, navigate, toas
 	const aids = section( "aids", "Reading aids", doc.getElementById( "set-aids-host" ) );
 	aids.replaceChildren( el( "legend", {}, "Reading aids" ) );
 	for ( const [ id, label, key ] of [ [ "lp-marker", "Reading marker", "showReadingMarker" ], [ "lp-sentence", "Sentence highlight", "highlightSentence" ], [ "lp-progress", "Progress and time", "showProgress" ], [ "lp-focus-band", "Focus band", "focusBand" ] ] ) check( aids, id, label, key, true );
-	range( aids, "lp-focus-strength", "Focus strength", "focusStrength", { min: 10, max: 90, scale: 100 } );
+	range( aids, "lp-focus-strength", "Focus strength", "focusStrength", { step: 5, min: 10, max: 90, scale: 100 } );
 	choice( aids, "lp-text-effect", "Text edge", "textEffect", [ [ "none", "None" ], [ "outline", "Outline" ], [ "shadow", "Shadow" ] ], true );
 	const mode = section( "mode", "Mode and pace", selectValues.find( f => f.dataset.tab === "mode" ) );
 	check( mode, "lp-points", "Notes / page mode", "pointsMode" );
@@ -615,7 +620,7 @@ export function createSettingsWorkspace( root, { getState, stage, navigate, toas
 				descriptor.reset.setAttribute( "aria-pressed", String( !value ) );
 				descriptor.reset.title = value ? "Restore this item’s palette colour" : "Already using the palette colour";
 			} else if ( control.ownerDocument.activeElement !== control && control.ownerDocument.activeElement !== descriptor.number ) {
-				control.value = kind === "number" ? Math.round( value * scale * 1000 ) / 1000 : value ?? "";
+				control.value = kind === "number" ? descriptor.number ? steppedControlNumber( value * scale, descriptor ) : roundControlNumber( value * scale ) : value ?? "";
 				if ( descriptor.number ) {
 					descriptor.number.value = control.value;
 					descriptor.number.setCustomValidity( "" );

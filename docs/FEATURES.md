@@ -1,5 +1,9 @@
 # Sightline Prompter: what it adds to Electron Teleprompter
 
+Preview 05's numeric patch gives slider/number pairs consistent whole-number
+or five-point steps. Fine readouts have at most two decimals. Display rounding
+preserves saved precision until adjustment; the signed-off layout is unchanged.
+
 For a detailed reviewer comparison, use the [Preview 05 feature grid](FEATURE-GRID.md),
 with dedicated Stream Deck and OBS sections, configuration choices, dependencies
 and limits. A [searchable view](FEATURE-GRID.html) and [comparison CSV](FEATURE-GRID.csv)

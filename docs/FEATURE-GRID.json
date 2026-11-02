@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "basis": "Settings Redesign Preview 05, documentation revision 4, 2 November 2026",
+  "basis": "Settings Redesign Preview 05 numeric patch, documentation revision 5, 2 November 2026",
   "date": "2 November 2026",
   "sourceBuild": "d55c205",
   "buildVersion": "1.1.0",
@@ -8,7 +8,7 @@
   "appRelease": "1.1.0",
   "pluginRelease": "0.2.0",
   "sourceUrl": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/FEATURE-GRID.md",
-  "sourceSha256": "48a76c7fe70eb3b55d99745d98da37c8e45e7de0c5a274cd5696af92f2844d6d",
+  "sourceSha256": "12a78d932d6f39ee6e08642714ce1ed974644f13390ae547733bad7a71b1542b",
   "support": [
     "Included",
     "Optional",
@@ -1552,6 +1552,12 @@
           "support": "Included",
           "options": "Appearance previews; Apply persists, Save and close persists/closes, Cancel restores the last applied look; preview addition.",
           "limits": "Explicit component installation, theme-library save/import, pairing reset and device tests are separate actions."
+        },
+        {
+          "name": "Numeric controls",
+          "support": "Included",
+          "options": "Slider/number pairs share whole-number or five-point increments; fine readouts have at most two decimals; preview patch.",
+          "limits": "Display rounding preserves stored precision until the control is adjusted."
         },
         {
           "name": "Named section navigation",
