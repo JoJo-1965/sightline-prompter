@@ -2,6 +2,9 @@
 
 ## Recording feedback batch — unpublished preview
 
+Mirror-group spacing is corrected in source and the open preview. The next
+batched package will retain the spacing after restart; no controls were moved.
+
 Reading aids follow-up: Focus strength follows the Focus band switch and keeps
 its saved value when off. Both aid groups have contextual ? help. Native hover,
 dependency and compact-layout checks cover the patch; screenshots are refreshed.

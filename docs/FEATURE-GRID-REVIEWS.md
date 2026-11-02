@@ -1,5 +1,14 @@
 # Feature-matrix review record
 
+2 November 2026, spacing follow-up for the next feedback batch: restored the
+mirror group's vertical layout after its move to Screens and mirroring, with
+12px above the group and 8px between the label and buttons. The native Settings
+check passes at all five window sizes. Applied the same CSS to the open preview
+without restarting or changing preferences; the persistent package and refreshed
+gallery will accompany the next batch. No capability, help, matrix, JL or
+marketing claim changes are needed; the matrix still describes the packaged
+Reading aids patch.
+
 2 November 2026, Reading aids patch: Focus strength is shown/enabled only with
 Focus band on and retains its value when off. Reviewed every control in both
 Reading aids groups and added missing contextual explanations. Refreshed the
