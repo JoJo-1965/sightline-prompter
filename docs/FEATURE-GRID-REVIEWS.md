@@ -1,5 +1,14 @@
 # Feature-matrix review record
 
+2 November 2026, next feedback batch: implemented a single Notes/page, Voice or
+Scroll selector in source. Mode and pace now hides/disables unrelated controls
+without erasing their values: response for Voice; WPM, script pacing and
+countdown for Scroll; page guidance for Notes. Native checks cover component
+gates, transitions, save/reopen, Apply/Cancel and all five window sizes. Draft
+screenshots and guide notes are prepared. This is not in the running package;
+advance the matrix dependency rows, generated exports and JL snapshot when the
+combined batch is packaged. No current public marketing claim is changed.
+
 2 November 2026, spacing follow-up for the next feedback batch: restored the
 mirror group's vertical layout after its move to Screens and mirroring, with
 12px above the group and 8px between the label and buttons. The native Settings

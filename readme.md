@@ -255,6 +255,11 @@ and deployment.
 
 ### Unreleased
 
+**Next feedback batch, not yet packaged:** Mode and pace uses one Notes/page,
+Voice or Scroll choice. Relevant pace controls follow the selected mode;
+switching preserves their values. Native transitions and Apply/Cancel checks
+pass. The running Reading aids patch remains unchanged.
+
 **Preview 05 Reading aids patch:** Focus strength appears only with Focus band
 on and retains its value when switched off. Small ? pills explain every control
 in Reading indicators and Slide cues and script tags. Cue-file buttons keep

@@ -6,6 +6,18 @@ package, RC, supported-feature claim or website deployment is implied.
 
 ## Implemented, awaiting the next batched package
 
+- Mode and pace: one selector for Notes / page, Voice and Scroll replaces the
+  independent Notes checkbox. Scroll shows WPM, script pacing and countdown;
+  Voice shows response; Notes shows page-navigation guidance. Irrelevant fields
+  and their number boxes are hidden and disabled. Mode changes retain pace,
+  response and countdown preferences. Notes retains the previous underlying
+  scrolling choice. Voice still requires speech and microphone input.
+- Native checks cover all three modes, retained values, saving/reopening Notes,
+  Apply/Cancel, component prerequisites and compact layouts. The running package
+  is unchanged. Source captures for review:
+  [Scroll](images/mode-context-scroll.png),
+  [Voice](images/mode-context-voice.png),
+  [Notes / page](images/mode-context-notes.png).
 - Mirror group: restore the vertical layout lost when it moved outside the
   old Layout host. Source and the open preview use 12px above the group and
   8px before its buttons. Native checks pass at five window sizes. The open

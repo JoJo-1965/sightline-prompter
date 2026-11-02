@@ -65,6 +65,12 @@ to script review, appearance and framing.
 voice response and script pacing. Voice needs speech features, an engine and
 microphone input. Steady scrolling does not require speech components.
 
+**Next feedback batch — not yet packaged:** one Mode selector offers
+Notes/page, Voice and Scroll. Voice shows response; Scroll shows WPM, script
+pacing and countdown; Notes/page shows page-navigation guidance. Unrelated
+controls are hidden and disabled, with their values retained. The separate
+Notes checkbox is removed. Apply saves the chosen mode; Cancel restores it.
+
 **Text and directions** has four named targets:
 
 | Target | Script syntax and behaviour |

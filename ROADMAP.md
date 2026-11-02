@@ -2,6 +2,10 @@
 
 ## Recording feedback batch — unpublished preview
 
+Mode context is implemented and validated in source for the next batch: one
+Notes/page, Voice or Scroll choice, with mode-specific fields and retained
+preferences. The current running package has not been replaced.
+
 Mirror-group spacing is corrected in source and the open preview. The next
 batched package will retain the spacing after restart; no controls were moved.
 

@@ -63,6 +63,10 @@ export function createSettingsWorkspace( root, { getState, stage, navigate, toas
 		const descriptor = { control, key, kind, ...extra };
 		bindings.set( control.id, descriptor );
 		const change = () => {
+			if ( kind === "reading-mode" ) {
+				stage( control.value === "notes" ? { pointsMode: true } : { pointsMode: false, scrollMode: control.value } );
+				return;
+			}
 			if ( kind === "number" && extra.number ) {
 				control.value = steppedControlNumber( control.value, extra );
 				extra.number.value = control.value;
@@ -249,8 +253,10 @@ export function createSettingsWorkspace( root, { getState, stage, navigate, toas
 	const focusStrength = range( aids, "lp-focus-strength", "Focus strength", "focusStrength", { step: 5, min: 10, max: 90, scale: 100, help: "Controls how strongly text outside the focus band is dimmed. Higher values dim surrounding text more. This applies only while Focus band is on; the value is remembered when it is off." } );
 	choice( aids, "lp-text-effect", "Text edge", "textEffect", [ [ "none", "None" ], [ "outline", "Outline" ], [ "shadow", "Shadow" ] ], true, "Outline or Shadow helps words stand out over busy slides, video or light backgrounds. None uses plain text. This is independent of sentence highlighting and the focus band." );
 	const mode = section( "mode", "Mode and pace", selectValues.find( f => f.dataset.tab === "mode" ) );
-	check( mode, "lp-points", "Notes / page mode", "pointsMode" );
-	check( mode, "lp-follow-pace", "Follow script pacing", "followScriptPace" );
+	const readingMode = controls.get( "set-scroll-mode" );
+	readingMode.replaceChildren( new Option( "Notes / page", "notes" ), new Option( "Voice", "voice" ), new Option( "Scroll", "steady" ) );
+	addHelp( readingMode.closest( "[data-settings-control]" ).querySelector( ".settings-option-name" ), "Reading mode", "Choose one reading mode. Notes / page advances through speaking notes; Voice follows recognised speech; Scroll moves at a set words-per-minute pace. Each mode shows only its relevant controls. Saved pace and response values are retained when switching." );
+	check( mode, "lp-follow-pace", "Follow script pacing", "followScriptPace", false, "In Scroll mode, use the script's WPM pacing directives where present. Scroll speed supplies the starting or fallback pace. This does not set the pace in Voice or Notes / page mode." );
 	const takes = section( "takes", "Takes", doc.getElementById( "set-recording-host" ) );
 	for ( const [ id, label, key ] of [ [ "lp-summary", "Take summary", "takeSummary" ], [ "lp-pacing", "Pacing light", "showPacing" ], [ "lp-on-air", "On-air light", "onAirLight" ], [ "lp-start-beep", "Start beep", "startBeep" ] ] ) check( takes, id, label, key );
 	const screens = section( "screens", "Screens and mirroring", doc.getElementById( "set-display-host" ) );
@@ -292,7 +298,7 @@ export function createSettingsWorkspace( root, { getState, stage, navigate, toas
 	// workspace adds draft tracking without starting devices or services.
 	for ( const [ id, key ] of Object.entries( { "set-scroll-mode": "scrollMode", "set-steady-wpm": "steadyWpm", "set-countdown": "countdown", "set-slate": "slate", "set-voice-engine": "voiceEngine", "set-voice-commands": "voiceCommands", "set-wake-word": "wakeWord", "set-scratch-audio": "scratchAudio", "set-coach-fillers": "coachFillers", "set-take-loudness": "takeLoudness", "set-sound-check-takes": "soundCheckDuringTakes", "set-sound-alike": "soundAlike", "set-always-on-top": "alwaysOnTop", "set-check-updates": "checkUpdates", "set-debug-mode": "debugMode", "set-highlight-cues": "highlightCues", "set-cues-file": "cuesFile", "set-eye-line": "eyeLine", "set-eye-line-width": "eyeLineWidth", "set-eye-line-height": "eyeLineHeight", "set-eye-line-reading": "eyeLineReadingLine", "set-remote-delete": "remoteDeleteRecordings", "set-remote-port": "remotePort", "set-trace-commands": "traceCommands", "set-microphone": "audioDeviceId" } ) ) {
 		const input = controls.get( id );
-		if ( input ) bind( input, key, input.type === "checkbox" ? "check" : [ "number", "range" ].includes( input.type ) ? "number" : "select" );
+		if ( input ) bind( input, key, id === "set-scroll-mode" ? "reading-mode" : input.type === "checkbox" ? "check" : [ "number", "range" ].includes( input.type ) ? "number" : "select" );
 	}
 	const masterIds = { engine: "set-speech-enabled", microphone: "set-microphone-enabled", pad: "set-pad-enabled", pairing: "set-phone", mappings: "set-keyboard-mappings", gamepad: "set-gamepad-enabled", streamdeck: "set-stream-deck", obs: "set-obs-enabled", api: "set-remote" };
 	const engine = sections.get( "engine" ) ?? section( "engine", "Speech engine", selectValues.find( f => f.dataset.tab === "engine" ) );
@@ -312,8 +318,11 @@ export function createSettingsWorkspace( root, { getState, stage, navigate, toas
 	const micTest = el( "button", { type: "button", id: "set-microphone-test" }, "Test selected microphone" );
 	microphone.append( micTest, doc.getElementById( "vp-meter" ), doc.getElementById( "vp-mic-status" ) );
 	range( mode, "set-voice-speed", "Voice response", "autoScrollSpeed", { min: 10, max: 300, scale: 100, step: 5, preview: false, help: "Response to recognised speech. This changes following speed, not microphone gain." } );
-	range( mode, "set-steady-wpm", "Steady speed", "steadyWpm", { min: 60, max: 300, unit: "wpm", step: 5, preview: false } );
-	range( mode, "set-countdown", "Countdown before scrolling", "countdown", { min: 0, max: 10, unit: "s", preview: false, help: "A short countdown before prompting starts. Zero starts immediately; pauses in the script remain separate." } );
+	range( mode, "set-steady-wpm", "Scroll speed", "steadyWpm", { min: 60, max: 300, unit: "wpm", step: 5, preview: false, help: "Words per minute for Scroll mode. If Follow script pacing is on, pacing directives can replace this speed as you reach them. Voice response and Notes / page mode are independent." } );
+	range( mode, "set-countdown", "Countdown before scrolling", "countdown", { min: 0, max: 10, unit: "s", preview: false, help: "A countdown before Scroll mode starts moving. Zero starts immediately. It does not delay Voice or Notes / page mode; script pauses and recording slates are separate." } );
+	const modeDescription = el( "p", { id: "settings-mode-description", className: "field-hint" } );
+	modeDescription.dataset.essential = "true";
+	mode.append( modeDescription );
 	for ( const [ id, key ] of Object.entries( { "set-obs-host": "obsHost", "set-obs-port": "obsPort", "set-obs-controls": "obsControls", "set-obs-follow-prompter": "obsFollowPrompter", "set-obs-markers": "obsMarkers", "set-obs-recorded-slate": "obsRecordedSlate" } ) ) {
 		const input = controls.get( id );
 		bind( input, key, input.type === "checkbox" ? "check" : input.type === "number" ? "number" : "select" );
@@ -624,14 +633,22 @@ export function createSettingsWorkspace( root, { getState, stage, navigate, toas
 		const voiceReady = state.speechEnabled !== false && state.microphoneEnabled !== false;
 		for ( const option of modeChoice.options ) if ( option.value === "voice" ) option.disabled = !voiceReady;
 		const voiceMode = state.scrollMode === "voice" && !state.pointsMode;
-		controls.get( "set-voice-speed" ).closest( "[data-settings-control]" ).hidden = !voiceMode;
-		controls.get( "set-steady-wpm" ).closest( "[data-settings-control]" ).hidden = voiceMode || state.pointsMode === true;
+		const scrollMode = !voiceMode && state.pointsMode !== true;
+		for ( const [ id, active ] of [ [ "set-voice-speed", voiceMode ], [ "set-steady-wpm", scrollMode ], [ "lp-follow-pace", scrollMode ], [ "set-countdown", scrollMode ] ] ) {
+			const control = controls.get( id );
+			control.closest( "[data-settings-control]" ).hidden = !active;
+			control.disabled = !active;
+			const number = bindings.get( id ).number;
+			if ( number ) number.disabled = !active;
+		}
+		modeDescription.textContent = state.pointsMode === true ? "Notes / page: use Next and Previous to move between pages. Page timings come from the script; scrolling pace controls do not apply." : voiceMode ? voiceReady ? "Voice follows what you say. Voice response controls how quickly the script follows recognised speech." : "Voice needs enabled speech features and microphone input. Configure them in Voice before recording." : "Scroll runs at the selected WPM. Script pacing can change that speed where the script supplies a pace.";
 		controls.get( "set-coach-fillers" ).disabled = !voiceReady || !voiceMode;
 		controls.get( "set-coach-fillers" ).title = voiceReady && voiceMode ? "Optional aggregate counts while following speech" : "Enable speech, microphone input and Voice mode first";
 		for ( const descriptor of bindings.values() ) {
 			const { control, key, kind, scale = 1 } = descriptor, value = state[key];
 			if ( value === undefined ) continue;
-			if ( kind === "check" ) {
+			if ( kind === "reading-mode" ) control.value = state.pointsMode === true ? "notes" : state.scrollMode ?? "steady";
+			else if ( kind === "check" ) {
 				control.checked = value === true;
 				const label = control.nextElementSibling;
 				if ( label?.classList.contains( "settings-on-off" ) ) label.textContent = control.checked ? "On" : "Off";
