@@ -1,5 +1,13 @@
 # Approved Settings and Tools implementation
 
+**Preview 05 correction:** Joanne authorised implementation of the exact signed-off
+demo on 2 November. The expanding left list, central form, persistent right
+preview, header search, fixed footer and compact behaviour are restored. See
+[matched screenshots and independent layout checks](LAYOUT-ACCEPTANCE.md).
+Functional unit/native and recording fixtures pass. Preview 05 packaging and
+the final handover are being completed; the earlier Preview 04 review below
+is retained as the reason for this correction.
+
 **Layout review, 2 November:** Preview 04's composition is not signed off.
 It substituted a category grid and inline sample for the approved expanding
 left navigation and dedicated right preview. App changes are paused while

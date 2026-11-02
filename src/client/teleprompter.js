@@ -2697,7 +2697,7 @@ const settingsModal = uiElement( "settings-modal" );
 const field = id => uiElement( id );
 function settingsFeedback( text, error = false ) {
 	const status = field( "settings-applied" );
-	status.textContent = text;
+	status.textContent = text || "No unapplied changes";
 	status.title = text;
 	status.toggleAttribute( "data-error", error );
 }
@@ -3228,6 +3228,7 @@ if ( settingsModal ) {
 	settingsModal.addEventListener( "input", markSettingsDirty );
 	settingsModal.addEventListener( "change", markSettingsDirty );
 	settingsModal.addEventListener( "keydown", ( e ) => {
+		if ( e.target.closest( "dialog[open]" ) ) return;
 		if ( e.key === "Tab" ) {
 			const focusable = [ ...settingsModal.querySelectorAll( "button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), a[href]" ) ].filter( el => el.tabIndex >= 0 && el.getClientRects().length );
 			const end = e.shiftKey ? focusable[0] : focusable.at( -1 );

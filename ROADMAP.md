@@ -2,6 +2,10 @@
 
 ## Recording feedback batch — unpublished preview
 
+Preview 05 restores the signed-off Settings composition. Layout fidelity,
+preview-only example controls and compact behaviour are checked separately
+from the recording workflow. The public release remains unchanged.
+
 Documentation follow-through covers the shared guide/wiki content, native help
 and Settings explanations, refreshed screenshots, reusable recording demos,
 the promo's Markdown/HTML/PDF reader and staged JL page/FAQ/carousel copy.
@@ -15,7 +19,7 @@ and explicit voice/script recording commands keep continuous as the default.
 Native fixtures cover UI and recorder transitions. Joanne's camera, microphone,
 pause-compatible recording format and final handover remain the live acceptance test.
 
-**Settings redesign, signed off and implemented for Preview 04:** permanent
+**Settings redesign, signed off and implemented for Preview 05:** permanent
 forms, eight areas/34 named sections, four complete typography targets, editable
 backing, named portable reading themes and one Settings Apply/Cancel contract.
 Optional interfaces have enable switches, preserved hidden configuration and

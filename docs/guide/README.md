@@ -1,6 +1,6 @@
 # Sightline Prompter user guide
 
-This source guide now follows the unpublished **Settings Redesign Preview 04**.
+This source guide now follows the unpublished **Settings Redesign Preview 05**.
 The published 1.1.0 installer retains its bundled guide and previous layout.
 Use the preview folder/build manifest to identify the test package.
 

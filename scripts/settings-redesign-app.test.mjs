@@ -50,6 +50,27 @@ try {
 	const settings = await connect( "utility-window.html?panel=settings" ); await pause( 600 );
 	const native = await connect( "main-process" );
 	assert.equal( await settings.evaluate( '!!document.querySelector(".settings-workspace")' ), true );
+	const approvedSource = await fs.readFile( path.join( root, "docs/design/settings-and-tools-prototype.html" ), "utf8" );
+	const approvedAreas = [ ...approvedSource.slice( approvedSource.indexOf( "const areas=" ), approvedSource.indexOf( "const targets=" ) ).matchAll( /\{id:'[^']+',name:'([^']+)'/g ) ].map( match => match[1] );
+	assert.deepEqual( await settings.evaluate( '[...document.querySelectorAll("[data-settings-group]")].map(x=>x.textContent)' ), approvedAreas, "Area labels/order come from the signed-off interactive preview" );
+	await settings.evaluate( 'document.querySelector("[data-tab=typography]").click()' );
+	const layout = await settings.evaluate( `(()=>{const nav=document.querySelector('.settings-navigation'),content=document.querySelector('.settings-section-content'),preview=document.querySelector('.settings-workspace > .settings-preview-pane'),groups=[...document.querySelectorAll('[data-settings-group]')],expanded=[...document.querySelectorAll('.settings-area-sections')].filter(x=>!x.hidden),r=x=>x.getBoundingClientRect();return {threeColumns:r(nav).right<=r(content).left&&r(content).right<=r(preview).left,previewVisible:!!preview.getClientRects().length,inlineSample:!!content.querySelector('.settings-preview-pane,.settings-reading-sample'),expanded:expanded.length,childWithinArea:expanded[0].previousElementSibling.dataset.settingsGroup,verticalList:groups.every((x,i)=>!i||r(x).left===r(groups[0]).left&&r(x).top>r(groups[i-1]).top),headerSearch:!!document.querySelector('.settings-head .settings-search input'),selectedColour:getComputedStyle(document.querySelector('[data-settings-group=reading]')).backgroundColor};})()` );
+	assert.deepEqual( layout, { threeColumns: true, previewVisible: true, inlineSample: false, expanded: 1, childWithinArea: "reading", verticalList: true, headerSearch: true, selectedColour: "rgb(41, 77, 112)" }, "Rendered composition must match the approved layout, independently of functional checks" );
+	await settings.evaluate( 'document.querySelector(".settings-workspace [data-preview-reading=true]").click()' );
+	assert.equal( await settings.evaluate( 'document.querySelector(".settings-workspace [data-sample=production]").hidden' ), true, "Reading example hides production notes" );
+	assert.equal( await main.evaluate( 'document.getElementById("cb-play").getAttribute("aria-pressed")' ), "false", "Preview example never starts actual prompting" );
+	await settings.evaluate( 'document.querySelector(".settings-workspace [data-preview-reading=false]").click();const search=document.querySelector(".settings-search input");search.value="comments";search.dispatchEvent(new Event("input"));document.querySelector(".settings-search-results button").click()' );
+	assert.equal( await settings.evaluate( 'document.querySelector("[data-settings-page=typography]").hidden' ), false, "Header search opens the real permanent section" );
+	if ( process.env.SIGHTLINE_SCREENSHOT_GALLERY === "1" ) {
+		await settings.evaluate( 'document.querySelector("[data-text-target=production]").click();const head=document.getElementById("lp-heading-scale");head.value=125;head.dispatchEvent(new Event("input",{bubbles:true}))' );
+		for ( const name of [ "checklist", "typography", "background", "pad" ] ) {
+			await settings.evaluate( `document.querySelector('[data-tab="${ name }"]').click();document.activeElement?.blur()` );
+			const shot = await settings.call( "Page.captureScreenshot", { format: "png" } );
+			await fs.writeFile( path.join( artifacts, `layout-signed-off-${ name }.png` ), Buffer.from( shot.data, "base64" ) );
+		}
+		await settings.evaluate( 'document.getElementById("settings-cancel").click()' );
+		await main.evaluate( 'document.getElementById("cb-settings").click()' ); await pause( 100 );
+	}
 	await settings.evaluate( 'document.querySelector("[data-tab=typography]").click();document.querySelector("[data-text-target=script]").click();document.getElementById("appearance-script-italic").click()' );
 	await native.evaluate( "process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron').BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().includes('panel=settings')).close()" ); await pause( 100 );
 	assert.equal( await settings.evaluate( 'document.getElementById("settings-unsaved").classList.contains("hidden")' ), false, "Native Close preserves an unapplied draft and opens its guard" );
@@ -106,6 +127,12 @@ try {
 		}
 		console.log( `Compact ${ width }×${ height }: ${ JSON.stringify( failures ) }` );
 		assert.deepEqual( failures, [], `Every section fits at ${ width }×${ height }` );
+		assert.equal( await settings.evaluate( '!!document.querySelector(".settings-compact-nav").getClientRects().length&&!document.querySelector(".settings-navigation").getClientRects().length&&!document.querySelector(".settings-workspace > .settings-preview-pane").getClientRects().length' ), true, "Compact selectors and Preview action follow the approved responsive composition" );
+		await settings.evaluate( 'document.querySelector(".settings-open-preview").click();document.querySelector(".settings-preview-dialog [data-preview-reading=true]").click()' );
+		assert.equal( await settings.evaluate( 'document.querySelector(".settings-preview-dialog").open&&document.querySelector(".settings-preview-dialog [data-sample=production]").hidden' ), true, "Compact example uses the same Reading state" );
+		await settings.call( "Input.dispatchKeyEvent", { type: "keyDown", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 } );
+		await settings.call( "Input.dispatchKeyEvent", { type: "keyUp", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 } );
+		assert.equal( await settings.evaluate( '!document.querySelector(".settings-preview-dialog").open&&!document.getElementById("settings-modal").classList.contains("hidden")' ), true, "Escape closes only the compact example" );
 		await settings.evaluate( 'document.querySelector("[data-tab=typography]").click()' );
 		for ( const target of [ "script", "headings", "inline", "production" ] ) {
 			await settings.evaluate( `document.querySelector('[data-text-target="${ target }"]').click()` );
@@ -147,13 +174,13 @@ try {
 		for ( const name of sections ) {
 			await settings.evaluate( `document.querySelector('.settings-subtabs [data-tab="${ name }"]').click()` ); await pause( 60 );
 			const screenshot = await settings.call( "Page.captureScreenshot", { format: "png" } );
-			await fs.writeFile( path.join( artifacts, `settings-preview04-${ name }.png` ), Buffer.from( screenshot.data, "base64" ) );
+			await fs.writeFile( path.join( artifacts, `settings-preview05-${ name }.png` ), Buffer.from( screenshot.data, "base64" ) );
 		}
 		await settings.evaluate( 'document.querySelector("[data-tab=typography]").click()' );
 		for ( const target of [ "script", "headings", "inline", "production" ] ) {
 			await settings.evaluate( `document.querySelector('[data-text-target="${ target }"]').click()` );
 			const screenshot = await settings.call( "Page.captureScreenshot", { format: "png" } );
-			await fs.writeFile( path.join( artifacts, `settings-preview04-text-${ target }.png` ), Buffer.from( screenshot.data, "base64" ) );
+			await fs.writeFile( path.join( artifacts, `settings-preview05-text-${ target }.png` ), Buffer.from( screenshot.data, "base64" ) );
 		}
 		await settings.evaluate( 'document.getElementById("settings-cancel").click()' );
 		await main.evaluate( 'document.getElementById("cb-settings").click()' ); await pause( 100 );

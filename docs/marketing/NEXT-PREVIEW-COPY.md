@@ -12,7 +12,7 @@ reference, balance voice level with room noise and choose whether the recorder
 continues through retakes or follows the prompter. Explicit recording voice
 commands and optional script directives use the same saved permissions.
 
-**Settings Redesign Preview 04:** configure spoken script, headings, inline cues
+**Settings Redesign Preview 05:** configure spoken script, headings, inline cues
 and production notes independently: font, size, colour, bold, italic and spacing.
 Choose backing colour and transparency, then save a portable reading theme.
 Named sections stay in one place; enabled interfaces reveal their configuration.

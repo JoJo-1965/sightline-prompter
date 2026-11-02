@@ -6,8 +6,8 @@ remain available. Ordinary prompting works without OBS or this assistant.
 
 ## Before you begin
 
-Install OBS from **Settings > Setup > Optional components > OBS**. Open OBS and enable its
-WebSocket server. In **Settings > Controls > OBS connection**, enable the
+Install OBS from **Settings > Components > Installed components > OBS**. Open OBS and enable its
+WebSocket server. In **Settings > Controls > OBS integration**, enable the
 connection, enter the local address/password, **Apply**, then test the saved
 connection. The assistant supports OBS on this computer; remote OBS can still
 be controlled using the ordinary connection settings.

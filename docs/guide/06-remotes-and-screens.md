@@ -275,10 +275,10 @@ After a failure, select that key/dial in Stream Deck to read its full reason.
 
 ## The floating pad
 
-Enable the floating pad in **Controls > Pad and phone buttons**, then use
+Enable the floating pad in **Controls > Pad and phone**, then use
 **Ctrl+Shift+P** or **Tools > Prepare > Control pad** to open its button grid.
 The Compact preset starts with Top, Previous, Start / Pause and Next.
-**Customise** on the pad opens **Settings > Controls > Pad and phone buttons**.
+**Customise** on the pad opens **Settings > Controls > Pad and phone**.
 
 Choose **Compact**, **Reading**, **Studio** or **Framing & checks**, then **Use preset**, or add
 individual functions from the list. Presets replace your selection; Compact
@@ -321,7 +321,7 @@ Sound check and scratch audio use the microphone separately.
 
 **Finish recording** requires a one-second hold by default. Release early to
 cancel; a lost connection, changed recording or removed permission cancels too.
-With a keyboard, hold Enter or Space. **Controls > Pad and phone buttons > Hold Finish recording**
+With a keyboard, hold Enter or Space. **Controls > Pad and phone > Hold Finish recording**
 changes the shared pad/phone preference; Stream Deck keeps its own per-key
 checkbox. The progress bar measures the hold, not OBS completion. Read the
 reported OBS state afterwards. Ordinary Play/Pause never finishes the OBS file.
@@ -368,10 +368,10 @@ and too far away to work Settings on:
 
 ## The phone remote
 
-On **Settings > Controls > Phone pairing**, tick **Control the prompter from a phone on the
+On **Settings > Controls > Phone remote**, tick **Control the prompter from a phone on the
 same Wi-Fi** and save. Scan the QR code with your phone for the same buttons
 and order as the floating pad, with larger touch targets and the current
-section showing. Choose your layout in **Controls > Pad and phone buttons**. It updates on
+section showing. Choose your layout in **Controls > Pad and phone**. It updates on
 the phone automatically; there is no separate phone layout to maintain.
 
 The code appears after **Apply** or **Save & close**; reopen Settings if needed.
@@ -402,7 +402,7 @@ disconnects any phone already connected. The first time, Windows may ask
 whether to let Sightline Prompter use the network. Allow it on private
 networks.
 
-![Settings > Controls](images/settings-preview04-api.png)
+![Settings > Controls](images/settings-preview05-api.png)
 
 ## Choose your buttons and keys
 
@@ -431,7 +431,7 @@ device-specific entry reveals any generic default underneath. Keyboard pedals
 work as local keys. Stream Deck uses its own profiles and buttons-only API.
 OBS actions still require the existing connection and recording permissions.
 
-![Learning and arranging key and controller mappings](images/settings-preview04-mappings.png)
+![Learning and arranging key and controller mappings](images/settings-preview05-mappings.png)
 
 ## AI and remote control
 

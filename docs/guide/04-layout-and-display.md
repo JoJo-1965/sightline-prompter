@@ -1,6 +1,6 @@
 # Layout and display
 
-This source guide follows **Settings Redesign Preview 04**. The released
+This source guide follows **Settings Redesign Preview 05**. The released
 1.1.0 installer has its own bundled guide.
 
 ## Toolbar and live tools

@@ -21,8 +21,8 @@ earlier test history and do not describe today's installed version.
 
 ## Next-preview recording check
 
-For Preview 04, first follow [Settings acceptance](#settings-redesign-preview-04),
-then use the recording checks below. The app version remains 1.1.0; the Preview 04
+For Preview 05, first follow [Settings acceptance](#settings-redesign-preview-04),
+then use the recording checks below. The app version remains 1.1.0; the Preview 05
 folder and build manifest identify the unpublished package.
 
 1. With recording stopped, select a slate and Apply. Reopen Settings to confirm
@@ -73,7 +73,7 @@ RC11 keeps Settings above the fullscreen prompter and improves OBS button contra
 RC12 adds Comment size and Comment colour under Reading > Text and directions. Comments
 follow Heading font, independently of heading size; Theme restores their colour.
 RC13 adds custom pad/phone layouts and bounded listening recovery. Under
-**Controls > Pad and phone buttons**, choose Reading or Studio, reorder a button and check that
+**Controls > Pad and phone**, choose Reading or Studio, reorder a button and check that
 the phone shows the same order. **Voice > Voice commands** shows listening
 state and Restart listening; command-word tracing is off by default.
 RC14 moves the optional trace to **Debug**, alongside support logs.
@@ -85,7 +85,7 @@ private test builds. Today's published baseline is **1.1.0 / 0.2.0**, as above.
 
 ### Additional checks for the next candidate
 
-Under **Controls > Pad and phone buttons**, select **Framing & checks > Use preset**, or add its
+Under **Controls > Pad and phone**, select **Framing & checks > Use preset**, or add its
 buttons to your existing layout. Verify the same order on pad and phone.
 Open **Adjust guide** on each: align Eyes, lock them, fit Outline edges, then
 use Compare to change contrast, show/hide Ideal and restore Actual. The saved
@@ -96,7 +96,7 @@ Test listening off/on and Restart listening on both surfaces with the normal
 microphone. These must not stop OBS or change the saved listening preference.
 Tap Finish briefly: OBS must continue. Hold for one second: one Finish request
 should be sent. Repeat after a connection loss. The **Hold Finish recording**
-checkbox in Controls > Pad and phone buttons affects pad and phone; Stream Deck has its own
+checkbox in Controls > Pad and phone affects pad and phone; Stream Deck has its own
 per-key setting. Restore your normal layout and leave protection enabled.
 
 RC14 does not yet include this batch. After the next candidate is approved
@@ -142,7 +142,7 @@ A mouse fallback does not prove a physical Stream Deck key works.
 
 ## Preflight
 
-1. In **Settings > Controls > OBS connection**, enable the connection,
+1. In **Settings > Controls > OBS integration**, enable the connection,
    Apply and test it. In **OBS recording**, allow recording controls.
    These permissions must be chosen in Settings; the scripts do not enable them.
    In **Controls > Stream Deck**, choose **Check compatibility** and confirm
@@ -274,10 +274,10 @@ this script does not itself authorise publication.
 
 <a id="settings-redesign-preview-04"></a>
 
-## Settings redesign Preview 04
+## Settings redesign Preview 05
 
 Use the isolated preview rather than your production profile. The app version
-remains 1.1.0; the folder and build manifest identify Preview 04.
+remains 1.1.0; the folder and build manifest identify Preview 05.
 
 1. Open Settings from the toolbar, Files menu and shortcut. Confirm the frame
    stays stable across eight areas and 34 named sections. Resize to a compact

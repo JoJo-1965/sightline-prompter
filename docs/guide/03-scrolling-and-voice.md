@@ -27,7 +27,7 @@ In voice mode the prompter listens to you and keeps the words you're saying on
 the reading line. Speed up, slow down, pause to think or ad-lib a line, and it
 waits for you and then catches up.
 
-![Settings > Voice > Speech engine](images/settings-preview04-engine.png)
+![Settings > Voice > Speech engine](images/settings-preview05-engine.png)
 
 ### Speech recognition on this computer (the default)
 
@@ -97,7 +97,7 @@ Names and unusual words are what speech recognition gets wrong most:
 *Siobhan* heard as *shivawn*, *Sightline* as *site line*, and sometimes the
 wake word or a command. **Settings > Voice > Your words** fixes them.
 
-![Settings > Voice > Your words](images/settings-preview04-words.png)
+![Settings > Voice > Your words](images/settings-preview05-words.png)
 
 - **Match words that sound alike** (on unless you turn it off): a word heard
   that isn't in the script but sounds like a longer script word, starts with

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "basis": "Settings Redesign Preview 04, documentation revision 3, 2 November 2026",
+  "basis": "Settings Redesign Preview 05, documentation revision 4, 2 November 2026",
   "date": "2 November 2026",
   "sourceBuild": "59358aa",
   "buildVersion": "1.1.0",
@@ -8,7 +8,7 @@
   "appRelease": "1.1.0",
   "pluginRelease": "0.2.0",
   "sourceUrl": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/FEATURE-GRID.md",
-  "sourceSha256": "7c14c4dcd33614ebb6a67c3d9dba8d732517f9fbc06e3926dda5257db49d0373",
+  "sourceSha256": "5d8d772e9369170d99ecaf07114738df264a9e888d6fa659165a56bf74f0035f",
   "support": [
     "Included",
     "Optional",
@@ -497,7 +497,13 @@
           "name": "Colours and themes",
           "support": "Included",
           "options": "Independent script, heading, inline-direction, production-note and background colour pickers; per-item Use theme reset; preview addition.",
-          "limits": "Colour is separate from off-air/on-air opacity and text brightness."
+          "limits": "Palette changes preserve custom colours; Use theme restores inheritance. Colour is separate from opacity and brightness."
+        },
+        {
+          "name": "Script view preview",
+          "support": "Included",
+          "options": "Dedicated right column with Paused/Reading examples; compact windows use a Preview dialog; preview addition.",
+          "limits": "Example controls never start prompting, microphone capture or recording."
         },
         {
           "name": "Portable reading themes",
@@ -668,7 +674,7 @@
         {
           "name": "Small-screen layout",
           "support": "Included",
-          "options": "Fixed named sections and compact area/section selectors; no automatic pagination or internal scrolling; preview addition.",
+          "options": "Expanding vertical area list, fixed named sections and compact Area/Section selectors with Preview action; no automatic pagination or internal scrolling; preview addition.",
           "limits": "Native checks cover 560 × 500 content and larger frames. Physical display/zoom and fullscreen stacking still require acceptance checks."
         }
       ]

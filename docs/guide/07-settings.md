@@ -1,6 +1,6 @@
 # Settings
 
-This source guide describes **Settings Redesign Preview 04**, based on the
+This source guide describes **Settings Redesign Preview 05**, based on the
 approved interactive demo. It is an unpublished preview of Sightline 1.1.0.
 For the released app, use the guide bundled with its installer.
 
@@ -14,13 +14,18 @@ On larger windows, choose an area and a named section in the sidebar, or use
 Disabled features are excluded from search and navigation where appropriate:
 OBS recording/setup needs OBS enabled; speech commands/words need speech enabled.
 
+The selected area expands in the left list. Controls stay in the centre and
+**Script view preview** stays on the right; search is in the header. Compact
+windows use a **Preview** action. Paused/Reading changes only the example,
+never the actual prompter, microphone or recorder.
+
 ## Apply, save and cancel
 
 Every preference in Settings uses the same draft:
 
 - Appearance changes preview in the sample and the prompter.
 - **Apply** saves the draft and keeps the window open.
-- **Save & close** saves and closes.
+- **Save and close** saves and closes.
 - **Cancel** discards changes made since opening or the last Apply.
 - **×**, native Close and **Esc** check for unapplied changes.
 
@@ -38,14 +43,14 @@ Sliders have matching numeric values, units and keyboard adjustment.
 
 | Area | Sections |
 | --- | --- |
-| Prepare | Session checklist |
+| Prepare to record | Recording setup |
 | Reading | Mode and pace; Text and directions; Theme and background; Layout; Reading aids; Screens and mirroring; Head guide |
-| Voice | Speech engine; Microphone; Voice commands; Your words |
-| Recording | Takes; Sound and scratch audio; Slate and sync |
-| Controls | Pad and phone buttons; Phone pairing; Keyboard and clickers; Game controller; Stream Deck; OBS connection; OBS recording; OBS profile and scenes; AI and local API |
-| Setup | Getting started; Optional components; Restore defaults |
-| Debug | Health; Command tracing; Screen capture; Support logs |
-| About | Version and updates; Credits; Help and support |
+| Voice | Speech engine; Microphone; Commands; Your words |
+| Recording | Takes; Sound check; Slate and sync |
+| Controls | Pad and phone; Phone remote; Keyboard and clickers; Game controller; Stream Deck; OBS integration; OBS recording control; OBS profile and scenes; AI and API |
+| Components | Getting started; Installed components; Restore defaults |
+| Debug | Status and recovery; Speech trace; Capture for demos; Support log |
+| About | Version and updates; Credits and licences; Help and support |
 
 ## Prepare and reading
 
@@ -82,7 +87,8 @@ profiles retain their earlier appearance until you change/reset their colours.
 
 The **Background colour** picker is independent of text colour. Off-air and
 on-air background opacity, text opacity and brightness have their own controls.
-The sample shows backing over a patterned background so transparency is visible.
+The right preview demonstrates paused versus reading appearance. Palette changes
+preserve custom colours; Use theme restores inheritance.
 
 **Save current as…** creates a named reading theme; choose it again from
 **My saved themes**. Optionally export a copy while saving. **Import theme…**
@@ -118,7 +124,7 @@ See [head guide and capture limits](04-layout-and-display.md).
 ## Voice
 
 **Speech engine** has an enable switch, engine choice, readiness and service
-key controls. Manage the offline model in **Setup > Optional components**.
+key controls. Manage the offline model in **Components > Installed components**.
 The local engine runs on the computer; Deepgram is an optional online service.
 
 **Microphone** has a separate enable switch, input selector and explicit
@@ -141,7 +147,7 @@ A low level is advisory; consider room noise before increasing gain.
 
 **Slate and sync** holds the local slate choice. A screen-only flash does not
 validate camera lip sync. OBS's recorded slate route is configured separately
-under **Controls > OBS recording**. Verify the actual recorded picture/sound.
+under **Controls > OBS recording control**. Verify the actual recorded picture/sound.
 
 Section stops and retakes keep the existing recording workflow. Ordinary
 reading needs no compulsory recorder directives.
@@ -153,11 +159,11 @@ Each optional interface has **one enable switch**. Off hides its configuration
 and preserves saved values. Installation/readiness is separate from activation.
 Disabling an interface does not uninstall its software.
 
-- **Pad and phone buttons** arranges the shared layout when either interface
+- **Pad and phone** arranges the shared layout when either interface
   is enabled. Choose a button by name, use Earlier/Later or drag neighbouring
   buttons, and select presets, columns and hold-to-finish. Compact views edit
   the selected button without arbitrary page numbers.
-- **Phone pairing** shows the local QR/link after enabling and applying.
+- **Phone remote** shows the local QR/link after enabling and applying.
   New code disconnects previously paired phones. Use the same private network.
 - **Keyboard and clickers** learns custom plain-key/Shift mappings.
   Core shortcuts remain available when custom mappings are off.
@@ -165,14 +171,14 @@ Disabling an interface does not uninstall its software.
   Resetting one input type preserves the other type's mappings.
 - **Stream Deck** is its single setup home: installation/readiness,
   enablement, companion plugin compatibility and support.
-- **OBS connection** lives under Controls. Enable it before its recording
+- **OBS integration** lives under Controls. Enable it before its recording
   and profile/scene sections appear. Apply, start OBS and test the saved
   WebSocket connection. Recording control is a separate permission.
-- **AI and local API** uses a local port and access token. General authorised
+- **AI and API** uses a local port and access token. General authorised
   clients can use it; the supplied AI kit commands additionally need the
   optional kit and a suitable Node.js installation.
 
-**Setup > Optional components** selects the offline model, AI kit, Node.js
+**Components > Installed components** selects the offline model, AI kit, Node.js
 readiness or OBS installation. External apps keep their own update process.
 **Restore defaults** confirms a restart into onboarding; components, scripts,
 recordings and retained service keys are not uninstalled.

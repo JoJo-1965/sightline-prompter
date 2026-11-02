@@ -1,6 +1,7 @@
 import { prepareSettingsControls } from "./settings-controls.js";
 import { READING_FONTS, READING_PALETTES, TEXT_TARGETS, TEXT_FIELDS, appearanceFromSettings, captureReadingTheme, settingsFromTheme } from "./reading-appearance.js";
 import { INTERFACES, interfaceEnabled } from "./interface-state.js";
+import { createSettingsPreview } from "./settings-preview.js";
 
 // Forms are assembled once, before their controllers attach. Settings keeps
 // ownership for its lifetime; Tools never borrows any of these nodes.
@@ -180,6 +181,7 @@ export function createSettingsWorkspace( root, { getState, stage, navigate, toas
 		row( panel, "Style", styles );
 		range( panel, ( { script: "lp-line-height", headings: "lp-heading-line-height", inline: "lp-direction-line-height", production: "lp-production-line-height" } )[target], "Line spacing", f.spacing, { min: 100, max: 250, scale: 100, help: "Line spacing as a percentage of this text type’s font height. Paragraph gaps remain as written." } );
 		if ( target === "inline" ) choice( panel, "set-directions", "Visibility", "directions", [ [ "normal", "Normal" ], [ "dim", "Dimmed" ], [ "hide", "Hidden" ] ], true );
+		panel.append( el( "p", { className: "settings-inline-note" }, target === "production" ? "Production notes show while paused and hide during delivery. Everything inside stays silent, including quoted words." : target === "inline" ? "Short cues stay beside your words. Quoted words intended for speech keep the spoken-script style." : "The same font, size, colour, style and spacing pattern is used for every text target." ) );
 	}
 	function selectTarget( target ) {
 		for ( const button of targets.children ) {
@@ -213,7 +215,7 @@ export function createSettingsWorkspace( root, { getState, stage, navigate, toas
 		if ( theme ) {
 			const restored = settingsFromTheme( theme );
 			stage( { ...restored.settings, fontSize: restored.fontSize, opacity: restored.opacity }, true );
-		} else stage( { theme: palette.control.value, activeReadingTheme: "", scriptColour: "", headingColour: "", directionColour: "", productionNoteColour: "", backgroundColour: "" }, true );
+		} else stage( { theme: palette.control.value, activeReadingTheme: "" }, true );
 	} );
 	colour( background, "lp-background-colour", "Background colour", "backgroundColour", "background" );
 	for ( const [ id, label, key, min ] of [ [ "lp-bg-opacity", "Background off air", "opacity", 0 ], [ "lp-backing-on-air", "Background on air", "backingOnAir", 0 ], [ "lp-text-opacity", "Text opacity", "textOpacity", 20 ], [ "lp-text-brightness", "Text brightness", "textBrightness", 30 ] ] ) range( background, id, label, key, { min, scale: 100 } );
@@ -396,7 +398,18 @@ export function createSettingsWorkspace( root, { getState, stage, navigate, toas
 		host.append( buttons );
 		return host;
 	};
-	explain( "checklist", "Prepare a session", "Choose a script, check its reading appearance, then test the controls and recording route you will use. The session check shows what is ready.", [ [ "Run session check", "session" ], [ "Review script", "review" ], [ "Reading appearance", "typography" ], [ "Head guide", "guide" ] ] );
+	const checklist = section( "checklist", "Recording setup" );
+	checklist.replaceChildren( el( "legend", {}, "Recording setup" ), el( "p", { className: "settings-section-intro" }, "Set the reading view once, then check the recording setup. Each step opens its permanent Settings home." ) );
+	const steps = el( "div", { className: "settings-prepare-list" } );
+	for ( const [ name, title, description ] of [ [ "mode", "Reading mode", "Steady, Voice or Notes" ], [ "typography", "Text and directions", "Spoken words, inline cues and preparation notes" ], [ "layout", "Reading layout", "Margins, alignment and reading line" ], [ "guide", "Camera framing", "Ideal, Actual and saved recording reference" ], [ "sound", "Sound check", "Voice, room noise and accepted warnings" ], [ "obs", "Recorder", "Connection, permissions and confirmed state" ] ] ) {
+		const button = el( "button", { type: "button", className: "settings-prepare-step" } );
+		const text = el( "span" );
+		text.append( el( "span", { className: "settings-step-name" }, title ), el( "span", { className: "settings-step-state" }, description ) );
+		button.append( text, el( "span", { className: "settings-step-open" }, "Open" ) );
+		button.addEventListener( "click", () => navigate( name ) );
+		steps.append( button );
+	}
+	checklist.append( steps );
 	explain( "getting-started", "Getting started", "Start with steady scrolling and adjust the reading appearance. Enable optional controllers only when you want to use them; installation and readiness checks live in Optional components.", [ [ "Initial setup", "onboarding" ], [ "Getting started guide", "help" ], [ "Optional components", "components" ] ] );
 	explain( "guide", "Head guide", "Set the eye centre and level first, then fit top, bottom and sides. Save a recording reference to return to that position; the ideal template stays separate. Capture protection depends on your recording route.", [ [ "Show guide", "guide-show" ], [ "Adjust guide", "guide-adjust" ], [ "Fullscreen / restore", "guide-fullscreen" ] ] );
 	const health = section( "health", "Health" );
@@ -480,14 +493,7 @@ export function createSettingsWorkspace( root, { getState, stage, navigate, toas
 		new MutationObserver( paint ).observe( list, { childList: true } );
 		paint();
 	}
-	const samples = [];
-	for ( const host of [ typography, background ] ) {
-		const sample = el( "aside", { className: "settings-reading-sample" } );
-		sample.setAttribute( "aria-label", "Reading appearance preview" );
-		sample.innerHTML = "<div class=\"sample-paper\"><p data-sample=\"headings\">Your next section</p><p data-sample=\"script\">Read naturally, at your own pace. <span data-sample=\"inline\">[smile]</span></p><p data-sample=\"production\">Preparation note — hidden while reading.</p></div>";
-		host.append( sample );
-		samples.push( sample );
-	}
+	const preview = createSettingsPreview( root, getState );
 	for ( const button of root.querySelectorAll( "button[data-help-text]" ) ) {
 		const popup = el( "div", { className: "settings-explanation" }, button.dataset.helpText );
 		popup.setAttribute( "popover", "auto" );
@@ -605,7 +611,8 @@ export function createSettingsWorkspace( root, { getState, stage, navigate, toas
 				const effective = value || paletteInfo[descriptor.target];
 				control.value = effective;
 				descriptor.hex.textContent = effective.toUpperCase();
-				descriptor.reset.disabled = !value;
+				descriptor.reset.disabled = false;
+				descriptor.reset.setAttribute( "aria-pressed", String( !value ) );
 				descriptor.reset.title = value ? "Restore this item’s palette colour" : "Already using the palette colour";
 			} else if ( control.ownerDocument.activeElement !== control && control.ownerDocument.activeElement !== descriptor.number ) {
 				control.value = kind === "number" ? Math.round( value * scale * 1000 ) / 1000 : value ?? "";
@@ -627,30 +634,8 @@ export function createSettingsWorkspace( root, { getState, stage, navigate, toas
 			host.querySelector( "[data-interface-config]" ).disabled = !enabled;
 			host.querySelector( "[data-interface-status]" ).textContent = enabled ? "Enabled. Apply to activate changes." : "Off. Enable to see configuration; saved values are retained.";
 		}
-		const appearance = appearanceFromSettings( state, state );
-		for ( const sample of samples ) {
-			const colour = state.backgroundColour || paletteInfo.background, rgb = [ 1, 3, 5 ].map( offset => parseInt( colour.slice( offset, offset + 2 ), 16 ) );
-			const backing = `rgba(${ rgb.join( "," ) }, ${ state.opacity ?? 1 })`;
-			sample.style.backgroundImage = `linear-gradient(${ backing },${ backing }),linear-gradient(135deg,#526b7b,#333d52)`;
-			for ( const node of sample.querySelectorAll( "[data-sample]" ) ) {
-				const target = node.dataset.sample, style = appearance.text[target];
-				Object.assign( node.style, { color: style.color || paletteInfo[target], fontFamily: style.font === "Follow script" ? appearance.text.script.font : style.font, fontWeight: style.bold ? "700" : "400", fontStyle: style.italic ? "italic" : "normal", lineHeight: String( style.spacing / 100 ), fontSize: `${ target === "script" ? Math.min( 26, Math.max( 14, style.size / 18 ) ) : Math.min( 28, Math.max( 9, style.size / 100 * 17 ) ) }px`, opacity: String( ( state.textOpacity ?? 1 ) * ( target === "inline" && state.directions === "dim" ? 0.65 : 1 ) ), filter: `brightness(${ state.textBrightness ?? 1 })` } );
-				node.hidden = target === "inline" && state.directions === "hide";
-			}
-		}
-		fitSamples();
+		preview.sync( state );
 		return appearanceFromSettings( state, state );
 	}
-	function fitSamples() {
-		for ( const sample of samples ) {
-			if ( !sample.clientHeight ) continue;
-			const paper = sample.querySelector( ".sample-paper" ), style = root.ownerDocument.defaultView.getComputedStyle( sample );
-			const room = sample.clientHeight - parseFloat( style.paddingTop ) - parseFloat( style.paddingBottom );
-			paper.style.transformOrigin = "top left";
-			paper.style.transform = `scale(${ Math.min( 1, room / Math.max( 1, paper.scrollHeight ) ) })`;
-		}
-	}
-	const resize = new ResizeObserver( fitSamples );
-	for ( const sample of samples ) resize.observe( sample );
 	return { sync, selectTarget, bindings, controls, sections, row, el };
 }

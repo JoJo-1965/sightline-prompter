@@ -1,6 +1,6 @@
 # Sightline Prompter feature grid
 
-**Review basis: Settings Redesign Preview 04, documentation revision 3, 2 November 2026.**
+**Review basis: Settings Redesign Preview 05, documentation revision 4, 2 November 2026.**
 **Build version:** `1.1.0` · **Publication status:** Preview
 
 **Maintained source:** [Feature grid](https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/FEATURE-GRID.md)
@@ -128,7 +128,8 @@ Reference: [Layout and display](guide/04-layout-and-display.md) and [Settings](g
 | Capability | Availability | Options and behaviour | Dependencies and limits |
 | --- | --- | --- | --- |
 | Theme settings | Included | Reading > Theme and background contains four built-in palettes and named custom reading themes; preview addition. | Soft cream has a configurable light backing; existing cream profiles retain their prior colours until changed. |
-| Colours and themes | Included | Independent script, heading, inline-direction, production-note and background colour pickers; per-item Use theme reset; preview addition. | Colour is separate from off-air/on-air opacity and text brightness. |
+| Colours and themes | Included | Independent script, heading, inline-direction, production-note and background colour pickers; per-item Use theme reset; preview addition. | Palette changes preserve custom colours; Use theme restores inheritance. Colour is separate from opacity and brightness. |
+| Script view preview | Included | Dedicated right column with Paused/Reading examples; compact windows use a Preview dialog; preview addition. | Example controls never start prompting, microphone capture or recording. |
 | Portable reading themes | Optional | Save current appearance under a name; restore, import or export reading-theme JSON; preview addition. | Stores typography and reading background only, excluding controllers, recordings, windows, scripts and credentials. |
 | Text and heading fonts | Included | Four complete text targets: Segoe UI, Atkinson Hyperlegible, OpenDyslexic and Verdana, with Follow script for non-script text; preview addition. | Fonts are installed/bundled locally; preference is not an accessibility certification. |
 | Script text size | Included | Toolbar and settings adjustment, with remote and voice size actions. | Available reading area depends on window dimensions and margins. |
@@ -161,7 +162,7 @@ Reference: [Layout and display](guide/04-layout-and-display.md) and [Remotes and
 | Utility windows | Included | Separate Settings, help and command windows, with movable positioning. | Window stacking must still be checked in the user's chosen fullscreen arrangement. |
 | Capture protection | Limited | Request that supported capture paths exclude Sightline utility/reading windows. | Platform, capture method and compositor determine the result; verify the actual recording. |
 | Capture override for testing | Optional | Debug control allows capture of Sightline windows for demonstrations and diagnostics. | This intentionally removes protection; inspect every captured output before recording. |
-| Small-screen layout | Included | Fixed named sections and compact area/section selectors; no automatic pagination or internal scrolling; preview addition. | Native checks cover 560 × 500 content and larger frames. Physical display/zoom and fullscreen stacking still require acceptance checks. |
+| Small-screen layout | Included | Expanding vertical area list, fixed named sections and compact Area/Section selectors with Preview action; no automatic pagination or internal scrolling; preview addition. | Native checks cover 560 × 500 content and larger frames. Physical display/zoom and fullscreen stacking still require acceptance checks. |
 
 ## 08 · Head positioning and framing reference
 

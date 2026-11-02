@@ -1,11 +1,11 @@
 # Sightline Prompter: what it adds to Electron Teleprompter
 
-For a detailed reviewer comparison, use the [Preview 04 feature grid](FEATURE-GRID.md),
+For a detailed reviewer comparison, use the [Preview 05 feature grid](FEATURE-GRID.md),
 with dedicated Stream Deck and OBS sections, configuration choices, dependencies
 and limits. A [searchable view](FEATURE-GRID.html) and [comparison CSV](FEATURE-GRID.csv)
 are generated from the same tables.
 
-**Unpublished Settings Redesign Preview 04:** the signed-off design is implemented
+**Unpublished Settings Redesign Preview 05:** the signed-off design is implemented
 in the app and covered by native UI checks. It includes the prior recording
 preview, plus permanent named Settings sections, four complete typography targets,
 editable backing, portable reading themes, optional-interface gates and live Tools.
@@ -21,7 +21,7 @@ New controls check advertised app capabilities; older unreported versions are
 unconfirmed. See the [workflow walkthrough](guide/14-acceptance-test.md),
 [validation limits](BUILD-FREEZE-1.1.0.md) and [roadmap](../ROADMAP.md).
 
-**Preview 04 navigation:** eight areas and 34 named sections separate reading,
+**Preview 05 navigation:** eight areas and 34 named sections separate reading,
 voice, recording, controllers, setup, debug and About. Settings owns its forms
 permanently. A fixed frame, sidebar search and compact selectors replace
 automatic pages and control borrowing. Small raised ? pills support hover,
@@ -51,7 +51,7 @@ when custom mappings are disabled. Resetting one type preserves the other.
 The pad/phone layout uses named button selection, Earlier/Later and neighbouring
 drag/drop instead of arbitrary pages.
 
-**Setup > Optional components** manages the offline model and AI kit and checks
+**Components > Installed components** manages the offline model and AI kit and checks
 Node.js/OBS readiness. The kit needs no repository clone or npm dependency setup.
 **Setup > Restore defaults** confirms a restart into onboarding, retains installed
 components, scripts, recordings and service keys, and resets preferences/pairings.
@@ -324,7 +324,7 @@ The whole workflow is in the guide:
   window with a draggable title bar, saved geometry and stable grouped tabs.
 - **Mirroring in one Settings topic:** **Reading > Screens and mirroring** holds both
   beam-splitter toggles. The toolbar mirrors stay available and in sync.
-- **OBS under Controls in Preview 04:** recorded-slate
+- **OBS under Controls in Preview 05:** recorded-slate
   preparation shows prerequisites, progress, readiness and errors in Settings.
 - **Clear OBS button states:** dark controls with readable enabled/disabled
   labels and a visible focus outline. Settings and help stay above their
@@ -342,7 +342,7 @@ The whole workflow is in the guide:
   disabled-feature help stays hidden.
 - **Check for updates** on Settings > About, and a quiet check at start-up
   (can be turned off). Nothing downloads by itself.
-- **Preview 04 Settings:** eight areas, named sections and permanent forms. File operations stay
+- **Preview 05 Settings:** eight areas, named sections and permanent forms. File operations stay
   in Files; settings still import/export as JSON or XML.
 - **Live Tools** has Prepare, Adjust and During take. Its changes are immediate;
   Settings has a separate Apply/Cancel draft.
@@ -429,7 +429,7 @@ The whole workflow is in the guide:
 - **Fonts** including Atkinson Hyperlegible, OpenDyslexic and Verdana, with a
   separate **heading font** and **heading size**, so big headings stay
   readable with a dyslexia font.
-- **Preview 04 text styling:** **Reading > Text and directions** gives all four
+- **Preview 05 text styling:** **Reading > Text and directions** gives all four
   text types independent font, size, colour, bold, italic and line spacing.
   Inline visibility is independent of size. Use theme resets a colour;
   Apply keeps the appearance draft. Production notes hide

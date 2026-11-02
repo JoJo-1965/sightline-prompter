@@ -189,6 +189,7 @@ try {
 	assert.equal( await centred(), true, "Reopening clears a previous drag offset" );
 	await send( "Emulation.setDeviceMetricsOverride", { width: 560, height: 500, deviceScaleFactor: 1, mobile: false } );
 	await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
+	if ( !await centred() ) console.log( "Settings resize geometry:", await evaluate( "(()=>{const e=document.querySelector('.settings-content'),r=e.getBoundingClientRect(),s=getComputedStyle(e);return {viewport:[innerWidth,innerHeight],rect:[r.x,r.y,r.width,r.height],maxHeight:s.maxHeight,position:s.position,transform:s.transform,margin:s.margin,align:s.alignSelf,parent:e.parentElement.getBoundingClientRect().toJSON()};})()" ) );
 	assert.equal( await centred(), true, "Settings recentres on a smaller viewport" );
 	await send( "Emulation.clearDeviceMetricsOverride" );
 	await evaluate( "document.getElementById('settings-close').click()" );
@@ -225,7 +226,7 @@ try {
 	// The redesigned native forms have their own full suite. Retain an inline
 	// fallback check here alongside the recorder/head-guide integration fixture.
 	await evaluate( "document.getElementById('cb-tools').click();document.getElementById('cb-settings').click()" );
-	assert.equal( await evaluate( "document.querySelectorAll('.settings-tabs button').length" ), 8 );
+	assert.equal( await evaluate( "document.querySelectorAll('[data-settings-group]').length" ), 8 );
 	assert.equal( await evaluate( "document.querySelectorAll('[data-settings-page]').length" ), 34 );
 	assert.equal( await evaluate( "document.querySelectorAll('.settings-pagination').length" ), 0 );
 	assert.equal( await evaluate( "document.querySelectorAll('#lp-production-colour').length" ), 1 );
