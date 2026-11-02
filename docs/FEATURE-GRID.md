@@ -5,11 +5,10 @@
 
 **Maintained source:** [Feature grid](https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/FEATURE-GRID.md)
 
-This grid describes the preview built from `d1302a1` plus the approved Settings
-implementation, with companion Stream
+This grid describes the preview built from `dbdaa9a`, with companion Stream
 Deck plugin **0.2.0**. It includes the existing features and the unpublished
-preview additions. The final preview manifest will identify the tested source snapshot.
-The public app release remains **1.1.0**; this document
+preview additions. The build manifest also records the packaging/documentation
+snapshot. The public app release remains **1.1.0**; this document
 does not announce a new release or certify a recording setup.
 
 Use the [searchable grid](FEATURE-GRID.html) to browse by subject or support
