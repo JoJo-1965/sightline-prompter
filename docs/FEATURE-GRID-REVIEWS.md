@@ -1,5 +1,12 @@
 # Feature-matrix review record
 
+2 November 2026, phone review access: a separate browser layout and native
+screenshot gallery expose the current Preview 07 for read-only review on the
+same network. The layout includes Prompter layout naming, visible subtabs and
+compact toolbar-icon mirror buttons; the gallery preserves exact app captures.
+This changes no installed feature or publication claim. The binary, revision-8
+matrix, help and JL snapshot remain unchanged; no new package/deploy is needed.
+
 2 November 2026, requested combined Preview 07: compact mirror buttons join
 all approved Preview 06 fixes in one package. No capability rows or directive,
 theme, permission, OBS or Stream Deck behaviour changes. Revision 8 advances
