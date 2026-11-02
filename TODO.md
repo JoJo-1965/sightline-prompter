@@ -1,9 +1,26 @@
 # TODO
 
+## Current handover — Settings Preview 06
+
+The combined layout was approved on 2 November 2026. Before packaging, review
+the conversation queue, not only this backlog. The four visible queued cards
+are included: Prompter layout naming, visible group subtabs, matching toolbar
+mirror icons and one combined preview containing all preceding UI fixes.
+
+- [x] Implement the approved Settings batch and retain saved preferences.
+- [x] Include the older Guide/OBS shortcut overlap in this batch.
+- [ ] Complete native and packaged checks, documentation/matrix/JL snapshot sync.
+- [ ] Deliver one portable Preview 06 using the existing Preview 05 profile.
+
+Physical controller/pedal/iPhone acceptance, clean recording/capture and sync
+remain manual checks. Code signing, updates, meeting integrations and other
+roadmap proposals are outside this preview. No release or live deployment is
+implied. The sections below retain earlier candidate history.
+
 ## Built for the next candidate, not yet packaged
 
 - [x] Setup/session workflow (58): named component subtabs, top-level
-  Components/Debug, OBS under Recording, first-use checklist and Session check.
+  Components/Debug, OBS now under Controls, first-use checklist and Session check.
 - [x] Restore shipped defaults and restart onboarding, with confirmation,
   private settings backup and retained components/files/keys. Active recording,
   editing and maintenance block reset. Native isolated-profile checks pass.
@@ -56,7 +73,7 @@ The older checklist below is retained as project history.
 
 ## Features
 
-- [ ] Auto-scroll mode — toggleable auto-scroll at configurable speed (words-per-minute), spacebar to toggle, up/down to adjust speed
+- [x] Auto-scroll mode — configurable words-per-minute pace and keyboard controls
 - [x] Add a basic markdown editor (CodeMirror 6, Cmd+E toggle, Save/Save As)
 - [ ] Allow for custom CSS
 

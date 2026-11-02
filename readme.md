@@ -47,7 +47,7 @@ to check your own recording setup.
 **Reviewing the current preview?** The [detailed feature grid](docs/FEATURE-GRID.md)
 groups its capabilities, options and requirements, with dedicated Stream Deck
 and OBS sections. Browse the [searchable grid](docs/FEATURE-GRID.html) or use
-the [comparison CSV](docs/FEATURE-GRID.csv). It describes unpublished Preview 05;
+the [comparison CSV](docs/FEATURE-GRID.csv). It describes unpublished Preview 06;
 the published download above remains Sightline 1.1.0.
 
 | Step       | What your AI does                                                         | What Sightline does                                                                                        |
@@ -287,7 +287,7 @@ Preview 05 status/error prompts point to the same named Settings sections.
 The native acceptance harness also runs against the packaged executable.
 
 **Review status:** The signed-off Settings/Tools redesign is implemented for
-Preview 05 validation. It supersedes Preview 03's missing-control and automatic
+Preview 06 validation. It supersedes Preview 03's missing-control and automatic
 pagination problems. See the [Settings guide](docs/guide/07-settings.md) and
 [implementation record](docs/design/IMPLEMENTATION-STATUS.md). The published
 installer remains 1.1.0; this work is not a new release.

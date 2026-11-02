@@ -65,7 +65,7 @@ file transfer for broader supported preferences.
 
 ## Layout and reading aids
 
-**Reading > Layout** contains alignment, side/top/bottom margins and reading-line
+**Reading > Prompter layout** contains alignment, side/top/bottom margins and reading-line
 position. The top/bottom margins fade the text near their edges.
 
 **Reading > Reading aids** groups the reading marker, sentence highlight,

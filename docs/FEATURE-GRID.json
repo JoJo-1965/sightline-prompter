@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "basis": "Settings Redesign Preview 05 Reading aids patch, documentation revision 6, 2 November 2026",
+  "basis": "Settings Redesign Preview 06, documentation revision 7, 2 November 2026",
   "date": "2 November 2026",
-  "sourceBuild": "f47b4da",
+  "sourceBuild": "c0b1b9a",
   "buildVersion": "1.1.0",
   "publicationStatus": "preview",
   "appRelease": "1.1.0",
   "pluginRelease": "0.2.0",
   "sourceUrl": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/FEATURE-GRID.md",
-  "sourceSha256": "5393e029e43c629d84890b34a69bc0d272a664867b18332573cae74385bb97d0",
+  "sourceSha256": "9cdcafc5febfbfa27ac94a159622c75835152ae9d65e03059d6e5fb722d811f1",
   "support": [
     "Included",
     "Optional",
@@ -108,6 +108,12 @@
       ],
       "rows": [
         {
+          "name": "Mode selection",
+          "support": "Included",
+          "options": "One Notes/page, Voice or Scroll choice in Mode and pace; relevant controls follow the selected mode.",
+          "limits": "Switching modes retains response, pace and countdown values; Voice requires enabled speech and microphone input."
+        },
+        {
           "name": "Steady scrolling",
           "support": "Included",
           "options": "Automatic scrolling at a chosen words-per-minute pace.",
@@ -158,8 +164,8 @@
         {
           "name": "Start countdown",
           "support": "Optional",
-          "options": "Set a countdown before prompting begins.",
-          "limits": "A countdown alone does not start an external recorder."
+          "options": "Set a countdown before Scroll mode starts moving.",
+          "limits": "Does not delay Voice or Notes/page mode, and does not itself start an external recorder."
         },
         {
           "name": "Section targets",
@@ -726,20 +732,20 @@
         {
           "name": "Guide visibility",
           "support": "Included",
-          "options": "Outline colour/opacity and background-opacity control.",
-          "limits": "A busy or bright camera picture may need stronger backing."
+          "options": "Stateful Show/Hide, Mint/Gold outline colour, outline/background opacity and Show Ideal in Head guide subtabs; preview addition.",
+          "limits": "Appearance and eye lock use Apply. Visibility is immediate; hidden guides retain their configuration."
         },
         {
-          "name": "Guide templates",
+          "name": "Session framing reference",
           "support": "Included",
-          "options": "Choose a session framing template and keep it across script/module changes.",
-          "limits": "A session setting is separate from script-specific directions."
+          "options": "Keep the guide pose, appearance and saved Ideal across script/module changes.",
+          "limits": "These are manual session preferences; no camera tracking or named automatic fitting is claimed."
         },
         {
           "name": "Guide placements",
           "support": "Included",
-          "options": "Centre and beside-panel placements, plus window positioning and sizing.",
-          "limits": "Beside panel refers to a guide placement alongside the reading area."
+          "options": "Centred and beside-prompter saved placements, plus window positioning and sizing; accessible from Settings and adjustments.",
+          "limits": "Placement/fullscreen actions act immediately; beside prompter means alongside the reading area."
         },
         {
           "name": "Fullscreen and chromeless guide",
@@ -762,7 +768,7 @@
         {
           "name": "Save and restore recording reference",
           "support": "Included",
-          "options": "Save Actual position, dimensions and eye lock; restore without overwriting Ideal; preview addition.",
+          "options": "Save Actual position, dimensions and eye lock from Settings or adjustments; restore without overwriting Ideal; preview addition.",
           "limits": "Restoring the shape does not restore the physical camera, body or guide window."
         },
         {
@@ -1548,10 +1554,16 @@
           "limits": "Resizing never reallocates a setting to another page. A minimum usable window is required."
         },
         {
+          "name": "Settings example preview",
+          "support": "Included",
+          "options": "Inline example when width permits; movable non-modal companion on narrow windows. Both follow the same draft; preview addition.",
+          "limits": "Settings remains usable while the companion is open. Examples never start prompting, a microphone or a recorder; the guide diagram is manual."
+        },
+        {
           "name": "Settings draft consistency",
           "support": "Included",
           "options": "Appearance previews; Apply persists, Save and close persists/closes, Cancel restores the last applied look; preview addition.",
-          "limits": "Explicit component installation, theme-library save/import, pairing reset and device tests are separate actions."
+          "limits": "Component installation, theme-library save/import, pairing reset, device tests and guide visibility/placement/reference saves are explicit actions."
         },
         {
           "name": "Numeric controls",
@@ -1562,7 +1574,7 @@
         {
           "name": "Named section navigation",
           "support": "Included",
-          "options": "Sidebar search and explicit sections, plus compact selectors; preview addition.",
+          "options": "Sidebar search, explicit sections and visible button subtabs for Text, Screens, Reading aids, Head guide and Installed components; compact area/section selectors.",
           "limits": "Disabled OBS recording/setup and speech children are excluded until their parent is enabled."
         },
         {
@@ -1692,7 +1704,7 @@
         {
           "name": "Published versus preview",
           "support": "Limited",
-          "options": "This grid covers Preview 02 and companion 0.2.0 together.",
+          "options": "This grid covers Settings Preview 06 and companion 0.2.0 together.",
           "limits": "Do not compare the public 1.1.0 installer as though it already includes all preview additions."
         },
         {

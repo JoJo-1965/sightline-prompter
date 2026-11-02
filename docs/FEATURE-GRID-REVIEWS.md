@@ -1,5 +1,14 @@
 # Feature-matrix review record
 
+2 November 2026, final conversation-queue review: the four visible queued
+cards are covered by Prompter layout naming, visible group tabs, toolbar SVG
+reuse for both mirror axes and one combined Preview 06. The old Guide/OBS
+collision is included and checked at three prompter sizes. No new directive,
+permission, integration capability, pricing or marketing claim is introduced.
+Revision 7 retains distinct OBS/Stream Deck sections and qualified hardware,
+capture and synchronization limits. The gallery, offline help, promo preparation
+guide and JL review snapshot accompany this batch; published versions stay put.
+
 2 November 2026, approved combined batch: Joanne approved the review layout.
 Implemented visible tabs for Screens, Reading aids and Installed components,
 the three-mode selector, Head guide controls/reference actions and matching

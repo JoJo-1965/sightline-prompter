@@ -1,4 +1,25 @@
-# Preview 05 layout fidelity
+# Settings layout fidelity
+
+## Preview 06 combined approved batch
+
+The approved 2 November batch extends the same composition. The native app
+retains the expanding left navigation, centre controls, right example, header
+search and fixed footer. Function groups use the same button tabs as Text and
+directions. The queue's Prompter layout name and toolbar mirror icons appear
+in the [current native Screens capture](../guide/images/settings-preview06-screens.png).
+Compare it with the approved [combined interactive review](settings-feedback-batch-prototype.html)
+at the same desktop width. The prior typography comparison below records the
+unchanged base composition separately from functional checks.
+
+The [gallery](../guide/settings-gallery.md) includes every named section,
+guide appearance/reference and the compact companion. At wide widths the
+third column remains visible even in a short window. At narrow widths the
+companion is a non-modal native window; Settings remains interactive and its
+Close button keeps normal size. Native checks additionally cover five sizes,
+every subtab and real pointer interaction. Hardware/recording acceptance is
+separate from this layout review. No public release is implied.
+
+## Preview 05 base composition
 
 The user reauthorised implementation of the original interactive preview on
 2 November 2026. Its source at `d1302a1` remains the reference. Native layout

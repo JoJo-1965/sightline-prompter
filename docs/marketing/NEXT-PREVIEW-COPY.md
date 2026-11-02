@@ -12,13 +12,20 @@ reference, balance voice level with room noise and choose whether the recorder
 continues through retakes or follows the prompter. Explicit recording voice
 commands and optional script directives use the same saved permissions.
 
-**Settings Redesign Preview 05:** configure spoken script, headings, inline cues
+**Settings Redesign Preview 06:** configure spoken script, headings, inline cues
 and production notes independently: font, size, colour, bold, italic and spacing.
 Choose backing colour and transparency, then save a portable reading theme.
 Named sections stay in one place; enabled interfaces reveal their configuration.
 Tools provides separate live controls. These are preview additions, not features
 of the published 1.1.0 installer. Production notes still hide during delivery;
 quoted spoken cues retain script styling.
+
+Visible button subtabs reveal related controls. Notes / page, Voice and Scroll
+show their own settings. Head guide includes a saved recording reference;
+the live example stays alongside Settings or in a non-modal companion on a
+narrow screen. Prompter layout names margins/alignment clearly, and mirroring
+uses the same icons as the toolbar. These are configuration improvements;
+the audience, AI-led workflow and existing product claims remain unchanged.
 
 **Carousel inserts:**
 

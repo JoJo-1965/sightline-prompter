@@ -1,25 +1,25 @@
 # Sightline Prompter: what it adds to Electron Teleprompter
 
-**Next feedback batch, not packaged:** a movable non-modal preview stays in
-sync while Settings remains usable. Its controls use standard UI text sizes.
-The combined mode, navigation, Head guide and preview layout review is in
-[the interactive mock and gallery](design/settings-feedback-batch-2026-11-02.md).
-This does not change the published feature baseline.
+**Settings Preview 06:** implements the approved combined layout: visible
+button subtabs, three context-aware reading modes, complete Head guide setup and
+recording-reference controls, width-based inline preview and a non-modal
+companion. Shared controls, eye-line gating, focus and mirror spacing are
+checked together. The app remains an unpublished 1.1.0 preview.
 
-Preview 05's Reading aids patch reveals Focus strength only when Focus band is
+Preview 06's Reading aids patch reveals Focus strength only when Focus band is
 on, retaining its value when off. Both aid groups now have small contextual
 help pills on every control.
 
-Preview 05's numeric patch gives slider/number pairs consistent whole-number
+Preview 06's numeric patch gives slider/number pairs consistent whole-number
 or five-point steps. Fine readouts have at most two decimals. Display rounding
 preserves saved precision until adjustment; the signed-off layout is unchanged.
 
-For a detailed reviewer comparison, use the [Preview 05 feature grid](FEATURE-GRID.md),
+For a detailed reviewer comparison, use the [Preview 06 feature grid](FEATURE-GRID.md),
 with dedicated Stream Deck and OBS sections, configuration choices, dependencies
 and limits. A [searchable view](FEATURE-GRID.html) and [comparison CSV](FEATURE-GRID.csv)
 are generated from the same tables.
 
-**Unpublished Settings Redesign Preview 05:** the signed-off design is implemented
+**Unpublished Settings Redesign Preview 06:** the signed-off design is implemented
 in the app and covered by native UI checks. It includes the prior recording
 preview, plus permanent named Settings sections, four complete typography targets,
 editable backing, portable reading themes, optional-interface gates and live Tools.
@@ -35,7 +35,7 @@ New controls check advertised app capabilities; older unreported versions are
 unconfirmed. See the [workflow walkthrough](guide/14-acceptance-test.md),
 [validation limits](BUILD-FREEZE-1.1.0.md) and [roadmap](../ROADMAP.md).
 
-**Preview 05 navigation:** eight areas and 34 named sections separate reading,
+**Preview 06 navigation:** eight areas and 34 named sections separate reading,
 voice, recording, controllers, setup, debug and About. Settings owns its forms
 permanently. A fixed frame, sidebar search and compact selectors replace
 automatic pages and control borrowing. Small raised ? pills support hover,
@@ -338,7 +338,7 @@ The whole workflow is in the guide:
   window with a draggable title bar, saved geometry and stable grouped tabs.
 - **Mirroring in one Settings topic:** **Reading > Screens and mirroring** holds both
   beam-splitter toggles. The toolbar mirrors stay available and in sync.
-- **OBS under Controls in Preview 05:** recorded-slate
+- **OBS under Controls in Preview 06:** recorded-slate
   preparation shows prerequisites, progress, readiness and errors in Settings.
 - **Clear OBS button states:** dark controls with readable enabled/disabled
   labels and a visible focus outline. Settings and help stay above their
@@ -356,7 +356,7 @@ The whole workflow is in the guide:
   disabled-feature help stays hidden.
 - **Check for updates** on Settings > About, and a quiet check at start-up
   (can be turned off). Nothing downloads by itself.
-- **Preview 05 Settings:** eight areas, named sections and permanent forms. File operations stay
+- **Preview 06 Settings:** eight areas, named sections and permanent forms. File operations stay
   in Files; settings still import/export as JSON or XML.
 - **Live Tools** has Prepare, Adjust and During take. Its changes are immediate;
   Settings has a separate Apply/Cancel draft.
@@ -443,7 +443,7 @@ The whole workflow is in the guide:
 - **Fonts** including Atkinson Hyperlegible, OpenDyslexic and Verdana, with a
   separate **heading font** and **heading size**, so big headings stay
   readable with a dyslexia font.
-- **Preview 05 text styling:** **Reading > Text and directions** gives all four
+- **Preview 06 text styling:** **Reading > Text and directions** gives all four
   text types independent font, size, colour, bold, italic and line spacing.
   Inline visibility is independent of size. Use theme resets a colour;
   Apply keeps the appearance draft. Production notes hide
@@ -451,7 +451,7 @@ The whole workflow is in the guide:
   inline directions keep the script style and remain spoken.
 - Independent text opacity, background opacity and text brightness, margins
   that fade out at the edges and alignment. **Reading > Text and directions** has all four independent spacing controls;
-  **Reading > Layout** contains margins, alignment and reading line.
+  **Reading > Prompter layout** contains margins, alignment and reading line.
   Quotes to read aloud retain script
   spacing. Settings uses aligned rows with space between labels and controls.
 

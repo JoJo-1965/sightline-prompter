@@ -21,8 +21,8 @@ earlier test history and do not describe today's installed version.
 
 ## Next-preview recording check
 
-For Preview 05, first follow [Settings acceptance](#settings-redesign-preview-04),
-then use the recording checks below. The app version remains 1.1.0; the Preview 05
+For Preview 06, first follow [Settings acceptance](#settings-redesign-preview-04),
+then use the recording checks below. The app version remains 1.1.0; the Preview 06
 folder and build manifest identify the unpublished package.
 
 1. With recording stopped, select a slate and Apply. Reopen Settings to confirm
@@ -273,11 +273,19 @@ evidence is reviewed. The Stream Deck repo remains private. Running or passing
 this script does not itself authorise publication.
 
 <a id="settings-redesign-preview-04"></a>
+<a id="settings-redesign-preview-06"></a>
 
-## Settings redesign Preview 05
+## Settings redesign Preview 06
 
 Use the isolated preview rather than your production profile. The app version
-remains 1.1.0; the folder and build manifest identify Preview 05.
+remains 1.1.0; the folder and build manifest identify Preview 06.
+
+For this feedback batch, also check all three reading modes, every visible group
+tab and the eye-line enable gate. Show/hide the head guide, apply appearance and
+eye-lock changes, save/restore a recording reference and confirm Ideal stays
+unchanged. Resize Settings short/wide: the third column should remain. At narrow
+widths, open Preview and keep it visible while editing Settings; close it with
+Escape or native X without losing the draft.
 
 1. Open Settings from the toolbar, Files menu and shortcut. Confirm the frame
    stays stable across eight areas and 34 named sections. Resize to a compact

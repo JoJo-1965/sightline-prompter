@@ -1,11 +1,11 @@
 # Sightline Prompter feature grid
 
-**Review basis: Settings Redesign Preview 05 Reading aids patch, documentation revision 6, 2 November 2026.**
+**Review basis: Settings Redesign Preview 06, documentation revision 7, 2 November 2026.**
 **Build version:** `1.1.0` · **Publication status:** Preview
 
 **Maintained source:** [Feature grid](https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/FEATURE-GRID.md)
 
-This grid describes the preview built from `f47b4da`, with companion Stream
+This grid describes the preview built from `c0b1b9a`, with companion Stream
 Deck plugin **0.2.0**. It includes the existing features and the unpublished
 preview additions. The build manifest also records the packaging/documentation
 snapshot. The public app release remains **1.1.0**; this document
@@ -45,6 +45,7 @@ Reference: [Scrolling and voice](guide/03-scrolling-and-voice.md) and [Recording
 
 | Capability | Availability | Options and behaviour | Dependencies and limits |
 | --- | --- | --- | --- |
+| Mode selection | Included | One Notes/page, Voice or Scroll choice in Mode and pace; relevant controls follow the selected mode. | Switching modes retains response, pace and countdown values; Voice requires enabled speech and microphone input. |
 | Steady scrolling | Included | Automatic scrolling at a chosen words-per-minute pace. | Timings are estimates and depend on the script and delivery. |
 | Voice following | Optional | Advances through the script as recognised speech matches the words being read. | Requires microphone access and a configured local or online speech engine. |
 | Page and talking-point mode | Included | Notes mode displays pages of talking points; headings or explicit page breaks divide them. | Pages advance through navigation controls rather than continuous speech alignment. |
@@ -53,7 +54,7 @@ Reference: [Scrolling and voice](guide/03-scrolling-and-voice.md) and [Recording
 | Restart and return to top | Included | Return to the beginning; reset can also restore normal pace and clear the pacing clock. | Returning to top and starting a fresh timed run are distinct actions. |
 | Section navigation | Included | Previous, next and numbered section jumps; section retakes. | Section boundaries come from the script structure. |
 | Speed and responsiveness | Included | Change steady WPM or voice-following responsiveness during use. | Recognition accuracy and responsiveness are different concerns. |
-| Start countdown | Optional | Set a countdown before prompting begins. | A countdown alone does not start an external recorder. |
+| Start countdown | Optional | Set a countdown before Scroll mode starts moving. | Does not delay Voice or Notes/page mode, and does not itself start an external recorder. |
 | Section targets | Optional | Per-section WPM and target duration, plus script-wide pacing instructions. | Targets guide delivery; they do not guarantee the final running time. |
 | Pace feedback | Included | Pacing light, elapsed time, progress and estimated time remaining. | Speech-derived figures require useful recognition data. |
 | Sentence and reading position | Optional | Reading-line marker, sentence highlight and focus band. | These are reading aids rather than a measure of eye contact. |
@@ -175,13 +176,13 @@ Reference: [Head guide and controls](guide/06-remotes-and-screens.md) and [Produ
 | Eye-line anchoring | Included | Set centre and eye level before adjusting the shape around the eyes. | Manual alignment must be repeated if camera framing changes. |
 | Head-edge adjustment | Included | Adjust top, bottom, left and right independently. | Changes the outline, not the camera crop or the person's image. |
 | Move and scale | Included | Horizontal/vertical position, overall size, width and height controls. | Shape adjustments are separate from moving the guide window itself. |
-| Guide visibility | Included | Outline colour/opacity and background-opacity control. | A busy or bright camera picture may need stronger backing. |
-| Guide templates | Included | Choose a session framing template and keep it across script/module changes. | A session setting is separate from script-specific directions. |
-| Guide placements | Included | Centre and beside-panel placements, plus window positioning and sizing. | Beside panel refers to a guide placement alongside the reading area. |
+| Guide visibility | Included | Stateful Show/Hide, Mint/Gold outline colour, outline/background opacity and Show Ideal in Head guide subtabs; preview addition. | Appearance and eye lock use Apply. Visibility is immediate; hidden guides retain their configuration. |
+| Session framing reference | Included | Keep the guide pose, appearance and saved Ideal across script/module changes. | These are manual session preferences; no camera tracking or named automatic fitting is claimed. |
+| Guide placements | Included | Centred and beside-prompter saved placements, plus window positioning and sizing; accessible from Settings and adjustments. | Placement/fullscreen actions act immediately; beside prompter means alongside the reading area. |
 | Fullscreen and chromeless guide | Included | Toggle the guide into and out of fullscreen; lock the adjustment view when ready. | Test stacking with the OBS projector and prompter on the chosen monitor. |
 | Adjustment panel | Included | Movable controls; bottom placement avoids the main top toolbar by default; preview refinement. | Dense small-screen combinations still have the separate known toolbar issue. |
 | Save Ideal | Included | Save the preferred target outline for repeatable framing. | This is distinct from saving an Actual reference for a recording. |
-| Save and restore recording reference | Included | Save Actual position, dimensions and eye lock; restore without overwriting Ideal; preview addition. | Restoring the shape does not restore the physical camera, body or guide window. |
+| Save and restore recording reference | Included | Save Actual position, dimensions and eye lock from Settings or adjustments; restore without overwriting Ideal; preview addition. | Restoring the shape does not restore the physical camera, body or guide window. |
 | Guide export metadata | Included | Record Ideal/Actual information, recording reference and guide window geometry in the edit pack. | Metadata describes the configured guide, not proof that it was absent from the video. |
 | Keep guide out of output | Limited | Capture protection and a camera-source recording workflow keep the guide on the operator's screen. | No universal automatic guarantee; verify the recorded file and chosen capture source. |
 | Automatic face or eye tracking | Not included | Actual framing is aligned by the user. | No automatic face detection, posture scoring or lens-gaze correction is claimed. |
@@ -352,9 +353,10 @@ Reference: [Settings](guide/07-settings.md), [Screenshot gallery](guide/settings
 | --- | --- | --- | --- |
 | Grouped settings | Included | Top-level task groups and focused subtabs separate prompting, appearance, recording and controls. | The detailed settings guide describes the current placement of each tool. |
 | Stable settings panel | Included | Stable frame, eight areas and 34 named sections, permanent controls and no internal scrolling; preview addition. | Resizing never reallocates a setting to another page. A minimum usable window is required. |
-| Settings draft consistency | Included | Appearance previews; Apply persists, Save and close persists/closes, Cancel restores the last applied look; preview addition. | Explicit component installation, theme-library save/import, pairing reset and device tests are separate actions. |
+| Settings example preview | Included | Inline example when width permits; movable non-modal companion on narrow windows. Both follow the same draft; preview addition. | Settings remains usable while the companion is open. Examples never start prompting, a microphone or a recorder; the guide diagram is manual. |
+| Settings draft consistency | Included | Appearance previews; Apply persists, Save and close persists/closes, Cancel restores the last applied look; preview addition. | Component installation, theme-library save/import, pairing reset, device tests and guide visibility/placement/reference saves are explicit actions. |
 | Numeric controls | Included | Slider/number pairs share whole-number or five-point increments; fine readouts have at most two decimals; preview patch. | Display rounding preserves stored precision until the control is adjusted. |
-| Named section navigation | Included | Sidebar search and explicit sections, plus compact selectors; preview addition. | Disabled OBS recording/setup and speech children are excluded until their parent is enabled. |
+| Named section navigation | Included | Sidebar search, explicit sections and visible button subtabs for Text, Screens, Reading aids, Head guide and Installed components; compact area/section selectors. | Disabled OBS recording/setup and speech children are excluded until their parent is enabled. |
 | Live Tools groups | Included | Prepare, Adjust and During take share saved values with Settings through separate controls; preview addition. | Live changes are immediate; a short prompter uses a utility window instead of clipping the menu. |
 | Contextual explanations | Included | Small question-mark pills beside options explain purpose and consequences on hover, keyboard focus or click. Both Reading aids groups have explanations for every control. | Escape closes the explanation. Help follows the selected mode and enabled components. |
 | Apply, save and cancel | Included | Review changed settings, apply them and keep or cancel the dialog changes. | Some setup operations and permissions have their own explicit controls. |
@@ -380,7 +382,7 @@ Reference: [Privacy and accessibility policies](POLICIES.md) and [Acceptance wal
 | Optional word tracing | Optional | Enable recognised command-word logging to investigate actual mishearings. | May include nearby speech; only enable it for the intended diagnostic period. |
 | Recording-state honesty | Included | Confirmed stopped/recording/paused states are distinct from unknown/disconnected. | UI state cannot certify that the resulting picture/audio is usable. |
 | Hardware acceptance | Limited | Walkthrough covers real camera, mic, controls, clean tracks, sync and output inspection. | Local automated tests do not replace camera/mic and physical-control testing. |
-| Published versus preview | Limited | This grid covers Preview 02 and companion 0.2.0 together. | Do not compare the public 1.1.0 installer as though it already includes all preview additions. |
+| Published versus preview | Limited | This grid covers Settings Preview 06 and companion 0.2.0 together. | Do not compare the public 1.1.0 installer as though it already includes all preview additions. |
 | Reviewer comparison scope | Included | Compare prompting, control, scripting, production handover, privacy and setup effort separately. | No competitor feature, price, performance ranking or endorsement is asserted here. |
 
 ## Maintaining this grid

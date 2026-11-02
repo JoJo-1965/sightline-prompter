@@ -1,6 +1,6 @@
 # Settings
 
-This source guide describes **Settings Redesign Preview 05**, based on the
+This source guide describes **Settings Redesign Preview 06**, based on the
 approved interactive demo. It is an unpublished preview of Sightline 1.1.0.
 For the released app, use the guide bundled with its installer.
 
@@ -16,7 +16,9 @@ OBS recording/setup needs OBS enabled; speech commands/words need speech enabled
 
 The selected area expands in the left list. Controls stay in the centre and
 **Script view preview** stays on the right; search is in the header. Compact
-windows use a **Preview** action. Paused/Reading changes only the example,
+windows use a **Preview** action to open a movable, non-modal companion.
+It stays in sync while Settings remains usable. The third column follows width,
+so a short but wide window keeps it. Paused/Reading changes only the example,
 never the actual prompter, microphone or recorder.
 
 ## Apply, save and cancel
@@ -32,8 +34,9 @@ Every preference in Settings uses the same draft:
 Device/service activation happens on Apply, rather than while choosing values.
 **Tools** is labelled **Live adjustments**: its controls apply immediately.
 Installing a component, importing/saving a theme, testing a microphone,
-resetting pairings and recorder commands are explicit actions. Cancelling
-another Settings edit does not undo those actions.
+resetting pairings, recorder commands and guide visibility/placement/reference
+actions are explicit actions. Cancelling another Settings edit does not undo
+them. Guide appearance and eye-lock preferences use Apply like other settings.
 
 The small **?** pill explains the adjacent option. Hover, focus or click/tap
 it. An open explanation takes the first Esc; Settings stays open.
@@ -61,22 +64,19 @@ existing stored precision is retained until you adjust the value.
 **Session checklist** opens the existing preparation checks and links directly
 to script review, appearance and framing.
 
-**Mode and pace** holds Steady/Voice, Notes/page mode, steady WPM, countdown,
-voice response and script pacing. Voice needs speech features, an engine and
-microphone input. Steady scrolling does not require speech components.
-
-**Next feedback batch — not yet packaged:** one Mode selector offers
+**Mode and pace** has one Mode selector offering
 Notes/page, Voice and Scroll. Voice shows response; Scroll shows WPM, script
 pacing and countdown; Notes/page shows page-navigation guidance. Unrelated
 controls are hidden and disabled, with their values retained. The separate
 Notes checkbox is removed. Apply saves the chosen mode; Cancel restores it.
 
-The same batch adds a movable **non-modal preview window** for compact Settings
+A movable **non-modal preview window** is available for compact Settings
 layouts. It remains open while you change settings, using the same draft as the
 inline example. Its small Close preview button, native X and Escape close the
 preview without closing Settings. Preview controls never start prompting or
-recording. Other layout changes are shown in the
-[combined review](../design/settings-feedback-batch-2026-11-02.md) before wiring.
+recording. The [combined review](../design/settings-feedback-batch-2026-11-02.md)
+records the approved layout. Voice requires enabled speech and microphone input;
+Scroll and Notes/page do not require speech components.
 
 **Text and directions** has four named targets:
 
@@ -118,27 +118,33 @@ pairings and credentials. It is **not a complete app backup**. Use
 **Files > Save/Load settings** for the broader supported JSON/XML preference
 transfer; sensitive opt-ins still require explicit setup on the destination.
 
-### Layout, aids and screens
+### Prompter layout, aids and screens
 
-**Layout** contains alignment, side/top/bottom margins and reading-line position.
+**Prompter layout** contains alignment, margins and reading-line position.
 Line spacing lives with each typography target.
 
-**Reading aids** uses named choices for reading indicators versus slide cues
+**Reading aids** uses visible button subtabs for reading indicators versus slide cues
 and directive tags. Sentence highlight, progress/time, marker, focus band,
 strength and text edge stay together. **Focus strength** appears only while
 **Focus band** is on; switching the band off retains the selected strength.
 Small **?** pills explain every control in both groups. Hover, focus with the
 keyboard or click a pill to read its explanation; Escape closes it.
 
-**Screens and mirroring** uses named Window/mirroring and Eye-line strip
-choices. Set the monitor, always on top, toolbar visibility, capture protection,
+**Screens and mirroring** uses visible **Window and mirroring** and
+**Eye-line strip** subtabs. Set the monitor, always on top, toolbar visibility, capture protection,
 click-through and independent left/right and top/bottom mirroring here.
-The eye-line strip has separate width, height and reading-line settings.
+Enable the eye-line strip to reveal its width, height and reading-line controls.
+These use the same sliders, number boxes and help pills as other settings.
 The mouse pointer remains visible when the main toolbar hides.
 
-**Head guide** opens the dedicated guide and adjustment window. Fit the eyes
-first, lock them, then fit top/bottom and left/right. Save a recording reference
-without replacing Ideal; restore that saved reference when needed.
+**Head guide** has a stateful Show/Hide switch and visible **Guide**,
+**Appearance** and **Recording reference** subtabs. Choose centred/beside-prompter
+placement, eye locking, outline colour/opacity, backing opacity and Show Ideal.
+Appearance/eye-lock preferences use Apply. Show/Hide, placement, fullscreen and
+reference actions act immediately. Apply guide edits before saving/restoring
+a reference. Save recording reference keeps Ideal separate; Restore is available
+after a reference exists. The right-hand manual diagram is not camera tracking.
+Use **Adjust guide** to fit eye centre/level, then top/bottom and sides.
 See [head guide and capture limits](04-layout-and-display.md).
 
 ## Voice
@@ -172,6 +178,10 @@ under **Controls > OBS recording control**. Verify the actual recorded picture/s
 Section stops and retakes keep the existing recording workflow. Ordinary
 reading needs no compulsory recorder directives.
 See [production handover](12-production-handover.md).
+
+Installed components uses visible **Speech model**, **AI kit**, **Node.js** and
+**OBS** subtabs. Dropdowns choose values or list entries; they do not hide these
+functional groups. Group tabs share pointer, arrow-key and Home/End behaviour.
 
 ## Controls and optional components
 

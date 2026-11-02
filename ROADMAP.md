@@ -10,6 +10,11 @@ controls and follows its enable switch. All subtabs fit the tested desktop and
 compact frames; mode/guide persistence and recorder regression checks pass.
 Published app/plugin versions remain 1.1.0/0.2.0.
 
+The final queue review also includes Prompter layout naming, toolbar-matched
+mirror icons and the older Guide/OBS shortcut collision. These belong to the
+same preview. Dated candidate and installation notes below are historical;
+they do not override this current preview status or imply hardware acceptance.
+
 Reading aids follow-up: Focus strength follows the Focus band switch and keeps
 its saved value when off. Both aid groups have contextual ? help. Native hover,
 dependency and compact-layout checks cover the patch; screenshots are refreshed.
