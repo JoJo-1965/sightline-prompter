@@ -1,5 +1,13 @@
 # TODO
 
+## Current build — Settings Preview 07
+
+Requested as one combined repreview after all queued cards arrived in full.
+Includes the compact mirror buttons and all Preview 06 UI fixes. Source native
+checks passed at five sizes. Documentation revision 8 and the new build manifest
+identify this package. Reuse the existing Preview 05 profile and promo slot 4;
+the previous handover below is retained as history. No release is implied.
+
 ## Current handover — Settings Preview 06
 
 The combined layout was approved on 2 November 2026. Before packaging, review

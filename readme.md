@@ -47,7 +47,7 @@ to check your own recording setup.
 **Reviewing the current preview?** The [detailed feature grid](docs/FEATURE-GRID.md)
 groups its capabilities, options and requirements, with dedicated Stream Deck
 and OBS sections. Browse the [searchable grid](docs/FEATURE-GRID.html) or use
-the [comparison CSV](docs/FEATURE-GRID.csv). It describes unpublished Preview 06;
+the [comparison CSV](docs/FEATURE-GRID.csv). It describes unpublished Preview 07;
 the published download above remains Sightline 1.1.0.
 
 | Step       | What your AI does                                                         | What Sightline does                                                                                        |

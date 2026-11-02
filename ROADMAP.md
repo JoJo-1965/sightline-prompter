@@ -2,6 +2,10 @@
 
 ## Recording feedback batch — unpublished preview
 
+Settings Preview 07 rolls the compact toolbar-icon mirror buttons into the
+approved Preview 06 batch. It changes no function or permission. The previous
+UI fixes remain included; documentation revision 8 identifies this new package.
+
 Joanne approved the combined layout on 2 November. Settings Preview 06 includes
 all stacked observations: context-aware modes, visible group tabs, mirror
 spacing, inset focus, Head guide setup/reference controls and width-based

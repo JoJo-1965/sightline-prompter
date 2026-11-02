@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "basis": "Settings Redesign Preview 06, documentation revision 7, 2 November 2026",
+  "basis": "Settings Redesign Preview 07, documentation revision 8, 2 November 2026",
   "date": "2 November 2026",
-  "sourceBuild": "c0b1b9a",
+  "sourceBuild": "e4bf0f4",
   "buildVersion": "1.1.0",
   "publicationStatus": "preview",
   "appRelease": "1.1.0",
   "pluginRelease": "0.2.0",
   "sourceUrl": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/FEATURE-GRID.md",
-  "sourceSha256": "9cdcafc5febfbfa27ac94a159622c75835152ae9d65e03059d6e5fb722d811f1",
+  "sourceSha256": "1811a54b7bf91629963e94dd943d7d5dbc582b8b172192065cb5e34d492d736c",
   "support": [
     "Included",
     "Optional",

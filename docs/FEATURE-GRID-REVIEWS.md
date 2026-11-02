@@ -1,5 +1,12 @@
 # Feature-matrix review record
 
+2 November 2026, requested combined Preview 07: compact mirror buttons join
+all approved Preview 06 fixes in one package. No capability rows or directive,
+theme, permission, OBS or Stream Deck behaviour changes. Revision 8 advances
+the exact preview/source metadata, refreshes the Screens screenshot and keeps
+the remaining identical gallery views. Guide, feature exports, marketing copy
+and JL review snapshot are checked together; published versions remain fixed.
+
 2 November 2026, full queued mirror card received after Preview 06 handover:
 the earlier truncated card also requested smaller buttons. Source now uses
 content-sized mirror buttons with the standard 32px minimum height and existing

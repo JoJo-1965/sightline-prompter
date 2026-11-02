@@ -1,10 +1,12 @@
 # Sightline Prompter: what it adds to Electron Teleprompter
 
-**Settings Preview 06:** implements the approved combined layout: visible
+**Settings Preview 07:** retains the approved combined layout: visible
 button subtabs, three context-aware reading modes, complete Head guide setup and
 recording-reference controls, width-based inline preview and a non-modal
 companion. Shared controls, eye-line gating, focus and mirror spacing are
-checked together. The app remains an unpublished 1.1.0 preview.
+checked together. Mirror buttons are now compact and reuse the toolbar icons.
+The app remains an unpublished 1.1.0 preview. The Preview 06 capabilities
+described below remain included.
 
 Preview 06's Reading aids patch reveals Focus strength only when Focus band is
 on, retaining its value when off. Both aid groups now have small contextual

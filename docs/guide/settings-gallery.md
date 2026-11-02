@@ -1,8 +1,11 @@
-# Settings screenshot gallery — Preview 06
+# Settings screenshot gallery — Preview 07
 
 These are actual Windows Electron Settings captures from the unpublished
-Settings Redesign Preview 06, 2 November 2026. They replace the Preview 03
+Settings Redesign Preview 07, 2 November 2026. They replace the Preview 03
 pagination examples. The public installer remains Sightline 1.1.0.
+
+The Screens image shows Preview 07's compact mirror buttons. Unchanged views
+retain the matching Preview 06 captures; the approved composition is preserved.
 
 The frame stays fixed across all 34 named sections. Compact windows use area
 and section selectors; tests also cover 560 × 500 content. Screenshots show
@@ -77,9 +80,9 @@ Every Reading aids control has a small ? explanation.
 [Enabled eye-line strip](images/settings-preview06-eye-line-enabled.png)
 
 
-[Open full size](images/settings-preview06-screens.png)
+[Open full size](images/settings-preview07-screens.png)
 
-![Reading: Screens and mirroring, Preview 06](images/settings-preview06-screens.png)
+![Reading: Screens and mirroring, Preview 07](images/settings-preview07-screens.png)
 
 ### Head guide
 

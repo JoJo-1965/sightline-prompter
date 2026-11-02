@@ -1,6 +1,6 @@
 # Settings
 
-This source guide describes **Settings Redesign Preview 06**, based on the
+This source guide describes **Settings Redesign Preview 07**, based on the
 approved interactive demo. It is an unpublished preview of Sightline 1.1.0.
 For the released app, use the guide bundled with its installer.
 
@@ -133,6 +133,7 @@ keyboard or click a pill to read its explanation; Escape closes it.
 **Screens and mirroring** uses visible **Window and mirroring** and
 **Eye-line strip** subtabs. Set the monitor, always on top, toolbar visibility, capture protection,
 click-through and independent left/right and top/bottom mirroring here.
+The compact mirror buttons use the same axis icons as the main toolbar.
 Enable the eye-line strip to reveal its width, height and reading-line controls.
 These use the same sliders, number boxes and help pills as other settings.
 The mouse pointer remains visible when the main toolbar hides.

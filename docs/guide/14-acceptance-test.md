@@ -21,8 +21,8 @@ earlier test history and do not describe today's installed version.
 
 ## Next-preview recording check
 
-For Preview 06, first follow [Settings acceptance](#settings-redesign-preview-04),
-then use the recording checks below. The app version remains 1.1.0; the Preview 06
+For Preview 07, first follow [Settings acceptance](#settings-redesign-preview-04),
+then use the recording checks below. The app version remains 1.1.0; the Preview 07
 folder and build manifest identify the unpublished package.
 
 1. With recording stopped, select a slate and Apply. Reopen Settings to confirm
@@ -275,10 +275,10 @@ this script does not itself authorise publication.
 <a id="settings-redesign-preview-04"></a>
 <a id="settings-redesign-preview-06"></a>
 
-## Settings redesign Preview 06
+## Settings redesign Preview 07
 
 Use the isolated preview rather than your production profile. The app version
-remains 1.1.0; the folder and build manifest identify Preview 06.
+remains 1.1.0; the folder and build manifest identify Preview 07.
 
 For this feedback batch, also check all three reading modes, every visible group
 tab and the eye-line enable gate. Show/hide the head guide, apply appearance and
