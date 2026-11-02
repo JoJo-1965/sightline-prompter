@@ -1,5 +1,12 @@
 # Approved Settings and Tools implementation
 
+**Layout review, 2 November:** Preview 04's composition is not signed off.
+It substituted a category grid and inline sample for the approved expanding
+left navigation and dedicated right preview. App changes are paused while
+Joanne reviews the [layout comparison](LAYOUT-PARITY-REVIEW.md). The original
+interactive demo is the specification; software test passes below do not
+establish visual fidelity. Earlier completion notes describe functional work.
+
 Joanne signed off the updated interactive demo on 1 November 2026 and
 authorised implementation. This file tracks the combined implementation;
 it is not a release announcement. Preview 04 is now packaged and validated.
