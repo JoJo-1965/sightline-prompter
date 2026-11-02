@@ -1,5 +1,20 @@
 # Approved Settings and Tools implementation
 
+**Preview 05 handed over, 2 November:** package source `4d7f879`, code reference
+`d55c205`, approved interactive reference `d1302a1`. The packaged native suite
+passes, including explicit layout checks. Matched app screenshots are recorded.
+The app is open at 1064 × 691 with the dedicated right preview visible and the
+unchanged promo loaded in slot 4. Wireless GO II RX passed a temporary device
+check; the local speech model is installed; Stream Deck 0.2.0 is compatible;
+OBS is connected with recording permission and confirmed stopped. No recording
+was started. The build manifest and START-HERE are in
+`D:\Sightline\Dev\Builds\Previews\settings-layout-preview-05`.
+
+The recording integrations were recovered from the earlier working preview,
+with current reading/head-guide preferences retained. OBS's older stored
+password was refreshed through OS-protected storage using its local config.
+Physical output and sync remain for the user's actual recording test.
+
 **Preview 05 correction:** Joanne authorised implementation of the exact signed-off
 demo on 2 November. The expanding left list, central form, persistent right
 preview, header search, fixed footer and compact behaviour are restored. See
