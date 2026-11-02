@@ -81,7 +81,7 @@ them explicitly. Keep Sightline scratch audio as a separate timing reference.
 
 The assistant adds no prompter or head-guide capture source. Confirm this in
 your actual recorded picture; other capture routes you later add can change
-what is recorded. Prepare the recorded slate separately in **Recording > OBS
+what is recorded. Prepare the recorded slate separately in **Controls > OBS
 recording** and verify its picture and tone in a test file. Make early and late
 physical claps and speak normally to check camera/mic sync. A digital slate
 alone cannot establish camera lip sync.

@@ -255,6 +255,9 @@ and deployment.
 
 ### Unreleased
 
+Preview 04 status/error prompts point to the same named Settings sections.
+The native acceptance harness also runs against the packaged executable.
+
 **Review status:** The signed-off Settings/Tools redesign is implemented for
 Preview 04 validation. It supersedes Preview 03's missing-control and automatic
 pagination problems. See the [Settings guide](docs/guide/07-settings.md) and

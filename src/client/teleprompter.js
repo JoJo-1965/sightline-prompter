@@ -1454,7 +1454,7 @@ async function startAutoScrollSession() {
 		openSettings();
 		showSettingsTab( "voice" );
 		showToast(
-			"Download the speech model first (Settings > Prompting > Voice), then press Play again"
+			"Download the speech model first (Settings > Voice > Speech engine), then press Play again"
 		);
 		return;
 	}
@@ -1539,7 +1539,7 @@ function offerSpeechModel() {
 	const close = document.createElement( "button" );
 	close.type = "button";
 	close.textContent = "×";
-	close.title = "Not now (Settings > Prompting > Voice has it)";
+	close.title = "Not now (Settings > Voice > Speech engine has it)";
 	close.setAttribute( "aria-label", "Not now" );
 	close.addEventListener( "click", () => {
 		rememberVoiceOffer();

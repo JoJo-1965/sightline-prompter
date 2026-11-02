@@ -278,8 +278,8 @@ An AI agent can do the same through the local API: see
 
 ## Notes (talking points)
 
-For a talk from notes rather than a word-for-word script, tick **Notes** in the
-Layout panel (the Recording view), or put `{mode: notes}` at the top of the
+For a talk from notes rather than a word-for-word script, choose **Notes** in
+**Reading > Mode and pace**, or put `{mode: notes}` at the top of the
 script (`{mode: points}` works too). The script shows a page at a time, with
 no scrolling.
 

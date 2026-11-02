@@ -13,5 +13,9 @@ no-feature-impact decision here; an old unchanged entry is not a new review.
 | 1 November 2026 | Optional-interface and help review in the design mock | OBS moves to Controls, game controller gets a separate home, optional interfaces reveal configuration only when enabled, and mock help follows enabled features. These are proposed UI behaviours, not installed-app additions; the matrix/public help/site remain on the tested baseline. |
 | 2 November 2026 | Approved Settings/Tools design implemented in native Preview 04 | Matrix advanced from Preview 02 to Preview 04: complete four-target typography, custom backing and portable reading themes; permanent named sections and consistent drafts; interface/runtime/help gates; separate controller homes and live Tools. Native checks cover compact windows, input learning, pad arrangement, theme files, window/capture policy and recorder/head-guide fixtures. Physical recording and accessibility limits remain qualified; final source hash is pinned before packaging. |
 
+Preview 04 packaging review, 2 November: runtime hints now use the new Settings
+paths and the native harness also runs against the packaged executable. These
+are copy/validation corrections to the same capabilities; no matrix row changes.
+
 Automated guards check consistency. They cannot prove a capability or hardware
 claim; review the exact build before publication.

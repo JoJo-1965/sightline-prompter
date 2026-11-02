@@ -221,7 +221,7 @@ const defaultSettings = {
 	remoteControl: false, // AI / script control over http://127.0.0.1 (see remote.js)
 	streamDeck: false, // the Stream Deck plugin: buttons only, its own key (stream-deck.json)
 	remotePort: 47615,
-	remoteDeleteRecordings: false, // the local API may delete recordings (Settings > Remotes)
+	remoteDeleteRecordings: false, // the local API may delete recordings (Controls > AI and local API)
 	obsEnabled: false,
 	obsHost: "127.0.0.1",
 	obsPort: 4455,
@@ -302,7 +302,7 @@ ipcMain.on( "debugLog", ( _event, text ) => {
 	if ( problem || settings.debugMode ) logProblem( `page: ${ text.slice( 0, 500 ) }` );
 } );
 
-// Settings > About > Debug > Save a log for support: the log, with what this computer
+// Settings > Debug > Support logs: the log, with what this computer
 // and Sightline look like, in one file to attach to an issue or an email. No
 // scripts, keys, word lists or audio; nothing is sent by itself.
 ipcMain.handle( "saveSupportLog", async ( event ) => {
@@ -398,7 +398,7 @@ let hasUnsavedChanges = false;
 let isClosing = false;
 let refreshMenus = () => {};
 let remoteToken = null;
-let streamDeckToken = null; // Settings > Remotes > Stream Deck: buttons only
+let streamDeckToken = null; // Settings > Controls > Stream Deck: buttons only
 let phoneKey = null;
 let phoneServer = null;
 let phoneError = null;
@@ -1799,7 +1799,7 @@ app.whenReady().then( async () => {
 		},
 		"POST /recording/delete": async ( { id } ) => {
 			if ( !settings.remoteDeleteRecordings ) {
-				throw Object.assign( new Error( "Deleting recordings isn't allowed. In the app: Settings > Remotes > tick \"Let it delete recordings\"" ), { status: 403 } );
+				throw Object.assign( new Error( "Deleting recordings isn't allowed. In the app: Settings > Controls > AI and local API > tick \"Let it delete recordings\"" ), { status: 403 } );
 			}
 			const result = await deleteRecording( takeLogFolder(), id, file => shell.trashItem( file ) );
 			win.webContents.send( "recordingsChanged", id );

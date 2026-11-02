@@ -8,15 +8,17 @@ pause also hold prompting. These commands disappear from help when OBS controls
 are disabled. Normal **go**, **pause** and **again** remain available; their
 recording behaviour follows the optional [linked mode](11-obs.md).
 
-Choose **Steady / Voice** on the top bar, or use **Settings > Prompting >
-Scrolling**. **Tools > Voice and microphone** opens the quick voice panel.
+Choose **Steady / Voice** on the top bar, or use **Settings > Reading > Mode
+and pace**. Enable speech and microphone input in **Settings > Voice** before
+using voice following. Speech engine, Microphone and Voice commands have
+separate named sections.
 
 ## Steady scrolling
 
 The script moves at a fixed pace in words per minute. Set it with the **Speed**
 slider. While scrolling, **↑** and **↓** make it faster or slower by 5 words a
 minute. A script can set its own pace, section by section, with `{wpm: 140}`.
-Turn on **Follow the script's pace** in the Layout panel to use those
+Turn on **Follow the script's pace** in Reading > Mode and pace to use those
 settings.
 
 ## Voice scrolling
@@ -355,5 +357,5 @@ Otherwise it's the sentence on the reading line.
 
 ![The sentence on the reading line, highlighted](images/running.png)
 
-Turn it off or on in **Settings > Reading > Reading aids**, or the quick panel
-at **Tools > Spacing and mirror**.
+Turn it off or on in **Settings > Reading > Reading aids** under Reading
+indicators. **Tools > Adjust** provides separate live size and spacing controls.

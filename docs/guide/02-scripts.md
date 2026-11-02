@@ -127,7 +127,8 @@ read.
 | `{page}`                      | In notes: start a new page here, with no title (a `# heading` also starts one) |
 | `{pacing: section, wpm: 145}` | At the top: settings for the whole script                 |
 
-To check a script, tick **Show directives** in the Layout panel. Each
+To check a script, open **Reading > Reading aids > Slide cues and script tags**
+and tick **Show script directive tags**. Each
 directive appears as a small tag, with ⚠ on any it doesn't recognise (usually a
 typo).
 

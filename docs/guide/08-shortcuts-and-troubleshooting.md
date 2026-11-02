@@ -1,7 +1,7 @@
 # Shortcuts and troubleshooting
 
-**Wake word sometimes stops responding:** check **Settings > Prompting >
-Commands**. Audio/engine faults recover automatically with bounded retries;
+**Wake word sometimes stops responding:** check **Settings > Voice > Voice
+commands**. Audio/engine faults recover automatically with bounded retries;
 use **Restart listening** or click the listening badge for a manual retry.
 To investigate a misheard word, enable the optional local command-word trace in **Settings > Debug**,
 reproduce it, then switch tracing off. See [Listening recovery](03-scrolling-and-voice.md#if-listening-stops-responding).
@@ -98,8 +98,9 @@ start with "Prompter, go", choose "Always, even when stopped" and look for the
 **The speech model download failed.** Check you're online and click
 **Try again**. It carries on from the files it already has.
 
-**The prompter shows up in my recording.** Tick **Hide from screen capture** in
-the Layout panel.
+**The prompter shows up in my recording.** Enable **Hide from screen capture**
+in **Reading > Screens and mirroring** and check a short recording. Exclusion
+depends on the capture route. Debug's session capture override is for testing.
 
 **The phone can't connect.** The phone and the computer need to be on the same
 Wi-Fi. Allow Sightline Prompter on private networks if Windows asks. If you
