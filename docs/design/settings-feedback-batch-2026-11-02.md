@@ -22,6 +22,11 @@ remaining proposals; then build and review one combined app preview.
 
 ## Implemented, awaiting the next batched package
 
+- Focus treatment: the actual app source now draws keyboard focus inside the
+  control border, with no detached outer halo. This is no longer only a mock
+  change. Native rendering confirms a visible focus cue with no outside paint.
+  The earlier package retains the old rule; no running preview was available
+  for an in-place update when this follow-up was checked.
 - Compact preview: replaced the modal dialog in source with a movable,
   non-modal utility window, placed beside Settings where space permits. Both
   preview copies share the current draft. Explicit 13px control fonts prevent
@@ -53,9 +58,9 @@ remaining proposals; then build and review one combined app preview.
 - Use the same visible-tab treatment for the existing Reading aids groups;
   keep the four text-target choices as visible buttons. Mode selection remains
   a value selector, not hidden group navigation.
-- The blue extra edge is the 2px keyboard-focus outline offset 3px beyond the
-  normal border. Propose one consistent focus treatment that preserves clear
-  keyboard focus. Do not remove focus indicators globally.
+- The former blue extra edge was the keyboard-focus outline offset 3px beyond
+  the normal border. The source now uses one inset focus treatment; keyboard
+  focus remains visible. This correction is ready for the combined package.
 
 ## Persistent preview column — proposal
 
@@ -112,3 +117,8 @@ The following capture is from the **native app in an isolated test profile**,
 showing the implemented non-modal companion and its standard Close control.
 
 ![Actual native non-modal preview](images/batch-native-preview.png)
+
+The focus correction below is also from the native app test. Its group
+navigation is still the pre-batch version; this capture verifies focus styling.
+
+![Native app: one inset focus cue without an outer halo](images/batch-native-focus.png)

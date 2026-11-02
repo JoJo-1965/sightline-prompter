@@ -1,5 +1,12 @@
 # Feature-matrix review record
 
+2 November 2026, focus follow-up: the actual app source now uses an inset focus
+cue instead of the detached outer halo, including the floating preview. Native
+rendering confirms that focus remains visible and does not paint outside the
+control; Settings checks pass at five sizes. Captured the actual app result.
+This is a cosmetic correction for the combined batch, with no capability,
+matrix, script, JL or marketing claim change. The earlier package is unchanged.
+
 2 November 2026, combined Settings feedback review: compact preview is a
 non-modal utility window in source, sharing the live Settings draft and normal
 control fonts. Native checks cover real Settings interaction while open,

@@ -255,6 +255,10 @@ and deployment.
 
 ### Unreleased
 
+**Focus styling, next batch:** the app now uses a single inset keyboard-focus
+cue instead of a detached outer halo. Native rendering and layout checks pass;
+the earlier installed package retains its old styling until the combined build.
+
 **Combined Settings feedback review:** one [interactive mock and gallery](docs/design/settings-feedback-batch-2026-11-02.md)
 covers mode dependencies, spacing, visible groups, focus styling, Head guide and
 preview behaviour. Source now has a movable non-modal preview with a standard
