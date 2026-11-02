@@ -1,5 +1,8 @@
 # Directions appearance Preview 03: review status
 
+Historical checkpoint: [Settings Redesign Preview 04](PREVIEW-04.md) supersedes
+this layout. The following records the earlier review, not current behaviour.
+
 Unpublished local development preview, 1 November 2026. This is a checkpoint
 of the changes under review, not a release-ready app.
 
@@ -29,9 +32,9 @@ the automated suite passed during development.
 - Tools can clip in small windows and does not share a complete control
   vocabulary with Settings.
 
-The [Settings and Tools review](design/SETTINGS-AND-TOOLS-REDESIGN.md),
-[interactive mock](design/settings-and-tools-prototype.html) and
-[screenshot gallery](design/settings-and-tools-gallery.md) are the proposed
+The [Settings and Tools review](https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/design/SETTINGS-AND-TOOLS-REDESIGN.md),
+[interactive mock](https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/design/settings-and-tools-prototype.html) and
+[screenshot gallery](https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/design/settings-and-tools-gallery.md) are the proposed
 replacement. They are explicitly labelled as design artifacts. The initial
 recording configuration, fixed navigation, full text attributes and consistent
 controls are being reviewed together before another implementation build.

@@ -88,6 +88,9 @@
 			"docs/guide/**/*",
 			"docs/marketing/**/*",
 			"docs/*.md",
+			"docs/FEATURE-GRID.html",
+			"docs/FEATURE-GRID.csv",
+			"docs/FEATURE-GRID.json",
 			"LICENSE",
 			"readme.md",
 			"package.json"

@@ -25,7 +25,7 @@ export async function buildInstallerHelp( root, out, version ) {
 			if ( /^[a-z]+:/i.test( file ) ) return match;
 			const source = path.posix.normalize( path.posix.join( path.posix.dirname( relative ), file ) );
 			return pages.has( source ) ? `href="${ file.replace( /\.md$/, ".html" ) }${ suffix }"` : `href="https://github.com/JoJo-1965/sightline-prompter/blob/main/${ source }${ suffix }"`;
-		} );
+		} ).replace( /href="([^"]*)FEATURE-GRID\.html"/g, 'href="$1FEATURE-GRID-search.html"' );
 		const title = escapeHtml( markdown.match( /^# (.+)/m )?.[1] ?? "Sightline Prompter" );
 		await fs.mkdir( path.dirname( target ), { recursive: true } );
 		await fs.writeFile( target, `<!doctype html>
@@ -40,6 +40,15 @@ body{display:block;height:auto}nav{padding:16px 24px;background:var(--panel);dis
 	};
 	await render( "release-notes.html", `# Release notes\n\nThis copy is bundled with **Sightline Prompter ${ version }**.\n\n${ readme.slice( offset + marker.length ).trim() }` );
 	for ( const [ file, markdown ] of pages ) await render( file.replace( /\.md$/, ".html" ), markdown );
+	// Keep the searchable reference and comparison data usable from offline help.
+	const grid = ( await fs.readFile( path.join( root, "docs/FEATURE-GRID.html" ), "utf8" ) )
+		.replace( /href="([^"?#]+\.md)([#?][^"]*)?"/g, ( match, file, suffix = "" ) => {
+			if ( /^[a-z]+:/i.test( file ) ) return match;
+			const source = path.posix.normalize( path.posix.join( "docs", file ) );
+			return pages.has( source ) ? `href="${ file.replace( /\.md$/, ".html" ) }${ suffix }"` : match;
+		} );
+	await fs.writeFile( path.join( out, "docs/FEATURE-GRID-search.html" ), grid );
+	for ( const name of [ "FEATURE-GRID.csv", "FEATURE-GRID.json" ] ) await fs.copyFile( path.join( root, "docs", name ), path.join( out, "docs", name ) );
 	await fs.copyFile( path.join( root, "LICENSE" ), path.join( out, "LICENSE" ) );
 	await fs.copyFile( path.join( root, "docs/script-directives.json" ), path.join( out, "docs/script-directives.json" ) );
 	for ( const folder of [ "docs/images", "docs/guide/images", "docs/design/images" ] ) {

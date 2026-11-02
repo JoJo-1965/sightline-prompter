@@ -162,7 +162,7 @@ are, and the bottom left shows the time left. It's also a quick way to move:
 point at it to see the section and time at that place, then click to jump
 there, or drag along it. The white ticks mark where each section starts.
 While the prompter is running, clicks on the bar are ignored, so a stray
-click can't jump a take: pause first. Turn the bar off in the Layout panel.
+click can't jump a take: pause first. Turn the bar off in Reading > Reading aids.
 
 ## The menu
 
