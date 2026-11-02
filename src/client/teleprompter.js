@@ -3260,6 +3260,7 @@ window.electron.onMenuSettings( async ( topic ) => {
 	if ( topic === "pad" ) showSettingsTab( "pad" );
 } );
 window.electron.onUtilityPanelClose( ( kind, quit ) => {
+	if ( kind === "preview" ) settingsWorkspace?.closePreview();
 	if ( kind === "tools" ) closePanels();
 	if ( kind === "settings" ) requestCloseSettings( quit ? () => window.electron.windowControl( "close" ) : null );
 	if ( kind === "help" ) closeHelp();

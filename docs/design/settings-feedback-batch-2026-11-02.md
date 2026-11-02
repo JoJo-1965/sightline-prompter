@@ -4,8 +4,30 @@ These are review proposals unless marked implemented. Show the combined layout
 before wiring any departure from the signed-off interactive preview. No new
 package, RC, supported-feature claim or website deployment is implied.
 
+## One combined review
+
+Use the [interactive mock](settings-feedback-batch-prototype.html) and
+[screenshot gallery](settings-feedback-batch-gallery.html). They retain the
+approved left navigation, central controls, right preview and fixed footer.
+The workstation serves the review at `http://192.168.0.150:4881/` and its gallery
+at `/gallery` while the read-only review helper is running. The mock changes
+only its own example data, with no access to the app, microphone or recorder.
+
+This batch covers mode dependencies, mirror spacing, visible group navigation,
+focus styling, Head guide configuration and preview layout/behaviour together.
+The layout mock fits 1064 × 691, 1011 × 656, 680 × 600 and 560 × 500. In the
+short/wide case, the third column remains visible. Compact windows use a
+non-modal companion preview. Obtain one layout sign-off before wiring the
+remaining proposals; then build and review one combined app preview.
+
 ## Implemented, awaiting the next batched package
 
+- Compact preview: replaced the modal dialog in source with a movable,
+  non-modal utility window, placed beside Settings where space permits. Both
+  preview copies share the current draft. Explicit 13px control fonts prevent
+  the close button inheriting prompter text size. Escape, native X, minimum size,
+  real pointer interaction with Settings and capture-policy inheritance pass
+  native checks. The running package remains unchanged.
 - Mode and pace: one selector for Notes / page, Voice and Scroll replaces the
   independent Notes checkbox. Scroll shows WPM, script pacing and countdown;
   Voice shows response; Notes shows page-navigation guidance. Irrelevant fields
@@ -28,6 +50,9 @@ package, RC, supported-feature claim or website deployment is implied.
 - Replace the hidden Window and mirroring / Eye-line strip dropdown with two
   visible named tabs. Keep the signed-off left navigation and right preview.
 - Show Eye-line strip configuration only when that mode is enabled.
+- Use the same visible-tab treatment for the existing Reading aids groups;
+  keep the four text-target choices as visible buttons. Mode selection remains
+  a value selector, not hidden group navigation.
 - The blue extra edge is the 2px keyboard-focus outline offset 3px beyond the
   normal border. Propose one consistent focus treatment that preserves clear
   keyboard focus. Do not remove focus indicators globally.
@@ -69,3 +94,21 @@ The mock must fit the fixed panel without scrolling, hidden group dropdowns or
 cramped controls. Check compact widths and the absence of hanging label words.
 Review what fits before choosing which appearance controls belong directly on
 this page. A useful page is the goal; filling every blank area is not.
+
+## Review captures
+
+These layout captures come from the combined interactive mock. They are not
+claims about the currently running package. Open an image at full size to zoom.
+
+![Mode and pace: Scroll controls](images/batch-review-mode.png)
+
+![Screens and mirroring: visible groups and mirror spacing](images/batch-review-screens.png)
+
+![Head guide: Guide group](images/batch-review-guide.png)
+
+![Head guide: Appearance group](images/batch-review-guide-appearance.png)
+
+The following capture is from the **native app in an isolated test profile**,
+showing the implemented non-modal companion and its standard Close control.
+
+![Actual native non-modal preview](images/batch-native-preview.png)

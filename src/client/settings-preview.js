@@ -1,4 +1,5 @@
 import { appearanceFromSettings, READING_PALETTES } from "./reading-appearance.js";
+import { showPanelWindow, hidePanelWindow } from "./panel-windows.js";
 
 // The approved preview is a separate column. Its Paused/Reading controls only
 // change the example; they never start prompting, a microphone or a recorder.
@@ -33,34 +34,54 @@ export function createSettingsPreview( root, getState ) {
 	};
 	const sidebar = pane();
 	root.querySelector( ".settings-content" ).append( sidebar );
-	const dialog = doc.createElement( "dialog" );
-	dialog.className = "settings-preview-dialog";
-	dialog.setAttribute( "aria-label", "Script view preview" );
-	dialog.append( pane() );
+	const floating = doc.createElement( "section" );
+	floating.className = "settings-floating-preview";
+	floating.setAttribute( "aria-label", "Script view preview" );
+	floating.hidden = true;
+	floating.append( pane() );
 	const close = doc.createElement( "button" );
 	close.type = "button";
 	close.textContent = "Close preview";
-	dialog.append( close );
-	root.append( dialog );
+	close.className = "settings-preview-close";
+	floating.append( close );
+	root.append( floating );
 	const open = doc.createElement( "button" );
 	open.type = "button";
 	open.className = "settings-open-preview";
 	open.textContent = "Preview";
 	root.querySelector( "#settings-cancel" ).before( open );
-	open.addEventListener( "click", () => {
-		sync();
-		dialog.showModal();
-	} );
-	close.addEventListener( "click", () => dialog.close() );
-	dialog.addEventListener( "keydown", ( event ) => {
-		if ( event.key !== "Escape" ) return;
+	const hide = () => {
+		floating.hidden = true;
+		hidePanelWindow( "preview" );
+	};
+	const closePreview = () => {
+		hide();
+		if ( !root.classList.contains( "hidden" ) ) {
+			window.electron.utilityPanel( "settings", "show" );
+			open.focus();
+		}
+	};
+	const keyViews = new WeakSet();
+	const dismiss = ( event ) => {
+		if ( event.key !== "Escape" || floating.hidden ) return;
 		event.preventDefault();
 		event.stopPropagation();
-		dialog.close();
-		open.focus();
+		closePreview();
+	};
+	open.addEventListener( "click", async () => {
+		sync();
+		await showPanelWindow( "preview", floating );
+		floating.hidden = root.classList.contains( "hidden" );
+		if ( floating.hidden ) hidePanelWindow( "preview" );
+		const view = floating.ownerDocument.defaultView;
+		if ( !keyViews.has( view ) ) {
+			view.addEventListener( "keydown", dismiss, true );
+			keyViews.add( view );
+		}
 	} );
+	close.addEventListener( "click", closePreview );
 	new MutationObserver( () => {
-		if ( root.classList.contains( "hidden" ) && dialog.open ) dialog.close();
+		if ( root.classList.contains( "hidden" ) ) hide();
 	} ).observe( root, { attributes: true, attributeFilter: [ "class" ] } );
 	function sync( state = getState() ) {
 		const appearance = appearanceFromSettings( state, state );
@@ -90,5 +111,5 @@ export function createSettingsPreview( root, getState ) {
 			}
 		}
 	}
-	return { sidebar, sync };
+	return { sidebar, sync, close: closePreview };
 }

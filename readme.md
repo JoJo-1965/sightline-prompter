@@ -255,6 +255,13 @@ and deployment.
 
 ### Unreleased
 
+**Combined Settings feedback review:** one [interactive mock and gallery](docs/design/settings-feedback-batch-2026-11-02.md)
+covers mode dependencies, spacing, visible groups, focus styling, Head guide and
+preview behaviour. Source now has a movable non-modal preview with a standard
+close control and shared draft updates. Native interaction, close/resize and
+capture checks pass. Remaining layout proposals await the combined review;
+the running recording package is unchanged.
+
 **Next feedback batch, not yet packaged:** Mode and pace uses one Notes/page,
 Voice or Scroll choice. Relevant pace controls follow the selected mode;
 switching preserves their values. Native transitions and Apply/Cancel checks

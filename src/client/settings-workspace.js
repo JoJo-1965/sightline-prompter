@@ -683,5 +683,5 @@ export function createSettingsWorkspace( root, { getState, stage, navigate, toas
 		preview.sync( state );
 		return appearanceFromSettings( state, state );
 	}
-	return { sync, selectTarget, bindings, controls, sections, row, el };
+	return { sync, selectTarget, bindings, controls, sections, row, el, closePreview: preview.close };
 }

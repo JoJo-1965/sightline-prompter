@@ -71,6 +71,13 @@ pacing and countdown; Notes/page shows page-navigation guidance. Unrelated
 controls are hidden and disabled, with their values retained. The separate
 Notes checkbox is removed. Apply saves the chosen mode; Cancel restores it.
 
+The same batch adds a movable **non-modal preview window** for compact Settings
+layouts. It remains open while you change settings, using the same draft as the
+inline example. Its small Close preview button, native X and Escape close the
+preview without closing Settings. Preview controls never start prompting or
+recording. Other layout changes are shown in the
+[combined review](../design/settings-feedback-batch-2026-11-02.md) before wiring.
+
 **Text and directions** has four named targets:
 
 | Target | Script syntax and behaviour |

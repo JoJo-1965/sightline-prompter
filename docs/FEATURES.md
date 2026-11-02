@@ -1,5 +1,11 @@
 # Sightline Prompter: what it adds to Electron Teleprompter
 
+**Next feedback batch, not packaged:** a movable non-modal preview stays in
+sync while Settings remains usable. Its controls use standard UI text sizes.
+The combined mode, navigation, Head guide and preview layout review is in
+[the interactive mock and gallery](design/settings-feedback-batch-2026-11-02.md).
+This does not change the published feature baseline.
+
 Preview 05's Reading aids patch reveals Focus strength only when Focus band is
 on, retaining its value when off. Both aid groups now have small contextual
 help pills on every control.

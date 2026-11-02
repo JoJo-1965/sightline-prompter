@@ -1,5 +1,17 @@
 # Feature-matrix review record
 
+2 November 2026, combined Settings feedback review: compact preview is a
+non-modal utility window in source, sharing the live Settings draft and normal
+control fonts. Native checks cover real Settings interaction while open,
+Escape/native X, minimum size and inherited capture policy. The full unit
+suite passes. The combined layout mock also covers visible groups, mode gates,
+focus treatment, Head guide setup and width-based preview placement; these
+remaining layout proposals require sign-off before final wiring. Mock captures
+are distinct from the actual native preview capture. The matrix remains based
+on the packaged Reading aids patch. Advance dependency/preview rows, generated
+exports, help/gallery and JL copies together when the approved batch is built.
+No script format, sample, recorder workflow, USP or marketing change is made.
+
 2 November 2026, next feedback batch: implemented a single Notes/page, Voice or
 Scroll selector in source. Mode and pace now hides/disables unrelated controls
 without erasing their values: response for Voice; WPM, script pacing and

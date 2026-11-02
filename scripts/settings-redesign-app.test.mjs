@@ -199,17 +199,43 @@ try {
 		console.log( `Compact ${ width }×${ height }: ${ JSON.stringify( failures ) }` );
 		assert.deepEqual( failures, [], `Every section fits at ${ width }×${ height }` );
 		assert.equal( await settings.evaluate( '!!document.querySelector(".settings-compact-nav").getClientRects().length&&!document.querySelector(".settings-navigation").getClientRects().length&&!document.querySelector(".settings-workspace > .settings-preview-pane").getClientRects().length' ), true, "Compact selectors and Preview action follow the approved responsive composition" );
-		await settings.evaluate( 'document.querySelector(".settings-open-preview").click();document.querySelector(".settings-preview-dialog [data-preview-reading=true]").click()' );
-		assert.equal( await settings.evaluate( 'document.querySelector(".settings-preview-dialog").open&&document.querySelector(".settings-preview-dialog [data-sample=production]").hidden' ), true, "Compact example uses the same Reading state" );
-		await settings.call( "Input.dispatchKeyEvent", { type: "keyDown", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 } );
-		await settings.call( "Input.dispatchKeyEvent", { type: "keyUp", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 } );
-		assert.equal( await settings.evaluate( '!document.querySelector(".settings-preview-dialog").open&&!document.getElementById("settings-modal").classList.contains("hidden")' ), true, "Escape closes only the compact example" );
+		await settings.evaluate( 'document.querySelector(".settings-open-preview").click()' );
+		const detached = await connect( "utility-window.html?panel=preview" ); await pause( 150 );
+		await detached.evaluate( 'document.querySelector("[data-preview-reading=true]").click()' );
+		assert.equal( await detached.evaluate( '!document.querySelector(".settings-floating-preview").hidden&&document.querySelector("[data-sample=production]").hidden' ), true, "Detached example uses the same Reading state" );
+		assert.equal( await settings.evaluate( '!document.querySelector("dialog:modal")' ), true, "Preview never makes Settings modal or inert" );
+		assert.equal( await native.evaluate( "process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron').BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().includes('panel=preview')).isModal()" ), false );
+		await settings.evaluate( 'document.querySelector("[data-tab=typography]").click();document.querySelector("[data-text-target=script]").click()' );
+		const originalWeight = await detached.evaluate( 'document.querySelector("[data-sample=script]").style.fontWeight' );
+		const boldPoint = await settings.evaluate( '(()=>{const r=document.getElementById("appearance-script-bold").getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2}})()' );
+		await settings.call( "Page.bringToFront" );
+		for ( const type of [ "mousePressed", "mouseReleased" ] ) await settings.call( "Input.dispatchMouseEvent", { type, button: "left", clickCount: 1, ...boldPoint } );
+		assert.notEqual( await detached.evaluate( 'document.querySelector("[data-sample=script]").style.fontWeight' ), originalWeight, "Settings accepts a real pointer click and updates the still-open preview" );
+		await settings.evaluate( 'document.getElementById("appearance-script-bold").click()' );
+		assert.equal( await detached.evaluate( '(()=>{const b=document.querySelector(".settings-preview-close"),r=b.getBoundingClientRect();return parseFloat(getComputedStyle(b).fontSize)===13&&r.height<=34&&r.width<150&&r.bottom<=innerHeight})()' ), true, "Close uses a standard control size independent of prompter text" );
+		if ( width === 1024 && process.env.SIGHTLINE_TEST_ARTIFACTS ) {
+			const shot = await detached.call( "Page.captureScreenshot", { format: "png" } );
+			await fs.writeFile( path.join( artifacts, "floating-preview.png" ), Buffer.from( shot.data, "base64" ) );
+		}
+		await detached.call( "Page.bringToFront" );
+		await detached.evaluate( 'document.body.tabIndex=-1;document.body.focus()' );
+		await detached.call( "Input.dispatchKeyEvent", { type: "keyDown", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 } );
+		await detached.call( "Input.dispatchKeyEvent", { type: "keyUp", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 } );
+		assert.equal( await detached.evaluate( 'document.querySelector(".settings-floating-preview").hidden' ), true, "Escape hides only the detached preview" );
+		assert.equal( await settings.evaluate( '!document.getElementById("settings-modal").classList.contains("hidden")' ), true, "Settings stays open with its draft intact" );
 		await settings.evaluate( 'document.querySelector("[data-tab=typography]").click()' );
 		for ( const target of [ "script", "headings", "inline", "production" ] ) {
 			await settings.evaluate( `document.querySelector('[data-text-target="${ target }"]').click()` );
 			assert.equal( await settings.evaluate( 'document.querySelector("#set-reading-host").getBoundingClientRect().bottom<=document.querySelector(".settings-actions").getBoundingClientRect().top' ), true, `${ target } fits at ${ width }×${ height }` );
 		}
 	}
+	await settings.evaluate( 'document.querySelector(".settings-open-preview").click()' ); await pause( 100 );
+	const previewWindow = await connect( "utility-window.html?panel=preview" );
+	await native.evaluate( "process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron').BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().includes('panel=preview')).setBounds({width:300,height:360})" ); await pause( 100 );
+	assert.equal( await previewWindow.evaluate( '(()=>{const close=document.querySelector(".settings-preview-close").getBoundingClientRect();return close.bottom<=innerHeight&&close.right<=innerWidth&&document.body.scrollHeight<=innerHeight})()' ), true, "The minimum-size preview keeps its close control inside its frame" );
+	await native.evaluate( "process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron').BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().includes('panel=preview')).close()" ); await pause( 120 );
+	assert.equal( await previewWindow.evaluate( 'document.querySelector(".settings-floating-preview").hidden' ), true, "Native X closes only the preview" );
+	assert.equal( await settings.evaluate( '!document.getElementById("settings-modal").classList.contains("hidden")' ), true );
 	await resize( 1064, 691 );
 	await settings.evaluate( 'document.getElementById("settings-cancel").click()' ); await pause( 100 );
 	await main.evaluate( 'document.getElementById("cb-settings").click()' ); await pause( 150 );

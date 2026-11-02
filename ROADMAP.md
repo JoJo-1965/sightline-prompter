@@ -2,6 +2,12 @@
 
 ## Recording feedback batch — unpublished preview
 
+All current Settings observations are consolidated into one interactive review:
+mode dependencies, visible groups, mirror spacing, focus styling, Head guide
+and preview behaviour. Source-mode and non-modal-preview checks pass; remaining
+layout proposals await the combined sign-off before one app preview is built.
+The running recording build is retained.
+
 Mode context is implemented and validated in source for the next batch: one
 Notes/page, Voice or Scroll choice, with mode-specific fields and retained
 preferences. The current running package has not been replaced.
