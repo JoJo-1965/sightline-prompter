@@ -1,5 +1,46 @@
 # Sightline Prompter roadmap
 
+## Next candidate — MCP support (planned)
+
+Requested by Joanne on 2 November 2026 for the next candidate after UAT
+Preview 08. **Planned, not implemented or included in the current preview.**
+
+Add an optional Model Context Protocol (MCP) server adapter over Sightline's
+existing token-protected local API. Compatible AI assistants can discover
+supported tools and use the existing app functions through a standard
+connection. Retain the current API, command tools and agent kit.
+
+Initial scope:
+
+- Test the connection and report app, adapter and control-contract versions,
+  available capabilities and actionable setup errors.
+- Validate scripts, list slots and load or select an approved script.
+- Report preparation readiness, saved-reference availability and session
+  status, without automatically enabling the camera or microphone.
+- Expose supported prompting controls, section navigation, pace and markers.
+- Provide authorised access to take logs and edit-pack information for
+  production handover. This does not add a built-in video editor.
+- Provide explicit enable/disable and setup guidance, with separate access
+  to status/data, script/settings changes and recording controls. Honour
+  existing feature gates and recorder permissions; the adapter cannot enable
+  itself or bypass them.
+
+Start with local MCP-capable desktop agents. Remote/cloud access requires a
+separately designed authenticated connection and is outside the initial scope.
+Reuse the established Settings grouping and enable-dependent configuration;
+review any new interface before implementation.
+
+Candidate acceptance includes protocol/tool discovery, connection and version
+checks, input validation, permission enforcement, disabled-feature handling,
+reconnection and clear errors. Verify the packaged setup with Codex and Claude
+Code, preserve current API/Stream Deck behaviour and keep tokens out of output.
+
+Position the benefit as **Works with your AI assistant**, with **MCP support**
+as the technical feature. Until implemented and validated, use **MCP support —
+planned** only in roadmap/planning material. Update help, setup instructions,
+the feature grid, reviewer brief and JL draft together when it becomes a
+supported candidate capability; publication remains a separate decision.
+
 ## Recording feedback batch — unpublished preview
 
 Settings Preview 07 rolls the compact toolbar-icon mirror buttons into the

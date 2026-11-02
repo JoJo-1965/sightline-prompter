@@ -1,5 +1,13 @@
 # Feature-matrix review record
 
+2 November 2026, next-candidate MCP request: added optional MCP server support
+to ROADMAP.md, wrapping the existing local API with discovery, connection and
+version checks, script/control tools and authorised recording-data access.
+This is planned scope, not an implemented UAT 08 feature. No capability rows,
+help, screenshots, supported marketing claims or JL exports change; revision 9
+remains the current validated snapshot. Update those references together when
+the adapter is implemented and tested.
+
 2 November 2026, UAT Preview 08: optional local head-position feedback,
 manual fallback, real audio measurement, reviewed local test recording and
 explicit fixed framing-reference save/restore are implemented using the
