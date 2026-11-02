@@ -49,6 +49,23 @@ try {
 	await main.evaluate( 'document.getElementById("cb-settings").click()' );
 	const settings = await connect( "utility-window.html?panel=settings" ); await pause( 600 );
 	const native = await connect( "main-process" );
+	assert.equal( await settings.evaluate( 'document.querySelector(".settings-subtabs [data-tab=layout]").textContent' ), "Prompter layout", "Queued naming feedback appears in navigation" );
+	for ( const axis of [ "h", "v" ] ) {
+		const artwork = client => client.evaluate( `(()=>{const b=document.querySelector('${ client === main ? `#cb-mirror-${ axis }` : `.lp-mirror-row [data-axis=${ axis }]` }');return [b.querySelector('svg').outerHTML,b.getAttribute('aria-label')]})()` );
+		assert.deepEqual( await artwork( settings ), await artwork( main ), "Settings reuses the toolbar mirror artwork and accessible labels" );
+	}
+	const mainSize = await native.evaluate( "process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron').BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().includes('teleprompter.html')).getContentSize()" );
+	await main.evaluate( 'window.sessionControlClasses=["guide-controls","obs-status","capture-override-note"].map(id=>[id,document.getElementById(id).className]);sessionControlClasses.forEach(([id])=>document.getElementById(id).classList.remove("hidden"))' );
+	for ( const [ width, height ] of [ [ 1024, 600 ], [ 680, 500 ], [ 480, 300 ] ] ) {
+		await native.evaluate( `process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron').BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().includes('teleprompter.html')).setContentSize(${ width },${ height })` ); await pause( 100 );
+		assert.equal( await main.evaluate( '(()=>{const r=["guide-controls","obs-status","capture-override-note"].map(id=>document.getElementById(id).getBoundingClientRect());return r.every(a=>a.left>=0&&a.right<=innerWidth&&a.top>=0&&a.bottom<=innerHeight)&&r.every((a,i)=>r.every((b,j)=>i===j||a.right<=b.left||b.right<=a.left||a.bottom<=b.top||b.bottom<=a.top))})()' ), true, `Session controls wrap without overlapping at ${ width }×${ height }` );
+		if ( width === 1024 && process.env.SIGHTLINE_TEST_ARTIFACTS ) {
+			const shot = await main.call( "Page.captureScreenshot", { format: "png" } );
+			await fs.writeFile( path.join( artifacts, "session-controls.png" ), Buffer.from( shot.data, "base64" ) );
+		}
+	}
+	await main.evaluate( 'sessionControlClasses.forEach(([id,name])=>document.getElementById(id).className=name);delete window.sessionControlClasses' );
+	await native.evaluate( `process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron').BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().includes('teleprompter.html')).setContentSize(${ mainSize[0] },${ mainSize[1] })` );
 	assert.equal( await settings.evaluate( '!!document.querySelector(".settings-workspace")' ), true );
 	const approvedSource = await fs.readFile( path.join( root, "docs/design/settings-and-tools-prototype.html" ), "utf8" );
 	const approvedAreas = [ ...approvedSource.slice( approvedSource.indexOf( "const areas=" ), approvedSource.indexOf( "const targets=" ) ).matchAll( /\{id:'[^']+',name:'([^']+)'/g ) ].map( match => match[1] );
@@ -225,9 +242,17 @@ try {
 	}
 	console.log( "Overflow:", JSON.stringify( overflow ) );
 	assert.deepEqual( overflow, [], "Every desktop section fits above the footer" );
-	const resize = ( width, height ) => native.evaluate( `process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron').BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().includes('panel=settings')).setContentSize(${ width },${ height })` );
+	const resize = async ( width, height ) => {
+		await native.evaluate( `process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron').BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().includes('panel=settings')).setContentSize(${ width },${ height })` );
+		for ( let attempt = 0; attempt < 30; attempt++ ) {
+			if ( await settings.evaluate( `innerWidth===${ width }&&innerHeight===${ height }` ) ) return;
+			await pause( 50 );
+		}
+		assert.fail( `Settings did not resize to ${ width }×${ height }` );
+	};
 	for ( const [ width, height ] of [ [ 1024, 600 ], [ 680, 600 ], [ 576, 539 ], [ 560, 500 ] ] ) {
 		await resize( width, height ); await pause( 120 );
+		console.log( "Viewport:", await settings.evaluate( '({width:innerWidth,height:innerHeight,wide:matchMedia("(min-width:921px)").matches,display:getComputedStyle(document.querySelector(".settings-workspace > .settings-preview-pane")).display})' ) );
 		assert.deepEqual( await subtopicSpills(), [], `Every visible subtab fits at ${ width }×${ height }` );
 		const failures = [];
 		for ( const name of sections ) {

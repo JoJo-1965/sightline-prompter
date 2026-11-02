@@ -111,7 +111,7 @@ export function createLiveTools( panel, { getState, action, save, size, backing 
 			row( state.onAir ? "On-air backing" : "Off-air backing", state.opacity * 100, 0, 100, "%", value => backing( value / 100 ) );
 			row( "Line spacing", Math.round( ( state.lineHeight ?? 1.3 ) * 100 ), 100, 250, "%", value => save( { lineHeight: value / 100 } ), 5 );
 			button( "Themes and text", "typography" );
-			button( "Layout and margins", "layout" );
+			button( "Prompter layout", "layout" );
 			button( "Guide adjustments", "guide-adjust" );
 			button( "Screens and mirroring", "screens" );
 		} else {

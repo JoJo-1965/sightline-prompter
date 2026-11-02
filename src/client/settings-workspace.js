@@ -281,14 +281,14 @@ export function createSettingsWorkspace( root, { getState, getGuideState = () =>
 		themeActions.append( button );
 	}
 	doc.getElementById( "set-background-host" )?.remove();
-	const layout = section( "layout", "Layout", doc.getElementById( "set-layout-host" ) );
-	layout.replaceChildren( el( "legend", {}, "Layout" ) );
+	const layout = section( "layout", "Prompter layout", doc.getElementById( "set-layout-host" ) );
+	layout.replaceChildren( el( "legend", {}, "Prompter layout" ) );
 	choice( layout, "lp-align", "Alignment", "textAlign", [ [ "left", "Left" ], [ "center", "Centre" ] ], true );
 	for ( const [ id, label, key, min, max ] of [ [ "lp-margin-x", "Side margins", "marginX", 0, 35 ], [ "lp-margin-top", "Top margin", "marginTop", 0, 60 ], [ "lp-margin-bottom", "Bottom margin", "marginBottom", 0, 60 ], [ "lp-reading-line", "Reading line", "readingLine", 5, 80 ] ] ) range( layout, id, label, key, { min, max } );
 	const aids = section( "aids", "Reading aids", doc.getElementById( "set-aids-host" ) );
 	aids.replaceChildren( el( "legend", {}, "Reading aids" ) );
 	for ( const [ id, label, key, help ] of [
-		[ "lp-marker", "Reading marker", "showReadingMarker", "Shows a visible marker at your reading line. Its position follows the reading-line setting in Reading > Layout." ],
+		[ "lp-marker", "Reading marker", "showReadingMarker", "Shows a visible marker at your reading line. Its position follows the reading-line setting in Reading > Prompter layout." ],
 		[ "lp-sentence", "Sentence highlight", "highlightSentence", "Highlights the current sentence in steady scrolling and the next sentence to say in voice mode. This helps you keep your place without changing the script or scroll speed." ],
 		[ "lp-progress", "Progress and time", "showProgress", "Shows script progress and estimated time remaining. While paused, click or drag the progress bar to move; clicks are ignored during delivery to prevent accidental jumps." ],
 		[ "lp-focus-band", "Focus band", "focusBand", "Dims text away from the reading line so the active reading area stands out. Enable it to reveal Focus strength. Switching it off retains your saved strength." ]
@@ -307,6 +307,9 @@ export function createSettingsWorkspace( root, { getState, getGuideState = () =>
 	const mirror = oldLayout.querySelector( ".lp-mirror-row" );
 	for ( const original of mirror?.querySelectorAll( "[data-axis]" ) ?? [] ) {
 		const button = original.cloneNode( true );
+		const toolbar = doc.getElementById( `cb-mirror-${ button.dataset.axis }` );
+		button.replaceChildren( toolbar.querySelector( "svg" ).cloneNode( true ), el( "span", {}, button.dataset.axis === "h" ? "Left–right" : "Up–down" ) );
+		button.setAttribute( "aria-label", toolbar.getAttribute( "aria-label" ) );
 		original.replaceWith( button );
 		button.addEventListener( "click", () => {
 			const mode = getState().mirrored;

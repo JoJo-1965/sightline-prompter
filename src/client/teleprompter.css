@@ -1294,7 +1294,8 @@ body.controls-hidden * {
 
 /* --- Help --- */
 
-.cb-mirror-axis svg { display: block; width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linejoin: round; }
+.cb-mirror-axis svg, .mirror-pills svg { display: block; width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linejoin: round; flex-shrink: 0; }
+.mirror-pills button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
 .help-tabs { display: flex; flex: 0 0 auto; flex-wrap: wrap; gap: 6px; margin: 8px 0 12px; }
 .help-tabs button { padding: 7px 12px; border: 1px solid #657282; border-radius: 6px; background: #26313c; color: #edf3fa; text-wrap: balance; }
 .help-tabs button[aria-selected="true"] { background: #315b79; border-color: #8fd3ff; }
@@ -3042,6 +3043,10 @@ body.notes-pages #md ol.current-section {
 	text-wrap: pretty;
 }
 #obs-status.hidden { display: none; }
+#session-controls {position:fixed;top:50px;left:12px;right:12px;z-index:1300;display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:flex-start;gap:8px;pointer-events:none;}
+#session-controls > * {pointer-events:auto;}
+#session-controls > .guide-controls, #session-controls > #obs-status {position:static;box-sizing:border-box;max-width:100%;}
+#session-controls > #capture-override-note {position:static;box-sizing:border-box;flex:0 0 100%;width:100%;max-width:100%;margin:0;}
 #obs-status.obs-recording { border-left: 4px solid #ff5252; }
 #obs-status button {
 	min-height: 32px;

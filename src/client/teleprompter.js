@@ -348,6 +348,13 @@ for ( const el of [ ...document.body.children ] ) {
 }
 document.body.appendChild( hud );
 
+// Persistent session actions share one wrapping row rather than overlapping
+// independent fixed positions on small displays.
+const sessionControls = document.createElement( "div" );
+sessionControls.id = "session-controls";
+sessionControls.append( uiElement( "capture-override-note" ), uiElement( "guide-controls" ), uiElement( "obs-status" ) );
+hud.append( sessionControls );
+
 function applyMirror() {
 	const md = uiElement( "md" );
 	if ( !md ) return;
