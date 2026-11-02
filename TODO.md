@@ -9,8 +9,13 @@ mirror icons and one combined preview containing all preceding UI fixes.
 
 - [x] Implement the approved Settings batch and retain saved preferences.
 - [x] Include the older Guide/OBS shortcut overlap in this batch.
-- [ ] Complete native and packaged checks, documentation/matrix/JL snapshot sync.
-- [ ] Deliver one portable Preview 06 using the existing Preview 05 profile.
+- [x] Complete native and packaged checks, documentation/matrix/JL snapshot sync.
+- [x] Deliver one portable Preview 06 using the existing Preview 05 profile.
+
+Packaged source `50e2a08`, code `c0b1b9a`, documentation revision 7. Running
+from `D:/Sightline/Dev/Builds/Previews/settings-layout-preview-06`; the retained
+profile's preferences, slots and pairing were checked unchanged. No recording
+was started. See [verification](docs/PREVIEW-06-VERIFICATION.md).
 
 Physical controller/pedal/iPhone acceptance, clean recording/capture and sync
 remain manual checks. Code signing, updates, meeting integrations and other
