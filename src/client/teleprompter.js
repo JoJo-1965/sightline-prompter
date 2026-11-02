@@ -102,6 +102,7 @@ const summaryModal = uiElement( "take-summary" );
 let headGuideState = null;
 window.electron.onHeadGuideState( ( value ) => {
 	headGuideState = value;
+	settingsWorkspace?.sync();
 	const restore = uiElement( "guide-controls" );
 	restore?.classList.toggle( "hidden", !value.shown );
 	restore?.setAttribute( "aria-pressed", String( value.controlsShown ) );
@@ -2705,6 +2706,7 @@ function settingsFeedback( text, error = false ) {
 let settingsReturnFocus = null;
 settingsWorkspace = createSettingsWorkspace( settingsModal, {
 	getState: () => settingsDraft?.value ?? { ...settings, fontSize, opacity, autoScrollSpeed, audioDeviceId, mirrored },
+	getGuideState: () => headGuideState,
 	stage: stageSettings, navigate: name => showSettingsTab( name ), toast: ( text ) => {
 		settingsFeedback( text );
 		showToast( text, 4500 );

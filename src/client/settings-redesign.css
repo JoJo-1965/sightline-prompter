@@ -134,6 +134,12 @@ body:not(.utility-window) #settings-modal.settings-redesign .settings-content {w
 .settings-floating-preview .settings-preview-close {align-self:flex-end;flex-shrink:0;margin-top:10px;}
 #settings-modal > .settings-floating-preview {position:fixed;inset:12px 12px 12px auto;width:min(340px,calc(100vw - 24px));height:auto;border:1px solid #667484;border-radius:8px;z-index:30;}
 #settings-modal.settings-redesign .settings-control-row {margin:0;box-sizing:border-box;}
+#settings-modal.settings-redesign .settings-guide-subheading {font:600 13px/1.4 "Segoe UI",system-ui,sans-serif;margin:14px 0 7px;color:#a6cde7;}
+.settings-guide-preview {display:flex;flex-direction:column;position:relative;flex:1;min-height:0;border:1px solid #596b81;border-radius:6px;overflow:hidden;padding:8px;}
+.settings-guide-preview svg {width:100%;height:100%;min-height:0;flex:1;}
+.settings-guide-preview p {margin:8px 0 0!important;font:11px/1.4 "Segoe UI",system-ui,sans-serif!important;text-align:center;text-wrap:pretty;}
+.settings-floating-preview [hidden] {display:none!important;}
+@media(min-width:921px){#settings-modal.settings-redesign .settings-workspace>.settings-preview-pane{display:flex}#settings-modal.settings-redesign .settings-open-preview{display:none}}
 #settings-modal.settings-redesign :is(button,a,input,select):focus-visible {outline:2px solid var(--accent);outline-offset:-2px;}
 #settings-modal.settings-redesign .lp-mirror-row {display:flex;flex-direction:column;gap:8px;margin:12px 0 0;}
 #settings-modal.settings-redesign .settings-cue-file .file-row {display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;}

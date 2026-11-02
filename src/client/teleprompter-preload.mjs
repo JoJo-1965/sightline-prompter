@@ -9,7 +9,7 @@ contextBridge.exposeInMainWorld( "electron", {
 	saveSupportLog: () => ipcRenderer.invoke( "saveSupportLog" ),
 	// Control bar, slots and window IPC
 	windowControl: action => ipcRenderer.send( "windowControl", action ),
-	headGuide: ( action = "toggle" ) => ipcRenderer.send( "headGuideAction", action ),
+	headGuide: ( action = "toggle", value ) => ipcRenderer.send( "headGuideAction", action, value ),
 	utilityPanel: ( kind, action, value ) => ipcRenderer.send( "utilityPanel", kind, action, value ),
 	onUtilityPanelClose: callback => on( "utilityPanelClose", callback ),
 	onHeadGuideState: callback => on( "headGuideState", callback ),

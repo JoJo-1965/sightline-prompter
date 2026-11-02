@@ -255,21 +255,19 @@ and deployment.
 
 ### Unreleased
 
-**Focus styling, next batch:** the app now uses a single inset keyboard-focus
-cue instead of a detached outer halo. Native rendering and layout checks pass;
-the earlier installed package retains its old styling until the combined build.
+**Settings Preview 06:** implements the approved combined feedback layout.
+Visible button subtabs replace group dropdowns in Screens, Reading aids and
+Installed components. Mode and pace offers one Notes/page, Voice or Scroll
+choice with relevant controls and retained values. Head guide has Guide,
+Appearance and Recording reference tabs, a stateful Show/Hide control and
+separate recording/Ideal saves. Eye-line controls use the shared sliders and
+remain hidden until enabled. Mirror spacing and the inset focus cue are fixed.
 
-**Combined Settings feedback review:** one [interactive mock and gallery](docs/design/settings-feedback-batch-2026-11-02.md)
-covers mode dependencies, spacing, visible groups, focus styling, Head guide and
-preview behaviour. Source now has a movable non-modal preview with a standard
-close control and shared draft updates. Native interaction, close/resize and
-capture checks pass. Remaining layout proposals await the combined review;
-the running recording package is unchanged.
-
-**Next feedback batch, not yet packaged:** Mode and pace uses one Notes/page,
-Voice or Scroll choice. Relevant pace controls follow the selected mode;
-switching preserves their values. Native transitions and Apply/Cancel checks
-pass. The running Reading aids patch remains unchanged.
+The right preview now follows available width. Narrow windows use a movable,
+non-modal companion that updates while Settings stays usable, with a standard
+Close control. Native mode/reference, all-subtab, compact-window, real pointer,
+close/resize and capture checks pass, alongside the recorder regression fixture.
+The app remains 1.1.0; this is an unpublished preview, not a public release.
 
 **Preview 05 Reading aids patch:** Focus strength appears only with Focus band
 on and retains its value when switched off. Small ? pills explain every control

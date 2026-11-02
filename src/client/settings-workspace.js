@@ -6,7 +6,7 @@ import { roundControlNumber, steppedControlNumber } from "./numeric-controls.js"
 
 // Forms are assembled once, before their controllers attach. Settings keeps
 // ownership for its lifetime; Tools never borrows any of these nodes.
-export function createSettingsWorkspace( root, { getState, stage, navigate, toast } ) {
+export function createSettingsWorkspace( root, { getState, getGuideState = () => null, stage, navigate, toast } ) {
 	const doc = root.ownerDocument;
 	const box = root.querySelector( ".settings-content" );
 	const oldLayout = doc.getElementById( "layout-panel" );
@@ -125,6 +125,49 @@ export function createSettingsWorkspace( root, { getState, stage, navigate, toas
 		input.replaceChildren( ...values.map( ( [ value, name ] ) => el( "option", { value, textContent: name } ) ) );
 		row( host, label, input, help );
 		return bind( input, key, "select", { preview } );
+	}
+	function topicTabs( host, id, label, groups ) {
+		const tabs = el( "div", { id, className: "settings-targets settings-topic-tabs" } );
+		tabs.dataset.navigationChoice = "true";
+		tabs.setAttribute( "role", "tablist" );
+		tabs.setAttribute( "aria-label", label );
+		host.append( tabs );
+		const panels = new Map();
+		const select = ( key ) => {
+			for ( const button of tabs.children ) {
+				button.setAttribute( "aria-selected", String( button.dataset.topic === key ) );
+				button.tabIndex = button.dataset.topic === key ? 0 : -1;
+			}
+			for ( const [ name, panel ] of panels ) panel.hidden = name !== key;
+		};
+		for ( const [ key, title, fields ] of groups ) {
+			const button = el( "button", { id: `${ id }-${ key }`, type: "button", textContent: title } );
+			button.dataset.topic = key;
+			button.setAttribute( "role", "tab" );
+			const panel = el( "section", { id: `${ button.id }-panel` } );
+			panel.setAttribute( "role", "tabpanel" );
+			panel.setAttribute( "aria-labelledby", button.id );
+			button.setAttribute( "aria-controls", panel.id );
+			for ( const field of fields ) {
+				delete field.dataset.tab;
+				panel.append( field );
+			}
+			panels.set( key, panel );
+			tabs.append( button );
+			host.append( panel );
+			button.addEventListener( "click", () => select( key ) );
+		}
+		tabs.addEventListener( "keydown", ( event ) => {
+			if ( ![ "ArrowLeft", "ArrowRight", "Home", "End" ].includes( event.key ) ) return;
+			event.preventDefault();
+			event.stopPropagation();
+			const buttons = [ ...tabs.children ], index = buttons.indexOf( event.target );
+			const next = event.key === "Home" ? 0 : event.key === "End" ? buttons.length - 1 : ( index + ( event.key === "ArrowRight" ? 1 : -1 ) + buttons.length ) % buttons.length;
+			buttons[next].click();
+			buttons[next].focus();
+		} );
+		select( groups[0][0] );
+		return { tabs, panels, select };
 	}
 	function colour( host, id, label, key, target ) {
 		const input = take( id );
@@ -320,6 +363,13 @@ export function createSettingsWorkspace( root, { getState, stage, navigate, toas
 	range( mode, "set-voice-speed", "Voice response", "autoScrollSpeed", { min: 10, max: 300, scale: 100, step: 5, preview: false, help: "Response to recognised speech. This changes following speed, not microphone gain." } );
 	range( mode, "set-steady-wpm", "Scroll speed", "steadyWpm", { min: 60, max: 300, unit: "wpm", step: 5, preview: false, help: "Words per minute for Scroll mode. If Follow script pacing is on, pacing directives can replace this speed as you reach them. Voice response and Notes / page mode are independent." } );
 	range( mode, "set-countdown", "Countdown before scrolling", "countdown", { min: 0, max: 10, unit: "s", preview: false, help: "A countdown before Scroll mode starts moving. Zero starts immediately. It does not delay Voice or Notes / page mode; script pauses and recording slates are separate." } );
+	const stripSettings = controls.get( "set-eye-line" ).closest( "fieldset" );
+	check( stripSettings, "set-eye-line", "Enable eye-line strip", "eyeLine", false, "Pin a narrow reading strip near the camera. Enable it to adjust width, height and reading line. Apply updates the prompter; turning it off retains its settings." );
+	for ( const [ id, label, key, min, step, help ] of [
+		[ "set-eye-line-width", "Strip width", "eyeLineWidth", 20, 5, "Width as a percentage of the display. Apply updates the reading strip." ],
+		[ "set-eye-line-height", "Strip height", "eyeLineHeight", 15, 5, "Height as a percentage of the display. Apply updates the reading strip." ],
+		[ "set-eye-line-reading", "Reading line in strip", "eyeLineReadingLine", 5, 1, "Reading-line position from the top of the strip. Apply updates its position." ]
+	] ) range( stripSettings, id, label, key, { min, max: id === "set-eye-line-reading" ? 80 : 100, step, preview: false, help } );
 	const modeDescription = el( "p", { id: "settings-mode-description", className: "field-hint" } );
 	modeDescription.dataset.essential = "true";
 	mode.append( modeDescription );
@@ -432,24 +482,61 @@ export function createSettingsWorkspace( root, { getState, stage, navigate, toas
 	}
 	checklist.append( steps );
 	explain( "getting-started", "Getting started", "Start with steady scrolling and adjust the reading appearance. Enable optional controllers only when you want to use them; installation and readiness checks live in Optional components.", [ [ "Initial setup", "onboarding" ], [ "Getting started guide", "help" ], [ "Optional components", "components" ] ] );
-	explain( "guide", "Head guide", "Set the eye centre and level first, then fit top, bottom and sides. Save a recording reference to return to that position; the ideal template stays separate. Capture protection depends on your recording route.", [ [ "Show guide", "guide-show" ], [ "Adjust guide", "guide-adjust" ], [ "Fullscreen / restore", "guide-fullscreen" ] ] );
+	const guide = section( "guide", "Head guide" );
+	const guideVisible = take( "set-head-guide-visible" );
+	guideVisible.type = "checkbox";
+	guideVisible.dataset.navigationChoice = "true";
+	const guideVisibleValue = row( guide, "Show head guide", guideVisible, "Show or hide the guide now without losing its saved settings. This is a manual framing reference, not face tracking." );
+	guideVisibleValue.append( el( "span", { className: "settings-on-off" } ) );
+	guideVisible.addEventListener( "change", () => window.electron.headGuide( guideVisible.checked ? "show" : "hide" ) );
+	const guideConfig = el( "div" );
+	guide.append( guideConfig );
+	const guideFit = el( "fieldset" ), guideLook = el( "fieldset" ), guideReference = el( "fieldset" );
+	const placement = take( "set-head-guide-placement", "select" );
+	placement.dataset.navigationChoice = "true";
+	placement.append( new Option( "Centred", "centre" ), new Option( "Beside prompter", "beside" ) );
+	row( guideFit, "Placement", placement, "Move the guide to its saved centred or beside-prompter position now. The separate adjustment controls fit the actual outline." );
+	placement.addEventListener( "change", () => window.electron.headGuide( "place", placement.value ) );
+	check( guideFit, "set-head-guide-eyes", "Lock eye position", "headGuideEyesLocked", false, "Fit the eye centre and level first, then lock them while fitting the head outline. Apply saves this setting; the floating adjustment controls remain available during recording." );
+	const guideAction = ( host, id, label, action ) => {
+		const button = el( "button", { id, type: "button", textContent: label } );
+		button.addEventListener( "click", () => window.electron.headGuide( action ) );
+		host.append( button );
+		return button;
+	};
+	const guideFitActions = el( "div", { className: "settings-inline-actions" } );
+	guideFit.append( guideFitActions );
+	guideAction( guideFitActions, "settings-guide-adjust", "Adjust guide", "adjust" );
+	const guideFullscreen = guideAction( guideFitActions, "settings-guide-fullscreen", "Fullscreen / restore", "fullscreen" );
+	guideFit.append( el( "p", { className: "field-hint" }, "Fit eye centre and level first, then top, bottom and sides in the floating adjustment controls." ) );
+	choice( guideLook, "set-head-guide-colour", "Outline colour", "headGuideColour", [ [ "mint", "Mint" ], [ "gold", "Gold" ] ], false, "Choose the existing guide outline colour. Apply updates the actual guide; the example previews the draft." );
+	range( guideLook, "set-head-guide-opacity", "Outline opacity", "headGuideOpacity", { min: 20, max: 100, scale: 100, preview: false, help: "Make the guide outlines easier to see. Apply updates the actual guide. The recorded result depends on capture protection and the recording route." } );
+	range( guideLook, "set-head-guide-backing", "Background opacity", "headGuideBackground", { min: 0, max: 80, scale: 100, preview: false, help: "Add a dark backing behind the guide to improve contrast. Zero is transparent. This does not change the prompter background." } );
+	check( guideLook, "set-head-guide-ideal", "Show Ideal", "headGuideShowIdeal", false, "Show the saved Ideal as a dashed outline alongside the solid Actual reference. Apply updates the guide. Saving a recording reference does not replace Ideal." );
+	const referenceStatus = el( "p", { id: "settings-guide-reference-status", className: "field-hint" } );
+	referenceStatus.setAttribute( "role", "status" );
+	guideReference.append( referenceStatus );
+	const referenceActions = el( "div", { className: "settings-inline-actions" } );
+	guideReference.append( referenceActions );
+	const saveReference = guideAction( referenceActions, "settings-guide-save-reference", "Save recording reference", "save-reference" );
+	const restoreReference = guideAction( referenceActions, "settings-guide-restore-reference", "Restore saved position", "restore-reference" );
+	guideReference.append( el( "p", { className: "field-hint" }, "Save the actual framing for this recording. Ideal stays unchanged." ) );
+	guideReference.append( el( "h4", { className: "settings-guide-subheading" }, "Ideal reference" ) );
+	const idealActions = el( "div", { className: "settings-inline-actions" } );
+	guideReference.append( idealActions );
+	const saveIdeal = guideAction( idealActions, "settings-guide-save-ideal", "Save as Ideal", "save-ideal" );
+	const restoreIdeal = guideAction( idealActions, "settings-guide-restore-ideal", "Back to Ideal", "reset-pose" );
+	const guideHint = el( "p", { id: "settings-guide-capture-status", className: "field-hint" } );
+	guideReference.append( guideHint );
+	topicTabs( guideConfig, "settings-guide-topics", "Head guide controls", [ [ "guide", "Guide", [ guideFit ] ], [ "appearance", "Appearance", [ guideLook ] ], [ "reference", "Recording reference", [ guideReference ] ] ] );
 	const health = section( "health", "Health" );
 	health.append( el( "p", { className: "field-hint" }, "Listening health and automatic recovery events are logged without recognised words. Enable command tracing separately only when investigating mishearings." ) );
 	const screenTopics = el( "fieldset" );
 	screenTopics.dataset.tab = "screens";
 	screenTopics.dataset.settingsFirst = "true";
-	const screenChoice = el( "select", { id: "settings-screen-topic" } );
-	screenChoice.dataset.navigationChoice = "true";
-	screenChoice.setAttribute( "aria-label", "Screen controls" );
-	screenChoice.append( new Option( "Window and mirroring", "window" ), new Option( "Eye-line strip", "strip" ) );
-	screenTopics.append( screenChoice );
 	box.insertBefore( screenTopics, box.querySelector( ".modal-actions" ) );
 	const screenFields = [ ...root.querySelectorAll( "fieldset[data-tab=\"screens\"]" ) ].filter( node => node !== screenTopics );
-	const showScreens = () => {
-		for ( const field of screenFields ) field.hidden = ( field.querySelector( "#set-eye-line" ) ? "strip" : "window" ) !== screenChoice.value;
-	};
-	screenChoice.addEventListener( "change", showScreens );
-	showScreens();
+	topicTabs( screenTopics, "settings-screen-topics", "Screen controls", [ [ "window", "Window and mirroring", screenFields.filter( field => !field.querySelector( "#set-eye-line" ) ) ], [ "strip", "Eye-line strip", screenFields.filter( field => field.querySelector( "#set-eye-line" ) ) ] ] );
 	const aidTopics = el( "fieldset" );
 	const cueHighlight = controls.get( "set-highlight-cues" ).closest( "[data-settings-control]" );
 	addHelp( cueHighlight.querySelector( ".settings-option-name" ), "Highlight cue phrases", "Highlights phrases listed in a cues.yaml file and underlined words from rich-text or Word scripts. Cue phrases are exact words to say for slide changes; highlighting does not rewrite them." );
@@ -464,32 +551,15 @@ export function createSettingsWorkspace( root, { getState, stage, navigate, toas
 	cueFileGroup.append( cueFileName, cueFileRow );
 	aidTopics.dataset.tab = "aids";
 	aidTopics.dataset.settingsFirst = "true";
-	const aidChoice = el( "select" );
-	aidChoice.dataset.navigationChoice = "true";
-	aidChoice.setAttribute( "aria-label", "Reading aids" );
-	aidChoice.append( new Option( "Reading indicators", "indicators" ), new Option( "Slide cues and script tags", "cues" ) );
-	aidTopics.append( aidChoice );
 	box.insertBefore( aidTopics, box.querySelector( ".modal-actions" ) );
 	const aidFields = [ ...root.querySelectorAll( "fieldset[data-tab=\"aids\"]" ) ].filter( node => node !== aidTopics );
-	const showAids = () => {
-		for ( const field of aidFields ) field.hidden = ( field.querySelector( "#set-highlight-cues,#lp-directives" ) ? "cues" : "indicators" ) !== aidChoice.value;
-	};
-	aidChoice.addEventListener( "change", showAids );
-	showAids();
+	topicTabs( aidTopics, "settings-aid-topics", "Reading aids", [ [ "indicators", "Reading indicators", aidFields.filter( field => !field.querySelector( "#set-highlight-cues,#lp-directives" ) ) ], [ "cues", "Slide cues and script tags", aidFields.filter( field => field.querySelector( "#set-highlight-cues,#lp-directives" ) ) ] ] );
 	const componentFields = [ ...root.querySelectorAll( "[data-component-choice]" ) ];
 	if ( componentFields.length ) {
-		const choose = el( "select", { id: "settings-component-choice" } );
-		choose.dataset.navigationChoice = "true";
-		choose.setAttribute( "aria-label", "Optional component" );
-		for ( const item of componentFields ) choose.append( el( "option", { value: item.dataset.componentChoice }, item.querySelector( "legend" ).textContent ) );
 		const host = section( "components", "Optional components" );
 		host.dataset.settingsFirst = "true";
-		host.append( choose );
-		const paint = () => {
-			for ( const item of componentFields ) item.hidden = item.dataset.componentChoice !== choose.value;
-		};
-		choose.addEventListener( "change", paint );
-		paint();
+		const labels = { model: "Speech model", kit: "AI kit", node: "Node.js", obs: "OBS" };
+		topicTabs( host, "settings-component-topics", "Installed components", componentFields.map( item => [ item.dataset.componentChoice, labels[item.dataset.componentChoice] ?? item.querySelector( "legend" ).textContent, [ item ] ] ) );
 	}
 	// Small, named editors replace unbounded lists. Selecting another item never
 	// depends on the current window height.
@@ -621,6 +691,25 @@ export function createSettingsWorkspace( root, { getState, stage, navigate, toas
 	}
 	function sync( state = getState() ) {
 		const paletteInfo = READING_PALETTES[state.theme] ?? READING_PALETTES.default;
+		const actualGuide = getGuideState();
+		const guideShown = actualGuide?.shown ?? state.showHeadGuide === true;
+		guideVisible.checked = guideShown;
+		guideVisible.nextElementSibling.textContent = guideShown ? "On" : "Off";
+		guideConfig.hidden = !guideShown;
+		placement.value = actualGuide?.placement ?? state.headGuidePlacement ?? "centre";
+		guideFullscreen.setAttribute( "aria-pressed", String( actualGuide?.fullscreen === true ) );
+		const guidePending = actualGuide && [ [ "headGuideEyesLocked", "eyesLocked" ], [ "headGuideOpacity", "opacity" ], [ "headGuideBackground", "background" ], [ "headGuideColour", "colour" ], [ "headGuideShowIdeal", "showIdeal" ] ].some( ( [ key, property ] ) => state[key] !== undefined && state[key] !== actualGuide[property] );
+		const reference = actualGuide?.reference ?? state.headGuideReference;
+		referenceStatus.textContent = guidePending ? "Apply guide changes before saving or restoring a reference." : reference?.savedAt ? `Recording reference saved · ${ new Date( reference.savedAt ).toLocaleString() }` : "No recording reference saved.";
+		for ( const button of [ saveReference, saveIdeal, restoreIdeal ] ) button.disabled = !guideShown || !!guidePending;
+		restoreReference.disabled = !guideShown || !!guidePending || !reference?.pose;
+		guideHint.textContent = actualGuide?.captureStatus ?? "Manual reference; capture protection depends on your recording route.";
+		for ( const id of [ "set-eye-line-width", "set-eye-line-height", "set-eye-line-reading" ] ) {
+			const input = controls.get( id );
+			input.closest( "[data-settings-control]" ).hidden = state.eyeLine !== true;
+			input.disabled = state.eyeLine !== true;
+			bindings.get( id ).number.disabled = state.eyeLine !== true;
+		}
 		const focusEnabled = state.focusBand === true;
 		focusStrength.control.closest( "[data-settings-control]" ).hidden = !focusEnabled;
 		focusStrength.control.disabled = focusStrength.number.disabled = !focusEnabled;

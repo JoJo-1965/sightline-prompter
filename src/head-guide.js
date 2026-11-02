@@ -215,7 +215,9 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 			saveSettings( { showHeadGuide: false } );
 			return;
 		}
-		if ( !fromOverlay && !fromControls ) return;
+		const fromSettings = event.sender === prompter.webContents && [ "place", "save-reference", "restore-reference", "save-ideal", "reset-pose" ].includes( name );
+		if ( !fromOverlay && !fromControls && !fromSettings ) return;
+		if ( fromSettings && !overlay ) return;
 		if ( name === "ready" ) {
 			send();
 			if ( !hotkeyRegistered || !fullscreenHotkeyRegistered ) prompter.webContents.send( "toast", "A head guide hotkey is in use. Use Tools or Stream Deck for the guide controls." );

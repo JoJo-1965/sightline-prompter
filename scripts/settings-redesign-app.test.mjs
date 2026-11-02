@@ -56,7 +56,7 @@ try {
 	await settings.evaluate( 'document.querySelector("[data-tab=typography]").click()' );
 	const layout = await settings.evaluate( `(()=>{const nav=document.querySelector('.settings-navigation'),content=document.querySelector('.settings-section-content'),preview=document.querySelector('.settings-workspace > .settings-preview-pane'),groups=[...document.querySelectorAll('[data-settings-group]')],expanded=[...document.querySelectorAll('.settings-area-sections')].filter(x=>!x.hidden),r=x=>x.getBoundingClientRect();return {threeColumns:r(nav).right<=r(content).left&&r(content).right<=r(preview).left,previewVisible:!!preview.getClientRects().length,inlineSample:!!content.querySelector('.settings-preview-pane,.settings-reading-sample'),expanded:expanded.length,childWithinArea:expanded[0].previousElementSibling.dataset.settingsGroup,verticalList:groups.every((x,i)=>!i||r(x).left===r(groups[0]).left&&r(x).top>r(groups[i-1]).top),headerSearch:!!document.querySelector('.settings-head .settings-search input'),selectedColour:getComputedStyle(document.querySelector('[data-settings-group=reading]')).backgroundColor};})()` );
 	assert.deepEqual( layout, { threeColumns: true, previewVisible: true, inlineSample: false, expanded: 1, childWithinArea: "reading", verticalList: true, headerSearch: true, selectedColour: "rgb(41, 77, 112)" }, "Rendered composition must match the approved layout, independently of functional checks" );
-	await settings.evaluate( 'document.querySelector("[data-tab=screens]").click();document.getElementById("settings-screen-topic").focus()' );
+	await settings.evaluate( 'document.querySelector("[data-tab=screens]").click();document.getElementById("settings-screen-topics-window").focus()' );
 	assert.equal( await settings.evaluate( '(()=>{const input=document.activeElement,style=getComputedStyle(input);return input.matches(":focus-visible")&&style.outlineStyle!=="none"&&parseFloat(style.outlineWidth)>0&&parseFloat(style.outlineOffset)+parseFloat(style.outlineWidth)<=0})()' ), true, "Focused controls keep a visible cue without an outer halo" );
 	if ( process.env.SIGHTLINE_TEST_ARTIFACTS ) {
 		const shot = await settings.call( "Page.captureScreenshot", { format: "png" } );
@@ -95,7 +95,7 @@ try {
 	await aidShot( "reading-aids-help" );
 	await settings.evaluate( 'document.querySelector(".settings-explanation:popover-open").hidePopover()' );
 	await aidShot( "reading-aids-on" );
-	await settings.evaluate( 'const select=document.querySelector("select[aria-label=\\"Reading aids\\"]");select.value="cues";select.dispatchEvent(new Event("change",{bubbles:true}))' );
+	await settings.evaluate( 'document.getElementById("settings-aid-topics-cues").click()' );
 	for ( const id of [ "set-highlight-cues", "set-cues-file", "lp-directives" ] ) assert.equal( await settings.evaluate( `!!document.getElementById('${ id }').closest('[data-settings-control]').querySelector('button[data-help-text]')` ), true, `Cue/script option ${ id } has contextual help` );
 	await aidShot( "reading-aids-cues" );
 	await settings.evaluate( 'document.getElementById("settings-cancel").click()' );
@@ -133,6 +133,34 @@ try {
 	await settings.evaluate( `(()=>{for(const [id,value] of [['set-steady-wpm','${ previousPace[0] }'],['set-countdown','${ previousPace[1] }']]){const input=document.getElementById(id);input.value=value;input.dispatchEvent(new Event('input',{bubbles:true}))}})()` );
 	await settings.evaluate( 'document.getElementById("settings-apply").click()' ); await pause( 200 );
 	assert.equal( JSON.parse( await fs.readFile( path.join( profile, "app-state.json" ), "utf8" ) ).settings.pointsMode, false, "Returning to Scroll clears Notes mode on Apply" );
+	await settings.evaluate( 'document.querySelector("[data-tab=screens]").click();document.getElementById("settings-screen-topics-window").focus()' );
+	assert.equal( await settings.evaluate( '!document.getElementById("settings-screen-topic")&&!document.getElementById("settings-component-choice")&&!document.querySelector("select[aria-label=\\"Reading aids\\"]")' ), true, "Function groups use visible tabs instead of dropdown navigation" );
+	await settings.call( "Input.dispatchKeyEvent", { type: "keyDown", key: "ArrowRight", code: "ArrowRight", windowsVirtualKeyCode: 39 } );
+	assert.equal( await settings.evaluate( 'document.getElementById("settings-screen-topics-strip").getAttribute("aria-selected")' ), "true", "Group tabs support the same arrow navigation as text targets" );
+	assert.equal( await settings.evaluate( '!document.getElementById("set-eye-line-width").closest("[data-settings-control]").getClientRects().length' ), true, "Strip configuration stays hidden while disabled" );
+	await settings.evaluate( 'document.getElementById("set-eye-line").click()' );
+	assert.equal( await settings.evaluate( '!!document.getElementById("set-eye-line-width").closest("[data-settings-control]").getClientRects().length' ), true );
+	await aidShot( "eye-line-enabled" );
+	await settings.evaluate( 'document.getElementById("set-eye-line").click();document.querySelector("[data-tab=guide]").click();document.getElementById("set-head-guide-visible").click()' ); await pause( 400 );
+	assert.equal( await settings.evaluate( '!document.getElementById("settings-guide-topics").closest("[hidden]")&&document.querySelector(".settings-workspace .settings-guide-preview").querySelectorAll("ellipse").length===2' ), true, "Showing the guide exposes its three groups and actual/ideal preview" );
+	const idealBeforeGuideSettings = JSON.stringify( JSON.parse( await fs.readFile( path.join( profile, "app-state.json" ), "utf8" ) ).settings.headGuideIdeal );
+	await settings.evaluate( 'document.getElementById("settings-guide-topics-appearance").click();document.getElementById("set-head-guide-colour").value="gold";document.getElementById("set-head-guide-colour").dispatchEvent(new Event("change",{bubbles:true}));document.getElementById("set-head-guide-opacity").value=80;document.getElementById("set-head-guide-opacity").dispatchEvent(new Event("input",{bubbles:true}));document.getElementById("settings-guide-topics-guide").click();document.getElementById("set-head-guide-eyes").click();document.getElementById("settings-apply").click()' ); await pause( 300 );
+	const guideApplied = JSON.parse( await fs.readFile( path.join( profile, "app-state.json" ), "utf8" ) ).settings;
+	assert.deepEqual( [ guideApplied.headGuideColour, guideApplied.headGuideOpacity, guideApplied.headGuideEyesLocked ], [ "gold", 0.8, true ], "Guide settings save through the existing preference path" );
+	await settings.evaluate( 'document.getElementById("set-head-guide-placement").value="beside";document.getElementById("set-head-guide-placement").dispatchEvent(new Event("change",{bubbles:true}));document.getElementById("settings-guide-topics-reference").click();document.getElementById("settings-guide-save-reference").click()' ); await pause( 300 );
+	const guideSaved = JSON.parse( await fs.readFile( path.join( profile, "app-state.json" ), "utf8" ) ).settings;
+	assert.equal( guideSaved.headGuidePlacement, "beside", "Saved placement action reaches the guide" );
+	assert.ok( guideSaved.headGuideReference?.pose, "Settings can save the current recording reference" );
+	assert.equal( JSON.stringify( guideSaved.headGuideIdeal ), idealBeforeGuideSettings, "Recording reference never replaces Ideal" );
+	assert.equal( await settings.evaluate( '!document.getElementById("settings-guide-restore-reference").disabled' ), true );
+	await settings.evaluate( 'document.getElementById("settings-guide-restore-reference").click()' ); await pause( 120 );
+	for ( const group of [ "guide", "appearance", "reference" ] ) {
+		await settings.evaluate( `document.getElementById('settings-guide-topics-${ group }').click()` );
+		await aidShot( `guide-${ group }` );
+	}
+	await settings.evaluate( 'document.getElementById("set-head-guide-visible").click()' ); await pause( 150 );
+	assert.equal( await settings.evaluate( 'document.getElementById("settings-guide-topics").closest("[hidden]")!==null' ), true, "Hiding the guide retains preferences and hides configuration" );
+	await settings.evaluate( 'document.getElementById("set-head-guide-visible").click()' ); await pause( 250 );
 	await settings.evaluate( 'document.querySelector("[data-tab=typography]").click()' );
 	await settings.evaluate( 'document.querySelector(".settings-workspace [data-preview-reading=true]").click()' );
 	assert.equal( await settings.evaluate( 'document.querySelector(".settings-workspace [data-sample=production]").hidden' ), true, "Reading example hides production notes" );
@@ -185,7 +213,10 @@ try {
 	await settings.evaluate( 'document.querySelector("[data-tab=mode]").click()' );
 	assert.equal( await main.evaluate( 'globalThis.settingsMeterStream.getAudioTracks()[0].readyState' ), "ended", "Leaving Microphone stops the temporary input" );
 	await main.evaluate( 'navigator.mediaDevices.getUserMedia=globalThis.originalSettingsMedia;settingsToneContext.close()' );
+	await settings.evaluate( 'if(!document.getElementById("lp-focus-band").checked)document.getElementById("lp-focus-band").click()' );
 	const sections = await settings.evaluate( '[...document.querySelectorAll(".settings-subtabs [data-tab]")].map(x=>x.dataset.tab)' );
+	const subtopicSpills = async () => settings.evaluate( `(()=>{const failures=[],floor=document.querySelector('.settings-actions').getBoundingClientRect().top;for(const name of ['screens','aids','components','guide']){document.querySelector('.settings-subtabs [data-tab="'+name+'"]').click();const page=document.querySelector('[data-settings-page="'+name+'"]');for(const tab of page.querySelectorAll('.settings-topic-tabs [role=tab]')){tab.click();const spill=[...page.querySelectorAll('input,select,button,p,fieldset')].filter(x=>x.getClientRects().length&&!x.closest('[hidden],.hidden')).filter(x=>x.getBoundingClientRect().bottom>floor||x.getBoundingClientRect().right>innerWidth).map(x=>x.id||x.className);if(spill.length)failures.push({name,group:tab.textContent,spill});}}return failures})()` );
+	assert.deepEqual( await subtopicSpills(), [], "Every visible group fits the desktop frame" );
 	const overflow = [];
 	for ( const name of sections ) {
 		await settings.evaluate( `document.querySelector('.settings-subtabs [data-tab="${ name }"]').click()` ); await pause( 30 );
@@ -197,6 +228,7 @@ try {
 	const resize = ( width, height ) => native.evaluate( `process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron').BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().includes('panel=settings')).setContentSize(${ width },${ height })` );
 	for ( const [ width, height ] of [ [ 1024, 600 ], [ 680, 600 ], [ 576, 539 ], [ 560, 500 ] ] ) {
 		await resize( width, height ); await pause( 120 );
+		assert.deepEqual( await subtopicSpills(), [], `Every visible subtab fits at ${ width }×${ height }` );
 		const failures = [];
 		for ( const name of sections ) {
 			await settings.evaluate( `document.querySelector('.settings-subtabs [data-tab="${ name }"]').click()` );
@@ -205,7 +237,9 @@ try {
 		}
 		console.log( `Compact ${ width }×${ height }: ${ JSON.stringify( failures ) }` );
 		assert.deepEqual( failures, [], `Every section fits at ${ width }×${ height }` );
-		assert.equal( await settings.evaluate( '!!document.querySelector(".settings-compact-nav").getClientRects().length&&!document.querySelector(".settings-navigation").getClientRects().length&&!document.querySelector(".settings-workspace > .settings-preview-pane").getClientRects().length' ), true, "Compact selectors and Preview action follow the approved responsive composition" );
+		assert.equal( await settings.evaluate( '!!document.querySelector(".settings-compact-nav").getClientRects().length&&!document.querySelector(".settings-navigation").getClientRects().length' ), true, "Compact navigation fits the smaller frame" );
+		assert.equal( await settings.evaluate( '!!document.querySelector(".settings-workspace > .settings-preview-pane").getClientRects().length' ), width > 920, "Preview placement depends on width rather than height" );
+		if ( width > 920 ) continue;
 		await settings.evaluate( 'document.querySelector(".settings-open-preview").click()' );
 		const detached = await connect( "utility-window.html?panel=preview" ); await pause( 150 );
 		await detached.evaluate( 'document.querySelector("[data-preview-reading=true]").click()' );
@@ -220,7 +254,7 @@ try {
 		assert.notEqual( await detached.evaluate( 'document.querySelector("[data-sample=script]").style.fontWeight' ), originalWeight, "Settings accepts a real pointer click and updates the still-open preview" );
 		await settings.evaluate( 'document.getElementById("appearance-script-bold").click()' );
 		assert.equal( await detached.evaluate( '(()=>{const b=document.querySelector(".settings-preview-close"),r=b.getBoundingClientRect();return parseFloat(getComputedStyle(b).fontSize)===13&&r.height<=34&&r.width<150&&r.bottom<=innerHeight})()' ), true, "Close uses a standard control size independent of prompter text" );
-		if ( width === 1024 && process.env.SIGHTLINE_TEST_ARTIFACTS ) {
+		if ( width === 680 && process.env.SIGHTLINE_TEST_ARTIFACTS ) {
 			const shot = await detached.call( "Page.captureScreenshot", { format: "png" } );
 			await fs.writeFile( path.join( artifacts, "floating-preview.png" ), Buffer.from( shot.data, "base64" ) );
 		}
@@ -277,6 +311,7 @@ try {
 		await settings.evaluate( '[...document.querySelectorAll("[data-interface-master] input")].forEach(x=>{x.checked=true;x.dispatchEvent(new Event("change",{bubbles:true}))})' );
 		for ( const name of sections ) {
 			await settings.evaluate( `document.querySelector('.settings-subtabs [data-tab="${ name }"]').click()` ); await pause( 60 );
+			await settings.evaluate( `document.querySelector('[data-settings-page="${ name }"] .settings-topic-tabs [role=tab]')?.click()` );
 			const screenshot = await settings.call( "Page.captureScreenshot", { format: "png" } );
 			await fs.writeFile( path.join( artifacts, `settings-preview05-${ name }.png` ), Buffer.from( screenshot.data, "base64" ) );
 		}

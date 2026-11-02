@@ -153,6 +153,7 @@ export function createSettingsNavigation( modal, { onShow = () => {}, getState =
 			localStorage.setItem( "settingsTab", name );
 		} catch { /* Optional persistence. */ }
 		onShow( name );
+		modal.dispatchEvent( new CustomEvent( "settings-section-change", { detail: name } ) );
 		return name;
 	}
 	area.addEventListener( "change", () => show( SETTINGS_GROUPS.find( group => group.id === area.value ).pages[0][0] ) );

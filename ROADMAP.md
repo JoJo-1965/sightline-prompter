@@ -2,18 +2,13 @@
 
 ## Recording feedback batch — unpublished preview
 
-All current Settings observations are consolidated into one interactive review:
-mode dependencies, visible groups, mirror spacing, focus styling, Head guide
-and preview behaviour. Source-mode and non-modal-preview checks pass; remaining
-layout proposals await the combined sign-off before one app preview is built.
-The running recording build is retained.
-
-Mode context is implemented and validated in source for the next batch: one
-Notes/page, Voice or Scroll choice, with mode-specific fields and retained
-preferences. The current running package has not been replaced.
-
-Mirror-group spacing is corrected in source and the open preview. The next
-batched package will retain the spacing after restart; no controls were moved.
+Joanne approved the combined layout on 2 November. Settings Preview 06 includes
+all stacked observations: context-aware modes, visible group tabs, mirror
+spacing, inset focus, Head guide setup/reference controls and width-based
+inline versus non-modal preview. Eye-line configuration uses the shared
+controls and follows its enable switch. All subtabs fit the tested desktop and
+compact frames; mode/guide persistence and recorder regression checks pass.
+Published app/plugin versions remain 1.1.0/0.2.0.
 
 Reading aids follow-up: Focus strength follows the Focus band switch and keeps
 its saved value when off. Both aid groups have contextual ? help. Native hover,

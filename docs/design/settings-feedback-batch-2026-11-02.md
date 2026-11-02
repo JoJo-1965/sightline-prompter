@@ -1,8 +1,10 @@
 # Settings feedback batch — 2 November 2026
 
-These are review proposals unless marked implemented. Show the combined layout
-before wiring any departure from the signed-off interactive preview. No new
-package, RC, supported-feature claim or website deployment is implied.
+**Approved by Joanne, 2 November 2026.** The combined layout is now wired into
+Settings Preview 06. The proposal notes and mock captures below are retained as
+the review record; the current native gallery is in
+[Settings screenshots](../guide/settings-gallery.md). No release, RC or live
+website deployment is implied.
 
 ## One combined review
 

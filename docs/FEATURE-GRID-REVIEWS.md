@@ -1,5 +1,17 @@
 # Feature-matrix review record
 
+2 November 2026, approved combined batch: Joanne approved the review layout.
+Implemented visible tabs for Screens, Reading aids and Installed components,
+the three-mode selector, Head guide controls/reference actions and matching
+manual preview, width-based third-column placement, non-modal companion,
+inset focus, mirror spacing and standard eye-line controls with enable gating.
+All 34 sections and all subtabs fit five native sizes, including Focus band on.
+Mode/guide save/restore, actual pointer interaction, native/Escape close and
+capture checks pass. Unit and recorder/head-guide regression fixtures pass.
+Revision 7 and Preview 06 are the new unpublished basis; pin the final code
+hash and regenerate/sync references before packaging. No script syntax or
+marketing-positioning change is introduced. Hardware limits remain qualified.
+
 2 November 2026, focus follow-up: the actual app source now uses an inset focus
 cue instead of the detached outer halo, including the floating preview. Native
 rendering confirms that focus remains visible and does not paint outside the

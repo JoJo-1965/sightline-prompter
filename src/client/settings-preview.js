@@ -1,5 +1,6 @@
 import { appearanceFromSettings, READING_PALETTES } from "./reading-appearance.js";
 import { showPanelWindow, hidePanelWindow } from "./panel-windows.js";
+import { guidePose, guideOutline } from "./guide-pose.js";
 
 // The approved preview is a separate column. Its Paused/Reading controls only
 // change the example; they never start prompting, a microphone or a recorder.
@@ -23,6 +24,7 @@ export function createSettingsPreview( root, getState ) {
 				<span data-sample="inline">[smile]</span>
 				<p data-sample="script">Keep your place.</p>
 			</div>
+			<div class="settings-guide-preview" hidden></div>
 			<p class="settings-preview-explainer" role="status"></p>
 			<div class="settings-preview-footer">Example only · no live camera or audio.</div>`;
 		for ( const button of host.querySelectorAll( "[data-preview-reading]" ) ) button.addEventListener( "click", () => {
@@ -83,6 +85,11 @@ export function createSettingsPreview( root, getState ) {
 	new MutationObserver( () => {
 		if ( root.classList.contains( "hidden" ) ) hide();
 	} ).observe( root, { attributes: true, attributeFilter: [ "class" ] } );
+	root.addEventListener( "settings-section-change", () => sync() );
+	const guideShape = ( value, ideal = false ) => {
+		const pose = guidePose( value ), shape = guideOutline( pose );
+		return `<g fill="none" stroke="currentColor" stroke-width="3" ${ ideal ? "stroke-dasharray=\"8 6\"" : "" } transform="translate(${ pose.x * 10 } ${ pose.y * 5.625 }) translate(500 155) scale(${ pose.scale }) translate(-500 -155)"><g transform="translate(500 155) scale(${ pose.width } ${ pose.height }) translate(-500 -155)"><ellipse cx="${ shape.cx }" cy="${ shape.cy }" rx="${ shape.rx }" ry="${ shape.ry }"/><path d="${ shape.shoulders }"/></g><path transform="translate(500 155) scale(${ 1 / pose.scale }) translate(-500 -155)" d="M436 155h28m72 0h28"/></g>`;
+	};
 	function sync( state = getState() ) {
 		const appearance = appearanceFromSettings( state, state );
 		const palette = READING_PALETTES[state.theme] ?? READING_PALETTES.default;
@@ -90,10 +97,22 @@ export function createSettingsPreview( root, getState ) {
 		const rgb = [ 1, 3, 5 ].map( offset => parseInt( colour.slice( offset, offset + 2 ), 16 ) );
 		const backing = reading ? state.backingOnAir ?? 0.07 : state.opacity ?? 1;
 		const scriptSize = 19 * ( state.fontSize ?? 3 ) / 3;
+		const isGuide = !!root.querySelector( "[data-settings-page=\"guide\"]:not([hidden])" );
 		for ( const host of views ) {
+			host.querySelector( "h3" ).textContent = isGuide ? "Framing reference" : "Script view preview";
+			host.querySelector( ".settings-preview-mode" ).hidden = isGuide;
+			host.querySelector( ".settings-script-preview" ).hidden = isGuide;
+			const guide = host.querySelector( ".settings-guide-preview" );
+			guide.hidden = !isGuide;
+			if ( isGuide ) {
+				const pose = guidePose( Object.fromEntries( [ "x", "y", "scale", "width", "height", "top", "bottom", "left", "right" ].map( key => [ key, state[`headGuide${ key[0].toUpperCase() }${ key.slice( 1 ) }`] ] ) ) );
+				guide.style.backgroundColor = `rgba(0,0,0,${ state.headGuideBackground ?? 0.12 })`;
+				guide.style.color = state.headGuideColour === "gold" ? "#fbd86c" : "#72efce";
+				guide.innerHTML = `<svg viewBox="250 0 500 562.5" role="img" aria-label="Manual Actual and Ideal framing references" style="opacity:${ state.headGuideOpacity ?? 0.75 }">${ state.showHeadGuide ? `${ state.headGuideShowIdeal !== false ? guideShape( state.headGuideIdeal, true ) : "" }${ guideShape( pose ) }` : "<text x=\"500\" y=\"280\" text-anchor=\"middle\" fill=\"currentColor\" stroke=\"none\" font-size=\"28\">Guide hidden</text>" }</svg><p>Solid: Actual · Dashed: Ideal</p>`;
+			}
 			for ( const button of host.querySelectorAll( "[data-preview-reading]" ) ) button.setAttribute( "aria-pressed", String( ( button.dataset.previewReading === "true" ) === reading ) );
 			host.querySelector( ".settings-script-preview" ).style.backgroundColor = `rgba(${ rgb.join( "," ) },${ backing })`;
-			host.querySelector( ".settings-preview-explainer" ).textContent = reading ? "Reading: notes hidden." : "Paused: notes shown.";
+			host.querySelector( ".settings-preview-explainer" ).textContent = isGuide ? "Manual reference · no face tracking." : reading ? "Reading: notes hidden." : "Paused: notes shown.";
 			for ( const node of host.querySelectorAll( "[data-sample]" ) ) {
 				const target = node.dataset.sample;
 				const style = appearance.text[target];
