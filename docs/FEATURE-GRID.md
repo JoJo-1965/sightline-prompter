@@ -5,7 +5,7 @@
 
 **Maintained source:** [Feature grid](https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/FEATURE-GRID.md)
 
-This grid describes the preview built from `e4bf0f4`, with companion Stream
+This grid describes the preview built from `228b4f8`, with companion Stream
 Deck plugin **0.2.0**. It includes the existing features and the unpublished
 preview additions. The build manifest also records the packaging/documentation
 snapshot. The public app release remains **1.1.0**; this document
