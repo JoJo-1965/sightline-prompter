@@ -1,5 +1,13 @@
 # Feature-matrix review record
 
+2 November 2026, full queued mirror card received after Preview 06 handover:
+the earlier truncated card also requested smaller buttons. Source now uses
+content-sized mirror buttons with the standard 32px minimum height and existing
+toolbar icons, rather than stretching each button across half the panel.
+This is a cosmetic correction for the next combined build, with no capability,
+permission, theme, script or matrix-row change. The packaged Preview 06 and its
+gallery/JL snapshot remain the reviewed revision-7 baseline until that build.
+
 2 November 2026, final conversation-queue review: the four visible queued
 cards are covered by Prompter layout naming, visible group tabs, toolbar SVG
 reuse for both mirror axes and one combined Preview 06. The old Guide/OBS

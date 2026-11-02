@@ -142,6 +142,8 @@ body:not(.utility-window) #settings-modal.settings-redesign .settings-content {w
 @media(min-width:921px){#settings-modal.settings-redesign .settings-workspace>.settings-preview-pane{display:flex}#settings-modal.settings-redesign .settings-open-preview{display:none}}
 #settings-modal.settings-redesign :is(button,a,input,select):focus-visible {outline:2px solid var(--accent);outline-offset:-2px;}
 #settings-modal.settings-redesign .lp-mirror-row {display:flex;flex-direction:column;gap:8px;margin:12px 0 0;}
+#settings-modal.settings-redesign .mirror-pills {flex-wrap:wrap;align-self:flex-start;}
+#settings-modal.settings-redesign .mirror-pills button {flex:0 0 auto;min-width:110px;padding:5px 12px;white-space:nowrap;overflow-wrap:normal;}
 #settings-modal.settings-redesign .settings-cue-file .file-row {display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;}
 #settings-modal.settings-redesign .settings-cue-file input {width:100%;min-width:0;text-overflow:ellipsis;}
 #settings-modal.settings-redesign .settings-cue-file button {white-space:nowrap;overflow-wrap:normal;}
