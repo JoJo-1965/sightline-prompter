@@ -116,6 +116,9 @@ body:not(.utility-window) #settings-modal.settings-redesign .settings-content {w
 #settings-modal.settings-redesign .settings-style-buttons button:first-child {font-weight:700;}
 #settings-modal.settings-redesign .settings-style-buttons button:last-child {font-style:italic;}
 #settings-modal.settings-redesign .settings-control-row {margin:0;box-sizing:border-box;}
+#settings-modal.settings-redesign .settings-cue-file .file-row {display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;}
+#settings-modal.settings-redesign .settings-cue-file input {width:100%;min-width:0;text-overflow:ellipsis;}
+#settings-modal.settings-redesign .settings-cue-file button {white-space:nowrap;overflow-wrap:normal;}
 #settings-modal.settings-redesign .settings-targets {margin-top:0;}
 #settings-modal.settings-redesign .settings-option-name > span {font-weight:550;}
 #settings-modal.settings-redesign :is([hidden],.hidden) {display:none!important;}

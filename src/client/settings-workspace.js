@@ -39,17 +39,19 @@ export function createSettingsWorkspace( root, { getState, stage, navigate, toas
 		controls.set( id, node );
 		return node;
 	};
+	function addHelp( name, label, help ) {
+		if ( !help || name.querySelector( "[data-help-text]" ) ) return;
+		const hint = el( "button", { type: "button", className: "settings-help-button", textContent: "?" } );
+		hint.dataset.helpText = help;
+		hint.setAttribute( "aria-label", `Help: ${ label }` );
+		name.append( hint );
+	}
 	function row( host, label, control, help = "" ) {
 		const line = el( "div", { className: "settings-row settings-control-row" } );
 		line.dataset.settingsControl = control.id;
 		const name = el( "span", { className: "settings-option-name" } );
 		name.append( control.matches( "input,select,textarea" ) ? el( "label", { htmlFor: control.id }, label ) : el( "span", {}, label ) );
-		if ( help ) {
-			const hint = el( "button", { type: "button", className: "settings-help-button", textContent: "?" } );
-			hint.dataset.helpText = help;
-			hint.setAttribute( "aria-label", `Help: ${ label }` );
-			name.append( hint );
-		}
+		addHelp( name, label, help );
 		const value = el( "span", { className: "settings-control-value" } );
 		value.append( control );
 		line.append( name, value );
@@ -238,9 +240,14 @@ export function createSettingsWorkspace( root, { getState, stage, navigate, toas
 	for ( const [ id, label, key, min, max ] of [ [ "lp-margin-x", "Side margins", "marginX", 0, 35 ], [ "lp-margin-top", "Top margin", "marginTop", 0, 60 ], [ "lp-margin-bottom", "Bottom margin", "marginBottom", 0, 60 ], [ "lp-reading-line", "Reading line", "readingLine", 5, 80 ] ] ) range( layout, id, label, key, { min, max } );
 	const aids = section( "aids", "Reading aids", doc.getElementById( "set-aids-host" ) );
 	aids.replaceChildren( el( "legend", {}, "Reading aids" ) );
-	for ( const [ id, label, key ] of [ [ "lp-marker", "Reading marker", "showReadingMarker" ], [ "lp-sentence", "Sentence highlight", "highlightSentence" ], [ "lp-progress", "Progress and time", "showProgress" ], [ "lp-focus-band", "Focus band", "focusBand" ] ] ) check( aids, id, label, key, true );
-	range( aids, "lp-focus-strength", "Focus strength", "focusStrength", { step: 5, min: 10, max: 90, scale: 100 } );
-	choice( aids, "lp-text-effect", "Text edge", "textEffect", [ [ "none", "None" ], [ "outline", "Outline" ], [ "shadow", "Shadow" ] ], true );
+	for ( const [ id, label, key, help ] of [
+		[ "lp-marker", "Reading marker", "showReadingMarker", "Shows a visible marker at your reading line. Its position follows the reading-line setting in Reading > Layout." ],
+		[ "lp-sentence", "Sentence highlight", "highlightSentence", "Highlights the current sentence in steady scrolling and the next sentence to say in voice mode. This helps you keep your place without changing the script or scroll speed." ],
+		[ "lp-progress", "Progress and time", "showProgress", "Shows script progress and estimated time remaining. While paused, click or drag the progress bar to move; clicks are ignored during delivery to prevent accidental jumps." ],
+		[ "lp-focus-band", "Focus band", "focusBand", "Dims text away from the reading line so the active reading area stands out. Enable it to reveal Focus strength. Switching it off retains your saved strength." ]
+	] ) check( aids, id, label, key, true, help );
+	const focusStrength = range( aids, "lp-focus-strength", "Focus strength", "focusStrength", { step: 5, min: 10, max: 90, scale: 100, help: "Controls how strongly text outside the focus band is dimmed. Higher values dim surrounding text more. This applies only while Focus band is on; the value is remembered when it is off." } );
+	choice( aids, "lp-text-effect", "Text edge", "textEffect", [ [ "none", "None" ], [ "outline", "Outline" ], [ "shadow", "Shadow" ] ], true, "Outline or Shadow helps words stand out over busy slides, video or light backgrounds. None uses plain text. This is independent of sentence highlighting and the focus band." );
 	const mode = section( "mode", "Mode and pace", selectValues.find( f => f.dataset.tab === "mode" ) );
 	check( mode, "lp-points", "Notes / page mode", "pointsMode" );
 	check( mode, "lp-follow-pace", "Follow script pacing", "followScriptPace" );
@@ -274,7 +281,7 @@ export function createSettingsWorkspace( root, { getState, stage, navigate, toas
 	for ( const field of selectValues.filter( node => node.dataset.tab === "screens" && node !== screens && !node.querySelector( "#set-eye-line" ) ) ) if ( !field.querySelector( "input,select,button" ) ) field.remove();
 	const scriptHost = doc.getElementById( "set-script-host" );
 	scriptHost.dataset.tab = "aids";
-	check( scriptHost, "lp-directives", "Show script directive tags", "showDirectives", true );
+	check( scriptHost, "lp-directives", "Show script directive tags", "showDirectives", true, "Shows control tags such as {stop} and {pause} while reviewing a script. Tags remain outside speech tracking. Hiding their text does not disable their script behaviour." );
 	oldLayout.remove();
 	for ( const note of root.querySelectorAll( ".settings-live-note" ) ) note.remove();
 	root.classList.add( "settings-redesign" );
@@ -435,6 +442,17 @@ export function createSettingsWorkspace( root, { getState, stage, navigate, toas
 	screenChoice.addEventListener( "change", showScreens );
 	showScreens();
 	const aidTopics = el( "fieldset" );
+	const cueHighlight = controls.get( "set-highlight-cues" ).closest( "[data-settings-control]" );
+	addHelp( cueHighlight.querySelector( ".settings-option-name" ), "Highlight cue phrases", "Highlights phrases listed in a cues.yaml file and underlined words from rich-text or Word scripts. Cue phrases are exact words to say for slide changes; highlighting does not rewrite them." );
+	const cueFileRow = controls.get( "set-cues-file" ).closest( ".file-row" );
+	const cueFileGroup = el( "div" );
+	cueFileGroup.className = "settings-cue-file";
+	cueFileGroup.dataset.settingsControl = "set-cues-file";
+	const cueFileName = el( "span", { className: "settings-option-name" } );
+	cueFileName.append( el( "label", { htmlFor: "set-cues-file" }, "Cue phrases file" ) );
+	addHelp( cueFileName, "Cue phrases file", "Choose a cues.yaml file; the at text on each cue supplies the phrase to highlight. Browse selects a file and Clear removes that selection. Underlined words from imported scripts can still be highlighted." );
+	cueFileRow.before( cueFileGroup );
+	cueFileGroup.append( cueFileName, cueFileRow );
 	aidTopics.dataset.tab = "aids";
 	aidTopics.dataset.settingsFirst = "true";
 	const aidChoice = el( "select" );
@@ -502,10 +520,13 @@ export function createSettingsWorkspace( root, { getState, stage, navigate, toas
 	for ( const button of root.querySelectorAll( "button[data-help-text]" ) ) {
 		const popup = el( "div", { className: "settings-explanation" }, button.dataset.helpText );
 		popup.setAttribute( "popover", "auto" );
+		popup.setAttribute( "role", "tooltip" );
 		popup.id = `${ button.closest( "[data-settings-control]" ).dataset.settingsControl }-help`;
 		root.append( popup );
 		button.setAttribute( "aria-controls", popup.id );
 		button.setAttribute( "aria-expanded", "false" );
+		const explained = doc.getElementById( button.closest( "[data-settings-control]" ).dataset.settingsControl );
+		if ( explained ) explained.setAttribute( "aria-describedby", [ explained.getAttribute( "aria-describedby" ), popup.id ].filter( Boolean ).join( " " ) );
 		let pinned = false, leaveTimer;
 		const open = () => {
 			clearTimeout( leaveTimer );
@@ -591,6 +612,9 @@ export function createSettingsWorkspace( root, { getState, stage, navigate, toas
 	}
 	function sync( state = getState() ) {
 		const paletteInfo = READING_PALETTES[state.theme] ?? READING_PALETTES.default;
+		const focusEnabled = state.focusBand === true;
+		focusStrength.control.closest( "[data-settings-control]" ).hidden = !focusEnabled;
+		focusStrength.control.disabled = focusStrength.number.disabled = !focusEnabled;
 		for ( const field of soundFields ) {
 			field.hidden = state.microphoneEnabled === false;
 			field.disabled = state.microphoneEnabled === false;
