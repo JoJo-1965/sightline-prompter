@@ -1,5 +1,12 @@
 # Approved Settings and Tools implementation
 
+**Numeric patch, 2 November:** source `83ef675`, code reference `9d05dbb`.
+Whole/five-point controls, two-decimal fine readouts and retained stored precision
+pass pure and native checks, including the packaged executable. The approved
+layout is unchanged. The patch reuses the Preview 05 profile; a state backup is
+retained. The full unit/recording fixture and 587 offline help links pass. The
+matrix/JL draft now cover 235 entries and documentation revision 5.
+
 **Preview 05 handed over, 2 November:** package source `4d7f879`, code reference
 `d55c205`, approved interactive reference `d1302a1`. The packaged native suite
 passes, including explicit layout checks. Matched app screenshots are recorded.
