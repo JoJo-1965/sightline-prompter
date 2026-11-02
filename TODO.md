@@ -8,6 +8,10 @@ checks passed at five sizes. Documentation revision 8 and the new build manifest
 identify this package. Reuse the existing Preview 05 profile and promo slot 4;
 the previous handover below is retained as history. No release is implied.
 
+Preview 07 is packaged-tested and running. Saved preferences, slots and pairing
+were verified retained against the valid pre-launch backup. See
+[Preview 07 verification](docs/PREVIEW-07-VERIFICATION.md).
+
 ## Current handover — Settings Preview 06
 
 The combined layout was approved on 2 November 2026. Before packaging, review

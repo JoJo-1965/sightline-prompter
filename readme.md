@@ -255,6 +255,10 @@ and deployment.
 
 ### Unreleased
 
+- **Settings Preview 07:** combines all approved UI fixes with compact mirror
+  buttons using the main toolbar icons. The five-size source and packaged checks
+  pass; documentation revision 8 identifies the updated help and feature grid.
+
 **Settings Preview 06:** implements the approved combined feedback layout.
 Visible button subtabs replace group dropdowns in Screens, Reading aids and
 Installed components. Mode and pace offers one Notes/page, Voice or Scroll
