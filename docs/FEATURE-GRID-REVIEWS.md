@@ -134,3 +134,10 @@ are copy/validation corrections to the same capabilities; no matrix row changes.
 
 Automated guards check consistency. They cannot prove a capability or hardware
 claim; review the exact build before publication.
+
+UAT 08 handover verification, 2 November 2026: recorded final executable/archive
+hashes, controlled-fixture versus physical acceptance limits, retained-profile
+checks and installed Stream Deck compatibility. This supplemental evidence and
+the updated promo recording guide change no product capabilities or matrix
+rows; the revision 9 snapshot stays pinned to implementation `228b4f8` and
+packaging source `67c9060`. Elgato evidence separately uses released binaries.
