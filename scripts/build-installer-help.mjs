@@ -25,7 +25,7 @@ export async function buildInstallerHelp( root, out, version ) {
 			if ( /^[a-z]+:/i.test( file ) ) return match;
 			const source = path.posix.normalize( path.posix.join( path.posix.dirname( relative ), file ) );
 			return pages.has( source ) ? `href="${ file.replace( /\.md$/, ".html" ) }${ suffix }"` : `href="https://github.com/JoJo-1965/sightline-prompter/blob/main/${ source }${ suffix }"`;
-		} ).replace( /href="([^"]*)FEATURE-GRID\.html"/g, 'href="$1FEATURE-GRID-search.html"' );
+		} ).replace( /href="([^"]*)FEATURE-GRID\.html"/g, "href=\"$1FEATURE-GRID-search.html\"" );
 		const title = escapeHtml( markdown.match( /^# (.+)/m )?.[1] ?? "Sightline Prompter" );
 		await fs.mkdir( path.dirname( target ), { recursive: true } );
 		await fs.writeFile( target, `<!doctype html>

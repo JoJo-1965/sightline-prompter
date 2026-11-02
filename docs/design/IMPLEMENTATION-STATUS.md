@@ -2,7 +2,7 @@
 
 Joanne signed off the updated interactive demo on 1 November 2026 and
 authorised implementation. This file tracks the combined implementation;
-it is not a release announcement or a claim that the app build is finished.
+it is not a release announcement. Preview 04 is now packaged and validated.
 
 - [x] Signed-off design and conditional interface/help rules recorded.
 - [x] Permanent Settings ownership; remove control borrowing and automatic pages.
@@ -14,9 +14,9 @@ it is not a release announcement or a claim that the app build is finished.
 - [x] Runtime input/service gates, dependency/readiness messages and matching help.
 - [x] Matching Tools groups, live controls, placement and visible pointer.
 - [x] Combined native app checks including Tools first, reopen and resize.
-- [ ] Build an isolated Preview 04 with manifest and acceptance instructions.
+- [x] Build an isolated Preview 04 with manifest and acceptance instructions.
 - [x] Update guide/help/screenshots/roadmap/changelog and generated feature grid.
-- [ ] Sync the reviewed grid and relevant copy to the draft JL website branch.
+- [x] Sync the reviewed grid and relevant copy to the draft JL website branch.
 
 No new version tag, public release or live website deployment is authorised
 by the design sign-off. Stream Deck source remains private. The disabled
@@ -45,7 +45,21 @@ integration fixture and feature-grid guards passed on 2 November 2026. The
 refreshed gallery contains 38 real app captures. Guides, help, samples, roadmap,
 changelog and staged marketing copy describe the implemented preview.
 
-Pending before handover: pin the matrix to this implementation, sync the draft
-JL snapshot and finish the isolated Preview 04 package and manifest. Physical
-camera/microphone/recording-route acceptance and macOS hardware/accessibility
-checks remain separate from these software tests.
+Preview folder:
+`D:\Sightline\Dev\Builds\Previews\settings-redesign-preview-04`.
+The package manifest pins source `3598b6d`, capability reference `59358aa` and
+the package hashes. Its own profile starts optional inputs/integrations off,
+retains allowlisted appearance/head-guide settings and loads the review script
+in slot 1 and the promo copy in slot 4. The native suite passed against the
+packaged executable as well as the development source. Windows metadata and
+577 offline help links/pictures passed; the searchable reference and identical
+comparison data are bundled. A final quote-style correction to the help builder
+does not change its generated output or app capabilities.
+
+The draft JL branch contains the same 233-entry grid and six refreshed preview
+images. Its full 518-page build passed; desktop/phone checks confirmed search,
+reset and layout. Its public download remains 1.1.0/0.2.0. Nothing was deployed.
+
+Physical camera/microphone/recording-route acceptance and macOS hardware/manual
+accessibility checks remain separate from these software tests. The next action
+is review of the actual preview, followed by the live production acceptance.
