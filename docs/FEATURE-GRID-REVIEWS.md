@@ -1,5 +1,14 @@
 # Feature-matrix review record
 
+2 November 2026, Elgato demonstration extension: exercised existing MCP Deck
+virtual keys through official Elgato MCP Server 0.1.8, installed Stream Deck
+7.6 and the unchanged released plugin/app. Play/Pause, Marker, pace and On air
+were exercised; the video distinguishes configured action icons from confirmed
+app state because MCP action-list state readback remained unchanged. This is
+validation of an existing Stream Deck input route, not a new native Sightline
+MCP server or physical-controller acceptance. No app binary or matrix rows
+change; native MCP remains planned for the next candidate.
+
 2 November 2026, next-candidate MCP request: added optional MCP server support
 to ROADMAP.md, wrapping the existing local API with discovery, connection and
 version checks, script/control tools and authorised recording-data access.
