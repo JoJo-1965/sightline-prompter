@@ -1,406 +1,201 @@
 # Settings
 
-This source guide includes the next update's Theme tab, independent spacing,
-unified Stream Deck setup and optional linked recording. For the published
-1.1.0 layout, use the guide bundled with that app. Preview images are labelled.
+This source guide describes **Settings Redesign Preview 04**, based on the
+approved interactive demo. It is an unpublished preview of Sightline 1.1.0.
+For the released app, use the guide bundled with its installer.
 
-Open **⚙ Settings** on the top bar or press **Ctrl+,** (**Cmd+,** on Mac).
-In RC8, Settings opens in its own upright window. Drag the native title bar
-to place it beside the prompter or on another screen. Its position and size
-are remembered; opening Settings again brings the same window forward and
-keeps any unsaved draft. **F1 / ?** opens Help in a separate movable window too.
-RC11 keeps these windows above their prompter owner, including fullscreen.
-Opening Settings brings it forward and focuses its controls.
-**“Prompter, what can I say?”** also has its own movable window in RC10.
-Settings, both help windows and Guide adjustments follow **Hide from capture**;
-turn it off to take support screenshots. The head-guide overlay stays protected
-unless the session-only **Debug > Allow all windows to be captured**
-override is active.
-There are seven groups, with a second row of focused topics. Each setting has
-one home. Script files, recordings and settings import/export are in the
-**Files menu (☰)**; live tools are under **Tools** on the top bar.
+Open **Settings** on the toolbar, **Files (☰) > Settings**, or **Ctrl+,**
+(**Cmd+,** on Mac). Settings opens in an upright, movable window. It retains
+the same frame while you change sections; resizing never moves a control
+onto another page. There is no internal scrolling or numbered pagination.
 
-About shows the source/build version. A candidate such as 1.1.0-rc.1 recognises
-the later final 1.1.0 as an update. Nothing installs automatically.
+On larger windows, choose an area and a named section in the sidebar, or use
+**Find a setting**. Compact windows use **Area** and **Section** selectors.
+Disabled features are excluded from search and navigation where appropriate:
+OBS recording/setup needs OBS enabled; speech commands/words need speech enabled.
 
-[Browse the full Settings screenshot gallery](settings-gallery.md) for every
-topic and page. The same gallery opens from the guide's contents and works
-offline in the app.
+## Apply, save and cancel
 
-Settings keeps the same width and height across every tab and page. It only
-reduces the available content space when you resize the Settings window.
-There is no scrolling. Longer topics use **Previous / Next**, with the current
-section and page number shown between them. In the next preview, enabled
-buttons name destinations and unavailable directions are disabled. Hover or
-focus for the full destination label. Smaller windows use more pages;
-your draft stays intact as you move between them. Word lists use pages too.
+Every preference in Settings uses the same draft:
 
-The small raised **?** pill sits beside the option it explains, with a larger
-tap area. Hover over it, focus it with the keyboard, or tap/click it for an
-explanation of the nearby choice. Click again, click elsewhere, or press
-**Esc** to dismiss it. When an explanation is open, the first Esc closes
-that explanation and leaves Settings open. The explanation can be hovered
-without disappearing as you move the pointer onto it.
-
-![Prompting settings, with Scrolling selected and the other topics alongside](images/settings-scrolling.png)
-
-## Find a setting
-
-| Group | Topic | What belongs here |
-| --- | --- | --- |
-| **Prompting** | Scrolling | Steady or voice mode, steady speed and the opening countdown |
-| | Voice | Speech engine, model download, responsiveness, Deepgram key and microphone |
-| | Commands | When to listen, wake word, listener state and Restart listening |
-| | Your words | Script synonyms, command synonyms, sound-alike matching, suggestions and Teach |
-| | Script | Notes mode, pacing, script directions, slide cues and directive display |
-| **Appearance** | Theme | Standard, yellow on dark, high contrast or soft cream script colours |
-| | Text | Body and heading fonts, heading size and text-size preview |
-| | Directions | Separate inline direction and production note size, colour and spacing; inline visibility |
-| | Background | Text opacity, backing on/off air and brightness |
-| | Reading aids | Focus band, text edge, reading-line marker, sentence highlight and progress bar |
-| | Spacing | Independent script and heading line spacing, margins, reading line and alignment |
-| | Screens | Beam-splitter mirroring, prompter monitor, Keep on top, eye-line strip and keeping controls visible |
-| **Recording** | Takes | Slate, ON AIR display, countdown beep, capture protection and click-through |
-| | Takes: rehearsal coaching | Optional recognised filler/repetition counts during active voice following; Apply to save |
-| | Audio | Scratch audio, loudness per take and keeping the sound-check meter visible |
-| | OBS connection | Enable OBS, address, port, protected password and the saved-connection test |
-| | OBS recording | Start/stop permission, chapters and preparing the recorded slate |
-| | OBS setup | Optional separate profile/scenes assistant and configuration guide |
-| **Controls** | Pad | Select and arrange shared pad/phone buttons, columns and presets |
-| | Buttons & keys | Learn local keys, clicker/pedal inputs and controller buttons; choose actions and reset |
-| | Phone | Enable the phone remote, scan its QR code or replace its code |
-| | Stream Deck | Enable the companion plugin's buttons-only connection and open its guide |
-| | AI & API | Enable local automation, port, token, recording-delete permission and AI setup help |
-| **Components** | Speech model | Install, repair or remove the offline speech model |
-| | AI kit | Install, repair, remove or open the standalone agent kit |
-| | Node.js | Check the runtime for kit commands and open its supplier installer |
-| | OBS | Installation check, supplier installer and custom location |
-| | Stream Deck | Elgato app and Sightline plugin installation checks |
-| **Debug** | Debug | Support logs, capture override and optional command-word tracing |
-| **About** | About | Version, credits, updates, support and Restore defaults |
-
-OBS settings stay discoverable while disabled so you can configure them.
-OBS connection, recording and setup are together under **Recording**.
-**Prepare recorded slate** explains
-any unmet prerequisite beside the button and shows progress or errors in Settings.
-Recording commands in Help and the live recording controls still follow the
-permissions you have enabled. The head guide is independent of OBS.
-
-## Components
-
-In 1.1.0, **Components** is a top-level group. Its named subtabs
-keep each optional part's status beside its actions, without numbered component
-pages. **Debug** also has its own top-level group.
-
-- **Offline speech model:** Install downloads about 73 MB. Reinstall downloads
-  a fresh copy to staging; an incomplete download leaves the previous model
-  available. Remove moves the model to your system bin. Voice following and
-  offline commands need it; steady scrolling still works without it.
-- **AI agent kit:** Install copies the skills, script checker, command tool
-  and briefs from this app into a managed folder. Open folder and read
-  **START-HERE.md**. No repository clone or npm install is needed. Reinstall
-  refreshes this managed copy; keep personal files elsewhere. Remove moves
-  it to your system bin. Other applications' installed skills stay separate.
-- **Node.js:** reports whether a suitable version is available on the app's
-  PATH. Commands need 22.16 or later. Use Get Node.js for its own installer,
-  restart Sightline, then Check again. The desktop app needs no separate Node.
-- **OBS Studio:** checks the usual installation folders and running portable
-  copies. Install / reinstall opens OBS's own download page. **Locate** remembers
-  a custom installation; **Check again** detects later removal too.
-- **Stream Deck (Controls in the next preview):** checks the Elgato application and looks for the Sightline
-  plugin manifest. Its installer is separate from the plugin. **Controls >
-  Stream Deck > Check compatibility** confirms the live plugin version and
-  protocol; finding installed files alone does not confirm a working connection.
-
-Unavailable controls are greyed out with a visible explanation. **AI & API**
-reports readiness of the supplied kit commands: these need both the kit and
-Node.js. Other API clients and the built-in reviews do not. Turning the API
-off disables its port, token and deletion controls without erasing their values.
-Installation, help and Components links remain available.
-
-OBS and Stream Deck cannot be enabled for a missing local application. An
-existing enabled connection can still be switched off. OBS's address stays
-editable so you can use OBS on another computer; that setup needs no local
-OBS installation. A confirmed live connection also establishes availability.
-OBS recording permissions stay unavailable while the integration is off.
-After installing or locating software, use **Check again**. These checks do
-not claim that third-party software is the newest version; use its own updater.
-
-Model Reinstall and Remove also appear in **Prompting > Voice**. Stop
-prompting and recording before changing the model. Always command listening
-pauses for maintenance and resumes afterwards if a usable model remains.
-Removal asks first. Component actions apply immediately, independently of
-Settings Apply/Cancel. The existing first-run model download offer remains.
-Installing the AI kit does not enable the API or alter your assistant.
-
-![AI kit with its own named component subtab](images/settings-component-kit.png)
-
-![Node.js availability and installer](images/settings-component-node.png)
-
-Stream Deck installation and plugin checks now share **Controls > Stream Deck**.
-
-## Setup and session checks
-
-For a clean start, use **Settings > About > Restore defaults…**. A confirmation
-explains the reset before anything changes. Sightline restarts with shipped
-preferences and opens Getting started. It clears layouts, shortcuts, slot
-assignments, recent-file history, pairings and remembered window positions;
-integrations start disabled. Open your existing scripts again when ready.
-
-Installed components and their remembered locations stay. Script files,
-recordings, scratch audio and saved service keys stay too; OBS profiles and
-scenes are untouched. Phone and Stream Deck pairing details are renewed, so
-reconnect them after enabling their integrations. The last setup is kept
-locally as `app-state.before-defaults.json`; it may contain service keys, so
-keep it private. This is a support backup, not a shareable settings export.
-
-Cancel leaves the setup unchanged. Save or close the script editor and pause
-prompting first. Reset is blocked during component maintenance or OBS
-recording/setup, including paused recordings or an enabled connection whose
-recording state cannot be confirmed. Pending take data is saved before restart.
-Unsaved Settings drafts are discarded only after confirmation.
-
-![Restore defaults under About, alongside its preservation note](images/settings-defaults.png)
-
-**Help > Getting started…** opens the first-use checklist. Optional tools can
-be skipped; a new profile sees it automatically. **Tools > Session check…**
-links to existing script, sound, framing, enabled OBS, sync and control tools.
-Refresh after changing settings. Status describes configuration and connection
-evidence; it does not certify your recorded camera or microphone.
-
-**Recording > OBS setup** opens the optional separate-profile assistant and
-[configuration guide](15-obs-setup.md). Review its plan before Create. Existing
-setups remain available, and recording/streaming/replay must be stopped.
-
-The API controls below are off in a draft. The saved service stays on until
-Apply; the grey controls retain their values.
-
-![Grey API controls with a visible draft explanation](images/settings-ai-unavailable.png)
-
-## Theme, fonts, spacing and reading aids
-
-**Appearance > Theme** is the first Appearance topic. Choose **Standard**,
-**Yellow on dark**, **High contrast** or **Soft cream**. It changes script
-colours; the controls keep their own colours. Changes save immediately.
-
-![Script colour themes on their own named tab](images/settings-theme.png)
-
-Open **Appearance > Text** for the body font, heading font, heading size
-and text-size preview. Direction and production-note controls have their own
-home under **Appearance > Directions**. Fonts and heading size save immediately.
-The visible notes distinguish changes saved immediately
-from the text-size preview saved with Apply or Save & close.
-
-![Script fonts, heading size and text-size preview](images/settings-reading.png)
-
-**Appearance > Directions** has two clearly named groups:
-
-- **Inline directions [ … ]:** visibility, size (40–150% of the usual cue
-  size), colour and line spacing. Normal, Dimmed and Hidden apply only to
-  square-bracket cues. Quoted words intended to be spoken retain script styling.
-- **Production notes &lt;!-- … --&gt;:** size (40–200% of the usual note size),
-  colour and line spacing. The usual note size is 55% of the script text.
-  Notes appear while paused and hide during delivery; even their quoted
-  contents stay outside speech tracking.
-
-Both groups follow Heading font and save immediately, including inline
-visibility. Each has its own **Theme** colour reset. Line spacing is 100–250%
-of that group's font size. High contrast removes production-note dimming.
-Changing a heading's size does not resize either kind of note.
-
-![Inline directions in their own appearance group](images/settings-directions.png)
-
-![Production notes with independent appearance controls](images/settings-directions-page-2.png)
-
-**Appearance > Background** holds visibility and brightness.
-Use Background for the off-air level and Background on air for the level used
-when ON AIR is enabled. Both values are remembered.
-
-![Separate off-air and on-air backing controls](images/settings-background.png)
-
-**Appearance > Spacing** has **Script line spacing** and **Heading line spacing**.
-Inline direction and production note spacing are in **Appearance > Directions**.
-Each is 100–250% of that text's font size and saves immediately.
-Changing one leaves the others alone. Existing profiles
-start with their previous shared spacing; Reset layout restores the shipped
-values, including the separate production-note defaults.
-
-Direction spacing applies to wrapped square-bracket cues. A direction-only
-paragraph can be tighter than the script. Inline cues share a line with the
-surrounding words; quotations intended to be spoken keep script spacing.
-These controls change line spacing, not gaps between paragraphs.
-
-![Separate script and heading line spacing](images/settings-layout.png)
-
-Labels, sliders and inputs use aligned rows with more vertical space. The
-Settings frame stays fixed; longer topics use the existing Previous/Next
-controls rather than scrolling or shrinking the text.
-
-**Appearance > Reading aids** holds the focus band, text edge, reading-line
-marker, sentence highlight and progress bar. [Layout and display](04-layout-and-display.md)
-explains these choices, with illustrations.
-
-## Apply, Save & close and Cancel
-
-- **Apply** saves your changes and keeps Settings open.
+- Appearance changes preview in the sample and the prompter.
+- **Apply** saves the draft and keeps the window open.
 - **Save & close** saves and closes.
-- **Cancel**, **×** and **Esc** close without saving the pending draft.
+- **Cancel** discards changes made since opening or the last Apply.
+- **×**, native Close and **Esc** check for unapplied changes.
 
-If there are unsaved changes, closing offers **Save**, **Discard** or
-**Keep editing**. Shared live controls show **Saved immediately as you adjust**;
-cancelling the draft keeps those changes. The text-size preview has its own
-**Preview until Apply or Save & close** note and is restored when cancelled.
+Device/service activation happens on Apply, rather than while choosing values.
+**Tools** is labelled **Live adjustments**: its controls apply immediately.
+Installing a component, importing/saving a theme, testing a microphone,
+resetting pairings and recorder commands are explicit actions. Cancelling
+another Settings edit does not undo those actions.
 
-The footer shows **Unsaved changes** when you edit the pending draft and
-**Saved** after Apply. Clearing or choosing a slide-cue file also counts as a
-pending change. Invalid numbers return you to the relevant topic and page,
-with the field focused and its permitted range explained.
+The small **?** pill explains the adjacent option. Hover, focus or click/tap
+it. An open explanation takes the first Esc; Settings stays open.
+Sliders have matching numeric values, units and keyboard adjustment.
 
-Changing group or topic never applies or discards the draft. Settings remembers
-the last topic used, and returning to a group recalls its last topic during
-that session. Older saved tab choices are carried across where possible.
+## Areas and sections
 
-Use **Tab** to move between the selected group, selected topic and controls.
-Within either tab row, **← / →** changes selection; **Home / End** goes to its
-first or last tab. Hidden topics stay out of keyboard navigation. Focus stays
-inside Settings until you close it, then returns to the control that opened it.
+| Area | Sections |
+| --- | --- |
+| Prepare | Session checklist |
+| Reading | Mode and pace; Text and directions; Theme and background; Layout; Reading aids; Screens and mirroring; Head guide |
+| Voice | Speech engine; Microphone; Voice commands; Your words |
+| Recording | Takes; Sound and scratch audio; Slate and sync |
+| Controls | Pad and phone buttons; Phone pairing; Keyboard and clickers; Game controller; Stream Deck; OBS connection; OBS recording; OBS profile and scenes; AI and local API |
+| Setup | Getting started; Optional components; Restore defaults |
+| Debug | Health; Command tracing; Screen capture; Support logs |
+| About | Version and updates; Credits; Help and support |
 
-Drag the native title bar to move Settings between screens. The inline
-fallback can be dragged inside the prompter; double-click its title to recentre.
+## Prepare and reading
 
-## Settings files and automation
+**Session checklist** opens the existing preparation checks and links directly
+to script review, appearance and framing.
 
-**Controls > Pad** has a **Framing & checks** preset and selectable guide,
-listening and session-check buttons. **Hold Finish recording for one second**
-is on by default for pad and phone; Stream Deck has a separate per-key choice.
-These layout choices save immediately and preserve existing selections unless
-you apply a preset. [The controls guide](06-remotes-and-screens.md#the-floating-pad)
-explains the device-local guide panels and software status checks.
+**Mode and pace** holds Steady/Voice, Notes/page mode, steady WPM, countdown,
+voice response and script pacing. Voice needs speech features, an engine and
+microphone input. Steady scrolling does not require speech components.
 
-**Files > Save settings to file** and **Load settings from file** preserve
-the shared pad/phone layout in JSON and XML. In 1.1.0, the
-local settings API accepts `padLayout` too, with the same validation. Unknown
-actions are removed, duplicates are collapsed and invalid column counts are
-rejected before other settings change. Remotes, credentials and tracing
-permissions remain protected.
+**Text and directions** has four named targets:
 
-New XML exports preserve structured values such as button layouts and word
-lists as JSON inside XML. An older export containing only `[object Object]`
-does not contain the original structure; export again from the corrected app.
+| Target | Script syntax and behaviour |
+| --- | --- |
+| Spoken script | The words you read aloud; also the base size used by the toolbar |
+| Headings | Titles and section headings, with their existing title hierarchy |
+| Inline directions | Square-bracket cues such as `[smile]`; silent, with separate Normal/Dimmed/Hidden visibility |
+| Production notes | HTML comments such as `<!-- prepare the slide -->`; silent, visible while paused and hidden during delivery |
 
-## Voice and commands are separate
+Each target has its own **font, size, colour, Bold, Italic and line spacing**.
+Non-script fonts can **Follow script**. Size is expressed as a percentage:
+headings are relative to script size, inline directions normally start at
+85%, and production notes at 55%. Visibility no longer changes direction size.
+Quoted words marked for speaking retain spoken-script styling and tracking.
 
-**Prompting > Voice** chooses how speech is recognised and which microphone
-to use. **Prompting > Commands** chooses when the wake word is heard, including
-Always listening while stopped. **Your words** holds training and synonyms.
+**Use theme** beside a colour restores that item's palette colour.
+**Choose theme** opens **Theme and background**.
 
-![Command listening and the wake-word choice on their own topic](images/settings-commands.png)
+### Theme and background
 
-![The question-mark button explains command listening without adding permanent text to the form](images/settings-commands-help.png)
+Choose Standard, Yellow on dark, High contrast or Soft cream. Soft cream's
+new palette has a light cream background and dark text. Existing cream
+profiles retain their earlier appearance until you change/reset their colours.
 
-See [Scrolling and voice](03-scrolling-and-voice.md) for the modes and commands.
-Sound checks and loudness are in **Recording > Audio**, with a live meter
-available from **Tools > Sound check** or **Ctrl+Shift+D**.
+The **Background colour** picker is independent of text colour. Off-air and
+on-air background opacity, text opacity and brightness have their own controls.
+The sample shows backing over a patterned background so transparency is visible.
 
-![Recording audio settings for scratch audio, loudness and the sound-check display](images/settings-audio.png)
+**Save current as…** creates a named reading theme; choose it again from
+**My saved themes**. Optionally export a copy while saving. **Import theme…**
+and **Export theme…** use portable `.sightline-theme.json` files.
+Names are unique; imported duplicates receive a suffix.
 
-## Connections in Controls
+A reading theme contains the four text styles and reading background values.
+It excludes scripts, window positions, controller/pad layouts, recorder setup,
+pairings and credentials. It is **not a complete app backup**. Use
+**Files > Save/Load settings** for the broader supported JSON/XML preference
+transfer; sensitive opt-ins still require explicit setup on the destination.
 
-**Controls > Phone** pairs a phone on the same Wi-Fi. **Controls > Stream Deck**
-enables the companion plugin's connection. **Controls > AI & API** enables an
-AI assistant or local script to control Sightline. Each connection is optional.
-Enable Phone and choose **Apply** or **Save & close** to display the QR code.
-RC10 fixes its image in the separate Settings window.
+### Layout, aids and screens
 
-**Check compatibility** shows the running Sightline version, the connected
-plugin's reported version and any update requirement. Version reporting needs
-plugin 0.1.9 or later; an older or disconnected plugin stays unconfirmed.
-This checks the local pairing, while **About > Check for updates** checks
-the latest public app release. See [compatibility and updates](06-remotes-and-screens.md#compatibility-and-updates).
+**Layout** contains alignment, side/top/bottom margins and reading-line position.
+Line spacing lives with each typography target.
 
-![The Stream Deck connection has its own topic and contextual help](images/settings-streamdeck.png)
+**Reading aids** uses named choices for reading indicators versus slide cues
+and directive tags. Sentence highlight, progress/time, marker, focus band,
+strength and text edge stay together.
 
-Follow [Remotes and second screens](06-remotes-and-screens.md) for pairing and
-connection steps, or [Setting up your AI](10-setting-up-your-ai.md) for automation.
+**Screens and mirroring** uses named Window/mirroring and Eye-line strip
+choices. Set the monitor, always on top, toolbar visibility, capture protection,
+click-through and independent left/right and top/bottom mirroring here.
+The eye-line strip has separate width, height and reading-line settings.
+The mouse pointer remains visible when the main toolbar hides.
 
-## Tools and Files
+**Head guide** opens the dedicated guide and adjustment window. Fit the eyes
+first, lock them, then fit top/bottom and left/right. Save a recording reference
+without replacing Ideal; restore that saved reference when needed.
+See [head guide and capture limits](04-layout-and-display.md).
 
-The toolbar's **Edit** button sits immediately left of **Tools**. It opens the
-script editor, or read-only sample source with **Save a copy…**.
-**Tools** drops down beneath its button and shifts inward at the window edge.
-It follows the button when the window size or mirror mode changes.
+## Voice
 
-Settings starts centred on its first opening, then remembers where you put
-it. It keeps the same dimensions across topics and stays upright when the
-prompter is mirrored. Use the window's native title bar to move it across
-screens. Closing with **×**, Escape or Cancel keeps the existing unsaved-change
-prompt; quitting Sightline with a Settings draft asks too. Apply stays open;
-Save & close saves and hides the window.
+**Speech engine** has an enable switch, engine choice, readiness and service
+key controls. Manage the offline model in **Setup > Optional components**.
+The local engine runs on the computer; Deepgram is an optional online service.
 
-![Settings in its own movable window](images/floating-settings.png)
+**Microphone** has a separate enable switch, input selector and explicit
+**Test selected microphone** meter. A test is temporary and stops when you
+leave the section, disable input or close Settings. Selecting an input does
+not adjust its gain.
 
-**Tools** holds Sound check, the head guide and fullscreen/restore, Keeper,
-Scrap, quick display/voice panels, the control pad and the control window.
-Quick panels reuse the existing live controls rather than separate copies.
-If Settings is already open, a quick display tool brings the corresponding
-Settings topic forward, keeping the same live controls and draft.
-Their keyboard shortcuts, voice commands and Stream Deck actions still work.
+**Voice commands** contains listening mode, wake word, listener status and
+restart. **Your words** provides script-word corrections and command phrases,
+with named item selectors rather than height-dependent pages.
+Voice-command help needs speech, microphone input and listening enabled.
+Recording commands also need the relevant recording integration and permission.
 
-![Tools grouped into recording tools, quick adjustments and operator windows](images/tools-menu.png)
+## Recording
 
-**Files (☰)** holds New/Open, Google Docs, recent and sample scripts,
-Edit/Save/Save as, Clear slot, Recordings, the edit-pack export, settings-file
-import/export and Quit. It does not repeat playback, appearance, voice or
-window tools. **Settings…** is always visible near the menu's foot, above Quit,
-even when its groups are folded. The top bar keeps slots, playback, speed,
-size, backing, independent mirror axes and
-mode switching; on narrow windows, Tools and Settings provide the additional adjustments.
+**Takes** contains take summary, pacing light, start beep, on-air indication and
+optional aggregate rehearsal counts. **Sound and scratch audio** holds per-take
+level feedback, the independent scratch reference and sound-check display.
+A low level is advisory; consider room noise before increasing gain.
 
-![The compact Files menu](images/menu.png)
+**Slate and sync** holds the local slate choice. A screen-only flash does not
+validate camera lip sync. OBS's recorded slate route is configured separately
+under **Controls > OBS recording**. Verify the actual recorded picture/sound.
 
-The native application menu keeps standard keyboard/platform access through
-**File, Edit, Playback, Tools, Window and Help**. Script slots are under File.
-Detailed preferences remain in Settings. **F1** opens grouped shortcuts;
-**Shift+F1** opens the illustrated guide. On Mac the usual application menu
-also remains available.
+Section stops and retakes keep the existing recording workflow. Ordinary
+reading needs no compulsory recorder directives.
+See [production handover](12-production-handover.md).
 
-Keyboard and voice help keep a consistent frame size as you switch topics.
-Longer topic contents stay inside that frame; the tabs and Close stay in place.
+## Controls and optional components
 
-**Copy the AI script prompt** is available in F1 Help as well as the native
-Help menu, without enabling remote control.
+Each optional interface has **one enable switch**. Off hides its configuration
+and preserves saved values. Installation/readiness is separate from activation.
+Disabling an interface does not uninstall its software.
 
-## About, updates and support
+- **Pad and phone buttons** arranges the shared layout when either interface
+  is enabled. Choose a button by name, use Earlier/Later or drag neighbouring
+  buttons, and select presets, columns and hold-to-finish. Compact views edit
+  the selected button without arbitrary page numbers.
+- **Phone pairing** shows the local QR/link after enabling and applying.
+  New code disconnects previously paired phones. Use the same private network.
+- **Keyboard and clickers** learns custom plain-key/Shift mappings.
+  Core shortcuts remain available when custom mappings are off.
+- **Game controller** separately enables and assigns controller buttons.
+  Resetting one input type preserves the other type's mappings.
+- **Stream Deck** is its single setup home: installation/readiness,
+  enablement, companion plugin compatibility and support.
+- **OBS connection** lives under Controls. Enable it before its recording
+  and profile/scene sections appear. Apply, start OBS and test the saved
+  WebSocket connection. Recording control is a separate permission.
+- **AI and local API** uses a local port and access token. General authorised
+  clients can use it; the supplied AI kit commands additionally need the
+  optional kit and a suitable Node.js installation.
 
-**About** gives the version, **Credits and licence**, the user guide,
-Joanne's tip jar and **Check for updates**. Update checks ask GitHub; nothing
-downloads or installs automatically.
+**Setup > Optional components** selects the offline model, AI kit, Node.js
+readiness or OBS installation. External apps keep their own update process.
+**Restore defaults** confirms a restart into onboarding; components, scripts,
+recordings and retained service keys are not uninstalled.
 
-**Credits and licence** opens the full About page, also available from
-**Help > About**. Copyright and attribution live there, with no repeated
-messages in the Files menu or the Settings overview.
+## Tools, debug and help
 
-**Debug > Debug mode** adds detail to the local support log. **Save a log for support…**
-creates a file containing the version, system and enabled features, excluding
-scripts, keys, audio and command-word traces. It sends nothing itself.
+**Tools** has Prepare, Adjust and During take tabs. It follows the same visual
+controls as Settings, with separate controls and shared saved values.
+Disabled functions are omitted. If the prompting window cannot fit the menu,
+Tools opens in its own utility window.
 
-**Allow all windows to be captured** applies immediately and lasts only until
-Sightline closes. It overrides capture protection for open and newly opened
-windows, including the head guide. A persistent banner and phone notice show
-when it is active. Untick it or use the banner's **Turn off** button to restore
-the current normal rules, including any changes made during the override.
-It does not enable command-word tracing or change the saved capture preferences.
-This control is not exported or available through the settings API.
+**Debug > Health** explains listener recovery. **Command tracing** is off by
+default and can record recognised nearby conversation during Always listening.
+Health/recovery events contain no spoken words. **Support logs** exports a
+local diagnostic file without sending it.
 
-The separate **Trace command words to the local heard log** checkbox is also
-under **Debug**. It is off by default and does not require Debug mode.
-Apply saves the choice. This saves recognised text for investigating mishearings;
-with Always listening it may include nearby conversation while stopped or off air.
-Turn it off afterwards. Health and recovery logs contain no spoken words.
+**Screen capture > Allow all windows to be captured** is an immediate,
+session-only override, including the head guide. Its banner stays visible.
+Turning it off restores the normal capture rules. It is not exported or
+available through the settings API. Capture protection still depends on the
+recording route: check a short recorded file.
 
-![Debug logs and the optional command-word trace](images/settings-debug.png)
-
-![Session-only capture override enabled for a demo or support recording](images/settings-debug-capture.png)
-
-Sightline is free and stays free. Support is voluntary and gives no extra
-features. See [privacy, terms and support](../POLICIES.md).
+**About** holds version/update information, credits and support.
+**F1 / ?** and voice help use grouped topics and omit disabled feature keys.
+See the [screenshot gallery](settings-gallery.md) and
+[privacy, terms and support](../POLICIES.md).

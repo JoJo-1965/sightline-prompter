@@ -18,6 +18,7 @@ export function buildMenus( browserWindow, {
 	if ( recent.length ) recent.push( separator, { label: "Clear recent files", click: clearRecentFiles } );
 	const check = ( label, key, accelerator ) => ( {
 		label, type: "checkbox", checked: !!settings[key], ...( accelerator ? { accelerator } : {} ),
+		enabled: key !== "showPad" || settings.padEnabled !== false,
 		click: entry => updateSettings( { [key]: entry.checked } )
 	} );
 	const template = [

@@ -16,6 +16,7 @@ const guideRows = [
 	[ "Stream Deck", "Guide key: visibility, fullscreen, adjustments and ideal reference. Plugin 0.2 adds eye/edge dials with eye lock" ]
 ];
 export function voiceHelpTabs( settings ) {
+	if ( settings.speechEnabled === false || settings.microphoneEnabled === false || settings.voiceCommands === "off" ) return [];
 	const groups = new Map();
 	for ( const [ say, does, category ] of COMMAND_HELP ) {
 		const obs = category === "OBS" || say === "record take · finish recording";
@@ -33,15 +34,15 @@ export function helpTabs( settings, notes = false ) {
 	const scrolling = get( "Scrolling" );
 	const reading = { ...scrolling, keys: scrolling.keys.filter( ( [ combos ] ) => !takeKeys.has( combos[0] ) ) };
 	const takes = { section: "Takes, markers and exports", keys: scrolling.keys.filter( ( [ combos ] ) => takeKeys.has( combos[0] ) ) };
-	const display = { ...get( "Window" ), keys: get( "Window" ).keys.filter( ( [ combos ] ) => !guideKeys.has( combos[0] ) ) };
+	const display = { ...get( "Window" ), keys: get( "Window" ).keys.filter( ( [ combos ] ) => !guideKeys.has( combos[0] ) && !( combos[0] === "Ctrl+Shift+P" && settings.padEnabled === false ) && !( combos[0] === "Ctrl+Shift+D" && settings.microphoneEnabled === false ) ) };
 	const readingSections = [ reading ];
 	readingSections.push( section( "Prepare a session", [
 		[ "Help > Getting started", "Choose your initial setup or reopen it later; optional tools can be skipped" ],
-		[ "Settings > About > Restore defaults", "Confirms a restart into initial setup. Components, scripts, recordings and service keys stay; preferences and pairings reset" ],
+		[ "Setup > Restore defaults", "Confirms a restart into initial setup. Components, scripts, recordings and service keys stay; preferences and pairings reset" ],
 		[ "Tools > Session check", "Links to script, sound, framing, enabled recording and sync checks; Refresh updates known status" ]
 	] ) );
 	if ( notes ) readingSections.push( get( "Notes" ) );
-	if ( settings.scrollMode === "voice" ) readingSections.push( get( "Voice scroll sync" ) );
+	if ( settings.scrollMode === "voice" && settings.speechEnabled !== false && settings.microphoneEnabled !== false ) readingSections.push( get( "Voice scroll sync" ) );
 	const recording = [ takes ];
 	recording.push( section( "Recording preparation", [
 		[ "Production comments", "HTML comments <!-- like this --> show while paused and hide during delivery; short [smile] cues remain inline" ],
@@ -54,8 +55,8 @@ export function helpTabs( settings, notes = false ) {
 	] ) );
 	if ( settings.obsEnabled ) {
 		const rows = [
-			[ "Settings > Recording > OBS connection", "Saved address, port and protected password; Apply, then Test saved connection" ],
-			[ "Recording > OBS setup", "Review a separate profile/scenes plan using configured sources, with OBS outputs stopped; physical recording checks remain" ],
+			[ "Settings > Controls > OBS connection", "Saved address, port and protected password; Apply, then Test saved connection" ],
+			[ "Controls > OBS profile and scenes", "Review a separate profile/scenes plan using configured sources, with OBS outputs stopped; physical recording checks remain" ],
 			[ "Status only", "Read recording status without starting or stopping OBS" ],
 			[ "Edit pack", "Confirmed recording paths and observations stay in the take log" ],
 			[ "Disable OBS", "Disconnects Sightline; leaves an existing OBS recording running" ]
@@ -63,7 +64,7 @@ export function helpTabs( settings, notes = false ) {
 		if ( settings.obsControls ) rows.splice( 2, 0,
 			[ "Record take", "Confirm OBS recording before starting the prompter's normal slate/countdown" ],
 			[ "Finish recording", "Pause prompting, stop OBS and retain its confirmed file path" ],
-			[ "Link recording to prompting", "Recording > OBS recording: opt in to start with Play, pause/resume with prompting, and stop at the end. Continuous is the default" ],
+			[ "Link recording to prompting", "Controls > OBS recording: opt in to start with Play, pause/resume with prompting, and stop at the end. Continuous is the default" ],
 			[ "Record on / off / pause / resume", "Explicit voice commands or optional {record: …} directives. Requires recording permission; directives never run on load" ],
 			[ "Recording pill", "OFF green · RECORDING red · PAUSED orange · UNKNOWN grey. Remains visible when the toolbar hides" ] );
 		if ( settings.obsControls && settings.obsMarkers ) rows.push( [ "Chapters", "Optional section/marker chapters, where the OBS format supports them" ] );
@@ -79,14 +80,13 @@ export function helpTabs( settings, notes = false ) {
 		{ label: "Head guide", sections: [ section( "Camera framing", guideRows.filter( ( [ label ] ) => label !== "Stream Deck" || settings.streamDeck ) ) ] }
 	];
 	tabs.push( { label: "Controls", sections: [ section( "Buttons and components", [
-		[ "Settings > Controls > Buttons & keys", "Choose an action, then press a key, clicker, pedal or controller button. Changes save immediately" ],
-		[ "Custom keys", "Plain keys and Shift combinations override the defaults shown here. System shortcuts stay reserved. Mappings stop during typing, editing and Settings" ],
-		[ "Controls > Pad", "Framing & checks adds local guide fitting, eye lock, ideal reference, listening and session status on pad and phone" ],
+		...( settings.keyboardMappingsEnabled !== false ? [ [ "Keyboard and clickers", "Choose an action, assign a plain key or Shift combination, then Apply. System shortcuts stay reserved; mappings stop during typing, editing and Settings" ] ] : [] ),
+		...( settings.gamepadEnabled !== false ? [ [ "Game controller", "Assign controller buttons in its own Controls section. Apply saves the draft; resetting one input type preserves the other" ] ] : [] ),
+		...( settings.padEnabled !== false || settings.phoneRemote ? [ [ "Pad and phone buttons", "Choose and arrange shared actions. Named button selection and Earlier/Later replace numbered pages" ] ] : [] ),
 		...( settings.obsEnabled && settings.obsControls ? [ [ "Finish recording hold", "Pad and phone require one second by default. Release early to cancel; Stream Deck has its own per-key setting" ] ] : [] ),
-		[ "Reset defaults", "Restores controller buttons and clears custom keys; Stream Deck profiles stay separate" ],
-		[ "Settings > Components", "Install, repair or remove the offline speech model and AI kit; check Node.js for AI commands" ]
+		[ "Setup > Optional components", "Install, repair or remove the offline speech model and AI kit; check Node.js for AI commands" ]
 	] ) ] } );
-	if ( settings.voiceCommands !== "off" ) tabs.push( { label: "Voice", sections: voiceHelpTabs( settings ).flatMap( t => t.sections ) } );
+	if ( voiceHelpTabs( settings ).length ) tabs.push( { label: "Voice", sections: voiceHelpTabs( settings ).flatMap( t => t.sections ) } );
 	return tabs;
 }
 

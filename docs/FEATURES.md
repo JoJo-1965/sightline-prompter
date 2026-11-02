@@ -1,20 +1,16 @@
 # Sightline Prompter: what it adds to Electron Teleprompter
 
-For a detailed reviewer comparison, use the [Preview 02 feature grid](FEATURE-GRID.md),
+For a detailed reviewer comparison, use the [Preview 04 feature grid](FEATURE-GRID.md),
 with dedicated Stream Deck and OBS sections, configuration choices, dependencies
 and limits. A [searchable view](FEATURE-GRID.html) and [comparison CSV](FEATURE-GRID.csv)
 are generated from the same tables.
 
-**Next unpublished preview:** optional linked recording and explicit recorder
-voice/script commands; a persistent state pill; production comments that hide
-during delivery; advisory sound-check acceptance; separate saved Actual framing
-references; one Stream Deck settings home and preview pairing; destination
-labels and visible slate choices. Awaiting Joanne's recording acceptance test.
-The directions follow-up adds **Appearance > Directions** with separate inline
-direction and production note size, colour and line spacing.
-Preview 03 has reported missing-control issues; see the
-[review status](PREVIEW-03-KNOWN-ISSUES.md). The later font/style redesign is
-a proposal, not an implemented feature.
+**Unpublished Settings Redesign Preview 04:** the signed-off design is implemented
+in the app and covered by native UI checks. It includes the prior recording
+preview, plus permanent named Settings sections, four complete typography targets,
+editable backing, portable reading themes, optional-interface gates and live Tools.
+The public installer remains 1.1.0; camera/recording-route acceptance and publication
+are separate. See the [implementation record](design/IMPLEMENTATION-STATUS.md).
 
 **Sightline 1.1.0, released 31 October 2026:** includes OBS integration (52),
 the manual head guide (55), production exports, voice tuning, component checks,
@@ -25,48 +21,41 @@ New controls check advertised app capabilities; older unreported versions are
 unconfirmed. See the [workflow walkthrough](guide/14-acceptance-test.md),
 [validation limits](BUILD-FREEZE-1.1.0.md) and [roadmap](../ROADMAP.md).
 
-**Navigation:** seven Settings groups with focused subtabs, a Files
-menu for input/output and a Tools menu for live recording and operator tools.
-Duplicate file operations and Display preferences have been removed from
-Settings. The top bar keeps live controls and Steady/Voice switching; native
-menus retain standard platform access. Keyboard tab navigation, visible focus,
-modal focus containment and focus return are covered by app checks. Settings
-keeps a consistent width and height without scrolling: longer topics and word lists use labelled
-Previous/Next pages. Small raised ? pills beside options support hover,
-keyboard and touch, with Escape to dismiss. Appearance separates Text,
-Theme, Directions, Background, Reading aids, Spacing and Screens. Immediate-save controls are
-labelled; pending changes show Unsaved changes, with Apply and Save & close.
-See the
-[Settings map](guide/07-settings.md).
+**Preview 04 navigation:** eight areas and 34 named sections separate reading,
+voice, recording, controllers, setup, debug and About. Settings owns its forms
+permanently. A fixed frame, sidebar search and compact selectors replace
+automatic pages and control borrowing. Small raised ? pills support hover,
+keyboard and touch, with Escape to dismiss.
 
-**Components** includes offline model and AI kit
-status, Install/Reinstall/Remove, and a separate Node.js availability check.
-The kit runs without cloning the repository or installing npm dependencies.
-Components detects optional dependencies. The preview moves Stream Deck app and
-plugin checks into its Controls topic, with installer links and a portable/custom **Locate**
-option. Missing dependencies have grey controls and visible explanations;
-preferences are retained. Local kit-command readiness stays separate from
-general API access. Remote OBS needs no local installation, and live plugin
-compatibility is checked separately from installed files.
-**Controls > Buttons & keys** learns controller buttons and local keyboard
-inputs from clickers/pedals, with the pad's action choices, duplicate-input
-replacement, immediate saving, three-entry pages and reset. Held/reconnected
-buttons do not repeat; typing, editing and Settings suspend actions. Plain
-keys and Shift combinations can be assigned; system shortcuts stay reserved.
-These controls are included in the published 1.1.0 baseline.
+**Complete appearance:** spoken script, headings, inline directions and production
+notes each have font, size, colour, bold, italic and line spacing. Editable backing
+colour and separate opacity/brightness controls show a live sample. Named reading
+themes can be saved, restored and moved between computers as JSON; they exclude
+controllers, recorder setup, windows, scripts and credentials.
 
-The setup/session workflow (58) separates occasional configuration from live
-recording: first-use **Getting started**, reopenable from Help; **Tools >
-Session check** before recording; named Components subtabs and top-level Debug.
-OBS connection, recording and setup are together under Recording. Components
-has no numbered overflow pages; the Settings frame remains stable.
+**One draft contract:** appearance previews; Apply saves, Save & close saves and
+closes, Cancel restores the last applied look. Explicit device tests, component
+installation, theme-library operations and pairing resets are separate actions.
+Tools has matching Prepare, Adjust and During take tabs, labelled Live adjustments.
+It has its own controls and opens a utility window if the prompter is too short.
 
-**About > Restore defaults** offers a confirmed restart into onboarding with
-shipped preferences. Layouts, shortcuts, slots, recent history and pairings
-reset; integrations start off. Installed components/locations, script files,
-recordings, scratch audio and service keys stay. It saves pending take data,
-keeps a private local settings backup and blocks active recording, editing or
-component maintenance. No OBS profiles or scenes are modified.
+**Optional interfaces:** speech, microphone, pad, phone, custom keys, game
+controller, Stream Deck, OBS and local API each have an enable switch. Off hides
+configuration and preserves values. Disabled actions/help are omitted; component
+installation/readiness remains separate. Stream Deck has one setup home.
+OBS connection, recording and profile/scene setup live under Controls.
+
+**Input configuration:** Keyboard and clickers and Game controller have separate
+homes, named mapping selectors and Apply/Cancel. Core shortcuts remain usable
+when custom mappings are disabled. Resetting one type preserves the other.
+The pad/phone layout uses named button selection, Earlier/Later and neighbouring
+drag/drop instead of arbitrary pages.
+
+**Setup > Optional components** manages the offline model and AI kit and checks
+Node.js/OBS readiness. The kit needs no repository clone or npm dependency setup.
+**Setup > Restore defaults** confirms a restart into onboarding, retains installed
+components, scripts, recordings and service keys, and resets preferences/pairings.
+The existing idle/maintenance guards and private local backup remain.
 
 The optional [OBS setup assistant](guide/15-obs-setup.md) (59) reuses configured
 camera/mic sources, offers a folder and 1080p/4K canvas, then shows a plan.
@@ -216,7 +205,7 @@ The whole workflow is in the guide:
   marker"** to read on from the last marker.
 - **Heard log:** every word it heard, beside the script words it matched, to
   find words it keeps mishearing.
-- **Your words** (Settings > Prompting > Voice): words that **sound alike** count as the
+- **Your words** (Settings > Voice > Your words): words that **sound alike** count as the
   script word ("marsha" for "Moshe") or the command ("prompta" for
   "Prompter"), and lists of script words and command words it mishears, as
   synonyms rather than replacements, with suggestions from the heard log and
@@ -326,16 +315,16 @@ The whole workflow is in the guide:
   mirrored views.
 - **Movable Settings and Help windows:** drag their native title bars across
   screens; each remembers its position and size and stays upright when the
-  prompter is mirrored. Settings keeps a stable frame with pages instead of
-  scrolling. Apply stays open; Save & close, Cancel and native Close preserve
+  prompter is mirrored. Settings keeps a stable frame with named sections instead of
+  scrolling or automatic pages. Apply stays open; Save & close, Cancel and native Close preserve
   the existing draft checks. Quitting with a Settings draft asks before
   discarding it. Opening the same window again keeps the draft and brings it
   forward. Both stay above the prompter and follow **Hide from capture**.
 - **Movable voice-command help:** “Prompter, what can I say?” opens a separate
   window with a draggable title bar, saved geometry and stable grouped tabs.
-- **Mirroring in one Settings topic:** **Appearance > Screens** holds both
+- **Mirroring in one Settings topic:** **Reading > Screens and mirroring** holds both
   beam-splitter toggles. The toolbar mirrors stay available and in sync.
-- **OBS connection, recording and setup together under Recording:** recorded-slate
+- **OBS under Controls in Preview 04:** recorded-slate
   preparation shows prerequisites, progress, readiness and errors in Settings.
 - **Clear OBS button states:** dark controls with readable enabled/disabled
   labels and a visible focus outline. Settings and help stay above their
@@ -353,11 +342,10 @@ The whole workflow is in the guide:
   disabled-feature help stays hidden.
 - **Check for updates** on Settings > About, and a quiet check at start-up
   (can be turned off). Nothing downloads by itself.
-- **Settings in seven groups:** Prompting, Appearance, Recording, Controls,
-  Components, Debug and About, with focused subtabs and shared live controls. File operations stay
+- **Preview 04 Settings:** eight areas, named sections and permanent forms. File operations stay
   in Files; settings still import/export as JSON or XML.
-- **Layout and Voice panels** for changes while the script runs. Drag them,
-  or Settings, by the title to anywhere in the window.
+- **Live Tools** has Prepare, Adjust and During take. Its changes are immediate;
+  Settings has a separate Apply/Cancel draft.
 - **Settings** with **Apply** (save and stay) and a prompt before closing with
   unsaved changes; **Quit Sightline** always at the foot of the ☰ menu; and a
   **check for updates** on Settings > About.
@@ -426,7 +414,7 @@ The whole workflow is in the guide:
 - **Prompter monitor:** choose a monitor (the Elgato Prompter shows up by name)
   and the prompter opens full screen there every time.
 - **Eye-line mode:** a narrow strip right under the webcam.
-- **Mirroring in one click:** ↔ and ↕ toggles in the Layout panel.
+- **Mirroring in one click:** ↔ and ↕ toolbar icons, also in Reading > Screens and mirroring.
 - **Hide from screen sharing and recordings**, and **click-through** so clicks
   reach the app behind (Ctrl+Shift+X from anywhere).
 - Windows that stay reachable when a monitor is unplugged or the resolution
@@ -437,19 +425,19 @@ The whole workflow is in the guide:
 - Sentence highlight, a **focus band** that dims the lines away from the
   reading line, and a **text edge** for reading over busy backgrounds.
 - **Colour themes:** standard, yellow on dark, high contrast and soft cream,
-  in the dedicated **Settings > Appearance > Theme** topic.
+  in the dedicated **Reading > Theme and background** topic.
 - **Fonts** including Atkinson Hyperlegible, OpenDyslexic and Verdana, with a
   separate **heading font** and **heading size**, so big headings stay
   readable with a dyslexia font.
-- **Directions and production-note styling:** **Appearance > Directions** has
-  separate size, colour and line spacing for `[inline directions]` and
-  `<!-- production notes -->`. Both follow Heading font; each has its own Theme
-  colour reset. Inline visibility saves immediately. Production notes hide
+- **Preview 04 text styling:** **Reading > Text and directions** gives all four
+  text types independent font, size, colour, bold, italic and line spacing.
+  Inline visibility is independent of size. Use theme resets a colour;
+  Apply keeps the appearance draft. Production notes hide
   during delivery, including their quoted contents; quoted spoken words in
   inline directions keep the script style and remain spoken.
 - Independent text opacity, background opacity and text brightness, margins
-  that fade out at the edges and alignment. **Appearance > Spacing** has separate
-  script and heading line spacing; direction/note spacing has its own home.
+  that fade out at the edges and alignment. **Reading > Text and directions** has all four independent spacing controls;
+  **Reading > Layout** contains margins, alignment and reading line.
   Quotes to read aloud retain script
   spacing. Settings uses aligned rows with space between labels and controls.
 

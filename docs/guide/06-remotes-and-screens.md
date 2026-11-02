@@ -275,16 +275,19 @@ After a failure, select that key/dial in Stream Deck to read its full reason.
 
 ## The floating pad
 
-**Ctrl+Shift+P** or **Tools > Control pad** opens a floating button grid.
+Enable the floating pad in **Controls > Pad and phone buttons**, then use
+**Ctrl+Shift+P** or **Tools > Prepare > Control pad** to open its button grid.
 The Compact preset starts with Top, Previous, Start / Pause and Next.
-**Customise** on the pad opens **Settings > Controls > Pad**.
+**Customise** on the pad opens **Settings > Controls > Pad and phone buttons**.
 
 Choose **Compact**, **Reading**, **Studio** or **Framing & checks**, then **Use preset**, or add
 individual functions from the list. Presets replace your selection; Compact
 resets it. Up to 36 buttons can include markers, Keeper/Scrap, speed, text
 size, mirror axes, guide, OBS and script slots. Drag selected buttons to
-reorder them, or use **Earlier / Later**, including across the short list
-pages. Remove a button to hide it. Changes save immediately.
+reorder them, or use **Earlier / Later**. Choose a button by name; compact
+views keep its controls together. Remove hides a button. Apply saves the draft;
+Cancel restores the last applied layout. The same layout is used when the
+phone is enabled even if the floating pad is off.
 
 The pad and phone share this selection and order, with the Stream Deck
 artwork and equivalent actions. Stream Deck profiles keep their own key
@@ -318,7 +321,7 @@ Sound check and scratch audio use the microphone separately.
 
 **Finish recording** requires a one-second hold by default. Release early to
 cancel; a lost connection, changed recording or removed permission cancels too.
-With a keyboard, hold Enter or Space. **Controls > Pad > Hold Finish recording**
+With a keyboard, hold Enter or Space. **Controls > Pad and phone buttons > Hold Finish recording**
 changes the shared pad/phone preference; Stream Deck keeps its own per-key
 checkbox. The progress bar measures the hold, not OBS completion. Read the
 reported OBS state afterwards. Ordinary Play/Pause never finishes the OBS file.
@@ -365,10 +368,10 @@ and too far away to work Settings on:
 
 ## The phone remote
 
-On **Settings > Controls > Phone**, tick **Control the prompter from a phone on the
+On **Settings > Controls > Phone pairing**, tick **Control the prompter from a phone on the
 same Wi-Fi** and save. Scan the QR code with your phone for the same buttons
 and order as the floating pad, with larger touch targets and the current
-section showing. Choose your layout in **Controls > Pad**. It updates on
+section showing. Choose your layout in **Controls > Pad and phone buttons**. It updates on
 the phone automatically; there is no separate phone layout to maintain.
 
 The code appears after **Apply** or **Save & close**; reopen Settings if needed.
@@ -399,19 +402,20 @@ disconnects any phone already connected. The first time, Windows may ask
 whether to let Sightline Prompter use the network. Allow it on private
 networks.
 
-![Settings > Controls](images/settings-remotes.png)
+![Settings > Controls](images/settings-preview04-api.png)
 
 ## Choose your buttons and keys
 
-In 1.1.0, open **Settings > Controls > Buttons & keys**. Choose
-an action, select **Press a key or button…**, then press your clicker, pedal,
-keyboard key or controller button once. Escape cancels; learning times out
-after 15 seconds. Assigning an existing input replaces its action. Changes
-save immediately and are included in JSON/XML settings exports.
+In Preview 04, **Keyboard and clickers** and **Game controller** have separate
+enable switches and configuration sections under Controls. Choose an action,
+then **Assign a key…** or **Assign a controller button…**. Press once.
+Escape cancels learning after a maximum 15 seconds. Assigning an existing input
+replaces its action in the draft. Apply saves; Cancel restores applied mappings.
 
 Use the action list beside each entry to change it, or Remove to clear that
-entry. Lists use three entries per page. **Reset defaults** clears custom keys
-and restores the original controller buttons. The defaults are A/play-pause,
+entry. Choose an entry by name. **Reset defaults** affects only the current
+input type; keyboard and controller mappings are preserved independently.
+The controller defaults are A/play-pause,
 B/marker, X/next marker and D-pad/speed or sections.
 
 Plain keys and Shift combinations use physical key positions. Ctrl, Alt,
@@ -427,7 +431,7 @@ device-specific entry reveals any generic default underneath. Keyboard pedals
 work as local keys. Stream Deck uses its own profiles and buttons-only API.
 OBS actions still require the existing connection and recording permissions.
 
-![Learning and arranging key and controller mappings](images/settings-buttons.png)
+![Learning and arranging key and controller mappings](images/settings-preview04-mappings.png)
 
 ## AI and remote control
 
@@ -441,7 +445,7 @@ it is in [Working with AI](09-working-with-ai.md#2-record-let-the-ai-run-the-pro
 
 ## Choosing the prompter monitor
 
-On **Settings > Appearance > Screens** (or Window > Prompter monitor), pick a monitor and
+On **Settings > Reading > Screens and mirroring** (or Window > Prompter monitor), pick a monitor and
 the prompter opens full screen there, now and each time the app starts. A
 dedicated prompter screen such as the Elgato Prompter shows up by name.
 **F11** gives a normal window again.

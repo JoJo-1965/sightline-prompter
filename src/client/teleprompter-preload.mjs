@@ -148,6 +148,10 @@ contextBridge.exposeInMainWorld( "electron", {
 	// Settings IPC
 	getSettings: () => ipcRenderer.send( "getSettings" ),
 	saveSettings: partial => ipcRenderer.send( "saveSettings", partial ),
+	applyPreferences: payload => ipcRenderer.invoke( "applyPreferences", payload ),
+	saveReadingTheme: payload => ipcRenderer.invoke( "saveReadingTheme", payload ),
+	importReadingTheme: () => ipcRenderer.invoke( "importReadingTheme" ),
+	exportReadingTheme: theme => ipcRenderer.invoke( "exportReadingTheme", theme ),
 	getCaptureOverride: () => ipcRenderer.send( "getCaptureOverride" ),
 	setCaptureOverride: enabled => ipcRenderer.send( "setCaptureOverride", enabled === true ),
 	onCaptureOverride: callback => on( "captureOverride", callback ),

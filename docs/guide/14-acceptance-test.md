@@ -21,8 +21,12 @@ earlier test history and do not describe today's installed version.
 
 ## Next-preview recording check
 
+For Preview 04, first follow [Settings acceptance](#settings-redesign-preview-04),
+then use the recording checks below. The app version remains 1.1.0; the Preview 04
+folder and build manifest identify the unpublished package.
+
 1. With recording stopped, select a slate and Apply. Reopen Settings to confirm
-   it. Previous/Next must name their destination and disable at the bounds.
+   it. Named sections must retain the same controls when the window is resized.
    Stream Deck setup should have one home under Controls.
 2. Use the **Recording preview** sample. Long production comments show while
    paused and hide during delivery; short cues stay visible. The first spoken
@@ -40,7 +44,7 @@ earlier test history and do not describe today's installed version.
 7. Accept a sound-check warning with Continue anyway. Check the measured result
    and acceptance in the take log. Keep scratch audio and inspect the exported
    script, recording-clock references and saved guide reference together.
-8. In the directions appearance follow-up, open **Appearance > Directions**.
+8. In the directions appearance follow-up, open **Reading > Text and directions**.
    Adjust inline directions, then production notes: each has separate size,
    colour and line spacing. Reset one colour to Theme without changing the
    other. Hide inline directions and check paused production notes remain.
@@ -66,11 +70,11 @@ and Getting Started. The matching Stream Deck plugin remains 0.1.9.
 RC10 fixes the phone QR image, gives voice help a movable native window,
 moves mirroring to Screens and honours Hide from capture for helper windows.
 RC11 keeps Settings above the fullscreen prompter and improves OBS button contrast.
-RC12 adds Comment size and Comment colour under Appearance > Text. Comments
+RC12 adds Comment size and Comment colour under Reading > Text and directions. Comments
 follow Heading font, independently of heading size; Theme restores their colour.
 RC13 adds custom pad/phone layouts and bounded listening recovery. Under
-**Controls > Pad**, choose Reading or Studio, reorder a button and check that
-the phone shows the same order. **Prompting > Commands** shows listening
+**Controls > Pad and phone buttons**, choose Reading or Studio, reorder a button and check that
+the phone shows the same order. **Voice > Voice commands** shows listening
 state and Restart listening; command-word tracing is off by default.
 RC14 moves the optional trace to **Debug**, alongside support logs.
 Enable it only to investigate a mishearing, Apply, then turn it off afterwards.
@@ -81,7 +85,7 @@ private test builds. Today's published baseline is **1.1.0 / 0.2.0**, as above.
 
 ### Additional checks for the next candidate
 
-Under **Controls > Pad**, select **Framing & checks > Use preset**, or add its
+Under **Controls > Pad and phone buttons**, select **Framing & checks > Use preset**, or add its
 buttons to your existing layout. Verify the same order on pad and phone.
 Open **Adjust guide** on each: align Eyes, lock them, fit Outline edges, then
 use Compare to change contrast, show/hide Ideal and restore Actual. The saved
@@ -92,16 +96,16 @@ Test listening off/on and Restart listening on both surfaces with the normal
 microphone. These must not stop OBS or change the saved listening preference.
 Tap Finish briefly: OBS must continue. Hold for one second: one Finish request
 should be sent. Repeat after a connection loss. The **Hold Finish recording**
-checkbox in Controls > Pad affects pad and phone; Stream Deck has its own
+checkbox in Controls > Pad and phone buttons affects pad and phone; Stream Deck has its own
 per-key setting. Restore your normal layout and leave protection enabled.
 
 RC14 does not yet include this batch. After the next candidate is approved
-and installed, check the seven Settings groups and the five named Components
+and installed, check the eight Settings areas and named Optional components
 subtabs; each component should keep its status and actions together. OBS
-connection/recording/setup belong under Recording. Confirm the Settings frame
+connection/recording/setup belong under Controls. Confirm the Settings frame
 stays the same size without scrolling and your draft survives navigation.
 
-On a disposable profile, **About > Restore defaults…** should offer Cancel as
+On a disposable profile, **Setup > Restore defaults…** should offer Cancel as
 the initial choice. Cancel must preserve the setup. Confirm only when you want
 to clear preferences, layouts, slots and pairings and restart onboarding.
 Installed components, original script files, recordings and service keys must
@@ -138,7 +142,7 @@ A mouse fallback does not prove a physical Stream Deck key works.
 
 ## Preflight
 
-1. In **Settings > Recording > OBS connection**, enable the connection,
+1. In **Settings > Controls > OBS connection**, enable the connection,
    Apply and test it. In **OBS recording**, allow recording controls.
    These permissions must be chosen in Settings; the scripts do not enable them.
    In **Controls > Stream Deck**, choose **Check compatibility** and confirm
@@ -151,7 +155,7 @@ A mouse fallback does not prove a physical Stream Deck key works.
    microphone in Sightline and OBS. The Academy reference setup uses
    **3840 × 2160 at 30 fps** and an independent unprocessed microphone route
    at **48 kHz / 24-bit PCM**; those are OBS settings, not script commands.
-4. Choose **Voice** scrolling. In **Prompting > Commands**, choose **Always**
+4. Choose **Voice** scrolling. In **Voice > Voice commands**, choose **Always**
    listening and wake word **Prompter** for these exact scripts. Leave a brief
    beat after the wake word, then finish the command within four seconds.
 5. Put the OBS Preview Projector below the guide and Sightline text above.
@@ -247,7 +251,7 @@ installation and pairing share Controls > Stream Deck. Check the running build:
    Install the AI kit, open its folder and run the checker on your own script.
    Reinstall should refresh the managed copy. Removal must ask first; Cancel
    should leave it installed. Stop prompting/recording before model changes.
-2. In **Controls > Buttons & keys**, choose Next and learn your pedal or
+2. In **Controls > Keyboard and clickers**, choose Next and learn your pedal or
    clicker. Close Settings, focus the prompter and press once. It should
    advance once; holding the button should not keep advancing.
 3. Assign a second action, try it, then test that typing or opening Settings
@@ -267,3 +271,44 @@ deferred for a future Mac tester and is not a gate for this Windows candidate.
 The release, merge and website deployment remain on hold while the Academy
 evidence is reviewed. The Stream Deck repo remains private. Running or passing
 this script does not itself authorise publication.
+
+<a id="settings-redesign-preview-04"></a>
+
+## Settings redesign Preview 04
+
+Use the isolated preview rather than your production profile. The app version
+remains 1.1.0; the folder and build manifest identify Preview 04.
+
+1. Open Settings from the toolbar, Files menu and shortcut. Confirm the frame
+   stays stable across eight areas and 34 named sections. Resize to a compact
+   window: area/section selectors replace the sidebar, with no automatic pages
+   or internal scrolling. Search and choose sections without changing preferences.
+2. In Reading > Text and directions, try all four targets. Give each a different
+   font, size, colour, bold/italic style and spacing. Check that only the intended
+   text changes. Production notes remain silent and disappear during delivery;
+   short inline cues stay as configured, with quoted spoken text still tracked.
+3. Change a backing colour and off-air/on-air opacity. Choose a built-in palette
+   to apply its colours; a colour's Use theme reset is disabled when it is already
+   inherited. Save a named reading theme, change the look, restore it, then
+   export/import it. The theme must contain no recorder, pairing or service keys.
+4. Apply a change, make another and Cancel. Only the applied appearance should
+   remain. Reopen and close with an unsaved change: native Close/×/Esc must offer
+   the draft guard. The first Esc on an open ? explanation only dismisses help.
+5. Enable/disable each interface. Configuration disappears when off, retains its
+   values and reappears when on. OBS children need OBS enabled; speech children
+   need speech enabled. Missing prerequisites explain disabled actions. Test the
+   selected microphone explicitly; leaving its section must stop that meter.
+6. Learn a keyboard/clicker input and a controller button in their separate
+   sections. Apply/Cancel must work, and resetting one type must preserve the
+   other. Core Space still starts/stops steady prompting with custom mappings off.
+   Arrange pad buttons by name/Earlier/Later or drag/drop; confirm the enabled
+   phone uses the same selection and order.
+7. Open Tools before Settings, after Settings and in a short prompter window.
+   Prepare, Adjust and During take must stay reachable, with a separate Tools
+   window if necessary. Live changes save immediately and remain in sync. The
+   pointer stays visible when the main toolbar hides. Confirm Settings still
+   has its complete controls after every sequence.
+8. Continue the recording checks above with your actual camera, RØDE microphone,
+   OBS and Stream Deck. Inspect the recorded files, clean tracks, recorded sync
+   reference and edit pack. Automated fixtures do not certify the physical route.
+   Publication remains on hold until all five production requirements are validated.

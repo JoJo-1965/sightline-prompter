@@ -25,7 +25,7 @@ In voice mode the prompter listens to you and keeps the words you're saying on
 the reading line. Speed up, slow down, pause to think or ad-lib a line, and it
 waits for you and then catches up.
 
-![Settings > Prompting > Voice](images/settings-voice.png)
+![Settings > Voice > Speech engine](images/settings-preview04-engine.png)
 
 ### Speech recognition on this computer (the default)
 
@@ -33,7 +33,7 @@ Speech is turned into words **on your own computer**. You don't need an
 account or a key, it works offline, and nothing you say leaves the PC.
 
 The first time you open Sightline, a small note at the bottom right offers it:
-choose **Download**. Or open **Settings > Prompting > Voice** (or the Voice panel) and
+choose **Download**. Or open **Settings > Voice > Speech engine** (or the Voice panel) and
 click **Download speech model**.
 It's a one-off download of about 73 MB, and progress is shown as it goes.
 In the next candidate, the same Voice page also has Reinstall and Remove.
@@ -93,9 +93,9 @@ heard in place of script words, most often first.
 
 Names and unusual words are what speech recognition gets wrong most:
 *Siobhan* heard as *shivawn*, *Sightline* as *site line*, and sometimes the
-wake word or a command. **Settings > Prompting > Your words** fixes them.
+wake word or a command. **Settings > Voice > Your words** fixes them.
 
-![Settings > Prompting > Your words](images/settings-words.png)
+![Settings > Voice > Your words](images/settings-preview04-words.png)
 
 - **Match words that sound alike** (on unless you turn it off): a word heard
   that isn't in the script but sounds like a longer script word, starts with
@@ -138,7 +138,7 @@ the saved preference: Always resumes wake listening; otherwise press Play.
 Scratch audio and sound check use the microphone separately. This is not a
 system microphone mute, and it never silently enables Always listening.
 
-**The wake word** is "Prompter" unless you choose another on **Settings > Prompting > Commands >
+**The wake word** is "Prompter" unless you choose another on **Settings > Voice > Voice commands >
 Wake word**: Computer, Teleprompter or Director. Pick one that doesn't come up in
 your scripts. Below, read "Prompter" as whichever you chose. Apply refreshes
 the active listener immediately, including while it waits for the wake word.
@@ -169,7 +169,7 @@ Switching listening off also cancels an in-progress startup. Late messages
 from that old session cannot interrupt its replacement.
 
 Recovery tries at most three times in a minute, then shows that listening
-has stopped. Use **Prompting > Commands > Restart listening**, or click the
+has stopped. Use **Voice > Voice commands > Restart listening**, or click the
 listening badge, for a deliberate retry. The Commands page shows its state.
 Recovery events go in the support log without spoken words or audio.
 
@@ -178,7 +178,7 @@ in **Settings > Debug**, then Apply and reproduce it. This is **off by default**
 It saves recognised text during commands-only listening, including while
 stopped, and may include nearby conversation. Turn it off afterwards.
 Entries use `mode: "commands"`; ordinary voice entries use `mode: "voice"`.
-The trace can reveal a mishearing; add that form in **Prompting > Your words**.
+The trace can reveal a mishearing; add that form in **Voice > Your words**.
 An operating listener can still misrecognise a word; recovery cannot fix
 every recognition error. This option saves no audio.
 
@@ -216,7 +216,7 @@ closing Settings or stopping the take. It follows **Hide from capture**.
 
 ![The movable voice-command window](images/floating-voice-help.png)
 
-Choose when it listens on **Settings > Prompting > Commands**:
+Choose when it listens on **Settings > Voice > Voice commands**:
 
 - **In voice mode** (the default): commands work while voice scrolling.
 - **Always, even when stopped**: the microphone listens for the wake word
@@ -272,7 +272,7 @@ During a stop or a countdown:
 - In steady scrolling, the microphone listens for "Prompter, go" while the
   prompter waits, even if voice commands are set to voice mode only (the small
   **🎙 Prompter** label shows). Set **Voice commands** to **Off** in
-  Settings > Prompting > Commands to stop this.
+  Settings > Voice > Voice commands to stop this.
 
 ### In voice scrolling
 
@@ -355,5 +355,5 @@ Otherwise it's the sentence on the reading line.
 
 ![The sentence on the reading line, highlighted](images/running.png)
 
-Turn it off or on in **Settings > Appearance > Reading aids**, or the quick panel
+Turn it off or on in **Settings > Reading > Reading aids**, or the quick panel
 at **Tools > Spacing and mirror**.

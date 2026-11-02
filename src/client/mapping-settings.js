@@ -1,7 +1,7 @@
 import { MAPPING_ACTIONS, normaliseMappings, inputId, inputLabel } from "./input-mappings.js";
 
-export function createMappingSettings( root, save ) {
-	const field = id => root.querySelector( `#${ id }` );
+export function createMappingSettings( root, save, { kind = "key", prefix = "set-map" } = {} ) {
+	const field = id => root.querySelector( `#${ id.replace( "set-map", prefix ) }` );
 	const choices = field( "set-map-action" );
 	for ( const group of new Set( MAPPING_ACTIONS.map( item => item.group ) ) ) {
 		const options = document.createElement( "optgroup" );
@@ -11,23 +11,35 @@ export function createMappingSettings( root, save ) {
 	}
 	choices.append( new Option( "Next marker", "next-marker" ), new Option( "Do nothing", "none" ) );
 	let rows = normaliseMappings();
-	let page = 0;
+	let selected = "";
+	const picker = document.createElement( "select" );
+	picker.dataset.navigationChoice = "true";
+	picker.setAttribute( "aria-label", kind === "key" ? "Keyboard mapping" : "Controller mapping" );
+	field( "set-map-page" ).replaceWith( picker );
+	field( "set-map-prev" ).remove();
+	field( "set-map-next" ).remove();
+	picker.addEventListener( "change", () => {
+		selected = picker.value;
+		paint();
+	} );
 	let learning = false;
 	let timer;
 	function cancel() {
 		learning = false;
 		clearTimeout( timer );
-		field( "set-map-learn" ).textContent = "Press a key or button…";
+		field( "set-map-learn" ).textContent = kind === "key" ? "Assign a key…" : "Assign a controller button…";
 		field( "set-map-cancel" ).hidden = true;
 	}
 	function paint() {
-		page = Math.max( 0, Math.min( page, Math.ceil( rows.length / 3 ) - 1 ) );
-		field( "set-map-page" ).textContent = rows.length ? `${ page + 1 } of ${ Math.ceil( rows.length / 3 ) }` : "No custom mappings";
-		field( "set-map-prev" ).disabled = page === 0;
-		field( "set-map-next" ).disabled = ( page + 1 ) * 3 >= rows.length;
+		const matching = rows.filter( item => item.kind === kind );
+		if ( !matching.some( item => inputId( item ) === selected ) ) selected = matching[0] ? inputId( matching[0] ) : "";
+		picker.replaceChildren( ...matching.map( item => new Option( inputLabel( item ), inputId( item ) ) ) );
+		if ( !matching.length ) picker.append( new Option( "No custom mappings", "" ) );
+		picker.value = selected;
+		picker.disabled = !matching.length;
 		const list = field( "set-map-list" );
 		list.replaceChildren();
-		for ( const row of rows.slice( page * 3, page * 3 + 3 ) ) {
+		for ( const row of matching.filter( item => inputId( item ) === selected ) ) {
 			const line = document.createElement( "div" );
 			line.className = "mapping-row";
 			const label = document.createElement( "span" );
@@ -56,7 +68,7 @@ export function createMappingSettings( root, save ) {
 		}
 	}
 	function learn( input ) {
-		if ( !learning ) return false;
+		if ( !learning || input.kind !== kind ) return false;
 		const existing = rows.find( row => inputId( row ) === inputId( input ) );
 		if ( !existing && rows.length >= 80 ) {
 			cancel();
@@ -66,10 +78,10 @@ export function createMappingSettings( root, save ) {
 		const row = { ...input, action: choices.value };
 		if ( existing ) rows[rows.indexOf( existing )] = row;
 		else rows.push( row );
-		page = Math.floor( rows.indexOf( row ) / 3 );
+		selected = inputId( row );
 		cancel();
 		paint();
-		field( "set-map-notice" ).textContent = `${ inputLabel( input ) } assigned to ${ choices.selectedOptions[0].textContent }. Saved.`;
+		field( "set-map-notice" ).textContent = `${ inputLabel( input ) } assigned to ${ choices.selectedOptions[0].textContent }. Apply to save.`;
 		save( { inputMappings: rows } );
 		field( "set-map-learn" ).focus();
 		return true;
@@ -88,15 +100,11 @@ export function createMappingSettings( root, save ) {
 	field( "set-map-cancel" ).addEventListener( "click", cancel );
 	field( "set-map-reset" ).addEventListener( "click", () => {
 		cancel();
-		rows = normaliseMappings();
-		page = 0;
+		rows = [ ...rows.filter( item => item.kind !== kind ), ...normaliseMappings().filter( item => item.kind === kind ) ];
+		selected = "";
 		paint();
-		save( { inputMappings: null } );
-		field( "set-map-notice" ).textContent = "Default controller mappings restored. Custom key mappings cleared.";
-	} );
-	for ( const [ id, step ] of [ [ "set-map-prev", -1 ], [ "set-map-next", 1 ] ] ) field( id ).addEventListener( "click", () => {
-		page += step;
-		paint();
+		save( { inputMappings: rows } );
+		field( "set-map-notice" ).textContent = kind === "key" ? "Custom keyboard mappings cleared in this draft. Core shortcuts stay available." : "Default game-controller mappings restored in this draft.";
 	} );
 	return {
 		learn, cancel,
@@ -107,6 +115,7 @@ export function createMappingSettings( root, save ) {
 			const next = normaliseMappings( value );
 			if ( JSON.stringify( rows ) !== JSON.stringify( next ) || !field( "set-map-list" ).children.length ) {
 				rows = next;
+				field( "set-map-notice" ).textContent = "";
 				paint();
 			}
 		}

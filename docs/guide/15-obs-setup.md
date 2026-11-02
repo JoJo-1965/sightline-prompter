@@ -6,8 +6,8 @@ remain available. Ordinary prompting works without OBS or this assistant.
 
 ## Before you begin
 
-Install OBS from **Settings > Components > OBS**. Open OBS and enable its
-WebSocket server. In **Settings > Recording > OBS connection**, enable the
+Install OBS from **Settings > Setup > Optional components > OBS**. Open OBS and enable its
+WebSocket server. In **Settings > Controls > OBS connection**, enable the
 connection, enter the local address/password, **Apply**, then test the saved
 connection. The assistant supports OBS on this computer; remote OBS can still
 be controlled using the ordinary connection settings.
@@ -23,7 +23,7 @@ devices just to satisfy the assistant. Native validation has been on Windows;
 macOS hardware validation remains deferred.
 
 Stop recording, streaming and the replay buffer. Pause prompting, then open
-**Settings > Recording > OBS setup > Set up OBS…**, or use the OBS row in
+**Settings > Controls > OBS profile and scenes > Set up OBS…**, or use the OBS row in
 **Help > Getting started…**. If OBS is unavailable, use **Connection…**
 or the configuration guide; inspection changes nothing.
 

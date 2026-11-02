@@ -16,7 +16,7 @@ for ( const ext of [ "json", "xml" ] ) {
 	assert.deepEqual( settingsValues( parse( serialize( notes, `settings.${ ext }` ), `settings.${ ext }` ), defaults ), notes );
 	assert.deepEqual( settingsValues( { productionNoteColour: "" }, defaults ), { productionNoteColour: "" } );
 }
-for ( const value of [ 0, 2.1, -1 ] ) assert.throws( () => settingsValues( { productionNoteScale: value }, defaults ), /productionNoteScale/ );
+for ( const value of [ 0, 4.1, -1 ] ) assert.throws( () => settingsValues( { productionNoteScale: value }, defaults ), /productionNoteScale/ );
 for ( const value of [ 0, 2.6 ] ) assert.throws( () => settingsValues( { productionNoteLineHeight: value }, defaults ), /productionNoteLineHeight/ );
 assert.throws( () => settingsValues( { productionNoteColour: "red" }, defaults ), /hex colour/ );
 assert.deepEqual( settingsValues( { padLayout: null }, defaults ), { padLayout: null } );

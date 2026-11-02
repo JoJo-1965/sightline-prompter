@@ -25,7 +25,7 @@ back a section. {pause}
 
 ## Making it comfortable {target: 0:30}
 
-[Open Tools, then Spacing and mirror.]
+[Open Tools > Adjust for live changes, or Settings > Reading to prepare the view.]
 
 Size makes the text bigger or smaller. Text opacity and Background change how
 see-through the script is. They're separate, so you can have solid text on a
@@ -58,7 +58,8 @@ There's one at the end of every section in this script. They set the target
 pace for each section, where to stop until you say "Prompter, go", and where
 to count down and carry on by itself.
 
-To check them, open Settings, Prompting, Script, then tick Show directives. {pause}
+To check them, open Settings > Reading > Reading aids, choose Slide cues and script tags,
+then tick Show directives and Apply. {pause}
 
 ## Recording setups {target: 0:35}
 

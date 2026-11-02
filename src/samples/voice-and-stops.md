@@ -9,7 +9,7 @@ remain inline; longer preparation and edit notes hide during delivery.
 Optional explicit recording directives, such as {record: on}, require enabled
 OBS recording controls. Examples inside this comment never execute.
 Prepare the recorded slate before recording.
-Find it in Settings > Recording > OBS recording.
+Find it in Settings > Controls > OBS recording, after enabling OBS integration.
 It puts its own flash and tone into OBS; keep scratch audio as well.
 Continuous mode leaves OBS recording through stops and retakes. Linked mode
 can pause/resume recording with prompting. No extra directives are needed. -->
@@ -72,7 +72,7 @@ marker" or press Shift+B, and you read on from the last marker, here at the
 start of this part, without starting the whole section again.
 
 If "Prompter" comes up in your scripts, choose a different wake word in
-Settings, under Prompting, Commands: Computer, Teleprompter or Director. {stop}
+Settings > Voice > Commands: Computer, Teleprompter or Director. {stop}
 
 ## Off script {target: 0:30}
 

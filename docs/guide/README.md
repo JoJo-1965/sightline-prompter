@@ -1,5 +1,9 @@
 # Sightline Prompter user guide
 
+This source guide now follows the unpublished **Settings Redesign Preview 04**.
+The published 1.1.0 installer retains its bundled guide and previous layout.
+Use the preview folder/build manifest to identify the test package.
+
 Sightline Prompter is a see-through teleprompter for speakers, content creators
 and learning teams recording to camera. Choose voice following or a steady
 pace, keep your words near the lens and collect take information for the edit.

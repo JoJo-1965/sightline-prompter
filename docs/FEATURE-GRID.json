@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "basis": "Recording Workflow Preview 02, documentation revision 2, 1 November 2026",
-  "date": "1 November 2026",
-  "sourceBuild": "647272d",
+  "basis": "Settings Redesign Preview 04, documentation revision 3, 2 November 2026",
+  "date": "2 November 2026",
+  "sourceBuild": "d1302a1",
   "buildVersion": "1.1.0",
   "publicationStatus": "preview",
   "appRelease": "1.1.0",
   "pluginRelease": "0.2.0",
   "sourceUrl": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/FEATURE-GRID.md",
-  "sourceSha256": "ee066e7d31fa0e8cb8ad0a955ee0c0fd7e9412fb329dfbda43482a83ddec2712",
+  "sourceSha256": "d310158807b4cc492bb56c0809255e8ed1ab73cbc7870d40da4d161ab0a53110",
   "support": [
     "Included",
     "Optional",
@@ -490,20 +490,26 @@
         {
           "name": "Theme settings",
           "support": "Included",
-          "options": "Dedicated Theme subtab; Standard, Yellow on dark, High contrast and Soft cream.",
-          "limits": "The dedicated subtab is a preview addition."
+          "options": "Reading > Theme and background contains four built-in palettes and named custom reading themes; preview addition.",
+          "limits": "Soft cream has a configurable light backing; existing cream profiles retain their prior colours until changed."
         },
         {
           "name": "Colours and themes",
           "support": "Included",
-          "options": "Preset script/heading themes and a custom square-bracket direction colour.",
-          "limits": "This baseline does not offer arbitrary body, heading or background colour pickers."
+          "options": "Independent script, heading, inline-direction, production-note and background colour pickers; per-item Use theme reset; preview addition.",
+          "limits": "Colour is separate from off-air/on-air opacity and text brightness."
+        },
+        {
+          "name": "Portable reading themes",
+          "support": "Optional",
+          "options": "Save current appearance under a name; restore, import or export reading-theme JSON; preview addition.",
+          "limits": "Stores typography and reading background only, excluding controllers, recordings, windows, scripts and credentials."
         },
         {
           "name": "Text and heading fonts",
           "support": "Included",
-          "options": "Standard, Atkinson Hyperlegible, OpenDyslexic and Verdana; separate heading choice or follow text.",
-          "limits": "Font preference is personal and is not an accessibility certification."
+          "options": "Four complete text targets: Segoe UI, Atkinson Hyperlegible, OpenDyslexic and Verdana, with Follow script for non-script text; preview addition.",
+          "limits": "Fonts are installed/bundled locally; preference is not an accessibility certification."
         },
         {
           "name": "Script text size",
@@ -520,20 +526,20 @@
         {
           "name": "Inline direction appearance",
           "support": "Included",
-          "options": "Independent square-bracket direction colour and size; font follows headings.",
-          "limits": "These controls apply to inline directions, not long HTML production notes."
+          "options": "Independent font, size, colour, bold, italic and line spacing; Normal/Dimmed/Hidden visibility; preview addition.",
+          "limits": "Visibility no longer changes size. Explicit spoken quotations retain script styling and tracking."
         },
         {
           "name": "Production note appearance",
-          "support": "Limited",
-          "options": "Preview 02 uses a fixed smaller style for long production notes.",
-          "limits": "Separate note controls and complete font/italic choices are under review; they are not supported features of this baseline."
+          "support": "Included",
+          "options": "Independent font, size, colour, bold, italic and line spacing for HTML production notes; preview addition.",
+          "limits": "Notes remain silent, show paused and hide during delivery. Existing note size remains independent of heading containers."
         },
         {
           "name": "Independent line spacing",
           "support": "Included",
-          "options": "Separate script, heading and inline-direction line spacing; preview addition.",
-          "limits": "Production-note line spacing is fixed in this baseline."
+          "options": "Separate script, heading, inline-direction and production-note spacing from 100–250%; preview addition.",
+          "limits": "Each percentage is relative to that text type’s font height; paragraph gaps remain as written."
         },
         {
           "name": "Alignment and margins",
@@ -544,8 +550,8 @@
         {
           "name": "Background and text visibility",
           "support": "Included",
-          "options": "Background opacity, separate on-air backing and text brightness.",
-          "limits": "Overlay appearance does not change the underlying video content."
+          "options": "Editable backing colour, off-air/on-air opacity, text opacity and brightness; preview addition.",
+          "limits": "The appearance preview does not change the content behind the prompter."
         },
         {
           "name": "Text edge",
@@ -636,6 +642,12 @@
           "limits": "Keyboard focus keeps controls available while they are in use."
         },
         {
+          "name": "Pointer visibility",
+          "support": "Included",
+          "options": "Mouse pointer stays visible when the toolbar hides; preview addition.",
+          "limits": "Click-through remains an independent preference."
+        },
+        {
           "name": "Utility windows",
           "support": "Included",
           "options": "Separate Settings, help and command windows, with movable positioning.",
@@ -655,9 +667,9 @@
         },
         {
           "name": "Small-screen layout",
-          "support": "Limited",
-          "options": "Grouped, paged settings avoid a changing-size settings panel.",
-          "limits": "A known 1024 × 600 preview issue can overlap guide access and OBS toolbar actions; queued for the next UI review."
+          "support": "Included",
+          "options": "Fixed named sections and compact area/section selectors; no automatic pagination or internal scrolling; preview addition.",
+          "limits": "Native checks cover 560 × 500 content and larger frames. Physical display/zoom and fullscreen stacking still require acceptance checks."
         }
       ]
     },
@@ -834,6 +846,18 @@
           "support": "Optional",
           "options": "Separate touch/mouse control window with selectable action buttons.",
           "limits": "Enable and customise it in Settings > Controls > Pad."
+        },
+        {
+          "name": "Interface enable switches",
+          "support": "Included",
+          "options": "Speech, microphone, pad, phone, custom keys, game controller, Stream Deck, OBS and local API each have an enable switch; preview addition.",
+          "limits": "Off hides configuration, preserves saved values and omits disabled actions/help. Dependencies remain a separate readiness check."
+        },
+        {
+          "name": "Separate input mappings",
+          "support": "Optional",
+          "options": "Keyboard/clickers and game controllers have distinct setup homes and enable switches; preview addition.",
+          "limits": "Disabling custom mappings retains core shortcuts. Resetting one type preserves the other type."
         },
         {
           "name": "Select and reorder actions",
@@ -1514,14 +1538,26 @@
         {
           "name": "Stable settings panel",
           "support": "Included",
-          "options": "Consistent width/height, grouped pages and no internal settings scrolling.",
-          "limits": "The screen must still accommodate the minimum usable dialog size."
+          "options": "Stable frame, eight areas and 34 named sections, permanent controls and no internal scrolling; preview addition.",
+          "limits": "Resizing never reallocates a setting to another page. A minimum usable window is required."
         },
         {
-          "name": "Named page navigation",
+          "name": "Settings draft consistency",
           "support": "Included",
-          "options": "Previous/Next name their destinations and disable at the bounds; preview addition.",
-          "limits": "Page navigation is used where one settings topic needs more space."
+          "options": "Appearance previews; Apply persists, Save and close persists/closes, Cancel restores the last applied look; preview addition.",
+          "limits": "Explicit component installation, theme-library save/import, pairing reset and device tests are separate actions."
+        },
+        {
+          "name": "Named section navigation",
+          "support": "Included",
+          "options": "Sidebar search and explicit sections, plus compact selectors; preview addition.",
+          "limits": "Disabled OBS recording/setup and speech children are excluded until their parent is enabled."
+        },
+        {
+          "name": "Live Tools groups",
+          "support": "Included",
+          "options": "Prepare, Adjust and During take share saved values with Settings through separate controls; preview addition.",
+          "limits": "Live changes are immediate; a short prompter uses a utility window instead of clipping the menu."
         },
         {
           "name": "Contextual explanations",

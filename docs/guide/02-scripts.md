@@ -9,9 +9,9 @@ inline. Unquoted cues stay outside speech tracking; quoted words in a `[Say:
 "..."]` direction are spoken. Production comments are never spoken or executable.
 Keep all spoken lines outside production comments, including quotations.
 
-In the directions appearance follow-up, **Appearance > Directions** has separate
-Inline directions and Production notes groups. Each has its own size, colour
-and line spacing; both follow Heading font. Appearance changes do not change
+In Preview 04, **Reading > Text and directions** has separate Spoken script,
+Headings, Inline directions and Production notes targets. Each has its own
+font, size, colour, bold, italic and line spacing. Appearance changes do not change
 which words are spoken or when production notes hide.
 Optional recording directives are covered in [Recording with OBS](11-obs.md).
 Ordinary scripts and retakes need no new directives.
@@ -103,7 +103,7 @@ with a line like `=== SECTION ===` in plain text. Sections let you:
 Anything in square brackets is a note to you, the speaker, such as
 `[smile]` or `[Say: "Section one". Pause.]`. Notes are shown dimmed, so they
 don't get read out by mistake. Any `"quoted words"` inside a note stay bright,
-because you do say those. Settings > Prompting > Script can show notes normally, or hide
+because you do say those. Settings > Reading > Reading aids can show notes normally, or hide
 them.
 
 Voice scrolling and the sentence highlight both ignore notes.

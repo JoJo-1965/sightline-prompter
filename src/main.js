@@ -21,6 +21,9 @@ import { createHeadGuide } from "./head-guide.js";
 import { createUtilityWindows } from "./utility-windows.js";
 import { captureOverride, protectWindow, setCaptureOverride, trackCaptureWindow } from "./capture-policy.js";
 import { settingsValues } from "./settings-values.js";
+import { APPEARANCE_DEFAULTS, normaliseReadingTheme, normaliseReadingThemes, upgradeReadingAppearance } from "./client/reading-appearance.js";
+import { INTERFACE_DEFAULTS, upgradeInterfaceSettings } from "./client/interface-state.js";
+import { readReadingTheme, writeReadingTheme } from "./reading-theme-files.js";
 import { readScriptSnapshot } from "./script-snapshot.js";
 import { createSpeech } from "./speech.js";
 import { createAgentKit, nodeStatus } from "./components.js";
@@ -117,6 +120,8 @@ async function copyAiPrompt( win ) {
 
 // Recording settings, edited on the Settings page and persisted as `settings` in app state.
 const defaultSettings = {
+	...APPEARANCE_DEFAULTS,
+	...INTERFACE_DEFAULTS,
 	scrollMode: "steady", // "steady" (fixed words per minute) or "voice" (follows what you say)
 	voiceEngine: "local", // "local" (on this computer) or "deepgram" (online, needs a key)
 	voiceCommands: "voice", // "Prompter, pause": "voice" (voice mode), "always" (steady too) or "off"
@@ -229,7 +234,7 @@ const defaultSettings = {
 };
 
 // Settings that a settings file or the remote API may not change.
-const PROTECTED_SETTINGS = [ "remoteControl", "remotePort", "remoteDeleteRecordings", "streamDeck", "phoneRemote", "phonePort", "obsEnabled", "obsHost", "obsPort", "obsControls", "obsFollowPrompter", "obsMarkers", "obsRecordedSlate", "traceCommands", "coachFillers" ];
+const PROTECTED_SETTINGS = [ "remoteControl", "remotePort", "remoteDeleteRecordings", "streamDeck", "phoneRemote", "phonePort", "obsEnabled", "obsHost", "obsPort", "obsControls", "obsFollowPrompter", "obsMarkers", "obsRecordedSlate", "traceCommands", "coachFillers", "speechEnabled", "microphoneEnabled", "padEnabled", "gamepadEnabled", "keyboardMappingsEnabled" ];
 
 // Take logs, one per script per day: the recordings library (recordings.js).
 const takeLogFolder = () => path.join( app.getPath( "userData" ), "take-logs" );
@@ -1481,7 +1486,7 @@ app.whenReady().then( async () => {
 	remoteToken = state.remoteToken || newToken();
 	streamDeckToken = state.streamDeckToken || newToken();
 	phoneKey = state.phoneKey || newPhoneKey();
-	settings = { ...defaultSettings, ...state.settings };
+	settings = { ...defaultSettings, ...upgradeInterfaceSettings( upgradeReadingAppearance( state.settings ?? defaultSettings ) ) };
 	// Existing profiles used one spacing value for every kind of text.
 	for ( const key of [ "headingLineHeight", "directionLineHeight" ] ) {
 		if ( !Object.hasOwn( state.settings ?? {}, key ) ) {
@@ -2386,6 +2391,105 @@ app.whenReady().then( async () => {
 	// Settings page IPC
 	ipcMain.on( "getSettings", () => {
 		sendSettings();
+	} );
+	ipcMain.handle( "applyPreferences", async ( event, payload = {} ) => {
+		if ( event.sender !== win.webContents ) return { ok: false, error: "Use the app’s Settings window" };
+		const before = { settings, fontSize: currentFontSize, opacity: currentOpacity, mirrored: currentMirrored, speed: currentAutoScrollSpeed, device: currentAudioDeviceId, key: currentDeepgramApiKey };
+		let previousPassword, passwordChanged = false;
+		try {
+			const partial = settingsValues( payload.settings ?? {}, defaultSettings );
+			if ( payload.mirrored !== undefined && ![ "off", "horizontal", "vertical", "both" ].includes( payload.mirrored ) ) throw new Error( "Invalid mirroring mode" );
+			for ( const [ key, min, max ] of [ [ "fontSize", 1, 8 ], [ "opacity", 0, 1 ], [ "autoScrollSpeed", 0.1, 3 ] ] ) {
+				if ( Object.hasOwn( payload, key ) && ( !Number.isFinite( payload[key] ) || payload[key] < min || payload[key] > max ) ) throw new Error( `Invalid ${ key }` );
+			}
+			if ( Object.hasOwn( payload, "audioDeviceId" ) && payload.audioDeviceId !== null && ( typeof payload.audioDeviceId !== "string" || payload.audioDeviceId.length > 512 ) ) throw new Error( "Invalid microphone selection" );
+			if ( Object.hasOwn( payload, "deepgramKey" ) && ( typeof payload.deepgramKey !== "string" || payload.deepgramKey.length > 512 ) ) throw new Error( "Invalid speech-service key" );
+			if ( payload.obs ) {
+				const options = payload.obs, host = String( options.host ?? "127.0.0.1" ).trim(), port = Number( options.port );
+				obsAddress( host, port );
+				if ( options.followPrompter !== settings.obsFollowPrompter && [ "recording", "paused" ].includes( obs.state().recording ) ) throw new Error( "Finish recording before changing linked recording mode" );
+				if ( options.password !== undefined && ( typeof options.password !== "string" || options.password.length > 4096 ) ) throw new Error( "Invalid OBS password" );
+				Object.assign( partial, { obsEnabled: options.enabled === true, obsHost: host, obsPort: port, obsControls: options.controls === true, obsFollowPrompter: options.followPrompter === true, obsMarkers: options.markers === true, obsRecordedSlate: options.recordedSlate === true } );
+				if ( options.password !== undefined || options.clearPassword ) {
+					previousPassword = await obsCredentials.read();
+					await obsCredentials.write( options.clearPassword ? "" : options.password );
+					passwordChanged = true;
+				}
+				obsPassword = options.enabled ? await obsCredentials.read() : "";
+			}
+			currentFontSize = payload.fontSize ?? currentFontSize;
+			currentOpacity = payload.opacity ?? currentOpacity;
+			currentMirrored = payload.mirrored ?? currentMirrored;
+			currentAutoScrollSpeed = payload.autoScrollSpeed ?? currentAutoScrollSpeed;
+			if ( Object.hasOwn( payload, "audioDeviceId" ) ) currentAudioDeviceId = payload.audioDeviceId || null;
+			if ( payload.clearDeepgramKey === true ) currentDeepgramApiKey = null;
+			else if ( payload.deepgramKey?.trim() ) currentDeepgramApiKey = payload.deepgramKey.trim();
+			await updateSettings( partial );
+			win.webContents.send( "fontSize", currentFontSize );
+			win.webContents.send( "opacity", currentOpacity );
+			win.webContents.send( "mirrored", currentMirrored );
+			win.webContents.send( "autoScrollSpeed", currentAutoScrollSpeed );
+			win.webContents.send( "audioDeviceId", { deviceId: currentAudioDeviceId } );
+			return { ok: true, settings: { ...settings, hasDeepgramKey: !!currentDeepgramApiKey }, fontSize: currentFontSize, opacity: currentOpacity, mirrored: currentMirrored, autoScrollSpeed: currentAutoScrollSpeed, audioDeviceId: currentAudioDeviceId, obs: { hasPassword: await obsCredentials.hasSaved() } };
+		} catch ( error ) {
+			if ( passwordChanged ) await obsCredentials.write( previousPassword ).catch( () => {} );
+			obsPassword = before.settings.obsEnabled ? await obsCredentials.read().catch( () => "" ) : "";
+			currentFontSize = before.fontSize;
+			currentOpacity = before.opacity;
+			currentMirrored = before.mirrored;
+			currentAutoScrollSpeed = before.speed;
+			currentAudioDeviceId = before.device;
+			currentDeepgramApiKey = before.key;
+			if ( settings !== before.settings ) await updateSettings( before.settings ).catch( () => {} );
+			return { ok: false, error: error.message };
+		}
+	} );
+	const exportTheme = async ( input ) => {
+		const theme = normaliseReadingTheme( input );
+		const filename = `${ theme.name.replace( /[^\da-z-]+/gi, "-" ).replace( /^-|-$/g, "" ) || "Sightline-reading" }.sightline-theme.json`;
+		const result = await dialog.showSaveDialog( utilityWindows?.dialogParent() ?? win, { title: "Export reading theme", defaultPath: path.join( app.getPath( "documents" ), filename ), filters: [ { name: "Reading theme", extensions: [ "json" ] } ] } );
+		if ( result.canceled || !result.filePath ) return { cancelled: true };
+		await writeReadingTheme( result.filePath, theme );
+		return { path: result.filePath };
+	};
+	ipcMain.handle( "exportReadingTheme", async ( _event, input ) => {
+		try {
+			return { ok: true, ...await exportTheme( input ) };
+		} catch ( error ) {
+			return { ok: false, error: error.message };
+		}
+	} );
+	ipcMain.handle( "saveReadingTheme", async ( _event, payload = {} ) => {
+		try {
+			const theme = normaliseReadingTheme( { ...payload.theme, id: undefined } );
+			const library = normaliseReadingThemes( [ ...( settings.readingThemes ?? [] ), theme ] );
+			await updateSettings( { readingThemes: library } );
+			let copy = {};
+			if ( payload.exportCopy === true ) {
+				try {
+					copy = await exportTheme( theme );
+				} catch ( error ) {
+					copy = { exportError: error.message };
+				}
+			}
+			return { ok: true, theme, ...copy };
+		} catch ( error ) {
+			return { ok: false, error: error.message };
+		}
+	} );
+	ipcMain.handle( "importReadingTheme", async () => {
+		try {
+			const result = await dialog.showOpenDialog( utilityWindows?.dialogParent() ?? win, { title: "Import reading theme", properties: [ "openFile" ], filters: [ { name: "Reading theme", extensions: [ "json" ] } ] } );
+			if ( result.canceled || !result.filePaths[0] ) return { ok: true, cancelled: true };
+			const input = await readReadingTheme( result.filePaths[0] );
+			const theme = normaliseReadingTheme( { ...input, id: undefined } ), library = settings.readingThemes ?? [];
+			const original = theme.name;
+			for ( let n = 2; library.some( item => item.name.toLocaleLowerCase() === theme.name.toLocaleLowerCase() ); n++ ) theme.name = `${ original.slice( 0, 52 ) } (${ n })`;
+			await updateSettings( { readingThemes: normaliseReadingThemes( [ ...library, theme ] ) } );
+			return { ok: true, theme };
+		} catch ( error ) {
+			return { ok: false, error: error.message };
+		}
 	} );
 
 	ipcMain.on( "setIgnoreMouse", ( _event, ignore ) => {

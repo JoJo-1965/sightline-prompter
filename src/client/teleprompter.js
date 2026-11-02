@@ -48,8 +48,13 @@ import { createLevelMeter, soundCheckVerdict } from "./level-meter.js";
 import { SUPPORT_URL } from "./links.js";
 import { createObsUi } from "./obs-ui.js";
 import { createRecordingLink } from "./recording-link.js";
-import { createSettingsNavigation } from "./settings-navigation.js";
-import { addSettingsHelp, createSettingsPages } from "./settings-pages.js";
+import { createSettingsNavigation } from "./settings-sections.js";
+import { createSettingsWorkspace } from "./settings-workspace.js";
+import { createLiveTools } from "./live-tools.js";
+import { createSettingsDraft } from "./settings-draft.js";
+import { APPEARANCE_KEYS, READING_FONTS, READING_PALETTES, TEXT_FIELDS } from "./reading-appearance.js";
+import { voiceInputEnabled, customInputEnabled } from "./interface-state.js";
+import { addSettingsHelp } from "./settings-pages.js";
 import { uiElement, showPanelWindow, hidePanelWindow } from "./panel-windows.js";
 import {
 	indexSentences,
@@ -160,6 +165,7 @@ let settings = {
 };
 let syncPadSettings = () => {};
 let mappingSettings = null;
+let gamepadMappings = null;
 let componentSettings = null;
 let componentAvailability = null;
 let componentStatus = null;
@@ -247,7 +253,8 @@ function setFontSize( size, save = true ) {
 }
 
 window.electron.onFontSize( ( size ) => {
-	setFontSize( size, false );
+	settingsDraft?.rebase( { fontSize: size } );
+	setFontSize( settingsDraft?.value.fontSize ?? size, false );
 } );
 
 const DEFAULT_OPACITY = 1; // off air: an ordinary solid window
@@ -272,7 +279,9 @@ function toggleOnAir() {
 
 function applyBacking() {
 	if ( isEditMode ) return;
-	document.body.style.backgroundColor = `rgba(0, 0, 0, ${ liveBacking() })`;
+	const hex = settings.backgroundColour || READING_PALETTES[settings.theme ?? "default"]?.background || "#000000";
+	const rgb = [ 1, 3, 5 ].map( offset => parseInt( hex.slice( offset, offset + 2 ), 16 ) );
+	document.body.style.backgroundColor = `rgba(${ rgb.join( ", " ) }, ${ liveBacking() })`;
 }
 
 // The level in use now.
@@ -293,7 +302,7 @@ function setLiveBacking( value, save = true ) {
 }
 
 function setOpacity( value, save = true ) {
-	opacity = Math.min( 1, Math.max( 0, Math.round( value * 100 ) / 100 ) );
+	opacity = Math.min( 1, Math.max( 0, value ) );
 	applyBacking();
 	if ( save ) {
 		window.electron.saveOpacity( opacity );
@@ -302,7 +311,8 @@ function setOpacity( value, save = true ) {
 }
 
 window.electron.onOpacity( ( value ) => {
-	setOpacity( value, false );
+	settingsDraft?.rebase( { opacity: value } );
+	setOpacity( settingsDraft?.value.opacity ?? value, false );
 } );
 
 const MIRROR_MODES = [ "off", "horizontal", "vertical", "both" ];
@@ -421,7 +431,8 @@ function showToast( text, ms = 1400 ) {
 }
 
 window.electron.onMirrored( ( value ) => {
-	setMirrored( value, false );
+	settingsDraft?.rebase( { mirrored: value } );
+	setMirrored( settingsDraft?.value.mirrored ?? value, false );
 } );
 
 // Where a section starts: its first line after the heading at the reading
@@ -533,7 +544,7 @@ document.addEventListener(
 	"keydown",
 	( e ) => {
 		const input = keyInput( e );
-		if ( input && mappedAction( normaliseMappings( settings.inputMappings ), input ) !== undefined ) return;
+		if ( customInputEnabled( settings, "key" ) && input && mappedAction( normaliseMappings( settings.inputMappings ), input ) !== undefined ) return;
 		if ( SCROLL_KEYS.has( e.key ) ) noteManualScroll();
 	},
 	true
@@ -784,7 +795,7 @@ document.addEventListener( "keydown", ( event ) => {
 	// Let native button activation handle Space/Enter without also starting a take.
 	if ( [ " ", "Enter" ].includes( event.key ) && event.target.closest?.( "button, a, [role=tab]" ) ) return;
 	const customInput = keyInput( event );
-	const customAction = customInput && mappedAction( normaliseMappings( settings.inputMappings ), customInput );
+	const customAction = customInputEnabled( settings, "key" ) && customInput ? mappedAction( normaliseMappings( settings.inputMappings ), customInput ) : undefined;
 	if ( customAction !== undefined && customAction !== null ) {
 		event.preventDefault();
 		if ( !event.repeat ) runMappedAction( customAction );
@@ -1422,6 +1433,10 @@ async function prepareReading() {
 
 async function startAutoScrollSession() {
 	if ( autoScrollActive || autoScrollStarting ) return;
+	if ( !voiceInputEnabled( settings ) ) {
+		showToast( "Enable speech features and microphone input in Settings > Voice before voice following." );
+		return;
+	}
 	if ( listeningSuspended ) {
 		showToast( "Listening is off for this session. Turn it on with Stream Deck or Restart listening." );
 		return;
@@ -1494,6 +1509,7 @@ const VOICE_OFFERED = "sightline.voiceOffered";
 let voiceOffer = null;
 
 function offerSpeechModel() {
+	if ( settings.speechEnabled !== true ) return;
 	if ( !usesLocalVoice() ) return;
 	if ( voiceOffer ) {
 		updateVoiceOffer();
@@ -1757,6 +1773,7 @@ uiElement( "set-listening-restart" )?.addEventListener( "click", restartListenin
 // mode until you start, when the voice session takes over, so "Prompter, go"
 // starts it hands-free.
 function wantCommandListening() {
+	if ( !voiceInputEnabled( settings ) ) return false;
 	const always = settings.voiceCommands === "always";
 	const wanted = always || ( cuePaused && lastCue?.listen !== "off" && settings.voiceCommands !== "off" );
 	return (
@@ -2519,10 +2536,14 @@ function rerenderScript() {
 function applySettings( next ) {
 	const prev = settings;
 	settings = { ...settings, ...next };
+	if ( autoScrollActive && !voiceInputEnabled( settings ) ) stopAutoScrollSession();
+	if ( voiceOffer ) voiceOffer.classList.toggle( "hidden", settings.speechEnabled === false );
 	if ( prev.voiceCommands !== settings.voiceCommands ) commandFailure = false;
 	autoScrollHandle?.setCommandOptions( { onCommand: settings.voiceCommands === "off" ? null : runVoiceCommand, wakeWord: settings.wakeWord ?? "prompter", commandWords: settings.commandWords ?? [], soundAlike: settings.soundAlike !== false } );
-	syncPadSettings( settings.padLayout );
-	mappingSettings?.sync( settings.inputMappings );
+	const preferences = settingsDraft?.value ?? settings;
+	syncPadSettings( preferences.padLayout );
+	mappingSettings?.sync( preferences.inputMappings );
+	gamepadMappings?.sync( preferences.inputMappings );
 	const body = document.body;
 	body.classList.remove(
 		"directions-dim",
@@ -2559,7 +2580,42 @@ function applySettings( next ) {
 	syncCommandListening();
 }
 
-window.electron.onSettings( applySettings );
+let settingsDraft = null;
+let settingsWorkspace = null;
+let committedSettings = null;
+const VISUAL_SETTINGS = new Set( [ ...APPEARANCE_KEYS, "marginX", "marginTop", "marginBottom", "readingLine", "textAlign", "showReadingMarker", "highlightSentence", "showProgress", "focusBand", "focusStrength", "textEffect", "showDirectives" ] );
+function previewSettingsDraft() {
+	if ( !settingsDraft ) return;
+	const state = settingsDraft.value;
+	applySettings( Object.fromEntries( [ ...VISUAL_SETTINGS ].filter( key => key in state ).map( key => [ key, state[key] ] ) ) );
+	setFontSize( state.fontSize, false );
+	setOpacity( state.opacity, false );
+	setMirrored( state.mirrored, false );
+}
+function stageSettings( partial, preview = false ) {
+	if ( !settingsDraft ) return;
+	settingsDraft.stage( partial );
+	if ( partial.microphoneEnabled === false ) stopMicMeter();
+	wordsChanged();
+	if ( preview ) previewSettingsDraft();
+	settingsWorkspace.sync( settingsDraft.value );
+	if ( partial.inputMappings ) {
+		mappingSettings?.sync( settingsDraft.value.inputMappings );
+		gamepadMappings?.sync( settingsDraft.value.inputMappings );
+	}
+	if ( Object.keys( partial ).some( key => [ "speechEnabled", "obsEnabled" ].includes( key ) ) ) settingsNavigation.refresh();
+}
+window.electron.onSettings( ( next ) => {
+	const previous = committedSettings ?? settings;
+	const pending = settingsDraft?.patch ?? {};
+	committedSettings = { ...settings, ...next };
+	settingsDraft?.rebase( next );
+	if ( settingsDraft && !pending.wordFixes && JSON.stringify( previous.wordFixes ) !== JSON.stringify( next.wordFixes ) ) fillWordRows( next.wordFixes ?? [] );
+	if ( settingsDraft && !pending.commandWords && JSON.stringify( previous.commandWords ) !== JSON.stringify( next.commandWords ) ) fillCommandRows( next.commandWords ?? [] );
+	applySettings( next );
+	if ( settingsDraft ) previewSettingsDraft();
+	settingsWorkspace?.sync( settingsDraft?.value ?? { ...settings, fontSize, opacity } );
+} );
 window.electron.onCuePhrases( ( phrases ) => {
 	cuePhrases = Array.isArray( phrases ) ? phrases : [];
 	rerenderScript();
@@ -2639,21 +2695,25 @@ gdocInput.addEventListener( "keydown", ( e ) => {
 
 const settingsModal = uiElement( "settings-modal" );
 const field = id => uiElement( id );
-let settingsSnapshot = null;
-let settingsReturnFocus = null;
-
-function numberValue( id, min, max, fallback ) {
-	const value = Number( field( id ).value );
-	return Number.isFinite( value )
-		? Math.min( max, Math.max( min, value ) )
-		: fallback;
+function settingsFeedback( text, error = false ) {
+	const status = field( "settings-applied" );
+	status.textContent = text;
+	status.title = text;
+	status.toggleAttribute( "data-error", error );
 }
+let settingsReturnFocus = null;
+settingsWorkspace = createSettingsWorkspace( settingsModal, {
+	getState: () => settingsDraft?.value ?? { ...settings, fontSize, opacity, autoScrollSpeed, audioDeviceId, mirrored },
+	stage: stageSettings, navigate: name => showSettingsTab( name ), toast: ( text ) => {
+		settingsFeedback( text );
+		showToast( text, 4500 );
+	}
+} );
 
 // Changes made since Settings opened or was last applied. The Layout,
 // Reading and Recording tabs apply as you go, so they don't count.
 let settingsDirty = false;
 let afterSettingsClose = null;
-const LIVE_TABS = "#set-layout-host, #set-theme-host, #set-reading-host, #set-directions-host, #set-production-notes-host, #set-background-host, #set-aids-host, #set-display-host, #set-recording-host, #set-script-host, #set-pad-fieldset, #set-capture-fieldset, #set-mapping-fieldset";
 
 field( "set-capture-override" )?.addEventListener( "change", event => window.electron.setCaptureOverride( event.target.checked ) );
 field( "capture-override-off" )?.addEventListener( "click", () => window.electron.setCaptureOverride( false ) );
@@ -2664,7 +2724,8 @@ window.electron.onCaptureOverride( ( active ) => {
 window.electron.getCaptureOverride();
 
 function markSettingsDirty( event ) {
-	if ( !event.isTrusted || event.target.closest( LIVE_TABS ) ) return;
+	if ( event.target.closest( ".reading-theme-dialog" ) ) return;
+	if ( event.target.closest( ".settings-navigation,.settings-compact-nav,[data-navigation-choice]" ) ) return;
 	if ( !event.target.matches( "input, select, textarea" ) ) return;
 	wordsChanged();
 }
@@ -2688,11 +2749,14 @@ async function openSettings() {
 	settingsReturnFocus = document.activeElement;
 	closePanels();
 	settingsTrail( "opening" );
-	settingsSnapshot = { fontSize, opacity };
+	settingsDraft = createSettingsDraft( { ...( committedSettings ?? settings ), fontSize, opacity, autoScrollSpeed, audioDeviceId, mirrored, clearDeepgramKey: false } );
+	const openingDraft = settingsDraft;
 	settingsDirty = false;
 	window.electron.utilityPanel( "settings", "dirty", false );
 	field( "settings-unsaved" )?.classList.add( "hidden" );
 	if ( field( "settings-applied" ) ) field( "settings-applied" ).textContent = "";
+	field( "settings-applied" )?.removeAttribute( "title" );
+	field( "settings-applied" )?.removeAttribute( "data-error" );
 	field( "settings-applied" )?.removeAttribute( "data-pending" );
 	field( "set-scroll-mode" ).value = settings.scrollMode ?? "steady";
 	field( "set-steady-wpm" ).value = settings.steadyWpm;
@@ -2716,9 +2780,9 @@ async function openSettings() {
 	window.electron.speechModelStatus();
 	field( "set-deepgram-key" ).value = "";
 	field( "set-deepgram-status" ).textContent = settings.hasDeepgramKey
-		? "A key is saved. Type a new one to replace it; Clear in Tools > Voice and microphone removes it."
+		? "A key is saved. Type a replacement, or choose Remove saved service key. Apply confirms the change."
 		: "No key saved. Only needed for Deepgram.";
-	field( "set-font-size" ).value = fontSize;
+	field( "set-font-size" ).value = fontSize * 100;
 	field( "set-directions" ).value = settings.directions ?? "dim";
 	field( "set-trace-commands" ).checked = settings.traceCommands === true;
 	field( "set-always-on-top" ).checked = !!settings.alwaysOnTop;
@@ -2741,18 +2805,25 @@ async function openSettings() {
 	window.electron.getRemoteInfo();
 	field( "set-phone" ).checked = !!settings.phoneRemote;
 	window.electron.getPhoneInfo();
+	settingsWorkspace.sync( settingsDraft.value );
 	settingsTrail( `showing tab ${ lastSettingsTab() }` );
 	showSettingsTab( lastSettingsTab() );
 	settingsModal.classList.remove( "hidden" );
 	await showPanelWindow( "settings", settingsModal, () => settingsPages.layout() );
+	if ( settingsDraft !== openingDraft || settingsModal.classList.contains( "hidden" ) ) {
+		if ( !settingsDraft ) hidePanelWindow( "settings" );
+		return;
+	}
 	settingsNavigation.focus();
 	settingsTrail( "visible" );
 	requestAnimationFrame( () => requestAnimationFrame( () => settingsTrail( "painted" ) ) );
 	requestAnimationFrame( () => settingsPages.layout() );
 	settingsTrail( "listing microphones" );
 	await populateMicSelect();
+	if ( settingsDraft !== openingDraft || settingsModal.classList.contains( "hidden" ) ) return;
 	field( "set-microphone" ).innerHTML = micSelect.innerHTML;
 	field( "set-microphone" ).value = audioDeviceId ?? "";
+	settingsWorkspace.sync( settingsDraft.value );
 	settingsTrail( "done" );
 }
 
@@ -2767,7 +2838,7 @@ window.electron.onDisplays( ( displays ) => {
 	select.append( new Option( "Leave it where it is", "" ) );
 	for ( const d of displays )
 		select.append( new Option( `Full screen on ${ d.label }`, String( d.id ) ) );
-	const chosen = settings.prompterDisplay;
+	const chosen = settingsDraft ? settingsDraft.value.prompterDisplay : settings.prompterDisplay;
 	if ( chosen != null && !displays.some( d => d.id === chosen ) ) {
 		select.append(
 			new Option( "The monitor chosen before (not connected)", String( chosen ) )
@@ -2821,14 +2892,17 @@ async function finishSettingsClose( save ) {
 }
 
 function closeSettings( restore ) {
+	stopMicMeter();
 	settingsDirty = false;
 	window.electron.utilityPanel( "settings", "dirty", false );
-	if ( restore && settingsSnapshot ) {
-		setFontSize( settingsSnapshot.fontSize, false );
-		setOpacity( settingsSnapshot.opacity, false );
+	if ( restore && settingsDraft ) {
+		const state = settingsDraft.cancel();
+		applySettings( state );
+		setFontSize( state.fontSize, false );
+		setOpacity( state.opacity, false );
+		setMirrored( state.mirrored, false );
 	}
-	settingsSnapshot = null;
-	returnLayoutPanel();
+	settingsDraft = null;
 	settingsModal?.classList.add( "hidden" );
 	hidePanelWindow( "settings" );
 	const target = settingsReturnFocus?.isConnected && settingsReturnFocus.getClientRects().length ? settingsReturnFocus : field( "cb-settings" );
@@ -2842,10 +2916,14 @@ const wordsList = field( "words-list" );
 let teachingWord = false;
 
 function wordsChanged() {
-	settingsDirty = true;
-	window.electron.utilityPanel( "settings", "dirty", true );
-	field( "settings-applied" ).textContent = "Unsaved changes";
-	field( "settings-applied" ).dataset.pending = "true";
+	if ( !settingsDraft ) return;
+	settingsDraft.stage( { wordFixes: readWordRows(), commandWords: readCommandRows() } );
+	settingsDirty = settingsDraft.dirty || !!field( "set-deepgram-key" ).value.trim() || !!field( "set-obs-password" ).value || field( "set-obs-clear-password" ).checked;
+	window.electron.utilityPanel( "settings", "dirty", settingsDirty );
+	field( "settings-applied" ).textContent = settingsDirty ? "Unsaved changes" : "No unapplied changes";
+	field( "settings-applied" ).toggleAttribute( "data-pending", settingsDirty );
+	field( "settings-applied" ).removeAttribute( "data-error" );
+	field( "settings-applied" ).removeAttribute( "title" );
 }
 
 function addWordRow( word = "", heard = [] ) {
@@ -3077,79 +3155,37 @@ field( "command-words-add" ).addEventListener( "click", () => {
 
 async function saveSettingsPage( close = true ) {
 	const invalid = [ ...settingsModal.querySelectorAll( "input, select, textarea" ) ]
-		.find( control => !control.disabled && control.willValidate && !control.checkValidity() );
+		.find( control => !control.closest( "dialog" ) && !control.disabled && control.willValidate && !control.checkValidity() );
 	if ( invalid ) {
 		showSettingsTab( invalid.closest( "[data-settings-page]" ).dataset.settingsPage );
 		settingsPages.reveal( invalid );
 		invalid.reportValidity();
 		return false;
 	}
-	if ( !await obsUi.save() ) return false;
-	window.electron.saveSettings( {
-		scrollMode: field( "set-scroll-mode" ).value === "voice" ? "voice" : "steady",
-		voiceEngine: field( "set-voice-engine" ).value === "deepgram" ? "deepgram" : "local",
-		voiceCommands: field( "set-voice-commands" ).value,
-		wakeWord: field( "set-wake-word" ).value,
-		scratchAudio: field( "set-scratch-audio" ).checked,
-		coachFillers: field( "set-coach-fillers" ).checked,
-		takeLoudness: field( "set-take-loudness" ).value,
-		soundCheckDuringTakes: field( "set-sound-check-takes" ).checked,
-		soundAlike: field( "set-sound-alike" ).checked,
-		wordFixes: readWordRows(),
-		commandWords: readCommandRows(),
-		steadyWpm: numberValue( "set-steady-wpm", 60, 300, settings.steadyWpm ),
-		countdown: numberValue( "set-countdown", 0, 10, settings.countdown ),
-		slate: field( "set-slate" ).value,
-		directions: field( "set-directions" ).value,
-		traceCommands: field( "set-trace-commands" ).checked,
-		alwaysOnTop: field( "set-always-on-top" ).checked,
-		checkUpdates: field( "set-check-updates" ).checked,
-		debugMode: field( "set-debug-mode" ).checked,
-		prompterDisplay: field( "set-prompter-display" ).value
-			? Number( field( "set-prompter-display" ).value )
-			: null,
-		highlightCues: field( "set-highlight-cues" ).checked,
-		cuesFile: field( "set-cues-file" ).value || null,
-		eyeLine: field( "set-eye-line" ).checked,
-		eyeLineWidth: numberValue(
-			"set-eye-line-width",
-			20,
-			100,
-			settings.eyeLineWidth
-		),
-		eyeLineHeight: numberValue(
-			"set-eye-line-height",
-			15,
-			100,
-			settings.eyeLineHeight
-		),
-		eyeLineReadingLine: numberValue(
-			"set-eye-line-reading",
-			5,
-			80,
-			settings.eyeLineReadingLine
-		),
-		remoteControl: field( "set-remote" ).checked,
-		streamDeck: field( "set-stream-deck" ).checked,
-		remoteDeleteRecordings: field( "set-remote-delete" ).checked,
-		phoneRemote: field( "set-phone" ).checked,
-		remotePort: numberValue(
-			"set-remote-port",
-			1024,
-			65535,
-			settings.remotePort ?? 47615
-		)
-	} );
-	setFontSize( Number( field( "set-font-size" ).value ) );
-	applyAutoScrollSpeed( Number( field( "set-voice-speed" ).value ) );
-	const key = field( "set-deepgram-key" ).value.trim();
-	if ( key ) {
-		window.electron.setDeepgramKey( key );
-	}
-	const mic = field( "set-microphone" ).value || null;
-	if ( mic !== audioDeviceId ) {
-		audioDeviceId = mic;
-		window.electron.setAudioDeviceId( mic ?? "" );
+	const state = settingsDraft.value;
+	const partial = { ...settingsDraft.patch, wordFixes: readWordRows(), commandWords: readCommandRows(), slate: field( "set-slate" ).value, cuesFile: field( "set-cues-file" ).value || null, prompterDisplay: field( "set-prompter-display" ).value ? Number( field( "set-prompter-display" ).value ) : null };
+	for ( const key of [ "fontSize", "opacity", "autoScrollSpeed", "audioDeviceId", "mirrored", "clearDeepgramKey" ] ) delete partial[key];
+	field( "settings-apply" ).disabled = field( "settings-save" ).disabled = true;
+	try {
+		const result = await window.electron.applyPreferences( { settings: partial, fontSize: state.fontSize, opacity: state.opacity, mirrored: state.mirrored, autoScrollSpeed: state.autoScrollSpeed, audioDeviceId: field( "set-microphone" ).value || null, deepgramKey: field( "set-deepgram-key" ).value.trim(), clearDeepgramKey: state.clearDeepgramKey === true, obs: obsUi.options() } );
+		if ( !result.ok ) {
+			settingsFeedback( result.error, true );
+			showToast( result.error, 5000 );
+			return false;
+		}
+		committedSettings = result.settings;
+		settingsDraft.commit( { ...result.settings, fontSize: result.fontSize, opacity: result.opacity, mirrored: result.mirrored, autoScrollSpeed: result.autoScrollSpeed, audioDeviceId: result.audioDeviceId, clearDeepgramKey: false } );
+		applySettings( result.settings );
+		setFontSize( result.fontSize, false );
+		setOpacity( result.opacity, false );
+		audioDeviceId = result.audioDeviceId;
+		obsUi.saved( result.obs );
+	} catch ( error ) {
+		settingsFeedback( `Settings could not be saved: ${ error.message }`, true );
+		showToast( `Settings could not be saved: ${ error.message }`, 5000 );
+		return false;
+	} finally {
+		field( "settings-apply" ).disabled = field( "settings-save" ).disabled = false;
 	}
 	settingsDirty = false;
 	if ( close ) {
@@ -3159,31 +3195,29 @@ async function saveSettingsPage( close = true ) {
 	}
 	// Applied: Cancel now goes back to these, not to how it was when opened.
 	window.electron.utilityPanel( "settings", "dirty", false );
-	settingsSnapshot = { fontSize, opacity };
 	field( "set-deepgram-key" ).value = "";
-	field( "settings-applied" ).textContent = "Saved";
+	settingsFeedback( "Saved" );
 	field( "settings-applied" ).removeAttribute( "data-pending" );
 	return true;
 }
 
 if ( settingsModal ) {
 	for ( const radio of settingsModal.querySelectorAll( "input[name=slate-choice]" ) ) radio.addEventListener( "change", () => {
-		if ( radio.checked ) field( "set-slate" ).value = radio.value;
+		if ( radio.checked ) {
+			field( "set-slate" ).value = radio.value;
+			stageSettings( { slate: radio.value } );
+		}
 	} );
-	// Preview text size while its slider moves. Backing uses the shared live control.
-	field( "set-font-size" ).addEventListener( "input", e =>
-		setFontSize( Number( e.target.value ), false )
-	);
 	field( "set-cues-browse" ).addEventListener( "click", () =>
 		window.electron.browseCuesFile()
 	);
 	field( "set-cues-clear" ).addEventListener( "click", () => {
 		field( "set-cues-file" ).value = "";
-		wordsChanged();
+		stageSettings( { cuesFile: null } );
 	} );
 	field( "settings-save" ).addEventListener( "click", () => saveSettingsPage( true ) );
 	field( "settings-apply" ).addEventListener( "click", () => saveSettingsPage( false ) );
-	field( "settings-cancel" ).addEventListener( "click", () => requestCloseSettings() );
+	field( "settings-cancel" ).addEventListener( "click", () => closeSettings( true ) );
 	field( "settings-close" ).addEventListener( "click", () => requestCloseSettings() );
 	field( "settings-unsaved-save" ).addEventListener( "click", () => finishSettingsClose( true ) );
 	field( "settings-unsaved-discard" ).addEventListener( "click", () => finishSettingsClose( false ) );
@@ -3216,7 +3250,7 @@ if ( settingsModal ) {
 window.electron.onCuesFileChosen( ( filePath ) => {
 	if ( filePath ) {
 		field( "set-cues-file" ).value = filePath;
-		wordsChanged();
+		stageSettings( { cuesFile: filePath } );
 	}
 } );
 window.electron.onMenuSettings( async ( topic ) => {
@@ -3224,6 +3258,7 @@ window.electron.onMenuSettings( async ( topic ) => {
 	if ( topic === "pad" ) showSettingsTab( "pad" );
 } );
 window.electron.onUtilityPanelClose( ( kind, quit ) => {
+	if ( kind === "tools" ) closePanels();
 	if ( kind === "settings" ) requestCloseSettings( quit ? () => window.electron.windowControl( "close" ) : null );
 	if ( kind === "help" ) closeHelp();
 	if ( kind === "voicehelp" ) hideVoiceHelp();
@@ -3256,6 +3291,14 @@ const EDGE_FADE = 4; // % of the window height over which text fades at a margin
 function applyLayout() {
 	applyBacking();
 	const style = document.body.style;
+	const palette = READING_PALETTES[settings.theme ?? "default"] ?? READING_PALETTES.default;
+	for ( const [ target, f ] of Object.entries( TEXT_FIELDS ) ) {
+		const font = settings[f.font] === "same" || !settings[f.font] ? settings.scriptFont ?? "default" : settings[f.font];
+		style.setProperty( `--reading-${ target }-font`, `"${ READING_FONTS[font] ?? "Segoe UI" }", sans-serif` );
+		style.setProperty( `--reading-${ target }-colour`, settings[f.colour] || palette[target] );
+		style.setProperty( `--reading-${ target }-weight`, ( settings[f.bold] ?? target === "headings" ) ? "700" : "400" );
+		style.setProperty( `--reading-${ target }-style`, ( settings[f.italic] ?? target === "inline" ) ? "italic" : "normal" );
+	}
 	style.setProperty(
 		"--margin-x",
 		`${ settings.marginX ?? LAYOUT_DEFAULTS.marginX }vw`
@@ -3639,16 +3682,17 @@ function syncControls() {
 		: `${ settings.steadyWpm } wpm`;
 	if ( document.activeElement !== fontInput ) fontInput.value = fontSize;
 	if ( document.activeElement !== opacityInput ) opacityInput.value = liveBacking();
-	const bgInput = uiElement( "lp-bg-opacity" );
-	if ( bgInput && bgInput.ownerDocument.activeElement !== bgInput ) bgInput.value = opacity;
 	const mode = uiElement( "cb-mode" );
 	if ( mode ) {
+		mode.disabled = !voiceInputEnabled( settings );
+		mode.title = voiceInputEnabled( settings ) ? "Switch between steady scrolling and voice following" : "Enable speech features and microphone input in Settings > Voice to use voice following";
 		mode.textContent = voice ? "Voice" : "Steady";
 		mode.setAttribute( "aria-label", voice ? "Voice scrolling; switch to steady" : "Steady scrolling; switch to voice" );
 		mode.setAttribute( "aria-pressed", String( voice ) );
 	}
 	syncLayoutPanel();
 	syncVoicePanel();
+	if ( !field( "tools-panel" )?.classList.contains( "hidden" ) ) liveTools?.render();
 	positionToolsPanel();
 }
 
@@ -3789,12 +3833,6 @@ opacityInput?.addEventListener( "change", () =>
 	setLiveBacking( Number( opacityInput.value ) )
 );
 // The Layout panel's background slider is the same setting as the bar's Backing.
-document
-	.getElementById( "lp-bg-opacity" )
-	?.addEventListener( "input", e => setOpacity( Number( e.target.value ), false ) );
-document
-	.getElementById( "lp-bg-opacity" )
-	?.addEventListener( "change", e => setOpacity( Number( e.target.value ) ) );
 
 window.electron.onWindowState( ( state ) => {
 	window.lastWindowState = state;
@@ -3819,7 +3857,7 @@ const appMenu = uiElement( "app-menu" );
 
 function positionToolsPanel() {
 	const panel = field( "tools-panel" );
-	if ( !panel || panel.classList.contains( "hidden" ) ) return;
+	if ( !panel || panel.classList.contains( "hidden" ) || panel.ownerDocument !== document ) return;
 	const edge = 8;
 	const top = controlBar.offsetHeight + 6;
 	const anchor = field( "cb-tools" ).getBoundingClientRect();
@@ -3828,11 +3866,17 @@ function positionToolsPanel() {
 	panel.style.left = `${ left }px`;
 	panel.style.right = "auto";
 	panel.style.top = `${ top }px`;
-	panel.style.maxHeight = `${ Math.max( 0, window.innerHeight - top - edge ) }px`;
+	const available = Math.max( 0, window.innerHeight - top - edge );
+	panel.style.maxHeight = "none";
+	if ( panel.scrollHeight > available ) showPanelWindow( "tools", panel );
 }
 window.addEventListener( "resize", () => requestAnimationFrame( positionToolsPanel ) );
 
 function togglePanel( id ) {
+	if ( id === "voice-panel" ) {
+		openSettings().then( () => showSettingsTab( "engine" ) );
+		return;
+	}
 	const panel = uiElement( id );
 	if ( !panel ) return;
 	const opening = panel.classList.contains( "hidden" );
@@ -3840,6 +3884,7 @@ function togglePanel( id ) {
 	if ( opening ) {
 		panel.classList.remove( "hidden" );
 		if ( id === "tools-panel" ) field( "cb-tools" ).setAttribute( "aria-expanded", "true" );
+		if ( id === "tools-panel" && panel.ownerDocument !== document ) showPanelWindow( "tools", panel );
 		if ( id === "voice-panel" ) openVoicePanel();
 		syncControls();
 	}
@@ -3850,6 +3895,12 @@ function togglePanel( id ) {
 // Closes any open panel or menu; returns true if something was open.
 function closePanels() {
 	let closed = false;
+	const tools = field( "tools-panel" );
+	if ( tools?.ownerDocument !== document && tools && !tools.classList.contains( "hidden" ) ) {
+		tools.classList.add( "hidden" );
+		hidePanelWindow( "tools" );
+		closed = true;
+	}
 	document
 		.querySelectorAll( ".panel:not(.hidden), #app-menu:not(.hidden)" )
 		.forEach( ( el ) => {
@@ -3963,45 +4014,30 @@ function menuGroups() {
 	];
 }
 
-function renderTools() {
-	const panel = field( "tools-panel" );
-	panel.replaceChildren();
-	const guideShown = headGuideState?.shown ?? !!settings.showHeadGuide;
-	const guideLabel = guideShown ? "Hide head guide" : "Show head guide";
-	const groups = [
-		[ "Recording tools", [
-			[ "🎚", "Sound check", "Ctrl+Shift+D", toggleSoundCheck, { checked: soundCheckOn() } ],
-			[ "◎", guideLabel, "Ctrl+Shift+H", () => window.electron.headGuide( guideShown ? "hide" : "show" ), { checked: guideShown } ],
-			[ "◉", "Guide adjustments…", "", () => window.electron.headGuide( "adjust" ), { checked: !!headGuideState?.controlsShown, disabled: !guideShown } ],
-			[ "⛶", "Guide fullscreen / restore", "Ctrl+Alt+H", () => window.electron.headGuide( "fullscreen" ) ],
-			[ "★", "Keeper", "K", () => rateTake( "keeper" ) ],
-			[ "✗", "Scrap take", "Shift+K", () => rateTake( "scrap" ) ]
-		] ],
-		[ "Review", [
-			[ "▤", "Script & rehearsal review…", "", () => openScriptReview(), { disabled: isScrolling() } ]
-		] ],
-		[ "Prepare a session", [
-			[ "✓", "Session check…", "", () => workflow.open( "session" ), { disabled: isScrolling() } ]
-		] ],
-		[ "Quick adjustments", [
-			[ "▤", "Spacing and mirror…", "Ctrl+Shift+K", () => toggleLayoutView( "layout" ) ],
-			[ "◐", "Text and colour…", "", () => toggleLayoutView( "reading" ) ],
-			[ "●", "Take display…", "", () => toggleLayoutView( "recording" ) ],
-			[ "🎙", "Voice and microphone…", "Ctrl+Shift+V", () => togglePanel( "voice-panel" ) ]
-		] ],
-		[ "Operator windows", [
-			[ "▣", "Control window", "Ctrl+Shift+O", toggleSetting( "showControl" ), { checked: !!settings.showControl } ],
-			[ "▦", "Control pad", "Ctrl+Shift+P", toggleSetting( "showPad" ), { checked: !!settings.showPad } ]
-		] ]
-	];
-	for ( const [ title, items ] of groups ) {
-		const heading = document.createElement( "h4" );
-		heading.textContent = title;
-		panel.append( heading );
-		for ( const args of items ) panel.append( menuButton( ...args ) );
+let liveTools = null;
+function runTool( id ) {
+	if ( id === "close-tools" ) {
+		closePanels();
+		return;
+	}
+	const shown = headGuideState?.shown ?? settings.showHeadGuide;
+	const actions = { session: () => workflow.open( "session" ), onboarding: () => workflow.open( "onboarding" ), review: openScriptReview, help: () => window.electron.openGuide(), sound: toggleSoundCheck, "guide-show": () => window.electron.headGuide( "show" ), "guide-toggle": () => window.electron.headGuide( shown ? "hide" : "show" ), "guide-adjust": () => window.electron.headGuide( "adjust" ), "guide-fullscreen": () => window.electron.headGuide( "fullscreen" ), pad: toggleSetting( "showPad" ), play: toggleAutoScrollSession, marker: dropMarker, keeper: () => rateTake( "keeper" ), scrap: () => rateTake( "scrap" ), listen: toggleSessionListening, record: () => obsUi.action( "start" ), finish: () => obsUi.action( "stop" ) };
+	if ( actions[id] ) {
+		if ( [ "session", "onboarding", "review", "help" ].includes( id ) ) closePanels();
+		actions[id]();
+	} else {
+		closePanels();
+		openSettings().then( () => showSettingsTab( id === "settings" ? lastSettingsTab() : id ) );
 	}
 }
-
+settingsModal.addEventListener( "click", ( event ) => {
+	const button = event.target.closest( "[data-settings-action]" );
+	if ( button ) runTool( button.dataset.settingsAction );
+} );
+function renderTools() {
+	liveTools ??= createLiveTools( field( "tools-panel" ), { getState: () => ( { ...settings, fontSize, opacity: liveBacking(), onAir: onAir(), scrolling: isScrolling(), guideShown: headGuideState?.shown, obs: obsUi.state() } ), action: runTool, save: partial => window.electron.saveSettings( partial ), size: value => setFontSize( value ), backing: value => setLiveBacking( value ) } );
+	liveTools.render();
+}
 let recentExpanded = false;
 let samplesExpanded = false;
 
@@ -4317,170 +4353,9 @@ makeMovable( settingsModal?.querySelector( ".settings-content" ), settingsModal?
 makeMovable( uiElement( "layout-panel" ), document.querySelector( "#layout-panel > h4" ), "layout" );
 makeMovable( uiElement( "voice-panel" ), document.querySelector( "#voice-panel > h4" ), "voice" );
 
-// --- Layout panel ---
-
-const LAYOUT_FIELDS = [
-	// [input id, setting key, format]
-	[ "lp-margin-x", "marginX", v => `${ v }%` ],
-	[ "lp-margin-top", "marginTop", v => `${ v }%` ],
-	[ "lp-margin-bottom", "marginBottom", v => `${ v }%` ],
-	[ "lp-line-height", "lineHeight", v => `${ Math.round( v * 100 ) }%` ],
-	[ "lp-heading-line-height", "headingLineHeight", v => `${ Math.round( v * 100 ) }%` ],
-	[ "lp-direction-line-height", "directionLineHeight", v => `${ Math.round( v * 100 ) }%` ],
-	[ "lp-production-line-height", "productionNoteLineHeight", v => `${ Math.round( v * 100 ) }%` ],
-	[ "lp-heading-scale", "headingScale", v => `${ Math.round( v * 100 ) }%` ],
-	[ "lp-direction-scale", "directionScale", v => `${ Math.round( v * 100 ) }%` ],
-	[ "lp-production-scale", "productionNoteScale", v => `${ Math.round( v * 100 ) }%` ],
-	[ "lp-text-opacity", "textOpacity", v => `${ Math.round( v * 100 ) }%` ],
-	[ "lp-backing-on-air", "backingOnAir", v => `${ Math.round( v * 100 ) }%` ],
-	[ "lp-text-brightness", "textBrightness", v => `${ Math.round( v * 100 ) }%` ],
-	[ "lp-focus-strength", "focusStrength", v => `${ Math.round( v * 100 ) }%` ]
-];
-
-function readingLineKey() {
-	return settings.eyeLine ? "eyeLineReadingLine" : "readingLine";
-}
-
+// Settings owns its appearance controls permanently.
 function syncLayoutPanel() {
-	if ( !uiElement( "layout-panel" ) ) return;
-	for ( const [ id, key, format ] of LAYOUT_FIELDS ) {
-		const input = field( id );
-		const value = settings[key] ?? LAYOUT_DEFAULTS[key];
-		if ( input.ownerDocument.activeElement !== input ) input.value = value;
-		field( `${ id }-value` ).textContent = format( value );
-	}
-	const reading = settings[readingLineKey()];
-	if ( field( "lp-reading-line" ).ownerDocument.activeElement !== field( "lp-reading-line" ) )
-		field( "lp-reading-line" ).value = reading;
-	field( "lp-reading-line-value" ).textContent = `${ reading }%`;
-	field( "lp-align" ).value = settings.textAlign ?? "left";
-	field( "lp-align" ).disabled = !!settings.eyeLine;
-	field( "lp-marker" ).checked = !!settings.showReadingMarker;
-	field( "lp-sentence" ).checked = settings.highlightSentence !== false;
-	field( "lp-progress" ).checked = settings.showProgress !== false;
-	field( "lp-pinned" ).checked = !!settings.controlsPinned;
-	field( "lp-directives" ).checked = !!settings.showDirectives;
-	field( "lp-follow-pace" ).checked = settings.followScriptPace !== false;
-	field( "lp-focus-band" ).checked = !!settings.focusBand;
-	field( "lp-text-effect" ).value = settings.textEffect ?? "none";
-	field( "lp-theme" ).value = settings.theme ?? "default";
-	field( "lp-font" ).value = settings.scriptFont ?? "default";
-	field( "lp-heading-font" ).value = settings.headingFont ?? "same";
-	field( "lp-direction-colour" ).value = settings.directionColour || "#c8c8c8";
-	field( "lp-direction-theme" ).setAttribute( "aria-pressed", String( !settings.directionColour ) );
-	field( "lp-production-colour" ).value = settings.productionNoteColour || "#c8c8c8";
-	field( "lp-production-theme" ).setAttribute( "aria-pressed", String( !settings.productionNoteColour ) );
-	field( "lp-on-air" ).checked = settings.onAirLight !== false;
-	field( "lp-pacing" ).checked = settings.showPacing !== false;
-	field( "lp-points" ).checked = !!settings.pointsMode;
-	field( "lp-summary" ).checked = settings.takeSummary !== false;
-	field( "lp-start-beep" ).checked = !!settings.startBeep;
-	field( "lp-hide-capture" ).checked = !!settings.hideFromCapture;
-	field( "lp-click-through" ).checked = !!settings.clickThrough;
-	document.body.classList.toggle( "show-directives", !!settings.showDirectives );
-}
-
-if ( uiElement( "layout-panel" ) ) {
-	for ( const [ name, key ] of [ [ "direction", "directionColour" ], [ "production", "productionNoteColour" ] ] ) {
-		field( `lp-${ name }-colour` ).addEventListener( "input", () => {
-			settings[key] = field( `lp-${ name }-colour` ).value;
-			applyLayout();
-			syncLayoutPanel();
-		} );
-		field( `lp-${ name }-colour` ).addEventListener( "change", () => window.electron.saveSettings( { [key]: field( `lp-${ name }-colour` ).value } ) );
-		onClick( `lp-${ name }-theme`, () => window.electron.saveSettings( { [key]: "" } ) );
-	}
-	field( "set-directions" ).addEventListener( "change", () => window.electron.saveSettings( { directions: field( "set-directions" ).value } ) );
-	for ( const [ id, key ] of LAYOUT_FIELDS ) {
-		field( id ).addEventListener( "input", () => {
-			settings[key] = Number( field( id ).value );
-			applyLayout();
-			syncLayoutPanel();
-		} );
-		field( id ).addEventListener( "change", () => {
-			window.electron.saveSettings( { [key]: Number( field( id ).value ) } );
-		} );
-	}
-	field( "lp-reading-line" ).addEventListener( "input", () => {
-		settings[readingLineKey()] = Number( field( "lp-reading-line" ).value );
-		setReadingAnchor( settings[readingLineKey()] / 100 );
-		updateReadingMarker();
-		syncLayoutPanel();
-	} );
-	field( "lp-reading-line" ).addEventListener( "change", () => {
-		window.electron.saveSettings( {
-			[readingLineKey()]: Number( field( "lp-reading-line" ).value )
-		} );
-	} );
-	field( "lp-align" ).addEventListener( "change", () => {
-		window.electron.saveSettings( { textAlign: field( "lp-align" ).value } );
-	} );
-	field( "lp-marker" ).addEventListener( "change", () =>
-		window.electron.saveSettings( {
-			showReadingMarker: field( "lp-marker" ).checked
-		} )
-	);
-	field( "lp-sentence" ).addEventListener( "change", () =>
-		window.electron.saveSettings( {
-			highlightSentence: field( "lp-sentence" ).checked
-		} )
-	);
-	field( "lp-progress" ).addEventListener( "change", () =>
-		window.electron.saveSettings( {
-			showProgress: field( "lp-progress" ).checked
-		} )
-	);
-	field( "lp-pinned" ).addEventListener( "change", () =>
-		window.electron.saveSettings( {
-			controlsPinned: field( "lp-pinned" ).checked
-		} )
-	);
-	onClick( "lp-reset", () =>
-		window.electron.saveSettings( { ...LAYOUT_DEFAULTS, readingLine: 33 } )
-	);
-	onClick( "lp-done", closePanels );
-	// Each of these saves straight away; main sends the settings back, which
-	// re-applies classes, the mask and the window flags.
-	for ( const [ id, key ] of [
-		[ "lp-focus-band", "focusBand" ],
-		[ "lp-on-air", "onAirLight" ],
-		[ "lp-pacing", "showPacing" ],
-		[ "lp-points", "pointsMode" ],
-		[ "lp-summary", "takeSummary" ],
-		[ "lp-start-beep", "startBeep" ],
-		[ "lp-hide-capture", "hideFromCapture" ],
-		[ "lp-click-through", "clickThrough" ]
-	] ) {
-		field( id ).addEventListener( "change", () => {
-			window.electron.saveSettings( { [key]: field( id ).checked } );
-			if ( key === "clickThrough" && field( id ).checked ) {
-				showToast( "Click-through on · Ctrl+Shift+X turns it off from anywhere" );
-			}
-		} );
-	}
-	for ( const [ id, key ] of [
-		[ "lp-text-effect", "textEffect" ],
-		[ "lp-theme", "theme" ],
-		[ "lp-font", "scriptFont" ],
-		[ "lp-heading-font", "headingFont" ]
-	] ) {
-		field( id ).addEventListener( "change", () =>
-			window.electron.saveSettings( { [key]: field( id ).value } )
-		);
-	}
-	field( "lp-follow-pace" ).addEventListener( "change", () => {
-		settings.followScriptPace = field( "lp-follow-pace" ).checked;
-		window.electron.saveSettings( {
-			followScriptPace: settings.followScriptPace
-		} );
-	} );
-	field( "lp-directives" ).addEventListener( "change", () => {
-		settings.showDirectives = field( "lp-directives" ).checked;
-		document.body.classList.toggle( "show-directives", settings.showDirectives );
-		window.electron.saveSettings( { showDirectives: settings.showDirectives } );
-	} );
-	// Beam-splitter glass reflects every bit of light from the screen into the
-	// lens, so: solid black behind the text, dimmer text, and mirrored.
+	settingsWorkspace?.sync( settingsDraft?.value ?? { ...settings, fontSize, opacity, mirrored } );
 }
 
 // --- Voice panel: scroll mode, speech recognition, microphone with a live meter ---
@@ -4508,6 +4383,8 @@ function syncVoicePanel() {
 }
 
 function stopMicMeter() {
+	field( "set-microphone-test" )?.replaceChildren( "Test selected microphone" );
+	if ( meterStream ) field( "vp-mic-status" ).textContent = "Microphone test stopped.";
 	cancelAnimationFrame( meterRaf );
 	meterRaf = null;
 	meterStream?.getTracks().forEach( t => t.stop() );
@@ -4518,18 +4395,18 @@ function stopMicMeter() {
 	if ( fill ) fill.style.width = "0";
 }
 
-async function startMicMeter() {
+async function startMicMeter( selectedDevice = audioDeviceId, settingsPreview = false ) {
 	stopMicMeter();
 	const status = field( "vp-mic-status" );
 	try {
 		meterStream = await navigator.mediaDevices.getUserMedia( {
-			audio: audioDeviceId ? { deviceId: { exact: audioDeviceId } } : true
+			audio: selectedDevice ? { deviceId: { exact: selectedDevice } } : true
 		} );
 	} catch ( err ) {
 		status.textContent = `Can't open this microphone: ${ err.message }`;
 		return;
 	}
-	if ( field( "voice-panel" ).classList.contains( "hidden" ) ) {
+	if ( settingsPreview ? settingsModal.classList.contains( "hidden" ) || settingsDraft?.value.microphoneEnabled !== true : field( "voice-panel" ).classList.contains( "hidden" ) ) {
 		stopMicMeter();
 		return;
 	}
@@ -4935,13 +4812,15 @@ window.electron.reloadContent();
 let lastStatusSent = 0;
 
 function sendStatus() {
+	if ( !field( "tools-panel" )?.classList.contains( "hidden" ) ) liveTools?.render();
 	window.electron.sendRendererStatus( {
 		obs: obsUi.state(),
 		scrolling: isScrolling(),
 		preparing: autoScrollStarting || slating,
 		onAir: onAir(),
 		backing: Math.round( liveBacking() * 100 ),
-		panel: layoutPanel?.classList.contains( "hidden" ) === false ? layoutView : null,
+		panel: settingsModal.classList.contains( "hidden" ) ? null : ( { typography: "reading", engine: "voice", takes: "recording" }[settingsNavigation.current] ?? settingsNavigation.current ),
+		speechEnabled: settings.speechEnabled, microphoneEnabled: settings.microphoneEnabled, padEnabled: settings.padEnabled, gamepadEnabled: settings.gamepadEnabled, keyboardMappingsEnabled: settings.keyboardMappingsEnabled,
 		section: scriptIndex,
 		scrollY: Math.round( window.scrollY ),
 		progress: progressText?.textContent ?? "",
@@ -5238,10 +5117,12 @@ window.electron.onPhoneInfo( ( info ) => {
 onClick( "set-phone-new", () => window.electron.newPhoneKey() );
 
 const SETTINGS_TAB_KEY = "settingsTab";
-syncPadSettings = createPadSettings( settingsModal, partial => window.electron.saveSettings( partial ) );
+syncPadSettings = createPadSettings( settingsModal, partial => stageSettings( partial ) );
 syncPadSettings( settings.padLayout );
-mappingSettings = createMappingSettings( settingsModal, partial => window.electron.saveSettings( partial ) );
+mappingSettings = createMappingSettings( settingsModal, partial => stageSettings( partial ) );
 mappingSettings.sync( settings.inputMappings );
+gamepadMappings = createMappingSettings( settingsModal, partial => stageSettings( partial ), { kind: "gamepad", prefix: "set-gamepad-map" } );
+gamepadMappings.sync( settings.inputMappings );
 componentAvailability = createComponentAvailability( settingsModal, { navigate: name => showSettingsTab( name ) } );
 componentSettings = createComponentSettings( settingsModal, { onStatus: ( status ) => {
 	componentStatus = status;
@@ -5270,15 +5151,34 @@ settingsModal.addEventListener( "keydown", ( event ) => {
 		if ( input ) mappingSettings.learn( input );
 	}
 }, true );
-const settingsNavigation = createSettingsNavigation( settingsModal, { onShow: ( name ) => {
-	if ( name !== "buttons" ) mappingSettings.cancel();
-	if ( name.startsWith( "component-" ) || [ "remotes", "streamdeck", "obs", "obs-recording", "obs-setup" ].includes( name ) ) componentSettings.refresh();
+const settingsNavigation = createSettingsNavigation( settingsModal, { getState: () => settingsDraft?.value ?? settings, onShow: ( name ) => {
+	if ( name !== "microphone" ) stopMicMeter();
+	if ( name !== "mappings" ) mappingSettings.cancel();
+	if ( name !== "gamepad" ) gamepadMappings.cancel();
+	if ( [ "components", "api", "streamdeck", "obs", "obs-recording", "obs-setup" ].includes( name ) ) componentSettings.refresh();
 	settingsTrail( `tab ${ name }` );
-	if ( LAYOUT_TABS.includes( name ) ) borrowLayoutPanel();
 	settingsBox?.scrollTo( 0, 0 );
 } } );
 addSettingsHelp( settingsModal );
-const settingsPages = createSettingsPages( settingsModal );
+field( "set-microphone-test" ).addEventListener( "click", async () => {
+	const button = field( "set-microphone-test" );
+	if ( meterStream ) {
+		stopMicMeter();
+		button.textContent = "Test selected microphone";
+		return;
+	}
+	button.disabled = true;
+	try {
+		await startMicMeter( field( "set-microphone" ).value || null, true );
+	} finally {
+		button.disabled = false;
+		button.textContent = meterStream ? "Stop microphone test" : "Test selected microphone";
+	}
+} );
+field( "set-microphone" ).addEventListener( "change", stopMicMeter );
+const settingsPages = { layout() {}, reveal( control ) {
+	control.focus();
+} };
 
 // The About tab is a brief; the full page is a click away.
 uiElement( "settings-about-full" )?.addEventListener( "click", () => requestCloseSettings( openAbout ) );
@@ -5313,125 +5213,10 @@ function showSettingsTab( name ) {
 	settingsNavigation.show( name );
 }
 
-// The Layout tab shows the Layout panel's own controls (they apply straight
-// away), moved into Settings while it is open and put back when it closes.
-const layoutPanel = uiElement( "layout-panel" );
-const layoutHost = uiElement( "set-layout-host" );
-// Each live appearance control has one settings home. Directions and long
-// preparation notes have separate fieldsets under the Directions topic.
-const layoutHosts = {
-	layout: layoutHost,
-	theme: uiElement( "set-theme-host" ),
-	reading: uiElement( "set-reading-host" ),
-	directions: uiElement( "set-directions-host" ),
-	"production-notes": uiElement( "set-production-notes-host" ),
-	background: uiElement( "set-background-host" ),
-	aids: uiElement( "set-aids-host" ),
-	display: uiElement( "set-display-host" ),
-	recording: uiElement( "set-recording-host" ),
-	script: uiElement( "set-script-host" )
-};
-const LAYOUT_GROUP_TABS = {
-	Opacity: "reading",
-	Spacing: "layout",
-	"Reading aids": "reading",
-	Recording: "recording",
-	Script: "recording"
-};
-const LAYOUT_TABS = Object.keys( layoutHosts );
-const LAYOUT_TITLES = { layout: "Layout", reading: "Reading", recording: "Recording" };
-
-// The same groups make the floating panel's three views, one per control-bar
-// button. Done and Reset show in every view.
-{
-	let tab = "layout";
-	for ( const el of layoutPanel?.children ?? [] ) {
-		if ( el.tagName === "H4" ) continue;
-		if ( el.tagName === "H5" ) tab = LAYOUT_GROUP_TABS[el.textContent.trim()] ?? "layout";
-		if ( el.classList.contains( "lp-actions" ) ) continue;
-		el.dataset.view = el.classList.contains( "lp-hint" ) || el.classList.contains( "lp-mirror-row" ) ? "layout" : tab;
-	}
+async function toggleLayoutView( view ) {
+	await openSettings();
+	showSettingsTab( view );
 }
-let layoutView = "layout";
-
-function showLayoutView( view ) {
-	layoutView = view;
-	for ( const el of layoutPanel?.querySelectorAll( "[data-view]" ) ?? [] ) {
-		el.classList.toggle( "lp-off", el.dataset.view !== view );
-	}
-	const title = layoutPanel?.querySelector( "h4" );
-	if ( title ) title.textContent = LAYOUT_TITLES[view];
-}
-
-function toggleLayoutView( view ) {
-	if ( !settingsModal.classList.contains( "hidden" ) ) {
-		showSettingsTab( view );
-		showPanelWindow( "settings", settingsModal, () => settingsPages.layout() );
-		return;
-	}
-	const open = !layoutPanel?.classList.contains( "hidden" );
-	if ( open && layoutView === view ) {
-		closePanels();
-		return;
-	}
-	showLayoutView( view );
-	if ( !open ) togglePanel( "layout-panel" );
-}
-showLayoutView( "layout" );
-let layoutBorrowed = [];
-
-function borrowLayoutPanel() {
-	if ( layoutBorrowed.length || !layoutPanel || !layoutHost ) return;
-	layoutBorrowed = [ ...layoutPanel.children ].filter(
-		el => el.tagName !== "H4"
-	);
-	let tab = "layout";
-	for ( const el of layoutBorrowed ) {
-		if ( el.tagName === "H5" ) {
-			const heading = el.textContent.trim();
-			tab = { Opacity: "background", "Reading aids": "aids", Script: "script" }[heading] ?? LAYOUT_GROUP_TABS[heading] ?? "layout";
-		}
-		// The margins note and Reset layout belong with the spacing.
-		const spacing = el.classList.contains( "lp-hint" ) || el.classList.contains( "lp-actions" );
-		el.classList.remove( "lp-off" );
-		if ( el.classList.contains( "lp-mirror-row" ) ) {
-			uiElement( "set-mirror-host" ).append( el );
-			continue;
-		}
-		const id = el.dataset.settingsControl ?? el.querySelector( "input[id], select[id]" )?.id;
-		const destination = id?.startsWith( "lp-production-" ) ? "production-notes" : id?.startsWith( "lp-direction-" ) ? "directions" : [ "lp-font", "lp-heading-font", "lp-heading-scale" ].includes( id ) ? "reading" : id === "lp-theme" ? "theme" : [ "lp-marker", "lp-sentence", "lp-progress" ].includes( id ) ? "aids" : id === "lp-pinned" ? "display" : id === "lp-summary" ? "recording" : spacing ? "layout" : tab;
-		( layoutHosts[destination] ?? layoutHost ).append( el );
-	}
-	for ( const id of [ "lp-font", "lp-heading-font", "lp-heading-scale" ] ) {
-		layoutHosts.reading.append( field( id ).closest( "[data-settings-control]" ) );
-	}
-	for ( const [ host, prefix ] of [ [ layoutHosts.directions, "direction" ], [ layoutHosts["production-notes"], "production" ] ] ) {
-		for ( const suffix of [ "scale", "colour", "line-height" ] ) host.append( field( `lp-${ prefix }-${ suffix }` ).closest( "[data-settings-control]" ) );
-	}
-	field( "lp-done" )?.classList.add( "hidden" );
-	syncControls();
-}
-
-function returnLayoutPanel() {
-	if ( !layoutBorrowed.length ) return;
-	layoutPanel.append( ...layoutBorrowed );
-	layoutBorrowed = [];
-	showLayoutView( layoutView );
-	field( "lp-done" )?.classList.remove( "hidden" );
-}
-
-// Shared live controls remain applied when the Settings draft is cancelled.
-function refreshSharedDisplayFields() {
-	if ( settingsSnapshot ) settingsSnapshot.opacity = opacity;
-}
-for ( const type of [ "input", "change", "click" ] ) {
-	for ( const host of Object.values( layoutHosts ) ) {
-		host?.addEventListener( type, () =>
-			setTimeout( refreshSharedDisplayFields, 200 )
-		);
-	}
-}
-
 function lastSettingsTab() {
 	try {
 		return localStorage.getItem( SETTINGS_TAB_KEY ) ?? "scrolling";
@@ -6027,7 +5812,7 @@ window.electron.onPrepareScriptChange( async ( id ) => {
 } );
 
 function syncScratchAudio( active ) {
-	const want = ( active || slating ) && settings.scratchAudio === true && !isEditMode;
+	const want = settings.microphoneEnabled !== false && ( active || slating ) && settings.scratchAudio === true && !isEditMode;
 	if ( want === scratchWanted ) return;
 	scratchWanted = want;
 	scratchChange = scratchChange.then( async () => {
@@ -6082,6 +5867,11 @@ function showLevel( { level, peak, shortTerm, room } ) {
 }
 
 function syncLevelMeter( active ) {
+	if ( settings.microphoneEnabled === false ) {
+		meterEl.classList.add( "hidden" );
+		if ( levelMeter.running ) levelMeter.stop();
+		return;
+	}
 	const how = settings.takeLoudness ?? "voice";
 	const micOnAnyway = autoScrollActive || settings.scratchAudio === true;
 	const measuring = active && !isEditMode && ( how === "always" || ( how === "voice" && micOnAnyway ) );
@@ -6102,6 +5892,10 @@ function syncLevelMeter( active ) {
 }
 
 function toggleSoundCheck() {
+	if ( settings.microphoneEnabled === false ) {
+		showToast( "Enable microphone input in Settings > Voice > Microphone before a sound check." );
+		return;
+	}
 	soundCheck = !soundCheck;
 	const active = isScrolling() || cuePaused || pointsRunning;
 	syncLevelMeter( active );
@@ -6674,18 +6468,18 @@ function obsUiStatus() {
 }
 function pollGamepads() {
 	for ( const input of buttonEdges( navigator.getGamepads?.() ?? [] ) ) {
-		if ( mappingSettings?.learning ) {
-			if ( settingsModal.ownerDocument.hasFocus() && settingsModal.querySelector( "#settings-page-buttons" )?.hidden === false ) mappingSettings.learn( input );
+		if ( gamepadMappings?.learning ) {
+			if ( settingsModal.ownerDocument.hasFocus() && settingsModal.querySelector( "#settings-page-gamepad" )?.hidden === false ) gamepadMappings.learn( input );
 			continue;
 		}
-		if ( !document.hasFocus() || mappingBlocked() ) continue;
+		if ( !customInputEnabled( settings, "gamepad" ) || !document.hasFocus() || mappingBlocked() ) continue;
 		const action = mappedAction( normaliseMappings( settings.inputMappings ), input );
 		if ( action ) runMappedAction( action );
 	}
 }
 setInterval( pollGamepads, 40 );
 window.addEventListener( "gamepadconnected", () => {
-	showToast( "Controller connected · change buttons in Settings > Controls > Buttons & keys" );
+	if ( settings.gamepadEnabled ) showToast( "Controller connected · Settings > Controls > Game controller" );
 } );
 
 // --- Number boxes beside sliders ---
@@ -7004,5 +6798,5 @@ function attachNumberBox( range, getSpec ) {
 
 for ( const [ id, getSpec ] of Object.entries( NUMBER_BOXES ) ) {
 	const range = uiElement( id );
-	if ( range ) attachNumberBox( range, getSpec );
+	if ( range && !range.dataset.pairedNumber ) attachNumberBox( range, getSpec );
 }

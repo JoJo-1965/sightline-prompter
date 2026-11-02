@@ -1,114 +1,89 @@
 # Layout and display
 
-## The Layout panel
+This source guide follows **Settings Redesign Preview 04**. The released
+1.1.0 installer has its own bundled guide.
 
-**Edit**, immediately left of **Tools** on the toolbar, opens the current
-script's editor. Samples open as read-only source. **Tools** opens below its
-button, with its edges kept inside the window.
+## Toolbar and live tools
 
-The top toolbar has separate **left/right** and **top/bottom** mirror icons.
-Each stays lit while its axis is on; click again to turn it off. Both can be
-on together. The Layout and Reading toggles, keyboard and remote controls
-stay in step with these buttons.
+**Edit**, immediately left of **Tools**, edits the current script; samples
+open as read-only source. The toolbar has separate left/right and top/bottom
+mirror icons. Each axis stays lit while enabled.
 
-![Toolbar with independent left/right and top/bottom mirror icons](images/control-bar.png)
+Every toolbar slider has a label: Speed in steady mode, Response in voice
+mode, Text size and Background. Background changes the backing level in use:
+off air or on air. Voice Response controls following speed, not microphone gain.
 
-Every visible toolbar slider keeps a small label above it: **Speed** in steady
-mode, **Response** in voice mode, **Text size**, and **Background**. **Response**
-sets how quickly voice scrolling follows you. The background label changes
-to **On-air BG** while on air. Hover for more detail. Narrow windows retain
-these labels; the Tools panels provide sliders hidden to make room.
+**Tools** opens below its button with **Prepare**, **Adjust** and **During take**
+tabs. It is labelled **Live adjustments**. Text size, backing and line spacing
+apply immediately. Other buttons open session checks, script review, framing
+and enabled recording functions. A short prompting window uses a separate
+Tools window so the controls remain reachable.
 
-The **Tools** button opens quick adjustments: **Spacing and mirror**
-(**Ctrl+Shift+K**), **Text and colour**, **Take display**, and **Voice and
-microphone**. Changes show straight away. Drag a panel by its title to move
-it out of the way; double-click the title to recentre it.
+**Settings** has permanent controls; opening Tools never moves them.
+Its fixed frame uses named sections rather than automatic pages.
+Preferences preview together and use **Apply**, **Save & close** or **Cancel**.
+See [Settings and its complete section map](07-settings.md).
 
-Settings reuses these controls in **Appearance** under **Theme**, **Text**, **Directions**, **Background**,
-**Reading aids**, **Spacing** and **Screens**, plus **Recording > Takes** and
-**Prompting > Script**. There is
-one copy of each control; closing Settings returns it to the quick panel.
+## Text, directions and notes
 
-![The Layout panel](images/layout-panel.png)
+Open **Reading > Text and directions**, then choose Spoken script, Headings,
+Inline directions or Production notes. Each target has an independent font,
+size, colour, Bold, Italic and line spacing. A non-script font can Follow script.
+The same slider/numeric controls are used for each target.
 
-- **Text opacity**, **Backing** and **brightness**: how see-through the words
-  are, how solid the dark band behind them is, and how bright the text is.
-  They're separate, so you can have solid text on a faint background.
-- **Background on air**: the backing while you're on air (scrolling, held at
-  a stop, or the **On air** button lit); **Background** is the level the rest
-  of the time. Off air the window is solid, like any other; on air the
-  backing goes almost clear (7% to start with), so you can see your slides or the
-  call behind the words while you read. The control
-  bar's Background slider changes whichever is in use: its label reads **On-air BG**
-  while you are.
-- **Margins** keep the text narrow, so your eyes stay near the camera. The top
-  and bottom margins fade the text out near the edges.
-- **Script and heading line spacing** are independent, in
-  **Appearance > Spacing**. Inline direction and production note spacing
-  each have their own control in **Appearance > Directions**.
-  Each runs from 100% to 250% of its own font size.
-  Wrapped directions can be tighter than the spoken text; spoken quotations
-  keep script spacing. Existing profiles retain their previous spacing.
-- **Alignment** (left or centred) and the **reading line**:
-  where the line you're reading sits. Put it just under your webcam.
-- **Heading size**: section headings grow with the text, so if they get too
-  big when you make the text larger, lower this. 100% is their usual size
-  next to the text (40% to 150%).
-- **Mirror**, the **reading-line marker**, the **sentence highlight** and the
-  **progress bar**.
-- **Reading aids** (below), the **ON AIR** light and an optional start beep.
-- **Hide from screen capture** and **click-through** (below).
-- **Talking points**, the **pacing light**, the **take summary** and **Follow
-  the script's pace** (see [Recording a take](05-recording-a-take.md)).
-- **Show directives**: see `{ }` instructions as tags, to check a script.
+Spoken-script size is the toolbar's base size. Other sizes are relative to the
+script: section headings normally start at 150%, inline directions at 85% and
+production notes at 55%. Titles retain their larger hierarchy.
+Line spacing runs from 100–250% of the selected text type's font height.
 
-## Reading aids
+Inline `[smile]` cues have separate Normal/Dimmed/Hidden visibility. Changing
+visibility no longer changes their size. Unquoted directions stay out of
+speech alignment, word counts and timing; words explicitly marked for speech
+keep script styling.
 
-The separate **Appearance > Reading aids** topic brings these choices together.
-Fonts are in **Appearance > Text**, and colour themes are in **Appearance > Theme**.
+Production `<!-- preparation notes -->` appear while paused and hide during
+delivery. All contents remain silent, including quoted text and directives.
+Their font/style, size, colour and spacing are separate from both headings
+and inline cues.
 
-![Reading aids grouped together in Settings](images/settings-aids.png)
+## Themes and transparency
 
-- **Theme**: standard, yellow on dark, high contrast or soft cream.
-- **Font**: standard, Atkinson Hyperlegible, OpenDyslexic or Verdana. Some
-  people find Atkinson Hyperlegible or OpenDyslexic easier to read.
-- **Heading font**: section headings and titles can have their own font, for
-  example Standard headings with OpenDyslexic text, where the dyslexia font
-  makes big headings hard to read. **Same as the text** (the default) follows
-  the Font above.
-- **Inline directions**: **Appearance > Directions** groups visibility,
-  size, colour and line spacing for `[square-bracket cues]`. Size is 40–150%
-  of their usual size: at 100%, Dimmed cues remain smaller than the script,
-  while Normal cues match it. Quoted words you read aloud keep their script
-  style and remain spoken. Unquoted cues such as `[smile]` stay outside word
-  counts, speech tracking and timing.
-- **Production notes**: a separate group on the same tab controls long
-  `<!-- preparation notes -->`. Their size runs from 40–200% of the usual
-  note size, which is 55% of the spoken script. Their colour and spacing are
-  independent of inline directions and headings. Notes show while paused,
-  hide during delivery and remain silent, including any quoted contents.
-  Both groups follow **Heading font**. Each colour swatch has its own **Theme**
-  reset, and all these controls save immediately.
-- **Text effect**: an outline or a shadow on the text, for busy backgrounds.
-- **Focus band**: dims the lines away from the reading line, with a strength
-  setting.
-- **Sentence highlight**: lights the sentence you're on (see
-  [Scrolling and voice](03-scrolling-and-voice.md)).
+**Reading > Theme and background** has Standard, Yellow on dark, High contrast
+and Soft cream. The new cream palette has dark text on a light backing;
+older saved cream profiles retain their prior colours until changed/reset.
 
-## Settings > Appearance > Screens
+Choose any supported text colour or backing colour. **Use theme** beside a
+colour restores only that item's palette colour. Background off air and
+Background on air have independent opacity. Text opacity and brightness are
+separate, so clear words can sit over a faint backing.
 
-![Window, monitor and eye-line settings under Appearance > Screens](images/settings-display.png)
+**Save current as…** keeps a named reading theme. Save/load it from My saved
+themes, or import/export a portable theme JSON file for another computer.
+Themes contain reading appearance, not the entire UI, recorder configuration,
+window geometry, scripts, pairings or credentials. Use the separate settings
+file transfer for broader supported preferences.
 
-Window and monitor placement, Keep on top and the eye-line strip. Fonts and
-heading size are in **Appearance > Text**; backing is in **Appearance > Background**
-and colours are in **Appearance > Theme**. Highlights are in **Appearance > Reading aids**;
-the reading line is in **Appearance > Spacing**. Mirroring is in **Appearance > Screens**. Delivery directions are in
-**Prompting > Script**.
+## Layout and reading aids
+
+**Reading > Layout** contains alignment, side/top/bottom margins and reading-line
+position. The top/bottom margins fade the text near their edges.
+
+**Reading > Reading aids** groups the reading marker, sentence highlight,
+progress/time, focus band/strength and outline/shadow text edge.
+A named choice shows slide cues and directive tags separately.
+Long notes remain silent regardless of their display settings.
+
+## Screens and mirroring
+
+**Reading > Screens and mirroring** uses named Window/mirroring and Eye-line
+strip choices. Set the monitor, always on top, toolbar visibility, click-through
+and capture preference there. The mouse pointer remains visible when the
+toolbar hides.
 
 ## Mirroring
 
 For beam-splitter rigs, where you read the screen through angled glass,
-mirror the prompter. In **Settings > Appearance > Screens > Beam-splitter mirroring**, two
+mirror the prompter. In **Settings > Reading > Screens and mirroring**, two
 buttons do it: **↔ Left–right** (most beam splitters) and **↕ Up–down**. Each
 stays lit while it's on; click it again to turn it off. Both lit mirrors both
 ways, and the panel stays open. **Ctrl+M** steps through off, ↔, ↕ and both.
@@ -122,13 +97,13 @@ and **Text brightness** to about 70% in the Reading view.
 
 **Ctrl+L** shrinks the prompter to a strip at the top centre of the screen,
 right under the webcam. Its width, height and reading line are set separately
-on **Settings > Appearance > Screens**.
+on **Settings > Reading > Screens and mirroring > Eye-line strip**.
 
 ## Keeping the prompter off recordings
 
-Tick **Hide from screen capture** in the Layout panel, and the prompter won't
-show up in screen shares or screen recordings (Zoom, Teams, Riverside, OBS and
-so on). You still see it.
+Enable **Hide from capture** in **Reading > Screens and mirroring** to request
+exclusion from supported capture routes while keeping the prompter visible
+to you. Verify a short recorded file in your chosen recording setup.
 
 Settings, keyboard Help, voice-command help and Guide adjustments follow this
 preference too, including changes while they are open. Turn it off to capture

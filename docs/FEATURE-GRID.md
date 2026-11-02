@@ -1,13 +1,15 @@
 # Sightline Prompter feature grid
 
-**Review basis: Recording Workflow Preview 02, documentation revision 2, 1 November 2026.**
+**Review basis: Settings Redesign Preview 04, documentation revision 3, 2 November 2026.**
 **Build version:** `1.1.0` · **Publication status:** Preview
 
 **Maintained source:** [Feature grid](https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/FEATURE-GRID.md)
 
-This grid describes the preview built from `647272d`, with companion Stream
+This grid describes the preview built from `d1302a1` plus the approved Settings
+implementation, with companion Stream
 Deck plugin **0.2.0**. It includes the existing features and the unpublished
-preview additions. The public app release remains **1.1.0**; this document
+preview additions. The final preview manifest will identify the tested source snapshot.
+The public app release remains **1.1.0**; this document
 does not announce a new release or certify a recording setup.
 
 Use the [searchable grid](FEATURE-GRID.html) to browse by subject or support
@@ -126,16 +128,17 @@ Reference: [Layout and display](guide/04-layout-and-display.md) and [Settings](g
 
 | Capability | Availability | Options and behaviour | Dependencies and limits |
 | --- | --- | --- | --- |
-| Theme settings | Included | Dedicated Theme subtab; Standard, Yellow on dark, High contrast and Soft cream. | The dedicated subtab is a preview addition. |
-| Colours and themes | Included | Preset script/heading themes and a custom square-bracket direction colour. | This baseline does not offer arbitrary body, heading or background colour pickers. |
-| Text and heading fonts | Included | Standard, Atkinson Hyperlegible, OpenDyslexic and Verdana; separate heading choice or follow text. | Font preference is personal and is not an accessibility certification. |
+| Theme settings | Included | Reading > Theme and background contains four built-in palettes and named custom reading themes; preview addition. | Soft cream has a configurable light backing; existing cream profiles retain their prior colours until changed. |
+| Colours and themes | Included | Independent script, heading, inline-direction, production-note and background colour pickers; per-item Use theme reset; preview addition. | Colour is separate from off-air/on-air opacity and text brightness. |
+| Portable reading themes | Optional | Save current appearance under a name; restore, import or export reading-theme JSON; preview addition. | Stores typography and reading background only, excluding controllers, recordings, windows, scripts and credentials. |
+| Text and heading fonts | Included | Four complete text targets: Segoe UI, Atkinson Hyperlegible, OpenDyslexic and Verdana, with Follow script for non-script text; preview addition. | Fonts are installed/bundled locally; preference is not an accessibility certification. |
 | Script text size | Included | Toolbar and settings adjustment, with remote and voice size actions. | Available reading area depends on window dimensions and margins. |
 | Heading size | Included | Heading scale independent of the body text. | Long headings can require rewording or a smaller scale. |
-| Inline direction appearance | Included | Independent square-bracket direction colour and size; font follows headings. | These controls apply to inline directions, not long HTML production notes. |
-| Production note appearance | Limited | Preview 02 uses a fixed smaller style for long production notes. | Separate note controls and complete font/italic choices are under review; they are not supported features of this baseline. |
-| Independent line spacing | Included | Separate script, heading and inline-direction line spacing; preview addition. | Production-note line spacing is fixed in this baseline. |
+| Inline direction appearance | Included | Independent font, size, colour, bold, italic and line spacing; Normal/Dimmed/Hidden visibility; preview addition. | Visibility no longer changes size. Explicit spoken quotations retain script styling and tracking. |
+| Production note appearance | Included | Independent font, size, colour, bold, italic and line spacing for HTML production notes; preview addition. | Notes remain silent, show paused and hide during delivery. Existing note size remains independent of heading containers. |
+| Independent line spacing | Included | Separate script, heading, inline-direction and production-note spacing from 100–250%; preview addition. | Each percentage is relative to that text type’s font height; paragraph gaps remain as written. |
 | Alignment and margins | Included | Left or centred text; side, top and bottom margin controls. | Extreme settings can reduce the usable reading area. |
-| Background and text visibility | Included | Background opacity, separate on-air backing and text brightness. | Overlay appearance does not change the underlying video content. |
+| Background and text visibility | Included | Editable backing colour, off-air/on-air opacity, text opacity and brightness; preview addition. | The appearance preview does not change the content behind the prompter. |
 | Text edge | Optional | None, outline or shadow to separate words from a busy background. | Preview against the intended slides, call or camera picture. |
 | Focus band | Optional | Dim text away from the reading line; adjustable strength. | Does not remove text from the script or edit pack. |
 | Reading marker and progress | Optional | Reading-line position and marker, sentence highlight, progress and time-left display. | Display aids can be configured separately from the script content. |
@@ -155,10 +158,11 @@ Reference: [Layout and display](guide/04-layout-and-display.md) and [Remotes and
 | Click-through | Optional | Let pointer interaction reach content beneath the overlay. | Use the documented shortcut or remote control to regain interaction. |
 | Operator window | Optional | Separate upright controls and script/session status while the reading window is mirrored. | A second monitor is useful but not required. |
 | Toolbar hiding | Included | Toolbar retreats when the pointer moves away; faster distance-based hiding is a preview addition. | Keyboard focus keeps controls available while they are in use. |
+| Pointer visibility | Included | Mouse pointer stays visible when the toolbar hides; preview addition. | Click-through remains an independent preference. |
 | Utility windows | Included | Separate Settings, help and command windows, with movable positioning. | Window stacking must still be checked in the user's chosen fullscreen arrangement. |
 | Capture protection | Limited | Request that supported capture paths exclude Sightline utility/reading windows. | Platform, capture method and compositor determine the result; verify the actual recording. |
 | Capture override for testing | Optional | Debug control allows capture of Sightline windows for demonstrations and diagnostics. | This intentionally removes protection; inspect every captured output before recording. |
-| Small-screen layout | Limited | Grouped, paged settings avoid a changing-size settings panel. | A known 1024 × 600 preview issue can overlap guide access and OBS toolbar actions; queued for the next UI review. |
+| Small-screen layout | Included | Fixed named sections and compact area/section selectors; no automatic pagination or internal scrolling; preview addition. | Native checks cover 560 × 500 content and larger frames. Physical display/zoom and fullscreen stacking still require acceptance checks. |
 
 ## 08 · Head positioning and framing reference
 
@@ -202,6 +206,8 @@ Reference: [Pad and phone setup](guide/06-remotes-and-screens.md).
 | Capability | Availability | Options and behaviour | Dependencies and limits |
 | --- | --- | --- | --- |
 | Floating control pad | Optional | Separate touch/mouse control window with selectable action buttons. | Enable and customise it in Settings > Controls > Pad. |
+| Interface enable switches | Included | Speech, microphone, pad, phone, custom keys, game controller, Stream Deck, OBS and local API each have an enable switch; preview addition. | Off hides configuration, preserves saved values and omits disabled actions/help. Dependencies remain a separate readiness check. |
+| Separate input mappings | Optional | Keyboard/clickers and game controllers have distinct setup homes and enable switches; preview addition. | Disabling custom mappings retains core shortcuts. Resetting one type preserves the other type. |
 | Select and reorder actions | Included | Choose the supported actions and drag to arrange their order. | The layout uses a defined action catalogue, not arbitrary third-party plugins. |
 | Pad column count | Included | Two, three, four or six columns. | Choose a count suitable for the available pad width. |
 | Layout presets | Included | Compact, Reading, Studio, and Framing & checks presets. | Applying a preset replaces the current selected layout. |
@@ -345,8 +351,10 @@ Reference: [Settings](guide/07-settings.md), [Screenshot gallery](guide/settings
 | Capability | Availability | Options and behaviour | Dependencies and limits |
 | --- | --- | --- | --- |
 | Grouped settings | Included | Top-level task groups and focused subtabs separate prompting, appearance, recording and controls. | The detailed settings guide describes the current placement of each tool. |
-| Stable settings panel | Included | Consistent width/height, grouped pages and no internal settings scrolling. | The screen must still accommodate the minimum usable dialog size. |
-| Named page navigation | Included | Previous/Next name their destinations and disable at the bounds; preview addition. | Page navigation is used where one settings topic needs more space. |
+| Stable settings panel | Included | Stable frame, eight areas and 34 named sections, permanent controls and no internal scrolling; preview addition. | Resizing never reallocates a setting to another page. A minimum usable window is required. |
+| Settings draft consistency | Included | Appearance previews; Apply persists, Save and close persists/closes, Cancel restores the last applied look; preview addition. | Explicit component installation, theme-library save/import, pairing reset and device tests are separate actions. |
+| Named section navigation | Included | Sidebar search and explicit sections, plus compact selectors; preview addition. | Disabled OBS recording/setup and speech children are excluded until their parent is enabled. |
+| Live Tools groups | Included | Prepare, Adjust and During take share saved values with Settings through separate controls; preview addition. | Live changes are immediate; a short prompter uses a utility window instead of clipping the menu. |
 | Contextual explanations | Included | Small question-mark pills beside options explain purpose and consequences. | Help should be checked against the selected mode and enabled components. |
 | Apply, save and cancel | Included | Review changed settings, apply them and keep or cancel the dialog changes. | Some setup operations and permissions have their own explicit controls. |
 | Onboarding and components | Included | First-use setup distinguishes component installation from everyday operation. | Components remain optional where the app can run without them. |

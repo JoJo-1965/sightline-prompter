@@ -15,12 +15,16 @@ and explicit voice/script recording commands keep continuous as the default.
 Native fixtures cover UI and recorder transitions. Joanne's camera, microphone,
 pause-compatible recording format and final handover remain the live acceptance test.
 
-**Directions follow-up, built for review:** Appearance > Directions separates
-inline directions and production notes, each with size, colour and line spacing.
-The visibility control has one home there and saves immediately. Theme's live
-save handling, note sizing inside headings, high-contrast note dimming and
-ambiguous Comment labels are corrected. JSON/XML and native-window checks cover
-independence, persistence, speech exclusion and hiding during delivery.
+**Settings redesign, signed off and implemented for Preview 04:** permanent
+forms, eight areas/34 named sections, four complete typography targets, editable
+backing, named portable reading themes and one Settings Apply/Cancel contract.
+Optional interfaces have enable switches, preserved hidden configuration and
+matching help. OBS is under Controls; game-controller and keyboard mappings
+have separate homes. Tools has three live groups and a short-window fallback.
+Native checks cover compact frames, theme files, cancellation, microphone-test
+cleanup, retained core keys, Tools-first opening and pointer visibility.
+Preview packaging, documentation and Joanne's live acceptance remain separate
+from publication. The public app is still 1.1.0 with Stream Deck 0.2.0.
 
 What's planned and in which order. Joanne approved every item on 27 October
 2026, apart from the one on hold. The [change log in the README](readme.md#change-log)
@@ -35,8 +39,8 @@ complex builds come later.
 ## Where it stands (31 October 2026)
 
 **Post-release changes, awaiting publication:** Windows executable naming,
-independent script/heading/direction/production-note line spacing, a dedicated Appearance > Theme
-topic and roomier Settings rows. These are separate from the published 1.1.0
+independent text formatting and the signed-off Settings/Tools redesign,
+named themes and conditional interface setup. These are separate from published 1.1.0
 freeze; no new release has been tagged.
 
 **Released: Sightline 1.1.0 + Stream Deck 0.2.0.** The app release includes the

@@ -12,10 +12,13 @@ reference, balance voice level with room noise and choose whether the recorder
 continues through retakes or follows the prompter. Explicit recording voice
 commands and optional script directives use the same saved permissions.
 
-**Directions appearance follow-up:** Appearance > Directions gives short inline
-cues and long production notes their own size, colour and line spacing. They
-share Heading font, with separate Theme colour resets. Production notes still
-hide during delivery; quoted spoken cues retain the script's appearance.
+**Settings Redesign Preview 04:** configure spoken script, headings, inline cues
+and production notes independently: font, size, colour, bold, italic and spacing.
+Choose backing colour and transparency, then save a portable reading theme.
+Named sections stay in one place; enabled interfaces reveal their configuration.
+Tools provides separate live controls. These are preview additions, not features
+of the published 1.1.0 installer. Production notes still hide during delivery;
+quoted spoken cues retain script styling.
 
 **Carousel inserts:**
 

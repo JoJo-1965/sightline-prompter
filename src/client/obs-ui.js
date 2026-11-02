@@ -26,12 +26,12 @@ export function obsActionBlock( state, name, { busy = false, canStart = true } =
 
 export function obsSlateSetupBlock( state, settings, busy = false ) {
 	if ( busy ) return "Waiting for OBS confirmation…";
-	if ( !state?.enabled ) return "Enable OBS integration in Recording > OBS connection, then Apply.";
+	if ( !state?.enabled ) return "Enable OBS integration in Controls > OBS connection, then Apply.";
 	if ( !state.controls ) return "Allow Sightline to start and stop OBS recordings, then Apply.";
 	if ( !settings.obsRecordedSlate ) return "Tick Include the slate in the OBS recording, then Apply.";
 	if ( state.connection !== "connected" ) return "Connect OBS and use Test saved connection first.";
 	if ( state.recording !== "stopped" ) return "OBS must be stopped before preparing the slate source.";
-	if ( settings.slate === "off" ) return "Choose Flash or Flash and beep in Recording > Takes.";
+	if ( settings.slate === "off" ) return "Choose Flash or Flash and beep in Recording > Slate and sync.";
 	return null;
 }
 
@@ -72,7 +72,7 @@ export function createObsUi( { getSettings, canStart, onStart, onFinish, onChang
 			field( id ).disabled = !optionsReady;
 			field( id ).setAttribute( "aria-describedby", "set-obs-installation" );
 		}
-		const recordingBlock = installBlock ?? ( !field( "enabled" ).checked ? "Enable OBS in Recording > OBS connection to use recording options." : !field( "controls" ).checked ? "Allow recording controls to use chapters and the recorded slate." : null );
+		const recordingBlock = installBlock ?? ( !field( "enabled" ).checked ? "Enable OBS in Controls > OBS connection to use recording options." : !field( "controls" ).checked ? "Allow recording controls to use chapters and the recorded slate." : null );
 		field( "recording-availability" ).textContent = recordingBlock ?? "Recording options are available. Apply changes before using them; the saved connection must be confirmed.";
 		for ( const id of [ "markers", "recorded-slate" ] ) {
 			field( id ).disabled = !!recordingBlock;
@@ -90,6 +90,7 @@ export function createObsUi( { getSettings, canStart, onStart, onFinish, onChang
 		label.dataset.recording = known ? state.recording : "unknown";
 		label.title = obsStatusText( state );
 		field( "status" ).textContent = [ obsStatusText( state ), state.error, state.enabled && !state.controls ? "Status only" : "", state.markers && !state.chapters ? "Chapters unavailable until a supported OBS connection is confirmed" : "" ].filter( Boolean ).join( " · " );
+		if ( field( "enabled" ).checked !== !!state.enabled ) field( "status" ).textContent = `Apply to ${ field( "enabled" ).checked ? "enable" : "disable" } OBS. Saved connection: ${ obsStatusText( state ) }.`;
 		const ready = state.enabled && state.connection === "connected" && state.controls && !busy && !state.setupBusy;
 		start.disabled = !ready || !canStart();
 		finish.disabled = !ready || ![ "recording", "paused" ].includes( state.recording );
@@ -164,6 +165,15 @@ export function createObsUi( { getSettings, canStart, onStart, onFinish, onChang
 		} ),
 		refresh: paint,
 		action,
+		options() {
+			const password = field( "password" ).value;
+			return { enabled: field( "enabled" ).checked, host: field( "host" ).value, port: Number( field( "port" ).value ), controls: field( "controls" ).checked, followPrompter: field( "follow-prompter" ).checked, markers: field( "markers" ).checked, recordedSlate: field( "recorded-slate" ).checked, ...( password ? { password } : {} ), clearPassword: field( "clear-password" ).checked };
+		},
+		saved( result ) {
+			field( "password" ).value = "";
+			field( "clear-password" ).checked = false;
+			field( "password-status" ).textContent = result?.hasPassword ? "An OS-protected password is saved." : "No OBS password saved.";
+		},
 		fill() {
 			const settings = getSettings();
 			field( "enabled" ).checked = settings.obsEnabled === true;

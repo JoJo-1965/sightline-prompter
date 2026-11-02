@@ -1,205 +1,273 @@
-# Settings screenshot gallery
+# Settings screenshot gallery — Preview 04
 
-Source preview · 1 November 2026. Updated images include independent spacing,
-visible slate choices, linked recording, destination labels and unified Stream
-Deck setup. These next-preview changes are unpublished.
-The panel stays the same size across topics.
-RC8 gives Settings and Help their own movable windows. The controls shown
-below are retained; drag the native title bar to use another screen.
+These are actual Windows Electron Settings captures from the unpublished
+Settings Redesign Preview 04, 2 November 2026. They replace the Preview 03
+pagination examples. The public installer remains Sightline 1.1.0.
 
-![Settings as a separate movable window](images/floating-settings.png)
+The frame stays fixed across all 34 named sections. Compact windows use area
+and section selectors; tests also cover 560 × 500 content. Screenshots show
+an isolated demonstration profile. Optional switches are enabled in a draft
+to reveal their configuration; the footer and status lines explain when Apply
+is still needed. No user recorder or microphone was used for these captures.
 
-[Full audit and findings](../SETTINGS-UX-AUDIT.md)
+Tap **Open full size** if an image is too small on your phone. For behaviour
+and save rules, use the [Settings guide](07-settings.md).
 
-[Read the illustrated Settings guide](07-settings.md) for what each choice does.
+- [Prepare](#prepare)
+- [Reading](#reading)
+- [Voice](#voice)
+- [Recording](#recording)
+- [Controls](#controls)
+- [Setup](#setup)
+- [Debug](#debug)
+- [About](#about)
 
-Jump to [Prompting](settings-gallery.md#prompting), [Appearance](settings-gallery.md#appearance),
-[Recording](settings-gallery.md#recording), [Controls](settings-gallery.md#controls),
-[Components](settings-gallery.md#components), [Debug](settings-gallery.md#debug) or [About](settings-gallery.md#about).
+## Prepare
 
-## Setup and session check
+### Session checklist
 
-![Reopenable first-use checklist](images/getting-started.png)
+[Open full size](images/settings-preview04-checklist.png)
 
-![Pre-session links to existing tools](images/session-check.png)
+![Prepare: Session checklist, Preview 04](images/settings-preview04-checklist.png)
 
-## Prompting
+## Reading
 
-### Scrolling
+### Mode and pace
 
-![Scrolling mode, speed and countdown](images/settings-scrolling.png)
+[Open full size](images/settings-preview04-mode.png)
 
-### Voice recognition and microphone
+![Reading: Mode and pace, Preview 04](images/settings-preview04-mode.png)
 
-![Speech recognition and microphone settings](images/settings-voice.png)
+### Text and directions
 
-### Commands and wake word
+[Open full size](images/settings-preview04-typography.png)
 
-![Command listening and wake word](images/settings-commands.png)
+![Reading: Text and directions, Preview 04](images/settings-preview04-typography.png)
 
-### Question-mark help opened
+### Theme and background
 
-![Explanation opened from the miniature help pill](images/settings-commands-help.png)
+[Open full size](images/settings-preview04-background.png)
 
-### Your words
+![Reading: Theme and background, Preview 04](images/settings-preview04-background.png)
 
-![Script and command synonyms](images/settings-words.png)
+### Layout
 
-### Script behaviour
+[Open full size](images/settings-preview04-layout.png)
 
-![Script behaviour, first page](images/settings-script.png)
-
-![Script behaviour, second page](images/settings-script-page-2.png)
-
-## Appearance
-
-### Theme
-
-![Script colour themes on a dedicated tab](images/settings-theme.png)
-
-### Text
-
-![Body font, heading font, heading size and text-size preview](images/settings-reading.png)
-
-### Background
-
-![Text and background visibility](images/settings-background.png)
-
-### Directions
-
-The current unpublished follow-up separates inline cues from long production
-notes. Each group has its own size, colour and line spacing. Both follow
-Heading font; production notes still hide during delivery.
-
-![Inline directions and their visibility controls](images/settings-directions.png)
-
-![Production notes with independent appearance controls](images/settings-directions-page-2.png)
+![Reading: Layout, Preview 04](images/settings-preview04-layout.png)
 
 ### Reading aids
 
-![Reading aids](images/settings-aids.png)
+[Open full size](images/settings-preview04-aids.png)
 
-### Spacing
+![Reading: Reading aids, Preview 04](images/settings-preview04-aids.png)
 
-![Spacing and alignment, first page](images/settings-layout.png)
+### Screens and mirroring
 
-![Spacing and alignment, second page](images/settings-layout-page-2.png)
+[Open full size](images/settings-preview04-screens.png)
 
-![Reading position and layout reset](images/settings-layout-page-3.png)
+![Reading: Screens and mirroring, Preview 04](images/settings-preview04-screens.png)
 
-### Screens
+### Head guide
 
-Mirroring has one Settings home here, alongside the window and monitor controls.
+[Open full size](images/settings-preview04-guide.png)
 
-![Screen and eye-line settings, first page](images/settings-display.png)
+![Reading: Head guide, Preview 04](images/settings-preview04-guide.png)
 
-![Screen and eye-line settings, second page](images/settings-display-page-2.png)
+## Voice
 
-![Eye-line strip size and reading position](images/settings-display-page-3.png)
+### Speech engine
+
+[Open full size](images/settings-preview04-engine.png)
+
+![Voice: Speech engine, Preview 04](images/settings-preview04-engine.png)
+
+### Microphone
+
+[Open full size](images/settings-preview04-microphone.png)
+
+![Voice: Microphone, Preview 04](images/settings-preview04-microphone.png)
+
+### Voice commands
+
+[Open full size](images/settings-preview04-commands.png)
+
+![Voice: Voice commands, Preview 04](images/settings-preview04-commands.png)
+
+### Your words
+
+[Open full size](images/settings-preview04-words.png)
+
+![Voice: Your words, Preview 04](images/settings-preview04-words.png)
 
 ## Recording
 
 ### Takes
 
-The next candidate adds optional recognised filler/repetition counts. The
-choice defaults off and is saved with Apply. It starts no additional listener.
+[Open full size](images/settings-preview04-takes.png)
 
-![Optional rehearsal aggregate counting](images/settings-coaching.png)
+![Recording: Takes, Preview 04](images/settings-preview04-takes.png)
 
-![Coaching preference and slate, first page](images/settings-recording.png)
+### Sound and scratch audio
 
-![Take display and capture controls, second page](images/settings-recording-page-2.png)
+[Open full size](images/settings-preview04-sound.png)
 
-### Audio
+![Recording: Sound and scratch audio, Preview 04](images/settings-preview04-sound.png)
 
-![Scratch audio, loudness and sound checks](images/settings-audio.png)
+### Slate and sync
 
-### OBS connection
+[Open full size](images/settings-preview04-sync.png)
 
-![OBS connection under Recording](images/settings-obs.png)
-
-### OBS recording
-
-![OBS permissions and recorded-slate guidance](images/settings-obs-recording.png)
-
-### OBS setup
-
-![Optional OBS setup and configuration guide](images/settings-obs-setup.png)
-
-The [setup assistant](15-obs-setup.md) inspects configured sources and requires
-a reviewed plan before creating a separate profile and scene collection.
-
-![OBS setup choices with illustrative sources](images/obs-setup-choices.png)
-
-![Review before creating a separate setup](images/obs-setup-review.png)
+![Recording: Slate and sync, Preview 04](images/settings-preview04-sync.png)
 
 ## Controls
 
-### Pad and phone layout
+### Pad and phone buttons
 
-![Select and reorder shared pad and phone buttons](images/settings-pad.png)
+[Open full size](images/settings-preview04-pad.png)
 
-The same selected functions and order appear on both screens. Stream Deck
-keeps its physical profiles; the pad and phone reuse its artwork and actions.
+![Controls: Pad and phone buttons, Preview 04](images/settings-preview04-pad.png)
 
-![Customised floating pad](images/pad.png)
+### Phone pairing
 
-### Buttons and keys
+[Open full size](images/settings-preview04-pairing.png)
 
-Choose an action and press an input to learn it. Changes save immediately;
-longer lists use pages. System shortcuts stay reserved.
+![Controls: Phone pairing, Preview 04](images/settings-preview04-pairing.png)
 
-![Custom button and key mappings](images/settings-buttons.png)
+### Keyboard and clickers
 
-### Phone
+[Open full size](images/settings-preview04-mappings.png)
 
-The example QR below is for illustration; scan the code in your own Settings.
+![Controls: Keyboard and clickers, Preview 04](images/settings-preview04-mappings.png)
 
-![Phone remote](images/settings-phone.png)
+### Game controller
+
+[Open full size](images/settings-preview04-gamepad.png)
+
+![Controls: Game controller, Preview 04](images/settings-preview04-gamepad.png)
 
 ### Stream Deck
 
-Installation, plugin checks and pairing share this single Controls topic.
+[Open full size](images/settings-preview04-streamdeck.png)
 
-![Stream Deck setup and connection](images/settings-streamdeck.png)
+![Controls: Stream Deck, Preview 04](images/settings-preview04-streamdeck.png)
 
-### AI and API
+### OBS connection
 
-![AI and local automation](images/settings-remotes.png)
+[Open full size](images/settings-preview04-obs.png)
 
-## Components
+![Controls: OBS connection, Preview 04](images/settings-preview04-obs.png)
 
-Each optional component has its own named subtab. Installer links open the
-supplier's website; Locate supports portable/custom copies. There are no
-numbered component pages.
+### OBS recording
 
-![Offline speech model](images/settings-component-model.png)
+[Open full size](images/settings-preview04-obs-recording.png)
 
-![AI agent kit](images/settings-component-kit.png)
+![Controls: OBS recording, Preview 04](images/settings-preview04-obs-recording.png)
 
-![Node.js runtime check](images/settings-component-node.png)
+### OBS profile and scenes
 
-![OBS application check](images/settings-component-obs.png)
+[Open full size](images/settings-preview04-obs-setup.png)
 
-![Unavailable API controls retain draft values until Apply](images/settings-ai-unavailable.png)
+![Controls: OBS profile and scenes, Preview 04](images/settings-preview04-obs-setup.png)
+
+### AI and local API
+
+[Open full size](images/settings-preview04-api.png)
+
+![Controls: AI and local API, Preview 04](images/settings-preview04-api.png)
+
+## Setup
+
+### Getting started
+
+[Open full size](images/settings-preview04-getting-started.png)
+
+![Setup: Getting started, Preview 04](images/settings-preview04-getting-started.png)
+
+### Optional components
+
+[Open full size](images/settings-preview04-components.png)
+
+![Setup: Optional components, Preview 04](images/settings-preview04-components.png)
+
+### Restore defaults
+
+[Open full size](images/settings-preview04-reset.png)
+
+![Setup: Restore defaults, Preview 04](images/settings-preview04-reset.png)
 
 ## Debug
 
-Command-word tracing is off by default. The warning stays visible beside its
-checkbox; health and recovery logging needs no spoken words.
+### Health
 
-![Support logs and optional command-word tracing](images/settings-debug.png)
+[Open full size](images/settings-preview04-health.png)
 
-The session-only capture override applies immediately. Its checked state is
-shown below; the prompter also keeps a warning visible with a Turn off button.
+![Debug: Health, Preview 04](images/settings-preview04-health.png)
 
-![Capture override enabled](images/settings-debug-capture.png)
+### Command tracing
 
-![Persistent capture warning](images/capture-override-notice.png)
+[Open full size](images/settings-preview04-trace.png)
+
+![Debug: Command tracing, Preview 04](images/settings-preview04-trace.png)
+
+### Screen capture
+
+[Open full size](images/settings-preview04-capture.png)
+
+![Debug: Screen capture, Preview 04](images/settings-preview04-capture.png)
+
+### Support logs
+
+[Open full size](images/settings-preview04-logs.png)
+
+![Debug: Support logs, Preview 04](images/settings-preview04-logs.png)
 
 ## About
 
-Restore defaults asks before resetting preferences and restarting onboarding.
-Installed components, scripts, recordings and service keys are retained.
+### Version and updates
 
-![Restore defaults and its preservation note](images/settings-defaults.png)
+[Open full size](images/settings-preview04-version.png)
+
+![About: Version and updates, Preview 04](images/settings-preview04-version.png)
+
+### Credits
+
+[Open full size](images/settings-preview04-credits.png)
+
+![About: Credits, Preview 04](images/settings-preview04-credits.png)
+
+### Help and support
+
+[Open full size](images/settings-preview04-support.png)
+
+![About: Help and support, Preview 04](images/settings-preview04-support.png)
+
+## Four text targets
+
+Spoken script, headings, inline directions and production notes each expose
+the same complete controls. These examples show a 75% italic production note;
+they are an edited demonstration, not a new shipped default.
+
+### Spoken script
+
+[Open full size](images/settings-preview04-text-script.png)
+
+![Spoken script: independent font, size, colour, bold, italic and spacing](images/settings-preview04-text-script.png)
+
+### Headings
+
+[Open full size](images/settings-preview04-text-headings.png)
+
+![Headings: independent font, size, colour, bold, italic and spacing](images/settings-preview04-text-headings.png)
+
+### Inline directions
+
+[Open full size](images/settings-preview04-text-inline.png)
+
+![Inline directions: independent font, size, colour, bold, italic and spacing](images/settings-preview04-text-inline.png)
+
+### Production notes
+
+[Open full size](images/settings-preview04-text-production.png)
+
+![Production notes: independent font, size, colour, bold, italic and spacing](images/settings-preview04-text-production.png)

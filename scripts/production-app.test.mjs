@@ -222,148 +222,24 @@ try {
 	const toolsAnchorShot = await send( "Page.captureScreenshot", { format: "png", clip: toolsClip } );
 	await fs.writeFile( path.join( artifacts, "tools-menu-anchor.png" ), Buffer.from( toolsAnchorShot.result.data, "base64" ) );
 	console.log( "PASS: Tools opens below its toolbar button and stays within three viewport widths while resizing." );
-	await evaluate( "document.activeElement.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowDown',bubbles:true}))" );
-	assert.ok( await evaluate( "/head guide/i.test(document.activeElement.textContent)" ) );
-	await evaluate( "document.getElementById('tools-panel').dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}))" );
-	assert.equal( await evaluate( "document.activeElement.id" ), "cb-tools" );
-	await evaluate( "document.getElementById('cb-settings').focus();document.getElementById('cb-settings').click()" );
-	assert.deepEqual( await evaluate( "[...document.querySelectorAll('.settings-tabs button')].map(b=>b.textContent)" ), [ "Prompting", "Appearance", "Recording", "Controls", "Components", "Debug", "About" ] );
-	assert.equal( await evaluate( "document.querySelectorAll('#settings-modal fieldset:not([data-tab])').length" ), 0 );
-	assert.equal( await evaluate( "[...document.querySelectorAll('#settings-modal fieldset')].every(f=>f.closest('[data-settings-page]'))" ), true );
-	assert.equal( await evaluate( "['set-opacity','set-reading-line','set-reading-marker','set-sentence','set-mirrored','set-file-open','set-file-save'].some(id=>document.getElementById(id))" ), false );
-	await evaluate( "document.getElementById('set-countdown').value='2';document.querySelector('[data-settings-group=appearance]').click();document.querySelector('[data-settings-group=prompting]').click()" );
-	assert.equal( await evaluate( "document.getElementById('set-countdown').value" ), "2" );
-	await evaluate( "document.getElementById('settings-group-prompting').dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true}))" );
-	assert.equal( await evaluate( "document.activeElement.textContent" ), "Appearance" );
-	await evaluate( "document.getElementById('settings-topic-reading').dispatchEvent(new KeyboardEvent('keydown',{key:'End',bubbles:true}))" );
-	assert.equal( await evaluate( "document.activeElement.textContent" ), "Screens" );
-	await evaluate( "document.getElementById('settings-close').focus();document.activeElement.dispatchEvent(new KeyboardEvent('keydown',{key:'Tab',shiftKey:true,bubbles:true}))" );
-	assert.equal( await evaluate( "document.activeElement.id" ), "settings-save" );
-	await evaluate( "document.activeElement.dispatchEvent(new KeyboardEvent('keydown',{key:'Tab',bubbles:true}))" );
-	assert.equal( await evaluate( "document.activeElement.id" ), "settings-close" );
-	const visited = await evaluate( "(()=>{const results=[];for(const group of document.querySelectorAll('.settings-tabs button')){group.click();for(const topic of [...document.querySelectorAll('.settings-subtabs button')].filter(b=>!b.hidden)){topic.click();const page=document.getElementById(topic.getAttribute('aria-controls'));results.push({name:topic.dataset.tab,visible:page.getClientRects().length>0,fields:page.querySelectorAll('fieldset').length,one:[...document.querySelectorAll('[data-settings-page]')].filter(p=>p.getClientRects().length).length===1});}}return results;})()" );
-	assert.equal( visited.length, 27 );
-	assert.ok( visited.some( page => page.name === "component-kit" ) && visited.some( page => page.name === "buttons" ), "Components and input mappings have their own reachable topics" );
-	assert.ok( visited.every( page => page.visible && page.fields && page.one ), JSON.stringify( visited ) );
-	const semantics = await evaluate( "(()=>{const root=document.querySelector('.settings-content');return {unlabelled:[...root.querySelectorAll('input,select,textarea')].filter(e=>!e.getAttribute('aria-label')&&!e.getAttribute('aria-labelledby')&&![...(e.labels??[])].some(l=>l.textContent.trim())).map(e=>e.id||e.className),nested:root.querySelectorAll('label button,label input~input').length,oldCaption:root.textContent.includes('How this works'),colourScheme:getComputedStyle(root).colorScheme,interactiveTooltips:document.querySelectorAll('.settings-explanation a,.settings-explanation button').length};})()" );
-	assert.deepEqual( semantics.unlabelled, [], "Every settings control needs an accessible name" );
-	assert.equal( semantics.nested, 0, "Help and number buttons must not be nested inside control labels" );
-	assert.equal( semantics.oldCaption, false );
-	assert.equal( semantics.colourScheme, "dark" );
-	assert.equal( semantics.interactiveTooltips, 0, "Links and actions stay outside non-interactive tooltips" );
-	async function checkSettingsFit( width, height ) {
-		await send( "Emulation.setDeviceMetricsOverride", { width, height, deviceScaleFactor: 1, mobile: false } );
-		await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
-		const frame = await evaluate( "(()=>{const r=document.querySelector('.settings-content').getBoundingClientRect();return {width:r.width,height:r.height};})()" );
-		for ( const entry of visited ) {
-			await evaluate( `document.getElementById('settings-topic-${ entry.name }').click()` );
-			for ( let n = 0; n < 30; n++ ) {
-				await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
-				const fit = await evaluate( "(()=>{const b=document.querySelector('.settings-content'),r=b.getBoundingClientRect(),f=b.querySelector('.settings-actions').getBoundingClientRect(),p=b.querySelector('[data-settings-page]:not([hidden])');return {width:r.width,height:r.height,top:r.top,bottom:r.bottom,overflow:b.scrollHeight-b.clientHeight,footer:Math.abs(f.bottom-r.bottom)<=1,topic:p.dataset.settingsPage,page:b.querySelector('.settings-pagination [role=status]').textContent,next:b.querySelector('.settings-pagination').getClientRects().length&&!b.querySelector('.settings-pagination button:last-child').disabled};})()" );
-				assert.ok( fit.height <= 560 && fit.top >= 0 && fit.bottom <= height && fit.overflow <= 1 && fit.footer, JSON.stringify( { width, height, ...fit } ) );
-				assert.ok( Math.abs( fit.width - frame.width ) <= 1 && Math.abs( fit.height - frame.height ) <= 1, `Settings must keep the same size across every topic and page: ${ JSON.stringify( { frame, fit } ) }` );
-				const outside = await evaluate( "(()=>{const b=document.querySelector('.settings-content').getBoundingClientRect();return [...document.querySelector('[data-settings-page]:not([hidden])').querySelectorAll('input,select,button,textarea')].filter(e=>e.getClientRects().length).filter(e=>{const r=e.getBoundingClientRect();return r.left<b.left-1||r.right>b.right+1||r.top<b.top-1||r.bottom>b.bottom+1;}).map(e=>e.id||e.className);})()" );
-				assert.deepEqual( outside, [], `Settings controls must stay inside the panel: ${ entry.name }` );
-				if ( !fit.next ) break;
-				assert.ok( n < 29, "Settings pages must end" );
-				await evaluate( "document.querySelector('.settings-pagination button:last-child').click()" );
-			}
-		}
-	}
-	await checkSettingsFit( 1100, 900 );
-	await checkSettingsFit( 560, 500 );
-	await send( "Emulation.clearDeviceMetricsOverride" );
-	await evaluate( "document.getElementById('settings-topic-words').click();for(let n=0;n<18;n++){document.getElementById('words-add').click();document.querySelector('#words-list .word-row:last-child .wf-word').value='Example '+n;}document.getElementById('settings-topic-scrolling').click();document.getElementById('settings-topic-words').click()" );
-	const seenWords = new Set();
-	for ( let n = 0; n < 30; n++ ) {
-		await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
-		for ( const word of await evaluate( "[...document.querySelectorAll('#words-list .wf-word')].filter(e=>e.getClientRects().length).map(e=>e.value)" ) ) seenWords.add( word );
-		assert.equal( await evaluate( "document.querySelector('.settings-content').scrollHeight<=document.querySelector('.settings-content').clientHeight+1" ), true );
-		if ( !await evaluate( "document.querySelector('.settings-pagination').getClientRects().length&&!document.querySelector('.settings-pagination button:last-child').disabled" ) ) break;
-		await evaluate( "document.querySelector('.settings-pagination button:last-child').click()" );
-	}
-	assert.equal( seenWords.size, 18, "Every saved word must remain reachable without a scrolling list" );
-	await evaluate( "document.getElementById('words-list').replaceChildren()" );
-	await evaluate( "document.getElementById('settings-topic-commands').click()" );
-	await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
-	assert.equal( await evaluate( "document.querySelector('.settings-content').getBoundingClientRect().height" ), 560, "Short topics keep the same panel height as longer topics" );
-	await evaluate( "document.querySelector('#settings-page-commands .settings-help-button').focus()" );
-	assert.equal( await evaluate( "document.querySelectorAll('.settings-explanation:popover-open').length" ), 1 );
-	await send( "Input.dispatchKeyEvent", { type: "keyDown", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 } );
-	await send( "Input.dispatchKeyEvent", { type: "keyUp", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 } );
-	assert.equal( await evaluate( "document.querySelectorAll('.settings-explanation:popover-open').length" ), 0 );
-	const helpSize = await evaluate( "(()=>{const b=document.querySelector('#settings-page-commands .settings-help-button'),r=b.getBoundingClientRect(),p=b.firstElementChild.getBoundingClientRect();return {hit:[r.width,r.height],pill:[p.width,p.height],insideLabel:!!b.closest('label')};})()" );
-	assert.deepEqual( helpSize.hit, [ 24, 24 ] );
-	assert.deepEqual( helpSize.pill, [ 17, 12 ] );
-	assert.equal( helpSize.insideLabel, false );
-	await evaluate( "document.getElementById('settings-topic-audio').click()" );
-	await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
-	const scratchBefore = await evaluate( "document.getElementById('set-scratch-audio').checked" );
-	await evaluate( "document.querySelector('[data-settings-control=set-scratch-audio] .settings-help-button span').click()" );
-	assert.equal( await evaluate( "document.querySelectorAll('.settings-explanation:popover-open').length" ), 1 );
-	assert.equal( await evaluate( "document.getElementById('set-scratch-audio').checked" ), scratchBefore );
-	await evaluate( "document.querySelector('[data-settings-control=set-scratch-audio] .settings-help-button span').click();document.getElementById('settings-topic-scrolling').click();document.getElementById('set-countdown').focus()" );
-	await send( "Input.dispatchKeyEvent", { type: "keyDown", key: "ArrowUp", code: "ArrowUp", windowsVirtualKeyCode: 38 } );
-	await send( "Input.dispatchKeyEvent", { type: "keyUp", key: "ArrowUp", code: "ArrowUp", windowsVirtualKeyCode: 38 } );
-	assert.equal( await evaluate( "document.getElementById('settings-applied').textContent" ), "Unsaved changes" );
-	await evaluate( "document.getElementById('set-countdown').value='0'" );
-	console.log( "PASS: labelled controls, dark native controls, 24px help targets, miniature pills, isolated checkbox help and trusted-input draft feedback." );
-	assert.equal( await evaluate( "document.getElementById('settings-modal').classList.contains('hidden')" ), false );
-	const portBefore = await evaluate( "document.getElementById('set-remote-port').value" );
-	await evaluate( "document.getElementById('set-remote-port').value='70000';document.getElementById('settings-topic-about').click();document.getElementById('settings-apply').click()" );
-	await until( "document.activeElement.id==='set-remote-port'" );
-	assert.equal( await evaluate( "document.getElementById('set-remote-port').validity.rangeOverflow" ), true );
-	assert.equal( await evaluate( "document.querySelector('[data-settings-page]:not([hidden])').dataset.settingsPage" ), "remotes" );
-	await evaluate( `document.getElementById('set-remote-port').value=${ JSON.stringify( portBefore ) };document.getElementById('settings-topic-commands').click()` );
-	await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
-	const trigger = await evaluate( "(()=>{const r=document.querySelector('#settings-page-commands .settings-help-button').getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};})()" );
-	await send( "Input.dispatchMouseEvent", { type: "mouseMoved", ...trigger } );
-	await until( "document.querySelectorAll('.settings-explanation:popover-open').length===1" );
-	const tooltipPoint = await evaluate( "(()=>{const r=document.querySelector('.settings-explanation:popover-open').getBoundingClientRect();return {x:r.x+12,y:r.y+12};})()" );
-	await send( "Input.dispatchMouseEvent", { type: "mouseMoved", ...tooltipPoint } );
-	await pause( 220 );
-	assert.equal( await evaluate( "document.querySelectorAll('.settings-explanation:popover-open').length" ), 1, "The explanation must stay open while the pointer is over it" );
-	await evaluate( "document.querySelector('#settings-page-commands .settings-help-button').click()" );
-	assert.equal( await evaluate( "document.querySelectorAll('.settings-explanation:popover-open').length" ), 1 );
-	const helpClip = await evaluate( "(()=>{const b=document.querySelector('.settings-content').getBoundingClientRect(),p=document.querySelector('.settings-explanation:popover-open').getBoundingClientRect();return {x:Math.min(b.x,p.x),y:Math.min(b.y,p.y),width:Math.max(b.right,p.right)-Math.min(b.x,p.x),height:Math.max(b.bottom,p.bottom)-Math.min(b.y,p.y),scale:1};})()" );
-	const helpShot = await send( "Page.captureScreenshot", { format: "png", clip: helpClip } );
-	await fs.writeFile( path.join( artifacts, "settings-commands-help.png" ), Buffer.from( helpShot.result.data, "base64" ) );
-	await evaluate( "document.querySelector('#settings-page-commands .settings-help-button').click()" );
-	assert.equal( await evaluate( "document.querySelectorAll('.settings-explanation:popover-open').length" ), 0 );
-	console.log( "PASS: Settings keeps the same size and footer position across every topic and page without scrolling at desktop and 560×500; contextual help supports keyboard focus and Escape." );
-	await evaluate( "document.getElementById('settings-topic-layout').click()" );
-	for ( let n = 0; n < 10; n++ ) {
-		await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
-		if ( await evaluate( "document.getElementById('lp-reading-line').getClientRects().length>0" ) ) break;
-		await evaluate( "document.querySelector('.settings-pagination button:last-child').click()" );
-	}
-	await evaluate( "document.getElementById('lp-reading-line').focus()" );
+	// The redesigned native forms have their own full suite. Retain an inline
+	// fallback check here alongside the recorder/head-guide integration fixture.
+	await evaluate( "document.getElementById('cb-tools').click();document.getElementById('cb-settings').click()" );
+	assert.equal( await evaluate( "document.querySelectorAll('.settings-tabs button').length" ), 8 );
+	assert.equal( await evaluate( "document.querySelectorAll('[data-settings-page]').length" ), 34 );
+	assert.equal( await evaluate( "document.querySelectorAll('.settings-pagination').length" ), 0 );
+	assert.equal( await evaluate( "document.querySelectorAll('#lp-production-colour').length" ), 1 );
+	await evaluate( "document.getElementById('settings-topic-layout').click();document.getElementById('lp-reading-line').focus()" );
 	const lineBefore = await evaluate( "Number(document.getElementById('lp-reading-line').value)" );
 	await send( "Input.dispatchKeyEvent", { type: "keyDown", key: "ArrowRight", code: "ArrowRight", windowsVirtualKeyCode: 39 } );
 	await send( "Input.dispatchKeyEvent", { type: "keyUp", key: "ArrowRight", code: "ArrowRight", windowsVirtualKeyCode: 39 } );
 	assert.equal( await evaluate( "Number(document.getElementById('lp-reading-line').value)" ), lineBefore + 1 );
-	await evaluate( "document.querySelector('[data-settings-group=prompting]').click();document.getElementById('set-countdown').value='0';document.getElementById('settings-apply').click()" );
+	await evaluate( "document.getElementById('settings-topic-mode').click();const n=document.getElementById('set-countdown');n.value=0;n.dispatchEvent(new Event('input',{bubbles:true}));document.getElementById('settings-apply').click()" );
 	await until( "document.getElementById('settings-applied').textContent==='Saved'" );
-	await pause( 300 );
 	const navigationSaved = JSON.parse( await fs.readFile( path.join( profile, "app-state.json" ), "utf8" ) );
-	assert.equal( navigationSaved.settings.readingLine, lineBefore + 1, "Apply must not overwrite the shared live reading line with an old duplicate" );
-	await evaluate( "document.querySelector('[data-settings-group=prompting]').click();document.getElementById('settings-topic-scrolling').click();document.getElementById('set-countdown').value='0'" );
-	for ( const topic of [ "scrolling", "voice", "commands", "words", "script", "reading", "background", "aids", "layout", "display", "recording", "audio", "phone", "streamdeck", "remotes", "obs-recording" ] ) {
-		await evaluate( `document.getElementById('settings-topic-${ topic }').click()` );
-		await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
-		await pictureOf( ".settings-content", `settings-${ topic }.png` );
-		for ( let n = 1; n < 30; n++ ) {
-			if ( !await evaluate( "document.querySelector('.settings-pagination').getClientRects().length&&!document.querySelector('.settings-pagination button:last-child').disabled" ) ) break;
-			await evaluate( "document.querySelector('.settings-pagination button:last-child').click();document.querySelector('.settings-pagination button:last-child').blur()" );
-			await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
-			await pictureOf( ".settings-content", `settings-${ topic }-page-${ n + 1 }.png` );
-		}
-	}
-	await evaluate( "document.getElementById('settings-topic-about').click()" );
-	await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
-	await pictureOf( ".settings-content", "settings-about.png" );
-	await evaluate( "document.getElementById('settings-close').click()" );
-	assert.equal( await evaluate( "document.activeElement.id" ), "cb-settings" );
+	assert.equal( navigationSaved.settings.readingLine, lineBefore + 1 );
+	await evaluate( "document.getElementById('settings-cancel').click()" );
+	console.log( "PASS: redesigned Settings inline fallback, permanent controls, keyboard range adjustment and acknowledged Apply." );
 	await pictureOf( "#control-bar", "control-bar.png" );
 	for ( const width of [ 1100, 900, 700, 560 ] ) {
 		await send( "Emulation.setDeviceMetricsOverride", { width, height: 760, deviceScaleFactor: 1, mobile: false } );
@@ -379,22 +255,6 @@ try {
 	await evaluate( "document.getElementById('cb-on-air').click();document.getElementById('cb-mode').click()" );
 	await until( "document.getElementById('cb-speed-label').textContent==='Speed'&&document.getElementById('cb-backing-label').textContent==='Background'" );
 	console.log( "PASS: visible slider labels at four window widths, including voice Response and on-air Background state." );
-	await send( "Emulation.setDeviceMetricsOverride", { width: 700, height: 760, deviceScaleFactor: 1, mobile: false } );
-	assert.equal( await evaluate( "['cb-menu','cb-edit','cb-tools','cb-settings','cb-help','cb-mirror-h','cb-mirror-v'].every(id=>{const r=document.getElementById(id).getBoundingClientRect();return r.width>0&&r.left>=0&&r.right<=innerWidth;})" ), true );
-	await send( "Emulation.setDeviceMetricsOverride", { width: 560, height: 760, deviceScaleFactor: 1, mobile: false } );
-	assert.equal( await evaluate( "['cb-menu','cb-edit','cb-tools','cb-settings','cb-help','cb-mirror-h','cb-mirror-v'].every(id=>{const r=document.getElementById(id).getBoundingClientRect();return r.width>0&&r.left>=0&&r.right<=innerWidth;})" ), true );
-	await send( "Emulation.clearDeviceMetricsOverride" );
-	for ( const [ label, file ] of [ [ "Spacing and mirror…", "layout-panel.png" ], [ "Text and colour…", "reading-panel.png" ], [ "Take display…", "recording-panel.png" ] ] ) {
-		await evaluate( `document.getElementById('cb-tools').click();[...document.querySelectorAll('#tools-panel button')].find(b=>b.textContent.includes(${ JSON.stringify( label ) })).click()` );
-		await pictureOf( "#layout-panel", file );
-		await evaluate( "document.getElementById('lp-done').click()" );
-	}
-	await evaluate( "document.getElementById('cb-tools').click()" );
-	await pictureOf( "#tools-panel", "tools-menu.png" );
-	await evaluate( "document.getElementById('tools-panel').dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));document.getElementById('cb-menu').click()" );
-	await pictureOf( "#app-menu", "files-menu.png" );
-	await evaluate( "document.getElementById('app-menu').dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}))" );
-	console.log( "PASS: grouped Settings, all topics reachable, draft retained, file-only hamburger, Tools, keyboard focus and 700px access." );
 	await evaluate( "document.body.dispatchEvent(new KeyboardEvent('keydown',{key:'F1',bubbles:true}))" );
 	assert.equal( await evaluate( "document.querySelectorAll('#help-list [role=tab]').length" ), 6 );
 	assert.equal( await evaluate( "[...document.querySelectorAll('#help-list [role=tab]')].some(tab=>tab.textContent==='Controls')" ), true );

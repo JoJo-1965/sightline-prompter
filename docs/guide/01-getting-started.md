@@ -9,7 +9,7 @@ OBS, controls or your AI. Skip optional parts with **Later**. Reopen it from
 
 ![First-use checklist with optional tools](images/getting-started.png)
 
-To recreate the shipped setup, use **Settings > About > Restore defaults…**.
+To recreate the shipped setup, use **Settings > Setup > Restore defaults…**.
 After confirmation Sightline restarts into this checklist. Installed components,
 script files, recordings and service keys remain. Preferences, layouts, slots
 and pairings reset; integrations start off. See [Settings](07-settings.md).
@@ -171,7 +171,7 @@ click can't jump a take: pause first. Turn the bar off in the Layout panel.
 Opening one group folds the others away, so the menu stays short. Click
 anywhere else to close it. **Quit Sightline** is always at the bottom (also
 **Ctrl+W**, or **✕** on the control bar). Copyright and attribution are on
-the About page: **Help > About**, or **Settings > About > Credits and licence**.
+the About page: **Help > About**, or **Settings > About > Credits**.
 
 ## Your first take
 

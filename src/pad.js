@@ -139,7 +139,7 @@ export function createPad( {
 	}
 
 	function apply() {
-		if ( getSettings().showPad ) open();
+		if ( getSettings().padEnabled !== false && getSettings().showPad ) open();
 		else close();
 		protectWindow( pad, !!getSettings().hideFromCapture );
 		update();

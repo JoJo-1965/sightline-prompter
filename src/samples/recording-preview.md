@@ -8,6 +8,12 @@ For one continuous file, leave Link recording to prompting off. To test linked
 start/pause/resume/finish, choose it before recording and check pause support
 in your format. This sample never changes your saved recording permissions. -->
 
+<!-- APPEARANCE. In Settings > Reading > Text and directions, select Spoken
+script, Headings, Inline directions or Production notes. Each has its own font,
+size, colour, bold, italic and spacing. Theme and background sets the backing
+colour and transparency; save a reading theme to reuse this look. Apply keeps
+the changes; Cancel restores the saved view. Tools > Adjust has live controls. -->
+
 <!-- FRAME. Align eye centre and level, lock the eyes, then fit the head edges.
 Save recording reference. Move Actual, then Restore saved position. Ideal must
 stay unchanged. Check a real recording to confirm that the guide is excluded. -->
