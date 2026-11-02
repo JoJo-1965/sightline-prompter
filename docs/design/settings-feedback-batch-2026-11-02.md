@@ -32,6 +32,17 @@ package, RC, supported-feature claim or website deployment is implied.
   normal border. Propose one consistent focus treatment that preserves clear
   keyboard focus. Do not remove focus indicators globally.
 
+## Persistent preview column — proposal
+
+The current compact rule replaces the third column with a Preview button at
+width <= 920px OR height <= 670px. This rule also exists in the approved
+prototype. The reported window measured 1011 × 656 CSS pixels: height alone
+triggered the replacement despite sufficient width. Proposed correction for
+review: choose the inline preview versus button by available width; adapt the
+preview's height within the fixed frame. Do not resize the user's window or
+silently change the agreed composition. Check short/wide and narrow windows
+alongside the full layout before wiring this change.
+
 ## Head guide — proposal
 
 The current Settings page is only a launcher. The Show guide action invokes
