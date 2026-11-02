@@ -1,5 +1,12 @@
 # Feature-matrix review record
 
+2 November 2026, pre-record PoC: a separate browser mock explores optional
+head-position feedback alongside manual fitting, audio checks, a test clip and
+saved framing for returning after a break. Tracking, camera, audio and clips
+are simulated; only mock reference data is saved in the browser. No installed
+feature, help, matrix row, release or JL capability claim changes. Preview 07
+and its revision-8 feature snapshot remain the validated app basis.
+
 2 November 2026, phone review access: a separate browser layout and native
 screenshot gallery expose the current Preview 07 for read-only review on the
 same network. The layout includes Prompter layout naming, visible subtabs and
