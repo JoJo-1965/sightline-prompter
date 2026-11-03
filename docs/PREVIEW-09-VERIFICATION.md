@@ -2,6 +2,7 @@
 
 3 November 2026. Unpublished Windows x64 UAT, app 1.1.0, documentation
 revision 10; Stream Deck companion remains 0.2.0.
+Implementation source: `336e946`. Package hashes are in `BUILD-MANIFEST.json`.
 
 ## Combined source checks
 
