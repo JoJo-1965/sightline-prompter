@@ -1,5 +1,14 @@
 # Feature-matrix review record
 
+3 November 2026, UAT Preview 09: reviewed the full PC feedback batch. Updated
+existing rows for current setup guidance, nine Settings areas, listening
+health/recovery, Guide off, focus-band annotation exclusions and manual
+cross-screen placement. The 241 capabilities across 18 groups remain unchanged.
+Getting started intentionally scrolls guidance in the centre pane; configuration
+controls retain fixed sections. Documentation revision 10 remains preview-only.
+Help, affected captures, generated exports and the pending JL snapshot follow
+the same batch. No live publication or hardware acceptance is implied.
+
 2 November 2026, Elgato demonstration extension: exercised existing MCP Deck
 virtual keys through official Elgato MCP Server 0.1.8, installed Stream Deck
 7.6 and the unchanged released plugin/app. Play/Pause, Marker, pace and On air

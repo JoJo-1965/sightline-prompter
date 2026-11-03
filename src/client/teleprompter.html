@@ -119,7 +119,10 @@
     </div>
     <nav id="app-menu" class="hidden" aria-label="Files menu"></nav>
     <div id="tools-panel" class="panel hidden" role="region" aria-label="Recording tools"></div>
-    <button id="guide-controls" class="guide-controls hidden" type="button" aria-pressed="false" title="Toggle floating guide adjustments, including while the guide is fullscreen or locked">Guide adjustments</button>
+    <div id="guide-status" class="guide-status hidden" role="group" aria-label="Head guide controls">
+      <button id="guide-controls" class="guide-controls hidden" type="button" aria-pressed="false" title="Toggle floating guide adjustments, including while the guide is fullscreen or locked">Guide adjustments</button>
+      <button id="guide-off" type="button" title="Hide the head guide and its adjustments without changing the saved position">Guide off</button>
+    </div>
     <div id="voice-panel" class="panel hidden">
       <h4>Voice scroll sync</h4>
       <div class="lp-row lp-inline">

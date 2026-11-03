@@ -39,6 +39,7 @@ import {
 	WPM_STEP
 } from "./steady-scroll.js";
 import { decorateScript } from "./decorate.js";
+import { annotationMask } from "./focus-mask.js";
 import { setProductionNotesActive } from "./production-notes.js";
 import { readDirectives, parseDirective, parseDuration } from "./directives.js";
 import { createTakeLog } from "./take-log.js";
@@ -103,6 +104,7 @@ let headGuideState = null;
 window.electron.onHeadGuideState( ( value ) => {
 	headGuideState = value;
 	settingsWorkspace?.sync();
+	uiElement( "guide-status" )?.classList.toggle( "hidden", !value.shown );
 	const restore = uiElement( "guide-controls" );
 	restore?.classList.toggle( "hidden", !value.shown );
 	restore?.setAttribute( "aria-pressed", String( value.controlsShown ) );
@@ -352,7 +354,7 @@ document.body.appendChild( hud );
 // independent fixed positions on small displays.
 const sessionControls = document.createElement( "div" );
 sessionControls.id = "session-controls";
-sessionControls.append( uiElement( "capture-override-note" ), uiElement( "guide-controls" ), uiElement( "obs-status" ) );
+sessionControls.append( uiElement( "capture-override-note" ), uiElement( "guide-status" ), uiElement( "obs-status" ) );
 hud.append( sessionControls );
 
 function applyMirror() {
@@ -1735,7 +1737,7 @@ function showListeningStatus( status ) {
 	if ( commandPill ) commandPill.textContent = label;
 	if ( recovering || failed ) window.electron.debugLog?.( `${ status.reason === "manual restart" ? "voice" : "error" }: speech listener ${ status.type }: ${ status.reason ?? status.error ?? "connection stopped" }` );
 	if ( status.type === "recovered" ) showToast( "Listening restored", 1800 );
-	if ( failed ) showToast( "Listening stopped. Use Restart listening in Prompting > Commands.", 5000 );
+	if ( failed ) showToast( "Listening stopped. Use Restart listening in Debug > Status and recovery.", 5000 );
 	sendStatus();
 }
 
@@ -1744,7 +1746,7 @@ async function restartListeningNow() {
 	listeningSuspended = false;
 	if ( autoScrollActive ) return autoScrollHandle?.restartListening();
 	if ( !wantCommandListening() && !commandFailure ) {
-		showToast( "Enable Always listening in Prompting > Commands first", 3000 );
+		showToast( "Enable Always listening in Voice > Commands first", 3000 );
 		return;
 	}
 	commandFailure = false;
@@ -2714,6 +2716,7 @@ let settingsReturnFocus = null;
 settingsWorkspace = createSettingsWorkspace( settingsModal, {
 	getState: () => settingsDraft?.value ?? { ...settings, fontSize, opacity, autoScrollSpeed, audioDeviceId, mirrored },
 	getGuideState: () => headGuideState,
+	getSetupState: getWorkflowState,
 	stage: stageSettings, navigate: name => showSettingsTab( name ), toast: ( text ) => {
 		settingsFeedback( text );
 		showToast( text, 4500 );
@@ -3355,8 +3358,8 @@ function applyLayout() {
 // Top and bottom margins hide the text near the window edges. The mask is one
 // window tall and follows the scroll, so it stays put on screen.
 // The script's visibility down the window, as a mask: the top and bottom
-// margins fade to nothing, and the focus band (optional) dims lines away from
-// the reading line. Both are worked out per point and combined.
+// margins fade to nothing. The optional focus layer dims spoken text away from
+// the reading line; annotations are restored before applying the edge fade.
 function edgeAlpha( p, top, bottom ) {
 	if ( p < top - EDGE_FADE || p > 100 - bottom + EDGE_FADE ) return 0;
 	if ( p < top ) return ( p - ( top - EDGE_FADE ) ) / EDGE_FADE;
@@ -3377,6 +3380,7 @@ function updateEdgeMask() {
 	const focus = !!settings.focusBand;
 	if ( !top && !bottom && !focus ) {
 		md.style.webkitMaskImage = "";
+		md.style.maskComposite = "";
 		return;
 	}
 	const centre = getReadingAnchor() * 100;
@@ -3385,31 +3389,22 @@ function updateEdgeMask() {
 	const half = linePct * 0.9; // the reading line and a little either side
 	const fade = linePct * 1.5;
 	const floor = 1 - Math.min( 0.9, Math.max( 0, settings.focusStrength ?? 0.6 ) );
-	const points = new Set( [ 0, 100, top, 100 - bottom ] );
-	points.add( Math.max( 0, top - EDGE_FADE ) );
-	points.add( Math.min( 100, 100 - bottom + EDGE_FADE ) );
+	const gradient = ( points, alpha ) => `linear-gradient(to bottom, ${ [ ...points ].sort( ( a, b ) => a - b ).map( p => `rgba(0, 0, 0, ${ alpha( p ).toFixed( 3 ) }) ${ p.toFixed( 2 ) }%` ).join( ", " ) })`;
+	const edges = new Set( [ 0, 100, top, 100 - bottom, Math.max( 0, top - EDGE_FADE ), Math.min( 100, 100 - bottom + EDGE_FADE ) ] );
+	const layers = [ gradient( edges, p => edgeAlpha( p, top, bottom ) ) ];
+	const mdTop = md.getBoundingClientRect().top + window.scrollY;
+	const offset = window.scrollY - mdTop;
 	if ( focus ) {
-		for ( const p of [
-			centre - half - fade,
-			centre - half,
-			centre + half,
-			centre + half + fade
-		] ) {
-			points.add( Math.min( 100, Math.max( 0, p ) ) );
-		}
-	}
-	const stops = [ ...points ]
-		.sort( ( a, b ) => a - b )
-		.map( ( p ) => {
-			let a = edgeAlpha( p, top, bottom );
-			if ( focus ) a *= focusAlpha( p, centre, half, fade, floor );
-			return `rgba(0, 0, 0, ${ a.toFixed( 3 ) }) ${ p.toFixed( 2 ) }%`;
-		} );
-	md.style.webkitMaskImage = `linear-gradient(to bottom, ${ stops.join( ", " ) })`;
+		const annotations = annotationMask( md, { offset, height: window.innerHeight, mirrorX: mirrored === "horizontal" || mirrored === "both", mirrorY: mirroredVertically() } );
+		if ( annotations ) layers.push( annotations );
+		const points = new Set( [ 0, 100, ...[ centre - half - fade, centre - half, centre + half, centre + half + fade ].map( p => Math.min( 100, Math.max( 0, p ) ) ) ] );
+		layers.push( gradient( points, p => focusAlpha( p, centre, half, fade, floor ) ) );
+		md.style.maskComposite = annotations ? "intersect, add" : "intersect";
+	} else md.style.maskComposite = "";
+	md.style.webkitMaskImage = layers.join( ", " );
 	md.style.webkitMaskRepeat = "no-repeat";
 	md.style.webkitMaskSize = "100% 100vh";
-	const mdTop = md.getBoundingClientRect().top + window.scrollY;
-	md.style.webkitMaskPosition = `0 ${ window.scrollY - mdTop }px`;
+	md.style.webkitMaskPosition = `0 ${ offset }px`;
 }
 
 // --- Progress and time left ---
@@ -3788,6 +3783,7 @@ onClick( "cb-on-air", toggleOnAir );
 onClick( "cb-mode", () => window.electron.saveSettings( { scrollMode: settings.scrollMode === "voice" ? "steady" : "voice" } ) );
 onClick( "cb-edit", toggleEditMode );
 onClick( "guide-controls", () => window.electron.headGuide( "adjust" ) );
+onClick( "guide-off", () => window.electron.headGuide( "hide" ) );
 onClick( "cb-tools", () => {
 	renderTools();
 	togglePanel( "tools-panel" );
@@ -5169,6 +5165,7 @@ settingsModal.addEventListener( "keydown", ( event ) => {
 	}
 }, true );
 const settingsNavigation = createSettingsNavigation( settingsModal, { getState: () => settingsDraft?.value ?? settings, onShow: ( name ) => {
+	if ( name === "getting-started" ) settingsWorkspace.refreshSetup();
 	if ( name !== "microphone" ) stopMicMeter();
 	if ( name !== "mappings" ) mappingSettings.cancel();
 	if ( name !== "gamepad" ) gamepadMappings.cancel();
@@ -6436,11 +6433,12 @@ const navigateWorkflowSettings = async ( topic ) => {
 	await openSettings();
 	showSettingsTab( topic );
 };
+async function getWorkflowState() {
+	await componentSettings.refresh();
+	return { settings, components: componentStatus, obs: obsUi.state(), microphone: micSelect?.selectedOptions[0]?.textContent, guideShown: !!headGuideState?.shown, scriptTitle: slotState.slots[slotState.active]?.name, phone: phoneStatus };
+}
 workflow = createWorkflow( field( "workflow-modal" ), {
-	getState: async () => {
-		await componentSettings.refresh();
-		return { settings, components: componentStatus, obs: obsUi.state(), microphone: micSelect?.selectedOptions[0]?.textContent, guideShown: !!headGuideState?.shown, scriptTitle: slotState.slots[slotState.active]?.name, phone: phoneStatus };
-	},
+	getState: getWorkflowState,
 	navigate: async topic => topic === "obs-setup" ? obsSetupUi.open() : navigateWorkflowSettings( topic ),
 	act: ( action ) => {
 		if ( action === "sound" ) toggleSoundCheck();

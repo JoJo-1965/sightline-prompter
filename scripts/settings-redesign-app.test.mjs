@@ -49,16 +49,36 @@ try {
 	await main.evaluate( 'document.getElementById("cb-settings").click()' );
 	const settings = await connect( "utility-window.html?panel=settings" ); await pause( 600 );
 	const native = await connect( "main-process" );
+	const pixelBrightness = async id => {
+		const rect = await main.evaluate( `(()=>{const r=document.getElementById('${ id }').getBoundingClientRect();return {x:Math.round(r.left+r.width/2),y:Math.round(r.top+r.height/2),width:2,height:2}})()` );
+		return native.evaluate( `(async()=>{const e=process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron');const w=e.BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().includes('teleprompter.html'));const image=await w.webContents.capturePage(${ JSON.stringify( rect ) });const pixels=image.toBitmap();let sum=0;for(let i=0;i<pixels.length;i+=4)sum+=(pixels[i]+pixels[i+1]+pixels[i+2])*pixels[i+3]/765;return sum/(pixels.length/4);})()` );
+	};
+	const mountFocusProbes = () => main.evaluate( `(()=>{const root=document.getElementById('md');globalThis.focusOriginalPosition??=root.style.position;root.style.position='relative';document.querySelectorAll('[data-focus-probe]').forEach(x=>x.remove());const top=innerHeight*.75-root.getBoundingClientRect().top;['direction','production-note','spoken'].forEach((name,i)=>{const node=document.createElement('span');node.id='focus-probe-'+i;node.dataset.focusProbe='true';node.className=name;Object.assign(node.style,{display:'block',position:'absolute',left:(30+i*60)+'px',top:top+'px',width:'40px',height:'20px',padding:'0',margin:'0',border:'0',background:'white',opacity:'1'});root.append(node)});window.dispatchEvent(new Event('scroll'));})()` );
+	await main.evaluate( 'window.electron.applyPreferences({settings:{focusBand:false,marginTop:0,marginBottom:0,focusStrength:.6}})' ); await pause( 100 );
+	await mountFocusProbes(); await pause( 100 );
+	const baseline = await Promise.all( [ 0, 1, 2 ].map( i => pixelBrightness( `focus-probe-${ i }` ) ) );
+	assert.ok( baseline.every( value => value > 240 ), `Focus fixture starts with visible white regions: ${ baseline }` );
+	await main.evaluate( 'window.electron.applyPreferences({settings:{focusBand:true}})' ); await pause( 100 );
+	await mountFocusProbes(); await pause( 100 );
+	const focused = await Promise.all( [ 0, 1, 2 ].map( i => pixelBrightness( `focus-probe-${ i }` ) ) );
+	assert.ok( Math.abs( focused[0] - baseline[0] ) < 3 && Math.abs( focused[1] - baseline[1] ) < 3, `Focus leaves inline and production comments unchanged: ${ focused }` );
+	assert.ok( focused[2] < baseline[2] - 70, `Spoken content outside the reading line remains dimmed: ${ focused }` );
+	await main.evaluate( 'window.electron.applyPreferences({settings:{marginBottom:45}})' ); await pause( 100 );
+	await mountFocusProbes(); await pause( 100 );
+	assert.ok( await pixelBrightness( "focus-probe-1" ) < baseline[1] - 100, "Comment exemptions still respect the bottom margin" );
+	await main.evaluate( 'document.querySelectorAll("[data-focus-probe]").forEach(x=>x.remove());document.getElementById("md").style.position=globalThis.focusOriginalPosition;delete globalThis.focusOriginalPosition;window.electron.applyPreferences({settings:{focusBand:false,marginTop:0,marginBottom:0}})' ); await pause( 100 );
+	console.log( "Focus pixels:", { baseline, focused } );
 	assert.equal( await settings.evaluate( 'document.querySelector(".settings-subtabs [data-tab=layout]").textContent' ), "Prompter layout", "Queued naming feedback appears in navigation" );
 	for ( const axis of [ "h", "v" ] ) {
 		const artwork = client => client.evaluate( `(()=>{const b=document.querySelector('${ client === main ? `#cb-mirror-${ axis }` : `.lp-mirror-row [data-axis=${ axis }]` }');return [b.querySelector('svg').outerHTML,b.getAttribute('aria-label')]})()` );
 		assert.deepEqual( await artwork( settings ), await artwork( main ), "Settings reuses the toolbar mirror artwork and accessible labels" );
 	}
 	const mainSize = await native.evaluate( "process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron').BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().includes('teleprompter.html')).getContentSize()" );
-	await main.evaluate( 'window.sessionControlClasses=["guide-controls","obs-status","capture-override-note"].map(id=>[id,document.getElementById(id).className]);sessionControlClasses.forEach(([id])=>document.getElementById(id).classList.remove("hidden"))' );
+	await main.evaluate( 'window.sessionControlClasses=["guide-status","guide-controls","obs-status","capture-override-note"].map(id=>[id,document.getElementById(id).className]);sessionControlClasses.forEach(([id])=>document.getElementById(id).classList.remove("hidden"))' );
 	for ( const [ width, height ] of [ [ 1024, 600 ], [ 680, 500 ], [ 480, 300 ] ] ) {
 		await native.evaluate( `process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron').BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().includes('teleprompter.html')).setContentSize(${ width },${ height })` ); await pause( 100 );
-		assert.equal( await main.evaluate( '(()=>{const r=["guide-controls","obs-status","capture-override-note"].map(id=>document.getElementById(id).getBoundingClientRect());return r.every(a=>a.left>=0&&a.right<=innerWidth&&a.top>=0&&a.bottom<=innerHeight)&&r.every((a,i)=>r.every((b,j)=>i===j||a.right<=b.left||b.right<=a.left||a.bottom<=b.top||b.bottom<=a.top))})()' ), true, `Session controls wrap without overlapping at ${ width }×${ height }` );
+		assert.equal( await main.evaluate( '(()=>{const r=["guide-status","obs-status","capture-override-note"].map(id=>document.getElementById(id).getBoundingClientRect());return r.every(a=>a.left>=0&&a.right<=innerWidth&&a.top>=0&&a.bottom<=innerHeight)&&r.every((a,i)=>r.every((b,j)=>i===j||a.right<=b.left||b.right<=a.left||a.bottom<=b.top||b.bottom<=a.top))})()' ), true, `Session controls wrap without overlapping at ${ width }×${ height }` );
+		assert.equal( await main.evaluate( '(()=>{const a=document.getElementById("guide-controls").getBoundingClientRect(),b=document.getElementById("guide-off").getBoundingClientRect();return b.left>=a.right&&Math.abs(a.top-b.top)<1&&Math.abs(a.height-b.height)<1})()' ), true, "Guide off stays beside the matching adjustment button" );
 		if ( width === 1024 && process.env.SIGHTLINE_TEST_ARTIFACTS ) {
 			const shot = await main.call( "Page.captureScreenshot", { format: "png" } );
 			await fs.writeFile( path.join( artifacts, "session-controls.png" ), Buffer.from( shot.data, "base64" ) );
@@ -69,7 +89,18 @@ try {
 	assert.equal( await settings.evaluate( '!!document.querySelector(".settings-workspace")' ), true );
 	const approvedSource = await fs.readFile( path.join( root, "docs/design/settings-and-tools-prototype.html" ), "utf8" );
 	const approvedAreas = [ ...approvedSource.slice( approvedSource.indexOf( "const areas=" ), approvedSource.indexOf( "const targets=" ) ).matchAll( /\{id:'[^']+',name:'([^']+)'/g ) ].map( match => match[1] );
-	assert.deepEqual( await settings.evaluate( '[...document.querySelectorAll("[data-settings-group]")].map(x=>x.textContent)' ), approvedAreas, "Area labels/order come from the signed-off interactive preview" );
+	assert.deepEqual( await settings.evaluate( '[...document.querySelectorAll("[data-settings-group]")].map(x=>x.textContent)' ), [ "Getting started", ...approvedAreas ], "Keep the approved layout with Joanne's new first navigation entry" );
+	await settings.evaluate( 'document.querySelector("[data-tab=getting-started]").click()' );
+	for ( let n = 0; n < 100 && !await settings.evaluate( 'document.querySelectorAll(".settings-start-step").length===5' ); n++ ) await pause( 100 );
+	assert.equal( await settings.evaluate( 'document.querySelectorAll(".settings-start-step").length' ), 5, "Getting started contains live setup guidance rather than three launch buttons" );
+	for ( let n = 0; n < 100 && await settings.evaluate( 'document.querySelector(".settings-start-status").textContent.startsWith("Checking")' ); n++ ) await pause( 100 );
+	assert.match( await settings.evaluate( 'document.querySelector(".settings-start-status").textContent' ), /^Optional tools can be skipped/, "Setup status settles after checking installed components" );
+	assert.match( await settings.evaluate( 'document.querySelector(".settings-start-script").textContent' ), /script\.md/, "The setup page identifies the current script" );
+	assert.match( await settings.evaluate( 'document.querySelector(".settings-start-steps").textContent' ), /Segoe UI|Default font/, "The setup page includes the actual reading appearance" );
+	await settings.evaluate( 'document.querySelector("[data-tab=health]").click()' );
+	assert.equal( await settings.evaluate( '(()=>{const p=document.getElementById("settings-page-health");return ["set-listening-status","set-listening-restart"].every(id=>p.contains(document.getElementById(id))&&document.getElementById(id).getClientRects().length>0)})()' ), true, "Status and recovery has a visible live status and working recovery control" );
+	await settings.evaluate( 'document.querySelector("[data-tab=sync]").click()' );
+	assert.equal( await settings.evaluate( '[...document.querySelectorAll("input[name=slate-choice]")].every(x=>{const r=x.getBoundingClientRect();return r.width<=18&&r.height<=18&&getComputedStyle(x.closest("label")).whiteSpace==="nowrap"})' ), true, "Slate choices use radio sizing and whole labels" );
 	await settings.evaluate( 'document.querySelector("[data-tab=typography]").click()' );
 	const layout = await settings.evaluate( `(()=>{const nav=document.querySelector('.settings-navigation'),content=document.querySelector('.settings-section-content'),preview=document.querySelector('.settings-workspace > .settings-preview-pane'),groups=[...document.querySelectorAll('[data-settings-group]')],expanded=[...document.querySelectorAll('.settings-area-sections')].filter(x=>!x.hidden),r=x=>x.getBoundingClientRect();return {threeColumns:r(nav).right<=r(content).left&&r(content).right<=r(preview).left,previewVisible:!!preview.getClientRects().length,inlineSample:!!content.querySelector('.settings-preview-pane,.settings-reading-sample'),expanded:expanded.length,childWithinArea:expanded[0].previousElementSibling.dataset.settingsGroup,verticalList:groups.every((x,i)=>!i||r(x).left===r(groups[0]).left&&r(x).top>r(groups[i-1]).top),headerSearch:!!document.querySelector('.settings-head .settings-search input'),selectedColour:getComputedStyle(document.querySelector('[data-settings-group=reading]')).backgroundColor};})()` );
 	assert.deepEqual( layout, { threeColumns: true, previewVisible: true, inlineSample: false, expanded: 1, childWithinArea: "reading", verticalList: true, headerSearch: true, selectedColour: "rgb(41, 77, 112)" }, "Rendered composition must match the approved layout, independently of functional checks" );
@@ -239,9 +270,21 @@ try {
 	const sections = await settings.evaluate( '[...document.querySelectorAll(".settings-subtabs [data-tab]")].map(x=>x.dataset.tab)' );
 	const subtopicSpills = async () => settings.evaluate( `(()=>{const failures=[],floor=document.querySelector('.settings-actions').getBoundingClientRect().top;for(const name of ['screens','aids','components','guide']){document.querySelector('.settings-subtabs [data-tab="'+name+'"]').click();const page=document.querySelector('[data-settings-page="'+name+'"]');for(const tab of page.querySelectorAll('.settings-topic-tabs [role=tab]')){tab.click();const spill=[...page.querySelectorAll('input,select,button,p,fieldset')].filter(x=>x.getClientRects().length&&!x.closest('[hidden],.hidden')).filter(x=>x.getBoundingClientRect().bottom>floor||x.getBoundingClientRect().right>innerWidth).map(x=>x.id||x.className);if(spill.length)failures.push({name,group:tab.textContent,spill});}}return failures})()` );
 	assert.deepEqual( await subtopicSpills(), [], "Every visible group fits the desktop frame" );
+	const checkSetupReachable = async () => {
+		assert.equal( await settings.evaluate( 'getComputedStyle(document.querySelector(".settings-section-content")).overflowY' ), "auto", "The setup guide scrolls inside the central pane, keeping navigation, preview and footer fixed" );
+		assert.equal( await settings.evaluate( '(()=>{const pane=document.querySelector(".settings-section-content"),page=document.querySelector("[data-settings-page=getting-started]"),floor=document.querySelector(".settings-actions").getBoundingClientRect().top;const buttons=[...page.querySelectorAll("button")];const fits=buttons.every(button=>{button.scrollIntoView({block:"nearest",inline:"nearest",behavior:"instant"});const r=button.getBoundingClientRect(),p=pane.getBoundingClientRect();return r.top>=p.top-1&&r.bottom<=Math.min(p.bottom,floor)+1&&r.left>=p.left&&r.right<=p.right;});pane.scrollTo({top:0,behavior:"instant"});return buttons.length===6&&fits&&pane.scrollWidth<=pane.clientWidth})()' ), true, "Every setup action is reachable without overlapping the footer or scrolling sideways" );
+	};
 	const overflow = [];
 	for ( const name of sections ) {
 		await settings.evaluate( `document.querySelector('.settings-subtabs [data-tab="${ name }"]').click()` ); await pause( 30 );
+		if ( name === "getting-started" ) {
+			await checkSetupReachable();
+			if ( process.env.SIGHTLINE_TEST_ARTIFACTS ) {
+				const shot = await settings.call( "Page.captureScreenshot", { format: "png" } );
+				await fs.writeFile( path.join( artifacts, "getting-started.png" ), Buffer.from( shot.data, "base64" ) );
+			}
+			continue;
+		}
 		const clipped = await settings.evaluate( `(()=>{const panel=document.querySelector('[data-settings-page="${ name }"]'), floor=document.querySelector('.settings-actions').getBoundingClientRect().top;return [...panel.querySelectorAll('button,input,select,p,fieldset')].filter(x=>x.getClientRects().length&&!x.closest('[hidden],.hidden')).filter(x=>x.getBoundingClientRect().bottom>floor||x.getBoundingClientRect().right>innerWidth).map(x=>({id:x.id||x.className,text:x.innerText?.slice(0,45),bottom:Math.round(x.getBoundingClientRect().bottom)}))})()` );
 		if ( clipped.length ) overflow.push( { name, clipped } );
 	}
@@ -262,6 +305,10 @@ try {
 		const failures = [];
 		for ( const name of sections ) {
 			await settings.evaluate( `document.querySelector('.settings-subtabs [data-tab="${ name }"]').click()` );
+			if ( name === "getting-started" ) {
+				await checkSetupReachable();
+				continue;
+			}
 			const spill = await settings.evaluate( `(()=>{const panel=document.querySelector('[data-settings-page="${ name }"]'),floor=document.querySelector('.settings-actions').getBoundingClientRect().top;return [...panel.querySelectorAll('input,select,button,p,fieldset')].filter(x=>x.getClientRects().length&&!x.closest('[hidden],.hidden')).filter(x=>x.getBoundingClientRect().bottom>floor||x.getBoundingClientRect().right>innerWidth).map(x=>x.id||x.className)})()` );
 			if ( spill.length ) failures.push( [ name, spill ] );
 		}
@@ -380,6 +427,22 @@ try {
 	await main.evaluate( 'window.electron.setCaptureOverride(false)' ); await pause( 100 );
 	assert.ok( ( await protectedWindows() ).every( item => item.protected ), "Turning off the override restores the saved protection requests" );
 	console.log( "Settings:", await settings.evaluate( '({size:[innerWidth,innerHeight], sections:document.querySelectorAll("[data-settings-page]").length, visible:[...document.querySelectorAll("[data-settings-page]")].filter(x=>!x.hidden).map(x=>x.dataset.settingsPage)})' ) );
+	await main.evaluate( 'window.electron.headGuide("show")' ); await pause( 100 );
+	assert.equal( await main.evaluate( '!document.getElementById("guide-status").classList.contains("hidden")' ), true );
+	await main.evaluate( 'document.getElementById("guide-off").click()' ); await pause( 100 );
+	assert.equal( await main.evaluate( 'document.getElementById("guide-status").classList.contains("hidden")' ), true, "Guide off hides the guide and its controls" );
+	await native.evaluate( "process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron').BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().includes('teleprompter.html')).hide()" );
+	for ( const action of [ "maximize", "fullscreen" ] ) {
+		await main.evaluate( `window.electron.windowControl('${ action }')` ); await pause( 80 );
+		const moved = await native.evaluate( `(()=>{const e=process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron'),w=e.BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().includes('teleprompter.html')),match=e.screen.getDisplayMatching,display=match(w.getBounds()),area=display.workArea;const width=Math.round(area.width*.75),height=Math.round(area.height*.75);const expected={x:area.x+Math.round((area.width-width)/2),y:area.y+Math.round((area.height-height)/2),width,height};w.emit('will-move');e.screen.getDisplayMatching=()=>({...display,id:display.id+123456});w.emit('moved');e.screen.getDisplayMatching=match;return {expected,bounds:w.getBounds()}})()` );
+		assert.deepEqual( moved.bounds, moved.expected, `${ action } clears after a cross-display drag and restores a centred 75% window` );
+		await pause( 100 );
+		assert.equal( await main.evaluate( 'document.getElementById("cb-max").getAttribute("aria-pressed")!=="true"&&document.getElementById("cb-full").getAttribute("aria-pressed")!=="true"' ), true );
+	}
+	const withinDisplay = await native.evaluate( "(()=>{const e=process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron'),w=e.BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().includes('teleprompter.html')),area=e.screen.getDisplayMatching(w.getBounds()).workArea;const next={x:area.x+50,y:area.y+70,width:500,height:400};w.emit('will-move');w.setBounds(next);w.emit('moved');return {expected:next,actual:w.getBounds()}})()" );
+	assert.deepEqual( withinDisplay.actual, withinDisplay.expected, "A same-display move retains the chosen size and location" );
+	const programmaticMove = await native.evaluate( "(()=>{const e=process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron'),w=e.BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().includes('teleprompter.html')),match=e.screen.getDisplayMatching,display=match(w.getBounds()),before=w.getBounds();e.screen.getDisplayMatching=()=>({...display,id:display.id+123456});w.emit('moved');e.screen.getDisplayMatching=match;return {before,after:w.getBounds()}})()" );
+	assert.deepEqual( programmaticMove.after, programmaticMove.before, "Programmatic placement does not trigger the manual-drag default" );
 	assert.deepEqual( errors, [] );
 	console.log( `Native settings smoke passed. Screenshots: ${ artifacts }` );
 } finally {

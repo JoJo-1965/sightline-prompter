@@ -1162,18 +1162,18 @@ body.controls-hidden * {
 }
 
 .guide-controls {
-	position: fixed;
-	top: 50px;
-	right: 10px;
-	z-index: 1300;
-	padding: 6px 10px;
-	border: 1px solid #8fd3ff;
-	border-radius: 6px;
-	background: #263a45;
-	color: #edf3fa;
-	font: 12px "Segoe UI", Helvetica, Arial, sans-serif;
-	cursor: pointer;
 	-webkit-app-region: no-drag;
+}
+.guide-status {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: .6rem;
+	padding: .55rem .8rem;
+	border-radius: .6rem;
+	background: #20242b;
+	color: #fff;
+	font: 14px/1.4 system-ui, sans-serif;
 }
 .guide-controls:focus-visible { outline: 2px solid #ffd54a; outline-offset: 2px; }
 .guide-controls[aria-pressed="true"] { background: #34535c; border-color: #72efce; }
@@ -3045,10 +3045,10 @@ body.notes-pages #md ol.current-section {
 #obs-status.hidden { display: none; }
 #session-controls {position:fixed;top:50px;left:12px;right:12px;z-index:1300;display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:flex-start;gap:8px;pointer-events:none;}
 #session-controls > * {pointer-events:auto;}
-#session-controls > .guide-controls, #session-controls > #obs-status {position:static;box-sizing:border-box;max-width:100%;}
+#session-controls > .guide-status, #session-controls > #obs-status {position:static;box-sizing:border-box;max-width:100%;}
 #session-controls > #capture-override-note {position:static;box-sizing:border-box;flex:0 0 100%;width:100%;max-width:100%;margin:0;}
 #obs-status.obs-recording { border-left: 4px solid #ff5252; }
-#obs-status button {
+#session-controls :is(#guide-status, #obs-status) button {
 	min-height: 32px;
 	padding: 5px 10px;
 	border: 1px solid #8391a5;
@@ -3059,9 +3059,9 @@ body.notes-pages #md ol.current-section {
 	opacity: 1;
 	cursor: pointer;
 }
-#obs-status button:hover:not(:disabled) { background: #465772; border-color: #badbff; }
-#obs-status button:active:not(:disabled) { background: #293749; }
-#obs-status button:focus-visible { outline: 2px solid #8fd3ff; outline-offset: 2px; }
+#session-controls :is(#guide-status, #obs-status) button:hover:not(:disabled) { background: #465772; border-color: #badbff; }
+#session-controls :is(#guide-status, #obs-status) button:active:not(:disabled) { background: #293749; }
+#session-controls :is(#guide-status, #obs-status) button:focus-visible { outline: 2px solid #8fd3ff; outline-offset: 2px; }
 #obs-status button:disabled {
 	background: #262c35;
 	color: #b9c4d2;

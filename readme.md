@@ -248,6 +248,12 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ## Change log
 
+- **UAT Preview 09 (unpublished):** combines the PC feedback batch: useful
+  Getting started guidance at the top of Settings, visible listening health
+  and recovery, matching Guide adjustments/Guide off controls, aligned slate
+  choices, focus-band exclusions for comments, and a centred 75% normal window
+  after dragging to another display. See [the UAT checklist](docs/PREVIEW-09.md).
+
 - **UAT Preview 08 (unpublished):** preserves the signed-off Settings layout,
   improves heading/action spacing and implements the approved Prepare to record
   workflow. Real local face detection supplements manual framing; audio advice,

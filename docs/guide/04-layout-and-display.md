@@ -70,6 +70,8 @@ position. The top/bottom margins fade the text near their edges.
 
 **Reading > Reading aids** groups the reading marker, sentence highlight,
 progress/time, focus band/strength and outline/shadow text edge.
+The focus band dims spoken text; production comments and inline directions
+retain their own appearance. Margin fading still applies to all text.
 A named choice shows slide cues and directive tags separately.
 Long notes remain silent regardless of their display settings.
 

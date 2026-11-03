@@ -292,7 +292,7 @@ widths, open Preview and keep it visible while editing Settings; close it with
 Escape or native X without losing the draft.
 
 1. Open Settings from the toolbar, Files menu and shortcut. Confirm the frame
-   stays stable across eight areas and 34 named sections. Resize to a compact
+   stays stable across nine areas and 34 named sections. Resize to a compact
    window: area/section selectors replace the sidebar, with no automatic pages
    or internal scrolling. Search and choose sections without changing preferences.
 2. In Reading > Text and directions, try all four targets. Give each a different

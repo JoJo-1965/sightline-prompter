@@ -1,6 +1,6 @@
 # Sightline Prompter feature grid
 
-**Review basis: UAT Preview 08, documentation revision 9, 2 November 2026.**
+**Review basis: UAT Preview 09, documentation revision 10, 3 November 2026.**
 **Build version:** `1.1.0` · **Publication status:** Preview
 
 **Maintained source:** [Feature grid](https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/FEATURE-GRID.md)
@@ -141,7 +141,7 @@ Reference: [Layout and display](guide/04-layout-and-display.md) and [Settings](g
 | Alignment and margins | Included | Left or centred text; side, top and bottom margin controls. | Extreme settings can reduce the usable reading area. |
 | Background and text visibility | Included | Editable backing colour, off-air/on-air opacity, text opacity and brightness; preview addition. | The appearance preview does not change the content behind the prompter. |
 | Text edge | Optional | None, outline or shadow to separate words from a busy background. | Preview against the intended slides, call or camera picture. |
-| Focus band | Optional | Dim text away from the reading line; adjustable strength. | Strength is shown/enabled only while Focus band is on and retains its value when off. Does not remove text from the script or edit pack. |
+| Focus band | Optional | Dim spoken text away from the reading line; adjustable strength. Production comments and inline directions keep their own appearance; preview patch. | Strength appears only while enabled and is retained when off. Margin fading still applies to comments. No text is removed from the script or edit pack. |
 | Reading marker and progress | Optional | Reading-line position and marker, sentence highlight, progress and time-left display. | Display aids can be configured separately from the script content. |
 
 ## 07 · Windows, screens and capture
@@ -154,7 +154,7 @@ Reference: [Layout and display](guide/04-layout-and-display.md) and [Remotes and
 | Always on top | Optional | Keep the prompter above ordinary application windows. | Operating-system window rules and other topmost windows can affect stacking. |
 | Windowed and fullscreen use | Included | Size and position the prompter, or use a fullscreen reading view. | Multi-window arrangements need checking on the intended display. |
 | Horizontal and vertical mirror | Included | Separate mirror controls, including toolbar icons. | Set the flips appropriate to the physical teleprompter glass or monitor. |
-| Prompter monitor | Optional | Choose the display used for the reading window. | Requires the display to be connected and recognised by the operating system. |
+| Prompter monitor | Optional | Explicit display selection opens full screen. A manual cross-screen drag restores a centred normal window at 75% of the destination work area; preview patch. | Windows drag handling clears eye-line mode and the pinned monitor choice. Same-display moves retain the chosen size. Requires a connected display. |
 | Eye-line strip | Optional | Compact reading strip with configurable screen height and reading-line position. | Lens alignment is a manual setup task. |
 | Click-through | Optional | Let pointer interaction reach content beneath the overlay. | Use the documented shortcut or remote control to regain interaction. |
 | Operator window | Optional | Separate upright controls and script/session status while the reading window is mirrored. | A second monitor is useful but not required. |
@@ -163,7 +163,7 @@ Reference: [Layout and display](guide/04-layout-and-display.md) and [Remotes and
 | Utility windows | Included | Separate Settings, help and command windows, with movable positioning. | Window stacking must still be checked in the user's chosen fullscreen arrangement. |
 | Capture protection | Limited | Request that supported capture paths exclude Sightline utility/reading windows. | Platform, capture method and compositor determine the result; verify the actual recording. |
 | Capture override for testing | Optional | Debug control allows capture of Sightline windows for demonstrations and diagnostics. | This intentionally removes protection; inspect every captured output before recording. |
-| Small-screen layout | Included | Expanding vertical area list, fixed named sections and compact Area/Section selectors with Preview action; no automatic pagination or internal scrolling; preview addition. | Native checks cover 560 × 500 content and larger frames. Physical display/zoom and fullscreen stacking still require acceptance checks. |
+| Small-screen layout | Included | Expanding area list, fixed named sections and compact Area/Section selectors with Preview action; no automatic pagination. Getting started alone scrolls its guidance in the centre pane; preview addition. | Native checks cover 560 × 500 content and larger frames. Physical display/zoom and fullscreen stacking still require acceptance checks. |
 
 ## 08 · Head positioning and framing reference
 
@@ -176,7 +176,7 @@ Reference: [Prepare to record](guide/16-prepare-to-record.md), [Head guide and c
 | Eye-line anchoring | Included | Set centre and eye level before adjusting the shape around the eyes. | Manual alignment must be repeated if camera framing changes. |
 | Head-edge adjustment | Included | Adjust top, bottom, left and right independently. | Changes the outline, not the camera crop or the person's image. |
 | Move and scale | Included | Horizontal/vertical position, overall size, width and height controls. | Shape adjustments are separate from moving the guide window itself. |
-| Guide visibility | Included | Stateful Show/Hide, Mint/Gold outline colour, outline/background opacity and Show Ideal in Head guide subtabs; preview addition. | Appearance and eye lock use Apply. Visibility is immediate; hidden guides retain their configuration. |
+| Guide visibility | Included | Stateful Show/Hide, Guide off beside floating Guide adjustments, Mint/Gold outline colour, outline/background opacity and Show Ideal in Head guide subtabs; preview addition. | Appearance and eye lock use Apply. Visibility is immediate; hidden guides retain their configuration and saved position. |
 | Session framing reference | Included | Keep the guide pose, appearance and saved Ideal across script/module changes. | These are manual session preferences; no camera tracking or named automatic fitting is claimed. |
 | Guide placements | Included | Centred and beside-prompter saved placements, plus window positioning and sizing; accessible from Settings and adjustments. | Placement/fullscreen actions act immediately; beside prompter means alongside the reading area. |
 | Fullscreen and chromeless guide | Included | Toggle the guide into and out of fullscreen; lock the adjustment view when ready. | Test stacking with the OBS projector and prompter on the chosen monitor. |
@@ -356,7 +356,7 @@ Reference: [Settings](guide/07-settings.md), [Screenshot gallery](guide/settings
 | Capability | Availability | Options and behaviour | Dependencies and limits |
 | --- | --- | --- | --- |
 | Grouped settings | Included | Top-level task groups and focused subtabs separate prompting, appearance, recording and controls. | The detailed settings guide describes the current placement of each tool. |
-| Stable settings panel | Included | Stable frame, eight areas and 34 named sections, permanent controls and no internal scrolling; preview addition. | Resizing never reallocates a setting to another page. A minimum usable window is required. |
+| Stable settings panel | Included | Stable frame, nine areas and 34 named sections, permanent controls. Getting started is first and scrolls guidance in the centre pane; preview addition. | Configuration sections retain their fixed layout; resizing never reallocates a setting to another page. A minimum usable window is required. |
 | Settings example preview | Included | Inline example when width permits; movable non-modal companion on narrow windows. Both follow the same draft; preview addition. | Settings remains usable while the companion is open. Examples never start prompting, a microphone or a recorder; the guide diagram is manual. |
 | Settings draft consistency | Included | Appearance previews; Apply persists, Save and close persists/closes, Cancel restores the last applied look; preview addition. | Component installation, theme-library save/import, pairing reset, device tests and guide visibility/placement/reference saves are explicit actions. |
 | Numeric controls | Included | Slider/number pairs share whole-number or five-point increments; fine readouts have at most two decimals; preview patch. | Display rounding preserves stored precision until the control is adjusted. |
@@ -364,7 +364,7 @@ Reference: [Settings](guide/07-settings.md), [Screenshot gallery](guide/settings
 | Live Tools groups | Included | Prepare, Adjust and During take share saved values with Settings through separate controls; preview addition. | Live changes are immediate; a short prompter uses a utility window instead of clipping the menu. |
 | Contextual explanations | Included | Small question-mark pills beside options explain purpose and consequences on hover, keyboard focus or click. Both Reading aids groups have explanations for every control. | Escape closes the explanation. Help follows the selected mode and enabled components. |
 | Apply, save and cancel | Included | Review changed settings, apply them and keep or cancel the dialog changes. | Some setup operations and permissions have their own explicit controls. |
-| Onboarding and components | Included | First-use setup distinguishes component installation from everyday operation. | Components remain optional where the app can run without them. |
+| Onboarding and components | Included | First-use setup plus Getting started at the top of Settings, showing the current script, mode, text appearance and optional-tool guidance; preview patch. | Components remain optional. Opening guidance does not enable devices or integrations; changes use Apply. |
 | Restore defaults | Included | Return preferences to the shipped starting setup and re-enter onboarding. | Does not uninstall components or delete the user's scripts and recording media. |
 | Settings transfer | Optional | Import/export supported settings in JSON or XML, including structured pad layouts and word lists. | Secrets and sensitive opt-ins are not a way to bypass explicit permissions. |
 | Settings access | Included | Toolbar settings control and a Settings item in the hamburger menu. | The menu remains an accessible route when toolbar icons are less obvious. |
@@ -382,7 +382,7 @@ Reference: [Privacy and accessibility policies](POLICIES.md) and [Acceptance wal
 | Local-first operation | Included | Scripts, settings and logs are held locally; local speech avoids a cloud recogniser. | Deepgram, document links and chosen external AI tools have their own network behaviour. |
 | No required telemetry account | Included | No Sightline sign-in is required to prompt or create local take logs. | Elgato, online recognition and AI providers can have independent accounts/telemetry. |
 | Local recording information | Included | Keep script snapshots, recognised timing, take choices and optional scratch audio for handover. | These files can contain personal or confidential content; manage them as production material. |
-| Diagnostic logging | Optional | Debug events and listener health/recovery help investigate failures. | More detailed command-word tracing is separate and off by default. |
+| Diagnostic logging | Optional | Debug > Status and recovery shows listening health, Restart listening and a speech-settings link. Recovery events help investigate failures. | Uses applied speech/microphone settings. Recognised-word tracing is separate and off by default. |
 | Optional word tracing | Optional | Enable recognised command-word logging to investigate actual mishearings. | May include nearby speech; only enable it for the intended diagnostic period. |
 | Recording-state honesty | Included | Confirmed stopped/recording/paused states are distinct from unknown/disconnected. | UI state cannot certify that the resulting picture/audio is usable. |
 | Hardware acceptance | Limited | Walkthrough covers real camera, mic, controls, clean tracks, sync and output inspection. | Local automated tests do not replace camera/mic and physical-control testing. |

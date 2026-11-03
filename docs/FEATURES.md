@@ -1,5 +1,12 @@
 # Sightline Prompter: what it adds to Electron Teleprompter
 
+**UAT Preview 09:** Getting started is first in Settings and provides current
+setup guidance. Debug shows listening health and recovery. Guide adjustments
+and Guide off share a compact control group; slate options stay on one line.
+The focus band excludes comments and inline directions. Cross-screen dragging
+restores a centred normal window at 75% of the destination work area.
+See the [combined UAT checklist](PREVIEW-09.md).
+
 **UAT Preview 08:** preserves the approved Settings composition and adds the
 approved preparation workflow with real local face detection, manual fallback,
 audio advice, an actual reviewed test clip and a fixed recording reference.
@@ -22,7 +29,7 @@ Preview 06's numeric patch gives slider/number pairs consistent whole-number
 or five-point steps. Fine readouts have at most two decimals. Display rounding
 preserves saved precision until adjustment; the signed-off layout is unchanged.
 
-For a detailed reviewer comparison, use the [Preview 06 feature grid](FEATURE-GRID.md),
+For a detailed reviewer comparison, use the [current preview feature grid](FEATURE-GRID.md),
 with dedicated Stream Deck and OBS sections, configuration choices, dependencies
 and limits. A [searchable view](FEATURE-GRID.html) and [comparison CSV](FEATURE-GRID.csv)
 are generated from the same tables.
@@ -434,7 +441,9 @@ The whole workflow is in the guide:
   horizontally), with the whole display, controls included, mirrored so it all
   reads correctly in the glass.
 - **Prompter monitor:** choose a monitor (the Elgato Prompter shows up by name)
-  and the prompter opens full screen there every time.
+  and the prompter opens full screen there. In Preview 09, dragging it to a
+  different screen clears the pinned choice and restores a centred normal
+  window at 75% of that screen's usable width and height.
 - **Eye-line mode:** a narrow strip right under the webcam.
 - **Mirroring in one click:** ↔ and ↕ toolbar icons, also in Reading > Screens and mirroring.
 - **Hide from screen sharing and recordings**, and **click-through** so clicks
@@ -446,6 +455,8 @@ The whole workflow is in the guide:
 
 - Sentence highlight, a **focus band** that dims the lines away from the
   reading line, and a **text edge** for reading over busy backgrounds.
+  Preview 09 leaves production comments and inline directions undimmed by
+  the focus band; their own typography and margin fading still apply.
 - **Colour themes:** standard, yellow on dark, high contrast and soft cream,
   in the dedicated **Reading > Theme and background** topic.
 - **Fonts** including Atkinson Hyperlegible, OpenDyslexic and Verdana, with a

@@ -226,7 +226,7 @@ try {
 	// The redesigned native forms have their own full suite. Retain an inline
 	// fallback check here alongside the recorder/head-guide integration fixture.
 	await evaluate( "document.getElementById('cb-tools').click();document.getElementById('cb-settings').click()" );
-	assert.equal( await evaluate( "document.querySelectorAll('[data-settings-group]').length" ), 8 );
+	assert.equal( await evaluate( "document.querySelectorAll('[data-settings-group]').length" ), 9 );
 	assert.equal( await evaluate( "document.querySelectorAll('[data-settings-page]').length" ), 34 );
 	assert.equal( await evaluate( "document.querySelectorAll('.settings-pagination').length" ), 0 );
 	assert.equal( await evaluate( "document.querySelectorAll('#lp-production-colour').length" ), 1 );

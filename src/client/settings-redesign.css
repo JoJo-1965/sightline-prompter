@@ -10,7 +10,10 @@ body #md .direction .say { color: var(--reading-script-colour); font-family: var
 #settings-modal.settings-redesign { --settings-surface: #282c34; --settings-line: #4c5561; --settings-muted: #bdc7d3; }
 #settings-modal.settings-redesign :is(p,label,legend,button,span) { text-wrap: pretty; }
 #settings-modal.settings-redesign :is(h3,h4,legend) { text-wrap: balance; }
-#settings-modal.settings-redesign :where(button, select, input:not([type=checkbox]):not([type=range]):not([type=color])) { font: inherit; color: inherit; background: #333b46; border: 1px solid #667484; border-radius: 5px; min-height: 30px; padding: 4px 9px; box-sizing: border-box; }
+#settings-modal.settings-redesign :where(button, select, input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color])) { font: inherit; color: inherit; background: #333b46; border: 1px solid #667484; border-radius: 5px; min-height: 30px; padding: 4px 9px; box-sizing: border-box; }
+#settings-modal.settings-redesign .settings-radio-choices { display:flex; flex-wrap:wrap; gap:8px 14px; align-items:center; min-width:0; }
+#settings-modal.settings-redesign .settings-radio-choices label { display:inline-flex; align-items:center; justify-content:flex-start; flex:0 0 auto; gap:7px; min-height:30px; margin:0; padding:0; white-space:nowrap; text-wrap:nowrap; }
+#settings-modal.settings-redesign input[type=radio] { appearance:auto; width:17px; height:17px; min-height:17px; min-width:17px; flex:0 0 17px; padding:0; margin:0; accent-color:#7fbff2; }
 #settings-modal.settings-redesign button { cursor: pointer; }
 #settings-modal.settings-redesign :is(button.active, button[aria-pressed=true], button[aria-selected=true]) { background: #294b65; border-color: #88bfe6; }
 #settings-modal.settings-redesign :is(button,select,input):focus-visible { outline: 2px solid #a3d5ff; outline-offset: 2px; }
@@ -29,6 +32,16 @@ body #md .direction .say { color: var(--reading-script-colour); font-family: var
 #settings-modal.settings-redesign #set-reading-host { position: relative; }
 #settings-modal.settings-redesign .settings-style-buttons { display: flex; gap: 7px; }
 #settings-modal.settings-redesign .settings-inline-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+#settings-modal.settings-redesign .settings-section-content:has(>[data-settings-page="getting-started"]:not([hidden])) { overflow-y:auto; overflow-x:hidden; overscroll-behavior:contain; scrollbar-gutter:stable; }
+#settings-modal.settings-redesign .settings-start-intro { margin:0 0 12px; color:var(--settings-muted); font-size:13px; line-height:1.5; }
+#settings-modal.settings-redesign .settings-start-script { margin:8px 0; font-size:13px; font-weight:600; overflow-wrap:anywhere; }
+#settings-modal.settings-redesign .settings-start-status { margin:8px 0 14px; color:var(--settings-muted); font-size:12px; line-height:1.5; }
+#settings-modal.settings-redesign .settings-start-steps { display:grid; gap:10px; margin:0 0 14px; }
+#settings-modal.settings-redesign .settings-start-step { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:14px; border:1px solid #4c5561; border-radius:6px; padding:12px; }
+#settings-modal.settings-redesign .settings-start-step h5 { margin:0 0 6px; font-size:13px; line-height:1.4; text-wrap:balance; }
+#settings-modal.settings-redesign .settings-start-step p { margin:0; font-size:12px; line-height:1.5; color:var(--settings-muted); text-wrap:pretty; }
+#settings-modal.settings-redesign .settings-start-step button { max-width:170px; text-wrap:balance; }
+@media(max-width:760px) { #settings-modal.settings-redesign .settings-start-step { grid-template-columns:minmax(0,1fr); gap:8px; } #settings-modal.settings-redesign .settings-start-step button { justify-self:start; } }
 #settings-modal.settings-redesign .field-hint { font-size: 12px; line-height: 1.35; color: var(--settings-muted); margin: 7px 0; }
 #settings-modal.settings-redesign .settings-unsaved { position: absolute; inset: auto 0 0; background: #293b50; border: 1px solid #9abbdc; padding: 14px; z-index: 30; }
 #settings-modal.settings-redesign .settings-help-button { display: inline-flex; align-items: center; justify-content: center; align-self: start; margin-top: -2px; min-width: 17px; min-height: 15px; width: 17px; height: 15px; padding: 0; font-size: 10px; border-radius: 9px; background: #324354; border: 1px solid #83a8c6; color: #d9efff; }

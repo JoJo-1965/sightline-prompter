@@ -3,10 +3,11 @@ import { READING_FONTS, READING_PALETTES, TEXT_TARGETS, TEXT_FIELDS, appearanceF
 import { INTERFACES, interfaceEnabled } from "./interface-state.js";
 import { createSettingsPreview } from "./settings-preview.js";
 import { roundControlNumber, steppedControlNumber } from "./numeric-controls.js";
+import { workflowRows } from "./workflow.js";
 
 // Forms are assembled once, before their controllers attach. Settings keeps
 // ownership for its lifetime; Tools never borrows any of these nodes.
-export function createSettingsWorkspace( root, { getState, getGuideState = () => null, stage, navigate, toast } ) {
+export function createSettingsWorkspace( root, { getState, getGuideState = () => null, getSetupState = async () => ( { settings: getState(), obs: {} } ), stage, navigate, toast } ) {
 	const doc = root.ownerDocument;
 	const box = root.querySelector( ".settings-content" );
 	const oldLayout = doc.getElementById( "layout-panel" );
@@ -291,7 +292,7 @@ export function createSettingsWorkspace( root, { getState, getGuideState = () =>
 		[ "lp-marker", "Reading marker", "showReadingMarker", "Shows a visible marker at your reading line. Its position follows the reading-line setting in Reading > Prompter layout." ],
 		[ "lp-sentence", "Sentence highlight", "highlightSentence", "Highlights the current sentence in steady scrolling and the next sentence to say in voice mode. This helps you keep your place without changing the script or scroll speed." ],
 		[ "lp-progress", "Progress and time", "showProgress", "Shows script progress and estimated time remaining. While paused, click or drag the progress bar to move; clicks are ignored during delivery to prevent accidental jumps." ],
-		[ "lp-focus-band", "Focus band", "focusBand", "Dims text away from the reading line so the active reading area stands out. Enable it to reveal Focus strength. Switching it off retains your saved strength." ]
+		[ "lp-focus-band", "Focus band", "focusBand", "Dims spoken text away from the reading line. Production comments and inline directions retain their own appearance. Enable it to reveal Focus strength. Switching it off retains your saved strength." ]
 	] ) check( aids, id, label, key, true, help );
 	const focusStrength = range( aids, "lp-focus-strength", "Focus strength", "focusStrength", { step: 5, min: 10, max: 90, scale: 100, help: "Controls how strongly text outside the focus band is dimmed. Higher values dim surrounding text more. This applies only while Focus band is on; the value is remembered when it is off." } );
 	choice( aids, "lp-text-effect", "Text edge", "textEffect", [ [ "none", "None" ], [ "outline", "Outline" ], [ "shadow", "Shadow" ] ], true, "Outline or Shadow helps words stand out over busy slides, video or light backgrounds. None uses plain text. This is independent of sentence highlighting and the focus band." );
@@ -489,7 +490,52 @@ export function createSettingsWorkspace( root, { getState, getGuideState = () =>
 	prepareButton.addEventListener( "click", () => window.electron.prepareRecording() );
 	prepareAction.append( prepareButton );
 	checklist.append( prepareAction );
-	explain( "getting-started", "Getting started", "Start with steady scrolling and adjust the reading appearance. Enable optional controllers only when you want to use them; installation and readiness checks live in Optional components.", [ [ "Initial setup", "onboarding" ], [ "Getting started guide", "help" ], [ "Optional components", "components" ] ] );
+	const gettingStarted = section( "getting-started", "Getting started" );
+	gettingStarted.append( el( "p", { className: "settings-start-intro" }, "Open your script from Files, or choose a sample from Help. Choose how to read, make the text comfortable, then enable only the optional tools you need." ) );
+	const setupScript = el( "p", { className: "settings-start-script" } );
+	const setupStatus = el( "p", { className: "settings-start-status" } );
+	setupStatus.setAttribute( "role", "status" );
+	setupStatus.setAttribute( "aria-live", "polite" );
+	const setupSteps = el( "div", { className: "settings-start-steps" } );
+	gettingStarted.append( setupScript, setupStatus, setupSteps );
+	let setupContext = null, setupGeneration = 0;
+	function renderSetup() {
+		if ( !setupContext ) return;
+		const state = getState();
+		const context = { ...setupContext, settings: { ...setupContext.settings, ...state } };
+		setupScript.textContent = context.scriptTitle ? `Current script: ${ context.scriptTitle }` : "No script is open yet. Use Files > Open, or Help > Sample scripts.";
+		const rows = workflowRows( context );
+		const appearance = appearanceFromSettings( state, state );
+		if ( state.pointsMode ) rows[0][1] = "Notes / page mode is selected. Use Next and Previous to move through pages without scrolling.";
+		rows.splice( 1, 0, [ "Reading appearance", `${ appearance.text.script.font } · ${ appearance.text.script.size }% text size. Preview fonts, spacing, colours and directions beside the controls.`, "Set text appearance", "typography" ] );
+		const focus = gettingStarted.contains( doc.activeElement ) ? doc.activeElement.id : null;
+		setupSteps.replaceChildren( ...rows.map( ( [ title, description, label, name ], index ) => {
+			const item = el( "section", { className: "settings-start-step" } );
+			const copy = el( "div" );
+			copy.append( el( "h5", {}, `${ index + 1 }. ${ title }` ), el( "p", {}, description ) );
+			const button = el( "button", { id: `settings-start-${ name }`, type: "button" }, label );
+			button.addEventListener( "click", () => navigate( name === "obs-setup" ? "obs" : name ) );
+			item.append( copy, button );
+			return item;
+		} ) );
+		if ( focus ) doc.getElementById( focus )?.focus( { preventScroll: true } );
+	}
+	async function refreshSetup() {
+		const generation = ++setupGeneration;
+		setupStatus.textContent = "Checking the current setup…";
+		try {
+			const context = await getSetupState();
+			if ( generation !== setupGeneration ) return;
+			setupContext = context;
+			renderSetup();
+			setupStatus.textContent = "Optional tools can be skipped. Apply changes before trying them, then use Prepare to record to check framing and sound.";
+		} catch ( error ) {
+			if ( generation === setupGeneration ) setupStatus.textContent = `Setup status is unavailable: ${ error.message }. Your saved settings are unchanged.`;
+		}
+	}
+	const setupHelp = el( "button", { id: "settings-start-help", type: "button" }, "Read the getting started guide" );
+	setupHelp.addEventListener( "click", () => window.electron.openGuide( "01-getting-started.md" ) );
+	gettingStarted.append( setupHelp );
 	const guide = section( "guide", "Head guide" );
 	const guideVisible = take( "set-head-guide-visible" );
 	guideVisible.type = "checkbox";
@@ -538,7 +584,18 @@ export function createSettingsWorkspace( root, { getState, getGuideState = () =>
 	guideReference.append( guideHint );
 	topicTabs( guideConfig, "settings-guide-topics", "Head guide controls", [ [ "guide", "Guide", [ guideFit ] ], [ "appearance", "Appearance", [ guideLook ] ], [ "reference", "Recording reference", [ guideReference ] ] ] );
 	const health = section( "health", "Health" );
-	health.append( el( "p", { className: "field-hint" }, "Listening health and automatic recovery events are logged without recognised words. Enable command tracing separately only when investigating mishearings." ) );
+	const listeningStatus = doc.getElementById( "set-listening-status" );
+	listeningStatus.classList.add( "settings-health-status" );
+	health.append( listeningStatus );
+	const recoveryActions = el( "div", { className: "settings-inline-actions" } );
+	recoveryActions.append( take( "set-listening-restart", "button" ) );
+	const voiceSetup = el( "button", { type: "button" }, "Speech settings" );
+	voiceSetup.addEventListener( "click", () => navigate( "engine" ) );
+	recoveryActions.append( voiceSetup );
+	health.append( recoveryActions );
+	const healthNote = el( "p", { className: "field-hint" }, "Restart uses the applied speech and microphone settings. Listening recovery events are logged without recognised words; command-word tracing is a separate option." );
+	healthNote.dataset.essential = "true";
+	health.append( healthNote );
 	const screenTopics = el( "fieldset" );
 	screenTopics.dataset.tab = "screens";
 	screenTopics.dataset.settingsFirst = "true";
@@ -698,6 +755,7 @@ export function createSettingsWorkspace( root, { getState, getGuideState = () =>
 		}
 	}
 	function sync( state = getState() ) {
+		renderSetup();
 		const paletteInfo = READING_PALETTES[state.theme] ?? READING_PALETTES.default;
 		const actualGuide = getGuideState();
 		const guideShown = actualGuide?.shown ?? state.showHeadGuide === true;
@@ -780,5 +838,5 @@ export function createSettingsWorkspace( root, { getState, getGuideState = () =>
 		preview.sync( state );
 		return appearanceFromSettings( state, state );
 	}
-	return { sync, selectTarget, bindings, controls, sections, row, el, closePreview: preview.close };
+	return { sync, refreshSetup, selectTarget, bindings, controls, sections, row, el, closePreview: preview.close };
 }

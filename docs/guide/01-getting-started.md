@@ -2,6 +2,12 @@
 
 ## Set up once, check before a session
 
+In UAT Preview 09, **Settings > Getting started > First setup** is the first
+navigation entry. It shows the current script, reading mode, text appearance
+and optional tools, with instructions and links to their settings. The guide
+scrolls in the centre pane while navigation, the sample and footer stay fixed.
+Opening this page does not enable a camera, microphone or external integration.
+
 In 1.1.0, a new profile opens **Get ready with Sightline**.
 Choose prompting and microphone settings, try a sample, and optionally set up
 OBS, controls or your AI. Skip optional parts with **Later**. Reopen it from

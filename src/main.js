@@ -35,7 +35,7 @@ import { createGuide } from "./guide.js";
 import { createGoogleDocs, GOOGLE_DOC_MESSAGES } from "./google-docs.js";
 import { takeLogCsv } from "./client/take-log.js";
 import { editPack } from "./client/edit-pack.js";
-import { fitInside, keepTopReachable, sameRect } from "./utils/fit.js";
+import { centredDisplayWindow, fitInside, keepTopReachable, sameRect } from "./utils/fit.js";
 import { isNewer } from "./utils/version.js";
 import { startRemoteServer, newToken } from "./remote.js";
 import { createStreamDeckDiscovery } from "./stream-deck-discovery.js";
@@ -717,6 +717,8 @@ const createWindow = ( state ) => {
 	}
 
 	// --- Window controls ---
+	let dragFromDisplayId = null;
+	let settlingDisplay = false;
 	// Transparent frameless windows don't maximise reliably on Windows, so
 	// maximise is done by hand: fill the work area and remember the old bounds.
 
@@ -804,10 +806,38 @@ const createWindow = ( state ) => {
 		if ( !sameRect( bounds, next ) ) setWindowRect( next );
 	}
 	let dragTimer = null;
+	// will-move is manual-only on Windows/macOS; setBounds and monitor-menu
+	// placement must not be mistaken for a user's cross-screen drag.
+	win.on( "will-move", () => {
+		if ( !settlingDisplay && dragFromDisplayId == null ) dragFromDisplayId = screen.getDisplayMatching( win.getBounds() ).id;
+	} );
+	async function finishWindowDrag() {
+		if ( settlingDisplay || win.isDestroyed() || win.isMinimized() ) return;
+		const previousDisplayId = dragFromDisplayId;
+		dragFromDisplayId = null;
+		const display = screen.getDisplayMatching( win.getBounds() );
+		if ( previousDisplayId == null || display.id === previousDisplayId ) return keepInView( false );
+		settlingDisplay = true;
+		try {
+			windowMode = "normal";
+			preMaxBounds = null;
+			if ( settings.eyeLine || settings.prompterDisplay != null ) await updateSettings( { eyeLine: false, prompterDisplay: null } );
+			if ( win.isFullScreen() ) win.setFullScreen( false );
+			if ( win.isMaximized() ) win.unmaximize();
+			setWindowRect( centredDisplayWindow( display.workArea ) );
+			win.setAlwaysOnTop( settings.alwaysOnTop === true, "floating" );
+			utilityWindows?.restack();
+			sendWindowState();
+			refreshMenus();
+		} finally {
+			settlingDisplay = false;
+		}
+	}
 	win.on( "move", () => {
 		clearTimeout( dragTimer );
-		dragTimer = setTimeout( () => keepInView( false ), 400 );
+		if ( process.platform !== "win32" ) dragTimer = setTimeout( finishWindowDrag, 400 );
 	} );
+	if ( process.platform === "win32" ) win.on( "moved", finishWindowDrag );
 	screen.on( "display-metrics-changed", () => keepInView( true ) );
 
 	for ( const event of [ "display-added", "display-removed" ] ) {

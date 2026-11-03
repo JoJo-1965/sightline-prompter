@@ -171,8 +171,10 @@ Switching listening off also cancels an in-progress startup. Late messages
 from that old session cannot interrupt its replacement.
 
 Recovery tries at most three times in a minute, then shows that listening
-has stopped. Use **Voice > Voice commands > Restart listening**, or click the
-listening badge, for a deliberate retry. The Commands page shows its state.
+has stopped. Use **Settings > Debug > Status and recovery > Restart listening**,
+or click the listening badge, for a deliberate retry. Status and recovery
+shows listening health and links to the speech settings. Enable command
+listening in **Voice > Commands** before requesting a restart.
 Recovery events go in the support log without spoken words or audio.
 
 For a missed wake word, enable **Trace command words to the local heard log**

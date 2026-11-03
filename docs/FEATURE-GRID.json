@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "basis": "UAT Preview 08, documentation revision 9, 2 November 2026",
-  "date": "2 November 2026",
+  "basis": "UAT Preview 09, documentation revision 10, 3 November 2026",
+  "date": "3 November 2026",
   "sourceBuild": "228b4f8",
   "buildVersion": "1.1.0",
   "publicationStatus": "preview",
   "appRelease": "1.1.0",
   "pluginRelease": "0.2.0",
   "sourceUrl": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/FEATURE-GRID.md",
-  "sourceSha256": "7b8eb7a4433b32dd9868131cd29c81ee7e9ec8c9caf4f4c2cbbb5fea22b3c722",
+  "sourceSha256": "fc83c01da933f0b77898404af0a83afef7956cddccce9614773a67645cb38120",
   "support": [
     "Included",
     "Optional",
@@ -574,8 +574,8 @@
         {
           "name": "Focus band",
           "support": "Optional",
-          "options": "Dim text away from the reading line; adjustable strength.",
-          "limits": "Strength is shown/enabled only while Focus band is on and retains its value when off. Does not remove text from the script or edit pack."
+          "options": "Dim spoken text away from the reading line; adjustable strength. Production comments and inline directions keep their own appearance; preview patch.",
+          "limits": "Strength appears only while enabled and is retained when off. Margin fading still applies to comments. No text is removed from the script or edit pack."
         },
         {
           "name": "Reading marker and progress",
@@ -626,8 +626,8 @@
         {
           "name": "Prompter monitor",
           "support": "Optional",
-          "options": "Choose the display used for the reading window.",
-          "limits": "Requires the display to be connected and recognised by the operating system."
+          "options": "Explicit display selection opens full screen. A manual cross-screen drag restores a centred normal window at 75% of the destination work area; preview patch.",
+          "limits": "Windows drag handling clears eye-line mode and the pinned monitor choice. Same-display moves retain the chosen size. Requires a connected display."
         },
         {
           "name": "Eye-line strip",
@@ -680,7 +680,7 @@
         {
           "name": "Small-screen layout",
           "support": "Included",
-          "options": "Expanding vertical area list, fixed named sections and compact Area/Section selectors with Preview action; no automatic pagination or internal scrolling; preview addition.",
+          "options": "Expanding area list, fixed named sections and compact Area/Section selectors with Preview action; no automatic pagination. Getting started alone scrolls its guidance in the centre pane; preview addition.",
           "limits": "Native checks cover 560 × 500 content and larger frames. Physical display/zoom and fullscreen stacking still require acceptance checks."
         }
       ]
@@ -736,8 +736,8 @@
         {
           "name": "Guide visibility",
           "support": "Included",
-          "options": "Stateful Show/Hide, Mint/Gold outline colour, outline/background opacity and Show Ideal in Head guide subtabs; preview addition.",
-          "limits": "Appearance and eye lock use Apply. Visibility is immediate; hidden guides retain their configuration."
+          "options": "Stateful Show/Hide, Guide off beside floating Guide adjustments, Mint/Gold outline colour, outline/background opacity and Show Ideal in Head guide subtabs; preview addition.",
+          "limits": "Appearance and eye lock use Apply. Visibility is immediate; hidden guides retain their configuration and saved position."
         },
         {
           "name": "Session framing reference",
@@ -1578,8 +1578,8 @@
         {
           "name": "Stable settings panel",
           "support": "Included",
-          "options": "Stable frame, eight areas and 34 named sections, permanent controls and no internal scrolling; preview addition.",
-          "limits": "Resizing never reallocates a setting to another page. A minimum usable window is required."
+          "options": "Stable frame, nine areas and 34 named sections, permanent controls. Getting started is first and scrolls guidance in the centre pane; preview addition.",
+          "limits": "Configuration sections retain their fixed layout; resizing never reallocates a setting to another page. A minimum usable window is required."
         },
         {
           "name": "Settings example preview",
@@ -1626,8 +1626,8 @@
         {
           "name": "Onboarding and components",
           "support": "Included",
-          "options": "First-use setup distinguishes component installation from everyday operation.",
-          "limits": "Components remain optional where the app can run without them."
+          "options": "First-use setup plus Getting started at the top of Settings, showing the current script, mode, text appearance and optional-tool guidance; preview patch.",
+          "limits": "Components remain optional. Opening guidance does not enable devices or integrations; changes use Apply."
         },
         {
           "name": "Restore defaults",
@@ -1708,8 +1708,8 @@
         {
           "name": "Diagnostic logging",
           "support": "Optional",
-          "options": "Debug events and listener health/recovery help investigate failures.",
-          "limits": "More detailed command-word tracing is separate and off by default."
+          "options": "Debug > Status and recovery shows listening health, Restart listening and a speech-settings link. Recovery events help investigate failures.",
+          "limits": "Uses applied speech/microphone settings. Recognised-word tracing is separate and off by default."
         },
         {
           "name": "Optional word tracing",

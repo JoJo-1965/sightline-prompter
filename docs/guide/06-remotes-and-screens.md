@@ -105,6 +105,8 @@ fullscreen. **Lock** additionally passes clicks through. Windowed and
 fullscreen choices are remembered, as is the original window position.
 The separate **Guide adjustments** button stays available on the prompter
 while the guide is shown, so no shortcut is needed to adjust a fullscreen guide.
+In UAT Preview 09, **Guide off** sits beside it in a matching control group.
+It hides the guide and its adjustments without changing the saved position.
 
 The companion Stream Deck development branch adds a **Head-position guide**
 action you can drag onto any key. It shows **OFF**, **ON** or **LOCK**, using

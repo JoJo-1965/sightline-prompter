@@ -1,13 +1,15 @@
 # Settings
 
-This source guide describes **UAT Preview 08**, based on the
+This source guide describes **UAT Preview 09**, based on the
 approved interactive demo. It is an unpublished preview of Sightline 1.1.0.
 For the released app, use the guide bundled with its installer.
 
 Open **Settings** on the toolbar, **Files (☰) > Settings**, or **Ctrl+,**
 (**Cmd+,** on Mac). Settings opens in an upright, movable window. It retains
 the same frame while you change sections; resizing never moves a control
-onto another page. There is no internal scrolling or numbered pagination.
+onto another page. Configuration sections have no internal scrolling or
+numbered pagination. Getting started alone scrolls its setup guidance in the
+centre pane, keeping navigation, the reading example and footer in place.
 
 On larger windows, choose an area and a named section in the sidebar, or use
 **Find a setting**. Compact windows use **Area** and **Section** selectors.
@@ -50,12 +52,13 @@ existing stored precision is retained until you adjust the value.
 
 | Area | Sections |
 | --- | --- |
+| Getting started | First setup: current configuration and guided next steps |
 | Prepare to record | Recording setup |
-| Reading | Mode and pace; Text and directions; Theme and background; Layout; Reading aids; Screens and mirroring; Head guide |
+| Reading | Mode and pace; Text and directions; Theme and background; Prompter layout; Reading aids; Screens and mirroring; Head guide |
 | Voice | Speech engine; Microphone; Commands; Your words |
 | Recording | Takes; Sound check; Slate and sync |
 | Controls | Pad and phone; Phone remote; Keyboard and clickers; Game controller; Stream Deck; OBS integration; OBS recording control; OBS profile and scenes; AI and API |
-| Components | Getting started; Installed components; Restore defaults |
+| Components | Installed components; Restore defaults |
 | Debug | Status and recovery; Speech trace; Capture for demos; Support log |
 | About | Version and updates; Credits and licences; Help and support |
 
@@ -130,6 +133,8 @@ Line spacing lives with each typography target.
 and directive tags. Sentence highlight, progress/time, marker, focus band,
 strength and text edge stay together. **Focus strength** appears only while
 **Focus band** is on; switching the band off retains the selected strength.
+Production comments and inline directions keep their own appearance outside
+the band. Top and bottom margin fading still applies to them.
 Small **?** pills explain every control in both groups. Hover, focus with the
 keyboard or click a pill to read its explanation; Escape closes it.
 
@@ -140,6 +145,10 @@ The compact mirror buttons use the same axis icons as the main toolbar.
 Enable the eye-line strip to reveal its width, height and reading-line controls.
 These use the same sliders, number boxes and help pills as other settings.
 The mouse pointer remains visible when the main toolbar hides.
+On Windows, dragging the main prompter to another screen restores a normal
+window, centred at 75% of that screen's usable width and height. This clears
+eye-line mode and a pinned monitor choice. Moving within the same screen
+retains the chosen size. Explicit monitor-menu placement still opens full screen.
 
 **Head guide** has a stateful Show/Hide switch and visible **Guide**,
 **Appearance** and **Recording reference** subtabs. Choose centred/beside-prompter
