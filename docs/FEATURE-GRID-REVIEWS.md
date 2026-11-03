@@ -1,5 +1,14 @@
 # Feature-matrix review record
 
+3 November 2026, next-preview support reminder: Joanne requested reuse of the
+existing coffee note, repeating at a saved random 10–15 launch interval.
+Only scheduling changes; the support link, appearance, dismissal, delay and
+reading/on-air guards are retained. Unit checks cover repeated cycles, legacy
+profiles, busy deferral and unavailable storage. There is no new comparison
+capability, price, account requirement or integration. The 241-row UAT 09 grid
+and JL snapshot remain accurate for that immutable package; no exports or
+website claims change until the next combined preview is built.
+
 3 November 2026, UAT Preview 09: reviewed the full PC feedback batch. Updated
 existing rows for current setup guidance, nine Settings areas, listening
 health/recovery, Guide off, focus-band annotation exclusions and manual

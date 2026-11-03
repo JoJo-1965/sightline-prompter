@@ -69,3 +69,9 @@ GitHub wiki is not enabled, avoiding a second copy of the instructions.
 [Privacy, terms, accessibility and voluntary support](../POLICIES.md)
 explain the microphone and local files, online services, your rights and
 Joanne's tip jar. The same policies are linked from **Settings > About**.
+
+**Next preview:** the existing coffee note repeats every 10–15 launches,
+with a random saved interval. It keeps its 30-second startup delay and skips
+reading, on-air and open-Settings sessions. A skipped reminder remains due for
+a later launch. Closing it leaves Sightline fully usable; support is voluntary.
+The packaged UAT 09 retains the previous one-time schedule.

@@ -1,5 +1,10 @@
 # Sightline Prompter: what it adds to Electron Teleprompter
 
+**Next preview:** the existing voluntary coffee reminder repeats after a saved
+random interval of 10–15 launches, including profiles that saw the old one-time
+note. Its appearance, dismissal and reading/on-air checks are unchanged.
+This scheduling change is not in the packaged UAT 09 build.
+
 **UAT Preview 09:** Getting started is first in Settings and provides current
 setup guidance. Debug shows listening health and recovery. Guide adjustments
 and Guide off share a compact control group; slate options stay on one line.

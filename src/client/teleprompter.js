@@ -48,6 +48,7 @@ import { heardForms, normalizeWord } from "./word-fixes.js";
 import { createScratchRecorder } from "./scratch-audio.js";
 import { createLevelMeter, soundCheckVerdict } from "./level-meter.js";
 import { SUPPORT_URL } from "./links.js";
+import { recordSupportLaunch, recordSupportShown } from "./support-reminder.js";
 import { createObsUi } from "./obs-ui.js";
 import { createRecordingLink } from "./recording-link.js";
 import { createSettingsNavigation } from "./settings-sections.js";
@@ -4721,17 +4722,11 @@ function showUpdateNote( info ) {
 	hud.appendChild( note );
 }
 
-// Sightline is free. Once it's been opened ten times, a small note asks
-// once, never again, and never while you're reading or on air.
-const SUPPORT_LAUNCHES = "sightline.launches";
-const SUPPORT_ASKED = "sightline.supportAsked";
+// Reuse the support note every 10–15 launches, never while reading or on air.
 
 function maybeAskForSupport() {
 	try {
-		if ( localStorage.getItem( SUPPORT_ASKED ) ) return;
-		const launches = Number( localStorage.getItem( SUPPORT_LAUNCHES ) ?? 0 ) + 1;
-		localStorage.setItem( SUPPORT_LAUNCHES, String( launches ) );
-		if ( launches < 10 ) return;
+		if ( !recordSupportLaunch( localStorage ) ) return;
 	} catch {
 		return;
 	}
@@ -4739,9 +4734,9 @@ function maybeAskForSupport() {
 		const busy = steadySessionActive() || autoScrollActive || onAir() || !settingsModal?.classList.contains( "hidden" );
 		if ( busy || uiElement( "support-note" ) ) return;
 		try {
-			localStorage.setItem( SUPPORT_ASKED, new Date().toISOString() );
+			recordSupportShown( localStorage );
 		} catch {
-			// it may ask again next time; that's all
+			return; // Skip if the next interval cannot be saved.
 		}
 		const note = document.createElement( "div" );
 		note.id = "support-note";
