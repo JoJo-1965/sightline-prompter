@@ -28,6 +28,12 @@ Implementation source: `336e946`. Package hashes are in `BUILD-MANIFEST.json`.
 
 ## Package and acceptance
 
+The exact UAT 09 Windows package passes the native Settings suite and Windows
+metadata check. Offline help resolves 642 links/pictures. The portable ZIP is
+239,079,200 bytes, contains 460 entries and excludes personal profile files.
+ZIP SHA-256: `5b355a0cb9dfff17cd91941f4c5ce8692fe0e9f26aef7d6915e5cb18f55c9838`.
+The pending JL snapshot guard and full website build pass; it is not deployed.
+
 The package manifest records exact executable/archive hashes and source commits.
 The retained-profile launcher uses the existing preview profile and promo slot 4;
 the portable launcher uses a separate profile. Packaging does not overwrite UAT 08.
