@@ -2,109 +2,119 @@
 
 # Voice control, stops and countdowns
 
-[First, two sound checks. Stay quiet for the room, then read the card for your voice. Space carries on after each.]
-
-<!-- Optional recording setup: remember to press Record. Short [smile] cues
-remain inline; longer preparation and edit notes hide during delivery.
-Optional explicit recording directives, such as {record: on}, require enabled
-OBS recording controls. Examples inside this comment never execute.
-Prepare the recorded slate before recording.
-Find it in Settings > Controls > OBS recording, after enabling OBS integration.
-It puts its own flash and tone into OBS; keep scratch audio as well.
-Continuous mode leaves OBS recording through stops and retakes. Linked mode
-can pause/resume recording with prompting. No extra directives are needed. -->
+<!-- SETUP. Enable speech and microphone input, then select Voice in Reading >
+Mode and pace. Voice > Commands controls when commands are heard. This sample
+does not enable devices or start a production recording. For the audio checks,
+stay quiet for Room and read the Voice card normally. Review advice; do not
+raise gain automatically if it also amplifies room noise. Space carries on. -->
 
 {soundcheck: room}
 
 {soundcheck: voice}
 
-## Talk to the prompter {target: 0:25}
+## Follow my words {target: 0:15}
 
-[A sample to try with your voice. In the Voice panel, choose Voice as the mode, then press Space and start reading.]
+<!-- TRY. Read the ordinary text at a comfortable pace. If you enable sentence
+highlighting, watch it follow. Commands and setup instructions stay in these
+comments so reading the script does not accidentally perform them. -->
 
-Hello. In voice mode, the prompter listens and follows you, so the words you're
-about to say stay on the reading line. The sentence you're on is lit up.
+Hello. Voice mode follows the words I say. I can change pace, take a breath
+and carry on. Recognition can lose its place, so I keep a button or key
+available as a fallback. The reading aids are optional.
 
-Speed up, slow down, or stop to think. It waits for you, and then it catches up.
+{stop}
 
-In voice mode, a countdown in the script shows as a small blue mark, like the one
-at the end of this line. The prompter doesn't hold there: take a beat, then
-carry on. {pause: 3s}
+## Pause and resume {target: 0:15}
 
-## Stops {target: 0:25}
+<!-- TRY AT THE STOP. Say Prompter, go, or press Space. While reading, try
+Prompter, pause. Wait for it to hold, then Prompter, go. Finish a command within
+four seconds of the wake acknowledgement; otherwise say the wake word again.
+If command listening is off, Space still works. Stop means prompting pause. -->
 
-A stop is different. It waits for you, so you can go off script for a demo or
-a question without the prompter jumping ahead.
+A planned stop gives me time to think. I can resume by voice when command
+listening is enabled, or use my keyboard or controller. Resuming does not
+mean that a production recorder has started.
 
-This line ends with a stop, so the prompter waits here until you say
-"Prompter, go". [Say: "Prompter, go".] {stop}
+{stop}
 
-Good. You can also just say "go", or press Space or your clicker.
+## Retake this section {target: 0:15}
 
-## Talking to it as you go {target: 0:35}
+<!-- TRY ONCE. Read this section, then use Prompter, restart section or
+Prompter, again. Both return to this section's start, even near its heading.
+Restart without section resets the whole script. Mark the preferred attempt
+with Keeper; Scrap rejects a take choice without deleting its media. -->
 
-[Try each command as you reach it. Say "Prompter", leave a brief beat, then say the command and stop. Finish within four seconds of the acknowledgement; otherwise say "Prompter" again.]
+{marker: Retake practice}
 
-If you lose your place, say "Prompter, resync" and keep reading. It finds you
-anywhere in the script. [Say: "Prompter, resync".]
+[smile]
 
-Want a breather? Say "Prompter, pause". When you're ready, "Prompter, go".
-[Say: "Prompter, pause", then "Prompter, go".]
+This is my first attempt at a short passage. If I want another try, I can
+return to this section and read it again. The take log keeps the attempts
+and my choice, while I retain the original recording.
 
-If a line goes wrong, say "Prompter, again". It drops a marker where you were
-and takes you back to the start of the section for a retake. {marker}
+{stop}
 
-Bigger text? "Prompter, bigger". Smaller? "Prompter, smaller".
+## Navigate and recover {target: 0:15}
 
-Happy with that? Say "Prompter, keeper", and the take log marks this take as
-the one to use. Not happy? "Prompter, scrap that". [Say: "Prompter, keeper".] {stop}
+<!-- TRY. Prompter, next section advances. Prompter, section three jumps to a
+numbered section; return with next section. Prompter, resync is for recovering
+voice alignment. Prompter, what can I say opens contextual command help;
+Prompter, close hides it. Use each example deliberately, not as narration. -->
 
-## Finding your way {target: 0:30}
+Headings and the yellow section pill make navigation clearer. I can return
+to a named marker without restarting the whole section. If speech following
+loses my place, I can resynchronise, or pause and use the controls instead.
 
-[Optional camera framing: say Prompter guide on. In Adjust, move and scale Actual position to match your preview, then Save as ideal. The dashed Ideal position stays fixed while you check a new position. Say Prompter guide off to hide the guide. This is a manual check, without face tracking.]
+{marker: Recovery point}
 
-{marker: Finding your way} Forgotten a command? Say "Prompter, what can I say?" and they all
-appear on the screen. [Say: "Prompter, what can I say?"]
+{stop}
 
-To start a section, say its slate on its own, such as "Section two", and the
-prompter goes there. If a later line goes wrong, say "Prompter, back to the
-marker" or press Shift+B, and you read on from the last marker, here at the
-start of this part, without starting the whole section again.
+## Step off script {target: 0:25}
 
-If "Prompter" comes up in your scripts, choose a different wake word in
-Settings > Voice > Commands: Computer, Teleprompter or Director. {stop}
+<!-- TRY. At the off-script hold, talk freely for a few seconds. Voice commands
+and script following are unavailable there. Resume with Space or a controller.
+Any enabled scratch capture or production recorder can continue independently;
+listen off is not a recording-stop or whole-microphone privacy switch. -->
 
-## Off script {target: 0:30}
+I am about to leave the script for a short demonstration. Speech following
+will hold until I return using a button or key.
 
-Sometimes you leave the script: a demo, a story, a question from the room.
-Put listen off before it, and the microphone switches off and the prompter
-waits for you. [Press Space when you reach the off-script part, or carry on reading.] {listen: off}
+{listen: off}
 
-[Off script: talk for a moment about anything you like. When you're ready, press Space or your clicker.]
+<!-- AD-LIB. Share a short example, then press Space or Play / Pause. -->
 
 {listen: on}
-Welcome back. The prompter came here, to where the script starts again, and
-it's following you once more. {prompter: marker} It even dropped a marker
-here, because the script told it to.
 
-## In steady scrolling too {target: 0:25}
+I am back at the scripted words. The off-script interval can be kept in the
+session information, with the recording continuing if that is how I set it up.
 
-[Switch the mode to Steady, then press Space.]
+{stop}
 
-Stops and countdowns work when the script scrolls at a steady pace too.
+## A beat in either mode {target: 0:20}
 
-At a stop, the microphone switches on just to listen for "Prompter, go", and a
-small Prompter label shows that it's listening. {stop}
+<!-- TRY. First read in Voice mode: take your own three-second beat. Then try
+this section in Scroll mode: the countdown holds and resumes automatically.
+The mode choice is Reading > Mode and pace. -->
 
-In steady scrolling a countdown does hold, with a blue label at the bottom
-right, then carries on by itself. "Prompter, go" cuts it short, and "Prompter,
-pause" turns it into a stop. {pause: 8s}
+Here is a short beat before my next point. {pause: 3s}
 
-## Writing them into your scripts {target: 0:20}
+In Voice mode I take that beat myself. In Scroll mode the countdown waits
+and carries on. A stop, by comparison, waits for me to resume deliberately.
 
-In your own scripts, write stop in curly brackets wherever you want the
-prompter to wait for you, and pause, a colon and a number of seconds for a
-countdown. They're hidden while you read: tick Show directives in the Layout
-panel to see them.
+{stop}
 
-That's it. Have a great recording. {stop}
+## Recording commands are separate {target: 0:15}
+
+<!-- OPTIONAL DISPOSABLE RECORDING TEST. Enable OBS integration and recording
+controls in Connections > OBS integration. Confirm its connection first.
+Prompter, record on starts; record pause and record resume keep the same file
+where supported. Prompter, record off, finish or end finishes recording.
+These actions can change real recordings. Keep Link recording to prompting
+off for this continuous practice, and verify the confirmed recording pill. -->
+
+With recording permission, explicit recording commands control OBS.
+Ordinary prompting stops still mean pauses, and continuous recording can
+keep running underneath them. I use the confirmed recording state and inspect
+the saved file before trusting the setup.
+
+{stop}

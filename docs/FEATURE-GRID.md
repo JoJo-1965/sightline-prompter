@@ -1,7 +1,7 @@
 # Sightline Prompter feature grid
 
-**Review basis: RC 1 preview, documentation revision 11, 4 November 2026.**
-**Build version:** `1.2.0-rc.1` · **Publication status:** Preview
+**Review basis: RC 2 preview, documentation revision 12, 4 November 2026.**
+**Build version:** `1.2.0-rc.2` · **Publication status:** Preview
 
 **Maintained source:** [Feature grid](https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/FEATURE-GRID.md)
 
@@ -98,7 +98,7 @@ Reference: [Writing scripts](guide/02-scripts.md).
 | External editing | Included | Watch an opened file and refresh when it changes externally. | Watching pauses during built-in editing to avoid conflicting edits. |
 | Script slots | Included | Nine quick-access slots, recent files and switching controls. | A slot points to its script; clearing a slot is separately confirmed. |
 | Slot clearing protection | Included | Confirmation before clearing an occupied slot. | Keep source files backed up independently of slot assignments. |
-| Sample scripts | Included | Welcome, voice/directive demonstrations and recording acceptance examples. | Samples are protected originals: view them and save a working copy to edit. |
+| Sample scripts | Included | Twelve shipped samples; Start here is a twelve-stop core/RC feature tour. Focused voice, framing, recording, Notes and handover demos use separate setup comments and short cues. | Protected originals: save a copy to edit. Recording actions are opt-in exercises. The formatting diagnostic intentionally contains one unknown tag. See [Demo guide](DEMO-SCRIPTS.md). |
 | Recording preview sample | Included | Preparation, Continuous and linked recording, explicit commands and handover walkthrough; preview addition. | Exercise recorder controls only with the intended test setup connected. |
 | Exact recording script | Included | Preserve the source actually used, including section IDs, slide cues and directions, in the edit pack. | The export is the recording snapshot, which can differ from a later file edit. |
 
@@ -117,7 +117,7 @@ Reference: [Script directives](SCRIPT-DIRECTIVES.md) and [AI script brief](AI-SC
 | Manual script stops | Included | `{stop}` or `{pause}` holds prompting until the user continues. | Continuous recording keeps OBS running; linked recording changes that behaviour explicitly. |
 | Timed pauses | Included | `{pause: 3s}` provides a timed beat. | In voice mode it is a visible pause cue rather than a forced timed scroll. |
 | Named markers | Included | `{marker}` or `{marker: Setup}` creates a navigation and edit reference. | Marker positions are timing references, not verified frame-accurate cuts. |
-| Off-script passages | Optional | `{listen: off}` and `{listen: on}` support ad-lib or demonstration passages. | The microphone is off in the off-script hold; manual continuation is required. |
+| Off-script passages | Optional | `{listen: off}` and `{listen: on}` hold following and voice commands during ad-libs; manual continuation is required. | Enabled scratch audio and production recording can continue independently; this is not a whole-microphone privacy switch. |
 | Script sound checks | Optional | `{soundcheck: room}` and `{soundcheck: voice}` request the appropriate check. | Measurement uses the selected input and the current acoustic conditions. |
 | Script control commands | Optional | `{prompter: ...}` supports documented display, pace and marker actions. | Only documented commands are supported. |
 | Script recording commands | Dependent | Optional `{record: on}`, `{record: off}`, `{record: pause}` and `{record: resume}`; preview addition. | Require enabled OBS recording controls; loading a script never executes them. |
@@ -392,7 +392,7 @@ Reference: [Privacy and accessibility policies](POLICIES.md) and [Acceptance wal
 | Optional word tracing | Optional | Enable recognised command-word logging to investigate actual mishearings. | May include nearby speech; only enable it for the intended diagnostic period. |
 | Recording-state honesty | Included | Confirmed stopped/recording/paused states are distinct from unknown/disconnected. | UI state cannot certify that the resulting picture/audio is usable. |
 | Hardware acceptance | Limited | Walkthrough covers real camera, mic, controls, clean tracks, sync and output inspection. | Local automated tests do not replace camera/mic and physical-control testing. |
-| Published versus preview | Limited | This grid covers the 1.2.0 RC 1 candidate and companion 0.2.0 together. | The stable public 1.1.0 installer does not include all RC additions. |
+| Published versus preview | Limited | This grid covers the 1.2.0 RC 2 candidate and companion 0.2.0 together. | The stable public 1.1.0 installer does not include all RC additions. |
 | Reviewer comparison scope | Included | Compare prompting, control, scripting, production handover, privacy and setup effort separately. | No competitor feature, price, performance ranking or endorsement is asserted here. |
 
 ## Maintaining this grid

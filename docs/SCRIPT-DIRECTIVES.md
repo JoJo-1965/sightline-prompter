@@ -1,6 +1,6 @@
 # Script directives
 
-## Next-preview additions
+## Production notes and recording controls
 
 HTML comments `<!-- ... -->` show production notes while paused and hide them
 during delivery. Their entire contents, including quotes and braces, stay
@@ -22,11 +22,19 @@ A script distinguishes these kinds of text:
 | ------------------- | --------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
 | `[square brackets]` | **You, the speaker.** Reminders such as `[Say: Section one. Pause.]` or `[smile]` | Dimmed (or hidden, or normal, in Settings). Any `"quoted words"` inside stay bright, because you say them |
 | `{curly braces}`    | **The app.** Pace targets, pause points, pacing mode                              | Hidden while you read. Settings > **Show directives** shows them as small grey tags for checking a script |
-| `<!-- production comments -->` | **Preparation and editing, in the next preview.** Keep spoken lines outside | Visible while paused; hidden during delivery. Quotes and directives inside are never spoken or executed |
+| `<!-- production comments -->` | **Preparation, command exercises and editing.** Keep spoken lines outside | Visible while paused; hidden during delivery. Quotes and directives inside are never spoken or executed |
 
 Directives work the same in markdown, plain text, Word (`.docx`) and rich text
 (`.rtf`) scripts. They're case-insensitive, and spaces inside the braces don't
 matter.
+
+For authored scripts, keep long setup steps and literal voice-command examples
+inside production comments. Reserve inline brackets for short delivery cues or
+genuine quoted spoken words. Do not include a wake-word command in spoken copy
+unless executing that command is deliberate. The yellow section pill removes
+the need for spoken section slates. Check audio once, keep a recording reference
+separate from Ideal, and put a clap/slate in the file after Record starts.
+See the [demo-script guide](DEMO-SCRIPTS.md) for the shipped examples and limits.
 
 ## Script settings
 

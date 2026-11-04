@@ -2,6 +2,11 @@
 
 ## Current delivery position
 
+**RC 2 content refresh:** the twelve shipped sample files and first-run tour
+are reviewed together for current features and safe recording practice. The
+tour, menu, AI brief, demo guide and feature exports are updated as one batch;
+packaging follows validation. RC 1 remains available during that check.
+
 **Published baseline:** Sightline 1.1.0 with Stream Deck companion 0.2.0.
 **Current candidate:** 1.2.0 RC 1 combines the confirmed feedback batch with
 local MCP and ad-hoc Mac signing. Source and packaged Windows checks passed;

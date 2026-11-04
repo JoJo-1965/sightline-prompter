@@ -1,5 +1,11 @@
 # Sightline Prompter: what it adds to Electron Teleprompter
 
+**RC 2 demo refresh:** twelve sample files reviewed together. The first-run
+Start here tour explores core and RC features in twelve stops; focused samples
+demonstrate actual Notes, preparation and recording workflows. Setup/commands
+stay in paused-only production comments, with brief delivery cues inline.
+The AI writing brief and installed AI kit follow the same practices.
+
 **1.2.0 RC 1:** one Connections area, one OBS entry with three button subtabs,
 separate connection/recording state, persistent connection and reviewed test-clip
 outcomes, automatic meters during audio checks, and a yellow section/page pill.

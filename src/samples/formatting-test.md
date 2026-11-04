@@ -2,8 +2,10 @@
 
 # Sample: formatting test
 
-[A test page for checking how scripts look. It covers every kind of mark-up
-the prompter understands, in one place.]
+<!-- DIAGNOSTIC SAMPLE. This checks rendering, not delivery best practice.
+The unknown paws tag below is intentional: the checker must report it. All
+other shipped demos should pass. Keep that negative example out of real scripts.
+Use Reading > Text and directions to compare the four separate text types. -->
 
 ## Headings and text {wpm: 145}
 
@@ -18,7 +20,11 @@ used for slide cues in Word scripts.
 Smaller headings are shown, but only level-two headings start a section you
 can jump to.
 
-## Notes to the speaker
+## Notes to the speaker {wpm: 145}
+
+<!-- PRODUCTION NOTES. Compare this font, colour, italic and line spacing with
+the spoken text, headings and short inline cues. It shows paused and hides
+during delivery; its braces and quoted examples are not read or executed. -->
 
 [A note on a line of its own. It's dimmed, and can be hidden in Settings.]
 
@@ -28,7 +34,7 @@ A sentence with a note in the middle [smile] carries on afterwards.
 
 A note that holds “curly quotes” works too. [Say: “Like this”.]
 
-## Directives to the app
+## Directives to the app {wpm: 145}
 
 Everything in curly brackets is hidden while you read. {marker}
 
@@ -43,7 +49,7 @@ A literal brace is written with a backslash: \{ like this \}.
 A mistyped directive is hidden but flagged with a warning when Show directives
 is on: {paws}
 
-## Lists and quotes
+## Lists and quotes {wpm: 145}
 
 - A bulleted list item
 - Another item, long enough to wrap onto a second line at larger text sizes, so
@@ -54,7 +60,7 @@ is on: {paws}
 
 > A block quote, for a passage read from someone else's words.
 
-## Long words and symbols
+## Long words and symbols {wpm: 145}
 
 Supercalifragilisticexpialidocious, pneumonoultramicroscopicsilicovolcanoconiosis
 and a long web address, https://connected-ecosystem.co.uk/, should wrap without
@@ -62,6 +68,6 @@ spilling off the edge.
 
 Numbers and symbols: 1,250 people, 45%, £20, 9:30am, 3 × 4 = 12, and an emoji 🎬.
 
-## End of the test
+## End of the test {wpm: 145}
 
 That's every format. If anything looked wrong, note the section name.

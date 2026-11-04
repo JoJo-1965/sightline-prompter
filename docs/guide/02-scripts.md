@@ -44,6 +44,13 @@ changing your text. Longer result lists use Previous/Next; Refresh checks again.
 
 ### Samples and safe copies
 
+Begin with **Files > Sample scripts > Start here: Sightline feature tour**.
+The same tour opens automatically on a fresh profile. Twelve guided stops
+cover reading and appearance, preparation/head detection, Connections and OBS,
+local MCP, and production handover. Its ordinary text is safe to read: long
+setup steps and command exercises are paused-only production comments.
+Choose a [focused demo](../DEMO-SCRIPTS.md) when you want to practise one workflow.
+
 Open a sample from **Files (☰) > Sample scripts**. **Edit script** or **Ctrl+E**
 shows its source with a **Sample · read-only** label. You can select and copy
 the text; typing, Save and rehearsal-target updates cannot change a sample.

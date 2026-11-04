@@ -1,5 +1,5 @@
 {
-	"$comment": "Machine-readable definition of Sightline Prompter script directives. Human spec: SCRIPT-DIRECTIVES.md. AI brief: AI-SCRIPT-BRIEF.md.",
+	"$comment": "Machine-readable directive syntax, unchanged at 0.6.0. Authoring guidance reviewed 4 November 2026: brief inline cues, paused-only production notes, deliberate command exercises and recorded sync after Record. See SCRIPT-DIRECTIVES.md, AI-SCRIPT-BRIEF.md and DEMO-SCRIPTS.md.",
 	"name": "sightline-script-directives",
 	"version": "0.6.0",
 	"status": "syntax agreed; implemented in the app (27 October 2026): pause, marker, wpm, target, pacing, mode",

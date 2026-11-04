@@ -2,6 +2,11 @@
 
 ## Set up once, check before a session
 
+With no saved scripts, Sightline opens **Start here: Sightline feature tour**.
+It works without optional devices or services. Use Space at each planned stop,
+try its suggested action, and continue. Reopen it from Files > Sample scripts.
+The [demo guide](../DEMO-SCRIPTS.md) explains the focused recording/Notes samples.
+
 In UAT Preview 09, **Settings > Getting started > First setup** is the first
 navigation entry. It shows the current script, reading mode, text appearance
 and optional tools, with instructions and links to their settings. The guide

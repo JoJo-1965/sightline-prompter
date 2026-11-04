@@ -6,8 +6,8 @@ you want. It produces scripts that Sightline Prompter can pace, stop and count
 down automatically. In the app, **Help > Copy the AI Script Prompt** (or ☰ >
 Help) puts it on the clipboard for you.
 
-Spec version: **0.6 preview (1 November 2026: adds optional recording directives
-and production comments; 0.5 added sound checks)**. Full spec:
+Spec version: **0.6 (recording directives and production comments)**.
+Authoring guidance reviewed 4 November 2026 for the current RC. Full spec:
 [SCRIPT-DIRECTIVES.md](SCRIPT-DIRECTIVES.md). Machine-readable definition:
 [script-directives.json](script-directives.json).
 
@@ -19,8 +19,9 @@ use the mark-up below. Follow every rule exactly.
 
 ## 1. Text for delivery, preparation and control
 
-**Next-preview option:** use `<!-- production notes -->` for setup and editing
-instructions. They show paused and hide during delivery; nothing inside is
+Use `<!-- production notes -->` for setup, editing and command exercises.
+Keep them brief and close to the relevant section. They are preparation notes,
+not a second spoken script. They show paused and hide during delivery; nothing inside is
 spoken or executed. Keep short `[smile]` cues inline. Add optional `{record: on}`,
 `{record: off}`, `{record: pause}` or `{record: resume}` only when requested;
 they require OBS mode and recording permission. On/resume before the first
@@ -29,7 +30,7 @@ Continuous recording remains the default.
 
 1. **Spoken words:** plain text. This is what the speaker says, word for word.
 2. **Notes to the speaker:** in `[square brackets]`, for example `[smile]`,
-   `[slower here]` or `[Say: "Section one". Pause.]`. They're shown dimmed. Put
+   `[slower here]` or `[Say: "Thank you".]`. They're shown dimmed. Put
    any words the speaker must say inside a note in "double quotes".
 3. **Directives to the app:** in `{curly braces}`. They're hidden from the
    speaker and control pacing, stops and countdowns. Use only the directives
@@ -64,9 +65,9 @@ Never use `{` or `}` for anything else. Never put directives inside
 | `{pause: ns}`                              | Inline, at the end of a sentence                                  | A countdown: the prompter waits n seconds (1 to 30), showing "Carrying on in n", then carries on by itself, for example `{pause: 3s}`. Use 2s to 5s for a breath, a beat for emphasis, or time to look at a slide. Write them whether the speaker will use steady or voice scrolling: in voice scrolling the prompter doesn't hold, it shows the pause as a mark and the speaker takes the beat |
 | `{mode: notes}` (or `{mode: points}`) | Script settings | For a talk spoken from notes: shown a page at a time, never scrolled. A `# heading` starts a page (its title) and `{page}` starts one without a title; each `## heading` on the page is a bullet, with a short line under it if needed; put `{target: m:ss}` on the `# heading`. Without `# headings` or `{page}`, each `## section` is a page. Write each section as 3 to 6 short bullets (`- `) and give every section a `{target: m:ss}` |
 | `{marker}` or `{marker: Setup}`            | Inline                                                            | A bookmark for retakes. Put one at the start of any passage that's hard to deliver. In a long section, name one at the start of each part (`{marker: Setup}`, `{marker: Context}`), up to 40 characters, so the edit can find each part |
-| `{listen: off}` and `{listen: on}`        | Inline: off at the end of a sentence, on on its own line | Off script: an ad-lib, a demo or questions between them. The microphone is off and the prompter waits; the speaker carries on with Space or a clicker, from `{listen: on}` |
+| `{listen: off}` and `{listen: on}`        | Inline: off at the end of a sentence, on on its own line | Off script: following and voice commands hold; resume with Space or a controller. Any enabled scratch capture or production recorder can continue independently |
 | `{prompter: slower}`                       | Inline                                                            | Runs a prompter command at that point: `slower`, `faster`, `bigger`, `smaller` or `marker` |
-| `{soundcheck: room}` and `{soundcheck: voice}` | Inline, each on its own line, at the top of the script before the first section | A sound check before recording: the prompter stops, measures the room's background noise (room) or the speaker reading a line at their normal level (voice), says whether it's fine and how far to turn the mic's gain, and waits for the speaker to carry on. Both results are kept with the session |
+| `{soundcheck: room}` and `{soundcheck: voice}` | Inline, each on its own line, before the first section | Room-noise and normal-voice measurement, with automatic meter visibility and logged results. Advice is not a mandatory gain increase; balance speech against noise. Resume after reviewing each result |
 
 Several settings can share one pair of braces, separated by commas:
 `{pacing: section, wpm: 145, target: 9:30}`.
@@ -87,22 +88,30 @@ Several settings can share one pair of braces, separated by commas:
   put `{listen: off}` at the end of the sentence before it, the notes for it in
   `[square brackets]`, and `{listen: on}` on its own line before the script
   starts again. Don't use `{stop}` for these.
-- For a recording session, start the script with `{soundcheck: room}` and
-  `{soundcheck: voice}`, each on its own line, before the first section, unless
-  the user says they've already checked their sound. Don't put them anywhere
-  else.
+- Establish framing, audio, a reviewed test clip and a saved recording reference
+  before a production take. If audio is already checked in Prepare to record,
+  do not add duplicate compulsory sound checks. Otherwise offer the two
+  `{soundcheck: …}` directives before the first section and explain the choice.
+- A connection test proves connectivity, not recording quality. Confirm the
+  actual recording state, then record a clap or prepared recorded slate.
+  A sync cue before Record is useless for synchronising that recording.
 - Use `{prompter: slower}` (or `faster`, `bigger`, `smaller`, `marker`) only
   where the speaker will want it every time, such as `{prompter: slower}`
   before a dense passage.
 - You don't know whether the script will be read with steady or voice scrolling,
   so write stops and countdowns the same way for both. A `{stop}` holds in
   both; a countdown only holds in steady scrolling.
-- Speakers can control the prompter by voice with "Prompter, …" commands (go,
-  pause, again, resync). Don't write instructions for these into the spoken
-  text; if a reminder helps, put it in a note, for example
-  `[Say: "Prompter, go" when you're ready.]`.
-- Don't put stage directions, camera notes or slide numbers in the spoken text.
-  Put them in `[square brackets]`.
+- Keep literal voice-command exercises in production comments, outside spoken
+  copy. Reading a complete command aloud can execute it. Do not put them inside
+  quoted `[Say: …]` cues, which belong to the spoken alignment. Use short inline
+  cues such as `[smile]` only for delivery. A comment can say `Prompter, go`;
+  the speaker uses it deliberately while paused and command listening is enabled.
+- `restart section` / `again` retakes the current section; `next section`
+  advances. `restart` alone resets the whole script. With OBS controls enabled,
+  explicit `finish` / `end` finishes recording; ordinary `stop` pauses prompting.
+  Do not add executable recording directives unless the user requested them.
+- Put camera setup, slide changes and longer instructions in production comments.
+  Keep `[square brackets]` for brief delivery cues or genuine quoted spoken words.
 - Never invent other directives. If you need something not listed, write it as
   a note in `[square brackets]`.
 
@@ -123,6 +132,12 @@ It exits with 1 if anything below is broken.
 - [ ] Every `{` has a matching `}`, and no braces appear anywhere else.
 - [ ] Notes in `[ ]` contain no directives.
 - [ ] Every section in batch recording ends with `{stop}`.
+- [ ] No literal control commands are embedded in spoken copy; no unrequested
+      executable recording directive appears outside a production comment.
+- [ ] Targets reflect spoken words and deliberate beats; Notes targets allow
+      ad-lib delivery. A continuous take may use only a whole-script target.
+- [ ] Framing references preserve Ideal unless deliberately replaced; clap/slate
+      occurs after Record. Live word times and unmatched-word reports are estimates.
 
 ## 6. Example (markdown)
 
@@ -131,7 +146,7 @@ It exits with 1 if anything below is broken.
 
 ## Section 1 · Cold open {target: 0:45}
 
-[Say: "Section one". Pause.]
+[smile]
 
 There's one worry I hear from managers more than any other. It isn't
 hostility. {pause: 2s} It's "what if I say the wrong thing?" {stop}

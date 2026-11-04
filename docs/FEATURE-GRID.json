@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "basis": "RC 1 preview, documentation revision 11, 4 November 2026",
+  "basis": "RC 2 preview, documentation revision 12, 4 November 2026",
   "date": "4 November 2026",
   "sourceBuild": "5656b9c",
-  "buildVersion": "1.2.0-rc.1",
+  "buildVersion": "1.2.0-rc.2",
   "publicationStatus": "preview",
   "appRelease": "1.1.0",
   "pluginRelease": "0.2.0",
   "sourceUrl": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/FEATURE-GRID.md",
-  "sourceSha256": "34fa2fc868194bc34333f7cfceba10ac854734281f757e92791b2bd77a557c2a",
+  "sourceSha256": "6ca830be205f292000dbcbb312feeab206b93ef50b7c5b0b1159c87f5f491407",
   "support": [
     "Included",
     "Optional",
@@ -368,8 +368,8 @@
         {
           "name": "Sample scripts",
           "support": "Included",
-          "options": "Welcome, voice/directive demonstrations and recording acceptance examples.",
-          "limits": "Samples are protected originals: view them and save a working copy to edit."
+          "options": "Twelve shipped samples; Start here is a twelve-stop core/RC feature tour. Focused voice, framing, recording, Notes and handover demos use separate setup comments and short cues.",
+          "limits": "Protected originals: save a copy to edit. Recording actions are opt-in exercises. The formatting diagnostic intentionally contains one unknown tag. See [Demo guide](DEMO-SCRIPTS.md)."
         },
         {
           "name": "Recording preview sample",
@@ -456,8 +456,8 @@
         {
           "name": "Off-script passages",
           "support": "Optional",
-          "options": "`{listen: off}` and `{listen: on}` support ad-lib or demonstration passages.",
-          "limits": "The microphone is off in the off-script hold; manual continuation is required."
+          "options": "`{listen: off}` and `{listen: on}` hold following and voice commands during ad-libs; manual continuation is required.",
+          "limits": "Enabled scratch audio and production recording can continue independently; this is not a whole-microphone privacy switch."
         },
         {
           "name": "Script sound checks",
@@ -1768,7 +1768,7 @@
         {
           "name": "Published versus preview",
           "support": "Limited",
-          "options": "This grid covers the 1.2.0 RC 1 candidate and companion 0.2.0 together.",
+          "options": "This grid covers the 1.2.0 RC 2 candidate and companion 0.2.0 together.",
           "limits": "The stable public 1.1.0 installer does not include all RC additions."
         },
         {

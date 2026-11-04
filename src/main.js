@@ -370,9 +370,10 @@ const stateManager = stateFactory( defaultConfig );
 
 // Sample scripts shipped in src/samples, for onboarding and testing.
 export const SAMPLE_SCRIPTS = [
-	{ file: "welcome.md", label: "Welcome tour" },
+	{ file: "welcome.md", label: "Start here: Sightline feature tour" },
 	{ file: "voice-and-stops.md", label: "Voice control, stops and countdowns" },
 	{ file: "recording-preview.md", label: "Recording preview: preparation, modes and handover" },
+	{ file: "prepare-to-record.md", label: "Framing, audio and reference" },
 	{ file: "acceptance-main.md", label: "Recording walkthrough: module A" },
 	{ file: "acceptance-module-change.md", label: "Recording walkthrough: module B" },
 	{ file: "batch-module.md", label: "Batch recording, section by section" },

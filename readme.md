@@ -248,6 +248,17 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ## Change log
 
+### 1.2.0 RC 2 · refreshed demo scripts
+
+- Start here becomes a twelve-stop first-run tour covering core reading,
+  appearance, preparation/head detection, Connections/OBS, MCP and handover.
+- All twelve sample files are reviewed together. Setup and command exercises
+  use production comments; inline cues stay brief. Recording guidance preserves
+  Ideal, puts sync after Record and separates connection from media review.
+- Corrected pacing targets, real Notes examples and honest timing/privacy
+  limits. The AI brief, directive guidance and optional AI kit use the same
+  authoring practices. The formatting test retains one deliberate invalid tag.
+
 ### 1.2.0 RC 1 · 4 November 2026
 
 - Merge Controls and Components into **Connections**. Restore defaults moves

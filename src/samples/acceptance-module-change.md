@@ -8,7 +8,7 @@
 
 ## Section 1 · Same recording, new script {target: 0:30}
 
-[Slide: B01 · Module handover. This cue is a delivery note, not spoken text.]
+<!-- SLIDE B01. Module handover; keep this production note silent. -->
 
 This is module B in the same acceptance session. My first script should
 already have been saved with its own takes and scratch audio. This module
@@ -39,4 +39,7 @@ guide in the picture. Scratch audio should still be available independently.
 
 I am ready to finish the recording. {stop}
 
-<!-- AFTER RECORDING. In the next candidate, open Tools > Script & rehearsal review. Compare lines marked for review with the recording before deciding what needs another take. The edit pack includes rehearsal-coach.json. -->
+<!-- AFTER RECORDING. Open Script & rehearsal review and compare its candidates
+with the actual recording. The edit pack includes rehearsal-coach.json plus
+timing-quality.json and TIMING-NOTES.md. Live word and caption times are rough
+navigation aids, not verified cut points or proof that words were missed. -->

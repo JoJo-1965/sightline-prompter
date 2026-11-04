@@ -14,6 +14,7 @@ export const KIT_FILES = [
 	"src/client/script-health.js", "src/client/rehearsal-coach.js",
 	"docs/script-directives.json", "docs/AI-SCRIPT-BRIEF.md", "docs/SCRIPT-DIRECTIVES.md", "docs/EDIT-PACK.md",
 	"src/samples/batch-module.md", "src/samples/single-take.md", "src/samples/voice-and-stops.md", "src/samples/talking-points.md", "src/samples/notes.md",
+	"src/samples/welcome.md", "src/samples/prepare-to-record.md", "src/samples/recording-preview.md", "docs/DEMO-SCRIPTS.md",
 	"skills/sightline-script/SKILL.md", "skills/sightline-session/SKILL.md"
 ];
 export async function nodeStatus() {
