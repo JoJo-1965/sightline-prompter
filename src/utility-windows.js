@@ -12,7 +12,7 @@ export function createUtilityWindows( { dir, prompter, getSettings, saveSettings
 	let dirty = false;
 	let focused = null;
 	let timer;
-	const kinds = [ "settings", "help", "voicehelp", "workflow", "obssetup" ];
+	const kinds = [ "settings", "help", "voicehelp", "workflow", "obssetup", "tools", "preview" ];
 	const kindOf = ( url, frameName ) => kinds.find( kind => url === `${ host }?panel=${ kind }` && frameName === `sightline-${ kind }` );
 	const restack = () => {
 		for ( const [ kind, win ] of [ ...windows ].sort( ( [ a ], [ b ] ) => Number( a === focused ) - Number( b === focused ) ) ) {
@@ -72,12 +72,15 @@ export function createUtilityWindows( { dir, prompter, getSettings, saveSettings
 		openHandler( { url, frameName } ) {
 			const kind = kindOf( url, frameName );
 			if ( !kind ) return null;
-			const area = screen.getDisplayMatching( prompter.getBounds() ).workArea;
-			const size = [ "settings", "workflow", "obssetup" ].includes( kind ) ? { width: 676, height: 599 } : kind === "voicehelp" ? { width: 776, height: 639 } : { width: 996, height: 679 };
+			const anchor = kind === "preview" && windows.get( "settings" ) && !windows.get( "settings" ).isDestroyed() ? windows.get( "settings" ).getBounds() : prompter.getBounds();
+			const area = screen.getDisplayMatching( anchor ).workArea;
+			const size = kind === "preview" ? { width: 360, height: 560 } : kind === "tools" ? { width: 560, height: 440 } : kind === "settings" ? { width: 1080, height: 730 } : [ "workflow", "obssetup" ].includes( kind ) ? { width: 676, height: 599 } : kind === "voicehelp" ? { width: 776, height: 639 } : { width: 996, height: 679 };
 			const candidate = getSettings().utilityWindowBounds?.[kind];
-			const saved = candidate && [ "x", "y", "width", "height" ].every( key => Number.isFinite( candidate[key] ) ) && candidate.width >= 380 && candidate.height >= 420 ? candidate : null;
-			const bounds = fitInside( saved ?? { ...size, x: Math.round( area.x + ( area.width - size.width ) / 2 ), y: Math.round( area.y + ( area.height - size.height ) / 2 ) }, area );
-			return { action: "allow", overrideBrowserWindowOptions: { ...bounds, show: false, frame: true, transparent: false, backgroundColor: "#2a2d34", resizable: true, minimizable: false, maximizable: false, fullscreenable: false, minWidth: Math.min( 380, area.width ), minHeight: Math.min( 420, area.height ), autoHideMenuBar: true, webPreferences: { nodeIntegration: false, contextIsolation: true, sandbox: false, preload: path.join( dir, "client", "utility-window-preload.mjs" ) } } };
+			const minimum = kind === "preview" ? { width: 300, height: 360 } : kind === "settings" ? { width: 576, height: 539 } : { width: 380, height: 420 };
+			const saved = candidate && [ "x", "y", "width", "height" ].every( key => Number.isFinite( candidate[key] ) ) && candidate.width >= minimum.width && candidate.height >= minimum.height ? candidate : null;
+			const placement = kind === "preview" ? { x: anchor.x + anchor.width + 12 + size.width <= area.x + area.width ? anchor.x + anchor.width + 12 : anchor.x - size.width - 12, y: anchor.y } : { x: Math.round( area.x + ( area.width - size.width ) / 2 ), y: Math.round( area.y + ( area.height - size.height ) / 2 ) };
+			const bounds = fitInside( saved ?? { ...size, ...placement }, area );
+			return { action: "allow", overrideBrowserWindowOptions: { ...bounds, show: false, frame: true, transparent: false, backgroundColor: "#2a2d34", resizable: true, minimizable: false, maximizable: false, fullscreenable: false, minWidth: Math.min( minimum.width, area.width ), minHeight: Math.min( minimum.height, area.height ), autoHideMenuBar: true, webPreferences: { nodeIntegration: false, contextIsolation: true, sandbox: false, preload: path.join( dir, "client", "utility-window-preload.mjs" ) } } };
 		},
 		didCreate( win, details ) {
 			const kind = kindOf( details.url, details.frameName );

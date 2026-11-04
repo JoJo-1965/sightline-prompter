@@ -11,13 +11,20 @@ interpolated. Draft captions and suggested takes need editorial review. An edit
 pack does not render a finished video; use it alongside the master recordings
 in your external editing workflow. Physical lip sync needs a recorded reference.
 
+Sightline 1.2.0 adds `timing-quality.json` and `TIMING-NOTES.md` to every pack. Live word
+times may lag speech or bunch together. Unmatched/missing-word markers are
+alignment candidates, not verified omissions. Transcribe the recorded audio
+for final cuts and captions. Existing files, schemas and a supplied production
+brief remain intact. Historical OBS observations are used for delayed take
+endpoints; a take preceding Record does not inherit an earlier stopped file.
+
 Sightline doesn't record the video. The recording comes from whatever was
 used (OBS, Riverside, Zoom, a camera); this pack is what the prompter knew
 while you read, with timings to line up with it. If the user turned on
 scratch audio, `scratch-audio/` holds a plain microphone recording to help
 line them up (see [Scratch audio](#scratch-audio)).
 
-For the development OBS workflow, [From recording to the editor](https://github.com/JoJo-1965/sightline-prompter/blob/codex/obs-integration/docs/guide/12-production-handover.md)
+For the OBS workflow, [From recording to the editor](guide/12-production-handover.md)
 is the illustrated checklist for setup, retakes, keeper choices and collecting
 the master recordings alongside each module's pack.
 

@@ -1,18 +1,40 @@
 # Script directives
 
+## Production notes and recording controls
+
+HTML comments `<!-- ... -->` show production notes while paused and hide them
+during delivery. Their entire contents, including quotes and braces, stay
+outside speech tracking, timing and directive execution. Keep short `[smile]`
+cues inline. No compulsory directives are added.
+
+Optional `{record: on}`, `{record: off}`, `{record: pause}` and `{record: resume}`
+require enabled OBS recording controls. On/resume before the first spoken word
+runs on Play; inline commands run as reading reaches them. Off/pause also hold
+prompting. Loading never triggers recording. Normal stops keep continuous OBS
+recording running unless the user selects linked recording in Settings.
+
 Status: **syntax agreed** (27 October 2026): `[ ]` for the speaker, `{ }` for the app. **Built:** hiding, `{pause}`, `{pause: ns}`, `{marker}`, and section and inline `{wpm}` and `{target}` for steady scrolling. Also built: the pacing light, talking points (`{mode: points}`) and the script checker (`npm run check-script`). Parts of this are built in roadmap
 items 6 (cue pause) and 8 to 10 (pacing).
 
-A script can carry two kinds of note besides the words you speak:
+A script distinguishes these kinds of text:
 
 | Mark                | Who it's for                                                                      | On screen                                                                                                 |
 | ------------------- | --------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
 | `[square brackets]` | **You, the speaker.** Reminders such as `[Say: Section one. Pause.]` or `[smile]` | Dimmed (or hidden, or normal, in Settings). Any `"quoted words"` inside stay bright, because you say them |
 | `{curly braces}`    | **The app.** Pace targets, pause points, pacing mode                              | Hidden while you read. Settings > **Show directives** shows them as small grey tags for checking a script |
+| `<!-- production comments -->` | **Preparation, command exercises and editing.** Keep spoken lines outside | Visible while paused; hidden during delivery. Quotes and directives inside are never spoken or executed |
 
 Directives work the same in markdown, plain text, Word (`.docx`) and rich text
 (`.rtf`) scripts. They're case-insensitive, and spaces inside the braces don't
 matter.
+
+For authored scripts, keep long setup steps and literal voice-command examples
+inside production comments. Reserve inline brackets for short delivery cues or
+genuine quoted spoken words. Do not include a wake-word command in spoken copy
+unless executing that command is deliberate. The yellow section pill removes
+the need for spoken section slates. Check audio once, keep a recording reference
+separate from Ideal, and put a clap/slate in the file after Record starts.
+See the [demo-script guide](DEMO-SCRIPTS.md) for the shipped examples and limits.
 
 ## Script settings
 

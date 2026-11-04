@@ -35,6 +35,12 @@ export function controlView( id, status = {} ) {
 	const item = CONTROL_ACTIONS.find( a => a.id === ( id === "guide-adjust" ? "guide-adjustments" : id ) );
 	if ( !item ) return null;
 	const view = { ...item, active: false, hidden: false, disabled: !!status.editing, reason: "" };
+	if ( ( id === "pad" && status.padEnabled === false ) || ( id === "sound-check" && status.microphoneEnabled === false ) || ( ( id.startsWith( "listening-" ) || id === "scroll-mode" ) && ( status.speechEnabled === false || status.microphoneEnabled === false ) ) ) {
+		view.hidden = true;
+		view.disabled = true;
+		view.reason = "Enable this interface in Settings first";
+		return view;
+	}
 	if ( id === "toggle" ) {
 		view.label = status.scrolling ? "Pause" : "Start";
 		view.icon = status.scrolling ? "Ⅱ" : "▶";

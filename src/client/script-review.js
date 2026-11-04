@@ -42,9 +42,10 @@ export function createScriptReview( root, { health, coach, jump, canJump } ) {
 			findings = item.findings;
 			if ( !findings.length ) body.append( create( "p", "No long-sentence or similar-word-start prompts in this section. Read it aloud to check the delivery." ) );
 		} else {
-			field( "review-overview" ).textContent = "Finished takes · alignment estimates; check the recording before editing";
+			field( "review-overview" ).textContent = "Finished takes · live alignment estimates; verify against the recording";
 			body.append( create( "p", paceSummary( item.section, item.pace ) ?? "No voice word timing for this take. Steady scrolling cannot measure speaking pace." ) );
 			body.append( create( "p", item.coverageAvailable ? `${ item.matched } of ${ item.total } script words matched. Unmatched words can be recognition errors, intentional changes or a partial reading.` : "Sentence coverage is unavailable for this take; no missed lines are inferred.", "field-hint" ) );
+			body.append( create( "p", "Live word times may lag speech or share timestamps. Pace, unmatched-word prompts and exported captions need checking against a transcription of the recording.", "field-hint" ) );
 			if ( item.fillers ) {
 				const count = Object.values( item.fillers.fillers ).reduce( ( sum, n ) => sum + n, 0 );
 				body.append( create( "p", `${ count } filler candidates recognised · ${ item.fillers.repeatedPairs } adjacent repeated-word candidates. ${ count ? Object.entries( item.fillers.fillers ).map( ( [ word, n ] ) => `${ word }: ${ n }` ).join( ", " ) + "." : "Recognition may omit fillers, so zero is not proof that none were spoken." }` ) );

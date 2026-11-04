@@ -1,6 +1,6 @@
 # Sightline audience and messaging reference
 
-Reviewed 31 October 2026 for Sightline 1.1.0 and Stream Deck 0.2.0.
+Reviewed 4 November 2026 for Sightline 1.2.0 and Stream Deck 0.2.0.
 The plugin installer is available with the app release; its source stays private.
 Marketplace listing is pending. This is the editorial source for the
 [one-pager](ONE-PAGER.md), [channel copy](COPY.md) and JL product page.
@@ -50,8 +50,8 @@ do not describe them as demonstrated demand.
    Stream Deck. Listening preferences and feature permissions remain explicit.
 4. **Keep useful evidence for the edit:** section/take references, markers,
    keeper choices and recognition-derived alignment estimates.
-5. **Build the workflow you need:** optional local AI/API, OBS tools and manual
-   guide. Basic prompting does not require those integrations.
+5. **Build the workflow you need:** optional local MCP/API, OBS tools and a
+   framing guide with local position feedback. Basic prompting works independently.
 6. **Free and open:** MIT licence, no Sightline account/subscription. Local
    speech works offline after downloading its model. Optional services have
    their own accounts, connectivity and terms.
@@ -68,7 +68,7 @@ No competitor comparison establishes that Sightline is the only or best option.
 | Human-readable script directions | Plan sections, holds, beats and edit markers in the script | [Script specification](../SCRIPT-DIRECTIVES.md); timed pauses count down only in steady mode; voice mode treats them as visible beats; stops still hold |
 | Prompting-to-edit handover | Give an editor take choices and context rather than just a video file | [Edit pack](../EDIT-PACK.md); timing is estimated, not guaranteed frame-accurate; an external editor makes the cut |
 | One configurable pad/phone vocabulary | Keep useful controls within reach without separate layouts | [Controls guide](../guide/06-remotes-and-screens.md); shared customisation/new fitting panels are in 1.1.0 |
-| Optional OBS and framing workflow | Coordinate recording and manual references while retaining normal prompting | [OBS](../guide/11-obs.md), [handover](../guide/12-production-handover.md); physical routes need setup-specific checks; guide capture exclusion depends on the route |
+| Optional OBS and framing workflow | Align your head, check audio, review a short test and save a recording reference | [Preparation](../guide/16-prepare-to-record.md), [OBS](../guide/11-obs.md); optional local face detection compares against a fixed target, with manual fallback; capture exclusion depends on the route |
 | Local recognition and optional AI | Use your own script or assistant, with clear data choices | [AI guide](../guide/09-working-with-ai.md), [privacy](../PRIVACY.md); Deepgram sends audio online if selected |
 
 ## Claims to use and avoid
@@ -81,7 +81,7 @@ No competitor comparison establishes that Sightline is the only or best option.
 | Production video comes from OBS or your usual recorder | Sightline records or edits your finished video |
 | External AI can prepare scripts or interpret the edit pack | Built-in generative AI writes your script or edits the video |
 | Script health/rehearsal review uses local checks and estimates | The coach is an AI judge or detects every delivery problem |
-| Separate manual Ideal/Actual framing reference | Automatic face detection or head tracking |
+| Manual framing and optional local face-position feedback against a saved reference | Identity recognition, gaze tracking or automatic camera reframing |
 | Capture protection depends on platform and capture method; verify a recording | Guaranteed invisible in every recording or screen share |
 | Plugin installer is available with the app release; source private, Marketplace pending | Install it from Marketplace now; a made-up listing link |
 | App targets Windows, macOS and Linux | This build has passed physical Mac/VoiceOver acceptance |
@@ -96,7 +96,7 @@ the opening. Keep short blocks balanced and longer prose pretty-wrapped.
 Primary CTA: **Download the public release** at
 <https://github.com/JoJo-1965/sightline-prompter/releases/latest>.
 Secondary: read the guide or try a sample. Earlier acceptance material is
-historical; current download links identify 1.1.0/0.2.0. Voluntary support is
+historical; current download links identify 1.2.0/0.2.0. Voluntary support is
 tertiary, with no paid perks.
 
 Attribution: **Adapted and enhanced by Joanne Lockwood from SEE Change Happen

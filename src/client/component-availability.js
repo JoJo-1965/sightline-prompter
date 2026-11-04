@@ -38,10 +38,10 @@ export function createComponentAvailability( root, { navigate } ) {
 		const enabled = field( "set-stream-deck" );
 		enabled.disabled = !enabled.checked && !available;
 		enabled.setAttribute( "aria-describedby", "set-stream-deck-installation" );
-		field( "set-stream-deck-installation" ).textContent = available ? "Stream Deck is available. Enable control and Apply, then check the plugin connection below." : app?.supported === false ? "Stream Deck software is available for Windows and macOS. Phone and pad controls remain available." : components ? "Stream Deck was not found. Install it or use Locate in Components." : "Checking for Stream Deck…";
+		field( "set-stream-deck-installation" ).textContent = available ? "Stream Deck is available. Enable control and Apply, then check the plugin connection below." : app?.supported === false ? "Stream Deck software is available for Windows and macOS. Phone and pad controls remain available." : components ? "Stream Deck was not found. Use Install or Locate on this page." : "Checking for Stream Deck…";
 	}
 	for ( const id of [ "set-remote", "set-stream-deck" ] ) field( id ).addEventListener( "change", paint );
-	for ( const [ id, topic ] of [ [ "set-remote-components", "component-kit" ], [ "set-stream-deck-components", "component-streamdeck" ], [ "set-obs-components", "component-obs" ] ] ) field( id ).addEventListener( "click", () => navigate( topic ) );
+	for ( const [ id, topic ] of [ [ "set-remote-components", "component-kit" ], [ "set-obs-components", "component-obs" ] ] ) field( id ).addEventListener( "click", () => navigate( topic ) );
 	return {
 		fill: paint,
 		components( next ) {

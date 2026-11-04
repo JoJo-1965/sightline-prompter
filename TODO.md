@@ -1,9 +1,43 @@
 # TODO
 
+## Current build — Settings Preview 07
+
+Requested as one combined repreview after all queued cards arrived in full.
+Includes the compact mirror buttons and all Preview 06 UI fixes. Source native
+checks passed at five sizes. Documentation revision 8 and the new build manifest
+identify this package. Reuse the existing Preview 05 profile and promo slot 4;
+the previous handover below is retained as history. No release is implied.
+
+Preview 07 is packaged-tested and running. Saved preferences, slots and pairing
+were verified retained against the valid pre-launch backup. See
+[Preview 07 verification](docs/PREVIEW-07-VERIFICATION.md).
+
+## Current handover — Settings Preview 06
+
+The combined layout was approved on 2 November 2026. Before packaging, review
+the conversation queue, not only this backlog. The four visible queued cards
+are included: Prompter layout naming, visible group subtabs, matching toolbar
+mirror icons and one combined preview containing all preceding UI fixes.
+
+- [x] Implement the approved Settings batch and retain saved preferences.
+- [x] Include the older Guide/OBS shortcut overlap in this batch.
+- [x] Complete native and packaged checks, documentation/matrix/JL snapshot sync.
+- [x] Deliver one portable Preview 06 using the existing Preview 05 profile.
+
+Packaged source `50e2a08`, code `c0b1b9a`, documentation revision 7. Running
+from `D:/Sightline/Dev/Builds/Previews/settings-layout-preview-06`; the retained
+profile's preferences, slots and pairing were checked unchanged. No recording
+was started. See [verification](docs/PREVIEW-06-VERIFICATION.md).
+
+Physical controller/pedal/iPhone acceptance, clean recording/capture and sync
+remain manual checks. Code signing, updates, meeting integrations and other
+roadmap proposals are outside this preview. No release or live deployment is
+implied. The sections below retain earlier candidate history.
+
 ## Built for the next candidate, not yet packaged
 
 - [x] Setup/session workflow (58): named component subtabs, top-level
-  Components/Debug, OBS under Recording, first-use checklist and Session check.
+  Components/Debug, OBS now under Controls, first-use checklist and Session check.
 - [x] Restore shipped defaults and restart onboarding, with confirmation,
   private settings backup and retained components/files/keys. Active recording,
   editing and maintenance block reset. Native isolated-profile checks pass.
@@ -56,7 +90,7 @@ The older checklist below is retained as project history.
 
 ## Features
 
-- [ ] Auto-scroll mode — toggleable auto-scroll at configurable speed (words-per-minute), spacebar to toggle, up/down to adjust speed
+- [x] Auto-scroll mode — configurable words-per-minute pace and keyboard controls
 - [x] Add a basic markdown editor (CodeMirror 6, Cmd+E toggle, Save/Save As)
 - [ ] Allow for custom CSS
 

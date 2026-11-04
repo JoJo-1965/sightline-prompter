@@ -18,9 +18,13 @@ import { createPad } from "./pad.js";
 import { normalisePadLayout, controlAction, controlView } from "./client/control-actions.js";
 import { createControl } from "./control.js";
 import { createHeadGuide } from "./head-guide.js";
+import { createPreRecord } from "./pre-record.js";
 import { createUtilityWindows } from "./utility-windows.js";
 import { captureOverride, protectWindow, setCaptureOverride, trackCaptureWindow } from "./capture-policy.js";
 import { settingsValues } from "./settings-values.js";
+import { APPEARANCE_DEFAULTS, normaliseReadingTheme, normaliseReadingThemes, upgradeReadingAppearance } from "./client/reading-appearance.js";
+import { INTERFACE_DEFAULTS, upgradeInterfaceSettings } from "./client/interface-state.js";
+import { readReadingTheme, writeReadingTheme } from "./reading-theme-files.js";
 import { readScriptSnapshot } from "./script-snapshot.js";
 import { createSpeech } from "./speech.js";
 import { createAgentKit, nodeStatus } from "./components.js";
@@ -31,9 +35,10 @@ import { createGuide } from "./guide.js";
 import { createGoogleDocs, GOOGLE_DOC_MESSAGES } from "./google-docs.js";
 import { takeLogCsv } from "./client/take-log.js";
 import { editPack } from "./client/edit-pack.js";
-import { fitInside, keepTopReachable, sameRect } from "./utils/fit.js";
+import { centredDisplayWindow, fitInside, keepTopReachable, sameRect } from "./utils/fit.js";
 import { isNewer } from "./utils/version.js";
 import { startRemoteServer, newToken } from "./remote.js";
+import { createStreamDeckDiscovery } from "./stream-deck-discovery.js";
 import { createStreamDeckPeer, streamDeckContract } from "./stream-deck-compatibility.js";
 import { heardReport } from "./heard-report.js";
 import { deleteRecording, listRecordings, readRecording, recordingAudio, recordingPack, updateRecording, zipFiles } from "./recordings.js";
@@ -44,6 +49,7 @@ import { createObsCredentials } from "./obs-credentials.js";
 import { createObsLedger } from "./obs-ledger.js";
 import { createRecordedSlate } from "./recorded-slate.js";
 import { obsPosition } from "./client/obs-position.js";
+import { allowMcpRequest } from "./mcp-permissions.js";
 import {
 	serialize as serializeSettings,
 	parse as parseSettings,
@@ -116,6 +122,8 @@ async function copyAiPrompt( win ) {
 
 // Recording settings, edited on the Settings page and persisted as `settings` in app state.
 const defaultSettings = {
+	...APPEARANCE_DEFAULTS,
+	...INTERFACE_DEFAULTS,
 	scrollMode: "steady", // "steady" (fixed words per minute) or "voice" (follows what you say)
 	voiceEngine: "local", // "local" (on this computer) or "deepgram" (online, needs a key)
 	voiceCommands: "voice", // "Prompter, pause": "voice" (voice mode), "always" (steady too) or "off"
@@ -150,9 +158,14 @@ const defaultSettings = {
 	marginTop: 0, // % of the window height where text fades out
 	marginBottom: 0,
 	lineHeight: 1.3,
+	headingLineHeight: 1.3,
+	directionLineHeight: 1.3,
 	headingScale: 1, // section headings, as a share of their usual size next to the text
-	directionScale: 1, // delivery comments, independently of headings
+	directionScale: 1, // inline directions, independently of headings and production notes
 	directionColour: "", // empty follows the theme and direction visibility choice
+	productionNoteScale: 1, // preparation notes, relative to their usual smaller size
+	productionNoteLineHeight: 1.4,
+	productionNoteColour: "", // empty follows the script theme
 	textOpacity: 1, // script text only; the controls stay solid
 	backingOnAir: 0.07, // backing while on air: nearly see-through (Backing is the level off air)
 	textBrightness: 1, // dims the script without making it see-through
@@ -194,6 +207,11 @@ const defaultSettings = {
 	headGuideX: 0,
 	headGuideY: 0,
 	headGuideIdeal: { x: 0, y: 0, scale: 1 },
+	headGuideReference: null,
+	preRecordMicrophone: "default",
+	preRecordCameraId: "default",
+	preRecordSource: "camera",
+	preRecordScene: "",
 	headGuideShowIdeal: true,
 	headGuidePlacement: "centre",
 	headGuidePlacements: {},
@@ -207,13 +225,18 @@ const defaultSettings = {
 	showProgress: true,
 	controlsPinned: false, // keep the control bar visible instead of auto-hiding it
 	remoteControl: false, // AI / script control over http://127.0.0.1 (see remote.js)
+	mcpEnabled: false,
+	mcpScripts: false,
+	mcpControls: false,
+	mcpRecording: false,
 	streamDeck: false, // the Stream Deck plugin: buttons only, its own key (stream-deck.json)
 	remotePort: 47615,
-	remoteDeleteRecordings: false, // the local API may delete recordings (Settings > Remotes)
+	remoteDeleteRecordings: false, // the local API may delete recordings (Controls > AI and local API)
 	obsEnabled: false,
 	obsHost: "127.0.0.1",
 	obsPort: 4455,
 	obsControls: false, // status only until explicitly allowed
+	obsFollowPrompter: false, // optional linked recording lifecycle
 	obsMarkers: false,
 	obsRecordedSlate: false,
 	phoneRemote: false, // phone remote over the home network (Settings > Phone remote)
@@ -221,7 +244,8 @@ const defaultSettings = {
 };
 
 // Settings that a settings file or the remote API may not change.
-const PROTECTED_SETTINGS = [ "remoteControl", "remotePort", "remoteDeleteRecordings", "streamDeck", "phoneRemote", "phonePort", "obsEnabled", "obsHost", "obsPort", "obsControls", "obsMarkers", "obsRecordedSlate", "traceCommands", "coachFillers" ];
+const PROTECTED_SETTINGS = [ "preRecordReference", "preRecordMicrophone", "remoteControl", "mcpEnabled", "mcpScripts", "mcpControls", "mcpRecording", "remotePort", "remoteDeleteRecordings", "streamDeck", "phoneRemote", "phonePort", "obsEnabled", "obsHost", "obsPort", "obsControls", "obsFollowPrompter", "obsMarkers", "obsRecordedSlate", "traceCommands", "coachFillers", "speechEnabled", "microphoneEnabled", "padEnabled", "gamepadEnabled", "keyboardMappingsEnabled" ];
+PROTECTED_SETTINGS.push( "preRecordCameraId", "preRecordSource", "preRecordScene" );
 
 // Take logs, one per script per day: the recordings library (recordings.js).
 const takeLogFolder = () => path.join( app.getPath( "userData" ), "take-logs" );
@@ -289,7 +313,7 @@ ipcMain.on( "debugLog", ( _event, text ) => {
 	if ( problem || settings.debugMode ) logProblem( `page: ${ text.slice( 0, 500 ) }` );
 } );
 
-// Settings > About > Debug > Save a log for support: the log, with what this computer
+// Settings > Debug > Support logs: the log, with what this computer
 // and Sightline look like, in one file to attach to an issue or an email. No
 // scripts, keys, word lists or audio; nothing is sent by itself.
 ipcMain.handle( "saveSupportLog", async ( event ) => {
@@ -350,10 +374,12 @@ const stateManager = stateFactory( defaultConfig );
 
 // Sample scripts shipped in src/samples, for onboarding and testing.
 export const SAMPLE_SCRIPTS = [
-	{ file: "welcome.md", label: "Welcome tour" },
+	{ file: "welcome.md", label: "Start here: Sightline feature tour" },
 	{ file: "voice-and-stops.md", label: "Voice control, stops and countdowns" },
-	{ file: "acceptance-main.md", label: "RC acceptance: module A" },
-	{ file: "acceptance-module-change.md", label: "RC acceptance: module B" },
+	{ file: "recording-preview.md", label: "Recording preview: preparation, modes and handover" },
+	{ file: "prepare-to-record.md", label: "Framing, audio and reference" },
+	{ file: "acceptance-main.md", label: "Recording walkthrough: module A" },
+	{ file: "acceptance-module-change.md", label: "Recording walkthrough: module B" },
 	{ file: "batch-module.md", label: "Batch recording, section by section" },
 	{ file: "single-take.md", label: "Single continuous take" },
 	{ file: "notes.md", label: "Notes, a page at a time" },
@@ -384,7 +410,8 @@ let hasUnsavedChanges = false;
 let isClosing = false;
 let refreshMenus = () => {};
 let remoteToken = null;
-let streamDeckToken = null; // Settings > Remotes > Stream Deck: buttons only
+let mcpToken = null;
+let streamDeckToken = null; // Settings > Controls > Stream Deck: buttons only
 let phoneKey = null;
 let phoneServer = null;
 let phoneError = null;
@@ -512,6 +539,7 @@ function displayList() {
 	} ) );
 }
 
+let preRecord = null;
 const createWindow = ( state ) => {
 	const win = new BrowserWindow( {
 		width: state.width,
@@ -612,6 +640,7 @@ const createWindow = ( state ) => {
 		if ( obs && !win.isDestroyed() ) win.webContents.send( "obsState", obsSnapshot() );
 	} } );
 	obs = createObs( { onState: ( state ) => {
+		preRecord?.sync();
 		if ( !win.isDestroyed() ) win.webContents.send( "obsState", { ...state, recordedSlate: recordedSlate.state() } );
 		recordObsHistory( state );
 	} } );
@@ -675,6 +704,7 @@ const createWindow = ( state ) => {
 			const host = String( options.host ?? "127.0.0.1" ).trim();
 			const port = Number( options.port );
 			obsAddress( host, port );
+			if ( Object.hasOwn( options, "followPrompter" ) && options.followPrompter !== settings.obsFollowPrompter && [ "recording", "paused" ].includes( obs.state().recording ) ) throw new Error( "Finish recording before changing linked recording mode" );
 			if ( options.password !== undefined || options.clearPassword ) {
 				const password = options.clearPassword ? "" : String( options.password );
 				if ( password.length > 4096 ) throw new Error( "OBS password is too long" );
@@ -683,7 +713,7 @@ const createWindow = ( state ) => {
 			}
 			if ( options.enabled && !obsPassword ) obsPassword = await obsCredentials.read();
 			if ( !options.enabled ) obsPassword = "";
-			await updateSettings( { obsEnabled: options.enabled === true, obsHost: host, obsPort: port, obsControls: options.controls === true, obsMarkers: options.markers === true, obsRecordedSlate: options.recordedSlate === true } );
+			await updateSettings( { obsEnabled: options.enabled === true, obsHost: host, obsPort: port, obsControls: options.controls === true, obsFollowPrompter: options.followPrompter ?? settings.obsFollowPrompter, obsMarkers: options.markers === true, obsRecordedSlate: options.recordedSlate === true } );
 			return { ok: true, hasPassword: await obsCredentials.hasSaved(), state: obsSnapshot() };
 		} catch ( error ) {
 			return { ok: false, error: error.message };
@@ -700,6 +730,8 @@ const createWindow = ( state ) => {
 	}
 
 	// --- Window controls ---
+	let dragFromDisplayId = null;
+	let settlingDisplay = false;
 	// Transparent frameless windows don't maximise reliably on Windows, so
 	// maximise is done by hand: fill the work area and remember the old bounds.
 
@@ -787,10 +819,38 @@ const createWindow = ( state ) => {
 		if ( !sameRect( bounds, next ) ) setWindowRect( next );
 	}
 	let dragTimer = null;
+	// will-move is manual-only on Windows/macOS; setBounds and monitor-menu
+	// placement must not be mistaken for a user's cross-screen drag.
+	win.on( "will-move", () => {
+		if ( !settlingDisplay && dragFromDisplayId == null ) dragFromDisplayId = screen.getDisplayMatching( win.getBounds() ).id;
+	} );
+	async function finishWindowDrag() {
+		if ( settlingDisplay || win.isDestroyed() || win.isMinimized() ) return;
+		const previousDisplayId = dragFromDisplayId;
+		dragFromDisplayId = null;
+		const display = screen.getDisplayMatching( win.getBounds() );
+		if ( previousDisplayId == null || display.id === previousDisplayId ) return keepInView( false );
+		settlingDisplay = true;
+		try {
+			windowMode = "normal";
+			preMaxBounds = null;
+			if ( settings.eyeLine || settings.prompterDisplay != null ) await updateSettings( { eyeLine: false, prompterDisplay: null } );
+			if ( win.isFullScreen() ) win.setFullScreen( false );
+			if ( win.isMaximized() ) win.unmaximize();
+			setWindowRect( centredDisplayWindow( display.workArea ) );
+			win.setAlwaysOnTop( settings.alwaysOnTop === true, "floating" );
+			utilityWindows?.restack();
+			sendWindowState();
+			refreshMenus();
+		} finally {
+			settlingDisplay = false;
+		}
+	}
 	win.on( "move", () => {
 		clearTimeout( dragTimer );
-		dragTimer = setTimeout( () => keepInView( false ), 400 );
+		if ( process.platform !== "win32" ) dragTimer = setTimeout( finishWindowDrag, 400 );
 	} );
+	if ( process.platform === "win32" ) win.on( "moved", finishWindowDrag );
 	screen.on( "display-metrics-changed", () => keepInView( true ) );
 
 	for ( const event of [ "display-added", "display-removed" ] ) {
@@ -1469,9 +1529,16 @@ app.whenReady().then( async () => {
 		= state.autoScrollSpeed ?? defaultConfig.autoScrollSpeed;
 	currentAudioDeviceId = state.audioDeviceId || null;
 	remoteToken = state.remoteToken || newToken();
+	mcpToken = newToken();
 	streamDeckToken = state.streamDeckToken || newToken();
 	phoneKey = state.phoneKey || newPhoneKey();
-	settings = { ...defaultSettings, ...state.settings };
+	settings = { ...defaultSettings, ...upgradeInterfaceSettings( upgradeReadingAppearance( state.settings ?? defaultSettings ) ) };
+	// Existing profiles used one spacing value for every kind of text.
+	for ( const key of [ "headingLineHeight", "directionLineHeight" ] ) {
+		if ( !Object.hasOwn( state.settings ?? {}, key ) ) {
+			settings[key] = settings.lineHeight * ( settings.scriptFont === "opendyslexic" ? 1.1 : 1 );
+		}
+	}
 	if ( settings.obsEnabled ) obsPassword = await obsCredentials.read();
 	normalBounds = state.normalBounds ?? null;
 	slots = Array.from( { length: SLOT_COUNT }, ( _, i ) =>
@@ -1584,10 +1651,12 @@ app.whenReady().then( async () => {
 	// --- Remote control (AI assistants, scripts): see remote.js ---
 
 	const REMOTE_FILE = path.join( app.getPath( "userData" ), "remote-control.json" );
+	const MCP_FILE = path.join( app.getPath( "userData" ), "mcp-control.json" );
 	// Shown in the UI: a portable form of the path, without the user's name.
 	const APP_DATA_LABEL = { win32: "%APPDATA%", darwin: "~/Library/Application Support" }[process.platform] ?? "~/.config";
 	const REMOTE_FILE_LABEL = REMOTE_FILE.replace( app.getPath( "appData" ), APP_DATA_LABEL );
 	const REMOTE_COMMANDS = [
+		"obs-on", "obs-off", "obs-pause", "obs-resume",
 		"obs-record",
 		"obs-finish",
 		"play",
@@ -1731,14 +1800,14 @@ app.whenReady().then( async () => {
 			return remoteOpen( filePath, slotNumber( slot ) );
 		},
 		// Write a script sent as text into the scripts folder, then open it.
-		"POST /load-text": async ( { text, name = "script", format = "md", slot } ) => {
+		"POST /load-text": async ( { text, name = "script", format = "md", slot }, { mcp = false } = {} ) => {
 			if ( typeof text !== "string" || !text.trim() ) throw new Error( "text is required" );
 			const ext = format === "txt" ? "txt" : "md";
 			const safe = String( name ).replace( /[^\w .-]+/g, "_" ).replace( /^[. ]+/, "" ).slice( 0, 80 ) || "script";
 			const dir = path.join( app.getPath( "userData" ), "scripts" );
 			await fs.mkdir( dir, { recursive: true } );
 			const filePath = path.join( dir, `${ safe }.${ ext }` );
-			await fs.writeFile( filePath, text, "utf-8" );
+			await fs.writeFile( filePath, text, { encoding: "utf-8", flag: mcp ? "wx" : "w" } );
 			return remoteOpen( filePath, slotNumber( slot ) );
 		},
 		"POST /command": ( { action, value } ) => {
@@ -1777,7 +1846,7 @@ app.whenReady().then( async () => {
 		},
 		"POST /recording/delete": async ( { id } ) => {
 			if ( !settings.remoteDeleteRecordings ) {
-				throw Object.assign( new Error( "Deleting recordings isn't allowed. In the app: Settings > Remotes > tick \"Let it delete recordings\"" ), { status: 403 } );
+				throw Object.assign( new Error( "Deleting recordings isn't allowed. In the app: Settings > Controls > AI and local API > tick \"Let it delete recordings\"" ), { status: 403 } );
 			}
 			const result = await deleteRecording( takeLogFolder(), id, file => shell.trashItem( file ) );
 			win.webContents.send( "recordingsChanged", id );
@@ -1795,6 +1864,8 @@ app.whenReady().then( async () => {
 	// The Stream Deck plugin's key: the state, the live stream, the commands
 	// and the slots, nothing else (no scripts, settings or recordings).
 	const STREAM_DECK_FILE = path.join( app.getPath( "userData" ), "stream-deck.json" );
+	const streamDeckDiscovery = createStreamDeckDiscovery( { localFile: STREAM_DECK_FILE, standardFile: path.join( app.getPath( "appData" ), "Sightline Prompter", "stream-deck.json" ), claimCustom: process.argv.includes( "--pair-stream-deck-preview" ) } );
+	win.on( "closed", () => streamDeckDiscovery.release() );
 	const BUTTON_ROUTES = new Set( [ "GET /status", "POST /command", "POST /slot", "POST /stream-deck/hello" ] );
 	// Close the server now: open event streams (the Stream Deck) would otherwise keep it waiting.
 	const closeServer = server => new Promise( ( r ) => {
@@ -1817,21 +1888,25 @@ app.whenReady().then( async () => {
 	}
 
 	async function syncRemoteServer() {
+		if ( !settings.streamDeck ) streamDeckDiscovery.release();
 		if ( !settings.streamDeck ) streamDeckPeer.clear();
 		const on = settings.remoteControl || settings.streamDeck;
 		const wanted = on ? settings.remotePort : null;
 		// Restart when the port or which keys work changes.
-		const keys = `${ wanted }|${ !!settings.remoteControl }|${ !!settings.streamDeck }`;
+		const keys = `${ wanted }|${ !!settings.remoteControl }|${ !!settings.streamDeck }|${ !!settings.mcpEnabled }|${ !!settings.mcpScripts }|${ !!settings.mcpControls }|${ !!settings.mcpRecording }`;
 		if ( remoteServer && remoteServer.teleprompterKeys === keys ) return;
 		if ( remoteServer ) {
 			await closeServer( remoteServer );
 			remoteServer = null;
 		}
 		remoteError = null;
+		if ( !settings.mcpEnabled || !settings.remoteControl ) mcpToken = newToken();
 		if ( wanted ) {
 			remoteServer = startRemoteServer( {
 				port: wanted,
 				token: settings.remoteControl ? remoteToken : null,
+				mcpToken: settings.remoteControl && settings.mcpEnabled ? mcpToken : null,
+				allowMcp: ( method, route, body ) => allowMcpRequest( settings, method, route, body ),
 				buttonToken: settings.streamDeck ? streamDeckToken : null,
 				buttonRoutes: BUTTON_ROUTES,
 				routes: remoteRoutes,
@@ -1843,13 +1918,26 @@ app.whenReady().then( async () => {
 				}
 			} );
 			remoteServer.teleprompterKeys = keys;
+			await new Promise( ( resolve ) => {
+				if ( remoteServer.listening ) return resolve();
+				remoteServer.once( "listening", resolve );
+				remoteServer.once( "error", resolve );
+			} );
 		}
 		// Lets a local assistant, or the Stream Deck plugin, find the address and its key.
 		const url = remoteInfo().url;
 		if ( wanted && settings.remoteControl ) await fs.writeFile( REMOTE_FILE, JSON.stringify( { url, token: remoteToken }, null, 2 ) );
 		else await fs.rm( REMOTE_FILE, { force: true } );
-		if ( wanted && settings.streamDeck ) await fs.writeFile( STREAM_DECK_FILE, JSON.stringify( { url, token: streamDeckToken, appVersion: app.getVersion(), streamDeckApi: streamDeckContract() }, null, 2 ) );
-		else await fs.rm( STREAM_DECK_FILE, { force: true } );
+		if ( wanted && settings.remoteControl && settings.mcpEnabled && remoteServer?.listening ) await fs.writeFile( MCP_FILE, JSON.stringify( { url, token: mcpToken, appVersion: app.getVersion(), permissions: { scripts: settings.mcpScripts === true, controls: settings.mcpControls === true, recording: settings.mcpRecording === true } }, null, 2 ), { mode: 0o600 } );
+		else await fs.rm( MCP_FILE, { force: true } );
+		if ( wanted && settings.streamDeck && remoteServer?.listening ) {
+			const descriptor = { url, token: streamDeckToken, appVersion: app.getVersion(), streamDeckApi: streamDeckContract() };
+			await fs.writeFile( STREAM_DECK_FILE, JSON.stringify( descriptor, null, 2 ) );
+			streamDeckDiscovery.publish( descriptor );
+		} else {
+			streamDeckDiscovery.release();
+			await fs.rm( STREAM_DECK_FILE, { force: true } );
+		}
 		win.webContents.send( "remoteInfo", remoteInfo() );
 	}
 
@@ -1876,6 +1964,7 @@ app.whenReady().then( async () => {
 	framingGuide = createHeadGuide( {
 		dir: __dirname, prompter: win, getSettings: () => settings,
 		restackUtilities: () => utilityWindows?.restack(),
+		onFramingAction: ( name, value ) => preRecord?.guideAction( name, value ),
 		saveSettings: partial => updateSettings( partial ),
 		saveBounds: ( bounds ) => {
 			settings.headGuideBounds = bounds;
@@ -1887,6 +1976,9 @@ app.whenReady().then( async () => {
 	} );
 	framingGuide.apply();
 	win.on( "closed", () => framingGuide.dispose() );
+	preRecord = createPreRecord( { dir: __dirname, prompter: win, getSettings: () => settings, saveSettings: partial => updateSettings( partial ), guide: framingGuide, obs, probeObs: async () => obs.state().connection === "connected" || ( await externalComponents.status() ).obs.installed, busy: () => rendererStatus.scrolling === true || [ "recording", "paused" ].includes( obs.state().recording ) } );
+	win.on( "closed", () => preRecord.dispose() );
+	if ( process.argv.includes( "--prepare-recording" ) ) win.webContents.once( "did-finish-load", () => preRecord.open() );
 	const speech = createSpeech( { dir: __dirname, win, busy: () => !!rendererStatus.scrolling || [ "recording", "paused" ].includes( obs.state().recording ) } );
 	const kitFolder = path.join( app.getPath( "userData" ), "ai-kit" );
 	const kit = createAgentKit( { source: app.getAppPath(), folder: kitFolder, version: app.getVersion(), trash: target => shell.trashItem( target ) } );
@@ -2054,6 +2146,7 @@ app.whenReady().then( async () => {
 		controlPad.apply();
 		controlWindow.apply();
 		framingGuide.apply();
+		preRecord?.sync();
 	};
 	syncObsSettings();
 	// Samples stay viewable in the editor; only Save a copy can create an editable file.
@@ -2355,6 +2448,105 @@ app.whenReady().then( async () => {
 	// Settings page IPC
 	ipcMain.on( "getSettings", () => {
 		sendSettings();
+	} );
+	ipcMain.handle( "applyPreferences", async ( event, payload = {} ) => {
+		if ( event.sender !== win.webContents ) return { ok: false, error: "Use the app’s Settings window" };
+		const before = { settings, fontSize: currentFontSize, opacity: currentOpacity, mirrored: currentMirrored, speed: currentAutoScrollSpeed, device: currentAudioDeviceId, key: currentDeepgramApiKey };
+		let previousPassword, passwordChanged = false;
+		try {
+			const partial = settingsValues( payload.settings ?? {}, defaultSettings );
+			if ( payload.mirrored !== undefined && ![ "off", "horizontal", "vertical", "both" ].includes( payload.mirrored ) ) throw new Error( "Invalid mirroring mode" );
+			for ( const [ key, min, max ] of [ [ "fontSize", 1, 8 ], [ "opacity", 0, 1 ], [ "autoScrollSpeed", 0.1, 3 ] ] ) {
+				if ( Object.hasOwn( payload, key ) && ( !Number.isFinite( payload[key] ) || payload[key] < min || payload[key] > max ) ) throw new Error( `Invalid ${ key }` );
+			}
+			if ( Object.hasOwn( payload, "audioDeviceId" ) && payload.audioDeviceId !== null && ( typeof payload.audioDeviceId !== "string" || payload.audioDeviceId.length > 512 ) ) throw new Error( "Invalid microphone selection" );
+			if ( Object.hasOwn( payload, "deepgramKey" ) && ( typeof payload.deepgramKey !== "string" || payload.deepgramKey.length > 512 ) ) throw new Error( "Invalid speech-service key" );
+			if ( payload.obs ) {
+				const options = payload.obs, host = String( options.host ?? "127.0.0.1" ).trim(), port = Number( options.port );
+				obsAddress( host, port );
+				if ( options.followPrompter !== settings.obsFollowPrompter && [ "recording", "paused" ].includes( obs.state().recording ) ) throw new Error( "Finish recording before changing linked recording mode" );
+				if ( options.password !== undefined && ( typeof options.password !== "string" || options.password.length > 4096 ) ) throw new Error( "Invalid OBS password" );
+				Object.assign( partial, { obsEnabled: options.enabled === true, obsHost: host, obsPort: port, obsControls: options.controls === true, obsFollowPrompter: options.followPrompter === true, obsMarkers: options.markers === true, obsRecordedSlate: options.recordedSlate === true } );
+				if ( options.password !== undefined || options.clearPassword ) {
+					previousPassword = await obsCredentials.read();
+					await obsCredentials.write( options.clearPassword ? "" : options.password );
+					passwordChanged = true;
+				}
+				obsPassword = options.enabled ? await obsCredentials.read() : "";
+			}
+			currentFontSize = payload.fontSize ?? currentFontSize;
+			currentOpacity = payload.opacity ?? currentOpacity;
+			currentMirrored = payload.mirrored ?? currentMirrored;
+			currentAutoScrollSpeed = payload.autoScrollSpeed ?? currentAutoScrollSpeed;
+			if ( Object.hasOwn( payload, "audioDeviceId" ) ) currentAudioDeviceId = payload.audioDeviceId || null;
+			if ( payload.clearDeepgramKey === true ) currentDeepgramApiKey = null;
+			else if ( payload.deepgramKey?.trim() ) currentDeepgramApiKey = payload.deepgramKey.trim();
+			await updateSettings( partial );
+			win.webContents.send( "fontSize", currentFontSize );
+			win.webContents.send( "opacity", currentOpacity );
+			win.webContents.send( "mirrored", currentMirrored );
+			win.webContents.send( "autoScrollSpeed", currentAutoScrollSpeed );
+			win.webContents.send( "audioDeviceId", { deviceId: currentAudioDeviceId } );
+			return { ok: true, settings: { ...settings, hasDeepgramKey: !!currentDeepgramApiKey }, fontSize: currentFontSize, opacity: currentOpacity, mirrored: currentMirrored, autoScrollSpeed: currentAutoScrollSpeed, audioDeviceId: currentAudioDeviceId, obs: { hasPassword: await obsCredentials.hasSaved() } };
+		} catch ( error ) {
+			if ( passwordChanged ) await obsCredentials.write( previousPassword ).catch( () => {} );
+			obsPassword = before.settings.obsEnabled ? await obsCredentials.read().catch( () => "" ) : "";
+			currentFontSize = before.fontSize;
+			currentOpacity = before.opacity;
+			currentMirrored = before.mirrored;
+			currentAutoScrollSpeed = before.speed;
+			currentAudioDeviceId = before.device;
+			currentDeepgramApiKey = before.key;
+			if ( settings !== before.settings ) await updateSettings( before.settings ).catch( () => {} );
+			return { ok: false, error: error.message };
+		}
+	} );
+	const exportTheme = async ( input ) => {
+		const theme = normaliseReadingTheme( input );
+		const filename = `${ theme.name.replace( /[^\da-z-]+/gi, "-" ).replace( /^-|-$/g, "" ) || "Sightline-reading" }.sightline-theme.json`;
+		const result = await dialog.showSaveDialog( utilityWindows?.dialogParent() ?? win, { title: "Export reading theme", defaultPath: path.join( app.getPath( "documents" ), filename ), filters: [ { name: "Reading theme", extensions: [ "json" ] } ] } );
+		if ( result.canceled || !result.filePath ) return { cancelled: true };
+		await writeReadingTheme( result.filePath, theme );
+		return { path: result.filePath };
+	};
+	ipcMain.handle( "exportReadingTheme", async ( _event, input ) => {
+		try {
+			return { ok: true, ...await exportTheme( input ) };
+		} catch ( error ) {
+			return { ok: false, error: error.message };
+		}
+	} );
+	ipcMain.handle( "saveReadingTheme", async ( _event, payload = {} ) => {
+		try {
+			const theme = normaliseReadingTheme( { ...payload.theme, id: undefined } );
+			const library = normaliseReadingThemes( [ ...( settings.readingThemes ?? [] ), theme ] );
+			await updateSettings( { readingThemes: library } );
+			let copy = {};
+			if ( payload.exportCopy === true ) {
+				try {
+					copy = await exportTheme( theme );
+				} catch ( error ) {
+					copy = { exportError: error.message };
+				}
+			}
+			return { ok: true, theme, ...copy };
+		} catch ( error ) {
+			return { ok: false, error: error.message };
+		}
+	} );
+	ipcMain.handle( "importReadingTheme", async () => {
+		try {
+			const result = await dialog.showOpenDialog( utilityWindows?.dialogParent() ?? win, { title: "Import reading theme", properties: [ "openFile" ], filters: [ { name: "Reading theme", extensions: [ "json" ] } ] } );
+			if ( result.canceled || !result.filePaths[0] ) return { ok: true, cancelled: true };
+			const input = await readReadingTheme( result.filePaths[0] );
+			const theme = normaliseReadingTheme( { ...input, id: undefined } ), library = settings.readingThemes ?? [];
+			const original = theme.name;
+			for ( let n = 2; library.some( item => item.name.toLocaleLowerCase() === theme.name.toLocaleLowerCase() ); n++ ) theme.name = `${ original.slice( 0, 52 ) } (${ n })`;
+			await updateSettings( { readingThemes: normaliseReadingThemes( [ ...library, theme ] ) } );
+			return { ok: true, theme };
+		} catch ( error ) {
+			return { ok: false, error: error.message };
+		}
 	} );
 
 	ipcMain.on( "setIgnoreMouse", ( _event, ignore ) => {

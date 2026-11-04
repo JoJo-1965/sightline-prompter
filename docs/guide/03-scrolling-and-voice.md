@@ -1,14 +1,41 @@
 # Scrolling and voice
 
-Choose **Steady / Voice** on the top bar, or use **Settings > Prompting >
-Scrolling**. **Tools > Voice and microphone** opens the quick voice panel.
+## RC 1 recording feedback
+
+**Prompter, restart section** (or **restart sections**, **again**, **retake**)
+returns to this section's start, including when you are near its start.
+**Prompter, next section** advances. **Prompter, restart** still resets the
+whole script. The usual enabled command-listening mode is required.
+
+With OBS integration and recording controls enabled, **Prompter, finish**,
+**end**, **end recording**, **finish recording** and **stop recording** finish
+recording. The recogniser's observed **stopped recording** variant is accepted.
+**Prompter, stop** continues to pause prompting. Recorder commands retain their
+wake-word/end-of-phrase guard and OBS permissions.
+
+Scripted voice or room checks show the sound meter automatically, then return
+to your previous visibility choice. A yellow Section pill shows the current
+section alongside recorder status; explicitly paged Notes show the current page.
+
+## Recording commands
+
+With OBS integration and recording controls enabled, say the wake word, then
+**record on**, **record off**, **record pause** or **record resume**. Off and
+pause also hold prompting. These commands disappear from help when OBS controls
+are disabled. Normal **go**, **pause** and **again** remain available; their
+recording behaviour follows the optional [linked mode](11-obs.md).
+
+Choose **Steady / Voice** on the top bar, or use **Settings > Reading > Mode
+and pace**. Enable speech and microphone input in **Settings > Voice** before
+using voice following. Speech engine, Microphone and Voice commands have
+separate named sections.
 
 ## Steady scrolling
 
 The script moves at a fixed pace in words per minute. Set it with the **Speed**
 slider. While scrolling, **↑** and **↓** make it faster or slower by 5 words a
 minute. A script can set its own pace, section by section, with `{wpm: 140}`.
-Turn on **Follow the script's pace** in the Layout panel to use those
+Turn on **Follow the script's pace** in Reading > Mode and pace to use those
 settings.
 
 ## Voice scrolling
@@ -17,7 +44,7 @@ In voice mode the prompter listens to you and keeps the words you're saying on
 the reading line. Speed up, slow down, pause to think or ad-lib a line, and it
 waits for you and then catches up.
 
-![Settings > Prompting > Voice](images/settings-voice.png)
+![Settings > Voice > Speech engine](images/settings-1.2.0-engine.png)
 
 ### Speech recognition on this computer (the default)
 
@@ -25,11 +52,11 @@ Speech is turned into words **on your own computer**. You don't need an
 account or a key, it works offline, and nothing you say leaves the PC.
 
 The first time you open Sightline, a small note at the bottom right offers it:
-choose **Download**. Or open **Settings > Prompting > Voice** (or the Voice panel) and
+choose **Download**. Or open **Settings > Voice > Speech engine** (or the Voice panel) and
 click **Download speech model**.
 It's a one-off download of about 73 MB, and progress is shown as it goes.
-In the next candidate, the same Voice page also has Reinstall and Remove.
-**Settings > Components** lists the model and the optional AI kit,
+In Sightline 1.2.0, the same Voice page also has Reinstall and Remove.
+**Settings > Connections > Apps and add-ons** lists the model and the optional AI kit,
 with their status and maintenance controls. Stop prompting and recording
 before repairing/removing the model; a failed repair keeps the old copy.
 After that, voice scrolling works with no internet connection at all.
@@ -85,9 +112,9 @@ heard in place of script words, most often first.
 
 Names and unusual words are what speech recognition gets wrong most:
 *Siobhan* heard as *shivawn*, *Sightline* as *site line*, and sometimes the
-wake word or a command. **Settings > Prompting > Your words** fixes them.
+wake word or a command. **Settings > Voice > Your words** fixes them.
 
-![Settings > Prompting > Your words](images/settings-words.png)
+![Settings > Voice > Your words](images/settings-1.2.0-words.png)
 
 - **Match words that sound alike** (on unless you turn it off): a word heard
   that isn't in the script but sounds like a longer script word, starts with
@@ -130,7 +157,7 @@ the saved preference: Always resumes wake listening; otherwise press Play.
 Scratch audio and sound check use the microphone separately. This is not a
 system microphone mute, and it never silently enables Always listening.
 
-**The wake word** is "Prompter" unless you choose another on **Settings > Prompting > Commands >
+**The wake word** is "Prompter" unless you choose another on **Settings > Voice > Voice commands >
 Wake word**: Computer, Teleprompter or Director. Pick one that doesn't come up in
 your scripts. Below, read "Prompter" as whichever you chose. Apply refreshes
 the active listener immediately, including while it waits for the wake word.
@@ -161,8 +188,10 @@ Switching listening off also cancels an in-progress startup. Late messages
 from that old session cannot interrupt its replacement.
 
 Recovery tries at most three times in a minute, then shows that listening
-has stopped. Use **Prompting > Commands > Restart listening**, or click the
-listening badge, for a deliberate retry. The Commands page shows its state.
+has stopped. Use **Settings > Debug > Status and recovery > Restart listening**,
+or click the listening badge, for a deliberate retry. Status and recovery
+shows listening health and links to the speech settings. Enable command
+listening in **Voice > Commands** before requesting a restart.
 Recovery events go in the support log without spoken words or audio.
 
 For a missed wake word, enable **Trace command words to the local heard log**
@@ -170,7 +199,7 @@ in **Settings > Debug**, then Apply and reproduce it. This is **off by default**
 It saves recognised text during commands-only listening, including while
 stopped, and may include nearby conversation. Turn it off afterwards.
 Entries use `mode: "commands"`; ordinary voice entries use `mode: "voice"`.
-The trace can reveal a mishearing; add that form in **Prompting > Your words**.
+The trace can reveal a mishearing; add that form in **Voice > Your words**.
 An operating listener can still misrecognise a word; recovery cannot fix
 every recognition error. This option saves no audio.
 
@@ -186,7 +215,7 @@ every recognition error. This option saves no audio.
 | **from the top** (or top, start again) | Back to the start |
 | **reset** (or restart) | Back to the start, with the speed back to normal and the pacing clock cleared, ready for a fresh run |
 | **section 3** (1–99, including “section twenty one”) | To the start of that section. You can say it without "Prompter" too, as your spoken slate before each section: saying the section you're in counts as a retake |
-| **again** (or retake) | Drops a marker where you are, then goes back to the start of the section for a retake |
+| **again** (or retake, restart section, restart sections) | Drops a marker and restarts this section, including near its start |
 | **marker** | Drops a marker |
 | **back to the marker** (or from the marker, last marker) | Back to the last marker, to read on from there (Shift+B) |
 | **keeper** (or keep that, good take) | Marks the take you're on, or the one you've just finished, as a keeper in the [take log](05-recording-a-take.md#the-take-log) |
@@ -197,7 +226,9 @@ every recognition error. This option saves no audio.
 | **guide on · guide off** | Shows or hides the separate head-position guide; repeats keep the requested state |
 | **close** (or cancel, never mind) | Hides that list |
 | **record take** (or start recording) | Optional OBS integration: confirm recording, then start prompting. Requires enabled OBS recording controls |
-| **finish recording** (or stop recording) | Optional OBS integration: stop prompting and finish the OBS recording |
+| **finish recording** (or stop recording, stopped recording, end recording, finish, end) | Optional OBS integration: stop prompting and finish the OBS recording |
+| **record on / record off** | With OBS recording permission: explicitly start or finish recording; off holds prompting |
+| **record pause / record resume** | When enabled: pause or resume the existing recording; pause holds prompting. Check your format supports pausing |
 
 In RC10, **“Prompter, what can I say?”** opens a separate upright window.
 Drag its title bar onto another screen; its position and size are remembered.
@@ -206,7 +237,7 @@ closing Settings or stopping the take. It follows **Hide from capture**.
 
 ![The movable voice-command window](images/floating-voice-help.png)
 
-Choose when it listens on **Settings > Prompting > Commands**:
+Choose when it listens on **Settings > Voice > Voice commands**:
 
 - **In voice mode** (the default): commands work while voice scrolling.
 - **Always, even when stopped**: the microphone listens for the wake word
@@ -262,7 +293,7 @@ During a stop or a countdown:
 - In steady scrolling, the microphone listens for "Prompter, go" while the
   prompter waits, even if voice commands are set to voice mode only (the small
   **🎙 Prompter** label shows). Set **Voice commands** to **Off** in
-  Settings > Prompting > Commands to stop this.
+  Settings > Voice > Voice commands to stop this.
 
 ### In voice scrolling
 
@@ -345,5 +376,5 @@ Otherwise it's the sentence on the reading line.
 
 ![The sentence on the reading line, highlighted](images/running.png)
 
-Turn it off or on in **Settings > Appearance > Reading aids**, or the quick panel
-at **Tools > Spacing and mirror**.
+Turn it off or on in **Settings > Reading > Reading aids** under Reading
+indicators. **Tools > Adjust** provides separate live size and spacing controls.

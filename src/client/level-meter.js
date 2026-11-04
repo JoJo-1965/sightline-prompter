@@ -183,13 +183,13 @@ export function soundCheckVerdict( kind, m ) {
 		if ( noise === null ) return { verdict: "unknown", text: "Couldn't measure the room", advice: "Is a microphone connected?" };
 		if ( noise < -55 ) return { verdict: "quiet", text: `Quiet room ✓ (background ${ Math.round( noise ) } dB)`, advice: "" };
 		if ( noise <= -45 ) return { verdict: "ok", text: `OK: a little background noise (${ Math.round( noise ) } dB)`, advice: "Fine for most recordings; quieter is better if you can." };
-		return { verdict: "noisy", text: `Noisy ✗ (background ${ Math.round( noise ) } dB)`, advice: "A fan, traffic or hum? Check again once it's quieter." };
+		return { verdict: "noisy", text: `Background noise is noticeable (${ Math.round( noise ) } dB)`, advice: "Reduce a fan or hum if practical. More gain raises background noise too. Listen to a short recording; you can continue with this result." };
 	}
 	const lufs = m?.lufs ?? null;
 	const peak = m?.peak ?? null;
 	if ( lufs === null || lufs < -50 ) return { verdict: "silent", text: "Didn't hear you", advice: "Is the right microphone chosen (Voice panel), and is it unmuted?" };
 	if ( peak !== null && peak >= -1 ) return { verdict: "clipping", text: `Clipping ✗ (peak ${ peak } dBFS)`, advice: `Turn the mic gain down about ${ Math.max( 3, Math.ceil( peak + 6 ) ) } dB.` };
-	if ( lufs < -36 ) return { verdict: "too-quiet", text: `Too quiet (${ Math.round( lufs ) } LUFS)`, advice: `Turn the mic gain up about ${ Math.round( -24 - lufs ) } dB, or move closer.` };
+	if ( lufs < -36 ) return { verdict: "too-quiet", text: `Low voice level (${ Math.round( lufs ) } LUFS${ m?.aboveNoise != null ? `, ${ Math.round( m.aboveNoise ) } dB above background` : "" })`, advice: "A lower level can be usable if your voice is clear above the room noise. Increasing gain raises both. Try moving the mic closer, listen to a short recording, or continue at this level." };
 	if ( lufs > -14 ) return { verdict: "loud", text: `Loud (${ Math.round( lufs ) } LUFS)`, advice: `Turn the mic gain down about ${ Math.round( lufs + 20 ) } dB.` };
 	return { verdict: "good", text: `Good level ✓ (${ Math.round( lufs ) } LUFS, peak ${ Math.round( peak ) } dBFS)`, advice: "" };
 }

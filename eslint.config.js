@@ -2,7 +2,7 @@ import { defineConfig } from "eslint/config"; // eslint-disable-line n/no-unpubl
 import rg from "eslint-config-reverentgeek"; // eslint-disable-line n/no-unpublished-import
 
 export default defineConfig( [ {
-	ignores: [ "dist/", "src/client/editor-bundle.js" ]
+	ignores: [ "dist/", "src/client/editor-bundle.js", "src/client/framing-worker-bundle.js", "src/client/vision-runtime/" ]
 }, {
 	extends: [ rg.configs["node-esm"] ],
 	rules: {
@@ -11,6 +11,7 @@ export default defineConfig( [ {
 			// so they're devDependencies rather than runtime dependencies
 			allowModules: [
 				"electron",
+				"@mediapipe/tasks-vision",
 				"codemirror",
 				"@codemirror/lang-markdown",
 				"@codemirror/language-data",

@@ -41,13 +41,13 @@ reviewed plan. Do not create profiles through unrelated automation or claim
 that a 4K canvas proves native capture or that MKV mic tracks are separate WAVs.
 Read docs/guide/15-obs-setup.md for the clean-output and physical-test steps.
 
-### Optional OBS integration (1.1.0 release candidate)
+### Optional OBS integration
 
 The user must enable the integration in **Settings > Recording > OBS connection**
 and allow controls in **Recording > OBS recording** themselves. These settings
-are protected from the API and script files. Use the private Stream Deck
-0.1.9 companion for physical recording-key checks. The public 1.0.6 app does
-not contain OBS integration. See the [acceptance walkthrough](../../docs/guide/14-acceptance-test.md)
+are protected from the API and script files. The published pair is Sightline
+1.1.0 and Stream Deck 0.2.0; the plugin source remains private. See the
+[acceptance walkthrough](../../docs/guide/14-acceptance-test.md)
 for the two sample scripts and the remaining manual checks.
 The status response now includes appVersion and streamDeckApi; commands is
 the capability list. Use both versions and command support rather than
@@ -55,6 +55,17 @@ assuming a version number grants OBS access. Legacy builds may omit version
 metadata; leave it unconfirmed. The authenticated plugin hello is only a
 local compatibility report, not proof of the caller's identity or an update feed.
 Never ask for, print or copy the OBS password. No extra OBS plugin is needed.
+
+The next unpublished preview adds optional **Link recording to prompting**,
+explicit record on/off/pause/resume commands and `{record: ...}` directives.
+Use advertised capabilities, not version alone. Continuous remains the default;
+never silently change the recording mode during a session. Linking starts and
+resumes before prompting, pauses with it and finishes at the script end. Pause
+support depends on the recording format. UNKNOWN is not a stopped recorder.
+Production comments `<!-- ... -->` show paused and hide during delivery; their
+contents are never spoken or executable. Keep short delivery cues in brackets.
+Save/restore Actual recording references separately from Ideal. Both are manual
+framing metadata, not face tracking or proof of capture exclusion.
 
 Once enabled, `command obs-record` confirms OBS is recording before it starts
 prompting; `command obs-finish` stops prompting and asks OBS to finish. The
@@ -293,8 +304,9 @@ protected from API/import changes; the user enables it in Recording > Takes.
 
 Controls > AI & API reports readiness of the supplied kit commands, which need
 Node.js 22.16 or later and the kit. Other API clients do not need either.
-Components checks optional OBS/Stream Deck apps and the local plugin
-manifest. Installer/Locate links handle missing copies. Installed files do
+Components checks optional dependencies; the preview puts Stream Deck app and
+plugin checks together under Controls > Stream Deck. Installer/Locate links
+handle missing copies. Installed files do
 not confirm a live connection or the newest third-party version; retain the
 OBS connection and Stream Deck protocol checks. OBS on another computer needs
 no local installation. Component discovery never enables recording permissions.

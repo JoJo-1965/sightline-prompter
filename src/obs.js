@@ -1,5 +1,5 @@
 // OBS WebSocket v5, in main only. Disabled means no socket, timers or commands.
-// Never stream, change scenes, pause or stop an output as a side effect.
+// Recording actions require permission; never stream or change scenes.
 import { createHash, randomUUID } from "node:crypto";
 import { recordedSlateRoute } from "./obs-slate-route.js";
 import { createObsSetup } from "./obs-setup.js";
@@ -34,6 +34,24 @@ export function createObs( { onState = () => {}, WebSocketClass = globalThis.Web
 	let setup = null;
 	let recordRevision = 0;
 	let recordTransition = null;
+	let calibrationVirtual = false;
+	let calibrationScenes = [];
+	let calibrationFrameBusy = false;
+	let virtualOperation = null;
+	async function virtualCalibration( action ) {
+		if ( virtualOperation ) await virtualOperation;
+		const operation = ( async () => {
+			if ( action === "virtual-stop" && !calibrationVirtual ) return { owned: false };
+			if ( !config.enabled || state.connection !== "connected" ) throw new Error( "Connect OBS to manage the calibration feed" );
+			if ( action === "virtual-start" ) {
+				const before = await request( "GetVirtualCamStatus" );
+				if ( !before.outputActive ) { await request( "StartVirtualCam" ); calibrationVirtual = true; }
+			} else if ( calibrationVirtual ) { await request( "StopVirtualCam" ); calibrationVirtual = false; }
+			return { owned: calibrationVirtual };
+		} )();
+		virtualOperation = operation;
+		try { return await operation; } finally { if ( virtualOperation === operation ) virtualOperation = null; }
+	}
 	const pending = new Map();
 	const snapshot = () => ( { ...state, controls: config.controls, markers: config.markers, setupBusy, recordingBusy } );
 	const publish = ( partial ) => {
@@ -41,6 +59,7 @@ export function createObs( { onState = () => {}, WebSocketClass = globalThis.Web
 		onState( snapshot() );
 	};
 	function clearConnection() {
+		calibrationScenes = []; calibrationVirtual = false;
 		setup = null;
 		generation++;
 		clearTimeout( retry );
@@ -168,6 +187,7 @@ export function createObs( { onState = () => {}, WebSocketClass = globalThis.Web
 						if ( d.requestStatus?.result ) item.resolve( d.responseData ?? {} );
 						else item.reject( Object.assign( new Error( `OBS rejected ${ d.requestType }; check OBS and the recording format` ), { obsComment: d.requestStatus?.comment } ) );
 					} else if ( op === 5 ) {
+						if ( d.eventType === "VirtualcamStateChanged" && d.eventData?.outputActive === false ) calibrationVirtual = false;
 						if ( d.eventType === "CurrentSceneCollectionChanging" ) changingScenes = true;
 						if ( d.eventType === "CurrentSceneCollectionChanged" ) changingScenes = false;
 						if ( d.eventType === "ExitStarted" ) return lost( "OBS closed; recording status is unknown" );
@@ -200,6 +220,26 @@ export function createObs( { onState = () => {}, WebSocketClass = globalThis.Web
 	}
 	return {
 		state: snapshot,
+		async calibration( action, value ) {
+			if ( action === "virtual-start" || action === "virtual-stop" ) return virtualCalibration( action );
+			if ( !config.enabled || state.connection !== "connected" ) throw new Error( "Enable and connect OBS before choosing its calibration picture" );
+			if ( action === "scenes" ) {
+				const data = await request( "GetSceneList" );
+				calibrationScenes = ( data.scenes ?? [] ).map( item => item.sceneName ).filter( name => typeof name === "string" && name.length <= 512 ).slice( 0, 256 );
+				return { scenes: calibrationScenes, current: data.currentProgramSceneName };
+			}
+			if ( action === "frame" ) {
+				if ( !calibrationScenes.includes( value ) ) throw new Error( "Choose an available OBS calibration scene" );
+				if ( calibrationFrameBusy ) throw new Error( "Wait for the previous OBS picture" );
+				calibrationFrameBusy = true;
+				try {
+					const data = await request( "GetSourceScreenshot", { sourceName: value, imageFormat: "jpg", imageWidth: 640, imageCompressionQuality: 75 } );
+					if ( typeof data.imageData !== "string" || !/^data:image\/jpe?g;base64,/.test( data.imageData ) || data.imageData.length > 4 * 1024 * 1024 ) throw new Error( "OBS returned an invalid calibration picture" );
+					return data.imageData;
+				} finally { calibrationFrameBusy = false; }
+			}
+			throw new Error( "Unknown OBS calibration action" );
+		},
 		async setup( action, value ) {
 			if ( ![ "inspect", "plan", "apply", "restore" ].includes( action ) ) throw new Error( "Unknown OBS setup action" );
 			if ( setupBusy || recordingBusy ) throw new Error( "Wait for the current OBS operation to finish" );
@@ -238,6 +278,9 @@ export function createObs( { onState = () => {}, WebSocketClass = globalThis.Web
 			const next = { ...config, ...options, enabled: options.enabled === true, controls: options.controls === true, markers: options.markers === true };
 			if ( JSON.stringify( next ) === JSON.stringify( config ) ) return snapshot();
 			const reconnect = [ "enabled", "host", "port", "password" ].some( key => config[key] !== next[key] );
+			if ( reconnect && calibrationVirtual && state.connection === "connected" ) {
+				await virtualCalibration( "virtual-stop" ).catch( () => { calibrationVirtual = false; } );
+			}
 			config = next;
 			if ( !reconnect ) {
 				publish( {} );
@@ -256,7 +299,7 @@ export function createObs( { onState = () => {}, WebSocketClass = globalThis.Web
 				await request( "CreateRecordChapter", { chapterName: String( label ).slice( 0, 120 ) || "Sightline marker" } );
 				return snapshot();
 			}
-			if ( action !== "start" && action !== "stop" ) throw new Error( "Unknown OBS action" );
+			if ( ![ "start", "stop", "pause", "resume" ].includes( action ) ) throw new Error( "Unknown OBS action" );
 			if ( recordingBusy ) throw new Error( "An OBS recording command is still waiting for confirmation" );
 			recordingBusy = true;
 			const current = generation;
@@ -269,7 +312,7 @@ export function createObs( { onState = () => {}, WebSocketClass = globalThis.Web
 					await refresh();
 					stillAllowed();
 					if ( state.recording === desired ) return;
-					if ( desired === "recording" && state.recording === "paused" ) throw new Error( "OBS recording is paused; resume it in OBS first" );
+					if ( action === "start" && desired === "recording" && state.recording === "paused" ) throw new Error( "OBS recording is paused; use Record resume" );
 					await new Promise( resolve => setTimeout( resolve, Math.max( 1, Math.min( 100, timeoutMs / 4 ) ) ) );
 				} while ( Date.now() < deadline );
 				publish( { recording: null, error: "OBS did not confirm the requested recording state" } );
@@ -282,7 +325,17 @@ export function createObs( { onState = () => {}, WebSocketClass = globalThis.Web
 					if ( state.recording === "paused" ) throw new Error( "OBS recording is paused; resume it in OBS first" );
 					if ( state.recording !== "recording" ) await request( "StartRecord" );
 					await waitForRecording( "recording" );
+				} else if ( action === "pause" || action === "resume" ) {
+					await refresh();
+					stillAllowed();
+					if ( state.recording === "stopped" ) throw new Error( "Start an OBS recording before pausing or resuming it" );
+					const desired = action === "pause" ? "paused" : "recording";
+					if ( state.recording !== desired ) await request( action === "pause" ? "PauseRecord" : "ResumeRecord" );
+					await waitForRecording( desired );
 				} else {
+					await refresh();
+					stillAllowed();
+					if ( state.recording === "stopped" ) return snapshot();
 					const result = await request( "StopRecord" );
 					stillAllowed();
 					publish( { outputPath: result.outputPath ?? state.outputPath } );

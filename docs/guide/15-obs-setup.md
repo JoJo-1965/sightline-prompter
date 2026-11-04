@@ -1,13 +1,13 @@
 # Set up OBS for a recording session
 
-Development preview for the next candidate; not present in RC14. This optional
+This optional
 assistant creates a separate OBS profile and scene collection. Existing setups
 remain available. Ordinary prompting works without OBS or this assistant.
 
 ## Before you begin
 
-Install OBS from **Settings > Components > OBS**. Open OBS and enable its
-WebSocket server. In **Settings > Recording > OBS connection**, enable the
+Install OBS from **Settings > Connections > Apps and add-ons > OBS**. Open OBS and enable its
+WebSocket server. In **Settings > Connections > OBS integration**, enable the
 connection, enter the local address/password, **Apply**, then test the saved
 connection. The assistant supports OBS on this computer; remote OBS can still
 be controlled using the ordinary connection settings.
@@ -23,7 +23,7 @@ devices just to satisfy the assistant. Native validation has been on Windows;
 macOS hardware validation remains deferred.
 
 Stop recording, streaming and the replay buffer. Pause prompting, then open
-**Settings > Recording > OBS setup > Set up OBS…**, or use the OBS row in
+**Settings > Connections > OBS profile and scenes > Set up OBS…**, or use the OBS row in
 **Help > Getting started…**. If OBS is unavailable, use **Connection…**
 or the configuration guide; inspection changes nothing.
 
@@ -81,7 +81,7 @@ them explicitly. Keep Sightline scratch audio as a separate timing reference.
 
 The assistant adds no prompter or head-guide capture source. Confirm this in
 your actual recorded picture; other capture routes you later add can change
-what is recorded. Prepare the recorded slate separately in **Recording > OBS
+what is recorded. Prepare the recorded slate separately in **Controls > OBS
 recording** and verify its picture and tone in a test file. Make early and late
 physical claps and speak normally to check camera/mic sync. A digital slate
 alone cannot establish camera lip sync.

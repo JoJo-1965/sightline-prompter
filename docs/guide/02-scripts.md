@@ -1,8 +1,24 @@
 # Writing scripts
 
+## Production notes
+
+Use `<!-- Check framing and remember to press Record. -->` for preparation
+and edit instructions in Markdown/HTML scripts. They show before starting and
+between takes, then hide during delivery. Short cues such as `[smile]` remain
+inline. Unquoted cues stay outside speech tracking; quoted words in a `[Say:
+"..."]` direction are spoken. Production comments are never spoken or executable.
+Keep all spoken lines outside production comments, including quotations.
+
+In Preview 04, **Reading > Text and directions** has separate Spoken script,
+Headings, Inline directions and Production notes targets. Each has its own
+font, size, colour, bold, italic and line spacing. Appearance changes do not change
+which words are spoken or when production notes hide.
+Optional recording directives are covered in [Recording with OBS](11-obs.md).
+Ordinary scripts and retakes need no new directives.
+
 ## Script health before you read
 
-In the next candidate, **Script health…** on the editor toolbar opens the
+In Sightline 1.2.0, **Script health…** on the editor toolbar opens the
 **Script health** tab of **Script & rehearsal review**. It checks your current
 editor text, including unsaved changes, without saving or rewriting it.
 Outside the editor, use **Tools > Script & rehearsal review…** and select
@@ -27,6 +43,13 @@ changing your text. Longer result lists use Previous/Next; Refresh checks again.
 ## File types
 
 ### Samples and safe copies
+
+Begin with **Files > Sample scripts > Start here: Sightline feature tour**.
+The same tour opens automatically on a fresh profile. Twelve guided stops
+cover reading and appearance, preparation/head detection, Connections and OBS,
+local MCP, and production handover. Its ordinary text is safe to read: long
+setup steps and command exercises are paused-only production comments.
+Choose a [focused demo](../DEMO-SCRIPTS.md) when you want to practise one workflow.
 
 Open a sample from **Files (☰) > Sample scripts**. **Edit script** or **Ctrl+E**
 shows its source with a **Sample · read-only** label. You can select and copy
@@ -87,7 +110,7 @@ with a line like `=== SECTION ===` in plain text. Sections let you:
 Anything in square brackets is a note to you, the speaker, such as
 `[smile]` or `[Say: "Section one". Pause.]`. Notes are shown dimmed, so they
 don't get read out by mistake. Any `"quoted words"` inside a note stay bright,
-because you do say those. Settings > Prompting > Script can show notes normally, or hide
+because you do say those. Settings > Reading > Reading aids can show notes normally, or hide
 them.
 
 Voice scrolling and the sentence highlight both ignore notes.
@@ -111,7 +134,8 @@ read.
 | `{page}`                      | In notes: start a new page here, with no title (a `# heading` also starts one) |
 | `{pacing: section, wpm: 145}` | At the top: settings for the whole script                 |
 
-To check a script, tick **Show directives** in the Layout panel. Each
+To check a script, open **Reading > Reading aids > Slide cues and script tags**
+and tick **Show script directive tags**. Each
 directive appears as a small tag, with ⚠ on any it doesn't recognise (usually a
 typo).
 

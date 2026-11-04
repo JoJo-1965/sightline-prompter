@@ -66,6 +66,17 @@ if ( has( "src/menus.js" ) && !has( "src/client/shortcuts.js" ) && !has( "docs/g
 if ( userFacing && !has( "docs/FEATURES.md" ) ) {
 	reminders.push( "docs/FEATURES.md: if this is a new feature, add it to the feature list (and its at-a-glance table)" );
 }
+if ( userFacing && !has( "docs/FEATURE-GRID.md" ) && !has( "docs/FEATURE-GRID-REVIEWS.md" ) ) {
+	missing.push( "docs/FEATURE-GRID.md: update changed capabilities/options/limits, or record a no-feature-impact review in docs/FEATURE-GRID-REVIEWS.md" );
+}
+if ( userFacing || any( f => /^docs\/FEATURE-GRID\./.test( f ) || f === "scripts/build-feature-grid.mjs" ) ) {
+	try {
+		execFileSync( process.execPath, [ path.join( root, "scripts/build-feature-grid.mjs" ), "--check", ...( process.argv.includes( "--staged" ) ? [ "--staged" ] : [] ) ], { cwd: root, encoding: "utf8", stdio: [ "ignore", "pipe", "pipe" ] } );
+	} catch ( error ) {
+		missing.push( `Feature-grid exports are stale or invalid. Run node scripts/build-feature-grid.mjs; commit Markdown, HTML, CSV and JSON together. ${ error.stderr?.trim() ?? "" }` );
+	}
+	reminders.push( "JL feature grid: sync the reviewed app snapshot, run its check and review the landing summary/downloads alongside help and release notes." );
+}
 if ( userFacing && !has( "ROADMAP.md" ) ) {
 	reminders.push( "ROADMAP.md: if this finishes a roadmap item, tick it ✅" );
 }

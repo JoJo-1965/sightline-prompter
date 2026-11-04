@@ -1,15 +1,25 @@
 import { CONTROL_ACTIONS, normalisePadLayout, PAD_PRESETS } from "./control-actions.js";
 
-// Short explicit pages keep the Settings frame stable; arrows also make
-// reordering accessible without dragging, including across pages.
+// Render the complete ordered collection. The list scrolls without hiding
+// assignments or changing which buttons exist when the window is resized.
 export function createPadSettings( root, save ) {
 	const field = id => root.querySelector( `#${ id }` );
 	let layout = normalisePadLayout();
-	let page = 0;
+	let selected = 0;
 	let dragging = null;
 	let painted = false;
 	const list = field( "set-pad-buttons" );
 	const select = field( "set-pad-add" );
+	const picker = document.createElement( "select" );
+	picker.dataset.navigationChoice = "true";
+	picker.setAttribute( "aria-label", "Button to arrange" );
+	field( "set-pad-page" ).closest( "nav" ).hidden = true;
+	field( "set-pad-prev" ).remove();
+	field( "set-pad-next" ).remove();
+	picker.addEventListener( "change", () => {
+		selected = Number( picker.value );
+		paint();
+	} );
 	for ( const group of new Set( CONTROL_ACTIONS.map( a => a.group ) ) ) {
 		const optgroup = document.createElement( "optgroup" );
 		optgroup.label = group;
@@ -18,22 +28,23 @@ export function createPadSettings( root, save ) {
 	}
 	function paint( focus = null ) {
 		painted = true;
-		page = Math.max( 0, Math.min( page, Math.ceil( layout.buttons.length / 3 ) - 1 ) );
+		selected = Math.max( 0, Math.min( selected, layout.buttons.length - 1 ) );
 		field( "set-pad-columns" ).value = layout.columns;
 		field( "set-pad-hold-finish" ).checked = layout.holdToFinish !== false;
-		field( "set-pad-page" ).textContent = `${ page + 1 } of ${ Math.ceil( layout.buttons.length / 3 ) }`;
-		field( "set-pad-prev" ).disabled = page === 0;
-		field( "set-pad-next" ).disabled = ( page + 1 ) * 3 >= layout.buttons.length;
+		picker.replaceChildren( ...layout.buttons.map( ( id, index ) => new Option( `${ index + 1 }. ${ CONTROL_ACTIONS.find( item => item.id === id ).label }`, String( index ) ) ) );
+		picker.value = String( selected );
 		for ( const option of select.options ) option.disabled = layout.buttons.includes( option.value );
 		if ( select.selectedOptions[0]?.disabled ) select.value = [ ...select.options ].find( o => !o.disabled )?.value ?? "";
 		field( "set-pad-insert" ).disabled = layout.buttons.length >= 36 || !select.value;
 		list.replaceChildren();
-		for ( let index = page * 3; index < Math.min( page * 3 + 3, layout.buttons.length ); index++ ) {
+		list.setAttribute( "aria-label", `All ${ layout.buttons.length } pad buttons` );
+		for ( let index = 0; index < layout.buttons.length; index++ ) {
 			const id = layout.buttons[index];
 			const item = CONTROL_ACTIONS.find( a => a.id === id );
 			const row = document.createElement( "div" );
 			row.className = "pad-choice";
 			row.dataset.id = id;
+			row.classList.toggle( "selected", index === selected );
 			row.draggable = true;
 			const name = document.createElement( "span" );
 			name.textContent = `${ index + 1 }. ${ item.label }`;
@@ -47,7 +58,7 @@ export function createPadSettings( root, save ) {
 				button.addEventListener( "click", () => {
 					if ( delta ) {
 						[ layout.buttons[index], layout.buttons[index + delta] ] = [ layout.buttons[index + delta], id ];
-						page = Math.floor( ( index + delta ) / 3 );
+						selected = index + delta;
 					} else layout.buttons.splice( index, 1 );
 					commit( delta ? id : null );
 				} );
@@ -92,16 +103,12 @@ export function createPadSettings( root, save ) {
 		if ( !select.value || layout.buttons.includes( select.value ) || layout.buttons.length >= 36 ) return;
 		const added = select.value;
 		layout.buttons.push( added );
-		page = Math.floor( ( layout.buttons.length - 1 ) / 3 );
+		selected = layout.buttons.length - 1;
 		commit( added );
-	} );
-	for ( const [ id, step ] of [ [ "set-pad-prev", -1 ], [ "set-pad-next", 1 ] ] ) field( id ).addEventListener( "click", () => {
-		page += step;
-		paint();
 	} );
 	field( "set-pad-preset-use" ).addEventListener( "click", () => {
 		layout = normalisePadLayout( PAD_PRESETS[field( "set-pad-preset" ).value] );
-		page = 0;
+		selected = 0;
 		commit();
 	} );
 	return ( value ) => {

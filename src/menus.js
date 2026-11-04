@@ -18,6 +18,7 @@ export function buildMenus( browserWindow, {
 	if ( recent.length ) recent.push( separator, { label: "Clear recent files", click: clearRecentFiles } );
 	const check = ( label, key, accelerator ) => ( {
 		label, type: "checkbox", checked: !!settings[key], ...( accelerator ? { accelerator } : {} ),
+		enabled: key !== "showPad" || settings.padEnabled !== false,
 		click: entry => updateSettings( { [key]: entry.checked } )
 	} );
 	const template = [
@@ -80,6 +81,7 @@ export function buildMenus( browserWindow, {
 		{ label: "Help", submenu: [
 			item( "Getting started…", "menuWorkflow", undefined, "start" ),
 			{ label: "User guide", accelerator: "Shift+F1", click: () => openGuide?.() }, item( "Help and shortcuts", "menuHelp", "F1" ),
+			{ label: "Download and installation help", click: () => openGuide?.( "18-installation.md" ) },
 			{ label: "Copy the AI script prompt", click: () => copyAiPrompt?.() }, separator,
 			{ label: "Support Sightline (Joanne's tip jar)…", click: () => shell.openExternal( SUPPORT_URL ) },
 			{ label: "Diagnostics", submenu: [ { role: "reload" }, { role: "toggleDevTools" } ] },

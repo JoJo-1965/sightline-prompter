@@ -1,33 +1,54 @@
-{mode: notes, target: 5:00}
+{mode: notes, target: 3:00}
 
-# Sample: notes, a page at a time
+# Notes over a video call {target: 0:45}
 
-## What this is
+<!-- NOTES DEMO. Each level-one heading starts a page. Level-two headings are
+its bullets; short text beneath them is a reminder. Put a call, slide or other
+content behind the prompter. Next/Previous changes page; Space starts/pauses
+the talk timer. These targets allow ad-lib delivery. No recorder is started. -->
 
-Notes mode shows one page at a time, with no scrolling, for speaking from notes rather than reading a script word for word.
+## Open the conversation
 
-## How to move
+Welcome everyone and set the purpose.
 
-Press → or Page Down for the next page, ← or Page Up to go back, or say "Prompter, next page". Space starts and stops the talk timer.
+## Keep the call visible
 
-# Each # heading starts a page {target: 1:30}
+Use the points as prompts while looking towards the lens.
 
-## Its title is the # heading
+## Invite another voice
 
-## Each ## heading is a bullet
+Leave room for a response.
 
-Lines under a bullet show smaller, for a reminder or a story to tell.
+# Make the point {target: 0:45}
 
-## A target on the # heading times the page
+## One clear idea
 
-{page}
+Choose the point that matters most today.
 
-## A page break starts a page with no title
+## A brief example
 
-## Its first bullet names it in the take log
+Connect it to the people in this conversation.
 
-# Close {target: 1:00}
+## Pause for reactions
 
-## One thing to try this week
+Listen before moving on.
 
-## Thank the audience
+# Questions and discussion {target: 0:45}
+
+## What have we missed?
+
+## Who has not had a chance to speak?
+
+## What would make this useful?
+
+# Close with an action {target: 0:45}
+
+## Agree one next step
+
+## Confirm who will follow up
+
+## Thank everyone
+
+<!-- AFTERWARDS. The yellow page pill shows your current page. For one section
+per page, try the Talking points sample. Reading view and notes targets do not
+establish production recording state or prove how long an ad-lib was spoken. -->

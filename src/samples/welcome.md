@@ -2,90 +2,187 @@
 
 # Welcome to Sightline Prompter
 
-## Welcome {target: 0:15}
+<!-- START HERE. This tour works without a camera, microphone, AI or recorder.
+Read the ordinary text. Setup notes show while paused; short cues stay inline.
+Space starts or pauses. At each stop, try the suggested action, then continue.
+Samples are read-only: use Save a copy before making your own changes. -->
 
-[This is a sample script. Read it aloud, or just press Space and watch.]
+## Start here {target: 0:20}
 
-Hello, and welcome to Sightline Prompter. This short script shows you around
-while you read it.
+[smile]
 
-Press Space to start scrolling, and press it again to pause. Move the mouse to
-bring back the control bar at the top. {pause}
+Welcome to Sightline. Keep your words near the camera, see the content behind
+them, and speak at a comfortable pace. This guided tour introduces the main
+features and the latest recording tools. Try each part, or move to the next
+section whenever you are ready.
 
-## Reading and scrolling {target: 0:30}
+{stop}
 
-The scroll speed is set in words per minute. Change it with the Speed slider,
-or type a number into the box beside it.
+## See your content {target: 0:20}
 
-While it's scrolling, the up and down arrows make it a little faster or slower.
-The right and left arrows jump to the next or previous section, like this one.
+<!-- TRY. Put a slide, video call or camera preview behind Sightline. Adjust
+Background on the toolbar. Move the pointer away to let the toolbar hide.
+Return it to the top when you need the controls. No camera is opened by this tour. -->
 
-A presenter clicker works too. Page Down starts and pauses, and Page Up goes
-back a section. {pause}
+My script can sit over a presentation, a video call or a camera preview.
+I can see the content through the prompter while keeping my place.
+For a simpler view, I can choose an opaque background and read just the script.
 
-## Making it comfortable {target: 0:30}
+{stop}
 
-[Open Tools, then Spacing and mirror.]
+## Choose your reading mode {target: 0:25}
 
-Size makes the text bigger or smaller. Text opacity and Background change how
-see-through the script is. They're separate, so you can have solid text on a
-faint background.
+<!-- TRY. Reading > Mode and pace offers Scroll, Voice and Notes / page.
+Scroll needs no microphone. Voice needs enabled speech and microphone input.
+For a focused Notes exercise, open Sample scripts > Notes, a page at a time. -->
 
-The margins keep your eyes close to the camera. The top and bottom margins
-fade the text out near the edges of the window.
+Scroll moves at the pace I choose. Voice follows the words I say, using an
+enabled speech engine and microphone. Notes mode gives me talking points,
+one page at a time. I can choose the approach that suits this recording,
+rather than forcing every conversation into a written script.
+Local speech recognition can stay on my computer; online recognition is optional.
 
-The reading line marks where the line you're reading sits. Put it just under
-your camera. {pause}
+{stop}
 
-## Your scripts {target: 0:25}
+## Make the text yours {target: 0:20}
 
-Open a script from the Files menu, or drop a file onto this window. Word,
-rich text, plain text and markdown all work.
+<!-- TRY. Reading > Text and directions has separate controls for Spoken
+script, Headings, Inline directions and Production notes. Try font, colour,
+italic and line spacing. Theme and background controls the backing colour and
+opacity. Save a reading theme; Apply saves the draft and Cancel discards it. -->
 
-You have nine slots. Control and a number, one to nine, swaps between them,
-and each slot remembers where you were.
+I can make the spoken words, headings, short cues and preparation notes look
+different. Each has its own font, size, colour and spacing. The background is
+configurable too. A saved reading theme keeps that appearance for another
+script; it does not include every connection or recording preference.
 
-Press Control and E to edit a script right here. {pause}
+{stop}
 
-## Notes to you, instructions to the app {target: 0:35}
+## Keep your place {target: 0:20}
 
-Words in square brackets are notes to you, the speaker. [like this one] They're
-shown dimmed, so you don't read them out. If a note holds words you should say,
-they go in quotes. [Say: "Hello everyone".]
+<!-- TRY. Reading > Prompter layout sets margins and the reading line.
+Reading aids offers highlighting and a focus band; comments stay outside its
+dimming. Screens and mirroring has separate left-right/up-down buttons.
+Check the yellow section pill as you move between sections. -->
 
-Words in curly brackets are instructions to the app, and you never see them.
-There's one at the end of every section in this script. They set the target
-pace for each section, where to stop until you say "Prompter, go", and where
-to count down and carry on by itself.
+Comfortable margins and a reading line near the lens help me keep my eyes
+in the right place. Highlighting and the focus band are optional reading aids.
+The yellow section pill shows where I am. Separate mirror controls support
+a beam splitter, and the control window can stay on my main screen.
 
-To check them, open Settings, Prompting, Script, then tick Show directives. {pause}
+{stop}
 
-## Recording setups {target: 0:35}
+## Prepare the shot {target: 0:30}
 
-For a beam-splitter rig, press Control and M to mirror the whole display, or
-use the left–right and up–down buttons in the Layout panel.
+<!-- TRY BEFORE RECORDING. Use the main Prepare to record action, or Settings >
+Prepare to record > Overview > Open workflow. Ctrl+Shift+H shows the shared
+head guide; its adjustments and Lock current update the same target here.
+Hover the bottom Head guide tab to reveal its controls. Calibration stays in
+Guide adjustments until you explicitly open the full preparation workflow.
+With OBS enabled, select OBS scene preview and choose the scene matching
+your projector. This does not switch the recording scene.
+Align with the manual guide or enable local position feedback. Lock current
+only when you want that detected framing as the target. Check audio,
+record and review a short test, then save a recording reference. The test
+result appears in Settings and on the prompter. Keep Ideal unchanged unless
+you deliberately want to replace it. Preparation does not start your recorder. -->
 
-On a prompter monitor, such as the Elgato Prompter, open the control window
-on your main screen, with Control, Shift and O, to change the size, the
-backing and the mirroring from there.
+Before a take, I can align my head, check the room and my speaking level,
+then review a short recording. Optional local detection adds position feedback
+to the manual guide, with colour feedback and arrows to help me realign.
+The test passes only after I check picture and sound.
+I can save a recording reference and restore it after a break for consistent shots.
 
-Before you record, press Control, Shift and D for a sound check: your mic's
-level, and how noisy the room is.
+{stop}
 
-F11 goes full screen. {pause}
+## Bring your own script {target: 0:20}
 
-## Talk to it {target: 0:20}
+<!-- TRY. Files opens scripts or sample scripts. Drop a supported file onto
+Sightline, or use Ctrl+E / Cmd+E to edit. Samples need Save a copy. Nine slots
+keep separate scripts and reading positions; do not replace your recording slot. -->
 
-In voice mode, the prompter follows you as you speak. Say "Prompter", then a
-command, such as pause, go, slower, again or resync.
+I can open a script, drop in a supported document, or edit a copy here.
+Nine slots keep different scripts and their reading positions ready.
+Headings divide a script into sections, making it easier to navigate,
+rehearse and record a passage again.
 
-To try it, open the menu, then Sample scripts, then Voice control, stops and
-countdowns. {pause}
+{stop}
 
-## That's the tour {target: 0:15}
+## Cues and voice commands {target: 0:20}
 
-Press F1 for keyboard shortcuts. Files, at the top left, opens your scripts
-and exports. Tools opens recording helpers. Settings groups your preferences
-by task, with focused topics underneath.
+<!-- TRY WHILE PAUSED. Enable command listening in Voice > Commands first.
+Prompter, go resumes. Prompter, restart section retakes this section;
+Prompter, next section advances. Restart alone resets the whole script.
+Use the focused Voice control sample to practise. Command examples are setup
+notes, not spoken script: reading a complete command aloud can execute it. -->
 
-Have a great recording. {pause}
+[take a breath]
+
+Short cues can stay beside my words. Longer production comments appear while
+I am paused and hide during delivery. App directives can set pace, markers
+and planned stops. With command listening enabled, I can control the prompter
+by voice as well as with buttons or keys.
+
+{stop}
+
+## Connect your controls {target: 0:20}
+
+<!-- TRY. Connections groups configuration with Apps and add-ons checks.
+Stream Deck has test/compatibility information and companion profiles. Phone
+remote, floating pad, keyboard/clickers and game controller have their own homes
+and enable switches. Enable only the interfaces you want, then Apply. -->
+
+Stream Deck can put prompting, take markers and framing controls on keys,
+with supported dials for adjustments. A phone, floating pad, keyboard,
+clicker or game controller offers other ways to work.
+Connections brings those choices together, with separate enable switches
+and checks for the tools they need.
+
+{stop}
+
+## Know when you are recording {target: 0:25}
+
+<!-- OPTIONAL. Connections > OBS integration has Connection, Recording control
+and Profile and scenes subtabs. Apply before testing. Connection success is
+not a picture/sound pass. Continuous recording is the default; Link recording
+to prompting is optional. In a disposable test, confirm RECORDING before making
+a clap or recorded slate. This tour contains no executable recording commands. -->
+
+Prompting and recording are different jobs. OBS integration shows connection
+and recording state separately, with a persistent recording pill.
+I can keep one continuous recording through pauses, or deliberately link it
+to prompting. I check a recorded sync reference after recording starts,
+and inspect the result instead of relying on a reminder alone.
+
+{stop}
+
+## Work with your AI {target: 0:20}
+
+<!-- OPTIONAL. Connections > Apps and add-ons installs the AI kit.
+Connections > AI and API enables the API and local MCP. Follow the kit's MCP
+instructions in your desktop client. Read-only is the default; script,
+prompting and recording grants are separate. Keep tokens out of scripts/chat. -->
+
+An AI assistant can help prepare a script and interpret its edit pack.
+A compatible desktop client can also connect through local MCP to check
+Sightline, load scripts or use controls I have authorised.
+AI remains optional, and recording commands require their own permissions.
+
+{stop}
+
+## Take the next step {target: 0:25}
+
+<!-- TRY. The yellow pill should now show section 12 of 12. With commands
+enabled, try Prompter, section twelve, then Prompter, restart section.
+For recording exercises use Recording preview or Framing, audio and reference.
+For a call use either Notes sample. F1 opens contextual help and the User Guide.
+Export the edit pack with the matching production media; retain originals. -->
+
+The take log keeps sections, retakes, markers and keeper choices for the edit.
+An edit pack brings that information together with the captured script and
+available recording references. Live word timings are estimates, so final
+cuts and captions need checking against the recording.
+
+Choose a focused sample to practise, or save a copy and make the script yours.
+
+{stop}

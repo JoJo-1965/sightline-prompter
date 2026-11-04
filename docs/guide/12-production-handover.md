@@ -1,11 +1,15 @@
 # From recording to the editor
 
-**1.1.0 release candidate: not publicly released.** This workflow includes the optional
-OBS connection and head-position guide. Physical camera lip sync, normal
-speech commands and the Stream Deck recording keys still need hands-on checks.
+**Sightline 1.2.0 + Stream Deck 0.2.0.** Verify the
+camera, microphone, capture route and sync on your own setup.
 
-For final testing, use the [two-module acceptance walkthrough](14-acceptance-test.md)
-with Stream Deck **0.1.9**. It records the evidence needed to review this workflow.
+Use the [two-module acceptance walkthrough](14-acceptance-test.md) and its
+checklist to collect the evidence for your workflow.
+
+In the preview's Files > Sample scripts menu, choose **Recording preview** for
+the focused new-feature check, or **Recording walkthrough: module A/B** for
+the continuous two-module handover test. Samples open read-only; Save a copy
+creates an editable recording script.
 
 ## 1. Set up before the session
 
@@ -19,18 +23,31 @@ Open the right script and check its section names and slide cues. Keep delivery
 directions such as `[smile]` or `[point]` in square brackets: they stay visible
 without counting as spoken words. No extra OBS directives are required.
 
+In Sightline 1.2.0, place longer setup and edit instructions in `<!-- ... -->`
+production comments. They return while paused and hide during delivery. Keep
+spoken lines outside them, including quotations. The exact source script still
+goes into the edit pack. Save Actual as a **recording reference** before the
+session; restore it when needed without changing Ideal. Both accompany takes.
+
+Choose Continuous recording for uninterrupted files through stops and retakes.
+To test automatic start/pause/resume/finish, select **Link recording to prompting**
+under **Controls > OBS recording control** with OBS stopped. Test your format's pause
+support first. The pill must confirm the state; UNKNOWN is not a stopped recorder.
+No script directives are needed for either mode. Explicit record commands are optional.
+
 In **Settings > Recording > Audio**, enable scratch audio; choose **Flash and beep**
 under **Recording > Takes > Slate**. Scratch audio is an independent microphone reference, not your
 production master. Choose steady or voice scrolling for the session. In voice
-mode, take your own beat at timed pauses; `{stop}` still holds the prompter.
+mode with Continuous recording, take your own beat at timed pauses; `{stop}`
+still holds the prompter. Linked mode also honours timed pauses as recording pauses.
 
-In **Settings > Recording > OBS connection**, connect to OBS; allow controls in
-**Recording > OBS recording**. With OBS
+In **Settings > Connections > OBS integration**, connect to OBS; allow controls in
+**Controls > OBS recording control**. With OBS
 stopped, enable **Include the slate in the OBS recording**, **Apply**, then
 **Prepare recorded slate**. Prepare again after restarting Sightline or changing
 the OBS scene. Include OBS audio track 1 so the recorded tone reaches the file.
 
-![The OBS settings tab, including recording controls and recorded-slate preparation](images/settings-obs.png)
+![The OBS settings tab, including recording controls and recorded-slate preparation](images/settings-1.2.0-obs.png)
 
 For the Academy setup, check the camera and output are **3840 × 2160 at 30 fps**.
 Keep the microphone before OBS processing. The workstation test used **48 kHz,

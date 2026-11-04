@@ -3,6 +3,12 @@
 
 const clamp = ( v, lo, hi ) => Math.min( Math.max( v, lo ), Math.max( lo, hi ) );
 
+export function centredDisplayWindow( area ) {
+	const width = Math.round( area.width * .75 );
+	const height = Math.round( area.height * .75 );
+	return { x: area.x + Math.round( ( area.width - width ) / 2 ), y: area.y + Math.round( ( area.height - height ) / 2 ), width, height };
+}
+
 // Fit a window fully inside the work area: shrink it if it is bigger than the
 // screen, then move it so no edge is off the screen.
 export function fitInside( rect, area ) {

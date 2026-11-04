@@ -25,10 +25,14 @@ export const WAKE_WORDS = {
 export const wakeLabel = key => ( WAKE_WORDS[key] ?? WAKE_WORDS.prompter ).label;
 
 export const COMMANDS = [
+	{ id: "obs-on", phrases: [ "record on", "recording on" ] },
+	{ id: "obs-off", phrases: [ "record off", "recording off" ] },
+	{ id: "obs-pause", phrases: [ "record pause", "recording pause" ] },
+	{ id: "obs-resume", phrases: [ "record resume", "recording resume" ] },
 	{ id: "guide-on", phrases: [ "guide on", "show guide", "show the guide", "head guide on" ] },
 	{ id: "guide-off", phrases: [ "guide off", "hide guide", "hide the guide", "head guide off" ] },
 	{ id: "obs-record", phrases: [ "record take", "start recording" ] },
-	{ id: "obs-finish", phrases: [ "finish recording", "stop recording" ] },
+	{ id: "obs-finish", phrases: [ "finish recording", "stop recording", "stopped recording", "end recording", "finish", "end" ] },
 	{
 		id: "pause",
 		phrases: [
@@ -97,6 +101,8 @@ export const COMMANDS = [
 		phrases: [
 			"again",
 			"retake",
+			"restart section",
+			"restart sections",
 			"take it again",
 			"try again",
 			"one more time",
@@ -183,6 +189,9 @@ export const COMMANDS = [
 export const COMMAND_HELP = [
 	[ "guide on · guide off", "Show or hide the head-position guide", "Guide" ],
 	[ "record take · finish recording", "OBS only, when enabled with recording controls" ],
+	[ "finish · end", "Finish the OBS recording, when recording controls are enabled", "OBS" ],
+	[ "record on · record off", "Start or finish the recorder explicitly", "OBS" ],
+	[ "record pause · record resume", "Pause or resume the recorder explicitly", "OBS" ],
 	[ "pause", "Pause (stop, hold, wait)" ],
 	[ "go", "Start, or carry on (carry on, continue)" ],
 	[ "slower · faster", "Change the speed" ],
@@ -192,6 +201,7 @@ export const COMMAND_HELP = [
 	[ "reset", "Back to the start, with the speed and clock reset" ],
 	[ "section 3", "Go to that section (also without “Prompter”)" ],
 	[ "again", "A retake: back to the start of this section" ],
+	[ "restart section", "Retake this section; restart alone resets the whole script", "Takes" ],
 	[ "marker", "Drop a marker for the edit" ],
 	[ "back to the marker", "Read again from the last marker" ],
 	[ "keeper · scrap that", "Rate this take" ],
@@ -236,7 +246,7 @@ export function sectionNumber( words ) {
 	let n = /^\d+$/.test( said[1] ) ? Number( said[1] ) : NUMBER_WORDS[said[1]] ?? TENS[said[1]];
 	if ( said.length === 3 ) {
 		const unit = NUMBER_WORDS[said[2]];
-		n = TENS[said[1]] && unit >= 1 && unit <= 9 ? TENS[said[1]] + unit : null;
+		n = TENS[said[1]] && unit >= 1 && unit <= 9 ? TENS[said[1]] + unit : NUMBER_WORDS[said[1] + said[2]] ?? null;
 	}
 	return n >= 1 && n <= 99 ? n : null;
 }
@@ -345,6 +355,11 @@ export function createCommandListener( {
 		}
 		if ( final ) {
 			if ( held?.words.length ) {
+				// The local recogniser can end a phrase with SECTION TWEL,
+				// then deliver VE separately. Keep this exact number fragment
+				// under the existing wake-word timeout; never guess a recorder action.
+				const fragment = held.words.map( normalize );
+				if ( fragment.length === 2 && fragment[0] === "section" && fragment[1].length >= 3 && !sectionNumber( held.words ) && Object.keys( NUMBER_WORDS ).some( word => word.startsWith( fragment[1] ) ) ) return pass;
 				const n = sectionNumber( held.words );
 				const id = n ? null : matchCommand( held.words, options );
 				if ( n ) onCommand( "section", n );

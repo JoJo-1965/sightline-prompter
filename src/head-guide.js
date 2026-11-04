@@ -8,9 +8,11 @@ import { guideAdjustment, GUIDE_CONTROLS } from "./guide-control.js";
 
 const HOTKEY = "CommandOrControl+Shift+H";
 const FULLSCREEN_HOTKEY = "CommandOrControl+Alt+H";
-export function createHeadGuide( { dir, prompter, getSettings, saveSettings, saveBounds, onChange, restoreStack, restackUtilities } ) {
+export function createHeadGuide( { dir, prompter, getSettings, saveSettings, saveBounds, onChange, restoreStack, restackUtilities, onFramingAction = () => {} } ) {
+	let feedback = { enabled: false, active: false, person: null }, calibration = {};
 	let overlay = null;
 	let controls = null;
+	let toolbar = null, toolbarTimer = null, toolbarExpanded = true, toolbarPinned = false, toolbarUntil = 0, toolbarCursor = null, moving = null;
 	let locked = false;
 	let resizing = null;
 	let saveTimer;
@@ -23,9 +25,15 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 	const snapshot = () => ( { ...state(), shown: !!overlay, bounds: overlay?.getBounds() ?? getSettings().headGuideBounds ?? null, windowedBounds: normalBounds ?? getSettings().headGuideBounds ?? null, placement: getSettings().headGuidePlacement ?? "centre", placements: getSettings().headGuidePlacements ?? {}, displayId: overlay ? screen.getDisplayMatching( overlay.getBounds() ).id : null, captureOverride: captureOverride(), captureStatus: captureOverride() ? "Debug capture override on; guide may be recorded" : "Protected separate overlay; OBS capture route not verified" } );
 	const send = () => {
 		const value = snapshot();
+		value.reference = getSettings().headGuideReference ?? null;
 		value.controlsShown = controls?.isVisible() ?? false;
+		value.toolbarExpanded = toolbarExpanded;
+		value.toolbarPinned = toolbarPinned;
+		value.feedback = { ...feedback, person: Date.now() - ( feedback.at ?? 0 ) < 1500 ? feedback.person : null };
+		value.calibration = calibration;
 		overlay?.webContents.send( "headGuideState", value );
 		controls?.webContents.send( "headGuideState", { ...value, controlsOnly: true } );
+		toolbar?.webContents.send( "headGuideState", { ...value, toolbarOnly: true } );
 		if ( !prompter.isDestroyed() ) prompter.webContents.send( "headGuideState", value );
 	};
 	function remember() {
@@ -47,6 +55,8 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 	}
 	function close() {
 		clearTimeout( saveTimer );
+		clearInterval( toolbarTimer ); toolbarTimer = null;
+		toolbar?.destroy(); toolbar = null; moving = null;
 		controls?.destroy();
 		controls = null;
 		if ( overlay ) {
@@ -67,11 +77,49 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 		overlay.moveTop();
 		prompter.setAlwaysOnTop( true, "screen-saver" );
 		prompter.moveTop();
+		if ( toolbar?.isVisible() ) { toolbar.setAlwaysOnTop( true, "screen-saver", 1 ); toolbar.moveTop(); }
 		if ( controls?.isVisible() ) {
 			controls.setAlwaysOnTop( true, "screen-saver" );
 			controls.moveTop();
 		}
 		restackUtilities?.();
+	}
+	function toolbarBounds( expanded ) {
+		const area = screen.getDisplayMatching( overlay.getBounds() ).workArea;
+		const fullWidth = Math.max( 100, Math.min( 920, area.width - 24 ) );
+		const width = expanded ? fullWidth : Math.min( 140, fullWidth );
+		const height = expanded ? fullWidth >= 760 ? 46 : fullWidth >= 500 ? 82 : 118 : 26;
+		return { x: Math.round( area.x + ( area.width - width ) / 2 ), y: area.y + area.height - height - 12, width, height };
+	}
+	function updateToolbar( reveal = false ) {
+		if ( !overlay || !toolbar || toolbar.isDestroyed() ) return;
+		const cursor = screen.getCursorScreenPoint(), now = Date.now();
+		const full = toolbarBounds( true ), tab = toolbarBounds( false );
+		const inside = bounds => cursor.x >= bounds.x - 4 && cursor.x <= bounds.x + bounds.width + 4 && cursor.y >= bounds.y - 4 && cursor.y <= bounds.y + bounds.height + 4;
+		const moved = toolbarCursor && ( cursor.x !== toolbarCursor.x || cursor.y !== toolbarCursor.y );
+		toolbarCursor = cursor;
+		if ( reveal || inside( toolbarExpanded ? full : tab ) || moving || resizing ) toolbarUntil = now + 900;
+		const area = screen.getDisplayMatching( overlay.getBounds() ).workArea;
+		const far = Math.max( full.x - cursor.x, cursor.x - full.x - full.width ) > area.width * .1 || Math.max( full.y - cursor.y, cursor.y - full.y - full.height ) > area.height * .1;
+		const expanded = toolbarPinned || reveal || !!moving || !!resizing || inside( toolbarExpanded ? full : tab ) || ( now < toolbarUntil && !( moved && far ) );
+		const changed = toolbarExpanded !== expanded; toolbarExpanded = expanded;
+		const bounds = expanded ? full : tab, previous = toolbar.getBounds();
+		if ( Object.keys( bounds ).some( key => bounds[key] !== previous[key] ) ) toolbar.setBounds( bounds );
+		if ( changed ) send();
+	}
+	function ensureToolbar() {
+		if ( toolbar || !overlay ) return;
+		toolbarExpanded = true; toolbarUntil = Date.now() + 1800; toolbarCursor = screen.getCursorScreenPoint();
+		toolbar = new BrowserWindow( { ...toolbarBounds( true ), frame: false, transparent: true, backgroundColor: "#00000000", resizable: false, maximizable: false, minimizable: false, fullscreenable: false, skipTaskbar: true, show: false, title: "Sightline head-guide toolbar", webPreferences: { nodeIntegration: false, contextIsolation: true, sandbox: false, preload: path.join( dir, "client", "head-guide-preload.mjs" ) } } );
+		protectWindow( toolbar, true );
+		toolbar.setAlwaysOnTop( true, "screen-saver", 1 );
+		toolbar.loadFile( path.join( dir, "client", "head-guide.html" ), { query: { toolbar: "1" } } );
+		toolbar.once( "ready-to-show", () => { toolbar?.showInactive(); updateToolbar(); restack(); send(); } );
+		toolbar.on( "focus", restack );
+		toolbar.on( "close", event => { event.preventDefault(); toolbarPinned = false; toolbarUntil = 0; updateToolbar(); } );
+		toolbar.webContents.on( "will-navigate", event => event.preventDefault() );
+		toolbar.webContents.setWindowOpenHandler( () => ( { action: "deny" } ) );
+		toolbarTimer = setInterval( updateToolbar, 100 );
 	}
 	function toggleControls() {
 		if ( !overlay ) return;
@@ -83,7 +131,13 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 		if ( !controls ) {
 			const area = screen.getDisplayMatching( prompter.getBounds() ).workArea;
 			const saved = getSettings().headGuideControlsBounds;
-			const bounds = fitInside( saved ?? { x: area.x + area.width - 400, y: area.y + 30, width: 390, height: 740 }, area );
+			const toolbarBottom = Math.max( area.y + 60, prompter.getBounds().y + 64 );
+			const height = Math.min( 740, Math.max( 420, area.y + area.height - toolbarBottom - 12 ) );
+			const bounds = fitInside( saved ?? { x: area.x + area.width - 400, y: area.y + area.height - height - 12, width: 390, height }, area );
+			if ( bounds.y < toolbarBottom && area.height >= 500 ) {
+				bounds.y = toolbarBottom;
+				bounds.height = Math.min( bounds.height, area.y + area.height - bounds.y );
+			}
 			controls = new BrowserWindow( { ...bounds, minWidth: Math.min( 350, area.width ), minHeight: Math.min( 460, area.height ), show: false, minimizable: false, maximizable: false, fullscreenable: false, autoHideMenuBar: true, title: "Guide adjustments", backgroundColor: "#15222b", webPreferences: { nodeIntegration: false, contextIsolation: true, sandbox: false, preload: path.join( dir, "client", "head-guide-preload.mjs" ) } } );
 			protectWindow( controls, !!getSettings().hideFromCapture );
 			controls.setAlwaysOnTop( true, "screen-saver" );
@@ -146,6 +200,7 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 			overlay.loadFile( path.join( dir, "client", "head-guide.html" ) );
 			overlay.once( "ready-to-show", () => {
 				overlay?.showInactive();
+				ensureToolbar();
 				restack();
 			} );
 			overlay.on( "focus", restack );
@@ -182,7 +237,18 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 	function action( event, name, value ) {
 		const fromOverlay = overlay && event.sender === overlay.webContents;
 		const fromControls = controls && event.sender === controls.webContents;
-		if ( !fromOverlay && !fromControls && event.sender !== prompter.webContents ) return;
+		const fromToolbar = toolbar && event.sender === toolbar.webContents;
+		if ( !fromOverlay && !fromControls && !fromToolbar && event.sender !== prompter.webContents ) return;
+		if ( fromToolbar && name === "toolbar-reveal" ) { updateToolbar( true ); return; }
+		if ( fromToolbar && name === "toolbar-pin" ) { toolbarPinned = !toolbarPinned; updateToolbar( true ); send(); return; }
+		if ( fromToolbar && name === "move-start" && !fullscreen ) moving = { cursor: screen.getCursorScreenPoint(), bounds: overlay.getBounds() };
+		if ( fromToolbar && name === "move" && moving ) {
+			const cursor = screen.getCursorScreenPoint();
+			const bounds = { ...moving.bounds, x: moving.bounds.x + cursor.x - moving.cursor.x, y: moving.bounds.y + cursor.y - moving.cursor.y };
+			overlay.setBounds( fitInside( bounds, screen.getDisplayMatching( bounds ).workArea ) ); updateToolbar( true );
+		}
+		if ( fromToolbar && name === "move-end" ) { moving = null; remember(); }
+		if ( name.startsWith( "framing-" ) ) { onFramingAction( name.slice( 8 ), value ); return; }
 		if ( name === "adjust" ) {
 			toggleControls();
 			return;
@@ -208,7 +274,9 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 			saveSettings( { showHeadGuide: false } );
 			return;
 		}
-		if ( !fromOverlay && !fromControls ) return;
+		const fromSettings = event.sender === prompter.webContents && [ "place", "save-reference", "restore-reference", "save-ideal", "reset-pose" ].includes( name );
+		if ( !fromOverlay && !fromControls && !fromToolbar && !fromSettings ) return;
+		if ( fromSettings && !overlay ) return;
 		if ( name === "ready" ) {
 			send();
 			if ( !hotkeyRegistered || !fullscreenHotkeyRegistered ) prompter.webContents.send( "toast", "A head guide hotkey is in use. Use Tools or Stream Deck for the guide controls." );
@@ -229,6 +297,7 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 			send();
 		}
 		if ( name === "lock" ) {
+			if ( locked ) { unlock(); return; }
 			locked = true;
 			send();
 			overlay.setIgnoreMouseEvents( true, { forward: true } );
@@ -252,6 +321,13 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 		if ( name === "save-ideal" ) {
 			const pose = state();
 			saveSettings( { headGuideIdeal: guidePose( pose ), headGuideShowIdeal: true } );
+		}
+		if ( name === "save-reference" ) saveSettings( { headGuideReference: { savedAt: new Date().toISOString(), pose: guidePose( state() ), eyesLocked: state().eyesLocked, bounds: overlay?.getBounds() ?? null } } );
+		if ( name === "restore-reference" && getSettings().headGuideReference?.pose ) {
+			const reference = getSettings().headGuideReference;
+			const patch = { headGuideEyesLocked: reference.eyesLocked === true };
+			for ( const [ key, value ] of Object.entries( guidePose( reference.pose ) ) ) patch[`headGuide${ key[0].toUpperCase() }${ key.slice( 1 ) }`] = value;
+			saveSettings( patch );
 		}
 		if ( name === "ideal-visible" ) saveSettings( { headGuideShowIdeal: !state().showIdeal } );
 		if ( name === "reset-pose" ) {
@@ -286,7 +362,14 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 	prompter.on( "focus", restack );
 	return {
 		apply, toggle, toggleFullscreen, restack, isLocked: () => locked,
-		status: () => ( { ...state(), shown: !!overlay } ),
+		feedback( value ) { feedback = { ...value, at: Date.now() }; send(); },
+		calibration( value ) { calibration = value; send(); },
+		async pose( value ) {
+			const pose = guidePose( { x: value.x, y: value.y + 14 / 562.5 * 100, scale: value.size / 100 } );
+			await saveSettings( { headGuideX: pose.x, headGuideY: pose.y, headGuideScale: pose.scale, headGuideEyesLocked: false } );
+		},
+		showAdjustments() { if ( !overlay ) saveSettings( { showHeadGuide: true } ); if ( !controls?.isVisible() ) toggleControls(); },
+		status: () => ( { ...state(), reference: getSettings().headGuideReference ?? null, shown: !!overlay } ),
 		adjust: value => saveSettings( guideAdjustment( getSettings(), value ) ),
 		control: remoteControl,
 		dispose() {

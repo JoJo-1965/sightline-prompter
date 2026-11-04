@@ -1,24 +1,57 @@
 # Recording with OBS Studio
 
+## RC 1 connection and test results
+
+Open **Connections > OBS integration**. One sidebar entry contains visible
+**Connection**, **Recording control** and **Profile and scenes** buttons.
+Recording and setup tabs appear only while OBS integration is enabled.
+Connection and recorder state appear separately: **Connected / Not recording**
+means OBS is reachable and its recorder is idle. Disconnection means unknown.
+
+Apply connection changes before **Test saved connection**. Its running,
+passed or failed result remains in Settings and on the prompter. Changing
+connection settings or losing the connection marks a previous pass for recheck.
+A connection pass does not validate recorded picture or sound: use
+[Prepare to record](16-prepare-to-record.md) to review a real test.
+
+## Linked recording
+
+Continuous recording is the default: prompting stops and retakes leave OBS
+running. Opt in with **Connections > OBS integration > Recording control > Link recording to prompting**
+while OBS is stopped. Recording controls must also be enabled.
+Play starts/resumes recording and waits for confirmation; prompting pauses
+request recording pauses. The final stop or script end requests recording finish.
+Unsupported pause formats show an error and leave prompting held. Test your format.
+
+Explicit **Prompter, record on / off / pause / resume** works with permission
+regardless of linked mode. Optional `{record: on}` or `{record: resume}` before
+the first spoken line runs on Play. Inline `{record: pause}` and `{record: off}`
+also hold prompting. Loading a script never executes recording commands;
+commands inside production comments never execute.
+
+The persistent pill shows **OBS OFF** green, **OBS RECORDING** red, **OBS PAUSED**
+orange or **OBS UNKNOWN** grey, including when the toolbar hides. OFF requires
+confirmation; disconnection means UNKNOWN. Disabling OBS hides these features
+and their help. The baseline instructions below describe continuous mode.
+
 For an optional separate profile and scene collection, see the
 [OBS setup assistant and configuration guide](15-obs-setup.md). Setup is a
 one-time choice; normal prompting and retakes need no setup commands.
 
-In the next candidate, OBS topics are under **Settings > Recording**. On **OBS recording**,
+OBS topics are under **Settings > Recording**. On **OBS recording**,
 **Prepare recorded slate** explains any unmet prerequisite, then displays
 progress, readiness or errors beside the button. Apply permission changes first.
 
-**1.1.0 release candidate: built, not publicly released.** These instructions
-describe roadmap item 52 in the local Windows test build. Use the private
-Stream Deck **0.1.9** companion for the recording keys. The published 1.0.6
-app does not contain this OBS integration. Follow the
-[acceptance test](14-acceptance-test.md) before approving the recording workflow.
+**Sightline 1.2.0 + Stream Deck 0.2.0.** Linked recording,
+explicit record on/off/pause/resume commands and the recording pill are included.
+Use the
+[acceptance walkthrough](14-acceptance-test.md) for your recording route.
 
 Sightline connects to OBS Studio's built-in WebSocket interface. OBS handles
 the audio and video recording; Sightline handles the script, takes and edit
 information. You do not need a separate OBS plugin, Stream Deck or MCP server.
 
-The next candidate checks for a local OBS installation before enabling local
+Sightline checks for a local OBS installation before enabling local
 setup. If it is missing, **Components** provides OBS's installer link,
 **Locate** for portable/custom copies, and **Check again**. Entering another
 computer's OBS address keeps remote setup available. Installed software is
@@ -27,13 +60,13 @@ separate from a confirmed WebSocket connection and recording permissions.
 For the session checklist and which files to send to Production, follow
 [From recording to the editor](12-production-handover.md).
 
-![The OBS settings tab](images/settings-obs.png)
+![The OBS settings tab](images/settings-1.2.0-obs.png)
 
 ## Connect once
 
 1. In OBS Studio 28 or later, open **Tools > WebSocket Server Settings**.
    Enable the server and authentication. Note its port and password.
-2. In Sightline, open **Settings > Recording > OBS connection**. Tick **Enable OBS integration**.
+2. In Sightline, open **Settings > Connections > OBS integration**. Tick **Enable OBS integration**.
 3. Use **127.0.0.1** for OBS on this computer. Enter OBS's port (normally
    **4455**) and password, then click **Apply**.
 4. Click **Test saved connection**. Test uses the saved values; apply any
@@ -56,14 +89,14 @@ the default is this computer. There is no automatic network discovery.
 
 ## Watch status, or enable recording controls
 
-Leave **Allow Sightline to start and stop OBS recordings** off for status
+Leave recording controls off for status
 only. Sightline shows whether OBS is recording, paused or stopped, with
 the same information in its control window. A lost connection shows
 **recording status unknown**; it does not claim the recording stopped.
 RC11 gives **Record take** and **Finish recording** explicit dark styles with
 readable disabled labels and a clear keyboard-focus outline.
 
-In **Settings > Recording > OBS recording**, enable recording controls to get **Record take** and **Finish recording**
+In **Settings > Connections > OBS recording control**, enable recording controls to get **Record take** and **Finish recording**
 beside the script, in the control window and on the phone remote:
 
 - **Record take** checks OBS first. If OBS is stopped, it asks it to record,
@@ -72,9 +105,9 @@ beside the script, in the control window and on the phone remote:
   An OBS recording paused externally must be resumed in OBS first.
 - **Finish recording** stops prompting and asks OBS to finish its recording.
   If confirmation fails, inspect OBS before assuming recording has stopped.
-- **Play, Pause, Again and On air** keep their existing behaviour. They
-  do not start, pause or stop OBS. You can pause or repeat sections while
-  OBS makes one continuous recording.
+- **Continuous mode:** Play, Pause, Again and On air keep their existing
+  behaviour. Prompting pauses and retakes leave OBS recording. The preview's
+  optional **Link recording to prompting** setting changes this coupling.
 
 With voice commands listening, say **"Prompter, record take"** or
 **"Prompter, finish recording"**, using your selected wake word. In a
@@ -85,7 +118,7 @@ They do not enable the integration themselves.
 The local API accepts `obs-record` and `obs-finish` as command actions,
 subject to the same saved permissions. Request acceptance means the action
 was dispatched, not that OBS has confirmed it: inspect `status.obs`.
-The private companion Stream Deck test build **0.1.9** includes **Record take
+The companion Stream Deck **0.2.0** includes **Record take
 (OBS)** and **Finish recording (OBS)** keys. They use these same permissions
 and show stopped, recording, paused, confirming or unknown. Unsupported,
 disabled and status-only app states block recording requests. These keys
@@ -93,8 +126,9 @@ are separate from ordinary Play/Pause and On air.
 
 Each model has a separate sample profile ending in **OBS**, selected
 explicitly with **Use the OBS recording profile** on a key's settings page.
-Standard layouts keep their assignments. This is development code, not a
-public Marketplace release. See [Stream Deck setup](06-remotes-and-screens.md#stream-deck).
+Standard layouts keep their assignments. The plugin download is attached to
+the app release; its source stays private and Marketplace listing is pending.
+See [Stream Deck setup](06-remotes-and-screens.md#stream-deck).
 
 ## Put the slate into the recording
 
@@ -103,7 +137,7 @@ enabled. It uses OBS's included Browser source, not the protected head guide.
 
 1. Stop recording and streaming in OBS.
 2. In **Settings > Recording > Takes > Slate**, choose **Flash and beep** or **Flash**.
-3. In **Settings > Recording > OBS recording**, tick **Include the slate in the OBS recording**,
+3. In **Settings > Connections > OBS recording control**, tick **Include the slate in the OBS recording**,
    then **Apply** and **Prepare recorded slate**.
 4. Preparation adds or updates only **Sightline recorded sync** above the
    current scene. It leaves your camera, microphone, profile and scene choice
@@ -112,7 +146,7 @@ enabled. It uses OBS's included Browser source, not the protected head guide.
 5. Use **Record take**. Keep the normal scratch audio enabled for an independent
    microphone reference. Check a short recording before the full session.
 
-![OBS recording permissions, chapters and recorded-slate preparation](images/settings-obs-recording.png)
+![OBS recording permissions, chapters and recorded-slate preparation](images/settings-1.2.0-obs-recording.png)
 
 Prepare again after restarting Sightline or changing scenes. The status line
 shows whether the source is ready. Hidden, moved, cropped or muted sources

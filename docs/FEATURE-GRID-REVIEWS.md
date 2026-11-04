@@ -1,0 +1,226 @@
+# Feature-matrix review record
+
+## Stable 1.2.0 review — 4 November 2026
+
+Promoted the approved RC5 functions to the 1.2.0 reference, documentation
+revision 16. Reviewed all 249 entries across 18 groups with the built-in wiki,
+grouped release notes, roadmap, demo scripts and current packaged screenshots.
+Connections, OBS and Stream Deck retain separate capability groups. Local
+position feedback uses a fixed target and manual fallback; MCP permission
+gates and estimated live timings are explicit. Download approval illustrations
+and corrected built-in reference navigation add help, not new product claims.
+JL receives this same reviewed Markdown/HTML/CSV/JSON snapshot.
+
+## Earlier reviews
+
+4 November 2026, feedback after RC 5: remove the redundant guide footer message.
+The reveal tab, shortcuts, controls and framing geometry remain unchanged.
+This cosmetic correction changes no capability, requirement or limit in RC 5's
+249-row matrix. Queue it for the next combined package; frozen exports and JL
+snapshot stay tied to RC 5 until that packaging review.
+
+4 November 2026, RC 5 packaging review: Joanne requested the combined build.
+The 249-row grid now describes 1.2.0-rc.5/docs 15 and source 29e32a8. Existing
+guide visibility, position feedback, Lock current and preparation rows cover
+the corrected dimensions, hover toolbar and guide-only calibration. Help,
+screenshots, samples, release notes and generated exports agree. The JL review
+branch receives the same snapshot; public versions remain 1.1.0/0.2.0.
+
+4 November 2026, further guide feedback after RC 4: calibration now initialises
+its shared renderer in the background and opens the workflow only on request.
+The guide toolbar docks at the bottom with a hover-recoverable tab, pin option
+and its own small window layer above the prompter. Lock/unlock, fullscreen and
+Guide off remain reachable; turning the guide off removes the toolbar. Native
+tests cover these states, cold input choices and unclipped 920/560/320px layouts.
+This changes the existing guide visibility/control behaviour, not the row count.
+Help and actual captures are updated in source. Frozen RC 4/JL exports stay tied
+to that package; update their existing visibility/placement options and snapshot
+provenance with the next combined RC. No website deployment occurred here.
+
+4 November 2026, feedback after RC 4: corrected existing local position feedback
+to account for the guide's Width and independent side adjustments, and preserve
+those proportions on Lock current. Distance hints expose the existing measured
+size ratio; mirrored arrows now agree. No new integration, mode or capability
+row is introduced. The native regression reproduces the old mismatch and tests
+actual local inference on a face growing/shrinking against the fixed target.
+RC 4's 249-row exports and JL snapshot remain the record of that frozen package.
+The fix, help and review evidence are queued for the next combined candidate;
+refresh generated provenance and affected help/JL captures at that packaging
+point rather than relabelling RC 4's existing ZIP as fixed.
+
+3 November 2026, next-preview support reminder: Joanne requested reuse of the
+existing coffee note, repeating at a saved random 10–15 launch interval.
+Only scheduling changes; the support link, appearance, dismissal, delay and
+reading/on-air guards are retained. Unit checks cover repeated cycles, legacy
+profiles, busy deferral and unavailable storage. There is no new comparison
+capability, price, account requirement or integration. The 241-row UAT 09 grid
+and JL snapshot remain accurate for that immutable package; no exports or
+website claims change until the next combined preview is built.
+
+3 November 2026, UAT Preview 09: reviewed the full PC feedback batch. Updated
+existing rows for current setup guidance, nine Settings areas, listening
+health/recovery, Guide off, focus-band annotation exclusions and manual
+cross-screen placement. The 241 capabilities across 18 groups remain unchanged.
+Getting started intentionally scrolls guidance in the centre pane; configuration
+controls retain fixed sections. Documentation revision 10 remains preview-only.
+Help, affected captures, generated exports and the pending JL snapshot follow
+the same batch. No live publication or hardware acceptance is implied.
+
+2 November 2026, Elgato demonstration extension: exercised existing MCP Deck
+virtual keys through official Elgato MCP Server 0.1.8, installed Stream Deck
+7.6 and the unchanged released plugin/app. Play/Pause, Marker, pace and On air
+were exercised; the video distinguishes configured action icons from confirmed
+app state because MCP action-list state readback remained unchanged. This is
+validation of an existing Stream Deck input route, not a new native Sightline
+MCP server or physical-controller acceptance. No app binary or matrix rows
+change; native MCP remains planned for the next candidate.
+
+2 November 2026, next-candidate MCP request: added optional MCP server support
+to ROADMAP.md, wrapping the existing local API with discovery, connection and
+version checks, script/control tools and authorised recording-data access.
+This is planned scope, not an implemented UAT 08 feature. No capability rows,
+help, screenshots, supported marketing claims or JL exports change; revision 9
+remains the current validated snapshot. Update those references together when
+the adapter is implemented and tested.
+
+2 November 2026, UAT Preview 08: optional local head-position feedback,
+manual fallback, real audio measurement, reviewed local test recording and
+explicit fixed framing-reference save/restore are implemented using the
+approved mock composition. Four net capability rows are added (241 across
+18 groups). Revision 9 preserves the published app/plugin versions and marks
+all additions as preview-only. Help, samples, exports and the JL draft follow
+this UAT; physical camera/recorder/controller acceptance remains outstanding.
+
+2 November 2026, pre-record design approval: Joanne confirmed that the mock
+meets expectations. Recorded the approved source and interaction contract in
+design/PRE-RECORD-POC.md. This is design approval, with no new implemented
+capability, package, help or JL claim. The supported-feature matrix remains on
+Preview 07, documentation revision 8, until a real implementation is validated.
+
+2 November 2026, pre-record PoC: a separate browser mock explores optional
+head-position feedback alongside manual fitting, audio checks, a test clip and
+saved framing for returning after a break. Tracking, camera, audio and clips
+are simulated; only mock reference data is saved in the browser. No installed
+feature, help, matrix row, release or JL capability claim changes. Preview 07
+and its revision-8 feature snapshot remain the validated app basis.
+
+2 November 2026, phone review access: a separate browser layout and native
+screenshot gallery expose the current Preview 07 for read-only review on the
+same network. The layout includes Prompter layout naming, visible subtabs and
+compact toolbar-icon mirror buttons; the gallery preserves exact app captures.
+This changes no installed feature or publication claim. The binary, revision-8
+matrix, help and JL snapshot remain unchanged; no new package/deploy is needed.
+
+2 November 2026, requested combined Preview 07: compact mirror buttons join
+all approved Preview 06 fixes in one package. No capability rows or directive,
+theme, permission, OBS or Stream Deck behaviour changes. Revision 8 advances
+the exact preview/source metadata, refreshes the Screens screenshot and keeps
+the remaining identical gallery views. Guide, feature exports, marketing copy
+and JL review snapshot are checked together; published versions remain fixed.
+
+2 November 2026, full queued mirror card received after Preview 06 handover:
+the earlier truncated card also requested smaller buttons. Source now uses
+content-sized mirror buttons with the standard 32px minimum height and existing
+toolbar icons, rather than stretching each button across half the panel.
+This is a cosmetic correction for the next combined build, with no capability,
+permission, theme, script or matrix-row change. The packaged Preview 06 and its
+gallery/JL snapshot remain the reviewed revision-7 baseline until that build.
+
+2 November 2026, final conversation-queue review: the four visible queued
+cards are covered by Prompter layout naming, visible group tabs, toolbar SVG
+reuse for both mirror axes and one combined Preview 06. The old Guide/OBS
+collision is included and checked at three prompter sizes. No new directive,
+permission, integration capability, pricing or marketing claim is introduced.
+Revision 7 retains distinct OBS/Stream Deck sections and qualified hardware,
+capture and synchronization limits. The gallery, offline help, promo preparation
+guide and JL review snapshot accompany this batch; published versions stay put.
+
+2 November 2026, approved combined batch: Joanne approved the review layout.
+Implemented visible tabs for Screens, Reading aids and Installed components,
+the three-mode selector, Head guide controls/reference actions and matching
+manual preview, width-based third-column placement, non-modal companion,
+inset focus, mirror spacing and standard eye-line controls with enable gating.
+All 34 sections and all subtabs fit five native sizes, including Focus band on.
+Mode/guide save/restore, actual pointer interaction, native/Escape close and
+capture checks pass. Unit and recorder/head-guide regression fixtures pass.
+Revision 7 and Preview 06 are the new unpublished basis; pin the final code
+hash and regenerate/sync references before packaging. No script syntax or
+marketing-positioning change is introduced. Hardware limits remain qualified.
+
+2 November 2026, focus follow-up: the actual app source now uses an inset focus
+cue instead of the detached outer halo, including the floating preview. Native
+rendering confirms that focus remains visible and does not paint outside the
+control; Settings checks pass at five sizes. Captured the actual app result.
+This is a cosmetic correction for the combined batch, with no capability,
+matrix, script, JL or marketing claim change. The earlier package is unchanged.
+
+2 November 2026, combined Settings feedback review: compact preview is a
+non-modal utility window in source, sharing the live Settings draft and normal
+control fonts. Native checks cover real Settings interaction while open,
+Escape/native X, minimum size and inherited capture policy. The full unit
+suite passes. The combined layout mock also covers visible groups, mode gates,
+focus treatment, Head guide setup and width-based preview placement; these
+remaining layout proposals require sign-off before final wiring. Mock captures
+are distinct from the actual native preview capture. The matrix remains based
+on the packaged Reading aids patch. Advance dependency/preview rows, generated
+exports, help/gallery and JL copies together when the approved batch is built.
+No script format, sample, recorder workflow, USP or marketing change is made.
+
+2 November 2026, next feedback batch: implemented a single Notes/page, Voice or
+Scroll selector in source. Mode and pace now hides/disables unrelated controls
+without erasing their values: response for Voice; WPM, script pacing and
+countdown for Scroll; page guidance for Notes. Native checks cover component
+gates, transitions, save/reopen, Apply/Cancel and all five window sizes. Draft
+screenshots and guide notes are prepared. This is not in the running package;
+advance the matrix dependency rows, generated exports and JL snapshot when the
+combined batch is packaged. No current public marketing claim is changed.
+
+2 November 2026, spacing follow-up for the next feedback batch: restored the
+mirror group's vertical layout after its move to Screens and mirroring, with
+12px above the group and 8px between the label and buttons. The native Settings
+check passes at all five window sizes. Applied the same CSS to the open preview
+without restarting or changing preferences; the persistent package and refreshed
+gallery will accompany the next batch. No capability, help, matrix, JL or
+marketing claim changes are needed; the matrix still describes the packaged
+Reading aids patch.
+
+2 November 2026, Reading aids patch: Focus strength is shown/enabled only with
+Focus band on and retains its value when off. Reviewed every control in both
+Reading aids groups and added missing contextual explanations. Refreshed the
+off/on, help and cue-file screenshots; kept Browse/Clear labels unbroken.
+Matrix dependency/help rows and documentation revision 6 describe this patch.
+JL downloads use the same reviewed snapshot. Landing, FAQ, promo scripts,
+marketing and positioning require no claim changes; no publication is implied.
+
+2 November 2026, numeric patch: reviewed Settings, Tools, toolbar, head-guide
+and pad/phone numeric readouts. Added the numeric-controls row and revision 5.
+Help and changelog explain steps and retained stored precision. The current
+gallery's whole-number examples retain the same appearance; no layout, icon,
+marketing-positioning or release-status change is introduced.
+
+Review the matrix with help, guides, screenshots, changelog, roadmap and JL
+copy for every app or companion deployment. Update rows when behaviour,
+options, controls, requirements or limits change. Otherwise record the
+no-feature-impact decision here; an old unchanged entry is not a new review.
+
+| Date | Change reviewed | Matrix outcome |
+| --- | --- | --- |
+| 1 November 2026 | Deployment guards, generated metadata and website sync | No product capability change. The reference remains Preview 02; Preview 03 defects and the proposed redesign remain excluded as supported additions. |
+| 1 November 2026 | Design mock theme chooser and colour-reset clarification | Prototype only; no installed app or supported feature change. The matrix remains based on Preview 02. Updated the design findings and screenshot gallery; no live help or website capability update is needed. |
+| 1 November 2026 | Named custom themes and editable backing in the browser design mock | Prototype-only appearance save/restore, background colour/opacity and portable theme JSON. This is not whole-UI configuration export. The installed app has no new custom-theme capability. Matrix, live help and JL claims remain on the validated Preview 02 baseline; updated the design guide and gallery instead. |
+| 1 November 2026 | Optional-interface and help review in the design mock | OBS moves to Controls, game controller gets a separate home, optional interfaces reveal configuration only when enabled, and mock help follows enabled features. These are proposed UI behaviours, not installed-app additions; the matrix/public help/site remain on the tested baseline. |
+| 2 November 2026 | Approved Settings/Tools design implemented in native Preview 04 | Matrix advanced from Preview 02 to Preview 04: complete four-target typography, custom backing and portable reading themes; permanent named sections and consistent drafts; interface/runtime/help gates; separate controller homes and live Tools. Native checks cover compact windows, input learning, pad arrangement, theme files, window/capture policy and recorder/head-guide fixtures. Physical recording and accessibility limits remain qualified; final source hash is pinned before packaging. |
+
+Preview 04 packaging review, 2 November: runtime hints now use the new Settings
+paths and the native harness also runs against the packaged executable. These
+are copy/validation corrections to the same capabilities; no matrix row changes.
+
+Automated guards check consistency. They cannot prove a capability or hardware
+claim; review the exact build before publication.
+
+UAT 08 handover verification, 2 November 2026: recorded final executable/archive
+hashes, controlled-fixture versus physical acceptance limits, retained-profile
+checks and installed Stream Deck compatibility. This supplemental evidence and
+the updated promo recording guide change no product capabilities or matrix
+rows; the revision 9 snapshot stays pinned to implementation `228b4f8` and
+packaging source `67c9060`. Elgato evidence separately uses released binaries.

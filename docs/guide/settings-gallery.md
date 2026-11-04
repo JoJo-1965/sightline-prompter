@@ -1,185 +1,379 @@
 # Settings screenshot gallery
 
-Sightline 1.1.0 · 31 October 2026. These images show the released Settings layout.
-The panel stays the same size across topics.
-RC8 gives Settings and Help their own movable windows. The controls shown
-below are retained; drag the native title bar to use another screen.
+## Sightline 1.2.0
 
-![Settings as a separate movable window](images/floating-settings.png)
+Fresh captures from the packaged Windows app, 4 November 2026. Settings uses
+the approved left navigation, central controls and persistent reading example.
+The native checks cover all 34 sections at five window sizes. Demonstration
+assignments and unapplied integration switches show available configuration;
+they do not claim a connected physical device. Settings images are rendered
+at 1440 × 900 with 2× pixel density.
 
-[Full audit and findings](../SETTINGS-UX-AUDIT.md)
+![Current recording setup and reviewed-test status](images/settings-1.2.0-checklist.png)
 
-[Read the illustrated Settings guide](07-settings.md) for what each choice does.
+![Current text controls with independent formatting tabs](images/settings-1.2.0-typography.png)
 
-Jump to [Prompting](settings-gallery.md#prompting), [Appearance](settings-gallery.md#appearance),
-[Recording](settings-gallery.md#recording), [Controls](settings-gallery.md#controls),
-[Components](settings-gallery.md#components), [Debug](settings-gallery.md#debug) or [About](settings-gallery.md#about).
+![Current themes and editable backing](images/settings-1.2.0-background.png)
 
-## Setup and session check
+![Current pad layout with every button](images/settings-1.2.0-pad.png)
 
-![Reopenable first-use checklist](images/getting-started.png)
+![Current game-controller assignment list](images/settings-1.2.0-gamepad.png)
 
-![Pre-session links to existing tools](images/session-check.png)
+![Current OBS connection and recorder status](images/settings-1.2.0-obs.png)
 
-## Prompting
+![Current MCP, AI, and API permissions](images/settings-1.2.0-api.png)
 
-### Scrolling
+![Recoverable bottom head-guide toolbar](images/guide-toolbar-expanded.png)
 
-![Scrolling mode, speed and countdown](images/settings-scrolling.png)
+![Collapsed guide tab remains available](images/guide-toolbar-collapsed.png)
 
-### Voice recognition and microphone
+The rest of this page preserves earlier reviews as labelled history.
+Current instructions and navigation refer to 1.2.0.
 
-![Speech recognition and microphone settings](images/settings-voice.png)
+## Archived RC 5 guide controls
 
-### Commands and wake word
+The native implementation included in RC 5 moves guide controls to a small
+bottom toolbar above the prompter. Hover the retained tab to recover it.
+These captures show the validated runtime; the Settings composition below
+is retained from RC 4.
 
-![Command listening and wake word](images/settings-commands.png)
+![Expanded bottom guide toolbar](images/guide-toolbar-expanded.png)
 
-### Question-mark help opened
+![Recoverable collapsed guide tab](images/guide-toolbar-collapsed.png)
 
-![Explanation opened from the miniature help pill](images/settings-commands-help.png)
+## Archived RC 4 changes
 
-### Your words
+Actual packaged Windows captures at 1440 × 900 with 2× pixel density,
+4 November 2026. These supersede the corresponding earlier pages below.
+Demonstration assignments and unapplied switches show the available controls.
 
-![Script and command synonyms](images/settings-words.png)
+![Prepare to record: prominent workflow and test/reference state](images/settings-rc4-checklist.png)
 
-### Script behaviour
+![Game controller: every assignment with its action and Remove button](images/settings-rc4-gamepad.png)
 
-![Script behaviour, first page](images/settings-script.png)
+![Keyboard and clickers: complete assignment list](images/settings-rc4-mappings.png)
 
-![Script behaviour, second page](images/settings-script-page-2.png)
+![Pad and phone: aligned preset controls and all buttons in the selected layout](images/settings-rc4-pad.png)
 
-## Appearance
+![MCP, AI, and API with Configure MCP beside its switch](images/settings-rc4-api.png)
 
-### Text
+Long assignment lists scroll within the page. Pad buttons retain drag and
+Earlier/Later controls; the first and last disable the unavailable direction.
 
-![Body font, heading font, heading size and text-size preview](images/settings-reading.png)
+## Earlier RC 1 captures
 
-### Background
+Actual packaged Windows captures at 1440 × 900 with 2× pixel density,
+4 November 2026. Optional integrations are enabled in an unapplied draft to
+show their controls; connection/status lines identify what is actually saved.
 
-![Text and background visibility](images/settings-background.png)
+![Connections: OBS connection and separate status](images/settings-rc1-obs.png)
+
+![OBS recording-control subtab](images/settings-rc1-obs-recording.png)
+
+![OBS profile-and-scenes subtab](images/settings-rc1-obs-setup.png)
+
+![AI/API with MCP and separate grants](images/settings-rc1-api.png)
+
+![Recording setup with retained test outcome](images/settings-rc1-checklist.png)
+
+## Earlier UAT 09 reference captures
+
+The captures below document UAT 09. The RC images above supersede its old
+Controls/Components navigation and OBS pages. Unchanged reading controls retain
+the signed-off composition; these older images do not describe the RC's menu labels.
+
+These are actual Windows Electron Settings captures from the unpublished
+UAT Preview 09, 3 November 2026. They replace the Preview 03
+pagination examples. The public installer remains Sightline 1.1.0.
+
+The captures below use the current navigation, compact mirror buttons and
+guide controls. Older explicitly labelled detail examples are retained only
+where their controls are unchanged. The approved composition is preserved.
+
+The frame stays fixed across all 34 named sections. Compact windows use area
+and section selectors; tests also cover 560 × 500 content. Screenshots show
+an isolated demonstration profile. Optional switches are enabled in a draft
+to reveal their configuration; the footer and status lines explain when Apply
+is still needed. No user recorder or microphone was used for these captures.
+
+Button subtabs keep groups visible, and the non-modal companion stays live while
+you adjust Settings. The combined layout was approved on 2 November 2026.
+
+Tap **Open full size** if an image is too small on your phone. For behaviour
+and save rules, use the [Settings guide](07-settings.md).
+
+- [Prepare](#prepare)
+- [Reading](#reading)
+- [Voice](#voice)
+- [Recording](#recording)
+- [Controls](#controls)
+- [Setup](#setup)
+- [Debug](#debug)
+- [About](#about)
+
+## Prepare
+
+### Session checklist
+
+[Open full size](images/settings-preview09-checklist.png)
+
+![Prepare: Session checklist, UAT Preview 09](images/settings-preview09-checklist.png)
+
+## Reading
+
+### Mode and pace
+
+[Open full size](images/settings-preview09-mode.png)
+
+![Reading: Mode and pace, UAT Preview 09](images/settings-preview09-mode.png)
+
+### Text and directions
+
+[Open full size](images/settings-preview09-typography.png)
+
+![Reading: Text and directions, UAT Preview 09](images/settings-preview09-typography.png)
+
+### Theme and background
+
+[Open full size](images/settings-preview09-background.png)
+
+![Reading: Theme and background, UAT Preview 09](images/settings-preview09-background.png)
+
+### Prompter layout
+
+[Open full size](images/settings-preview09-layout.png)
+
+![Reading: Layout, UAT Preview 09](images/settings-preview09-layout.png)
 
 ### Reading aids
 
-![Reading aids](images/settings-aids.png)
+Focus band off hides its strength control and retains the chosen value.
+Every Reading aids control has a small ? explanation.
 
-### Spacing
+[Open full size](images/settings-preview09-aids.png)
 
-![Spacing and alignment, first page](images/settings-layout.png)
+![Reading: Reading aids, UAT Preview 09](images/settings-preview09-aids.png)
 
-![Spacing and alignment, second page](images/settings-layout-page-2.png)
+[Focus band on](images/settings-preview06-aids-on.png) ·
+[Help on hover](images/settings-preview06-aids-help.png) ·
+[Slide cues and script tags](images/settings-preview06-aids-cues.png)
 
-### Screens
+### Screens and mirroring
 
-Mirroring has one Settings home here, alongside the window and monitor controls.
+[Enabled eye-line strip](images/settings-preview06-eye-line-enabled.png)
 
-![Screen and eye-line settings, first page](images/settings-display.png)
 
-![Screen and eye-line settings, second page](images/settings-display-page-2.png)
+[Open full size](images/settings-preview09-screens.png)
+
+![Reading: Screens and mirroring, UAT Preview 09](images/settings-preview09-screens.png)
+
+### Head guide
+
+The Guide, Appearance and Recording reference groups use visible subtabs.
+
+[Appearance](images/settings-preview06-guide-appearance.png) ·
+[Recording reference](images/settings-preview06-guide-reference.png) ·
+[Non-modal companion](images/settings-preview06-floating-preview.png)
+
+
+[Open full size](images/settings-preview09-guide.png)
+
+![Reading: Head guide, UAT Preview 09](images/settings-preview09-guide.png)
+
+## Voice
+
+### Speech engine
+
+[Open full size](images/settings-preview09-engine.png)
+
+![Voice: Speech engine, UAT Preview 09](images/settings-preview09-engine.png)
+
+### Microphone
+
+[Open full size](images/settings-preview09-microphone.png)
+
+![Voice: Microphone, UAT Preview 09](images/settings-preview09-microphone.png)
+
+### Voice commands
+
+[Open full size](images/settings-preview09-commands.png)
+
+![Voice: Voice commands, UAT Preview 09](images/settings-preview09-commands.png)
+
+### Your words
+
+[Open full size](images/settings-preview09-words.png)
+
+![Voice: Your words, UAT Preview 09](images/settings-preview09-words.png)
 
 ## Recording
 
 ### Takes
 
-The next candidate adds optional recognised filler/repetition counts. The
-choice defaults off and is saved with Apply. It starts no additional listener.
+[Open full size](images/settings-preview09-takes.png)
 
-![Optional rehearsal aggregate counting](images/settings-coaching.png)
+![Recording: Takes, UAT Preview 09](images/settings-preview09-takes.png)
 
-![Coaching preference and slate, first page](images/settings-recording.png)
+### Sound and scratch audio
 
-![Take display and capture controls, second page](images/settings-recording-page-2.png)
+[Open full size](images/settings-preview09-sound.png)
 
-### Audio
+![Recording: Sound and scratch audio, UAT Preview 09](images/settings-preview09-sound.png)
 
-![Scratch audio, loudness and sound checks](images/settings-audio.png)
+### Slate and sync
 
-### OBS connection
+[Open full size](images/settings-preview09-sync.png)
 
-![OBS connection under Recording](images/settings-obs.png)
-
-### OBS recording
-
-![OBS permissions and recorded-slate guidance](images/settings-obs-recording.png)
-
-### OBS setup
-
-![Optional OBS setup and configuration guide](images/settings-obs-setup.png)
-
-The [setup assistant](15-obs-setup.md) inspects configured sources and requires
-a reviewed plan before creating a separate profile and scene collection.
-
-![OBS setup choices with illustrative sources](images/obs-setup-choices.png)
-
-![Review before creating a separate setup](images/obs-setup-review.png)
+![Recording: Slate and sync, UAT Preview 09](images/settings-preview09-sync.png)
 
 ## Controls
 
-### Pad and phone layout
+### Pad and phone buttons
 
-![Select and reorder shared pad and phone buttons](images/settings-pad.png)
+[Open full size](images/settings-preview09-pad.png)
 
-The same selected functions and order appear on both screens. Stream Deck
-keeps its physical profiles; the pad and phone reuse its artwork and actions.
+![Controls: Pad and phone buttons, UAT Preview 09](images/settings-preview09-pad.png)
 
-![Customised floating pad](images/pad.png)
+### Phone pairing
 
-### Buttons and keys
+[Open full size](images/settings-preview09-pairing.png)
 
-Choose an action and press an input to learn it. Changes save immediately;
-longer lists use pages. System shortcuts stay reserved.
+![Controls: Phone pairing, UAT Preview 09](images/settings-preview09-pairing.png)
 
-![Custom button and key mappings](images/settings-buttons.png)
+### Keyboard and clickers
 
-### Phone
+[Open full size](images/settings-preview09-mappings.png)
 
-The example QR below is for illustration; scan the code in your own Settings.
+![Controls: Keyboard and clickers, UAT Preview 09](images/settings-preview09-mappings.png)
 
-![Phone remote](images/settings-phone.png)
+### Game controller
+
+[Open full size](images/settings-preview09-gamepad.png)
+
+![Controls: Game controller, UAT Preview 09](images/settings-preview09-gamepad.png)
 
 ### Stream Deck
 
-![Stream Deck connection](images/settings-streamdeck.png)
+[Open full size](images/settings-preview09-streamdeck.png)
 
-### AI and API
+![Controls: Stream Deck, UAT Preview 09](images/settings-preview09-streamdeck.png)
 
-![AI and local automation](images/settings-remotes.png)
+### OBS connection
 
-## Components
+[Open full size](images/settings-preview09-obs.png)
 
-Each optional component has its own named subtab. Installer links open the
-supplier's website; Locate supports portable/custom copies. There are no
-numbered component pages.
+![Controls: OBS connection, UAT Preview 09](images/settings-preview09-obs.png)
 
-![Offline speech model](images/settings-component-model.png)
+### OBS recording
 
-![AI agent kit](images/settings-component-kit.png)
+[Open full size](images/settings-preview09-obs-recording.png)
 
-![Node.js runtime check](images/settings-component-node.png)
+![Controls: OBS recording, UAT Preview 09](images/settings-preview09-obs-recording.png)
 
-![OBS application check](images/settings-component-obs.png)
+### OBS profile and scenes
 
-![Stream Deck application and plugin checks](images/settings-component-streamdeck.png)
+[Open full size](images/settings-preview09-obs-setup.png)
 
-![Unavailable API controls retain draft values until Apply](images/settings-ai-unavailable.png)
+![Controls: OBS profile and scenes, UAT Preview 09](images/settings-preview09-obs-setup.png)
+
+### AI and local API
+
+[Open full size](images/settings-preview09-api.png)
+
+![Controls: AI and local API, UAT Preview 09](images/settings-preview09-api.png)
+
+## Getting started and components
+
+### Getting started
+
+[Open full size](images/settings-preview09-getting-started.png)
+
+![Setup: Getting started, UAT Preview 09](images/settings-preview09-getting-started.png)
+
+### Optional components
+
+[Open full size](images/settings-preview09-components.png)
+
+![Setup: Optional components, UAT Preview 09](images/settings-preview09-components.png)
+
+### Restore defaults
+
+[Open full size](images/settings-preview09-reset.png)
+
+![Setup: Restore defaults, UAT Preview 09](images/settings-preview09-reset.png)
 
 ## Debug
 
-Command-word tracing is off by default. The warning stays visible beside its
-checkbox; health and recovery logging needs no spoken words.
+### Health
 
-![Support logs and optional command-word tracing](images/settings-debug.png)
+[Open full size](images/settings-preview09-health.png)
 
-The session-only capture override applies immediately. Its checked state is
-shown below; the prompter also keeps a warning visible with a Turn off button.
+![Debug: Health, UAT Preview 09](images/settings-preview09-health.png)
 
-![Capture override enabled](images/settings-debug-capture.png)
+### Command tracing
 
-![Persistent capture warning](images/capture-override-notice.png)
+[Open full size](images/settings-preview09-trace.png)
+
+![Debug: Command tracing, UAT Preview 09](images/settings-preview09-trace.png)
+
+### Screen capture
+
+[Open full size](images/settings-preview09-capture.png)
+
+![Debug: Screen capture, UAT Preview 09](images/settings-preview09-capture.png)
+
+### Support logs
+
+[Open full size](images/settings-preview09-logs.png)
+
+![Debug: Support logs, UAT Preview 09](images/settings-preview09-logs.png)
 
 ## About
 
-Restore defaults asks before resetting preferences and restarting onboarding.
-Installed components, scripts, recordings and service keys are retained.
+### Version and updates
 
-![Restore defaults and its preservation note](images/settings-defaults.png)
+[Open full size](images/settings-preview09-version.png)
+
+![About: Version and updates, UAT Preview 09](images/settings-preview09-version.png)
+
+### Credits
+
+[Open full size](images/settings-preview09-credits.png)
+
+![About: Credits, UAT Preview 09](images/settings-preview09-credits.png)
+
+### Help and support
+
+[Open full size](images/settings-preview09-support.png)
+
+![About: Help and support, UAT Preview 09](images/settings-preview09-support.png)
+
+## Four text targets
+
+Spoken script, headings, inline directions and production notes each expose
+the same complete controls. These examples show a 75% italic production note;
+they are an edited demonstration, not a new shipped default.
+
+### Spoken script
+
+[Open full size](images/settings-preview09-text-script.png)
+
+![Spoken script: independent font, size, colour, bold, italic and spacing](images/settings-preview09-text-script.png)
+
+### Headings
+
+[Open full size](images/settings-preview09-text-headings.png)
+
+![Headings: independent font, size, colour, bold, italic and spacing](images/settings-preview09-text-headings.png)
+
+### Inline directions
+
+[Open full size](images/settings-preview09-text-inline.png)
+
+![Inline directions: independent font, size, colour, bold, italic and spacing](images/settings-preview09-text-inline.png)
+
+### Production notes
+
+[Open full size](images/settings-preview09-text-production.png)
+
+![Production notes: independent font, size, colour, bold, italic and spacing](images/settings-preview09-text-production.png)

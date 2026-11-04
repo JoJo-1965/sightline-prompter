@@ -4,10 +4,16 @@ Sightline is built to work with an AI at three points: **writing** the
 script, **running** the prompter while you record, and **editing** from the
 take log afterwards. How much your AI can do depends on where it runs.
 
-Sightline doesn't record video or audio: you record with OBS, Riverside,
-Zoom, your camera or anything else. Sightline gives your AI the accurate
-timings (takes, sections, words, retakes, markers, the slate) to find and
-cut the right parts of that recording.
+Your production recording stays in your chosen recorder. Sightline can retain
+optional scratch audio and a reviewed short preparation clip. Take/section
+times, retakes and markers help navigate the recording. Live word timings and
+coverage are estimates: use recorded-audio transcription for cuts and captions.
+
+**RC 1 adds [local MCP support](../MCP.md)** for compatible desktop AI clients.
+Enable the API and MCP under **Connections > MCP, AI, and API**, install the AI kit
+from **Connections > Apps and add-ons**, and configure its stdio server.
+Read-only access is the default; scripts, prompting and recording have separate
+grants. Browser assistants cannot connect directly to this local server.
 
 | Your AI | Write scripts | Load scripts and run the prompter | Use the take log and edit pack |
 | --- | --- | --- | --- |
@@ -32,7 +38,7 @@ cut the right parts of that recording.
 These run on your computer, so they can check scripts, load them into
 Sightline and read its take logs.
 
-**1. Get the files.** In the next candidate, use **Settings > Components
+**1. Get the files.** In Sightline 1.2.0, use **Settings > Connections > Apps and add-ons
 > AI kit > Install**, then **Open folder**. It copies the skills, briefs,
 samples, checker and command tool from the installed app. No clone or npm
 install is needed. Read START-HERE.md and use that kit folder below wherever
@@ -88,7 +94,7 @@ spec, the checker and the `sightline` command.
 
 ## Letting an AI run the prompter
 
-On **Settings > Controls > AI & API**, under **AI and remote control**:
+On **Settings > Connections > MCP, AI, and API**, under **AI and remote control**:
 
 - Tick **Let an AI assistant or script on this computer load scripts and
   control the teleprompter**, and save. It's off until you do.

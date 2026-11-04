@@ -1,3 +1,4 @@
+import { roundControlNumber } from "./numeric-controls.js";
 import {
 	startAutoScroll,
 	stopAutoScroll,
@@ -38,6 +39,8 @@ import {
 	WPM_STEP
 } from "./steady-scroll.js";
 import { decorateScript } from "./decorate.js";
+import { annotationMask } from "./focus-mask.js";
+import { setProductionNotesActive } from "./production-notes.js";
 import { readDirectives, parseDirective, parseDuration } from "./directives.js";
 import { createTakeLog } from "./take-log.js";
 import { COMMANDS, wakeLabel } from "./voice-commands.js";
@@ -45,9 +48,16 @@ import { heardForms, normalizeWord } from "./word-fixes.js";
 import { createScratchRecorder } from "./scratch-audio.js";
 import { createLevelMeter, soundCheckVerdict } from "./level-meter.js";
 import { SUPPORT_URL } from "./links.js";
+import { recordSupportLaunch, recordSupportShown } from "./support-reminder.js";
 import { createObsUi } from "./obs-ui.js";
-import { createSettingsNavigation } from "./settings-navigation.js";
-import { addSettingsHelp, createSettingsPages } from "./settings-pages.js";
+import { createRecordingLink } from "./recording-link.js";
+import { createSettingsNavigation } from "./settings-sections.js";
+import { createSettingsWorkspace } from "./settings-workspace.js";
+import { createLiveTools } from "./live-tools.js";
+import { createSettingsDraft } from "./settings-draft.js";
+import { APPEARANCE_KEYS, READING_FONTS, READING_PALETTES, TEXT_FIELDS } from "./reading-appearance.js";
+import { voiceInputEnabled, customInputEnabled } from "./interface-state.js";
+import { addSettingsHelp } from "./settings-pages.js";
 import { uiElement, showPanelWindow, hidePanelWindow } from "./panel-windows.js";
 import {
 	indexSentences,
@@ -93,7 +103,12 @@ const pacingEl = uiElement( "pacing" );
 const summaryModal = uiElement( "take-summary" );
 let headGuideState = null;
 window.electron.onHeadGuideState( ( value ) => {
+	const before = headGuideState;
 	headGuideState = value;
+	if ( [ "x", "y", "scale", "width", "height", "top", "bottom", "left", "right", "shown", "reference", "controlsShown" ].some( key => JSON.stringify( before?.[key] ) !== JSON.stringify( value[key] ) ) ) settingsWorkspace?.sync();
+	const reference = uiElement( "settings-framing-reference" );
+	if ( reference ) reference.textContent = value.reference?.pose ? "Recording position saved · Ideal unchanged" : "Recording position: Not saved";
+	uiElement( "guide-status" )?.classList.toggle( "hidden", !value.shown );
 	const restore = uiElement( "guide-controls" );
 	restore?.classList.toggle( "hidden", !value.shown );
 	restore?.setAttribute( "aria-pressed", String( value.controlsShown ) );
@@ -133,6 +148,7 @@ const obsUi = createObsUi( {
 	onChange: () => sendStatus(),
 	toast: text => showToast( text, 4500 )
 } );
+const linkedRecording = createRecordingLink( { getSettings: () => settings, getState: () => obsUi.state(), command: action => obsUi.action( action, { prompt: false } ) } );
 let recordingSaved = 0; // the take log version last sent to be saved
 let recordingY = null; // reading line at the last tick, to see the text move on
 let pendingJumpReason = null; // "again" when a jump is a voice retake
@@ -157,6 +173,7 @@ let settings = {
 };
 let syncPadSettings = () => {};
 let mappingSettings = null;
+let gamepadMappings = null;
 let componentSettings = null;
 let componentAvailability = null;
 let componentStatus = null;
@@ -182,6 +199,13 @@ function recordingScriptSnapshot() {
 function renderScript( html ) {
 	md.innerHTML = html;
 	decorateScript( md, { cuePhrases, highlight: settings.highlightCues } );
+	// A comments-only paragraph has no body-text line box holding it open.
+	for ( const paragraph of md.querySelectorAll( "p" ) ) {
+		const onlyComments = [ ...paragraph.childNodes ].every( node =>
+			node.nodeType === Node.TEXT_NODE ? !node.textContent.trim() : node.nodeType === Node.ELEMENT_NODE && node.matches( ".direction" )
+		);
+		paragraph.classList.toggle( "direction-only", onlyComments && !!paragraph.querySelector( ".direction" ) );
+	}
 	scriptDirectives = readDirectives( md );
 	liveMarkers = [];
 	tagSections();
@@ -237,7 +261,8 @@ function setFontSize( size, save = true ) {
 }
 
 window.electron.onFontSize( ( size ) => {
-	setFontSize( size, false );
+	settingsDraft?.rebase( { fontSize: size } );
+	setFontSize( settingsDraft?.value.fontSize ?? size, false );
 } );
 
 const DEFAULT_OPACITY = 1; // off air: an ordinary solid window
@@ -262,7 +287,9 @@ function toggleOnAir() {
 
 function applyBacking() {
 	if ( isEditMode ) return;
-	document.body.style.backgroundColor = `rgba(0, 0, 0, ${ liveBacking() })`;
+	const hex = settings.backgroundColour || READING_PALETTES[settings.theme ?? "default"]?.background || "#000000";
+	const rgb = [ 1, 3, 5 ].map( offset => parseInt( hex.slice( offset, offset + 2 ), 16 ) );
+	document.body.style.backgroundColor = `rgba(${ rgb.join( ", " ) }, ${ liveBacking() })`;
 }
 
 // The level in use now.
@@ -283,7 +310,7 @@ function setLiveBacking( value, save = true ) {
 }
 
 function setOpacity( value, save = true ) {
-	opacity = Math.min( 1, Math.max( 0, Math.round( value * 100 ) / 100 ) );
+	opacity = Math.min( 1, Math.max( 0, value ) );
 	applyBacking();
 	if ( save ) {
 		window.electron.saveOpacity( opacity );
@@ -292,7 +319,8 @@ function setOpacity( value, save = true ) {
 }
 
 window.electron.onOpacity( ( value ) => {
-	setOpacity( value, false );
+	settingsDraft?.rebase( { opacity: value } );
+	setOpacity( settingsDraft?.value.opacity ?? value, false );
 } );
 
 const MIRROR_MODES = [ "off", "horizontal", "vertical", "both" ];
@@ -325,6 +353,18 @@ for ( const el of [ ...document.body.children ] ) {
 	if ( getComputedStyle( el ).position === "fixed" ) hud.appendChild( el );
 }
 document.body.appendChild( hud );
+
+// Persistent session actions share one wrapping row rather than overlapping
+// independent fixed positions on small displays.
+const sessionControls = document.createElement( "div" );
+sessionControls.id = "session-controls";
+const sectionPill = Object.assign( document.createElement( "span" ), { id: "section-status", className: "hidden" } );
+sectionPill.setAttribute( "aria-label", "Current script section" );
+const preparationResult = Object.assign( document.createElement( "span" ), { id: "preparation-test-result", className: "hidden" } );
+preparationResult.setAttribute( "role", "status" );
+preparationResult.setAttribute( "aria-live", "polite" );
+sessionControls.append( uiElement( "capture-override-note" ), sectionPill, uiElement( "guide-status" ), uiElement( "obs-status" ), preparationResult );
+hud.append( sessionControls );
 
 function applyMirror() {
 	const md = uiElement( "md" );
@@ -411,7 +451,8 @@ function showToast( text, ms = 1400 ) {
 }
 
 window.electron.onMirrored( ( value ) => {
-	setMirrored( value, false );
+	settingsDraft?.rebase( { mirrored: value } );
+	setMirrored( settingsDraft?.value.mirrored ?? value, false );
 } );
 
 // Where a section starts: its first line after the heading at the reading
@@ -523,7 +564,7 @@ document.addEventListener(
 	"keydown",
 	( e ) => {
 		const input = keyInput( e );
-		if ( input && mappedAction( normaliseMappings( settings.inputMappings ), input ) !== undefined ) return;
+		if ( customInputEnabled( settings, "key" ) && input && mappedAction( normaliseMappings( settings.inputMappings ), input ) !== undefined ) return;
 		if ( SCROLL_KEYS.has( e.key ) ) noteManualScroll();
 	},
 	true
@@ -774,7 +815,7 @@ document.addEventListener( "keydown", ( event ) => {
 	// Let native button activation handle Space/Enter without also starting a take.
 	if ( [ " ", "Enter" ].includes( event.key ) && event.target.closest?.( "button, a, [role=tab]" ) ) return;
 	const customInput = keyInput( event );
-	const customAction = customInput && mappedAction( normaliseMappings( settings.inputMappings ), customInput );
+	const customAction = customInputEnabled( settings, "key" ) && customInput ? mappedAction( normaliseMappings( settings.inputMappings ), customInput ) : undefined;
 	if ( customAction !== undefined && customAction !== null ) {
 		event.preventDefault();
 		if ( !event.repeat ) runMappedAction( customAction );
@@ -1051,6 +1092,11 @@ function handleAutoScrollPosition( wordIdx, ranges ) {
 	if ( Date.now() - lastManualScrollTs < MANUAL_SCROLL_GRACE_MS ) return;
 	scrollToWord( wordIdx, ranges );
 	if ( pause ) pauseVoiceAt( pause );
+	else if ( wordIdx >= ranges.length - 1 ) {
+		autoScrollHandle?.setHold( true );
+		linkedRecording.finish();
+		showPausePill( 0 );
+	}
 }
 
 // --- Stops and timed pauses: {stop} or {pause}, and {pause: 5s} ---
@@ -1137,7 +1183,8 @@ function voicePauseCrossed( wordIdx, ranges ) {
 	voiceWordIdx = wordIdx;
 	if ( before === null || wordIdx <= before || autoScrollHandle?.isHeld() ) return null;
 	return directivePoints.pauses.find( ( pause ) => {
-		if ( pause.seconds ) return false;
+		if ( pause.seconds && !linkedRecording.enabled() ) return false;
+
 		const last = lastWordBefore( pause, ranges );
 		return last > before && last <= wordIdx;
 	} );
@@ -1145,7 +1192,27 @@ function voicePauseCrossed( wordIdx, ranges ) {
 
 // {prompter: slower} and the rest: run as the reading reaches them.
 const SCRIPT_COMMAND_LABELS = { slower: "slower", faster: "faster", bigger: "bigger text", smaller: "smaller text", marker: "marker" };
-function runScriptCommand( command ) {
+async function runScriptCommand( command ) {
+	if ( command.startsWith( "record:" ) ) {
+		if ( !settings.obsEnabled || !settings.obsControls ) return;
+		const resumeVoice = autoScrollActive && !autoScrollHandle?.isHeld();
+		const resumeSteady = isSteadyRunning();
+		autoScrollHandle?.setHold( true );
+		if ( resumeSteady ) stopSteadyScroll();
+		const action = command.slice( 7 );
+		const ok = await obsUi.action( { on: "start", off: "stop", pause: "pause", resume: "resume" }[action], { prompt: false } );
+		if ( ok && [ "on", "resume" ].includes( action ) ) {
+			if ( resumeVoice ) autoScrollHandle?.setHold( false );
+			if ( resumeSteady ) startSteadyScroll( { el: md, wordsPerMinute: settings.steadyWpm, onFinished: () => linkedRecording.finish() } );
+		} else if ( resumeSteady ) {
+			cuePaused = true;
+			cueWasStop = true;
+			showPausePill( 0 );
+		} else if ( resumeVoice ) {
+			showPausePill( 0 );
+		}
+		return;
+	}
 	runRemoteAction( command );
 	showToast( `Script: ${ SCRIPT_COMMAND_LABELS[command] ?? command }`, 1500 );
 }
@@ -1183,6 +1250,15 @@ function drawCheckCard( { title, line = "", count = null, result = null, done = 
 		if ( result.advice ) add( "div", "sc-advice", result.advice );
 	}
 	if ( done ) {
+		const proceed = add( "button", "sc-continue", result && ![ "good", "quiet", "ok" ].includes( result.verdict ) ? "Continue anyway" : "Continue" );
+		proceed.type = "button";
+		proceed.addEventListener( "click", () => {
+			if ( !scriptCheck?.done ) return;
+			recording.soundCheck( { ...scriptCheck.measured, kind: scriptCheck.kind, verdict: result?.verdict, advice: result?.advice ?? "", accepted: true }, sectionIndexAt( readingLineY() ) );
+			if ( autoScrollActive ) carryOnFromVoiceCheck();
+			else if ( cuePaused ) resumeFromCue();
+			else endScriptSoundCheck();
+		} );
 		const wake = wakeLabel( settings.wakeWord );
 		add( "div", "sc-hint", autoScrollActive
 			? `Space or “${ wake }, go” to carry on · “${ wake }, again” to check again`
@@ -1223,6 +1299,7 @@ async function startScriptSoundCheck( kind, pause = null ) {
 	} );
 	if ( scriptCheck !== run ) return;
 	const measured = levelMeter.measure( from, Date.now() );
+	run.measured = measured;
 	const result = soundCheckVerdict( kind, measured );
 	recording.soundCheck( {
 		kind,
@@ -1257,12 +1334,13 @@ function openingSoundCheck() {
 
 // Voice scrolling, carrying on from a sound check: the next check, or back to
 // following the script.
-function carryOnFromVoiceCheck() {
+async function carryOnFromVoiceCheck() {
 	const next = nextSoundCheck( scriptCheck?.pause );
 	if ( next ) {
 		pauseVoiceAt( next );
 		return;
 	}
+	if ( !await prepareReading() ) return;
 	clearPausePill();
 	autoScrollHandle?.setHold( false );
 	setIndicator( "Listening" );
@@ -1313,7 +1391,7 @@ function backOnScript() {
 	setIndicator( "Listening" );
 }
 
-function pauseVoiceAt( pause ) {
+async function pauseVoiceAt( pause ) {
 	if ( !autoScrollHandle ) return;
 	if ( pause.listen === "off" ) {
 		goOffScript( pause );
@@ -1328,15 +1406,57 @@ function pauseVoiceAt( pause ) {
 	}
 	autoScrollHandle.setHold( true );
 	cancelScroll();
-	showPausePill( pause.seconds, () => {
+	const atEnd = !directivePoints.wordTops.some( y => y > pause.y + 2 );
+	if ( atEnd ) await linkedRecording.finish();
+	else await linkedRecording.pause();
+	showPausePill( pause.seconds, async () => {
 		if ( !autoScrollActive || !autoScrollHandle ) return;
+		if ( !await prepareReading() ) return;
 		autoScrollHandle.setHold( false );
 		setIndicator( "Listening" );
 	} );
 }
 
+let preparingRead = false;
+let readingRequest = 0;
+async function prepareReading() {
+	if ( preparingRead ) return false;
+	preparingRead = true;
+	const request = readingRequest;
+	try {
+		// A recording directive before the first spoken word runs on Play,
+		// never while loading or previewing a script.
+		if ( settings.obsEnabled && settings.obsControls && window.scrollY < 4 ) {
+			const { ranges } = buildWordIndex( md );
+			const spoken = ranges.filter( range => !range.startContainer.parentElement?.closest( "h1, h2, h3, h4, h5, h6" ) );
+			for ( const c of directivePoints.prompterCommands ) {
+				if ( [ "record:on", "record:resume" ].includes( c.command ) && lastWordBefore( c, spoken ) < 0 ) {
+					if ( !await obsUi.action( c.command === "record:on" ? "start" : "resume", { prompt: false } ) ) return false;
+				}
+			}
+		}
+		if ( !await linkedRecording.start() ) {
+			showToast( "Recording was not confirmed. Check OBS before starting the take.", 5000 );
+			return false;
+		}
+		if ( request !== readingRequest ) {
+			linkedRecording.pause();
+			return false;
+		}
+		setProductionNotesActive( md, true, { alignFirst: window.scrollY < 4, readingAnchor: getReadingAnchor() } );
+		measureDirectives( buildWordIndex( md ).ranges );
+		return true;
+	} finally {
+		preparingRead = false;
+	}
+}
+
 async function startAutoScrollSession() {
 	if ( autoScrollActive || autoScrollStarting ) return;
+	if ( !voiceInputEnabled( settings ) ) {
+		showToast( "Enable speech features and microphone input in Settings > Voice before voice following." );
+		return;
+	}
 	if ( listeningSuspended ) {
 		showToast( "Listening is off for this session. Turn it on with Stream Deck or Restart listening." );
 		return;
@@ -1354,10 +1474,11 @@ async function startAutoScrollSession() {
 		openSettings();
 		showSettingsTab( "voice" );
 		showToast(
-			"Download the speech model first (Settings > Prompting > Voice), then press Play again"
+			"Download the speech model first (Settings > Voice > Speech engine), then press Play again"
 		);
 		return;
 	}
+	if ( !openingSoundCheck() && !await prepareReading() ) return;
 	autoScrollStarting = true;
 	pendingDeepgramKey = null;
 	// From the top, a pause after the first few words still counts.
@@ -1408,6 +1529,7 @@ const VOICE_OFFERED = "sightline.voiceOffered";
 let voiceOffer = null;
 
 function offerSpeechModel() {
+	if ( settings.speechEnabled !== true ) return;
 	if ( !usesLocalVoice() ) return;
 	if ( voiceOffer ) {
 		updateVoiceOffer();
@@ -1437,7 +1559,7 @@ function offerSpeechModel() {
 	const close = document.createElement( "button" );
 	close.type = "button";
 	close.textContent = "×";
-	close.title = "Not now (Settings > Prompting > Voice has it)";
+	close.title = "Not now (Settings > Voice > Speech engine has it)";
 	close.setAttribute( "aria-label", "Not now" );
 	close.addEventListener( "click", () => {
 		rememberVoiceOffer();
@@ -1559,8 +1681,10 @@ async function beginVoice( engine, deepgramKey ) {
 }
 
 async function stopAutoScrollSession() {
+	readingRequest++;
 	if ( !autoScrollActive && !autoScrollStarting ) return;
 	autoScrollActive = false;
+	linkedRecording.pause();
 	autoScrollStarting = false;
 	autoScrollHandle = null;
 	offScript = null;
@@ -1622,7 +1746,7 @@ function showListeningStatus( status ) {
 	if ( commandPill ) commandPill.textContent = label;
 	if ( recovering || failed ) window.electron.debugLog?.( `${ status.reason === "manual restart" ? "voice" : "error" }: speech listener ${ status.type }: ${ status.reason ?? status.error ?? "connection stopped" }` );
 	if ( status.type === "recovered" ) showToast( "Listening restored", 1800 );
-	if ( failed ) showToast( "Listening stopped. Use Restart listening in Prompting > Commands.", 5000 );
+	if ( failed ) showToast( "Listening stopped. Use Restart listening in Debug > Status and recovery.", 5000 );
 	sendStatus();
 }
 
@@ -1631,7 +1755,7 @@ async function restartListeningNow() {
 	listeningSuspended = false;
 	if ( autoScrollActive ) return autoScrollHandle?.restartListening();
 	if ( !wantCommandListening() && !commandFailure ) {
-		showToast( "Enable Always listening in Prompting > Commands first", 3000 );
+		showToast( "Enable Always listening in Voice > Commands first", 3000 );
 		return;
 	}
 	commandFailure = false;
@@ -1669,6 +1793,7 @@ uiElement( "set-listening-restart" )?.addEventListener( "click", restartListenin
 // mode until you start, when the voice session takes over, so "Prompter, go"
 // starts it hands-free.
 function wantCommandListening() {
+	if ( !voiceInputEnabled( settings ) ) return false;
 	const always = settings.voiceCommands === "always";
 	const wanted = always || ( cuePaused && lastCue?.listen !== "off" && settings.voiceCommands !== "off" );
 	return (
@@ -1858,9 +1983,10 @@ function resetPrompter() {
 	showToast( "Reset: back to the top, speed and clock reset", 2500 );
 }
 
-function runVoiceCommand( id, value ) {
+async function runVoiceCommand( id, value ) {
 	if ( isEditMode ) return;
-	if ( id === "obs-record" || id === "obs-finish" ) {
+	if ( id.startsWith( "obs-" ) ) {
+		if ( !settings.obsEnabled || !settings.obsControls ) return;
 		runRemoteAction( id );
 		return;
 	}
@@ -1891,12 +2017,14 @@ function runVoiceCommand( id, value ) {
 		if ( holdPauseCountdown() ) return;
 		if ( voice ) {
 			autoScrollHandle.setHold( true );
+			linkedRecording.pause();
 			cancelScroll();
 			setIndicator( `Paused · say “${ wakeLabel( settings.wakeWord ) }, go”` );
 		} else if ( isScrolling() ) runRemoteAction( "pause" );
 	} else if ( id === "go" ) {
 		if ( voice && scriptCheck ) carryOnFromVoiceCheck();
 		else if ( voice ) {
+			if ( !await prepareReading() ) return;
 			clearPausePill();
 			autoScrollHandle.setHold( false );
 			setIndicator( "Listening" );
@@ -1922,7 +2050,10 @@ function runVoiceCommand( id, value ) {
 		// Mark where it went wrong, then back to the start of the section.
 		dropMarker();
 		pendingJumpReason = "again";
-		runRemoteAction( "previous-section" );
+		if ( pointsMode() ) {
+			recording.jump( "again" );
+			goToPoint( pointsIndex );
+		} else jumpSection( 0 );
 		pendingJumpReason = null;
 		resyncAfterJump();
 		// Voice mode: a fresh slate for the retake, once the jump has settled.
@@ -2072,18 +2203,22 @@ function hideCountdown() {
 	countdownEl?.classList.add( "hidden" );
 }
 
-function startSteadySession() {
+async function startSteadySession() {
 	if ( isEditMode ) {
 		alert( "Exit the editor before starting to scroll." );
 		return;
 	}
+	if ( !openingSoundCheck() && !await prepareReading() ) return;
 	const begin = () => {
 		hideCountdown();
 		afterSlate( () => {
 			startSteadyScroll( {
 				el: md,
 				wordsPerMinute: settings.steadyWpm,
-				onFinished: () => setIndicator( null )
+				onFinished: () => {
+					setIndicator( null );
+					linkedRecording.finish();
+				}
 			} );
 			startCueTracking();
 			feedTakeLog( true );
@@ -2109,6 +2244,8 @@ function startSteadySession() {
 }
 
 function stopSteadySession() {
+	readingRequest++;
+	linkedRecording.pause();
 	hideSlate();
 	clearCuePause();
 	hideCountdown();
@@ -2117,6 +2254,11 @@ function stopSteadySession() {
 }
 
 function toggleAutoScrollSession() {
+	if ( preparingRead ) {
+		readingRequest++;
+		linkedRecording.pause();
+		return;
+	}
 	if ( pointsMode() ) {
 		togglePoints();
 		return;
@@ -2417,10 +2559,14 @@ function rerenderScript() {
 function applySettings( next ) {
 	const prev = settings;
 	settings = { ...settings, ...next };
+	if ( autoScrollActive && !voiceInputEnabled( settings ) ) stopAutoScrollSession();
+	if ( voiceOffer ) voiceOffer.classList.toggle( "hidden", settings.speechEnabled === false );
 	if ( prev.voiceCommands !== settings.voiceCommands ) commandFailure = false;
 	autoScrollHandle?.setCommandOptions( { onCommand: settings.voiceCommands === "off" ? null : runVoiceCommand, wakeWord: settings.wakeWord ?? "prompter", commandWords: settings.commandWords ?? [], soundAlike: settings.soundAlike !== false } );
-	syncPadSettings( settings.padLayout );
-	mappingSettings?.sync( settings.inputMappings );
+	const preferences = settingsDraft?.value ?? settings;
+	syncPadSettings( preferences.padLayout );
+	mappingSettings?.sync( preferences.inputMappings );
+	gamepadMappings?.sync( preferences.inputMappings );
 	const body = document.body;
 	body.classList.remove(
 		"directions-dim",
@@ -2457,7 +2603,42 @@ function applySettings( next ) {
 	syncCommandListening();
 }
 
-window.electron.onSettings( applySettings );
+let settingsDraft = null;
+let settingsWorkspace = null;
+let committedSettings = null;
+const VISUAL_SETTINGS = new Set( [ ...APPEARANCE_KEYS, "marginX", "marginTop", "marginBottom", "readingLine", "textAlign", "showReadingMarker", "highlightSentence", "showProgress", "focusBand", "focusStrength", "textEffect", "showDirectives" ] );
+function previewSettingsDraft() {
+	if ( !settingsDraft ) return;
+	const state = settingsDraft.value;
+	applySettings( Object.fromEntries( [ ...VISUAL_SETTINGS ].filter( key => key in state ).map( key => [ key, state[key] ] ) ) );
+	setFontSize( state.fontSize, false );
+	setOpacity( state.opacity, false );
+	setMirrored( state.mirrored, false );
+}
+function stageSettings( partial, preview = false ) {
+	if ( !settingsDraft ) return;
+	settingsDraft.stage( partial );
+	if ( partial.microphoneEnabled === false ) stopMicMeter();
+	wordsChanged();
+	if ( preview ) previewSettingsDraft();
+	settingsWorkspace.sync( settingsDraft.value );
+	if ( partial.inputMappings ) {
+		mappingSettings?.sync( settingsDraft.value.inputMappings );
+		gamepadMappings?.sync( settingsDraft.value.inputMappings );
+	}
+	if ( Object.keys( partial ).some( key => [ "speechEnabled", "obsEnabled" ].includes( key ) ) ) settingsNavigation.refresh();
+}
+window.electron.onSettings( ( next ) => {
+	const previous = committedSettings ?? settings;
+	const pending = settingsDraft?.patch ?? {};
+	committedSettings = { ...settings, ...next };
+	settingsDraft?.rebase( next );
+	if ( settingsDraft && !pending.wordFixes && JSON.stringify( previous.wordFixes ) !== JSON.stringify( next.wordFixes ) ) fillWordRows( next.wordFixes ?? [] );
+	if ( settingsDraft && !pending.commandWords && JSON.stringify( previous.commandWords ) !== JSON.stringify( next.commandWords ) ) fillCommandRows( next.commandWords ?? [] );
+	applySettings( next );
+	if ( settingsDraft ) previewSettingsDraft();
+	settingsWorkspace?.sync( settingsDraft?.value ?? { ...settings, fontSize, opacity } );
+} );
 window.electron.onCuePhrases( ( phrases ) => {
 	cuePhrases = Array.isArray( phrases ) ? phrases : [];
 	rerenderScript();
@@ -2537,21 +2718,27 @@ gdocInput.addEventListener( "keydown", ( e ) => {
 
 const settingsModal = uiElement( "settings-modal" );
 const field = id => uiElement( id );
-let settingsSnapshot = null;
-let settingsReturnFocus = null;
-
-function numberValue( id, min, max, fallback ) {
-	const value = Number( field( id ).value );
-	return Number.isFinite( value )
-		? Math.min( max, Math.max( min, value ) )
-		: fallback;
+function settingsFeedback( text, error = false ) {
+	const status = field( "settings-applied" );
+	status.textContent = text || "No unapplied changes";
+	status.title = text;
+	status.toggleAttribute( "data-error", error );
 }
+let settingsReturnFocus = null;
+settingsWorkspace = createSettingsWorkspace( settingsModal, {
+	getState: () => settingsDraft?.value ?? { ...settings, fontSize, opacity, autoScrollSpeed, audioDeviceId, mirrored },
+	getGuideState: () => headGuideState,
+	getSetupState: getWorkflowState,
+	stage: stageSettings, navigate: name => showSettingsTab( name ), toast: ( text ) => {
+		settingsFeedback( text );
+		showToast( text, 4500 );
+	}
+} );
 
 // Changes made since Settings opened or was last applied. The Layout,
 // Reading and Recording tabs apply as you go, so they don't count.
 let settingsDirty = false;
 let afterSettingsClose = null;
-const LIVE_TABS = "#set-layout-host, #set-reading-host, #set-background-host, #set-aids-host, #set-display-host, #set-recording-host, #set-script-host, #set-pad-fieldset, #set-capture-fieldset, #set-mapping-fieldset";
 
 field( "set-capture-override" )?.addEventListener( "change", event => window.electron.setCaptureOverride( event.target.checked ) );
 field( "capture-override-off" )?.addEventListener( "click", () => window.electron.setCaptureOverride( false ) );
@@ -2562,7 +2749,8 @@ window.electron.onCaptureOverride( ( active ) => {
 window.electron.getCaptureOverride();
 
 function markSettingsDirty( event ) {
-	if ( !event.isTrusted || event.target.closest( LIVE_TABS ) ) return;
+	if ( event.target.closest( ".reading-theme-dialog" ) ) return;
+	if ( event.target.closest( ".settings-navigation,.settings-compact-nav,[data-navigation-choice]" ) ) return;
 	if ( !event.target.matches( "input, select, textarea" ) ) return;
 	wordsChanged();
 }
@@ -2586,16 +2774,20 @@ async function openSettings() {
 	settingsReturnFocus = document.activeElement;
 	closePanels();
 	settingsTrail( "opening" );
-	settingsSnapshot = { fontSize, opacity };
+	settingsDraft = createSettingsDraft( { ...( committedSettings ?? settings ), fontSize, opacity, autoScrollSpeed, audioDeviceId, mirrored, clearDeepgramKey: false } );
+	const openingDraft = settingsDraft;
 	settingsDirty = false;
 	window.electron.utilityPanel( "settings", "dirty", false );
 	field( "settings-unsaved" )?.classList.add( "hidden" );
 	if ( field( "settings-applied" ) ) field( "settings-applied" ).textContent = "";
+	field( "settings-applied" )?.removeAttribute( "title" );
+	field( "settings-applied" )?.removeAttribute( "data-error" );
 	field( "settings-applied" )?.removeAttribute( "data-pending" );
 	field( "set-scroll-mode" ).value = settings.scrollMode ?? "steady";
 	field( "set-steady-wpm" ).value = settings.steadyWpm;
 	field( "set-countdown" ).value = settings.countdown;
 	field( "set-slate" ).value = settings.slate ?? "off";
+	for ( const radio of settingsModal.querySelectorAll( "input[name=slate-choice]" ) ) radio.checked = radio.value === field( "set-slate" ).value;
 	field( "set-voice-speed" ).value = autoScrollSpeed;
 	field( "set-voice-engine" ).value = usesLocalVoice() ? "local" : "deepgram";
 	field( "set-voice-commands" ).value = settings.voiceCommands ?? "voice";
@@ -2613,9 +2805,9 @@ async function openSettings() {
 	window.electron.speechModelStatus();
 	field( "set-deepgram-key" ).value = "";
 	field( "set-deepgram-status" ).textContent = settings.hasDeepgramKey
-		? "A key is saved. Type a new one to replace it; Clear in Tools > Voice and microphone removes it."
+		? "A key is saved. Type a replacement, or choose Remove saved service key. Apply confirms the change."
 		: "No key saved. Only needed for Deepgram.";
-	field( "set-font-size" ).value = fontSize;
+	field( "set-font-size" ).value = fontSize * 100;
 	field( "set-directions" ).value = settings.directions ?? "dim";
 	field( "set-trace-commands" ).checked = settings.traceCommands === true;
 	field( "set-always-on-top" ).checked = !!settings.alwaysOnTop;
@@ -2638,18 +2830,25 @@ async function openSettings() {
 	window.electron.getRemoteInfo();
 	field( "set-phone" ).checked = !!settings.phoneRemote;
 	window.electron.getPhoneInfo();
+	settingsWorkspace.sync( settingsDraft.value );
 	settingsTrail( `showing tab ${ lastSettingsTab() }` );
 	showSettingsTab( lastSettingsTab() );
 	settingsModal.classList.remove( "hidden" );
 	await showPanelWindow( "settings", settingsModal, () => settingsPages.layout() );
+	if ( settingsDraft !== openingDraft || settingsModal.classList.contains( "hidden" ) ) {
+		if ( !settingsDraft ) hidePanelWindow( "settings" );
+		return;
+	}
 	settingsNavigation.focus();
 	settingsTrail( "visible" );
 	requestAnimationFrame( () => requestAnimationFrame( () => settingsTrail( "painted" ) ) );
 	requestAnimationFrame( () => settingsPages.layout() );
 	settingsTrail( "listing microphones" );
 	await populateMicSelect();
+	if ( settingsDraft !== openingDraft || settingsModal.classList.contains( "hidden" ) ) return;
 	field( "set-microphone" ).innerHTML = micSelect.innerHTML;
 	field( "set-microphone" ).value = audioDeviceId ?? "";
+	settingsWorkspace.sync( settingsDraft.value );
 	settingsTrail( "done" );
 }
 
@@ -2664,7 +2863,7 @@ window.electron.onDisplays( ( displays ) => {
 	select.append( new Option( "Leave it where it is", "" ) );
 	for ( const d of displays )
 		select.append( new Option( `Full screen on ${ d.label }`, String( d.id ) ) );
-	const chosen = settings.prompterDisplay;
+	const chosen = settingsDraft ? settingsDraft.value.prompterDisplay : settings.prompterDisplay;
 	if ( chosen != null && !displays.some( d => d.id === chosen ) ) {
 		select.append(
 			new Option( "The monitor chosen before (not connected)", String( chosen ) )
@@ -2718,14 +2917,17 @@ async function finishSettingsClose( save ) {
 }
 
 function closeSettings( restore ) {
+	stopMicMeter();
 	settingsDirty = false;
 	window.electron.utilityPanel( "settings", "dirty", false );
-	if ( restore && settingsSnapshot ) {
-		setFontSize( settingsSnapshot.fontSize, false );
-		setOpacity( settingsSnapshot.opacity, false );
+	if ( restore && settingsDraft ) {
+		const state = settingsDraft.cancel();
+		applySettings( state );
+		setFontSize( state.fontSize, false );
+		setOpacity( state.opacity, false );
+		setMirrored( state.mirrored, false );
 	}
-	settingsSnapshot = null;
-	returnLayoutPanel();
+	settingsDraft = null;
 	settingsModal?.classList.add( "hidden" );
 	hidePanelWindow( "settings" );
 	const target = settingsReturnFocus?.isConnected && settingsReturnFocus.getClientRects().length ? settingsReturnFocus : field( "cb-settings" );
@@ -2739,10 +2941,14 @@ const wordsList = field( "words-list" );
 let teachingWord = false;
 
 function wordsChanged() {
-	settingsDirty = true;
-	window.electron.utilityPanel( "settings", "dirty", true );
-	field( "settings-applied" ).textContent = "Unsaved changes";
-	field( "settings-applied" ).dataset.pending = "true";
+	if ( !settingsDraft ) return;
+	settingsDraft.stage( { wordFixes: readWordRows(), commandWords: readCommandRows() } );
+	settingsDirty = settingsDraft.dirty || !!field( "set-deepgram-key" ).value.trim() || !!field( "set-obs-password" ).value || field( "set-obs-clear-password" ).checked;
+	window.electron.utilityPanel( "settings", "dirty", settingsDirty );
+	field( "settings-applied" ).textContent = settingsDirty ? "Unsaved changes" : "No unapplied changes";
+	field( "settings-applied" ).toggleAttribute( "data-pending", settingsDirty );
+	field( "settings-applied" ).removeAttribute( "data-error" );
+	field( "settings-applied" ).removeAttribute( "title" );
 }
 
 function addWordRow( word = "", heard = [] ) {
@@ -2974,79 +3180,37 @@ field( "command-words-add" ).addEventListener( "click", () => {
 
 async function saveSettingsPage( close = true ) {
 	const invalid = [ ...settingsModal.querySelectorAll( "input, select, textarea" ) ]
-		.find( control => !control.disabled && control.willValidate && !control.checkValidity() );
+		.find( control => !control.closest( "dialog" ) && !control.disabled && control.willValidate && !control.checkValidity() );
 	if ( invalid ) {
 		showSettingsTab( invalid.closest( "[data-settings-page]" ).dataset.settingsPage );
 		settingsPages.reveal( invalid );
 		invalid.reportValidity();
 		return false;
 	}
-	if ( !await obsUi.save() ) return false;
-	window.electron.saveSettings( {
-		scrollMode: field( "set-scroll-mode" ).value === "voice" ? "voice" : "steady",
-		voiceEngine: field( "set-voice-engine" ).value === "deepgram" ? "deepgram" : "local",
-		voiceCommands: field( "set-voice-commands" ).value,
-		wakeWord: field( "set-wake-word" ).value,
-		scratchAudio: field( "set-scratch-audio" ).checked,
-		coachFillers: field( "set-coach-fillers" ).checked,
-		takeLoudness: field( "set-take-loudness" ).value,
-		soundCheckDuringTakes: field( "set-sound-check-takes" ).checked,
-		soundAlike: field( "set-sound-alike" ).checked,
-		wordFixes: readWordRows(),
-		commandWords: readCommandRows(),
-		steadyWpm: numberValue( "set-steady-wpm", 60, 300, settings.steadyWpm ),
-		countdown: numberValue( "set-countdown", 0, 10, settings.countdown ),
-		slate: field( "set-slate" ).value,
-		directions: field( "set-directions" ).value,
-		traceCommands: field( "set-trace-commands" ).checked,
-		alwaysOnTop: field( "set-always-on-top" ).checked,
-		checkUpdates: field( "set-check-updates" ).checked,
-		debugMode: field( "set-debug-mode" ).checked,
-		prompterDisplay: field( "set-prompter-display" ).value
-			? Number( field( "set-prompter-display" ).value )
-			: null,
-		highlightCues: field( "set-highlight-cues" ).checked,
-		cuesFile: field( "set-cues-file" ).value || null,
-		eyeLine: field( "set-eye-line" ).checked,
-		eyeLineWidth: numberValue(
-			"set-eye-line-width",
-			20,
-			100,
-			settings.eyeLineWidth
-		),
-		eyeLineHeight: numberValue(
-			"set-eye-line-height",
-			15,
-			100,
-			settings.eyeLineHeight
-		),
-		eyeLineReadingLine: numberValue(
-			"set-eye-line-reading",
-			5,
-			80,
-			settings.eyeLineReadingLine
-		),
-		remoteControl: field( "set-remote" ).checked,
-		streamDeck: field( "set-stream-deck" ).checked,
-		remoteDeleteRecordings: field( "set-remote-delete" ).checked,
-		phoneRemote: field( "set-phone" ).checked,
-		remotePort: numberValue(
-			"set-remote-port",
-			1024,
-			65535,
-			settings.remotePort ?? 47615
-		)
-	} );
-	setFontSize( Number( field( "set-font-size" ).value ) );
-	applyAutoScrollSpeed( Number( field( "set-voice-speed" ).value ) );
-	const key = field( "set-deepgram-key" ).value.trim();
-	if ( key ) {
-		window.electron.setDeepgramKey( key );
-	}
-	const mic = field( "set-microphone" ).value || null;
-	if ( mic !== audioDeviceId ) {
-		audioDeviceId = mic;
-		window.electron.setAudioDeviceId( mic ?? "" );
+	const state = settingsDraft.value;
+	const partial = { ...settingsDraft.patch, wordFixes: readWordRows(), commandWords: readCommandRows(), slate: field( "set-slate" ).value, cuesFile: field( "set-cues-file" ).value || null, prompterDisplay: field( "set-prompter-display" ).value ? Number( field( "set-prompter-display" ).value ) : null };
+	for ( const key of [ "fontSize", "opacity", "autoScrollSpeed", "audioDeviceId", "mirrored", "clearDeepgramKey" ] ) delete partial[key];
+	field( "settings-apply" ).disabled = field( "settings-save" ).disabled = true;
+	try {
+		const result = await window.electron.applyPreferences( { settings: partial, fontSize: state.fontSize, opacity: state.opacity, mirrored: state.mirrored, autoScrollSpeed: state.autoScrollSpeed, audioDeviceId: field( "set-microphone" ).value || null, deepgramKey: field( "set-deepgram-key" ).value.trim(), clearDeepgramKey: state.clearDeepgramKey === true, obs: obsUi.options() } );
+		if ( !result.ok ) {
+			settingsFeedback( result.error, true );
+			showToast( result.error, 5000 );
+			return false;
+		}
+		committedSettings = result.settings;
+		settingsDraft.commit( { ...result.settings, fontSize: result.fontSize, opacity: result.opacity, mirrored: result.mirrored, autoScrollSpeed: result.autoScrollSpeed, audioDeviceId: result.audioDeviceId, clearDeepgramKey: false } );
+		applySettings( result.settings );
+		setFontSize( result.fontSize, false );
+		setOpacity( result.opacity, false );
+		audioDeviceId = result.audioDeviceId;
+		obsUi.saved( result.obs );
+	} catch ( error ) {
+		settingsFeedback( `Settings could not be saved: ${ error.message }`, true );
+		showToast( `Settings could not be saved: ${ error.message }`, 5000 );
+		return false;
+	} finally {
+		field( "settings-apply" ).disabled = field( "settings-save" ).disabled = false;
 	}
 	settingsDirty = false;
 	if ( close ) {
@@ -3056,28 +3220,29 @@ async function saveSettingsPage( close = true ) {
 	}
 	// Applied: Cancel now goes back to these, not to how it was when opened.
 	window.electron.utilityPanel( "settings", "dirty", false );
-	settingsSnapshot = { fontSize, opacity };
 	field( "set-deepgram-key" ).value = "";
-	field( "settings-applied" ).textContent = "Saved";
+	settingsFeedback( "Saved" );
 	field( "settings-applied" ).removeAttribute( "data-pending" );
 	return true;
 }
 
 if ( settingsModal ) {
-	// Preview text size while its slider moves. Backing uses the shared live control.
-	field( "set-font-size" ).addEventListener( "input", e =>
-		setFontSize( Number( e.target.value ), false )
-	);
+	for ( const radio of settingsModal.querySelectorAll( "input[name=slate-choice]" ) ) radio.addEventListener( "change", () => {
+		if ( radio.checked ) {
+			field( "set-slate" ).value = radio.value;
+			stageSettings( { slate: radio.value } );
+		}
+	} );
 	field( "set-cues-browse" ).addEventListener( "click", () =>
 		window.electron.browseCuesFile()
 	);
 	field( "set-cues-clear" ).addEventListener( "click", () => {
 		field( "set-cues-file" ).value = "";
-		wordsChanged();
+		stageSettings( { cuesFile: null } );
 	} );
 	field( "settings-save" ).addEventListener( "click", () => saveSettingsPage( true ) );
 	field( "settings-apply" ).addEventListener( "click", () => saveSettingsPage( false ) );
-	field( "settings-cancel" ).addEventListener( "click", () => requestCloseSettings() );
+	field( "settings-cancel" ).addEventListener( "click", () => closeSettings( true ) );
 	field( "settings-close" ).addEventListener( "click", () => requestCloseSettings() );
 	field( "settings-unsaved-save" ).addEventListener( "click", () => finishSettingsClose( true ) );
 	field( "settings-unsaved-discard" ).addEventListener( "click", () => finishSettingsClose( false ) );
@@ -3088,6 +3253,7 @@ if ( settingsModal ) {
 	settingsModal.addEventListener( "input", markSettingsDirty );
 	settingsModal.addEventListener( "change", markSettingsDirty );
 	settingsModal.addEventListener( "keydown", ( e ) => {
+		if ( e.target.closest( "dialog[open]" ) ) return;
 		if ( e.key === "Tab" ) {
 			const focusable = [ ...settingsModal.querySelectorAll( "button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), a[href]" ) ].filter( el => el.tabIndex >= 0 && el.getClientRects().length );
 			const end = e.shiftKey ? focusable[0] : focusable.at( -1 );
@@ -3110,7 +3276,7 @@ if ( settingsModal ) {
 window.electron.onCuesFileChosen( ( filePath ) => {
 	if ( filePath ) {
 		field( "set-cues-file" ).value = filePath;
-		wordsChanged();
+		stageSettings( { cuesFile: filePath } );
 	}
 } );
 window.electron.onMenuSettings( async ( topic ) => {
@@ -3118,6 +3284,8 @@ window.electron.onMenuSettings( async ( topic ) => {
 	if ( topic === "pad" ) showSettingsTab( "pad" );
 } );
 window.electron.onUtilityPanelClose( ( kind, quit ) => {
+	if ( kind === "preview" ) settingsWorkspace?.closePreview();
+	if ( kind === "tools" ) closePanels();
 	if ( kind === "settings" ) requestCloseSettings( quit ? () => window.electron.windowControl( "close" ) : null );
 	if ( kind === "help" ) closeHelp();
 	if ( kind === "voicehelp" ) hideVoiceHelp();
@@ -3132,9 +3300,14 @@ const LAYOUT_DEFAULTS = {
 	marginTop: 0,
 	marginBottom: 0,
 	lineHeight: 1.3,
+	headingLineHeight: 1.3,
+	directionLineHeight: 1.3,
 	headingScale: 1,
 	directionScale: 1,
 	directionColour: "",
+	productionNoteScale: 1,
+	productionNoteLineHeight: 1.4,
+	productionNoteColour: "",
 	textOpacity: 1,
 	textBrightness: 1,
 	backingOnAir: 0.07,
@@ -3145,6 +3318,14 @@ const EDGE_FADE = 4; // % of the window height over which text fades at a margin
 function applyLayout() {
 	applyBacking();
 	const style = document.body.style;
+	const palette = READING_PALETTES[settings.theme ?? "default"] ?? READING_PALETTES.default;
+	for ( const [ target, f ] of Object.entries( TEXT_FIELDS ) ) {
+		const font = settings[f.font] === "same" || !settings[f.font] ? settings.scriptFont ?? "default" : settings[f.font];
+		style.setProperty( `--reading-${ target }-font`, `"${ READING_FONTS[font] ?? "Segoe UI" }", sans-serif` );
+		style.setProperty( `--reading-${ target }-colour`, settings[f.colour] || palette[target] );
+		style.setProperty( `--reading-${ target }-weight`, ( settings[f.bold] ?? target === "headings" ) ? "700" : "400" );
+		style.setProperty( `--reading-${ target }-style`, ( settings[f.italic] ?? target === "inline" ) ? "italic" : "normal" );
+	}
 	style.setProperty(
 		"--margin-x",
 		`${ settings.marginX ?? LAYOUT_DEFAULTS.marginX }vw`
@@ -3154,13 +3335,19 @@ function applyLayout() {
 		"--line-height",
 		settings.lineHeight ?? LAYOUT_DEFAULTS.lineHeight
 	);
+	style.setProperty( "--heading-line-height", settings.headingLineHeight ?? LAYOUT_DEFAULTS.headingLineHeight );
+	style.setProperty( "--direction-line-height", settings.directionLineHeight ?? LAYOUT_DEFAULTS.directionLineHeight );
 	style.setProperty(
 		"--heading-scale",
 		settings.headingScale ?? LAYOUT_DEFAULTS.headingScale
 	);
 	style.setProperty( "--direction-scale", settings.directionScale ?? LAYOUT_DEFAULTS.directionScale );
+	style.setProperty( "--production-note-scale", settings.productionNoteScale ?? LAYOUT_DEFAULTS.productionNoteScale );
+	style.setProperty( "--production-note-line-height", settings.productionNoteLineHeight ?? LAYOUT_DEFAULTS.productionNoteLineHeight );
 	if ( /^#[\da-f]{6}$/i.test( settings.directionColour ?? "" ) ) style.setProperty( "--direction-colour", settings.directionColour );
 	else style.removeProperty( "--direction-colour" );
+	if ( /^#[\da-f]{6}$/i.test( settings.productionNoteColour ?? "" ) ) style.setProperty( "--production-note-colour", settings.productionNoteColour );
+	else style.removeProperty( "--production-note-colour" );
 	style.setProperty(
 		"--text-opacity",
 		settings.textOpacity ?? LAYOUT_DEFAULTS.textOpacity
@@ -3183,8 +3370,8 @@ function applyLayout() {
 // Top and bottom margins hide the text near the window edges. The mask is one
 // window tall and follows the scroll, so it stays put on screen.
 // The script's visibility down the window, as a mask: the top and bottom
-// margins fade to nothing, and the focus band (optional) dims lines away from
-// the reading line. Both are worked out per point and combined.
+// margins fade to nothing. The optional focus layer dims spoken text away from
+// the reading line; annotations are restored before applying the edge fade.
 function edgeAlpha( p, top, bottom ) {
 	if ( p < top - EDGE_FADE || p > 100 - bottom + EDGE_FADE ) return 0;
 	if ( p < top ) return ( p - ( top - EDGE_FADE ) ) / EDGE_FADE;
@@ -3205,6 +3392,7 @@ function updateEdgeMask() {
 	const focus = !!settings.focusBand;
 	if ( !top && !bottom && !focus ) {
 		md.style.webkitMaskImage = "";
+		md.style.maskComposite = "";
 		return;
 	}
 	const centre = getReadingAnchor() * 100;
@@ -3213,31 +3401,22 @@ function updateEdgeMask() {
 	const half = linePct * 0.9; // the reading line and a little either side
 	const fade = linePct * 1.5;
 	const floor = 1 - Math.min( 0.9, Math.max( 0, settings.focusStrength ?? 0.6 ) );
-	const points = new Set( [ 0, 100, top, 100 - bottom ] );
-	points.add( Math.max( 0, top - EDGE_FADE ) );
-	points.add( Math.min( 100, 100 - bottom + EDGE_FADE ) );
+	const gradient = ( points, alpha ) => `linear-gradient(to bottom, ${ [ ...points ].sort( ( a, b ) => a - b ).map( p => `rgba(0, 0, 0, ${ alpha( p ).toFixed( 3 ) }) ${ p.toFixed( 2 ) }%` ).join( ", " ) })`;
+	const edges = new Set( [ 0, 100, top, 100 - bottom, Math.max( 0, top - EDGE_FADE ), Math.min( 100, 100 - bottom + EDGE_FADE ) ] );
+	const layers = [ gradient( edges, p => edgeAlpha( p, top, bottom ) ) ];
+	const mdTop = md.getBoundingClientRect().top + window.scrollY;
+	const offset = window.scrollY - mdTop;
 	if ( focus ) {
-		for ( const p of [
-			centre - half - fade,
-			centre - half,
-			centre + half,
-			centre + half + fade
-		] ) {
-			points.add( Math.min( 100, Math.max( 0, p ) ) );
-		}
-	}
-	const stops = [ ...points ]
-		.sort( ( a, b ) => a - b )
-		.map( ( p ) => {
-			let a = edgeAlpha( p, top, bottom );
-			if ( focus ) a *= focusAlpha( p, centre, half, fade, floor );
-			return `rgba(0, 0, 0, ${ a.toFixed( 3 ) }) ${ p.toFixed( 2 ) }%`;
-		} );
-	md.style.webkitMaskImage = `linear-gradient(to bottom, ${ stops.join( ", " ) })`;
+		const annotations = annotationMask( md, { offset, height: window.innerHeight, mirrorX: mirrored === "horizontal" || mirrored === "both", mirrorY: mirroredVertically() } );
+		if ( annotations ) layers.push( annotations );
+		const points = new Set( [ 0, 100, ...[ centre - half - fade, centre - half, centre + half, centre + half + fade ].map( p => Math.min( 100, Math.max( 0, p ) ) ) ] );
+		layers.push( gradient( points, p => focusAlpha( p, centre, half, fade, floor ) ) );
+		md.style.maskComposite = annotations ? "intersect, add" : "intersect";
+	} else md.style.maskComposite = "";
+	md.style.webkitMaskImage = layers.join( ", " );
 	md.style.webkitMaskRepeat = "no-repeat";
 	md.style.webkitMaskSize = "100% 100vh";
-	const mdTop = md.getBoundingClientRect().top + window.scrollY;
-	md.style.webkitMaskPosition = `0 ${ window.scrollY - mdTop }px`;
+	md.style.webkitMaskPosition = `0 ${ offset }px`;
 }
 
 // --- Progress and time left ---
@@ -3522,16 +3701,17 @@ function syncControls() {
 		: `${ settings.steadyWpm } wpm`;
 	if ( document.activeElement !== fontInput ) fontInput.value = fontSize;
 	if ( document.activeElement !== opacityInput ) opacityInput.value = liveBacking();
-	const bgInput = uiElement( "lp-bg-opacity" );
-	if ( bgInput && bgInput.ownerDocument.activeElement !== bgInput ) bgInput.value = opacity;
 	const mode = uiElement( "cb-mode" );
 	if ( mode ) {
+		mode.disabled = !voiceInputEnabled( settings );
+		mode.title = voiceInputEnabled( settings ) ? "Switch between steady scrolling and voice following" : "Enable speech features and microphone input in Settings > Voice to use voice following";
 		mode.textContent = voice ? "Voice" : "Steady";
 		mode.setAttribute( "aria-label", voice ? "Voice scrolling; switch to steady" : "Steady scrolling; switch to voice" );
 		mode.setAttribute( "aria-pressed", String( voice ) );
 	}
 	syncLayoutPanel();
 	syncVoicePanel();
+	if ( !field( "tools-panel" )?.classList.contains( "hidden" ) ) liveTools?.render();
 	positionToolsPanel();
 }
 
@@ -3545,7 +3725,7 @@ function refreshControlsVisibility() {
 	clearTimeout( idleTimer );
 	const pinned = !!settings.controlsPinned;
 	document.body.classList.toggle( "controls-pinned", pinned );
-	if ( pinned || panelOpen() || controlBar?.matches( ":hover" ) ) {
+	if ( pinned || panelOpen() || controlBar?.matches( ":hover" ) || ( controlBar?.contains( document.activeElement ) && document.activeElement?.matches( ":focus-visible" ) ) ) {
 		document.body.classList.remove( "controls-hidden" );
 		return;
 	}
@@ -3555,6 +3735,7 @@ function refreshControlsVisibility() {
 				!settings.controlsPinned
 				&& !panelOpen()
 				&& !controlBar?.matches( ":hover" )
+				&& !( controlBar?.contains( document.activeElement ) && document.activeElement?.matches( ":focus-visible" ) )
 			) {
 				document.body.classList.add( "controls-hidden" );
 			}
@@ -3564,7 +3745,14 @@ function refreshControlsVisibility() {
 	);
 }
 
-function showControls() {
+function showControls( event ) {
+	const focused = controlBar?.contains( document.activeElement ) && document.activeElement?.matches( ":focus-visible" );
+	const farAway = event?.type === "mousemove" && event.clientY > ( controlBar?.getBoundingClientRect().bottom ?? 48 ) + window.innerHeight * 0.1;
+	if ( farAway && !settings.controlsPinned && !panelOpen() && !focused ) {
+		clearTimeout( idleTimer );
+		document.body.classList.add( "controls-hidden" );
+		return;
+	}
 	document.body.classList.remove( "controls-hidden" );
 	updateProgress();
 	refreshControlsVisibility();
@@ -3607,11 +3795,13 @@ onClick( "cb-on-air", toggleOnAir );
 onClick( "cb-mode", () => window.electron.saveSettings( { scrollMode: settings.scrollMode === "voice" ? "steady" : "voice" } ) );
 onClick( "cb-edit", toggleEditMode );
 onClick( "guide-controls", () => window.electron.headGuide( "adjust" ) );
+onClick( "guide-off", () => window.electron.headGuide( "hide" ) );
 onClick( "cb-tools", () => {
 	renderTools();
 	togglePanel( "tools-panel" );
 	if ( !field( "tools-panel" ).classList.contains( "hidden" ) ) field( "tools-panel" ).querySelector( "button" )?.focus();
 } );
+onClick( "cb-prepare", () => runTool( "prepare-recording" ) );
 onClick( "cb-help", openHelp );
 onClick( "help-ai-prompt", () => window.electron.copyAiPrompt() );
 onClick( "cb-settings", openSettings );
@@ -3664,12 +3854,6 @@ opacityInput?.addEventListener( "change", () =>
 	setLiveBacking( Number( opacityInput.value ) )
 );
 // The Layout panel's background slider is the same setting as the bar's Backing.
-document
-	.getElementById( "lp-bg-opacity" )
-	?.addEventListener( "input", e => setOpacity( Number( e.target.value ), false ) );
-document
-	.getElementById( "lp-bg-opacity" )
-	?.addEventListener( "change", e => setOpacity( Number( e.target.value ) ) );
 
 window.electron.onWindowState( ( state ) => {
 	window.lastWindowState = state;
@@ -3694,7 +3878,7 @@ const appMenu = uiElement( "app-menu" );
 
 function positionToolsPanel() {
 	const panel = field( "tools-panel" );
-	if ( !panel || panel.classList.contains( "hidden" ) ) return;
+	if ( !panel || panel.classList.contains( "hidden" ) || panel.ownerDocument !== document ) return;
 	const edge = 8;
 	const top = controlBar.offsetHeight + 6;
 	const anchor = field( "cb-tools" ).getBoundingClientRect();
@@ -3703,11 +3887,17 @@ function positionToolsPanel() {
 	panel.style.left = `${ left }px`;
 	panel.style.right = "auto";
 	panel.style.top = `${ top }px`;
-	panel.style.maxHeight = `${ Math.max( 0, window.innerHeight - top - edge ) }px`;
+	const available = Math.max( 0, window.innerHeight - top - edge );
+	panel.style.maxHeight = "none";
+	if ( panel.scrollHeight > available ) showPanelWindow( "tools", panel );
 }
 window.addEventListener( "resize", () => requestAnimationFrame( positionToolsPanel ) );
 
 function togglePanel( id ) {
+	if ( id === "voice-panel" ) {
+		openSettings().then( () => showSettingsTab( "engine" ) );
+		return;
+	}
 	const panel = uiElement( id );
 	if ( !panel ) return;
 	const opening = panel.classList.contains( "hidden" );
@@ -3715,6 +3905,7 @@ function togglePanel( id ) {
 	if ( opening ) {
 		panel.classList.remove( "hidden" );
 		if ( id === "tools-panel" ) field( "cb-tools" ).setAttribute( "aria-expanded", "true" );
+		if ( id === "tools-panel" && panel.ownerDocument !== document ) showPanelWindow( "tools", panel );
 		if ( id === "voice-panel" ) openVoicePanel();
 		syncControls();
 	}
@@ -3725,6 +3916,12 @@ function togglePanel( id ) {
 // Closes any open panel or menu; returns true if something was open.
 function closePanels() {
 	let closed = false;
+	const tools = field( "tools-panel" );
+	if ( tools?.ownerDocument !== document && tools && !tools.classList.contains( "hidden" ) ) {
+		tools.classList.add( "hidden" );
+		hidePanelWindow( "tools" );
+		closed = true;
+	}
 	document
 		.querySelectorAll( ".panel:not(.hidden), #app-menu:not(.hidden)" )
 		.forEach( ( el ) => {
@@ -3838,45 +4035,35 @@ function menuGroups() {
 	];
 }
 
-function renderTools() {
-	const panel = field( "tools-panel" );
-	panel.replaceChildren();
-	const guideShown = headGuideState?.shown ?? !!settings.showHeadGuide;
-	const guideLabel = guideShown ? "Hide head guide" : "Show head guide";
-	const groups = [
-		[ "Recording tools", [
-			[ "🎚", "Sound check", "Ctrl+Shift+D", toggleSoundCheck, { checked: soundCheckOn() } ],
-			[ "◎", guideLabel, "Ctrl+Shift+H", () => window.electron.headGuide( guideShown ? "hide" : "show" ), { checked: guideShown } ],
-			[ "◉", "Guide adjustments…", "", () => window.electron.headGuide( "adjust" ), { checked: !!headGuideState?.controlsShown, disabled: !guideShown } ],
-			[ "⛶", "Guide fullscreen / restore", "Ctrl+Alt+H", () => window.electron.headGuide( "fullscreen" ) ],
-			[ "★", "Keeper", "K", () => rateTake( "keeper" ) ],
-			[ "✗", "Scrap take", "Shift+K", () => rateTake( "scrap" ) ]
-		] ],
-		[ "Review", [
-			[ "▤", "Script & rehearsal review…", "", () => openScriptReview(), { disabled: isScrolling() } ]
-		] ],
-		[ "Prepare a session", [
-			[ "✓", "Session check…", "", () => workflow.open( "session" ), { disabled: isScrolling() } ]
-		] ],
-		[ "Quick adjustments", [
-			[ "▤", "Spacing and mirror…", "Ctrl+Shift+K", () => toggleLayoutView( "layout" ) ],
-			[ "◐", "Text and colour…", "", () => toggleLayoutView( "reading" ) ],
-			[ "●", "Take display…", "", () => toggleLayoutView( "recording" ) ],
-			[ "🎙", "Voice and microphone…", "Ctrl+Shift+V", () => togglePanel( "voice-panel" ) ]
-		] ],
-		[ "Operator windows", [
-			[ "▣", "Control window", "Ctrl+Shift+O", toggleSetting( "showControl" ), { checked: !!settings.showControl } ],
-			[ "▦", "Control pad", "Ctrl+Shift+P", toggleSetting( "showPad" ), { checked: !!settings.showPad } ]
-		] ]
-	];
-	for ( const [ title, items ] of groups ) {
-		const heading = document.createElement( "h4" );
-		heading.textContent = title;
-		panel.append( heading );
-		for ( const args of items ) panel.append( menuButton( ...args ) );
+let liveTools = null;
+function runTool( id ) {
+	if ( id === "prepare-recording" ) {
+		closePanels();
+		window.electron.prepareRecording();
+		return;
+	}
+	if ( id === "close-tools" ) {
+		closePanels();
+		return;
+	}
+	const shown = headGuideState?.shown ?? settings.showHeadGuide;
+	const actions = { session: () => workflow.open( "session" ), onboarding: () => workflow.open( "onboarding" ), review: openScriptReview, help: () => window.electron.openGuide(), sound: toggleSoundCheck, "guide-show": () => window.electron.headGuide( "show" ), "guide-toggle": () => window.electron.headGuide( shown ? "hide" : "show" ), "guide-adjust": () => window.electron.headGuide( "adjust" ), "guide-fullscreen": () => window.electron.headGuide( "fullscreen" ), pad: toggleSetting( "showPad" ), play: toggleAutoScrollSession, marker: dropMarker, keeper: () => rateTake( "keeper" ), scrap: () => rateTake( "scrap" ), listen: toggleSessionListening, record: () => obsUi.action( "start" ), finish: () => obsUi.action( "stop" ) };
+	if ( actions[id] ) {
+		if ( [ "session", "onboarding", "review", "help" ].includes( id ) ) closePanels();
+		actions[id]();
+	} else {
+		closePanels();
+		openSettings().then( () => showSettingsTab( id === "settings" ? lastSettingsTab() : id ) );
 	}
 }
-
+settingsModal.addEventListener( "click", ( event ) => {
+	const button = event.target.closest( "[data-settings-action]" );
+	if ( button ) runTool( button.dataset.settingsAction );
+} );
+function renderTools() {
+	liveTools ??= createLiveTools( field( "tools-panel" ), { getState: () => ( { ...settings, fontSize, opacity: liveBacking(), onAir: onAir(), scrolling: isScrolling(), guideShown: headGuideState?.shown, obs: obsUi.state() } ), action: runTool, save: partial => window.electron.saveSettings( partial ), size: value => setFontSize( value ), backing: value => setLiveBacking( value ) } );
+	liveTools.render();
+}
 let recentExpanded = false;
 let samplesExpanded = false;
 
@@ -4192,161 +4379,9 @@ makeMovable( settingsModal?.querySelector( ".settings-content" ), settingsModal?
 makeMovable( uiElement( "layout-panel" ), document.querySelector( "#layout-panel > h4" ), "layout" );
 makeMovable( uiElement( "voice-panel" ), document.querySelector( "#voice-panel > h4" ), "voice" );
 
-// --- Layout panel ---
-
-const LAYOUT_FIELDS = [
-	// [input id, setting key, format]
-	[ "lp-margin-x", "marginX", v => `${ v }%` ],
-	[ "lp-margin-top", "marginTop", v => `${ v }%` ],
-	[ "lp-margin-bottom", "marginBottom", v => `${ v }%` ],
-	[ "lp-line-height", "lineHeight", v => `${ Number( v ).toFixed( 2 ) }×` ],
-	[ "lp-heading-scale", "headingScale", v => `${ Math.round( v * 100 ) }%` ],
-	[ "lp-direction-scale", "directionScale", v => `${ Math.round( v * 100 ) }%` ],
-	[ "lp-text-opacity", "textOpacity", v => `${ Math.round( v * 100 ) }%` ],
-	[ "lp-backing-on-air", "backingOnAir", v => `${ Math.round( v * 100 ) }%` ],
-	[ "lp-text-brightness", "textBrightness", v => `${ Math.round( v * 100 ) }%` ],
-	[ "lp-focus-strength", "focusStrength", v => `${ Math.round( v * 100 ) }%` ]
-];
-
-function readingLineKey() {
-	return settings.eyeLine ? "eyeLineReadingLine" : "readingLine";
-}
-
+// Settings owns its appearance controls permanently.
 function syncLayoutPanel() {
-	if ( !uiElement( "layout-panel" ) ) return;
-	for ( const [ id, key, format ] of LAYOUT_FIELDS ) {
-		const input = field( id );
-		const value = settings[key] ?? LAYOUT_DEFAULTS[key];
-		if ( input.ownerDocument.activeElement !== input ) input.value = value;
-		field( `${ id }-value` ).textContent = format( value );
-	}
-	const reading = settings[readingLineKey()];
-	if ( field( "lp-reading-line" ).ownerDocument.activeElement !== field( "lp-reading-line" ) )
-		field( "lp-reading-line" ).value = reading;
-	field( "lp-reading-line-value" ).textContent = `${ reading }%`;
-	field( "lp-align" ).value = settings.textAlign ?? "left";
-	field( "lp-align" ).disabled = !!settings.eyeLine;
-	field( "lp-marker" ).checked = !!settings.showReadingMarker;
-	field( "lp-sentence" ).checked = settings.highlightSentence !== false;
-	field( "lp-progress" ).checked = settings.showProgress !== false;
-	field( "lp-pinned" ).checked = !!settings.controlsPinned;
-	field( "lp-directives" ).checked = !!settings.showDirectives;
-	field( "lp-follow-pace" ).checked = settings.followScriptPace !== false;
-	field( "lp-focus-band" ).checked = !!settings.focusBand;
-	field( "lp-text-effect" ).value = settings.textEffect ?? "none";
-	field( "lp-theme" ).value = settings.theme ?? "default";
-	field( "lp-font" ).value = settings.scriptFont ?? "default";
-	field( "lp-heading-font" ).value = settings.headingFont ?? "same";
-	field( "lp-direction-colour" ).value = settings.directionColour || "#c8c8c8";
-	field( "lp-direction-theme" ).setAttribute( "aria-pressed", String( !settings.directionColour ) );
-	field( "lp-on-air" ).checked = settings.onAirLight !== false;
-	field( "lp-pacing" ).checked = settings.showPacing !== false;
-	field( "lp-points" ).checked = !!settings.pointsMode;
-	field( "lp-summary" ).checked = settings.takeSummary !== false;
-	field( "lp-start-beep" ).checked = !!settings.startBeep;
-	field( "lp-hide-capture" ).checked = !!settings.hideFromCapture;
-	field( "lp-click-through" ).checked = !!settings.clickThrough;
-	document.body.classList.toggle( "show-directives", !!settings.showDirectives );
-}
-
-if ( uiElement( "layout-panel" ) ) {
-	field( "lp-direction-colour" ).addEventListener( "input", () => {
-		settings.directionColour = field( "lp-direction-colour" ).value;
-		applyLayout();
-		syncLayoutPanel();
-	} );
-	field( "lp-direction-colour" ).addEventListener( "change", () => window.electron.saveSettings( { directionColour: field( "lp-direction-colour" ).value } ) );
-	onClick( "lp-direction-theme", () => window.electron.saveSettings( { directionColour: "" } ) );
-	for ( const [ id, key ] of LAYOUT_FIELDS ) {
-		field( id ).addEventListener( "input", () => {
-			settings[key] = Number( field( id ).value );
-			applyLayout();
-			syncLayoutPanel();
-		} );
-		field( id ).addEventListener( "change", () => {
-			window.electron.saveSettings( { [key]: Number( field( id ).value ) } );
-		} );
-	}
-	field( "lp-reading-line" ).addEventListener( "input", () => {
-		settings[readingLineKey()] = Number( field( "lp-reading-line" ).value );
-		setReadingAnchor( settings[readingLineKey()] / 100 );
-		updateReadingMarker();
-		syncLayoutPanel();
-	} );
-	field( "lp-reading-line" ).addEventListener( "change", () => {
-		window.electron.saveSettings( {
-			[readingLineKey()]: Number( field( "lp-reading-line" ).value )
-		} );
-	} );
-	field( "lp-align" ).addEventListener( "change", () => {
-		window.electron.saveSettings( { textAlign: field( "lp-align" ).value } );
-	} );
-	field( "lp-marker" ).addEventListener( "change", () =>
-		window.electron.saveSettings( {
-			showReadingMarker: field( "lp-marker" ).checked
-		} )
-	);
-	field( "lp-sentence" ).addEventListener( "change", () =>
-		window.electron.saveSettings( {
-			highlightSentence: field( "lp-sentence" ).checked
-		} )
-	);
-	field( "lp-progress" ).addEventListener( "change", () =>
-		window.electron.saveSettings( {
-			showProgress: field( "lp-progress" ).checked
-		} )
-	);
-	field( "lp-pinned" ).addEventListener( "change", () =>
-		window.electron.saveSettings( {
-			controlsPinned: field( "lp-pinned" ).checked
-		} )
-	);
-	onClick( "lp-reset", () =>
-		window.electron.saveSettings( { ...LAYOUT_DEFAULTS, readingLine: 33 } )
-	);
-	onClick( "lp-done", closePanels );
-	// Each of these saves straight away; main sends the settings back, which
-	// re-applies classes, the mask and the window flags.
-	for ( const [ id, key ] of [
-		[ "lp-focus-band", "focusBand" ],
-		[ "lp-on-air", "onAirLight" ],
-		[ "lp-pacing", "showPacing" ],
-		[ "lp-points", "pointsMode" ],
-		[ "lp-summary", "takeSummary" ],
-		[ "lp-start-beep", "startBeep" ],
-		[ "lp-hide-capture", "hideFromCapture" ],
-		[ "lp-click-through", "clickThrough" ]
-	] ) {
-		field( id ).addEventListener( "change", () => {
-			window.electron.saveSettings( { [key]: field( id ).checked } );
-			if ( key === "clickThrough" && field( id ).checked ) {
-				showToast( "Click-through on · Ctrl+Shift+X turns it off from anywhere" );
-			}
-		} );
-	}
-	for ( const [ id, key ] of [
-		[ "lp-text-effect", "textEffect" ],
-		[ "lp-theme", "theme" ],
-		[ "lp-font", "scriptFont" ],
-		[ "lp-heading-font", "headingFont" ]
-	] ) {
-		field( id ).addEventListener( "change", () =>
-			window.electron.saveSettings( { [key]: field( id ).value } )
-		);
-	}
-	field( "lp-follow-pace" ).addEventListener( "change", () => {
-		settings.followScriptPace = field( "lp-follow-pace" ).checked;
-		window.electron.saveSettings( {
-			followScriptPace: settings.followScriptPace
-		} );
-	} );
-	field( "lp-directives" ).addEventListener( "change", () => {
-		settings.showDirectives = field( "lp-directives" ).checked;
-		document.body.classList.toggle( "show-directives", settings.showDirectives );
-		window.electron.saveSettings( { showDirectives: settings.showDirectives } );
-	} );
-	// Beam-splitter glass reflects every bit of light from the screen into the
-	// lens, so: solid black behind the text, dimmer text, and mirrored.
+	settingsWorkspace?.sync( settingsDraft?.value ?? { ...settings, fontSize, opacity, mirrored } );
 }
 
 // --- Voice panel: scroll mode, speech recognition, microphone with a live meter ---
@@ -4374,6 +4409,8 @@ function syncVoicePanel() {
 }
 
 function stopMicMeter() {
+	field( "set-microphone-test" )?.replaceChildren( "Test selected microphone" );
+	if ( meterStream ) field( "vp-mic-status" ).textContent = "Microphone test stopped.";
 	cancelAnimationFrame( meterRaf );
 	meterRaf = null;
 	meterStream?.getTracks().forEach( t => t.stop() );
@@ -4384,18 +4421,18 @@ function stopMicMeter() {
 	if ( fill ) fill.style.width = "0";
 }
 
-async function startMicMeter() {
+async function startMicMeter( selectedDevice = audioDeviceId, settingsPreview = false ) {
 	stopMicMeter();
 	const status = field( "vp-mic-status" );
 	try {
 		meterStream = await navigator.mediaDevices.getUserMedia( {
-			audio: audioDeviceId ? { deviceId: { exact: audioDeviceId } } : true
+			audio: selectedDevice ? { deviceId: { exact: selectedDevice } } : true
 		} );
 	} catch ( err ) {
 		status.textContent = `Can't open this microphone: ${ err.message }`;
 		return;
 	}
-	if ( field( "voice-panel" ).classList.contains( "hidden" ) ) {
+	if ( settingsPreview ? settingsModal.classList.contains( "hidden" ) || settingsDraft?.value.microphoneEnabled !== true : field( "voice-panel" ).classList.contains( "hidden" ) ) {
 		stopMicMeter();
 		return;
 	}
@@ -4697,17 +4734,11 @@ function showUpdateNote( info ) {
 	hud.appendChild( note );
 }
 
-// Sightline is free. Once it's been opened ten times, a small note asks
-// once, never again, and never while you're reading or on air.
-const SUPPORT_LAUNCHES = "sightline.launches";
-const SUPPORT_ASKED = "sightline.supportAsked";
+// Reuse the support note every 10–15 launches, never while reading or on air.
 
 function maybeAskForSupport() {
 	try {
-		if ( localStorage.getItem( SUPPORT_ASKED ) ) return;
-		const launches = Number( localStorage.getItem( SUPPORT_LAUNCHES ) ?? 0 ) + 1;
-		localStorage.setItem( SUPPORT_LAUNCHES, String( launches ) );
-		if ( launches < 10 ) return;
+		if ( !recordSupportLaunch( localStorage ) ) return;
 	} catch {
 		return;
 	}
@@ -4715,9 +4746,9 @@ function maybeAskForSupport() {
 		const busy = steadySessionActive() || autoScrollActive || onAir() || !settingsModal?.classList.contains( "hidden" );
 		if ( busy || uiElement( "support-note" ) ) return;
 		try {
-			localStorage.setItem( SUPPORT_ASKED, new Date().toISOString() );
+			recordSupportShown( localStorage );
 		} catch {
-			// it may ask again next time; that's all
+			return; // Skip if the next interval cannot be saved.
 		}
 		const note = document.createElement( "div" );
 		note.id = "support-note";
@@ -4801,13 +4832,15 @@ window.electron.reloadContent();
 let lastStatusSent = 0;
 
 function sendStatus() {
+	if ( !field( "tools-panel" )?.classList.contains( "hidden" ) ) liveTools?.render();
 	window.electron.sendRendererStatus( {
 		obs: obsUi.state(),
 		scrolling: isScrolling(),
 		preparing: autoScrollStarting || slating,
 		onAir: onAir(),
 		backing: Math.round( liveBacking() * 100 ),
-		panel: layoutPanel?.classList.contains( "hidden" ) === false ? layoutView : null,
+		panel: settingsModal.classList.contains( "hidden" ) ? null : ( { typography: "reading", engine: "voice", takes: "recording" }[settingsNavigation.current] ?? settingsNavigation.current ),
+		speechEnabled: settings.speechEnabled, microphoneEnabled: settings.microphoneEnabled, padEnabled: settings.padEnabled, gamepadEnabled: settings.gamepadEnabled, keyboardMappingsEnabled: settings.keyboardMappingsEnabled,
 		section: scriptIndex,
 		scrollY: Math.round( window.scrollY ),
 		progress: progressText?.textContent ?? "",
@@ -4990,6 +5023,10 @@ function jumpSection( step ) {
 }
 
 function runRemoteAction( action, value ) {
+	if ( [ "obs-on", "obs-off", "obs-pause", "obs-resume" ].includes( action ) ) {
+		if ( !settings.obsEnabled || !settings.obsControls ) return;
+		return obsUi.action( { "obs-on": "start", "obs-off": "stop", "obs-pause": "pause", "obs-resume": "resume" }[action], { prompt: action === "obs-off" || action === "obs-pause" } );
+	}
 	if ( action === "listening-toggle" ) return toggleSessionListening();
 	if ( action === "listening-restart" ) return restartListening();
 	if ( action === "session-check" ) return workflow?.open( "session" );
@@ -5100,10 +5137,12 @@ window.electron.onPhoneInfo( ( info ) => {
 onClick( "set-phone-new", () => window.electron.newPhoneKey() );
 
 const SETTINGS_TAB_KEY = "settingsTab";
-syncPadSettings = createPadSettings( settingsModal, partial => window.electron.saveSettings( partial ) );
+syncPadSettings = createPadSettings( settingsModal, partial => stageSettings( partial ) );
 syncPadSettings( settings.padLayout );
-mappingSettings = createMappingSettings( settingsModal, partial => window.electron.saveSettings( partial ) );
+mappingSettings = createMappingSettings( settingsModal, partial => stageSettings( partial ) );
 mappingSettings.sync( settings.inputMappings );
+gamepadMappings = createMappingSettings( settingsModal, partial => stageSettings( partial ), { kind: "gamepad", prefix: "set-gamepad-map" } );
+gamepadMappings.sync( settings.inputMappings );
 componentAvailability = createComponentAvailability( settingsModal, { navigate: name => showSettingsTab( name ) } );
 componentSettings = createComponentSettings( settingsModal, { onStatus: ( status ) => {
 	componentStatus = status;
@@ -5132,15 +5171,35 @@ settingsModal.addEventListener( "keydown", ( event ) => {
 		if ( input ) mappingSettings.learn( input );
 	}
 }, true );
-const settingsNavigation = createSettingsNavigation( settingsModal, { onShow: ( name ) => {
-	if ( name !== "buttons" ) mappingSettings.cancel();
-	if ( name.startsWith( "component-" ) || [ "remotes", "streamdeck", "obs", "obs-recording", "obs-setup" ].includes( name ) ) componentSettings.refresh();
+const settingsNavigation = createSettingsNavigation( settingsModal, { getState: () => settingsDraft?.value ?? settings, onShow: ( name ) => {
+	if ( name === "getting-started" ) settingsWorkspace.refreshSetup();
+	if ( name !== "microphone" ) stopMicMeter();
+	if ( name !== "mappings" ) mappingSettings.cancel();
+	if ( name !== "gamepad" ) gamepadMappings.cancel();
+	if ( [ "components", "api", "streamdeck", "obs", "obs-recording", "obs-setup" ].includes( name ) ) componentSettings.refresh();
 	settingsTrail( `tab ${ name }` );
-	if ( LAYOUT_TABS.includes( name ) ) borrowLayoutPanel();
 	settingsBox?.scrollTo( 0, 0 );
 } } );
 addSettingsHelp( settingsModal );
-const settingsPages = createSettingsPages( settingsModal );
+field( "set-microphone-test" ).addEventListener( "click", async () => {
+	const button = field( "set-microphone-test" );
+	if ( meterStream ) {
+		stopMicMeter();
+		button.textContent = "Test selected microphone";
+		return;
+	}
+	button.disabled = true;
+	try {
+		await startMicMeter( field( "set-microphone" ).value || null, true );
+	} finally {
+		button.disabled = false;
+		button.textContent = meterStream ? "Stop microphone test" : "Test selected microphone";
+	}
+} );
+field( "set-microphone" ).addEventListener( "change", stopMicMeter );
+const settingsPages = { layout() {}, reveal( control ) {
+	control.focus();
+} };
 
 // The About tab is a brief; the full page is a click away.
 uiElement( "settings-about-full" )?.addEventListener( "click", () => requestCloseSettings( openAbout ) );
@@ -5175,120 +5234,10 @@ function showSettingsTab( name ) {
 	settingsNavigation.show( name );
 }
 
-// The Layout tab shows the Layout panel's own controls (they apply straight
-// away), moved into Settings while it is open and put back when it closes.
-const layoutPanel = uiElement( "layout-panel" );
-const layoutHost = uiElement( "set-layout-host" );
-// Settings shows the Layout panel's groups over three tabs, so none runs
-// below the fold: spacing on Layout, opacity and reading aids on Reading,
-// recording and script options on Recording.
-const layoutHosts = {
-	layout: layoutHost,
-	reading: uiElement( "set-reading-host" ),
-	background: uiElement( "set-background-host" ),
-	aids: uiElement( "set-aids-host" ),
-	display: uiElement( "set-display-host" ),
-	recording: uiElement( "set-recording-host" ),
-	script: uiElement( "set-script-host" )
-};
-const LAYOUT_GROUP_TABS = {
-	Opacity: "reading",
-	Spacing: "layout",
-	"Reading aids": "reading",
-	Recording: "recording",
-	Script: "recording"
-};
-const LAYOUT_TABS = Object.keys( layoutHosts );
-const LAYOUT_TITLES = { layout: "Layout", reading: "Reading", recording: "Recording" };
-
-// The same groups make the floating panel's three views, one per control-bar
-// button. Done and Reset show in every view.
-{
-	let tab = "layout";
-	for ( const el of layoutPanel?.children ?? [] ) {
-		if ( el.tagName === "H4" ) continue;
-		if ( el.tagName === "H5" ) tab = LAYOUT_GROUP_TABS[el.textContent.trim()] ?? "layout";
-		if ( el.classList.contains( "lp-actions" ) ) continue;
-		el.dataset.view = el.classList.contains( "lp-hint" ) || el.classList.contains( "lp-mirror-row" ) ? "layout" : tab;
-	}
+async function toggleLayoutView( view ) {
+	await openSettings();
+	showSettingsTab( view );
 }
-let layoutView = "layout";
-
-function showLayoutView( view ) {
-	layoutView = view;
-	for ( const el of layoutPanel?.querySelectorAll( "[data-view]" ) ?? [] ) {
-		el.classList.toggle( "lp-off", el.dataset.view !== view );
-	}
-	const title = layoutPanel?.querySelector( "h4" );
-	if ( title ) title.textContent = LAYOUT_TITLES[view];
-}
-
-function toggleLayoutView( view ) {
-	if ( !settingsModal.classList.contains( "hidden" ) ) {
-		showSettingsTab( view );
-		showPanelWindow( "settings", settingsModal, () => settingsPages.layout() );
-		return;
-	}
-	const open = !layoutPanel?.classList.contains( "hidden" );
-	if ( open && layoutView === view ) {
-		closePanels();
-		return;
-	}
-	showLayoutView( view );
-	if ( !open ) togglePanel( "layout-panel" );
-}
-showLayoutView( "layout" );
-let layoutBorrowed = [];
-
-function borrowLayoutPanel() {
-	if ( layoutBorrowed.length || !layoutPanel || !layoutHost ) return;
-	layoutBorrowed = [ ...layoutPanel.children ].filter(
-		el => el.tagName !== "H4"
-	);
-	let tab = "layout";
-	for ( const el of layoutBorrowed ) {
-		if ( el.tagName === "H5" ) {
-			const heading = el.textContent.trim();
-			tab = { Opacity: "background", "Reading aids": "aids", Script: "script" }[heading] ?? LAYOUT_GROUP_TABS[heading] ?? "layout";
-		}
-		// The margins note and Reset layout belong with the spacing.
-		const spacing = el.classList.contains( "lp-hint" ) || el.classList.contains( "lp-actions" );
-		el.classList.remove( "lp-off" );
-		if ( el.classList.contains( "lp-mirror-row" ) ) {
-			uiElement( "set-mirror-host" ).append( el );
-			continue;
-		}
-		const id = el.dataset.settingsControl ?? el.querySelector( "input[id], select[id]" )?.id;
-		const destination = [ "lp-font", "lp-heading-font", "lp-heading-scale", "lp-direction-scale", "lp-direction-colour" ].includes( id ) ? "reading" : id === "lp-theme" ? "background" : [ "lp-marker", "lp-sentence", "lp-progress" ].includes( id ) ? "aids" : id === "lp-pinned" ? "display" : id === "lp-summary" ? "recording" : spacing ? "layout" : tab;
-		( layoutHosts[destination] ?? layoutHost ).append( el );
-	}
-	for ( const id of [ "lp-font", "lp-heading-font", "lp-heading-scale", "lp-direction-scale", "lp-direction-colour" ] ) {
-		layoutHosts.reading.append( field( id ).closest( "[data-settings-control]" ) );
-	}
-	field( "lp-done" )?.classList.add( "hidden" );
-	syncControls();
-}
-
-function returnLayoutPanel() {
-	if ( !layoutBorrowed.length ) return;
-	layoutPanel.append( ...layoutBorrowed );
-	layoutBorrowed = [];
-	showLayoutView( layoutView );
-	field( "lp-done" )?.classList.remove( "hidden" );
-}
-
-// Shared live controls remain applied when the Settings draft is cancelled.
-function refreshSharedDisplayFields() {
-	if ( settingsSnapshot ) settingsSnapshot.opacity = opacity;
-}
-for ( const type of [ "input", "change", "click" ] ) {
-	for ( const host of Object.values( layoutHosts ) ) {
-		host?.addEventListener( type, () =>
-			setTimeout( refreshSharedDisplayFields, 200 )
-		);
-	}
-}
-
 function lastSettingsTab() {
 	try {
 		return localStorage.getItem( SETTINGS_TAB_KEY ) ?? "scrolling";
@@ -5420,12 +5369,16 @@ let lastCue = null; // the pause just handled
 const handledCues = new Set(); // pauses already handled on this pass
 const handledCommands = new Set(); // {prompter: …} already run on this pass
 
-function pauseAtCue( pause ) {
+async function pauseAtCue( pause ) {
 	stopSteadyScroll();
 	cuePaused = true;
 	cueWasStop = !pause.seconds;
 	lastCue = pause;
 	handledCues.add( pause );
+	if ( !pause.soundcheck ) {
+		if ( !directivePoints.wordTops.some( y => y > pause.y + 2 ) ) await linkedRecording.finish();
+		else await linkedRecording.pause();
+	}
 	showPausePill( pause.seconds, resumeFromCue );
 	if ( pause.soundcheck ) startScriptSoundCheck( pause.soundcheck, pause );
 	if ( pause.listen === "off" ) {
@@ -5436,13 +5389,14 @@ function pauseAtCue( pause ) {
 	syncCommandListening();
 }
 
-function resumeFromCue() {
+async function resumeFromCue() {
 	// Room then voice: straight on to the next check.
 	const nextCheck = lastCue?.soundcheck ? nextSoundCheck( lastCue ) : null;
 	if ( nextCheck ) {
 		pauseAtCue( nextCheck );
 		return;
 	}
+	if ( !await prepareReading() ) return;
 	clearPausePill();
 	cuePaused = false;
 	syncCommandListening();
@@ -5455,7 +5409,10 @@ function resumeFromCue() {
 		startSteadyScroll( {
 			el: md,
 			wordsPerMinute: settings.steadyWpm,
-			onFinished: () => setIndicator( null )
+			onFinished: () => {
+				setIndicator( null );
+				linkedRecording.finish();
+			}
 		} );
 		// Just before the pause that was handled, so another pause on the same
 		// line (a countdown and then a stop) still counts. After {listen: off},
@@ -5661,6 +5618,7 @@ function goToPoint( index ) {
 	if ( index > last ) {
 		// Past the last section: the talk is over.
 		if ( pointsRunning ) togglePoints();
+		linkedRecording.finish();
 		return;
 	}
 	pointsIndex = Math.max( 0, index );
@@ -5668,8 +5626,10 @@ function goToPoint( index ) {
 	updateOnAir();
 }
 
-function togglePoints() {
+async function togglePoints() {
+	if ( !pointsRunning && !await prepareReading() ) return;
 	pointsRunning = !pointsRunning;
+	if ( !pointsRunning ) linkedRecording.pause();
 	setIndicator( pointsRunning ? "Notes · timing" : null );
 	updateOnAir();
 	updatePlayButton();
@@ -5873,7 +5833,7 @@ window.electron.onPrepareScriptChange( async ( id ) => {
 } );
 
 function syncScratchAudio( active ) {
-	const want = ( active || slating ) && settings.scratchAudio === true && !isEditMode;
+	const want = settings.microphoneEnabled !== false && ( active || slating ) && settings.scratchAudio === true && !isEditMode;
 	if ( want === scratchWanted ) return;
 	scratchWanted = want;
 	scratchChange = scratchChange.then( async () => {
@@ -5898,6 +5858,7 @@ function syncScratchAudio( active ) {
 // edge of the prompter, and each take's loudness in the take log. It runs
 // while the meter shows or a take is being measured, and not otherwise.
 let soundCheck = false;
+let preparationStatus = { meter: { active: false }, test: { state: "idle" } };
 let peakHold = { db: -Infinity, at: 0 };
 let clipAt = 0;
 const levelMeter = createLevelMeter( { onLevel: showLevel } );
@@ -5911,7 +5872,8 @@ hud.appendChild( meterEl );
 // -60 dBFS (empty) to 0 dBFS (full)
 const meterPercent = db => Math.min( 100, Math.max( 0, ( ( db + 60 ) / 60 ) * 100 ) );
 
-function showLevel( { level, peak, shortTerm, room } ) {
+function showLevel( { level, peak = null, shortTerm = null, room = null, preparation = false } ) {
+	if ( preparationStatus.meter.active && !preparation ) return;
 	// The control window shows the meter too, even while a take runs.
 	if ( controlOpen ) window.electron.sendPreviewLevel( { level, peak, shortTerm, room } );
 	if ( meterEl.classList.contains( "hidden" ) ) return;
@@ -5928,15 +5890,27 @@ function showLevel( { level, peak, shortTerm, room } ) {
 }
 
 function syncLevelMeter( active ) {
+	const forPreparation = preparationStatus.meter.active;
+	if ( settings.microphoneEnabled === false && !forPreparation ) {
+		meterEl.classList.add( "hidden" );
+		if ( levelMeter.running ) levelMeter.stop();
+		return;
+	}
 	const how = settings.takeLoudness ?? "voice";
 	const micOnAnyway = autoScrollActive || settings.scratchAudio === true;
 	const measuring = active && !isEditMode && ( how === "always" || ( how === "voice" && micOnAnyway ) );
-	const show = soundCheck && !isEditMode && ( !active || settings.soundCheckDuringTakes === true );
+	const forScript = !!scriptCheck && !scriptCheck.done;
+	const show = forPreparation || ( !isEditMode && ( forScript || ( soundCheck && ( !active || settings.soundCheckDuringTakes === true ) ) ) );
 	meterEl.classList.toggle( "hidden", !show );
+	if ( forPreparation ) {
+		// Preparation already owns a microphone stream. Relay its measurements
+		// without opening a second stream or changing the manual meter setting.
+		if ( levelMeter.running ) levelMeter.stop();
+		return;
+	}
 	// With the control window open, it keeps measuring for that, out of sight.
 	const forControl = soundCheck && controlOpen && !isEditMode;
 	// A {soundcheck} in the script, while it measures.
-	const forScript = !!scriptCheck && !scriptCheck.done;
 	if ( ( show || measuring || forControl || forScript ) && !levelMeter.running ) {
 		levelMeter.start( audioDeviceId ).catch( ( err ) => {
 			console.warn( "[sound check]", err );
@@ -5947,7 +5921,44 @@ function syncLevelMeter( active ) {
 	} else if ( !show && !measuring && !forControl && !forScript && levelMeter.running ) levelMeter.stop();
 }
 
+function receivePreparationStatus( next ) {
+	if ( !next ) return;
+	preparationStatus = next;
+	const result = next.test?.state ?? "idle";
+	const text = {
+		idle: "Not checked. Open Prepare to record to review picture and sound.",
+		recording: "Recording a local test clip…",
+		saving: "Saving the test clip…",
+		review: "Review required. Confirm the clip’s picture and sound before passing the test.",
+		passed: "Passed · You confirmed the test picture and sound.",
+		failed: "Failed · Check the camera and microphone, then make another test.",
+		stale: "Check again · The setup changed or a new test was requested.",
+		saved: `Previous test passed · ${ next.test?.at ? new Date( next.test.at ).toLocaleString() : "Saved reference" }. Recheck framing and audio for this session.`
+	}[result] ?? "Not checked.";
+	const output = uiElement( "settings-test-recording-result" );
+	if ( output ) {
+		output.dataset.result = result;
+		if ( output.textContent !== `Test recording: ${ text }` ) output.textContent = `Test recording: ${ text }`;
+	}
+	preparationResult.dataset.result = result;
+	const shortText = `Test recording: ${ { recording: "Recording…", saving: "Saving…", review: "Review required", passed: "Passed", failed: "Failed · retry", stale: "Check again", saved: "Previous test passed" }[result] ?? "Not checked" }`;
+	if ( preparationResult.textContent !== shortText ) preparationResult.textContent = shortText;
+	preparationResult.title = text;
+	preparationResult.classList.toggle( "hidden", result === "idle" );
+	syncLevelMeter( isScrolling() || cuePaused || pointsRunning );
+	if ( next.meter?.active ) {
+		showLevel( { ...next.meter, preparation: true } );
+		meterEl.querySelector( ".lm-text" ).textContent = `${ next.meter.phase === "room" ? "Room noise check · stay quiet" : "Voice check · speak normally" } · ${ Math.round( next.meter.level ) } dBFS`;
+	}
+}
+window.electron.onPreRecordStatus( receivePreparationStatus );
+window.electron.preRecordStatus().then( receivePreparationStatus ).catch( () => {} );
+
 function toggleSoundCheck() {
+	if ( settings.microphoneEnabled === false ) {
+		showToast( "Enable microphone input in Settings > Voice > Microphone before a sound check." );
+		return;
+	}
 	soundCheck = !soundCheck;
 	const active = isScrolling() || cuePaused || pointsRunning;
 	syncLevelMeter( active );
@@ -5971,6 +5982,12 @@ function takeLogged( take ) {
 
 function feedTakeLog( active ) {
 	if ( changingRecordingScript ) return;
+	const delivering = !scriptCheck && !cuePaused && !autoScrollStarting && ( isSteadyRunning() || pointsRunning || ( autoScrollActive && !autoScrollHandle?.isHeld() ) );
+	if ( setProductionNotesActive( md, delivering, { readingAnchor: getReadingAnchor() } ) ) {
+		const { ranges } = buildWordIndex( md );
+		measureDirectives( ranges );
+		recalculateSteady();
+	}
 	syncScratchAudio( active );
 	syncLevelMeter( active );
 	// Waiting for the slate: the take opens after it, so it gets the slate.
@@ -6025,6 +6042,11 @@ function rateTake( rating ) {
 }
 
 function pacingTick() {
+	const total = pointsMode() ? pointCount() : directivePoints.sections.length;
+	const currentIndex = pointsMode() ? pointsIndex : sectionIndexAt( readingLineY() );
+	sectionPill.classList.toggle( "hidden", isEditMode || total === 0 );
+	sectionPill.textContent = `${ pointsMode() && notePages ? "Page" : "Section" } ${ Math.min( total, Math.max( 1, currentIndex + 1 ) ) } / ${ total }`;
+	sectionPill.title = currentSectionTitle();
 	const active = isScrolling() || cuePaused || pointsRunning;
 	feedTakeLog( active );
 	if ( !active ) {
@@ -6465,11 +6487,12 @@ const navigateWorkflowSettings = async ( topic ) => {
 	await openSettings();
 	showSettingsTab( topic );
 };
+async function getWorkflowState() {
+	await componentSettings.refresh();
+	return { settings, components: componentStatus, obs: obsUi.state(), microphone: micSelect?.selectedOptions[0]?.textContent, guideShown: !!headGuideState?.shown, scriptTitle: slotState.slots[slotState.active]?.name, phone: phoneStatus };
+}
 workflow = createWorkflow( field( "workflow-modal" ), {
-	getState: async () => {
-		await componentSettings.refresh();
-		return { settings, components: componentStatus, obs: obsUi.state(), microphone: micSelect?.selectedOptions[0]?.textContent, guideShown: !!headGuideState?.shown, scriptTitle: slotState.slots[slotState.active]?.name, phone: phoneStatus };
-	},
+	getState: getWorkflowState,
 	navigate: async topic => topic === "obs-setup" ? obsSetupUi.open() : navigateWorkflowSettings( topic ),
 	act: ( action ) => {
 		if ( action === "sound" ) toggleSoundCheck();
@@ -6514,18 +6537,18 @@ function obsUiStatus() {
 }
 function pollGamepads() {
 	for ( const input of buttonEdges( navigator.getGamepads?.() ?? [] ) ) {
-		if ( mappingSettings?.learning ) {
-			if ( settingsModal.ownerDocument.hasFocus() && settingsModal.querySelector( "#settings-page-buttons" )?.hidden === false ) mappingSettings.learn( input );
+		if ( gamepadMappings?.learning ) {
+			if ( settingsModal.ownerDocument.hasFocus() && settingsModal.querySelector( "#settings-page-gamepad" )?.hidden === false ) gamepadMappings.learn( input );
 			continue;
 		}
-		if ( !document.hasFocus() || mappingBlocked() ) continue;
+		if ( !customInputEnabled( settings, "gamepad" ) || !document.hasFocus() || mappingBlocked() ) continue;
 		const action = mappedAction( normaliseMappings( settings.inputMappings ), input );
 		if ( action ) runMappedAction( action );
 	}
 }
 setInterval( pollGamepads, 40 );
 window.addEventListener( "gamepadconnected", () => {
-	showToast( "Controller connected · change buttons in Settings > Controls > Buttons & keys" );
+	if ( settings.gamepadEnabled ) showToast( "Controller connected · Settings > Connections > Game controller" );
 } );
 
 // --- Number boxes beside sliders ---
@@ -6615,13 +6638,37 @@ const NUMBER_BOXES = {
 		scale: 100,
 		unit: "%",
 		word: "percent",
-		name: "Comment size"
+		name: "Inline direction size"
+	} ),
+	"lp-production-scale": () => ( {
+		scale: 100,
+		unit: "%",
+		word: "percent",
+		name: "Production note size"
 	} ),
 	"lp-line-height": () => ( {
 		scale: 100,
 		unit: "%",
 		word: "percent",
-		name: "Line spacing"
+		name: "Script line spacing"
+	} ),
+	"lp-heading-line-height": () => ( {
+		scale: 100,
+		unit: "%",
+		word: "percent",
+		name: "Heading line spacing"
+	} ),
+	"lp-direction-line-height": () => ( {
+		scale: 100,
+		unit: "%",
+		word: "percent",
+		name: "Inline direction line spacing"
+	} ),
+	"lp-production-line-height": () => ( {
+		scale: 100,
+		unit: "%",
+		word: "percent",
+		name: "Production note line spacing"
 	} ),
 	"lp-reading-line": () => ( {
 		scale: 1,
@@ -6724,8 +6771,8 @@ function attachNumberBox( range, getSpec ) {
 		const scale = spec.scale;
 		num.min = tidy( Number( range.min ) * scale );
 		num.max = tidy( Number( range.max ) * scale );
-		num.step = tidy( Number( range.step ) * scale );
-		const shown = tidy( read() * scale );
+		num.step = roundControlNumber( Number( range.step ) * scale );
+		const shown = roundControlNumber( read() * scale );
 		if ( num.ownerDocument.activeElement !== num ) num.value = shown;
 		unit.textContent = spec.unit;
 		const label = spec.name;
@@ -6761,7 +6808,7 @@ function attachNumberBox( range, getSpec ) {
 		range.dispatchEvent( new Event( "input", { bubbles: true } ) );
 		if ( commit ) range.dispatchEvent( new Event( "change", { bubbles: true } ) );
 		refresh();
-		num.value = tidy( read() * spec.scale );
+		num.value = roundControlNumber( read() * spec.scale );
 	};
 	const nudge = ( steps, commit ) => {
 		const spec = getSpec();
@@ -6820,5 +6867,5 @@ function attachNumberBox( range, getSpec ) {
 
 for ( const [ id, getSpec ] of Object.entries( NUMBER_BOXES ) ) {
 	const range = uiElement( id );
-	if ( range ) attachNumberBox( range, getSpec );
+	if ( range && !range.dataset.pairedNumber ) attachNumberBox( range, getSpec );
 }

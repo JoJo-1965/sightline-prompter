@@ -1,12 +1,12 @@
 # Shortcuts and troubleshooting
 
-**Wake word sometimes stops responding:** check **Settings > Prompting >
-Commands**. Audio/engine faults recover automatically with bounded retries;
+**Wake word sometimes stops responding:** check **Settings > Voice > Voice
+commands**. Audio/engine faults recover automatically with bounded retries;
 use **Restart listening** or click the listening badge for a manual retry.
 To investigate a misheard word, enable the optional local command-word trace in **Settings > Debug**,
 reproduce it, then switch tracing off. See [Listening recovery](03-scrolling-and-voice.md#if-listening-stops-responding).
 
-**Changing pad or phone buttons:** use **Settings > Controls > Pad**, or
+**Changing pad or phone buttons:** use **Settings > Connections > Pad and phone**, or
 **Customise** on the pad. Selection and order are shared; Stream Deck
 profiles keep their physical key assignments.
 
@@ -70,7 +70,7 @@ and restore it.
 
 **Voice scrolling doesn't move.** Check the scroll mode is **Voice**, the
 **Listening** label is showing, and the meter in the Voice panel moves when you
-speak. If you use "On this computer", check Settings > Prompting > Voice says the speech
+speak. If you use "On this computer", check Settings > Voice > Speech engine says the speech
 model is installed.
 
 **Voice scrolling has lost its place.** Scroll by hand to where you are. It
@@ -91,15 +91,16 @@ for support…** and attach the file.
 
 **A voice command isn't heard.** Say "Prompter", then the command, then stop
 for a moment: commands only count at the end of what you say. Check Voice
-commands is on in Settings > Prompting > Voice. To use them while steady scrolling, or to
+commands is on in Settings > Voice > Speech engine. To use them while steady scrolling, or to
 start with "Prompter, go", choose "Always, even when stopped" and look for the
 🎙 Prompter label.
 
 **The speech model download failed.** Check you're online and click
 **Try again**. It carries on from the files it already has.
 
-**The prompter shows up in my recording.** Tick **Hide from screen capture** in
-the Layout panel.
+**The prompter shows up in my recording.** Enable **Hide from screen capture**
+in **Reading > Screens and mirroring** and check a short recording. Exclusion
+depends on the capture route. Debug's session capture override is for testing.
 
 **The phone can't connect.** The phone and the computer need to be on the same
 Wi-Fi. Allow Sightline Prompter on private networks if Windows asks. If you

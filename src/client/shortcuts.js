@@ -31,7 +31,9 @@ export const SHORTCUTS = [
 			[ [ "Ctrl+Shift+0" ], "Reset the backing" ],
 			[ [ "Ctrl+M" ], "Mirror: off → horizontal → vertical → both" ],
 			[ [ "Toolbar mirror icons" ], "Toggle left/right and top/bottom independently; lit means on" ],
-			[ [ "Ctrl+Shift+K" ], "Layout: margins, line spacing, alignment" ]
+			[ [ "Ctrl+Shift+K" ], "Layout: margins, alignment and reading line" ],
+			[ [ "Reading > Text and directions" ], "Independent script, heading, direction and note formatting" ],
+			[ [ "Reading > Theme and background" ], "Choose script colours; Text has fonts and Background has transparency" ]
 		]
 	},
 	{
@@ -56,21 +58,22 @@ export const SHORTCUTS = [
 			[ [ "Space" ], "Start / stop the talk timer" ],
 			[ [ "Page Down", "→" ], "Next page (starts the timer if it isn't running)" ],
 			[ [ "Page Up", "←" ], "Previous page" ],
-			[ [ "{mode: notes}" ], "In a script: notes, a page at a time (or Settings > Prompting > Script > Notes)" ],
+			[ [ "{mode: notes}" ], "In a script: notes, a page at a time (or Settings > Reading > Mode and pace > Notes)" ],
 			[ [ "# Heading", "{page}" ], "In notes: start a new page; each ## heading on it is a bullet" ]
 		]
 	},
 	{
 		section: "Script mark-up",
 		keys: [
-			[ [ "[ ]" ], "A note to you, the speaker: shown dimmed. \"Quoted words\" inside stay bright" ],
+			[ [ "[ ]" ], "Inline delivery directions: normal, dimmed or hidden; quoted words remain spoken" ],
+			[ [ "<!-- … -->" ], "Long production notes: shown while paused, hidden during delivery; everything inside stays silent" ],
 			[ [ "{ }" ], "An instruction to the app: hidden while you read" ],
 			[ [ "{pause}" ], "Stop scrolling here until you press Space or the clicker" ],
 			[ [ "{pause: 3s}" ], "Stop for 3 seconds, then carry on (a mark in voice mode)" ],
 			[ [ "{marker}" ], "A bookmark for retakes (Ctrl+B jumps to it)" ],
 			[ [ "{wpm: 140}" ], "On a section heading: that section's pace" ],
 			[ [ "{target: 1:20}" ], "On a section heading: that section's target time" ],
-			[ [ "Prompting > Script" ], "Show directives: see them as small tags, with ⚠ on typos" ]
+			[ [ "Reading > Reading aids" ], "Show directives: see them as small tags, with ⚠ on typos" ]
 		]
 	},
 	{

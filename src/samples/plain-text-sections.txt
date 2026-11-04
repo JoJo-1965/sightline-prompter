@@ -2,14 +2,14 @@
 
 === SECTION 1 · PLAIN TEXT {target: 0:10}
 
-[A sample in plain text, the same layout that Word scripts use.]
+[plain-text example]
 
 Plain text scripts mark each section with three equals signs and the word
 SECTION. Sightline turns those lines into sections you can jump between. {pause}
 
 === SECTION 2 · NOTES AND DIRECTIVES {wpm: 140}
 
-[Notes to you still go in square brackets.]
+[take a breath]
 
 And instructions to the app still go in curly brackets, which you never see.
 {pause}

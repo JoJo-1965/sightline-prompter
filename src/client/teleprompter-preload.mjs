@@ -9,7 +9,10 @@ contextBridge.exposeInMainWorld( "electron", {
 	saveSupportLog: () => ipcRenderer.invoke( "saveSupportLog" ),
 	// Control bar, slots and window IPC
 	windowControl: action => ipcRenderer.send( "windowControl", action ),
-	headGuide: ( action = "toggle" ) => ipcRenderer.send( "headGuideAction", action ),
+	headGuide: ( action = "toggle", value ) => ipcRenderer.send( "headGuideAction", action, value ),
+	prepareRecording: () => ipcRenderer.send( "openPreRecord" ),
+	preRecordStatus: () => ipcRenderer.invoke( "preRecordStatus" ),
+	onPreRecordStatus: callback => on( "preRecordStatus", callback ),
 	utilityPanel: ( kind, action, value ) => ipcRenderer.send( "utilityPanel", kind, action, value ),
 	onUtilityPanelClose: callback => on( "utilityPanelClose", callback ),
 	onHeadGuideState: callback => on( "headGuideState", callback ),
@@ -148,6 +151,10 @@ contextBridge.exposeInMainWorld( "electron", {
 	// Settings IPC
 	getSettings: () => ipcRenderer.send( "getSettings" ),
 	saveSettings: partial => ipcRenderer.send( "saveSettings", partial ),
+	applyPreferences: payload => ipcRenderer.invoke( "applyPreferences", payload ),
+	saveReadingTheme: payload => ipcRenderer.invoke( "saveReadingTheme", payload ),
+	importReadingTheme: () => ipcRenderer.invoke( "importReadingTheme" ),
+	exportReadingTheme: theme => ipcRenderer.invoke( "exportReadingTheme", theme ),
 	getCaptureOverride: () => ipcRenderer.send( "getCaptureOverride" ),
 	setCaptureOverride: enabled => ipcRenderer.send( "setCaptureOverride", enabled === true ),
 	onCaptureOverride: callback => on( "captureOverride", callback ),

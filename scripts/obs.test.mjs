@@ -61,6 +61,11 @@ class FakeSocket extends EventTarget {
 		if ( server.ignore === d.requestType ) return;
 		const result = server.reject !== d.requestType;
 		let responseData = {};
+		if ( d.requestType === "GetSceneList" ) responseData = { scenes: [ { sceneName: "Camera clean" }, { sceneName: "Slides" } ], currentProgramSceneName: "Slides" };
+		if ( d.requestType === "GetSourceScreenshot" ) responseData = { imageData: "data:image/jpeg;base64,ZmFrZQ==" };
+		if ( d.requestType === "GetVirtualCamStatus" ) responseData = { outputActive: server.virtual === true };
+		if ( d.requestType === "StartVirtualCam" ) server.virtual = true;
+		if ( d.requestType === "StopVirtualCam" ) server.virtual = false;
 		if ( d.requestType === "GetVersion" ) responseData = { availableRequests: server.chapters ? [ "CreateRecordChapter" ] : [] };
 		if ( result && d.requestType === "StartRecord" ) {
 			server.starting = server.startDelayPolls;
@@ -71,6 +76,8 @@ class FakeSocket extends EventTarget {
 			if ( !server.stopping ) server.active = false;
 			responseData = { outputPath: "/recordings/test.mp4" };
 		}
+		if ( result && d.requestType === "PauseRecord" ) server.paused = true;
+		if ( result && d.requestType === "ResumeRecord" ) server.paused = false;
 		if ( d.requestType === "GetRecordStatus" ) {
 			if ( server.starting > 0 && --server.starting === 0 ) server.active = true;
 			if ( server.stopping > 0 && --server.stopping === 0 ) server.active = false;
@@ -96,6 +103,19 @@ try {
 	await obs.configure( { enabled: true, password: "private" } );
 	assert.equal( server.auth, obsAuthentication( "private", "salt", "challenge" ) );
 	assert.equal( obs.state().recording, "stopped" );
+	const beforeCalibration = server.requests.length;
+	assert.deepEqual( ( await obs.calibration( "scenes" ) ).scenes, [ "Camera clean", "Slides" ] );
+	assert.match( await obs.calibration( "frame", "Camera clean" ), /^data:image\/jpeg/ );
+	await assert.rejects( obs.calibration( "frame", "Unknown scene" ), /available/ );
+	assert.ok( server.requests.slice( beforeCalibration ).every( type => [ "GetSceneList", "GetSourceScreenshot" ].includes( type ) ), "Calibration never changes a scene or recording" );
+	server.virtual = true;
+	assert.equal( ( await obs.calibration( "virtual-start" ) ).owned, false );
+	await obs.calibration( "virtual-stop" );
+	assert.equal( server.virtual, true, "An existing virtual camera remains running" );
+	server.virtual = false;
+	assert.equal( ( await obs.calibration( "virtual-start" ) ).owned, true );
+	await Promise.all( [ obs.calibration( "virtual-stop" ), obs.calibration( "virtual-stop" ) ] );
+	assert.equal( server.virtual, false, "Only the calibration-owned feed is stopped" );
 	await assert.rejects( obs.command( "start" ), /status-only/ );
 	assert.equal( server.requests.includes( "StartRecord" ), false );
 	const count = FakeSocket.instances.length;
@@ -109,6 +129,19 @@ try {
 	assert.equal( obs.state().recording, "recording" );
 	await obs.command( "start" );
 	assert.equal( server.requests.filter( x => x === "StartRecord" ).length, 1, "a retake uses the current recording" );
+	await obs.command( "pause" );
+	assert.equal( obs.state().recording, "paused" );
+	assert.equal( obs.state().recordingId, id );
+	const pauseRequests = server.requests.filter( x => x === "PauseRecord" ).length;
+	await obs.command( "pause" );
+	assert.equal( server.requests.filter( x => x === "PauseRecord" ).length, pauseRequests, "Pausing twice is idempotent" );
+	await obs.command( "resume" );
+	assert.equal( obs.state().recording, "recording" );
+	assert.equal( obs.state().recordingId, id );
+	server.reject = "PauseRecord";
+	await assert.rejects( obs.command( "pause" ), /rejected/ );
+	assert.equal( obs.state().recording, "recording", "An unsupported pause must not pretend OBS paused" );
+	server.reject = null;
 	await obs.command( "marker", "Setup" );
 	assert.ok( server.requests.includes( "CreateRecordChapter" ) );
 	server.reject = "CreateRecordChapter";

@@ -90,7 +90,6 @@ export function readDirectives( root ) {
 			sectionSettings( script, d );
 		} else if ( belongsToHeading( el, current.heading ) ) {
 			sectionSettings( current, d );
-			continue;
 		}
 		if ( "pause" in d ) {
 			const seconds = parsePauseSeconds( d.pause );
@@ -113,6 +112,7 @@ export function readDirectives( root ) {
 			const command = String( d.prompter ).trim().toLowerCase();
 			if ( PROMPTER_COMMANDS.includes( command ) ) prompterCommands.push( { el, command } );
 		}
+		if ( "record" in d && [ "on", "off", "pause", "resume" ].includes( String( d.record ).toLowerCase() ) ) prompterCommands.push( { el, command: `record:${ String( d.record ).toLowerCase() }` } );
 		if ( "marker" in d ) markers.push( { el, label: typeof d.marker === "string" ? d.marker : null } );
 		if ( current && "wpm" in d && parseWpm( d.wpm ) ) {
 			paceChanges.push( { el, wpm: parseWpm( d.wpm ) } );

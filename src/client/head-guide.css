@@ -12,16 +12,15 @@ svg { width: 100%; height: 100%; display: block; overflow: visible; color: #72ef
 .quiet { opacity: .4; }
 .dashed { stroke-dasharray: 8 8; }
 .label { fill: currentColor; font: 15px 'Segoe UI', sans-serif; paint-order: stroke; stroke: #17232b; stroke-width: 3px; stroke-linejoin: round; }
-footer { position: absolute; bottom: 0; left: 0; right: 0; height: 16px; background: #15222bed; font-size: 10px; padding: 1px 7px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 @media (max-width: 600px) { header strong { font-size: 0; } header strong::after { content: 'Head guide'; font-size: 12px; } input { width: 45px; } }
 #resize { position: absolute; bottom: 0; right: 0; width: 25px; height: 25px; cursor: nwse-resize; -webkit-app-region: no-drag; }
 #resize::after { content: '◢'; position: absolute; bottom: 0; right: 2px; color: #72efce; }
-body.locked header, body.locked footer, body.locked #resize { visibility: hidden; }
+body.locked header, body.locked #resize { visibility: hidden; }
 body.locked #stage { border-color: transparent; }
-body.chromeless header, body.chromeless footer, body.chromeless #resize { visibility: hidden; }
+body.chromeless header, body.chromeless #resize { visibility: hidden; }
 body.chromeless #stage { border-color: transparent; }
 body.fullscreen #stage { inset: 0; border: 0; }
-body.fullscreen header, body.fullscreen footer { z-index: 2; }
+body.fullscreen header { z-index: 2; }
 body.fullscreen header { -webkit-app-region: no-drag; }
 body.fullscreen #resize { display: none; }
 .ideal .line { stroke: #fff; stroke-dasharray: 5 9; opacity: .9; }
@@ -43,7 +42,7 @@ button:disabled { opacity: .45; cursor: default; }
 body.eyes-locked #head { cursor: default; }
 button:focus-visible, input:focus-visible { outline: 2px solid #fbd86c; outline-offset: 2px; }
 .controls-only { background: #15222b; color-scheme: dark; }
-.controls-only header, .controls-only #stage, .controls-only footer, .controls-only #resize { display: none; }
+.controls-only header, .controls-only #stage, .controls-only #resize { display: none; }
 .controls-only #adjust-panel { position: static; width: 100%; height: 100%; max-height: none; border: 0; border-radius: 0; padding: 12px; scrollbar-color: #657282 #15222b; }
 .controls-only #adjust-panel p { margin: 6px 0; line-height: 1.4; }
 .controls-only #adjust-panel hr { margin: 8px 0; }
@@ -55,3 +54,32 @@ summary { cursor: pointer; color: #9fdbf4; font-size: 12px; text-wrap: pretty; }
 .placements { margin-top: 9px; }
 #lock-eyes, #save-ideal, #reset-pose, #ideal-visible, #adjust-close { margin-top: 8px; min-height: 28px; }
 summary:focus-visible { outline: 2px solid #fbd86c; outline-offset: 2px; }
+.reference-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.reference-actions button { min-height: 30px; text-wrap: pretty; }
+.controls-only .shape-control { margin-top: 6px; }
+.controls-only .shape-range { margin-top: 1px; }
+#framing-controls{padding-bottom:14px;margin-bottom:16px;border-bottom:1px solid #617783;}
+#framing-controls h3{font-size:14px;margin:0 0 10px;text-wrap:balance;}
+#framing-controls label{display:block;margin:10px 0 6px;font-size:12px;text-wrap:pretty;}
+#framing-controls select{display:block;width:100%;padding:6px;background:#20333d;color:#fff;border:1px solid #71828a;border-radius:4px;}
+#framing-controls button{margin:6px 6px 0 0;min-height:30px;}#framing-detail{font-size:12px;text-wrap:pretty;}
+#framing-pill{position:fixed;left:14px;bottom:40px;z-index:4;padding:7px 12px;border:1px solid currentColor;border-radius:5px;background:#15222be8;font-size:14px;pointer-events:none;text-wrap:balance;max-width:calc(100% - 28px);}
+.controls-only #framing-pill{display:none;}#framing-arrow{font-size:48px;font-weight:600;pointer-events:none;}
+#framing-controls [hidden],#framing-pill[hidden]{display:none!important;}
+/* A separate native surface keeps these controls above the prompter while the
+   framing outline stays below it. Preserve the existing picture geometry. */
+body:not(.toolbar-only) header { display: none; }
+.toolbar-only #stage,.toolbar-only #adjust-panel,.toolbar-only #resize,.toolbar-only #framing-pill { display: none!important; }
+body.toolbar-only header { position: static; display: flex; flex-wrap: wrap; align-content: center; visibility: visible; gap: 6px; width: 100%; height: 100vh; padding: 7px 10px; border: 1px solid #657282; border-radius: 8px; -webkit-app-region: no-drag; z-index: 1000; }
+.toolbar-only header strong { flex: 1 1 auto; min-width: 70px; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.toolbar-only header strong::after { content: none; }
+.toolbar-only header button { min-height: 28px; white-space: nowrap; }
+.toolbar-only #toolbar-reveal { display: none; }
+.toolbar-only.toolbar-collapsed header { display: none; }
+.toolbar-only.toolbar-collapsed #toolbar-reveal { display: block; width: 100%; height: 100vh; border-color: #80c8bd; border-radius: 6px; background: #15222bf5; font-size: 12px; }
+body.fullscreen #framing-pill { bottom: 108px; }
+@media (max-width: 759px) {
+ .toolbar-only header { gap: 5px; padding: 6px 8px; }
+ .toolbar-only header strong { flex: 1 1 80px; }
+ .toolbar-only header input { width: 45px; }
+}

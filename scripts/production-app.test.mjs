@@ -18,6 +18,7 @@ const mock = new WebSocketServer( { host: "127.0.0.1", port: 0 } );
 await new Promise( r => mock.on( "listening", r ) );
 const port = mock.address().port;
 let active = false;
+let paused = false;
 let connections = 0;
 let authOK = false;
 const requests = [];
@@ -35,12 +36,17 @@ mock.on( "connection", ( socket ) => {
 		requests.push( d.requestType );
 		let responseData = {};
 		if ( d.requestType === "GetVersion" ) responseData = { availableRequests: [ "CreateRecordChapter" ] };
-		if ( d.requestType === "StartRecord" ) active = true;
+		if ( d.requestType === "StartRecord" ) {
+			active = true;
+			paused = false;
+		}
+		if ( d.requestType === "PauseRecord" ) paused = true;
+		if ( d.requestType === "ResumeRecord" ) paused = false;
 		if ( d.requestType === "StopRecord" ) {
 			active = false;
 			responseData = { outputPath: "/recordings/sightline-smoke.mp4" };
 		}
-		if ( d.requestType === "GetRecordStatus" ) responseData = { outputActive: active, outputPaused: false, outputDuration: 3000 };
+		if ( d.requestType === "GetRecordStatus" ) responseData = { outputActive: active, outputPaused: active && paused, outputDuration: 3000 };
 		socket.send( JSON.stringify( { op: 7, d: { requestId: d.requestId, requestType: d.requestType, requestStatus: { result: true }, responseData } } ) );
 	} );
 } );
@@ -55,7 +61,7 @@ const env = { ...process.env };
 delete env.ELECTRON_RUN_AS_NODE;
 // Native window occlusion must not suspend frame-based checks behind the
 // user's projector or always-on-top prompter. These flags affect this test only.
-const child = spawn( require( "electron" ), [ ".", `--user-data-dir=${ profile }`, "--remote-debugging-port=9335", "--disable-renderer-backgrounding", "--disable-backgrounding-occluded-windows", "--disable-features=CalculateNativeWinOcclusion" ], { cwd: root, env, windowsHide: true, stdio: [ "ignore", "pipe", "pipe" ] } );
+const child = spawn( process.env.SIGHTLINE_TEST_EXE ?? require( "electron" ), [ ...( process.env.SIGHTLINE_TEST_EXE ? [] : [ "." ] ), `--user-data-dir=${ profile }`, "--remote-debugging-port=9335", "--disable-renderer-backgrounding", "--disable-backgrounding-occluded-windows", "--disable-features=CalculateNativeWinOcclusion" ], { cwd: root, env, windowsHide: true, stdio: [ "ignore", "pipe", "pipe" ] } );
 let errors = "";
 child.stderr.on( "data", ( b ) => {
 	errors += b.toString();
@@ -132,6 +138,20 @@ try {
 	assert.ok( directions.text.includes( "smile" ) && directions.text.includes( "point" ) );
 	assert.equal( directions.sentences.join( " " ), "Hello there. More words." );
 	console.log( "PASS: delivery notes remain visible but stay out of speech alignment, counts and exported sentences." );
+	const productionNotes = await evaluate( `(async()=>{
+		const {decorateScript}=await import('./decorate.js');const {buildWordIndex}=await import('./word-index.js');const {setProductionNotesActive}=await import('./production-notes.js');
+		const root=document.createElement('div');root.id='md';root.style.cssText='font-size:32px;padding-top:1100px';
+		root.innerHTML='<p><!-- Prepare the recording. {record: off} [Say: "Not spoken"] --></p><p>[smile] These words are spoken.</p>';
+		document.body.append(root);decorateScript(root);const words=buildWordIndex(root).words;const visible=getComputedStyle(root.querySelector('.production-note')).display!=='none';
+		setProductionNotesActive(root,true,{alignFirst:true});const hidden=getComputedStyle(root.querySelector('.production-note')).display==='none';
+		const spoken=buildWordIndex(root).ranges[0];const y=spoken.getBoundingClientRect().top;
+		setProductionNotesActive(root,false);const shift=spoken.getBoundingClientRect().top-y;const restored=getComputedStyle(root.querySelector('.production-note')).display!=='none';root.remove();window.scrollTo(0,0);
+		return {words,visible,hidden,restored,y,shift};})()` );
+	assert.deepEqual( productionNotes.words, [ "these", "words", "are", "spoken" ] );
+	assert.ok( productionNotes.visible && productionNotes.hidden && productionNotes.restored );
+	assert.ok( Math.abs( productionNotes.y - 900 * 0.33 ) < 2, "First spoken line aligns below long preparation notes" );
+	assert.ok( Math.abs( productionNotes.shift ) < 2, "Showing paused notes preserves the spoken line" );
+	console.log( "PASS: production comments hide during delivery, return paused, exclude all enclosed commands/speech and preserve the reading line." );
 	const compatibilityConfig = JSON.parse( await fs.readFile( path.join( profile, "stream-deck.json" ), "utf8" ) );
 	assert.equal( compatibilityConfig.streamDeckApi.protocolVersion, 1 );
 	const compatibilityResponse = await fetch( compatibilityConfig.url + "/stream-deck/hello", {
@@ -169,6 +189,7 @@ try {
 	assert.equal( await centred(), true, "Reopening clears a previous drag offset" );
 	await send( "Emulation.setDeviceMetricsOverride", { width: 560, height: 500, deviceScaleFactor: 1, mobile: false } );
 	await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
+	if ( !await centred() ) console.log( "Settings resize geometry:", await evaluate( "(()=>{const e=document.querySelector('.settings-content'),r=e.getBoundingClientRect(),s=getComputedStyle(e);return {viewport:[innerWidth,innerHeight],rect:[r.x,r.y,r.width,r.height],maxHeight:s.maxHeight,position:s.position,transform:s.transform,margin:s.margin,align:s.alignSelf,parent:e.parentElement.getBoundingClientRect().toJSON()};})()" ) );
 	assert.equal( await centred(), true, "Settings recentres on a smaller viewport" );
 	await send( "Emulation.clearDeviceMetricsOverride" );
 	await evaluate( "document.getElementById('settings-close').click()" );
@@ -202,148 +223,24 @@ try {
 	const toolsAnchorShot = await send( "Page.captureScreenshot", { format: "png", clip: toolsClip } );
 	await fs.writeFile( path.join( artifacts, "tools-menu-anchor.png" ), Buffer.from( toolsAnchorShot.result.data, "base64" ) );
 	console.log( "PASS: Tools opens below its toolbar button and stays within three viewport widths while resizing." );
-	await evaluate( "document.activeElement.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowDown',bubbles:true}))" );
-	assert.ok( await evaluate( "/head guide/i.test(document.activeElement.textContent)" ) );
-	await evaluate( "document.getElementById('tools-panel').dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}))" );
-	assert.equal( await evaluate( "document.activeElement.id" ), "cb-tools" );
-	await evaluate( "document.getElementById('cb-settings').focus();document.getElementById('cb-settings').click()" );
-	assert.deepEqual( await evaluate( "[...document.querySelectorAll('.settings-tabs button')].map(b=>b.textContent)" ), [ "Prompting", "Appearance", "Recording", "Controls", "Components", "Debug", "About" ] );
-	assert.equal( await evaluate( "document.querySelectorAll('#settings-modal fieldset:not([data-tab])').length" ), 0 );
-	assert.equal( await evaluate( "[...document.querySelectorAll('#settings-modal fieldset')].every(f=>f.closest('[data-settings-page]'))" ), true );
-	assert.equal( await evaluate( "['set-opacity','set-reading-line','set-reading-marker','set-sentence','set-mirrored','set-file-open','set-file-save'].some(id=>document.getElementById(id))" ), false );
-	await evaluate( "document.getElementById('set-countdown').value='2';document.querySelector('[data-settings-group=appearance]').click();document.querySelector('[data-settings-group=prompting]').click()" );
-	assert.equal( await evaluate( "document.getElementById('set-countdown').value" ), "2" );
-	await evaluate( "document.getElementById('settings-group-prompting').dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true}))" );
-	assert.equal( await evaluate( "document.activeElement.textContent" ), "Appearance" );
-	await evaluate( "document.getElementById('settings-topic-reading').dispatchEvent(new KeyboardEvent('keydown',{key:'End',bubbles:true}))" );
-	assert.equal( await evaluate( "document.activeElement.textContent" ), "Screens" );
-	await evaluate( "document.getElementById('settings-close').focus();document.activeElement.dispatchEvent(new KeyboardEvent('keydown',{key:'Tab',shiftKey:true,bubbles:true}))" );
-	assert.equal( await evaluate( "document.activeElement.id" ), "settings-save" );
-	await evaluate( "document.activeElement.dispatchEvent(new KeyboardEvent('keydown',{key:'Tab',bubbles:true}))" );
-	assert.equal( await evaluate( "document.activeElement.id" ), "settings-close" );
-	const visited = await evaluate( "(()=>{const results=[];for(const group of document.querySelectorAll('.settings-tabs button')){group.click();for(const topic of [...document.querySelectorAll('.settings-subtabs button')].filter(b=>!b.hidden)){topic.click();const page=document.getElementById(topic.getAttribute('aria-controls'));results.push({name:topic.dataset.tab,visible:page.getClientRects().length>0,fields:page.querySelectorAll('fieldset').length,one:[...document.querySelectorAll('[data-settings-page]')].filter(p=>p.getClientRects().length).length===1});}}return results;})()" );
-	assert.equal( visited.length, 27 );
-	assert.ok( visited.some( page => page.name === "component-kit" ) && visited.some( page => page.name === "buttons" ), "Components and input mappings have their own reachable topics" );
-	assert.ok( visited.every( page => page.visible && page.fields && page.one ), JSON.stringify( visited ) );
-	const semantics = await evaluate( "(()=>{const root=document.querySelector('.settings-content');return {unlabelled:[...root.querySelectorAll('input,select,textarea')].filter(e=>!e.getAttribute('aria-label')&&!e.getAttribute('aria-labelledby')&&![...(e.labels??[])].some(l=>l.textContent.trim())).map(e=>e.id||e.className),nested:root.querySelectorAll('label button,label input~input').length,oldCaption:root.textContent.includes('How this works'),colourScheme:getComputedStyle(root).colorScheme,interactiveTooltips:document.querySelectorAll('.settings-explanation a,.settings-explanation button').length};})()" );
-	assert.deepEqual( semantics.unlabelled, [], "Every settings control needs an accessible name" );
-	assert.equal( semantics.nested, 0, "Help and number buttons must not be nested inside control labels" );
-	assert.equal( semantics.oldCaption, false );
-	assert.equal( semantics.colourScheme, "dark" );
-	assert.equal( semantics.interactiveTooltips, 0, "Links and actions stay outside non-interactive tooltips" );
-	async function checkSettingsFit( width, height ) {
-		await send( "Emulation.setDeviceMetricsOverride", { width, height, deviceScaleFactor: 1, mobile: false } );
-		await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
-		const frame = await evaluate( "(()=>{const r=document.querySelector('.settings-content').getBoundingClientRect();return {width:r.width,height:r.height};})()" );
-		for ( const entry of visited ) {
-			await evaluate( `document.getElementById('settings-topic-${ entry.name }').click()` );
-			for ( let n = 0; n < 30; n++ ) {
-				await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
-				const fit = await evaluate( "(()=>{const b=document.querySelector('.settings-content'),r=b.getBoundingClientRect(),f=b.querySelector('.settings-actions').getBoundingClientRect(),p=b.querySelector('[data-settings-page]:not([hidden])');return {width:r.width,height:r.height,top:r.top,bottom:r.bottom,overflow:b.scrollHeight-b.clientHeight,footer:Math.abs(f.bottom-r.bottom)<=1,topic:p.dataset.settingsPage,page:b.querySelector('.settings-pagination [role=status]').textContent,next:b.querySelector('.settings-pagination').getClientRects().length&&!b.querySelector('.settings-pagination button:last-child').disabled};})()" );
-				assert.ok( fit.height <= 560 && fit.top >= 0 && fit.bottom <= height && fit.overflow <= 1 && fit.footer, JSON.stringify( { width, height, ...fit } ) );
-				assert.ok( Math.abs( fit.width - frame.width ) <= 1 && Math.abs( fit.height - frame.height ) <= 1, `Settings must keep the same size across every topic and page: ${ JSON.stringify( { frame, fit } ) }` );
-				const outside = await evaluate( "(()=>{const b=document.querySelector('.settings-content').getBoundingClientRect();return [...document.querySelector('[data-settings-page]:not([hidden])').querySelectorAll('input,select,button,textarea')].filter(e=>e.getClientRects().length).filter(e=>{const r=e.getBoundingClientRect();return r.left<b.left-1||r.right>b.right+1||r.top<b.top-1||r.bottom>b.bottom+1;}).map(e=>e.id||e.className);})()" );
-				assert.deepEqual( outside, [], `Settings controls must stay inside the panel: ${ entry.name }` );
-				if ( !fit.next ) break;
-				assert.ok( n < 29, "Settings pages must end" );
-				await evaluate( "document.querySelector('.settings-pagination button:last-child').click()" );
-			}
-		}
-	}
-	await checkSettingsFit( 1100, 900 );
-	await checkSettingsFit( 560, 500 );
-	await send( "Emulation.clearDeviceMetricsOverride" );
-	await evaluate( "document.getElementById('settings-topic-words').click();for(let n=0;n<18;n++){document.getElementById('words-add').click();document.querySelector('#words-list .word-row:last-child .wf-word').value='Example '+n;}document.getElementById('settings-topic-scrolling').click();document.getElementById('settings-topic-words').click()" );
-	const seenWords = new Set();
-	for ( let n = 0; n < 30; n++ ) {
-		await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
-		for ( const word of await evaluate( "[...document.querySelectorAll('#words-list .wf-word')].filter(e=>e.getClientRects().length).map(e=>e.value)" ) ) seenWords.add( word );
-		assert.equal( await evaluate( "document.querySelector('.settings-content').scrollHeight<=document.querySelector('.settings-content').clientHeight+1" ), true );
-		if ( !await evaluate( "document.querySelector('.settings-pagination').getClientRects().length&&!document.querySelector('.settings-pagination button:last-child').disabled" ) ) break;
-		await evaluate( "document.querySelector('.settings-pagination button:last-child').click()" );
-	}
-	assert.equal( seenWords.size, 18, "Every saved word must remain reachable without a scrolling list" );
-	await evaluate( "document.getElementById('words-list').replaceChildren()" );
-	await evaluate( "document.getElementById('settings-topic-commands').click()" );
-	await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
-	assert.equal( await evaluate( "document.querySelector('.settings-content').getBoundingClientRect().height" ), 560, "Short topics keep the same panel height as longer topics" );
-	await evaluate( "document.querySelector('#settings-page-commands .settings-help-button').focus()" );
-	assert.equal( await evaluate( "document.querySelectorAll('.settings-explanation:popover-open').length" ), 1 );
-	await send( "Input.dispatchKeyEvent", { type: "keyDown", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 } );
-	await send( "Input.dispatchKeyEvent", { type: "keyUp", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 } );
-	assert.equal( await evaluate( "document.querySelectorAll('.settings-explanation:popover-open').length" ), 0 );
-	const helpSize = await evaluate( "(()=>{const b=document.querySelector('#settings-page-commands .settings-help-button'),r=b.getBoundingClientRect(),p=b.firstElementChild.getBoundingClientRect();return {hit:[r.width,r.height],pill:[p.width,p.height],insideLabel:!!b.closest('label')};})()" );
-	assert.deepEqual( helpSize.hit, [ 24, 24 ] );
-	assert.deepEqual( helpSize.pill, [ 17, 12 ] );
-	assert.equal( helpSize.insideLabel, false );
-	await evaluate( "document.getElementById('settings-topic-audio').click()" );
-	await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
-	const scratchBefore = await evaluate( "document.getElementById('set-scratch-audio').checked" );
-	await evaluate( "document.querySelector('[data-settings-control=set-scratch-audio] .settings-help-button span').click()" );
-	assert.equal( await evaluate( "document.querySelectorAll('.settings-explanation:popover-open').length" ), 1 );
-	assert.equal( await evaluate( "document.getElementById('set-scratch-audio').checked" ), scratchBefore );
-	await evaluate( "document.querySelector('[data-settings-control=set-scratch-audio] .settings-help-button span').click();document.getElementById('settings-topic-scrolling').click();document.getElementById('set-countdown').focus()" );
-	await send( "Input.dispatchKeyEvent", { type: "keyDown", key: "ArrowUp", code: "ArrowUp", windowsVirtualKeyCode: 38 } );
-	await send( "Input.dispatchKeyEvent", { type: "keyUp", key: "ArrowUp", code: "ArrowUp", windowsVirtualKeyCode: 38 } );
-	assert.equal( await evaluate( "document.getElementById('settings-applied').textContent" ), "Unsaved changes" );
-	await evaluate( "document.getElementById('set-countdown').value='0'" );
-	console.log( "PASS: labelled controls, dark native controls, 24px help targets, miniature pills, isolated checkbox help and trusted-input draft feedback." );
-	assert.equal( await evaluate( "document.getElementById('settings-modal').classList.contains('hidden')" ), false );
-	const portBefore = await evaluate( "document.getElementById('set-remote-port').value" );
-	await evaluate( "document.getElementById('set-remote-port').value='70000';document.getElementById('settings-topic-about').click();document.getElementById('settings-apply').click()" );
-	await until( "document.activeElement.id==='set-remote-port'" );
-	assert.equal( await evaluate( "document.getElementById('set-remote-port').validity.rangeOverflow" ), true );
-	assert.equal( await evaluate( "document.querySelector('[data-settings-page]:not([hidden])').dataset.settingsPage" ), "remotes" );
-	await evaluate( `document.getElementById('set-remote-port').value=${ JSON.stringify( portBefore ) };document.getElementById('settings-topic-commands').click()` );
-	await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
-	const trigger = await evaluate( "(()=>{const r=document.querySelector('#settings-page-commands .settings-help-button').getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};})()" );
-	await send( "Input.dispatchMouseEvent", { type: "mouseMoved", ...trigger } );
-	await until( "document.querySelectorAll('.settings-explanation:popover-open').length===1" );
-	const tooltipPoint = await evaluate( "(()=>{const r=document.querySelector('.settings-explanation:popover-open').getBoundingClientRect();return {x:r.x+12,y:r.y+12};})()" );
-	await send( "Input.dispatchMouseEvent", { type: "mouseMoved", ...tooltipPoint } );
-	await pause( 220 );
-	assert.equal( await evaluate( "document.querySelectorAll('.settings-explanation:popover-open').length" ), 1, "The explanation must stay open while the pointer is over it" );
-	await evaluate( "document.querySelector('#settings-page-commands .settings-help-button').click()" );
-	assert.equal( await evaluate( "document.querySelectorAll('.settings-explanation:popover-open').length" ), 1 );
-	const helpClip = await evaluate( "(()=>{const b=document.querySelector('.settings-content').getBoundingClientRect(),p=document.querySelector('.settings-explanation:popover-open').getBoundingClientRect();return {x:Math.min(b.x,p.x),y:Math.min(b.y,p.y),width:Math.max(b.right,p.right)-Math.min(b.x,p.x),height:Math.max(b.bottom,p.bottom)-Math.min(b.y,p.y),scale:1};})()" );
-	const helpShot = await send( "Page.captureScreenshot", { format: "png", clip: helpClip } );
-	await fs.writeFile( path.join( artifacts, "settings-commands-help.png" ), Buffer.from( helpShot.result.data, "base64" ) );
-	await evaluate( "document.querySelector('#settings-page-commands .settings-help-button').click()" );
-	assert.equal( await evaluate( "document.querySelectorAll('.settings-explanation:popover-open').length" ), 0 );
-	console.log( "PASS: Settings keeps the same size and footer position across every topic and page without scrolling at desktop and 560×500; contextual help supports keyboard focus and Escape." );
-	await evaluate( "document.getElementById('settings-topic-layout').click()" );
-	for ( let n = 0; n < 10; n++ ) {
-		await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
-		if ( await evaluate( "document.getElementById('lp-reading-line').getClientRects().length>0" ) ) break;
-		await evaluate( "document.querySelector('.settings-pagination button:last-child').click()" );
-	}
-	await evaluate( "document.getElementById('lp-reading-line').focus()" );
+	// The redesigned native forms have their own full suite. Retain an inline
+	// fallback check here alongside the recorder/head-guide integration fixture.
+	await evaluate( "document.getElementById('cb-tools').click();document.getElementById('cb-settings').click()" );
+	assert.equal( await evaluate( "document.querySelectorAll('[data-settings-group]').length" ), 8 );
+	assert.equal( await evaluate( "document.querySelectorAll('[data-settings-page]').length" ), 34 );
+	assert.equal( await evaluate( "document.querySelectorAll('.settings-pagination').length" ), 0 );
+	assert.equal( await evaluate( "document.querySelectorAll('#lp-production-colour').length" ), 1 );
+	await evaluate( "document.getElementById('settings-topic-layout').click();document.getElementById('lp-reading-line').focus()" );
 	const lineBefore = await evaluate( "Number(document.getElementById('lp-reading-line').value)" );
 	await send( "Input.dispatchKeyEvent", { type: "keyDown", key: "ArrowRight", code: "ArrowRight", windowsVirtualKeyCode: 39 } );
 	await send( "Input.dispatchKeyEvent", { type: "keyUp", key: "ArrowRight", code: "ArrowRight", windowsVirtualKeyCode: 39 } );
 	assert.equal( await evaluate( "Number(document.getElementById('lp-reading-line').value)" ), lineBefore + 1 );
-	await evaluate( "document.querySelector('[data-settings-group=prompting]').click();document.getElementById('set-countdown').value='0';document.getElementById('settings-apply').click()" );
+	await evaluate( "document.getElementById('settings-topic-mode').click();const n=document.getElementById('set-countdown');n.value=0;n.dispatchEvent(new Event('input',{bubbles:true}));document.getElementById('settings-apply').click()" );
 	await until( "document.getElementById('settings-applied').textContent==='Saved'" );
-	await pause( 300 );
 	const navigationSaved = JSON.parse( await fs.readFile( path.join( profile, "app-state.json" ), "utf8" ) );
-	assert.equal( navigationSaved.settings.readingLine, lineBefore + 1, "Apply must not overwrite the shared live reading line with an old duplicate" );
-	await evaluate( "document.querySelector('[data-settings-group=prompting]').click();document.getElementById('settings-topic-scrolling').click();document.getElementById('set-countdown').value='0'" );
-	for ( const topic of [ "scrolling", "voice", "commands", "words", "script", "reading", "background", "aids", "layout", "display", "recording", "audio", "phone", "streamdeck", "remotes", "obs-recording" ] ) {
-		await evaluate( `document.getElementById('settings-topic-${ topic }').click()` );
-		await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
-		await pictureOf( ".settings-content", `settings-${ topic }.png` );
-		for ( let n = 1; n < 30; n++ ) {
-			if ( !await evaluate( "document.querySelector('.settings-pagination').getClientRects().length&&!document.querySelector('.settings-pagination button:last-child').disabled" ) ) break;
-			await evaluate( "document.querySelector('.settings-pagination button:last-child').click();document.querySelector('.settings-pagination button:last-child').blur()" );
-			await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
-			await pictureOf( ".settings-content", `settings-${ topic }-page-${ n + 1 }.png` );
-		}
-	}
-	await evaluate( "document.getElementById('settings-topic-about').click()" );
-	await evaluate( "new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))" );
-	await pictureOf( ".settings-content", "settings-about.png" );
-	await evaluate( "document.getElementById('settings-close').click()" );
-	assert.equal( await evaluate( "document.activeElement.id" ), "cb-settings" );
+	assert.equal( navigationSaved.settings.readingLine, lineBefore + 1 );
+	await evaluate( "document.getElementById('settings-cancel').click()" );
+	console.log( "PASS: redesigned Settings inline fallback, permanent controls, keyboard range adjustment and acknowledged Apply." );
 	await pictureOf( "#control-bar", "control-bar.png" );
 	for ( const width of [ 1100, 900, 700, 560 ] ) {
 		await send( "Emulation.setDeviceMetricsOverride", { width, height: 760, deviceScaleFactor: 1, mobile: false } );
@@ -359,25 +256,9 @@ try {
 	await evaluate( "document.getElementById('cb-on-air').click();document.getElementById('cb-mode').click()" );
 	await until( "document.getElementById('cb-speed-label').textContent==='Speed'&&document.getElementById('cb-backing-label').textContent==='Background'" );
 	console.log( "PASS: visible slider labels at four window widths, including voice Response and on-air Background state." );
-	await send( "Emulation.setDeviceMetricsOverride", { width: 700, height: 760, deviceScaleFactor: 1, mobile: false } );
-	assert.equal( await evaluate( "['cb-menu','cb-edit','cb-tools','cb-settings','cb-help','cb-mirror-h','cb-mirror-v'].every(id=>{const r=document.getElementById(id).getBoundingClientRect();return r.width>0&&r.left>=0&&r.right<=innerWidth;})" ), true );
-	await send( "Emulation.setDeviceMetricsOverride", { width: 560, height: 760, deviceScaleFactor: 1, mobile: false } );
-	assert.equal( await evaluate( "['cb-menu','cb-edit','cb-tools','cb-settings','cb-help','cb-mirror-h','cb-mirror-v'].every(id=>{const r=document.getElementById(id).getBoundingClientRect();return r.width>0&&r.left>=0&&r.right<=innerWidth;})" ), true );
-	await send( "Emulation.clearDeviceMetricsOverride" );
-	for ( const [ label, file ] of [ [ "Spacing and mirror…", "layout-panel.png" ], [ "Text and colour…", "reading-panel.png" ], [ "Take display…", "recording-panel.png" ] ] ) {
-		await evaluate( `document.getElementById('cb-tools').click();[...document.querySelectorAll('#tools-panel button')].find(b=>b.textContent.includes(${ JSON.stringify( label ) })).click()` );
-		await pictureOf( "#layout-panel", file );
-		await evaluate( "document.getElementById('lp-done').click()" );
-	}
-	await evaluate( "document.getElementById('cb-tools').click()" );
-	await pictureOf( "#tools-panel", "tools-menu.png" );
-	await evaluate( "document.getElementById('tools-panel').dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));document.getElementById('cb-menu').click()" );
-	await pictureOf( "#app-menu", "files-menu.png" );
-	await evaluate( "document.getElementById('app-menu').dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}))" );
-	console.log( "PASS: grouped Settings, all topics reachable, draft retained, file-only hamburger, Tools, keyboard focus and 700px access." );
 	await evaluate( "document.body.dispatchEvent(new KeyboardEvent('keydown',{key:'F1',bubbles:true}))" );
 	assert.equal( await evaluate( "document.querySelectorAll('#help-list [role=tab]').length" ), 6 );
-	assert.equal( await evaluate( "[...document.querySelectorAll('#help-list [role=tab]')].some(tab=>tab.textContent==='Controls')" ), true );
+	assert.equal( await evaluate( "[...document.querySelectorAll('#help-list [role=tab]')].some(tab=>tab.textContent==='Connections')" ), true );
 	assert.equal( await evaluate( "/OBS recording|Record take|Finish recording/.test(document.querySelector('#help-list').textContent)" ), false );
 	assert.equal( await evaluate( "document.querySelectorAll('#help-list [role=tabpanel]:not([hidden])').length" ), 1 );
 	await evaluate( "document.querySelector('#help-list [role=tab]').dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true}))" );
@@ -401,7 +282,7 @@ try {
 	await evaluate( "window.electron.headGuide()" );
 	let guideTarget;
 	for ( let n = 0; n < 60; n++ ) {
-		guideTarget = ( await ( await fetch( "http://127.0.0.1:9335/json" ) ).json() ).find( t => t.url.includes( "head-guide.html" ) );
+		guideTarget = ( await ( await fetch( "http://127.0.0.1:9335/json" ) ).json() ).find( t => t.url.includes( "head-guide.html" ) && !t.url.includes( "?" ) );
 		if ( guideTarget ) break;
 		await pause( 100 );
 	}
@@ -478,7 +359,8 @@ try {
 		await pause( 100 );
 	}
 	assert.equal( await ce( "document.body.classList.contains('controls-only')&&!document.querySelector('#adjust-panel').hidden" ), true );
-	assert.equal( await ce( "document.querySelector('#adjust-panel').scrollHeight<=document.querySelector('#adjust-panel').clientHeight" ), true, "The main fitting controls fit without scrolling on the test display" );
+	assert.equal( await ce( "(()=>{const panel=document.querySelector('#adjust-panel'),input=document.querySelector('#shape-right');input.scrollIntoView({block:'nearest'});const p=panel.getBoundingClientRect(),r=input.getBoundingClientRect();return panel.scrollWidth<=panel.clientWidth&&r.top>=p.top&&r.bottom<=p.bottom;})()" ), true, "All fitting controls remain reachable in the scrollable guide panel" );
+	await ce( "document.querySelector('#adjust-panel').scrollTop=0" );
 	await pause( 200 );
 	await ge( "document.querySelector('[data-y=\"-1\"]').click()" );
 	await pause( 200 );
@@ -558,7 +440,7 @@ try {
 	await pause( 200 );
 	assert.equal( await ge( "document.querySelector('#head').getAttribute('transform')" ), savedIdealTransform, "reset must restore ideal pose" );
 	assert.equal( await ge( "document.querySelector('#ideal-head .pose-label').textContent" ), "Ideal position" );
-	assert.equal( await ge( "document.querySelector('#head .pose-label').textContent" ), "Actual position" );
+	assert.equal( await ge( "document.querySelector('#head .pose-label').textContent" ), "Recording target" );
 	// Real pointer input exercises the SVG coordinate mapping and drag capture.
 	const dragPoint = await ge( "(()=>{const p=new DOMPoint(500,187).matrixTransform(document.querySelector('#head').getScreenCTM());return {x:p.x,y:p.y};})()" );
 	await gc( "Input.dispatchMouseEvent", { type: "mousePressed", x: dragPoint.x, y: dragPoint.y, button: "left", clickCount: 1 } );
@@ -659,7 +541,7 @@ try {
 	cws.close();
 	gws.close();
 	await press();
-	const reopened = ( await ( await fetch( "http://127.0.0.1:9335/json" ) ).json() ).find( t => t.url.includes( "head-guide.html" ) );
+	const reopened = ( await ( await fetch( "http://127.0.0.1:9335/json" ) ).json() ).find( t => t.url.includes( "head-guide.html" ) && !t.url.includes( "?" ) );
 	assert.ok( reopened );
 	const saved = JSON.parse( await fs.readFile( path.join( profile, "app-state.json" ), "utf8" ) );
 	assert.equal( saved.settings.headGuideScale, 1.05 );
@@ -687,8 +569,39 @@ try {
 	await pause( 200 );
 	console.log( "PASS: disabled OBS Finish leaves ordinary prompting running." );
 	await openSettings();
+	await evaluate( "document.getElementById('settings-topic-api').click();document.getElementById('set-mcp-enabled').click();document.getElementById('settings-apply').click()" );
+	const mcpFile = path.join( profile, "mcp-control.json" );
+	for ( let n = 0; n < 50 && !await fs.stat( mcpFile ).catch( () => null ); n++ ) await pause( 50 );
+	const mcp = JSON.parse( await fs.readFile( mcpFile, "utf8" ) );
+	assert.equal( mcp.permissions.scripts, false );
+	const mcpHeaders = { Authorization: `Bearer ${ mcp.token }`, "Content-Type": "application/json" };
+	assert.equal( ( await fetch( mcp.url + '/status', { headers: mcpHeaders } ) ).status, 200 );
+	assert.equal( ( await fetch( mcp.url + '/command', { method: 'POST', headers: mcpHeaders, body: JSON.stringify( { action: 'play' } ) } ) ).status, 403 );
+	await evaluate( "document.getElementById('set-mcp-scripts').click();document.getElementById('settings-apply').click()" );
+	await until( "document.getElementById('settings-applied').textContent==='Saved'" );
+	for ( let n = 0; n < 50 && !JSON.parse( await fs.readFile( mcpFile, 'utf8' ) ).permissions.scripts; n++ ) await pause( 50 );
+	assert.equal( JSON.parse( await fs.readFile( mcpFile, 'utf8' ) ).permissions.scripts, true );
+	await evaluate( "document.getElementById('set-mcp-enabled').click();document.getElementById('settings-apply').click()" );
+	for ( let n = 0; n < 50 && await fs.stat( mcpFile ).catch( () => null ); n++ ) await pause( 50 );
+	assert.equal( !!await fs.stat( mcpFile ).catch( () => null ), false );
+	assert.equal( ( await fetch( mcp.url + '/status', { headers: mcpHeaders } ) ).status, 401, "Disabled MCP revokes its distinct credential" );
+	await evaluate( "document.getElementById('settings-close').click()" );
+	console.log( "PASS: native MCP enable/Apply, read-only defaults, separate scripting grant and live credential revocation." );
+	await openSettings();
 	await evaluate( `(()=>{document.getElementById('set-obs-enabled').checked=true;document.getElementById('set-obs-host').value='127.0.0.1';document.getElementById('set-obs-port').value=${ port };document.getElementById('set-obs-password').value='sightline-test-only';document.getElementById('set-obs-markers').checked=true;document.getElementById('settings-apply').click()})()` );
 	await until( "window.electron.obs('status').then(r=>r.state.connection==='connected' && r.state.recording==='stopped')" );
+	await evaluate( "document.getElementById('settings-topic-obs').click()" );
+	assert.deepEqual( await evaluate( "[...document.querySelectorAll('#settings-page-obs [data-obs-topic]')].filter(x=>!x.hidden).map(x=>x.textContent)" ), [ "Connection", "Recording control", "Profile and scenes" ], "OBS has three visible subtabs" );
+	assert.equal( await evaluate( "document.getElementById('set-obs-connection-state').textContent" ), "Connection: Connected" );
+	assert.equal( await evaluate( "document.getElementById('set-obs-recording-state').textContent" ), "Recording: Not recording" );
+	await evaluate( "document.getElementById('set-obs-test').click()" );
+	await until( "document.getElementById('set-obs-test-result').dataset.result==='passed'" );
+	assert.equal( await evaluate( "document.querySelector('#obs-status .obs-test-result').dataset.result" ), "passed", "Connection test feedback is retained on the prompter too" );
+	await evaluate( "document.querySelector('#settings-page-obs [data-obs-topic=obs-recording]').click()" );
+	assert.equal( await evaluate( "!document.getElementById('settings-page-obs-recording').hidden&&document.getElementById('settings-topic-obs').getAttribute('aria-current')==='page'" ), true, "OBS subtabs retain a single selected sidebar home" );
+	await evaluate( "document.querySelector('#settings-page-obs-recording [data-obs-topic=obs]').click();document.getElementById('set-obs-port').value='4456';document.getElementById('set-obs-port').dispatchEvent(new Event('input',{bubbles:true}))" );
+	assert.equal( await evaluate( "document.getElementById('set-obs-test').disabled&&document.getElementById('set-obs-test-result').dataset.result==='stale'" ), true, "A passed test cannot validate unsaved connection changes" );
+	await evaluate( `document.getElementById('set-obs-port').value='${ port }';document.getElementById('set-obs-port').dispatchEvent(new Event('input',{bubbles:true}))` );
 	assert.ok( authOK );
 	assert.equal( ( await evaluate( "window.electron.obs('start')" ) ).ok, false );
 	assert.equal( active, false );
@@ -732,7 +645,8 @@ try {
 	console.log( "PASS: module handover flushes the old recording before loading the new script." );
 	await evaluate( "window.electron.openSample('voice-and-stops.md')" );
 	await until( "document.getElementById('md').textContent.includes('Voice')" );
-	assert.equal( await evaluate( "document.getElementById('cb-tools').previousElementSibling.id" ), "cb-edit" );
+	assert.equal( await evaluate( "document.getElementById('cb-tools').previousElementSibling.id" ), "cb-prepare" );
+	assert.equal( await evaluate( "document.getElementById('cb-prepare').previousElementSibling.id" ), "cb-edit" );
 	await evaluate( "document.getElementById('cb-edit').click()" );
 	await until( "document.querySelector('#editor .cm-content')?.getAttribute('aria-readonly')==='true'" );
 	assert.equal( await evaluate( "document.activeElement === document.querySelector('#editor .cm-content')" ), true, "read-only source stays keyboard-focusable for selection and copying" );
@@ -760,6 +674,42 @@ try {
 	await evaluate( "document.getElementById('btn-cancel').click()" );
 	await until( "!document.body.classList.contains('editing')" );
 	console.log( "PASS: samples open read-only, typing and direct saves cannot alter them, and personal scripts remain editable." );
+	// The user's recorder is never contacted: all four actions use this fixture.
+	await evaluate( "window.electron.saveObsSettings({enabled:true,host:'127.0.0.1',port:" + port + ",controls:true,followPrompter:true,markers:true,recordedSlate:false})" );
+	await command( "restart" );
+	await pause( 150 );
+	await command( "play" );
+	await until( "window.electron.obs('status').then(r=>r.state.recording==='recording')" );
+	await until( "document.getElementById('obs-status').textContent.includes('OBS RECORDING')" );
+	const linkedId = ( await evaluate( "window.electron.obs('status')" ) ).state.recordingId;
+	await command( "pause" );
+	await until( "window.electron.obs('status').then(r=>r.state.recording==='paused')" );
+	await until( "document.getElementById('obs-status').textContent.includes('OBS PAUSED')" );
+	await command( "play" );
+	await until( "window.electron.obs('status').then(r=>r.state.recording==='recording')" );
+	assert.equal( ( await evaluate( "window.electron.obs('status')" ) ).state.recordingId, linkedId );
+	await command( "pause" );
+	await until( "window.electron.obs('status').then(r=>r.state.recording==='paused')" );
+	await evaluate( "window.electron.obs('stop')" );
+	await until( "document.getElementById('obs-status').textContent.includes('OBS OFF')" );
+	await evaluate( "window.electron.saveObsSettings({enabled:true,host:'127.0.0.1',port:" + port + ",controls:true,followPrompter:false,markers:true,recordedSlate:false})" );
+	console.log( "PASS: linked Play/pause/resume waits for recorder confirmation; pause retains file identity and all three recording pill states update." );
+	const directiveScript = path.join( profile, "explicit-recording.md" );
+	await fs.writeFile( directiveScript, `# Recording directive\n\n<!-- Remember to press Record. {record: off} -->\n\n{record: on}\n\n## A section\n\n${ "These are spoken words for a recording directive check. ".repeat( 60 ) }` );
+	const startsBeforeLoad = requests.filter( r => r === "StartRecord" ).length;
+	await fetch( automation.url + "/open", { method: "POST", headers: { Authorization: `Bearer ${ automation.token }`, "Content-Type": "application/json" }, body: JSON.stringify( { path: directiveScript } ) } );
+	await until( "document.getElementById('md').textContent.includes('Recording directive')" );
+	await pause( 250 );
+	assert.equal( requests.filter( r => r === "StartRecord" ).length, startsBeforeLoad, "Loading a recording directive must not execute it" );
+	await command( "play" );
+	await until( "window.electron.obs('status').then(r=>r.state.recording==='recording')" );
+	await until( "document.getElementById('md').classList.contains('take-reading')" );
+	assert.equal( requests.filter( r => r === "StartRecord" ).length, startsBeforeLoad + 1 );
+	await command( "pause" );
+	await until( "!document.getElementById('md').classList.contains('take-reading')" );
+	assert.equal( active, true, "Continuous mode leaves recording running during a prompting pause" );
+	await evaluate( "window.electron.obs('stop')" );
+	console.log( "PASS: real Markdown production comments render, recording directives wait for Play, and continuous-mode pauses keep recording." );
 	await evaluate( "window.electron.obs('start')" );
 	assert.ok( active );
 	const stops = requests.filter( r => r === "StopRecord" ).length;

@@ -8,7 +8,7 @@ import { pathToFileURL } from "node:url";
 import fs from "node:fs/promises";
 import showdown from "showdown";
 
-const PAGE_NAME = /^(\.\.\/)?[\w-]+\.md$/;
+const PAGE_NAME = /^(?:(?:\.\.\/)?[\w-][\w.-]*\.md|\.\.\/\.\.\/(?:ROADMAP|readme)\.md)$/;
 
 export function createGuide( { dir } ) {
 	const guideDir = path.join( dir, "..", "docs", "guide" );

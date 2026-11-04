@@ -11,6 +11,30 @@ assert.equal( matchCommand( [ "start", "recording" ] ), "obs-record" );
 assert.equal( matchCommand( [ "finish", "recording" ] ), "obs-finish" );
 assert.equal( matchCommand( [ "stop", "recording" ] ), "obs-finish" );
 assert.equal( matchCommand( [ "stop" ] ), "pause", "ordinary Stop still pauses prompting" );
+for ( const phrase of [ "finish", "end", "end recording", "stopped recording" ] ) assert.equal( matchCommand( phrase.split( " " ) ), "obs-finish", phrase );
+for ( const phrase of [ "restart section", "restart sections" ] ) assert.equal( matchCommand( phrase.split( " " ) ), "retake", phrase );
+assert.equal( matchCommand( [ "restart" ] ), "reset", "Bare restart still resets the whole script" );
+assert.equal( sectionNumber( [ "SECTION", "TWEL", "VE" ] ), 12, "Recogniser fragmentation observed in the promo recording" );
+assert.equal( sectionNumber( [ "section", "twel", "people" ] ), null );
+{
+	let now = 0;
+	const commands = [];
+	const listen = createCommandListener( { clock: () => now, onCommand: ( ...args ) => commands.push( args ) } );
+	listen( [ "PROMPTER", "SECTION", "TWEL" ], true );
+	assert.deepEqual( commands, [], "A number fragment must not jump early" );
+	listen( [ "VE" ], true );
+	assert.deepEqual( commands, [ [ "section", 12 ] ], "Twelve survives a recogniser phrase boundary" );
+	listen( [ "PROMPTER", "SECTION", "TWEL" ], true );
+	now = 4001;
+	listen( [ "VE" ], true );
+	assert.equal( commands.length, 1, "Expired fragments cannot become commands" );
+	for ( const phrase of [ "FINISH", "END", "STOPPED RECORDING" ] ) {
+		listen( [ "PROMPTER", ...phrase.split( " " ) ], false );
+		const before = commands.length;
+		listen( [ "THE", "SENTENCE" ], true );
+		assert.equal( commands.length, before, "Recorder commands must still end the phrase" );
+	}
+}
 
 // What the on-device recogniser actually heard for each command (speech-lab/cmd).
 const heard = {
