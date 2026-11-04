@@ -103,8 +103,11 @@ const pacingEl = uiElement( "pacing" );
 const summaryModal = uiElement( "take-summary" );
 let headGuideState = null;
 window.electron.onHeadGuideState( ( value ) => {
+	const before = headGuideState;
 	headGuideState = value;
-	settingsWorkspace?.sync();
+	if ( [ "x", "y", "scale", "width", "height", "top", "bottom", "left", "right", "shown", "reference", "controlsShown" ].some( key => JSON.stringify( before?.[key] ) !== JSON.stringify( value[key] ) ) ) settingsWorkspace?.sync();
+	const reference = uiElement( "settings-framing-reference" );
+	if ( reference ) reference.textContent = value.reference?.pose ? "Recording position saved · Ideal unchanged" : "Recording position: Not saved";
 	uiElement( "guide-status" )?.classList.toggle( "hidden", !value.shown );
 	const restore = uiElement( "guide-controls" );
 	restore?.classList.toggle( "hidden", !value.shown );
@@ -3798,6 +3801,7 @@ onClick( "cb-tools", () => {
 	togglePanel( "tools-panel" );
 	if ( !field( "tools-panel" ).classList.contains( "hidden" ) ) field( "tools-panel" ).querySelector( "button" )?.focus();
 } );
+onClick( "cb-prepare", () => runTool( "prepare-recording" ) );
 onClick( "cb-help", openHelp );
 onClick( "help-ai-prompt", () => window.electron.copyAiPrompt() );
 onClick( "cb-settings", openSettings );

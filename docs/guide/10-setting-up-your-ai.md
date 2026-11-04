@@ -10,7 +10,7 @@ times, retakes and markers help navigate the recording. Live word timings and
 coverage are estimates: use recorded-audio transcription for cuts and captions.
 
 **RC 1 adds [local MCP support](../MCP.md)** for compatible desktop AI clients.
-Enable the API and MCP under **Connections > AI and API**, install the AI kit
+Enable the API and MCP under **Connections > MCP, AI, and API**, install the AI kit
 from **Connections > Apps and add-ons**, and configure its stdio server.
 Read-only access is the default; scripts, prompting and recording have separate
 grants. Browser assistants cannot connect directly to this local server.

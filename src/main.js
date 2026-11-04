@@ -209,6 +209,9 @@ const defaultSettings = {
 	headGuideIdeal: { x: 0, y: 0, scale: 1 },
 	headGuideReference: null,
 	preRecordMicrophone: "default",
+	preRecordCameraId: "default",
+	preRecordSource: "camera",
+	preRecordScene: "",
 	headGuideShowIdeal: true,
 	headGuidePlacement: "centre",
 	headGuidePlacements: {},
@@ -242,6 +245,7 @@ const defaultSettings = {
 
 // Settings that a settings file or the remote API may not change.
 const PROTECTED_SETTINGS = [ "preRecordReference", "preRecordMicrophone", "remoteControl", "mcpEnabled", "mcpScripts", "mcpControls", "mcpRecording", "remotePort", "remoteDeleteRecordings", "streamDeck", "phoneRemote", "phonePort", "obsEnabled", "obsHost", "obsPort", "obsControls", "obsFollowPrompter", "obsMarkers", "obsRecordedSlate", "traceCommands", "coachFillers", "speechEnabled", "microphoneEnabled", "padEnabled", "gamepadEnabled", "keyboardMappingsEnabled" ];
+PROTECTED_SETTINGS.push( "preRecordCameraId", "preRecordSource", "preRecordScene" );
 
 // Take logs, one per script per day: the recordings library (recordings.js).
 const takeLogFolder = () => path.join( app.getPath( "userData" ), "take-logs" );
@@ -535,6 +539,7 @@ function displayList() {
 	} ) );
 }
 
+let preRecord = null;
 const createWindow = ( state ) => {
 	const win = new BrowserWindow( {
 		width: state.width,
@@ -635,6 +640,7 @@ const createWindow = ( state ) => {
 		if ( obs && !win.isDestroyed() ) win.webContents.send( "obsState", obsSnapshot() );
 	} } );
 	obs = createObs( { onState: ( state ) => {
+		preRecord?.sync();
 		if ( !win.isDestroyed() ) win.webContents.send( "obsState", { ...state, recordedSlate: recordedSlate.state() } );
 		recordObsHistory( state );
 	} } );
@@ -1958,6 +1964,7 @@ app.whenReady().then( async () => {
 	framingGuide = createHeadGuide( {
 		dir: __dirname, prompter: win, getSettings: () => settings,
 		restackUtilities: () => utilityWindows?.restack(),
+		onFramingAction: ( name, value ) => preRecord?.guideAction( name, value ),
 		saveSettings: partial => updateSettings( partial ),
 		saveBounds: ( bounds ) => {
 			settings.headGuideBounds = bounds;
@@ -1969,7 +1976,7 @@ app.whenReady().then( async () => {
 	} );
 	framingGuide.apply();
 	win.on( "closed", () => framingGuide.dispose() );
-	const preRecord = createPreRecord( { dir: __dirname, prompter: win, getSettings: () => settings, saveSettings: partial => updateSettings( partial ), busy: () => rendererStatus.scrolling === true || [ "recording", "paused" ].includes( obs.state().recording ) } );
+	preRecord = createPreRecord( { dir: __dirname, prompter: win, getSettings: () => settings, saveSettings: partial => updateSettings( partial ), guide: framingGuide, obs, probeObs: async () => obs.state().connection === "connected" || ( await externalComponents.status() ).obs.installed, busy: () => rendererStatus.scrolling === true || [ "recording", "paused" ].includes( obs.state().recording ) } );
 	win.on( "closed", () => preRecord.dispose() );
 	if ( process.argv.includes( "--prepare-recording" ) ) win.webContents.once( "did-finish-load", () => preRecord.open() );
 	const speech = createSpeech( { dir: __dirname, win, busy: () => !!rendererStatus.scrolling || [ "recording", "paused" ].includes( obs.state().recording ) } );
@@ -2139,6 +2146,7 @@ app.whenReady().then( async () => {
 		controlPad.apply();
 		controlWindow.apply();
 		framingGuide.apply();
+		preRecord?.sync();
 	};
 	syncObsSettings();
 	// Samples stay viewable in the editor; only Save a copy can create an editable file.

@@ -1,11 +1,11 @@
 # Sightline Prompter feature grid
 
-**Review basis: RC 3 preview, documentation revision 13, 4 November 2026.**
-**Build version:** `1.2.0-rc.3` · **Publication status:** Preview
+**Review basis: RC 4 preview, documentation revision 14, 4 November 2026.**
+**Build version:** `1.2.0-rc.4` · **Publication status:** Preview
 
 **Maintained source:** [Feature grid](https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/FEATURE-GRID.md)
 
-This grid describes the preview built from `8c7b8b8`, with companion Stream
+This grid describes the preview built from `40919e7` plus the RC 4 integration batch, with companion Stream
 Deck plugin **0.2.0**. It includes the existing features and the unpublished
 preview additions. The build manifest also records the packaging/documentation
 snapshot. The public app release remains **1.1.0**; this document
@@ -178,7 +178,7 @@ Reference: [Prepare to record](guide/16-prepare-to-record.md), [Head guide and c
 | Head-edge adjustment | Included | Adjust top, bottom, left and right independently. | Changes the outline, not the camera crop or the person's image. |
 | Move and scale | Included | Horizontal/vertical position, overall size, width and height controls. | Shape adjustments are separate from moving the guide window itself. |
 | Guide visibility | Included | Stateful Show/Hide, Guide off beside floating Guide adjustments, Mint/Gold outline colour, outline/background opacity and Show Ideal in Head guide subtabs; preview addition. | Appearance and eye lock use Apply. Visibility is immediate; hidden guides retain their configuration and saved position. |
-| Session framing reference | Included | Keep the guide pose, appearance and saved Ideal across script/module changes. | These are manual session preferences; no camera tracking or named automatic fitting is claimed. |
+| Session framing reference | Included | Keep the guide pose, appearance and saved Ideal across scripts. Preparation and Ctrl+Shift+H share draft adjustments, optional detection and the recording position; RC addition. | Target stays fixed as the person moves. Guide window/projector placement is manual; no automatic window fitting is claimed. |
 | Guide placements | Included | Centred and beside-prompter saved placements, plus window positioning and sizing; accessible from Settings and adjustments. | Placement/fullscreen actions act immediately; beside prompter means alongside the reading area. |
 | Fullscreen and chromeless guide | Included | Toggle the guide into and out of fullscreen; lock the adjustment view when ready. | Test stacking with the OBS projector and prompter on the chosen monitor. |
 | Adjustment panel | Included | Movable controls; bottom placement avoids the main top toolbar by default; preview refinement. | Dense small-screen combinations still have the separate known toolbar issue. |
@@ -186,7 +186,9 @@ Reference: [Prepare to record](guide/16-prepare-to-record.md), [Head guide and c
 | Save and restore recording reference | Included | Save Actual position, dimensions and eye lock from Settings or adjustments; restore without overwriting Ideal; preview addition. | Restoring the shape does not restore the physical camera, body or guide window. |
 | Guide export metadata | Included | Record Ideal/Actual information, recording reference and guide window geometry in the edit pack. | Metadata describes the configured guide, not proof that it was absent from the video. |
 | Keep guide out of output | Limited | Capture protection and a camera-source recording workflow keep the guide on the operator's screen. | No universal automatic guarantee; verify the recorded file and chosen capture source. |
-| Local position feedback | Optional | Real local face/eye detection in Prepare to record; fixed target, red/amber/green mask and correction arrows; preview addition. | Bundled model; one well-lit face near the camera. Grey means unavailable; no identity recognition or gaze correction. |
+| Local position feedback | Optional | Bundled local face/eye detection, fixed target and red/amber/green feedback in preparation and the existing Ctrl+Shift+H guide; RC addition. | One well-lit face; grey means unavailable. Same scene/crop and manually matched guide bounds are required. No identity or gaze correction. |
+| OBS calibration scene | Dependent | Choose an actual scene from the connected OBS instance and read its preview frames for local detection. No programme-scene switch or recording command; RC addition. | OBS integration must be enabled and available; camera choices remain when disabled. Sampled, centred 16:9 preview; does not test the production recording encoder or lip sync. |
+| Temporary calibration feed | Dependent | Explicitly start an OBS virtual camera for calibration, stopping it afterwards only when Sightline started it; RC addition. | An existing virtual-camera session is retained. Connection loss may require manual confirmation/cleanup in OBS. Does not reconfigure the output or recording route. |
 | Pre-record workflow | Optional | Camera alignment, manual fallback, audio check, actual short test recording and reviewed reference save. Select physical/virtual inputs before capture; errors beside the controls allow retry with another input; RC addition. | Explicit camera/microphone enable. Changing an input while capture is off keeps it off. A busy physical camera may require a virtual feed. Does not start OBS or production recording. |
 | Lock current framing | Optional | Use detected eye centre and apparent size as a draft target; preview addition. | Does not replace the recording reference until the reviewed setup is explicitly saved. |
 | Return after a break | Optional | Restore the fixed target, match framing and recheck audio; preview addition. | Same camera and resolution; original target/test retained. No silent recalibration. |
@@ -202,7 +204,7 @@ Reference: [Remotes and screens](guide/06-remotes-and-screens.md) and [Shortcuts
 | Keyboard control | Included | Start/pause, sections, markers, display actions and documented shortcuts. | Some shortcuts depend on focused windows; documented global shortcuts cover specific actions. |
 | Presentation clickers | Dependent | Navigate using compatible keyboard-like presentation remotes. | Button codes vary by device and may need mapping. |
 | Pedals and gamepads | Dependent | Map supported input events to prompter actions. | Hardware, drivers and device-event support vary. |
-| Learn and customise input | Optional | Input mapping controls let users assign supported buttons to actions. | This is not a driver for every USB controller. |
+| Learn and customise input | Optional | All keyboard/clicker and game-controller assignments appear in scrollable lists, with editable action and Remove on each row; RC addition. | Driver/device support varies. No assignment is hidden solely by the selected row or window height. |
 | Editing input safeguards | Included | Reading-oriented mappings are suspended where editing requires ordinary input. | Check unusual remotes against the editor before live use. |
 | Common action model | Included | Navigation, display, take and framing actions are shared across applicable control surfaces. | Available buttons and feedback depend on the surface and enabled features. |
 
@@ -212,7 +214,7 @@ Reference: [Pad and phone setup](guide/06-remotes-and-screens.md).
 
 | Capability | Availability | Options and behaviour | Dependencies and limits |
 | --- | --- | --- | --- |
-| Floating control pad | Optional | Separate touch/mouse control window with selectable action buttons. | Enable and customise it in Settings > Controls > Pad. |
+| Floating control pad | Optional | Separate touch/mouse window with configurable buttons. Settings shows the complete ordered list with drag, Earlier/Later and Remove; RC addition. | Enable under Connections > Pad and phone. Longer lists scroll within Settings; presets replace the draft selection. |
 | Interface enable switches | Included | Speech, microphone, pad, phone, custom keys, game controller, Stream Deck, OBS and local API each have an enable switch; preview addition. | Off hides configuration, preserves saved values and omits disabled actions/help. Dependencies remain a separate readiness check. |
 | Separate input mappings | Optional | Keyboard/clickers and game controllers have distinct setup homes and enable switches; preview addition. | Disabling custom mappings retains core shortcuts. Resetting one type preserves the other type. |
 | Select and reorder actions | Included | Choose the supported actions and drag to arrange their order. | The layout uses a defined action catalogue, not arbitrary third-party plugins. |
@@ -345,7 +347,7 @@ Reference: [Working with AI and the local API](guide/09-working-with-ai.md) and 
 | AI script brief | Included | Copy documented instructions for sections, targets, cues, stops and optional control directives. | The chosen assistant generates the script; check its output before use. |
 | Assistant choice | Dependent | ChatGPT, Claude, Gemini, Copilot or another assistant can prepare a compatible script. | Assistant capabilities, costs and privacy terms are external. |
 | Local control API | Optional | Enable token-protected local endpoints to load scripts, select slots and issue supported commands. | Off by default; intended for authorised local tools, not public web pages. |
-| Local MCP connection | Optional | Seven stdio tools in the AI kit: status/version, load script, slots, prompting, OBS recording, recording list and textual edit pack; RC addition. | Node.js 22.16+, enabled local API and MCP switch. Separate credential; read-only by default. No cloud/network MCP endpoint. See [MCP setup](MCP.md). |
+| Local MCP connection | Optional | Seven stdio tools in the AI kit; Connections > MCP, AI, and API includes a Configure MCP guide beside the switch; RC addition. | Node.js 22.16+, local API/MCP enabled and applied. Separate grants; read-only by default. No cloud MCP endpoint. See [client configuration](guide/17-configure-mcp.md). |
 | MCP permission grants | Optional | Script, prompting and OBS recording grants are enforced by the app; turning MCP off revokes active clients. | No settings edits, arbitrary file reads or recording deletion. Prompting requires the recording grant whenever OBS controls are enabled. |
 | Live automation feedback | Included | Status and event updates expose supported state and app/control-contract versions. | Clients need to handle connection loss, permissions and unsupported capabilities. |
 | Configure through an agent | Optional | An authorised local agent can change supported settings and control prompting. | General API access is separate from the restricted Stream Deck credential. |

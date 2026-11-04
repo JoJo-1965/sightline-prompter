@@ -74,7 +74,11 @@ a beam splitter, and the control window can stay on my main screen.
 
 ## Prepare the shot {target: 0:30}
 
-<!-- TRY BEFORE RECORDING. Open Prepare to record > Recording setup.
+<!-- TRY BEFORE RECORDING. Use the main Prepare to record action, or Settings >
+Prepare to record > Overview > Open workflow. Ctrl+Shift+H shows the shared
+head guide; its adjustments and Lock current update the same target here.
+With OBS enabled, select OBS scene preview and choose the scene matching
+your projector. This does not switch the recording scene.
 Align with the manual guide or enable local position feedback. Lock current
 only when you want that detected framing as the target. Check audio,
 record and review a short test, then save a recording reference. The test

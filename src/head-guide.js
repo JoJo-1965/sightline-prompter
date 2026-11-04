@@ -8,7 +8,8 @@ import { guideAdjustment, GUIDE_CONTROLS } from "./guide-control.js";
 
 const HOTKEY = "CommandOrControl+Shift+H";
 const FULLSCREEN_HOTKEY = "CommandOrControl+Alt+H";
-export function createHeadGuide( { dir, prompter, getSettings, saveSettings, saveBounds, onChange, restoreStack, restackUtilities } ) {
+export function createHeadGuide( { dir, prompter, getSettings, saveSettings, saveBounds, onChange, restoreStack, restackUtilities, onFramingAction = () => {} } ) {
+	let feedback = { enabled: false, active: false, person: null }, calibration = {};
 	let overlay = null;
 	let controls = null;
 	let locked = false;
@@ -25,6 +26,8 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 		const value = snapshot();
 		value.reference = getSettings().headGuideReference ?? null;
 		value.controlsShown = controls?.isVisible() ?? false;
+		value.feedback = { ...feedback, person: Date.now() - ( feedback.at ?? 0 ) < 1500 ? feedback.person : null };
+		value.calibration = calibration;
 		overlay?.webContents.send( "headGuideState", value );
 		controls?.webContents.send( "headGuideState", { ...value, controlsOnly: true } );
 		if ( !prompter.isDestroyed() ) prompter.webContents.send( "headGuideState", value );
@@ -190,6 +193,7 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 		const fromOverlay = overlay && event.sender === overlay.webContents;
 		const fromControls = controls && event.sender === controls.webContents;
 		if ( !fromOverlay && !fromControls && event.sender !== prompter.webContents ) return;
+		if ( name.startsWith( "framing-" ) ) { onFramingAction( name.slice( 8 ), value ); return; }
 		if ( name === "adjust" ) {
 			toggleControls();
 			return;
@@ -302,6 +306,13 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 	prompter.on( "focus", restack );
 	return {
 		apply, toggle, toggleFullscreen, restack, isLocked: () => locked,
+		feedback( value ) { feedback = { ...value, at: Date.now() }; send(); },
+		calibration( value ) { calibration = value; send(); },
+		async pose( value ) {
+			const pose = guidePose( { x: value.x, y: value.y + 14 / 562.5 * 100, scale: value.size / 100 } );
+			await saveSettings( { headGuideX: pose.x, headGuideY: pose.y, headGuideScale: pose.scale, headGuideEyesLocked: false } );
+		},
+		showAdjustments() { if ( !overlay ) saveSettings( { showHeadGuide: true } ); if ( !controls?.isVisible() ) toggleControls(); },
 		status: () => ( { ...state(), reference: getSettings().headGuideReference ?? null, shown: !!overlay } ),
 		adjust: value => saveSettings( guideAdjustment( getSettings(), value ) ),
 		control: remoteControl,

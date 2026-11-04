@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "basis": "RC 3 preview, documentation revision 13, 4 November 2026",
+  "basis": "RC 4 preview, documentation revision 14, 4 November 2026",
   "date": "4 November 2026",
-  "sourceBuild": "8c7b8b8",
-  "buildVersion": "1.2.0-rc.3",
+  "sourceBuild": "40919e7",
+  "buildVersion": "1.2.0-rc.4",
   "publicationStatus": "preview",
   "appRelease": "1.1.0",
   "pluginRelease": "0.2.0",
   "sourceUrl": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/FEATURE-GRID.md",
-  "sourceSha256": "021664cb76d4c5fd0e107582d1cd4b522c9e6dad6c96b6cc494651cf2be232e6",
+  "sourceSha256": "43edc48660ead5be7dc9c97ad0b78c314ca3ec2188d37902174706af32d83063",
   "support": [
     "Included",
     "Optional",
@@ -748,8 +748,8 @@
         {
           "name": "Session framing reference",
           "support": "Included",
-          "options": "Keep the guide pose, appearance and saved Ideal across script/module changes.",
-          "limits": "These are manual session preferences; no camera tracking or named automatic fitting is claimed."
+          "options": "Keep the guide pose, appearance and saved Ideal across scripts. Preparation and Ctrl+Shift+H share draft adjustments, optional detection and the recording position; RC addition.",
+          "limits": "Target stays fixed as the person moves. Guide window/projector placement is manual; no automatic window fitting is claimed."
         },
         {
           "name": "Guide placements",
@@ -796,8 +796,20 @@
         {
           "name": "Local position feedback",
           "support": "Optional",
-          "options": "Real local face/eye detection in Prepare to record; fixed target, red/amber/green mask and correction arrows; preview addition.",
-          "limits": "Bundled model; one well-lit face near the camera. Grey means unavailable; no identity recognition or gaze correction."
+          "options": "Bundled local face/eye detection, fixed target and red/amber/green feedback in preparation and the existing Ctrl+Shift+H guide; RC addition.",
+          "limits": "One well-lit face; grey means unavailable. Same scene/crop and manually matched guide bounds are required. No identity or gaze correction."
+        },
+        {
+          "name": "OBS calibration scene",
+          "support": "Dependent",
+          "options": "Choose an actual scene from the connected OBS instance and read its preview frames for local detection. No programme-scene switch or recording command; RC addition.",
+          "limits": "OBS integration must be enabled and available; camera choices remain when disabled. Sampled, centred 16:9 preview; does not test the production recording encoder or lip sync."
+        },
+        {
+          "name": "Temporary calibration feed",
+          "support": "Dependent",
+          "options": "Explicitly start an OBS virtual camera for calibration, stopping it afterwards only when Sightline started it; RC addition.",
+          "limits": "An existing virtual-camera session is retained. Connection loss may require manual confirmation/cleanup in OBS. Does not reconfigure the output or recording route."
         },
         {
           "name": "Pre-record workflow",
@@ -866,8 +878,8 @@
         {
           "name": "Learn and customise input",
           "support": "Optional",
-          "options": "Input mapping controls let users assign supported buttons to actions.",
-          "limits": "This is not a driver for every USB controller."
+          "options": "All keyboard/clicker and game-controller assignments appear in scrollable lists, with editable action and Remove on each row; RC addition.",
+          "limits": "Driver/device support varies. No assignment is hidden solely by the selected row or window height."
         },
         {
           "name": "Editing input safeguards",
@@ -896,8 +908,8 @@
         {
           "name": "Floating control pad",
           "support": "Optional",
-          "options": "Separate touch/mouse control window with selectable action buttons.",
-          "limits": "Enable and customise it in Settings > Controls > Pad."
+          "options": "Separate touch/mouse window with configurable buttons. Settings shows the complete ordered list with drag, Earlier/Later and Remove; RC addition.",
+          "limits": "Enable under Connections > Pad and phone. Longer lists scroll within Settings; presets replace the draft selection."
         },
         {
           "name": "Interface enable switches",
@@ -1534,8 +1546,8 @@
         {
           "name": "Local MCP connection",
           "support": "Optional",
-          "options": "Seven stdio tools in the AI kit: status/version, load script, slots, prompting, OBS recording, recording list and textual edit pack; RC addition.",
-          "limits": "Node.js 22.16+, enabled local API and MCP switch. Separate credential; read-only by default. No cloud/network MCP endpoint. See [MCP setup](MCP.md)."
+          "options": "Seven stdio tools in the AI kit; Connections > MCP, AI, and API includes a Configure MCP guide beside the switch; RC addition.",
+          "limits": "Node.js 22.16+, local API/MCP enabled and applied. Separate grants; read-only by default. No cloud MCP endpoint. See [client configuration](guide/17-configure-mcp.md)."
         },
         {
           "name": "MCP permission grants",

@@ -7,6 +7,9 @@ Open Prepare to record > Recording setup > Prepare to record. Enable only the
 camera/microphone you want. Select the camera or virtual feed before Enable
 camera. If capture fails, read the error beside the controls and choose another
 input. Align manually or enable local position feedback.
+Ctrl+Shift+H shows the same shared guide. Its adjustments and Lock current
+update preparation too. With OBS enabled, choose OBS scene preview and the
+scene matching your projector; calibration does not switch the recording scene.
 Lock current selects a draft target; it is not a saved recording reference.
 Check audio, record and review a short test, then save a recording reference.
 Keep Ideal unchanged unless replacing it is intentional. This preparation

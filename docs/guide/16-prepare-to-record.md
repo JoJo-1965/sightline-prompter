@@ -7,7 +7,8 @@ pre-record layout with real local camera detection, microphone measurement and
 a short recorded test. It supplements the existing manual Head guide.
 
 Open **Tools > Prepare > Prepare to record**, or **Settings > Prepare to record >
-Recording setup > Prepare to record**. Pause prompting and stop production
+Overview > Open workflow**, or use the main **Prepare to record** toolbar action.
+Pause prompting and stop production
 recording first. The preparation window is non-modal.
 
 RC 1 retains test results in **Settings > Prepare to record > Recording setup**
@@ -20,6 +21,25 @@ The room/voice check shows its meter on the prompter using the same microphone
 measurements, without opening a second capture stream.
 
 ## Align the shot
+
+RC 4 uses the existing **Ctrl+Shift+H head guide** for live feedback as well as
+manual alignment. Show the guide or open Head guide adjustments from this step.
+Its position, size, manual shape and recording reference are shared. Lock current
+in either view updates the same draft; it never replaces Ideal automatically.
+Use the guide's normal placement/size controls to match the camera/projector
+picture. Keep the same crop and aspect ratio; this is not automatic window fitting.
+
+When OBS integration is enabled and available, Calibration picture offers
+**OBS scene preview** and a visible **OBS scene** list. Choose the scene matching
+your projector, then Enable OBS preview. Sightline reads local preview frames;
+it does not switch programme/recording scenes or start a recording. Changing
+source/scene stops the old feed and requires explicit enable of the new one.
+Disabled/unavailable OBS hides these options in preparation and the head guide.
+
+**Temporary OBS virtual camera** is an optional alternative. Enable it explicitly.
+Sightline stops that virtual output when capture ends only if it started it;
+an already-running virtual camera is retained. A lost OBS connection may require
+checking its virtual-camera state manually. Generic camera/virtual feeds remain.
 
 Choose the camera or virtual-camera feed that matches your production picture,
 then select **Enable camera**. Selecting an input while capture is off does not
@@ -53,8 +73,10 @@ unusable signal needs correcting.
 
 Record a short test, up to eight seconds. **Review test recording** plays the
 actual camera-and-microphone WebM. Check picture and sound before accepting it.
-The guide is not burned into this camera recording. This does not start OBS or
-any production recorder.
+The guide is not burned into this camera recording. The test does not start a
+production recorder or verify OBS's actual recording route. An OBS-scene test is a sampled preview
+with the selected microphone, rather than the production encoder's output.
+Review the actual production file separately for picture/sound sync.
 
 ## Save and return after a break
 

@@ -1,5 +1,13 @@
 # Sightline Prompter: what it adds to Electron Teleprompter
 
+**RC 4 integration:** preparation has a first workflow card and a direct toolbar
+entry. The existing Ctrl+Shift+H guide shares live feedback and its draft target
+with preparation. OBS calibration can read a selected scene without changing
+recording; optional temporary virtual-camera capture retains existing sessions.
+OBS choices require enabled integration and confirmed availability. Pad buttons
+and controller/key assignments are full scrollable lists. Connections explicitly
+names MCP, AI, and API, with a Configure MCP guide beside the switch.
+
 **RC 2 demo refresh:** twelve sample files reviewed together. The first-run
 Start here tour explores core and RC features in twelve stops; focused samples
 demonstrate actual Notes, preparation and recording workflows. Setup/commands

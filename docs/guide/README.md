@@ -1,6 +1,6 @@
 # Sightline Prompter user guide
 
-This source guide follows the **1.2.0 RC 1 candidate**, documentation revision 11.
+This source guide follows the **1.2.0 RC 4 candidate**, documentation revision 14.
 The published 1.1.0 installer retains its bundled guide and previous layout.
 Use the preview folder/build manifest to identify the test package.
 
@@ -56,6 +56,8 @@ a break. This is an unpublished preview addition.
 13. [Settings screenshot gallery](settings-gallery.md): grouped controls, named destinations and contextual help; preview images labelled
 14. [Recording acceptance walkthrough](14-acceptance-test.md): published baseline, next-preview checks and recording samples
 15. [OBS setup assistant](15-obs-setup.md): review a separate profile/scenes plan, preserve existing setups and verify 4K, clean audio and sync
+16. [Prepare to record](16-prepare-to-record.md): shared head guide, OBS calibration pictures, audio, a reviewed test and saved reference
+17. [Configure MCP](17-configure-mcp.md): installed kit, client configuration, preview profiles and access grants
 
 Inside the app, open this guide from **Help > User Guide** or the **?** menu.
 **F1** shows the keyboard shortcuts.

@@ -15,7 +15,7 @@ export function createMappingSettings( root, save, { kind = "key", prefix = "set
 	const picker = document.createElement( "select" );
 	picker.dataset.navigationChoice = "true";
 	picker.setAttribute( "aria-label", kind === "key" ? "Keyboard mapping" : "Controller mapping" );
-	field( "set-map-page" ).replaceWith( picker );
+	field( "set-map-page" ).closest( "nav" ).hidden = true;
 	field( "set-map-prev" ).remove();
 	field( "set-map-next" ).remove();
 	picker.addEventListener( "change", () => {
@@ -39,7 +39,8 @@ export function createMappingSettings( root, save, { kind = "key", prefix = "set
 		picker.disabled = !matching.length;
 		const list = field( "set-map-list" );
 		list.replaceChildren();
-		for ( const row of matching.filter( item => inputId( item ) === selected ) ) {
+		list.setAttribute( "aria-label", `All ${ matching.length } ${ kind === "key" ? "keyboard" : "controller" } assignments` );
+		for ( const row of matching ) {
 			const line = document.createElement( "div" );
 			line.className = "mapping-row";
 			const label = document.createElement( "span" );

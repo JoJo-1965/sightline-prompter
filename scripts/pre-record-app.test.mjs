@@ -12,6 +12,12 @@ const artifacts = path.resolve( process.env.SIGHTLINE_TEST_ARTIFACTS ?? path.joi
 await fs.writeFile( path.join( profile, "script.md" ), '# Settings preview\n\n## Welcome\n\n[smile] Read naturally, at your own pace.\n\n<!-- Preparation notes do not count as speech. -->\n\n' + 'This is a spoken script for checking the reading appearance.\n\n'.repeat( 30 ) );
 await fs.writeFile( path.join( profile, "app-state.json" ), JSON.stringify( { width: 1100, height: 760, fontSize: 3, opacity: 1, recentFiles: [ path.join( profile, "script.md" ) ], settings: { interfaceSettingsVersion: 1, readingAppearanceVersion: 1, speechEnabled: false, microphoneEnabled: false, padEnabled: false, gamepadEnabled: false, keyboardMappingsEnabled: false, voiceCommands: "off", scrollMode: "steady", scratchAudio: false, takeLoudness: "off", countdown: 0, slate: "off", debugMode: true, checkUpdates: false, obsEnabled: false, phoneRemote: false, remoteControl: false, streamDeck: false, hideFromCapture: false } } ) );
 const env = { ...process.env }; delete env.ELECTRON_RUN_AS_NODE;
+let obsMock = null, obsImage = "", obsRequests = [];
+if ( process.env.SIGHTLINE_TEST_OBS === "1" ) {
+ const { WebSocketServer } = require("ws"); obsMock = new WebSocketServer({host:"127.0.0.1",port:0}); await new Promise(r=>obsMock.on("listening",r));
+ obsMock.on("connection",socket=>{socket.send(JSON.stringify({op:0,d:{rpcVersion:1}}));socket.on("message",raw=>{const {op,d}=JSON.parse(raw);if(op===1)return socket.send(JSON.stringify({op:2,d:{negotiatedRpcVersion:1}}));obsRequests.push(d);let responseData={};if(d.requestType==="GetVersion")responseData={availableRequests:["GetSourceScreenshot","GetSceneList"]};if(d.requestType==="GetRecordStatus")responseData={outputActive:false,outputPaused:false};if(d.requestType==="GetSceneList")responseData={scenes:[{sceneName:"Camera clean"},{sceneName:"Slides"}],currentProgramSceneName:"Camera clean"};if(d.requestType==="GetSourceScreenshot")responseData={imageData:obsImage};socket.send(JSON.stringify({op:7,d:{requestId:d.requestId,requestType:d.requestType,requestStatus:{result:true},responseData}}));});});
+ const seed=JSON.parse(await fs.readFile(path.join(profile,"app-state.json"),"utf8")); Object.assign(seed.settings,{obsEnabled:true,obsHost:"127.0.0.1",obsPort:obsMock.address().port,obsControls:false,obsPassword:""});await fs.writeFile(path.join(profile,"app-state.json"),JSON.stringify(seed));
+}
 const child = spawn( process.env.SIGHTLINE_TEST_EXE ?? require( "electron" ), [ ...( process.env.SIGHTLINE_TEST_EXE ? [] : [ "." ] ), "--inspect=0", `--user-data-dir=${ profile }`, `--remote-debugging-port=${ port }`, "--disable-renderer-backgrounding", "--prepare-recording", "--use-fake-ui-for-media-stream", "--use-file-for-fake-audio-capture=D:/Sightline/Dev/Testing/Pre-Record-UAT/microphone.wav", "--use-fake-device-for-media-stream", "--use-file-for-fake-video-capture=D:/Sightline/Dev/Testing/Pre-Record-UAT/camera.y4m" ], { cwd: root, env, windowsHide: true, stdio: [ "ignore", "pipe", "pipe" ] } );
 let stderr = ""; child.stderr.on( "data", data => stderr += data ); child.stdout.resume();
 const pause = ms => new Promise( resolve => setTimeout( resolve, ms ) );
@@ -60,7 +66,31 @@ try {
  await click("lock-current");
  await waitFor('!document.getElementById("accept-frame").disabled',"Locked model position becomes green");
  assert.equal(await page.evaluate('document.getElementById("framing-chip").textContent.includes("aligned")'),true);
+ await page.evaluate('window.preRecord.input("guide","show")');
+ const overlay=await connect("head-guide.html");
+ for(let n=0;n<50;n++){if(await overlay.evaluate('!!document.getElementById("framing-lock")&&!document.getElementById("framing-lock").disabled'))break;await pause(100);}
+ assert.equal(await overlay.evaluate('document.getElementById("framing-lock").disabled'),false,"The existing head guide receives real detector feedback");
+ await overlay.evaluate('window.headGuide.action("preferences",{x:12})');
+ await waitFor('Number(document.getElementById("guide-x").value)===12',"Head guide manual adjustment reaches preparation");
+ await overlay.evaluate('document.getElementById("framing-lock").click()');
+ await waitFor('!document.getElementById("accept-frame").disabled',"Lock current on the head guide updates the same preparation target");
+ assert.match(await overlay.evaluate('document.getElementById("framing-pill").textContent'),/Within|✓/);
+ if(obsMock){
+  obsImage=await page.evaluate('(()=>{const c=document.createElement("canvas");c.width=640;c.height=360;c.getContext("2d").drawImage(document.getElementById("camera-video"),0,0,640,360);return c.toDataURL("image/jpeg",.8)})()');
+  await page.evaluate('window.preRecord.input("obs-scenes")');
+  await page.evaluate('window.preRecord.input("source",{source:"obs",scene:"Slides"})');
+  await waitFor('!document.getElementById("obs-scene-field").hidden&&document.getElementById("obs-scene").value==="Slides"',"Actual OBS scene selection is shared");
+  assert.equal(await page.evaluate('document.getElementById("camera-video").srcObject'),null,"Selecting a scene does not automatically enable capture");
+  await click("connect-camera");await waitFor('!!document.getElementById("camera-video").srcObject',"OBS scene frames produce a calibration preview");
+  await waitFor('!document.getElementById("lock-current").disabled',"The real detector can use OBS scene frames",30000);
+  assert.ok(obsRequests.some(r=>r.requestType==="GetSourceScreenshot"&&r.requestData.sourceName==="Slides"));
+  assert.equal(obsRequests.some(r=>/^(SetCurrent|StartRecord|StopRecord|StartVirtualCam)/.test(r.requestType)),false,"Scene calibration never switches programme, starts recording or starts a virtual camera");
+  await page.evaluate('window.preRecord.input("source",{source:"camera",scene:"Slides"})');
+  await waitFor('document.getElementById("camera-video").srcObject===null',"Changing source stops old capture");
+  await click("connect-camera");await waitFor('!document.getElementById("lock-current").disabled',"Camera detection resumes after explicit enable",30000);await click("lock-current");
+ }
  await fs.writeFile(path.join(artifacts,"framing-detection.png"),Buffer.from((await page.call("Page.captureScreenshot",{format:"png"})).data,"base64"));
+ await fs.writeFile(path.join(artifacts,"head-guide-feedback.png"),Buffer.from((await overlay.call("Page.captureScreenshot",{format:"png"})).data,"base64"));
  await click("accept-frame");await click("measure-audio");
  await pause(400);
  assert.equal(await main.evaluate('!document.getElementById("level-meter").classList.contains("hidden")'),true,"Room/voice preparation automatically shows the prompter meter even when its manual meter is off");
@@ -106,8 +136,10 @@ try {
   assert.equal(await page.evaluate('document.documentElement.scrollWidth<=innerWidth+1'),true,"No horizontal overflow "+w);
  }
  assert.deepEqual(errors,[]);
+ if(obsMock){await main.evaluate('window.electron.saveSettings({obsEnabled:false})');await waitFor('document.getElementById("calibration-source-field").hidden',"Disabled OBS hides its calibration choices");assert.equal(await overlay.evaluate('document.getElementById("framing-inputs").hidden'),true,"The head guide uses the same OBS gate");}
  console.log("PASS: real local model inference, microphone measurement, recorded WebM playback, fixed reference and manual fallback. Synthetic devices only. Artifacts: "+artifacts);
 } finally {
  for(const socket of sockets)socket.close();
+ if(obsMock){for(const client of obsMock.clients)client.terminate();await new Promise(r=>obsMock.close(r));}
  await new Promise(resolve=>{const stop=spawn("taskkill",["/PID",String(child.pid),"/T","/F"],{windowsHide:true,stdio:"ignore"});stop.on("exit",resolve);stop.on("error",resolve);});
 }

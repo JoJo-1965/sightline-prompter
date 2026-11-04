@@ -1,7 +1,7 @@
 import { CONTROL_ACTIONS, normalisePadLayout, PAD_PRESETS } from "./control-actions.js";
 
-// Choose a named button to edit. Neighbours remain available for dragging;
-// resizing never changes which part of the layout is being edited.
+// Render the complete ordered collection. The list scrolls without hiding
+// assignments or changing which buttons exist when the window is resized.
 export function createPadSettings( root, save ) {
 	const field = id => root.querySelector( `#${ id }` );
 	let layout = normalisePadLayout();
@@ -13,7 +13,7 @@ export function createPadSettings( root, save ) {
 	const picker = document.createElement( "select" );
 	picker.dataset.navigationChoice = "true";
 	picker.setAttribute( "aria-label", "Button to arrange" );
-	field( "set-pad-page" ).replaceWith( picker );
+	field( "set-pad-page" ).closest( "nav" ).hidden = true;
 	field( "set-pad-prev" ).remove();
 	field( "set-pad-next" ).remove();
 	picker.addEventListener( "change", () => {
@@ -37,8 +37,8 @@ export function createPadSettings( root, save ) {
 		if ( select.selectedOptions[0]?.disabled ) select.value = [ ...select.options ].find( o => !o.disabled )?.value ?? "";
 		field( "set-pad-insert" ).disabled = layout.buttons.length >= 36 || !select.value;
 		list.replaceChildren();
-		const first = Math.max( 0, Math.min( selected - 1, layout.buttons.length - 3 ) );
-		for ( let index = first; index < Math.min( first + 3, layout.buttons.length ); index++ ) {
+		list.setAttribute( "aria-label", `All ${ layout.buttons.length } pad buttons` );
+		for ( let index = 0; index < layout.buttons.length; index++ ) {
 			const id = layout.buttons[index];
 			const item = CONTROL_ACTIONS.find( a => a.id === id );
 			const row = document.createElement( "div" );

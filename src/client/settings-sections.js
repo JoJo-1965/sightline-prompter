@@ -2,11 +2,11 @@ import { settingsSectionAvailable } from "./interface-state.js";
 
 export const SETTINGS_GROUPS = [
 	{ id: "start", label: "Getting started", pages: [ [ "getting-started", "First setup" ], [ "reset", "Restore defaults" ] ] },
-	{ id: "prepare", label: "Prepare to record", pages: [ [ "checklist", "Recording setup" ] ] },
+	{ id: "prepare", label: "Prepare to record", pages: [ [ "checklist", "Overview" ] ] },
 	{ id: "reading", label: "Reading", pages: [ [ "mode", "Mode and pace" ], [ "typography", "Text and directions" ], [ "background", "Theme and background" ], [ "layout", "Prompter layout" ], [ "aids", "Reading aids" ], [ "screens", "Screens and mirroring" ], [ "guide", "Head guide" ] ] },
 	{ id: "voice", label: "Voice", pages: [ [ "engine", "Speech engine" ], [ "microphone", "Microphone" ], [ "commands", "Commands" ], [ "words", "Your words" ] ] },
 	{ id: "recording", label: "Recording", pages: [ [ "takes", "Takes" ], [ "sound", "Sound check" ], [ "sync", "Slate and sync" ] ] },
-	{ id: "controls", label: "Connections", pages: [ [ "pad", "Pad and phone" ], [ "pairing", "Phone remote" ], [ "mappings", "Keyboard and clickers" ], [ "gamepad", "Game controller" ], [ "streamdeck", "Stream Deck" ], [ "obs", "OBS integration" ], [ "obs-recording", "OBS recording control" ], [ "obs-setup", "OBS profile and scenes" ], [ "api", "AI and API" ], [ "components", "Apps and add-ons" ] ] },
+	{ id: "controls", label: "Connections", pages: [ [ "pad", "Pad and phone" ], [ "pairing", "Phone remote" ], [ "mappings", "Keyboard and clickers" ], [ "gamepad", "Game controller" ], [ "streamdeck", "Stream Deck" ], [ "obs", "OBS integration" ], [ "obs-recording", "OBS recording control" ], [ "obs-setup", "OBS profile and scenes" ], [ "api", "MCP, AI, and API" ], [ "components", "Apps and add-ons" ] ] },
 	{ id: "debug", label: "Debug", pages: [ [ "health", "Status and recovery" ], [ "trace", "Speech trace" ], [ "capture", "Capture for demos" ], [ "logs", "Support log" ] ] },
 	{ id: "about", label: "About", pages: [ [ "version", "Version and updates" ], [ "credits", "Credits and licences" ], [ "support", "Help and support" ] ] }
 ];

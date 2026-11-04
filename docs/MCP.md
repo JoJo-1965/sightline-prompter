@@ -7,7 +7,7 @@ textual edit pack. It uses the official Model Context Protocol SDK.
 
 1. Install Node.js 22.16 or later. In **Connections > Apps and add-ons**, install
    or refresh the AI kit and open its folder.
-2. In **Connections > AI and API**, enable the local API and **Enable local MCP**,
+2. In **Connections > MCP, AI, and API**, enable the local API and **Enable local MCP**,
    then Apply. Read access is the default. Grant script loading, prompting and
    recording separately, only when needed.
 3. Add this stdio server to your desktop client's MCP configuration, replacing

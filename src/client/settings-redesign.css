@@ -81,7 +81,7 @@ body.utility-window #tools-panel.tools-redesign { position: static; width: 100%;
 	#settings-modal.settings-redesign :is(#lp-text-opacity,#lp-text-brightness) { margin: 0; }
 	#settings-modal.settings-redesign .settings-interface-config > .field-hint:not([id]):not([data-essential]) { display: none; }
 	#settings-modal.settings-redesign .pad-choice { padding: 2px 0; }
-	#settings-modal.settings-redesign .pad-choice:not(.selected) { display: none; }
+	#settings-modal.settings-redesign .pad-choice:not(.selected) { display: grid; }
 }
 @media (max-height: 540px) {
 	#settings-modal.settings-redesign .settings-interface-status { margin: 3px 0 6px; }
@@ -176,7 +176,7 @@ body:not(.utility-window) #settings-modal.settings-redesign .settings-content {w
 @media(max-width:760px),(max-height:610px) {
 #settings-modal.settings-redesign .settings-targets {margin-top:7px;}
 #settings-modal.settings-redesign .settings-content .settings-area-sections {display:none;}
-#settings-modal.settings-redesign .pad-choice:not(.selected) {display:none;}
+#settings-modal.settings-redesign .pad-choice:not(.selected) {display:grid;}
 #settings-modal.settings-redesign .settings-interface-config > .field-hint:not([id]):not([data-essential]) {display:none;}
 }
 @media(max-height:560px) {
@@ -190,6 +190,13 @@ body:not(.utility-window) #settings-modal.settings-redesign .settings-content {w
 #settings-modal.settings-redesign .settings-interface-status {margin:3px 0 6px;}
 }
 /* Result panels retain readable spacing inside the fixed three-column shell. */
+#settings-modal.settings-redesign :is(#set-pad-buttons,#set-map-list,#set-gamepad-map-list){max-height:36vh;overflow-y:auto;scrollbar-gutter:stable;overscroll-behavior:contain;}
+#settings-modal.settings-redesign .pad-toolbar{display:grid;grid-template-columns:auto 58px minmax(100px,1fr) auto;align-items:center;gap:8px;}
+#settings-modal.settings-redesign .pad-toolbar > *{min-width:0;margin:0;}
+#settings-modal.settings-redesign .pad-choice{grid-template-columns:minmax(90px,1fr) repeat(3,auto);}
+#settings-modal.settings-redesign .settings-prepare-workflow{width:100%;padding:16px 14px;margin-bottom:12px;}
+#settings-modal.settings-redesign .settings-section-content:has(#set-pad-buttons,#set-map-list,#set-gamepad-map-list){overflow-y:auto;overscroll-behavior:contain;}
+@media(max-width:650px){#settings-modal.settings-redesign .pad-toolbar{grid-template-columns:auto 58px minmax(0,1fr);}#settings-modal.settings-redesign #set-pad-preset{grid-column:1/3;}#settings-modal.settings-redesign #set-pad-preset-use{grid-column:3;}#settings-modal.settings-redesign .mapping-row{grid-template-columns:minmax(0,1fr) auto;}#settings-modal.settings-redesign .mapping-row>span{grid-column:1/-1;white-space:normal;}}
 #settings-modal.settings-redesign .settings-section-content:has( > [data-settings-page="checklist"]:not([hidden]), > [data-settings-page="obs"]:not([hidden]), > [data-settings-page="api"]:not([hidden]) ) {
 	overflow-y: auto;
 	overscroll-behavior: contain;

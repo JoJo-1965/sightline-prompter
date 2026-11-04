@@ -3,22 +3,49 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { protectWindow } from "./capture-policy.js";
-import { checkedFramingReference } from "./client/framing-position.js";
+import { checkedFramingReference, framingPose } from "./client/framing-position.js";
 import { guidePose } from "./client/guide-pose.js";
 
 protocol.registerSchemesAsPrivileged( [ { scheme: "sightline", privileges: { standard: true, secure: true, supportFetchAPI: true, corsEnabled: true } } ] );
 
-export function createPreRecord( { dir, prompter, getSettings, saveSettings, busy } ) {
+export function createPreRecord( { dir, prompter, getSettings, saveSettings, busy, guide, obs, probeObs = async () => false } ) {
 	let window = null, recording = false, quitting = false, lastTestFile = null;
+	let tracking = false, ready = false, pendingAction = null, installed = false, scenes = [], cameras = [], cameraId = getSettings().preRecordCameraId ?? "default";
+	const target = () => ( { x: getSettings().headGuideX ?? 0, y: ( getSettings().headGuideY ?? 0 ) - 14 / 562.5 * 100, size: ( getSettings().headGuideScale ?? 1 ) * 100 } );
+	const shared = () => ( { target: target(), pose: guide?.status(), reference: getSettings().headGuideReference ?? null, cameras, cameraId, source: getSettings().preRecordSource ?? "camera", scene: getSettings().preRecordScene ?? "", obs: { available: getSettings().obsEnabled === true && ( installed || obs?.state().connection === "connected" ), connected: obs?.state().connection === "connected", scenes } } );
+	const sync = () => {
+		if ( obs?.state().connection === "connected" ) installed = true;
+		const value = shared(); guide?.calibration( value );
+		if ( window && !window.isDestroyed() ) {
+			window.webContents.send( "preRecordShared", value );
+			if ( tracking && !window.isVisible() && !getSettings().showHeadGuide ) window.webContents.send( "preRecordGuideAction", { name: "tracking", value: false, background: true } );
+		}
+	};
+	const guideAction = async ( name, value ) => {
+		if ( name === "open" ) { await open(); return; }
+		if ( !window || window.isDestroyed() || !ready ) { pendingAction = { name, value }; await open(); }
+		else window.webContents.send( "preRecordGuideAction", { name, value, background: !window.isVisible() } );
+	};
 	let status = { test: { state: getSettings().preRecordReference?.testReviewed ? "saved" : "idle", at: getSettings().preRecordReference?.savedAt ?? null }, meter: { active: false } };
 	const publish = ( value ) => {
+		if ( Array.isArray( value?.inputs ) ) {
+			cameras = value.inputs.filter( item => typeof item.deviceId === "string" && item.deviceId.length <= 512 && typeof item.label === "string" ).slice( 0, 64 ).map( item => ( { deviceId: item.deviceId, label: item.label.slice( 0, 160 ) } ) );
+			if ( typeof value.cameraId === "string" && ( value.cameraId === "default" || cameras.some( item => item.deviceId === value.cameraId ) ) ) cameraId = value.cameraId;
+			sync();
+		}
+		if ( value?.feedback ) {
+			tracking = value.feedback.enabled === true;
+			let person = null;
+			try { if ( value.feedback.person ) person = framingPose( value.feedback.person ); } catch { /* Off-frame faces remain unavailable. */ }
+			guide?.feedback( { enabled: tracking, active: value.feedback.active === true, person, mirror: value.feedback.mirror === true, error: typeof value.feedback.error === "string" ? value.feedback.error.slice( 0, 300 ) : "" } );
+		}
 		if ( [ "idle", "recording", "saving", "review", "passed", "failed", "stale" ].includes( value?.test?.state ) ) status.test = { state: value.test.state, at: new Date().toISOString() };
 		if ( typeof value?.meter?.active === "boolean" ) status.meter = { active: value.meter.active, level: Math.max( -100, Math.min( 0, Number.isFinite( value.meter.level ) ? value.meter.level : -100 ) ), peak: Math.max( -100, Math.min( 0, Number.isFinite( value.meter.peak ) ? value.meter.peak : -100 ) ), phase: value.meter.phase === "voice" ? "voice" : "room" };
 		if ( !prompter.isDestroyed() ) prompter.webContents.send( "preRecordStatus", status );
 	};
 	protocol.handle( "sightline", ( request ) => {
 		const url = new URL( request.url ), name = url.pathname.slice( 1 );
-		const allowed = /^(pre-record\.(html|css|js)|framing-position\.js|framing-worker-bundle\.js|vision-runtime\/[a-zA-Z0-9_.-]+)$/.test( name );
+		const allowed = /^(pre-record\.(html|css|js)|framing-position\.js|guide-pose\.js|framing-worker-bundle\.js|vision-runtime\/[a-zA-Z0-9_.-]+)$/.test( name );
 		if ( url.hostname !== "prepare" || !allowed ) return new Response( "Not found", { status: 404 } );
 		return net.fetch( pathToFileURL( path.join( dir, "client", name ) ).href );
 	} );
@@ -34,13 +61,19 @@ export function createPreRecord( { dir, prompter, getSettings, saveSettings, bus
 			window.focus();
 			return;
 		}
-		window = new BrowserWindow( { width: 1440, height: 980, minWidth: 600, minHeight: 580, title: "Sightline · Prepare to record", parent: prompter, modal: false, backgroundColor: "#14171c", webPreferences: { nodeIntegration: false, sandbox: false, preload: path.join( dir, "client/pre-record-preload.mjs" ) } } );
+		ready = false;
+		window = new BrowserWindow( { width: 1440, height: 980, minWidth: 600, minHeight: 580, title: "Sightline · Prepare to record", parent: prompter, modal: false, backgroundColor: "#14171c", webPreferences: { backgroundThrottling: false, nodeIntegration: false, sandbox: false, preload: path.join( dir, "client/pre-record-preload.mjs" ) } } );
 		protectWindow( window, getSettings().hideFromCapture === true );
 		window.setAlwaysOnTop( true, "screen-saver" );
 		window.webContents.setWindowOpenHandler( () => ( { action: "deny" } ) );
 		window.webContents.on( "will-navigate", event => event.preventDefault() );
 		window.loadURL( "sightline://prepare/pre-record.html" );
 		window.on( "close", ( event ) => {
+			if ( tracking && getSettings().showHeadGuide && !recording && !quitting ) {
+				event.preventDefault(); window.hide();
+				window.webContents.send( "preRecordGuideAction", { name: "background" } );
+				return;
+			}
 			if ( recording && !quitting ) {
 				event.preventDefault();
 				const choice = dialog.showMessageBoxSync( window, { type: "question", message: "Stop the test recording and close preparation?", detail: "The current test clip will not be saved. Your previously saved reference is retained.", buttons: [ "Keep recording", "Stop and close" ], cancelId: 0, defaultId: 0 } );
@@ -51,6 +84,9 @@ export function createPreRecord( { dir, prompter, getSettings, saveSettings, bus
 			}
 		} );
 		window.on( "closed", () => {
+			tracking = ready = false;
+			guide?.feedback( { enabled: false, active: false, person: null } );
+			obs?.calibration( "virtual-stop" ).catch( () => {} );
 			publish( { ...( [ "recording", "saving" ].includes( status.test.state ) ? { test: { state: "failed" } } : {} ), meter: { active: false } } );
 			window = null;
 			recording = false;
@@ -59,7 +95,29 @@ export function createPreRecord( { dir, prompter, getSettings, saveSettings, bus
 	};
 	const action = async ( event, name, value ) => {
 		if ( !trusted( event ) ) throw new Error( "Preparation window required" );
-		if ( name === "load" ) return { reference: getSettings().preRecordReference ?? null, guide: { x: getSettings().headGuideX ?? 0, y: ( getSettings().headGuideY ?? 0 ) - 14 / 562.5 * 100, size: ( getSettings().headGuideScale ?? 1 ) * 100 }, microphoneId: getSettings().preRecordMicrophone ?? "default" };
+		if ( name === "load" ) {
+			installed = getSettings().obsEnabled === true && await probeObs();
+			if ( getSettings().obsEnabled && obs?.state().connection === "connected" ) scenes = ( await obs.calibration( "scenes" ).catch( () => ( { scenes: [] } ) ) ).scenes;
+			sync();
+			return { reference: getSettings().preRecordReference ?? null, guide: target(), microphoneId: getSettings().preRecordMicrophone ?? "default", shared: shared() };
+		}
+		if ( name === "ready" ) { ready = true; if ( pendingAction ) window.webContents.send( "preRecordGuideAction", pendingAction ); pendingAction = null; return; }
+		if ( name === "draft" ) { await guide.pose( framingPose( value ) ); return; }
+		if ( name === "guide" ) { if ( value === "adjust" ) guide.showAdjustments(); else if ( value === "show" ) await saveSettings( { showHeadGuide: true } ); return; }
+		if ( name === "source" ) {
+			if ( ![ "camera", "obs", "temporary" ].includes( value?.source ) ) throw new Error( "Choose a calibration input" );
+			if ( value.source !== "camera" && !shared().obs.available ) throw new Error( "OBS is unavailable or disabled" );
+			const scene = typeof value.scene === "string" ? value.scene.slice( 0, 512 ) : getSettings().preRecordScene ?? "";
+			if ( scene && value.source === "obs" && !scenes.includes( scene ) ) throw new Error( "Choose an available OBS scene" );
+			await saveSettings( { preRecordSource: value.source, preRecordScene: scene } ); sync(); return;
+		}
+		if ( name === "camera" ) {
+			if ( value !== "default" && !cameras.some( item => item.deviceId === value ) ) throw new Error( "Choose an available camera" );
+			cameraId = value; await saveSettings( { preRecordCameraId: value } ); sync(); return;
+		}
+		if ( name === "obs-scenes" ) { scenes = ( await obs.calibration( "scenes" ) ).scenes; sync(); return scenes; }
+		if ( name === "obs-frame" ) { if ( getSettings().preRecordSource !== "obs" ) throw new Error( "OBS preview is not selected" ); return obs.calibration( "frame", getSettings().preRecordScene ); }
+		if ( name === "virtual-start" || name === "virtual-stop" ) return obs.calibration( name );
 		if ( name === "model" ) return new Uint8Array( await fs.readFile( path.join( dir, "client/vision-model/blaze-face-short-range-v1.tflite" ) ) );
 		if ( name === "save" ) {
 			if ( busy() || recording ) throw new Error( "Finish the current recording before replacing its reference" );
@@ -104,7 +162,7 @@ export function createPreRecord( { dir, prompter, getSettings, saveSettings, bus
 	ipcMain.handle( "preRecordStatus", getStatus );
 	ipcMain.on( "closePreRecord", close );
 	ipcMain.handle( "preRecord", action );
-	return { open, dispose() {
+	return { open, sync, guideAction, dispose() {
 		quitting = true;
 		window?.destroy();
 		ipcMain.removeListener( "openPreRecord", open );

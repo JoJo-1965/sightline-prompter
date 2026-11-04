@@ -1,5 +1,16 @@
 # Remotes and second screens
 
+**RC 4:** Connections > Pad and phone shows every selected button in a scrollable
+list, with drag, Earlier/Later and Remove controls on each row. Keyboard/clicker
+and game-controller pages likewise show all assignments, with action and Remove
+on each row. The list scrolls without hiding entries when the window is smaller.
+
+The Ctrl+Shift+H head guide now receives optional live position feedback from
+the shared preparation session. Its adjustments and Lock current update the
+same target in both views. Calibration picture, OBS scene (when available),
+camera selection and capture are available in its adjustments. See
+[Prepare to record](16-prepare-to-record.md) for source and reference limits.
+
 In the next preview, **Settings > Controls > Stream Deck** is the single home
 for optional installation, **Locate**, **Check again**, pairing and compatibility.
 The published 1.1.0 layout also lists installation under Components.

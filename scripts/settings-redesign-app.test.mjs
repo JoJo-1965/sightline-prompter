@@ -294,7 +294,7 @@ try {
 			}
 			continue;
 		}
-		if ( [ "checklist", "obs", "api" ].includes( name ) ) {
+		if ( [ "checklist", "obs", "api", "pad", "mappings", "gamepad" ].includes( name ) ) {
 			await checkResultPageReachable( name );
 			continue;
 		}
@@ -303,6 +303,13 @@ try {
 	}
 	console.log( "Overflow:", JSON.stringify( overflow ) );
 	assert.deepEqual( overflow, [], "Every desktop section fits above the footer" );
+	await settings.evaluate( 'document.querySelector("[data-tab=pad]").click();for(let n=0;n<9&&document.querySelectorAll("#set-pad-buttons .pad-choice").length<9;n++)document.getElementById("set-pad-insert").click()' );
+	assert.ok( await settings.evaluate( 'document.querySelectorAll("#set-pad-buttons .pad-choice").length>=9' ), "All nine pad buttons are rendered together" );
+	assert.equal( await settings.evaluate( '[...document.querySelectorAll("#set-pad-buttons .pad-choice")].every(row=>getComputedStyle(row).display!=="none")' ), true, "No selected-only pad rule hides neighbouring buttons" );
+	await checkResultPageReachable( "pad" );
+	await settings.evaluate( 'document.querySelector("[data-tab=gamepad]").click()' );
+	assert.ok( await settings.evaluate( 'document.querySelectorAll("#set-gamepad-map-list .mapping-row").length>1' ), "All controller assignments are shown" );
+	await checkResultPageReachable( "gamepad" );
 	const resize = async ( width, height ) => {
 		await native.evaluate( `process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron').BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().includes('panel=settings')).setContentSize(${ width },${ height })` );
 		for ( let attempt = 0; attempt < 30; attempt++ ) {
@@ -322,7 +329,7 @@ try {
 				await checkSetupReachable();
 				continue;
 			}
-			if ( [ "checklist", "obs", "api" ].includes( name ) ) {
+			if ( [ "checklist", "obs", "api", "pad", "mappings", "gamepad" ].includes( name ) ) {
 				await checkResultPageReachable( name );
 				continue;
 			}

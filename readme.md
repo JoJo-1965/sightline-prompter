@@ -248,6 +248,19 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ## Change log
 
+### 1.2.0 RC 4 · integrated preparation and visible controls
+
+- Prepare to record is the first workflow card and a direct toolbar action.
+  The approved Settings columns remain; its submenu is now Overview.
+- Live position feedback and Lock current reach the Ctrl+Shift+H head guide;
+  guide adjustments update preparation immediately. Ideal remains separate.
+- Choose an actual OBS calibration scene without switching programme scenes or
+  recording. OBS options hide when disabled/unavailable. Temporary virtual-camera
+  capture starts explicitly and stops only a session Sightline started.
+- Show all pad buttons and controller/key assignments in scrollable lists,
+  retaining reorder/remove controls. Align the pad's columns and preset row.
+- Rename the connection page MCP, AI, and API and add Configure MCP instructions.
+
 ### 1.2.0 RC 3 · camera recovery
 
 - List physical and virtual cameras before capture starts, and keep the input

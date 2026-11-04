@@ -2,6 +2,13 @@
 
 ## Current delivery position
 
+**RC 4 integrated batch:** shared preparation/head-guide pose and live feedback,
+OBS scene calibration with conditional source controls, prominent preparation
+entry, complete pad/assignment lists, pad row alignment and MCP setup help are
+implemented. Source unit, native Settings (five sizes) and native camera/OBS
+preparation checks pass. Packaging and installer verification follow together.
+The Settings composition stays as approved; no personal profile is reset.
+
 **RC 3 camera recovery:** the default Facecam failure exposed a disabled input
 selector. The fix lists camera/virtual feeds before capture and leaves retry
 available after failure, with an error beside Enable camera. Real Elgato virtual

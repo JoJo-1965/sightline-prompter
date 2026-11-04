@@ -438,6 +438,9 @@ export function createSettingsWorkspace( root, { getState, getGuideState = () =>
 		links.append( take( "set-remote-help", "button" ), take( "set-remote-components", "button" ) );
 		config.append( links );
 		check( config, "set-mcp-enabled", "Enable local MCP", "mcpEnabled", false, "Optional stdio adapter for a desktop AI client. Read-only by default; scripts and controls require the separate grants below. Apply changes, then use the MCP instructions in your installed AI kit." );
+		const mcpHelp = el( "button", { id: "set-mcp-help", type: "button" }, "Configure MCP…" );
+		mcpHelp.addEventListener( "click", () => window.electron.openGuide( "17-configure-mcp.md" ) );
+		config.append( mcpHelp );
 		const mcpOptions = el( "fieldset", { className: "settings-mcp-options" } );
 		mcpOptions.dataset.mcpOptions = "true";
 		check( mcpOptions, "set-mcp-scripts", "Allow script loading and slots", "mcpScripts", false, "Lets the MCP client load uniquely named scripts and select a script slot. Existing files are retained." );
@@ -480,8 +483,14 @@ export function createSettingsWorkspace( root, { getState, getGuideState = () =>
 		host.append( buttons );
 		return host;
 	};
-	const checklist = section( "checklist", "Recording setup" );
-	checklist.replaceChildren( el( "legend", {}, "Recording setup" ), el( "p", { className: "settings-section-intro" }, "Set the reading view once, then check the recording setup. Each step opens its permanent Settings home." ) );
+	const checklist = section( "checklist", "Prepare to record" );
+	checklist.replaceChildren( el( "legend", {}, "Prepare to record" ), el( "p", { className: "settings-section-intro" }, "Check your recording setup, then fine-tune the reading view." ) );
+	const workflow = el( "button", { id: "settings-prepare-recording", type: "button", className: "settings-prepare-step settings-prepare-workflow" } );
+	const workflowText = el( "span" );
+	workflowText.append( el( "span", { className: "settings-step-name" }, "Head guide, audio and test recording" ), el( "span", { className: "settings-step-state" }, "Align head → Check audio → Test recording → Save reference → Ready" ) );
+	workflow.append( workflowText, el( "span", { className: "settings-step-open" }, "Open workflow →" ) );
+	workflow.addEventListener( "click", () => window.electron.prepareRecording() );
+	checklist.append( workflow, el( "h3", { className: "settings-guide-subheading" }, "Fine-tune your setup" ) );
 	const steps = el( "div", { className: "settings-prepare-list" } );
 	for ( const [ name, title, description ] of [ [ "mode", "Reading mode", "Steady, Voice or Notes" ], [ "typography", "Text and directions", "Spoken words, inline cues and preparation notes" ], [ "layout", "Reading layout", "Margins, alignment and reading line" ], [ "guide", "Camera framing", "Ideal, Actual and saved recording reference" ], [ "sound", "Sound check", "Voice, room noise and accepted warnings" ], [ "obs", "Recorder", "Connection, permissions and confirmed state" ] ] ) {
 		const button = el( "button", { type: "button", className: "settings-prepare-step" } );
@@ -492,15 +501,11 @@ export function createSettingsWorkspace( root, { getState, getGuideState = () =>
 		steps.append( button );
 	}
 	checklist.append( steps );
-	const prepareAction = el( "div", { className: "settings-inline-actions" } );
-	const prepareButton = el( "button", { id: "settings-prepare-recording", type: "button" }, "Prepare to record" );
-	prepareButton.addEventListener( "click", () => window.electron.prepareRecording() );
-	prepareAction.append( prepareButton );
-	checklist.append( prepareAction );
 	const testResult = el( "p", { id: "settings-test-recording-result", className: "settings-test-result" }, "Test recording: Not checked. Open Prepare to record to review picture and sound." );
 	testResult.setAttribute( "role", "status" );
 	testResult.setAttribute( "aria-live", "polite" );
 	checklist.append( testResult );
+	workflow.after( testResult, el( "p", { id: "settings-framing-reference", className: "settings-test-result" }, "Recording position: Not saved" ) );
 	const gettingStarted = section( "getting-started", "Getting started" );
 	gettingStarted.append( el( "p", { className: "settings-start-intro" }, "Open your script from Files, or choose a sample from Help. Choose how to read, make the text comfortable, then enable only the optional tools you need." ) );
 	const setupScript = el( "p", { className: "settings-start-script" } );

@@ -1,4 +1,5 @@
 import { framingPose, framingMatch, detectedPose, audioCheckAdvice } from "./framing-position.js";
+import { guideOutline } from "./guide-pose.js";
 
 const $ = id => document.getElementById( id );
 const copy = value => JSON.parse( JSON.stringify( value ) );
@@ -14,8 +15,54 @@ let worker = null, workerReady = false, workerBusy = false, frameTimer = null, l
 let recorder = null, recordTimer = null, testURL = null, testBlob = null, measuringTimer = null;
 let generation = 0, disposed = false;
 let cameraConnecting = false, cameraError = "";
+let shared = config.shared ?? { target: config.guide, source: "camera", scene: "", obs: { available: false, scenes: [] } };
+let inputSource = shared.obs.available ? shared.source : "camera", obsTimer = null, obsGeneration = 0, captureGeneration = 0;
+const draft = () => window.preRecord.input( "draft", state.target ).catch( error => say( error.message ) );
+function renderInput() {
+	$( "calibration-source-field" ).hidden = !shared.obs.available;
+	$( "calibration-source" ).value = inputSource;
+	$( "obs-scene-field" ).hidden = !shared.obs.available || inputSource !== "obs";
+	if ( JSON.stringify( [ ...$( "obs-scene" ).options ].slice( 1 ).map( item => item.value ) ) !== JSON.stringify( shared.obs.scenes ?? [] ) ) $( "obs-scene" ).replaceChildren( new Option( "Choose an OBS scene", "" ), ...( shared.obs.scenes ?? [] ).map( name => new Option( name, name ) ) );
+	$( "obs-scene" ).value = shared.scene;
+	$( "camera-device" ).parentElement.hidden = inputSource === "obs";
+	$( "refresh-obs-scenes" ).disabled = !shared.obs.connected;
+	$( "obs-calibration-status" ).hidden = inputSource !== "obs" || shared.obs.connected;
+	document.querySelector( ".camera-head strong" ).textContent = inputSource === "obs" ? "OBS scene preview · 16:9" : "Camera preview · 16:9";
+}
+async function stopInput() {
+	captureGeneration++;
+	obsGeneration++;
+	clearInterval( obsTimer ); obsTimer = null;
+	if ( cameraStream ) await connectCamera();
+	await window.preRecord.input( "virtual-stop" ).catch( () => {} );
+}
+async function obsStream() {
+	if ( !shared.scene ) throw new Error( "Choose the OBS scene to calibrate" );
+	const canvas = document.createElement( "canvas" ); canvas.width = 640; canvas.height = 360;
+	const context = canvas.getContext( "2d" ), epoch = ++obsGeneration;
+	let reading = false;
+	const paint = async () => {
+		if ( reading || epoch !== obsGeneration || disposed ) return;
+		reading = true;
+		try {
+			const uri = await window.preRecord.input( "obs-frame" );
+			const picture = new Image(); picture.src = uri; await picture.decode();
+			if ( epoch !== obsGeneration || disposed ) return;
+			const ratio = picture.width / picture.height, w = ratio > 16 / 9 ? picture.height * 16 / 9 : picture.width, h = ratio > 16 / 9 ? picture.height : picture.width * 9 / 16;
+			context.drawImage( picture, ( picture.width - w ) / 2, ( picture.height - h ) / 2, w, h, 0, 0, 640, 360 );
+		} catch ( error ) {
+			state.person = null; state.error = error.message;
+			if ( cameraStream && epoch === obsGeneration ) { await stopInput(); cameraError = state.error = error.message; render(); }
+			throw error;
+		} finally { reading = false; }
+	};
+	await paint();
+	obsTimer = setInterval( () => paint().catch( () => {} ), 350 );
+	return canvas.captureStream( 3 );
+}
 const state = { step: 0, mode: "setup", tracking: false, mirror: true, person: null, target: copy( config.guide ?? { x: 0, y: 0, size: 100 } ), manualConfirmed: false, framingAccepted: false, audio: null, audioAccepted: false, audioOverride: false, measuring: false, testState: "idle", testSeconds: 0, testApproved: false, testReviewed: false, testPicture: false, testSound: false, referenceSaved: false, microphoneId: config.microphoneId || "default", cameraId: "default", camera: null, testFile: null, error: "" };
 const names = [ "Align head", "Check audio", "Test recording", "Save reference", "Ready" ];
+state.cameraId = shared.cameraId ?? "default";
 const colours = { green: "#72dfad", amber: "#edc766", red: "#ff8585", lost: "#a7b2c0", manual: "#89c4ff" };
 function say( text ) {
 	$( "message" ).textContent = text;
@@ -59,6 +106,7 @@ async function listDevices() {
 	$( "camera-device" ).innerHTML = '<option value="default">Default camera</option>' + ( cameras.length ? deviceOptions( "videoinput", state.cameraId ) : "" );
 	if ( state.cameraId !== "default" && !cameras.some( d => d.deviceId === state.cameraId ) ) $( "camera-device" ).insertAdjacentHTML( "beforeend", `<option value="${ escape( state.cameraId ) }">Selected camera unavailable</option>` );
 	$( "camera-device" ).value = state.cameraId;
+	window.preRecord.report( { inputs: cameras.map( camera => ( { deviceId: camera.deviceId, label: camera.label } ) ), cameraId: state.cameraId } );
 }
 function renderSteps() {
 	const done = [ state.framingAccepted && match().aligned, state.audioAccepted, state.testApproved, state.referenceSaved, ready() ];
@@ -79,6 +127,15 @@ function renderCamera() {
 	$( "camera-video" ).style.transform = state.mirror ? "scaleX(-1)" : "";
 	$( "target-space" ).setAttribute( "transform", mirrored );
 	$( "target" ).setAttribute( "transform", transform );
+	if ( shared.pose ) {
+		const shape = guideOutline( shared.pose );
+		for ( const group of [ $( "target" ), $( "mask-hole" ) ] ) {
+			const ellipse = group.querySelector( "ellipse" ), path = group.querySelector( "path" );
+			for ( const [ key, value ] of Object.entries( { cx: 500 + ( shape.cx - 500 ) * shared.pose.width, cy: 169 + ( shape.cy - 155 ) * shared.pose.height, rx: shape.rx * shared.pose.width, ry: shape.ry * shared.pose.height } ) ) ellipse.setAttribute( key, value );
+			path.setAttribute( "d", shape.shoulders );
+			path.setAttribute( "transform", `translate(0 14) translate(500 155) scale(${ shared.pose.width } ${ shared.pose.height }) translate(-500 -155)` );
+		}
+	}
 	$( "mask-hole" ).setAttribute( "transform", `${ mirrored } ${ transform }` );
 	$( "target-label" ).setAttribute( "transform", state.mirror ? "translate(1000 0) scale(-1 1)" : "" );
 	$( "target-label" ).textContent = state.mode === "return" || state.referenceSaved ? "Saved recording reference" : "Recording target";
@@ -99,6 +156,11 @@ function renderCamera() {
 	$( "connect-camera" ).textContent = cameraConnecting ? "Opening camera…" : cameraStream ? "Turn camera off" : "Enable camera";
 	$( "connect-camera" ).disabled = cameraConnecting || [ "recording", "saving" ].includes( state.testState );
 	$( "camera-device" ).disabled = cameraConnecting || [ "recording", "saving" ].includes( state.testState );
+	$( "connect-camera" ).textContent = cameraConnecting ? "Opening picture…" : cameraStream ? "Turn picture off" : inputSource === "obs" ? "Enable OBS preview" : "Enable camera";
+	$( "calibration-source" ).disabled = $( "camera-device" ).disabled;
+	$( "obs-scene" ).disabled = $( "camera-device" ).disabled;
+	if ( inputSource === "obs" && ( !shared.scene || !shared.obs.connected ) ) $( "connect-camera" ).disabled = true;
+	window.preRecord.report( { feedback: { enabled: state.tracking, active: !!cameraStream, person: performance.now() - lastDetection < 1400 ? state.person : null, mirror: state.mirror, error: cameraError || state.error || ( !cameraStream ? "Enable the selected calibration picture." : "" ) } } );
 	$( "camera-status" ).textContent = cameraError || ( cameraConnecting ? "Opening the selected camera. Capture starts only after your request." : "" );
 	$( "camera-status" ).hidden = !cameraError && !cameraConnecting;
 	$( "camera-status" ).className = cameraError ? "note danger" : "note";
@@ -132,6 +194,11 @@ function panel() {
 	} else if ( state.step === 3 ) html += "<h2 id=\"panel-title\">" + ( state.mode === "return" ? "Keep your recording reference" : "Save your recording reference" ) + "</h2><p>" + ( state.mode === "return" ? "Your original framing stays fixed for consistency between shots. The audio recheck is complete." : "Save the checked framing with its camera, audio baseline and reviewed local test clip." ) + "</p>" + referenceData() + "<div class=\"note\">" + ( state.mode === "return" ? "Returning keeps the original target and saved test. It does not silently replace them." : "The saved position can also be restored from the manual Head guide controls. Existing Ideal proportions are retained." ) + "</div><div class=\"next\"><button type=\"button\" class=\"primary\" id=\"save-reference\">" + ( state.mode === "return" ? "Keep saved reference · ready" : saved ? "Replace saved recording reference" : "Save recording reference" ) + "</button></div>";
 	else html += "<div class=\"ready-icon\" aria-hidden=\"true\">✓</div><h2 id=\"panel-title\">Ready to record</h2><p>Your framing, audio and test recording have been checked. Restore this reference to match shots after a break.</p><ul class=\"ready-list\"><li>Head position and size checked.</li><li>Microphone check accepted" + ( state.audioOverride ? " with an advisory result" : "" ) + ".</li><li>Test picture and sound reviewed.</li><li>Reference retained in this Sightline profile.</li></ul><div class=\"note success\">Return to your script to record. This check does not start your production recorder.</div><div class=\"actions\"><button type=\"button\" class=\"primary\" id=\"finish-prepare\">Return to script</button><button type=\"button\" id=\"ready-break\">Restore after a break</button></div>";
 	$( "step-panel" ).innerHTML = html;
+	if ( state.step === 0 ) {
+		const actions = document.createElement( "div" ); actions.className = "actions";
+		actions.innerHTML = '<button id="shared-guide-show" type="button">Show head guide</button><button id="shared-guide-adjust" type="button">Head guide adjustments…</button>';
+		$( "panel-title" ).after( actions );
+	}
 	if ( state.step === 2 && state.testState === "review" ) {
 		const fail = Object.assign( document.createElement( "button" ), { id: "fail-test", type: "button", textContent: "Test failed · retry" } );
 		$( "redo-test" ).after( fail );
@@ -225,26 +292,38 @@ async function connectCamera() {
 	cameraError = "";
 	state.error = "";
 	if ( cameraStream ) {
+		captureGeneration++;
+		clearInterval( obsTimer ); obsTimer = null; obsGeneration++;
 		stopTracking();
 		cameraStream.getTracks().forEach( t => t.stop() );
 		cameraStream = null;
+		$( "camera-video" ).srcObject = null;
+		await window.preRecord.input( "virtual-stop" ).catch( () => {} );
 		state.camera = null;
 		invalidate();
 		render();
 		return;
 	}
 	cameraConnecting = true;
+	const captureEpoch = ++captureGeneration;
 	renderCamera();
 	try {
-		const stream = await navigator.mediaDevices.getUserMedia( { audio: false, video: { ...( state.cameraId !== "default" ? { deviceId: { exact: state.cameraId } } : {} ), width: { ideal: 1280 }, height: { ideal: 720 } } } );
-		if ( disposed ) {
+		if ( inputSource === "temporary" ) {
+			await window.preRecord.input( "virtual-start" ); await listDevices();
+			const virtual = knownDevices.find( d => d.kind === "videoinput" && /OBS.*Virtual/i.test( d.label ) );
+			if ( !virtual ) throw new Error( "OBS Virtual Camera is unavailable. Choose OBS scene preview instead." );
+			state.cameraId = virtual.deviceId;
+		}
+		const stream = inputSource === "obs" ? await obsStream() : await navigator.mediaDevices.getUserMedia( { audio: false, video: { ...( state.cameraId !== "default" ? { deviceId: { exact: state.cameraId } } : {} ), width: { ideal: 1280 }, height: { ideal: 720 } } } );
+		if ( disposed || captureEpoch !== captureGeneration ) {
 			stream.getTracks().forEach( t => t.stop() );
 			return;
 		}
 		cameraStream = stream;
 		const track = cameraStream.getVideoTracks()[0], settings = track.getSettings();
-		state.cameraId = settings.deviceId || state.cameraId;
+		if ( inputSource !== "obs" ) state.cameraId = settings.deviceId || state.cameraId;
 		state.camera = { deviceId: state.cameraId, label: track.label, width: settings.width, height: settings.height };
+		if ( inputSource === "obs" ) state.camera = { deviceId: "obs:" + shared.scene, label: "OBS scene · " + shared.scene, width: 640, height: 360 };
 		track.onended = () => {
 			cameraStream = null;
 			state.camera = null;
@@ -260,6 +339,8 @@ async function connectCamera() {
 		state.error = "";
 		render();
 	} catch ( error ) {
+		clearInterval( obsTimer ); obsTimer = null; obsGeneration++;
+		await window.preRecord.input( "virtual-stop" ).catch( () => {} );
 		cameraStream?.getTracks().forEach( t => t.stop() );
 		cameraStream = null;
 		state.camera = null;
@@ -270,6 +351,7 @@ async function connectCamera() {
 			OverconstrainedError: "The selected camera is unavailable. Choose another camera or virtual-camera feed, then try again."
 		};
 		cameraError = `${ advice[error.name] ?? "The camera could not open. Choose another input and try again." } (${ error.name })`;
+		if ( inputSource !== "camera" ) cameraError = error.message;
 		state.error = cameraError;
 		await listDevices().catch( () => {} );
 	} finally {
@@ -426,19 +508,23 @@ async function reviewTest() {
 	video.onended = () => panel();
 }
 function restoreReference() {
-	if ( !saved ) return;
-	state.mode = "return";
-	if ( !cameraStream ) state.cameraId = saved.camera.deviceId;
-	state.target = copy( saved.target );
+	if ( !saved && !shared.reference?.pose ) return;
+	const pose = shared.reference?.pose;
+	const restored = pose ? { x: pose.x, y: pose.y - 14 / 562.5 * 100, size: pose.scale * 100 } : copy( saved.target );
+	const same = saved && [ "x", "y", "size" ].every( key => Math.abs( restored[key] - saved.target[key] ) < 0.0001 );
+	state.mode = same ? "return" : "setup";
+	if ( !cameraStream && saved?.camera?.deviceId && !saved.camera.deviceId.startsWith( "obs:" ) ) state.cameraId = saved.camera.deviceId;
+	state.target = restored;
+	draft();
 	state.step = 0;
 	state.manualConfirmed = false;
 	state.framingAccepted = false;
 	state.audio = null;
 	state.audioAccepted = false;
 	state.audioOverride = false;
-	state.microphoneId = saved.microphoneId || "default";
-	state.testApproved = saved.testReviewed === true;
-	state.testState = saved.testFile ? "review" : "idle";
+	state.microphoneId = saved?.microphoneId ?? "default";
+	state.testApproved = same && saved.testReviewed === true;
+	state.testState = same && saved.testFile ? "review" : "idle";
 	state.referenceSaved = true;
 	render();
 	say( "Saved target restored. Your current position has not been used to replace it." );
@@ -454,6 +540,7 @@ async function saveReference() {
 async function action( id ) {
 	if ( id === "lock-current" ) {
 		state.target = framingPose( state.person );
+		await draft();
 		invalidate();
 		render();
 		say( "Current detected position is the draft target. Save after reviewing a test." );
@@ -486,6 +573,8 @@ async function action( id ) {
 	}
 	if ( id === "save-reference" ) await saveReference();
 	if ( id === "finish-prepare" ) window.preRecord.close();
+	if ( id === "shared-guide-adjust" ) await window.preRecord.input( "guide", "adjust" );
+	if ( id === "shared-guide-show" ) await window.preRecord.input( "guide", "show" );
 }
 $( "step-panel" ).addEventListener( "click", ( event ) => {
 	const button = event.target.closest( "button" );
@@ -497,6 +586,7 @@ $( "step-panel" ).addEventListener( "click", ( event ) => {
 $( "step-panel" ).addEventListener( "input", ( event ) => {
 	if ( event.target.dataset.guide ) {
 		state.target[event.target.dataset.guide] = Number( event.target.value );
+		draft();
 		event.target.nextElementSibling.textContent = event.target.value + "%";
 		invalidate();
 		renderCamera();
@@ -506,6 +596,7 @@ $( "step-panel" ).addEventListener( "input", ( event ) => {
 $( "step-panel" ).addEventListener( "change", ( event ) => {
 	if ( event.target.id === "tracking" ) {
 		state.tracking = event.target.checked;
+		if ( state.tracking ) window.preRecord.input( "guide", "show" );
 		state.manualConfirmed = false;
 		state.framingAccepted = false;
 		if ( state.tracking ) startTracking().catch( ( error ) => {
@@ -547,6 +638,7 @@ $( "camera-device" ).onchange = async ( event ) => {
 	const reconnect = !!cameraStream;
 	if ( reconnect ) await connectCamera();
 	state.cameraId = id;
+	await window.preRecord.input( "camera", id );
 	cameraError = "";
 	state.error = "";
 	if ( reconnect ) await connectCamera();
@@ -565,7 +657,7 @@ $( "new-setup" ).onclick = () => {
 	window.preRecord.report( { test: { state: "stale" } } );
 	state.mode = "setup";
 	state.step = 0;
-	state.target = copy( config.guide ?? { x: 0, y: 0, size: 100 } );
+	state.target = copy( shared.target ?? config.guide ?? { x: 0, y: 0, size: 100 } );
 	state.audio = null;
 	state.audioAccepted = false;
 	state.testApproved = false;
@@ -595,7 +687,54 @@ function refreshDevices() {
 		renderCamera();
 	} );
 }
+async function chooseInput( source, scene = shared.scene ) {
+	await stopInput();
+	inputSource = source;
+	if ( source === "obs" && shared.obs.connected && !shared.obs.scenes?.length ) await window.preRecord.input( "obs-scenes" );
+	await window.preRecord.input( "source", { source, scene } );
+	invalidate(); renderInput(); render();
+}
+$( "calibration-source" ).onchange = event => chooseInput( event.target.value ).catch( error => say( error.message ) );
+$( "obs-scene" ).onchange = event => chooseInput( inputSource, event.target.value ).catch( error => say( error.message ) );
+$( "refresh-obs-scenes" ).onclick = () => window.preRecord.input( "obs-scenes" ).catch( error => say( error.message ) );
+window.preRecord.onShared( async value => {
+	const nextSource = value.obs.available ? value.source : "camera";
+	if ( inputSource !== nextSource || shared.scene !== value.scene || ( inputSource !== "camera" && !value.obs.connected ) ) await stopInput();
+	shared = value; inputSource = nextSource;
+	if ( value.cameraId && state.cameraId !== value.cameraId && inputSource !== "obs" ) { await stopInput(); state.cameraId = value.cameraId; $( "camera-device" ).value = state.cameraId; }
+	const changed = [ "x", "y", "size" ].some( key => Math.abs( state.target[key] - value.target[key] ) > 0.0001 );
+	if ( changed ) {
+		state.target = copy( value.target ); invalidate();
+		if ( state.mode === "return" ) { state.mode = "setup"; state.step = 0; }
+	}
+	renderInput(); if ( changed ) render(); else renderCamera();
+} );
+window.preRecord.onGuideAction( async ( { name, value, background } ) => {
+	try {
+		if ( name === "background" ) {
+			clearInterval( measuringTimer ); state.measuring = false;
+			window.preRecord.report( { meter: { active: false } } );
+			microphoneStream?.getTracks().forEach( track => track.stop() ); microphoneStream = null;
+			await audioContext?.close(); audioContext = null; return;
+		}
+		if ( name === "source" ) { await chooseInput( value ); return; }
+		if ( name === "scene" ) { await chooseInput( inputSource, value ); return; }
+		if ( name === "scenes" ) { await window.preRecord.input( "obs-scenes" ); return; }
+		if ( name === "picture" ) { await connectCamera(); return; }
+		if ( name === "camera" ) { await stopInput(); state.cameraId = value; await window.preRecord.input( "camera", value ); await listDevices(); render(); return; }
+		if ( name === "lock" && state.person ) { state.mode = "setup"; await action( "lock-current" ); return; }
+		if ( name === "tracking" ) {
+			state.tracking = value === true;
+			if ( state.tracking ) { if ( !cameraStream ) await connectCamera(); else await startTracking(); }
+			else { stopTracking(); if ( background ) await stopInput(); }
+			render();
+			if ( !state.tracking && background ) window.preRecord.close();
+		}
+	} catch ( error ) { state.error = error.message; say( error.message ); render(); }
+} );
 navigator.mediaDevices.addEventListener( "devicechange", refreshDevices );
 refreshDevices();
+renderInput();
 render();
+window.preRecord.input( "ready" );
 if ( saved ) say( "A recording reference is available. Choose Restore saved reference to match previous shots." );
