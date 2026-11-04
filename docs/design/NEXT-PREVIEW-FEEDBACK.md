@@ -3,6 +3,20 @@
 Keep UAT 09 available for Joanne's combined review. Collect observations here
 and produce one subsequent preview after reviewing the complete queue.
 
+## Latest release steering
+
+Joanne is happy with the current preview and wants a new live release today.
+Priorities are a small local MCP integration, the existing automatic head
+detection/preparation workflow, and the Mac launch fix. Joanne explicitly
+allows free ad-hoc Mac signing; a paid Developer ID certificate is outside
+this release's scope. Do not describe an ad-hoc build as Apple-notarised.
+
+**Before any new build:** Joanne has additional feedback stacked in the chat
+queue. Review those remaining messages alongside this list and reconcile the
+complete RC scope first. The app connector exposes delivered turns, not an
+independent pending-message list. Do not mark unseen queued input as reviewed.
+The proposed 1.2.0 scope and deferrals are provisional until that review.
+
 - [x] Reuse the existing Buy Joanne a coffee note. Replace its one-time
   suppression with a saved random interval of 10–15 launches. Keep the existing
   appearance, link, dismissal, 30-second delay and busy checks. A busy launch
@@ -95,3 +109,40 @@ from a reviewed recording and retain unknown states when evidence is missing.
   distribution fix is Developer ID signing, notarisation/stapling and fresh
   download validation for both supported Mac architectures. Preserve the
   distinction between this alert and ordinary unidentified-developer prompts.
+
+## Production review of the real recording
+
+Joanne supplied the production agent's read-only review and independent word
+transcript, originally at `C:/Users/joloc/AppData/Local/Temp/slot4_words.json`.
+The transcript and attributed report are preserved as an additive handoff
+note; original media, exported metadata and original manifest stay intact.
+
+- Production reports reliable audio-clock alignment: main file offset 658.951 s
+  and clean-camera offset 659.096 s on the session clock. The 0.145 s relative
+  start offset is audio alignment, not a measured picture/sound correction.
+  Start/middle/end correlations show no drift; chapters agree within 0.05 s.
+  The 15-take structure and retakes in sections 3, 4 and 7 match the recording.
+- [ ] RC correctness: review live word-timing, missing/skipped-word and pace
+  claims. Live following delayed section starts, bunched timestamps and falsely
+  flagged spoken opening words as missing. Preserve additive schema contracts,
+  but mark live coverage as unverified and stop presenting it as an omission
+  audit or final edit/caption timing. Derived speaking pace needs qualification
+  when timestamps are delayed/grouped. Evidence includes section 1's six equal
+  timestamps and reported 251 WPM. Do not silently replace original estimates.
+- [ ] Recording instructions: explicitly confirm the actual recorder has
+  started before clapping or showing a recorded slate. The two audible claps
+  were about 18 s before OBS started and are absent from both video files.
+  A composed OBS flash does not automatically enter a separate clean-camera
+  recording. Keep picture-to-sound sync unverified until visually checked.
+- [ ] Voice-command regression: section 7 required two tries and section 12
+  several tries over roughly 26 s. Inspect and test recogniser variants for
+  twelve as well as phrase aliases. Preserve end-of-phrase/wake-word guards.
+- [ ] Production edit: listen to sections 10 and 4 before requesting pickups.
+  Fresh ASR suggests wording changes in section 10 and Prefer talking points
+  being heard as For fair talking points in section 4; these are not confirmed
+  misreads. The editor should remove control phrases and check camera lip sync.
+- [ ] Later feature: post-record scratch/master transcription and alignment,
+  with verified missing-word checks. This is separate from live following.
+  Export measured recording offsets once derived from authorised media, with
+  method, clock basis, verification status and unknown picture/sound offsets.
+  Do not claim the current app automatically calculates the reported offsets.

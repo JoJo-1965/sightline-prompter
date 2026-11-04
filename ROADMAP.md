@@ -35,6 +35,22 @@ implementation checklist for the next combined review:
    one new preview for Joanne's review. The coffee reminder's repeating 10–15
    launch schedule is already implemented/tested, but is not in UAT 09.
 
+**Production validation adds a correctness gate:** the independent recording
+review reports stable take/file audio alignment (main offset 658.951 s, camera
+659.096 s; no drift) and sensible take/chapter structure. Live voice-following
+word estimates delayed/bunched timestamps and produced false missing-word
+flags and misleading pace. Before RC, qualify those estimates and avoid
+presenting live alignment as verified omissions, final cuts or final captions.
+Include the section-twelve recognition misses and recording-before-sync-cue
+instructions in the combined batch. Possible misreads in sections 4 and 10
+remain production listening checks, not confirmed errors or automatic pickups.
+
+Post-record transcription/alignment, verified missing-word checks and automatic
+media-derived offset export are follow-up scope requiring their own validation.
+The measured production offsets are now preserved in the handoff notes; the
+current app did not calculate them. Clean-camera picture/sound sync is still
+unmeasured even though its audio has been aligned.
+
 **Mac distribution is a release priority:** an actual user has reported the
 damaged/cannot-open alert. Published v1.1.0 explicitly skips code signing and
 has no notarisation step. Confirm the affected asset and Mac, inspect the
