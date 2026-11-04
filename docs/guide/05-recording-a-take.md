@@ -2,6 +2,12 @@
 
 ## Preparation
 
+In **1.3.0 RC1**, [Recording review](19-post-record-review.md) can transcribe
+recorded audio or import timed words after the session. Use its candidates
+for listening and its per-file offsets for navigation; the original live
+log and takes remain intact. This optional preview workflow is separate
+from live following and the preparation test clip.
+
 **Slate at the start of each take** uses visible Off, Flash and beep, and Flash only
 choices. A local flash alone is a rehearsal cue; use a confirmed recorded
 route or visible claps for production sync.

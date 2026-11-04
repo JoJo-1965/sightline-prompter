@@ -1,0 +1,82 @@
+import assert from "node:assert/strict";
+import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
+import { normaliseTranscript, buildPostRecord, commandRanges, parseCsv, alignWords } from "../src/client/post-record.js";
+import { editPack } from "../src/client/edit-pack.js";
+import { logFingerprint, saveReview, reviewedLog } from "../src/recording-review-store.js";
+import { tourSteps } from "../src/client/coach-marks.js";
+import { createSyncReminder } from "../src/client/sync-reminder.js";
+import { createTakeLog } from "../src/client/take-log.js";
+
+const timed = ( text, start = 0, interval = .4 ) => text.split( " " ).map( ( word, i ) => ( { word, start: start + i * interval, end: start + i * interval + .3, probability: .9 } ) );
+const data = { startedAt: "2026-11-03T14:44:34.279Z", script: "Fixture", events: [], takes: [ { section: 1, title: "Opening", take: 1, start: 659, end: 668, duration: 9, status: "complete", rating: "keeper", markers: [], words: [ { i: 0, w: "I", t: 664.3 }, { i: 1, w: "wanted", t: 664.3 } ], sentences: [ { s: 0, from: 0, to: 6, text: "I wanted my words near the camera" } ] } ] };
+const original = JSON.stringify( data );
+assert.equal( alignWords( [ { word: "I’m" }, { word: "'ready'" } ], [ { word: "I'm" }, { word: "ready" } ] ).matches, 2, "Curly apostrophes and quotation marks are not delivery mistakes" );
+const transcript = normaliseTranscript( { words: timed( "I wanted my words near the camera", 3.34 ) }, { offsetS: 658.951 } );
+const review = buildPostRecord( data, [ transcript ] );
+assert.equal( review.takes[0].issues.length, 0, "Spoken opening words are not called missing because live following started late" );
+assert.ok( Math.abs( review.takes[0].start - 662.291 ) < .001 );
+assert.equal( JSON.stringify( data ), original, "Review cannot mutate the source log" );
+assert.throws( () => normaliseTranscript( [ { w: "word", s: 1, e: 2 } ] ), /offset/ );
+assert.throws( () => normaliseTranscript( [ { w: "a", s: 2, e: 3 }, { w: "b", s: 1, e: 2 } ], { clock: "session" } ), /Invalid/ );
+assert.throws( () => normaliseTranscript( [ { w: "word", s: NaN, e: 2 } ], { clock: "session" } ), /Invalid/ );
+assert.equal( normaliseTranscript( [ { w: "word", s: 1, e: 2 } ], { clock: "session" } ).words[0].start, 1 );
+
+const changed = structuredClone( data );
+changed.takes[0] = { ...changed.takes[0], start: 0, end: 8, words: [], sentences: [ { s: 0, from: 0, to: 5, text: "giving the editor a clearer start" } ] };
+const misread = buildPostRecord( changed, [ normaliseTranscript( timed( "gives the editor a clear start" ), { clock: "session" } ) ] );
+assert.ok( misread.takes[0].issues.some( i => i.expected === "clearer" && i.heard === "clear" ) );
+assert.ok( misread.takes[0].issues.every( i => i.verifiedMisread === false && i.priority.includes( "single-take" ) ), "Substitutions require listening and get single-take priority" );
+const unrelated = buildPostRecord( changed, [ normaliseTranscript( timed( "something unrelated was recorded" ), { clock: "session" } ) ] );
+assert.equal( unrelated.takes[0].issues[0].kind, "alignment-uncertain", "Weak alignment must not claim definite omissions" );
+
+const commands = [ ...timed( "Prompter section twelve", 2 ), ...timed( "Prompter banana", 8 ), ...timed( "Sightline Prompter is helpful", 12 ), ...timed( "The number twelve is ordinary speech", 18 ) ];
+const ranges = commandRanges( commands, [ { t: 3.3, type: "voice-command", action: "section", outcome: "recognised" } ] );
+assert.equal( ranges.length, 2 );
+assert.equal( ranges[0].value, 12 ); assert.equal( ranges[0].outcome, "recognised" );
+assert.equal( ranges[1].action, null ); assert.ok( ranges.every( r => r.end > r.start && r.reviewRequired ) );
+assert.equal( commandRanges( timed( "twelve people attended" ) ).length, 0, "Bare numbers cannot become global commands" );
+
+const live = editPack( data );
+const files = editPack( { ...data, postRecord: review } );
+for ( const name of [ "words.csv", "sentences.csv", "takes.csv", "edit-marks.csv" ] ) {
+	assert.equal( files[`live-${ name }`], live[name], "Retain the exact original estimate file" );
+	const oldHeader = parseCsv( live[name] )[0], currentHeader = parseCsv( files[name] )[0];
+	assert.deepEqual( currentHeader.slice( 0, oldHeader.length ), oldHeader, "Keep the original CSV columns and append evidence fields" );
+}
+assert.ok( files["captions.srt"].includes( "I wanted my words" ) );
+assert.equal( normaliseTranscript( JSON.parse( files["transcript.json"] ), { clock: "session" } ).words.length, transcript.words.length, "Exported transcripts can be imported again" );
+assert.equal( JSON.parse( files["timing-quality.json"] ).automaticCutSafe, false );
+assert.equal( JSON.stringify( data ), original );
+const rows = parseCsv( files["takes.csv"] ), header = rows[0];
+assert.equal( rows[1][header.indexOf( "speaking_wpm" )], "", "Do not reuse bunched live pace as a post-record measurement" );
+assert.equal( rows[1][header.indexOf( "rating" )], "keeper" );
+assert.deepEqual( parseCsv( 'a,b\r\n"one, two","quote ""and"" newline\ninside"\r\n' ), [ [ "a", "b" ], [ "one, two", 'quote "and" newline\ninside' ] ] );
+
+const profile = await fs.mkdtemp( path.join( os.tmpdir(), "sightline-review-store-" ) );
+await saveReview( data, review, profile );
+const attached = await reviewedLog( data, profile );
+assert.equal( attached.postRecord.sourceFingerprint, logFingerprint( data ) );
+const newer = structuredClone( data ); newer.takes[0].end++;
+assert.equal( await reviewedLog( newer, profile ), newer, "Never apply stale evidence after a take log changes" );
+assert.equal( JSON.stringify( data ), original );
+const inputFile = path.join( profile, "reference.wav" ); await fs.writeFile( inputFile, "original" );
+const inputStat = await fs.stat( inputFile );
+await saveReview( data, { ...review, inputs: [ { localPath: inputFile, size: inputStat.size, mtimeMs: inputStat.mtimeMs } ] }, profile );
+await fs.appendFile( inputFile, "changed" ); assert.equal( await reviewedLog( data, profile ), data, "Changed audio invalidates saved evidence" );
+let time = 100000;
+const liveLog = createTakeLog( { clock: () => time } ); liveLog.slate( 0 ); time += 1000;
+liveLog.commandAttempt( { action: "section", value: 12, outcome: "recognised", startAt: time - 500 } );
+assert.equal( liveLog.data().events.at( -1 ).start, .5 ); assert.equal( liveLog.data().events.at( -1 ).heard, undefined );
+time += 16000; liveLog.commandAttempt( { outcome: "unmatched", startAt: time - 16000 } ); assert.equal( liveLog.data().events.at( -1 ).start, null );
+const notices = [], reminder = createSyncReminder( { getSettings: () => ( { obsEnabled: true, slate: "off" } ), notify: text => notices.push( text ) } );
+assert.equal( reminder.observe( { connection: "connected", recording: "stopped", recordingId: "one" } ), false );
+assert.equal( reminder.observe( { connection: "connected", recording: "recording", recordingId: "one" } ), true );
+assert.equal( reminder.observe( { connection: "connected", recording: "recording", recordingId: "one" } ), false );
+assert.equal( notices.length, 1, "One sync reminder after confirmed recording, never before it" );
+const basicTour = tourSteps( {} );
+assert.ok( !basicTour.some( s => [ "obs", "streamdeck", "api" ].includes( s.page ) ), "Skip disabled integrations" );
+const fullTour = tourSteps( { obsEnabled: true, streamDeck: true, remoteControl: true } );
+assert.ok( [ "obs", "streamdeck", "api" ].every( p => fullTour.some( s => s.page === p ) ) );
+console.log( "PASS: post-record clocks, opening words, substitutions, command ranges, legacy CSV contracts, preserved originals, stale sidecars and conditional tour steps" );

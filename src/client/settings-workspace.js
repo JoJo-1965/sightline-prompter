@@ -302,6 +302,9 @@ export function createSettingsWorkspace( root, { getState, getGuideState = () =>
 	addHelp( readingMode.closest( "[data-settings-control]" ).querySelector( ".settings-option-name" ), "Reading mode", "Choose one reading mode. Notes / page advances through speaking notes; Voice follows recognised speech; Scroll moves at a set words-per-minute pace. Each mode shows only its relevant controls. Saved pace and response values are retained when switching." );
 	check( mode, "lp-follow-pace", "Follow script pacing", "followScriptPace", false, "In Scroll mode, use the script's WPM pacing directives where present. Scroll speed supplies the starting or fallback pace. This does not set the pace in Voice or Notes / page mode." );
 	const takes = section( "takes", "Takes", doc.getElementById( "set-recording-host" ) );
+	const reviewAudio = el( "button", { id: "settings-review-recorded-audio", type: "button" }, "Review recorded audio…" );
+	reviewAudio.addEventListener( "click", () => window.electron.recordings( "review-current" ) );
+	takes.append( el( "p", { className: "field-hint" }, "After the session, compare recorded words, review command cut ranges and measure file offsets. Original logs stay intact." ), reviewAudio );
 	for ( const [ id, label, key ] of [ [ "lp-summary", "Take summary", "takeSummary" ], [ "lp-pacing", "Pacing light", "showPacing" ], [ "lp-on-air", "On-air light", "onAirLight" ], [ "lp-start-beep", "Start beep", "startBeep" ] ] ) check( takes, id, label, key );
 	const screens = section( "screens", "Screens and mirroring", doc.getElementById( "set-display-host" ) );
 	for ( const [ id, label, key ] of [ [ "lp-pinned", "Keep toolbar visible", "controlsPinned" ], [ "lp-hide-capture", "Hide from capture", "hideFromCapture" ], [ "lp-click-through", "Click-through", "clickThrough" ] ] ) check( screens, id, label, key );
@@ -551,7 +554,10 @@ export function createSettingsWorkspace( root, { getState, getGuideState = () =>
 	}
 	const setupHelp = el( "button", { id: "settings-start-help", type: "button" }, "Read the getting started guide" );
 	setupHelp.addEventListener( "click", () => window.electron.openGuide( "01-getting-started.md" ) );
-	gettingStarted.append( setupHelp );
+	const startTour = el( "button", { id: "settings-start-tour", type: "button" }, "Take a guided tour…" );
+	startTour.addEventListener( "click", () => window.dispatchEvent( new Event( "sightline-guided-tour" ) ) );
+	const setupLinks = el( "div", { className: "settings-start-links" } );
+	setupLinks.append( setupHelp, startTour ); gettingStarted.append( setupLinks );
 	const guide = section( "guide", "Head guide" );
 	const guideVisible = take( "set-head-guide-visible" );
 	guideVisible.type = "checkbox";

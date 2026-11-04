@@ -1,5 +1,14 @@
 # Sightline Prompter features
 
+## 1.3.0 RC1 additions
+
+The candidate adds [post-record review](guide/19-post-record-review.md), timed
+transcript import, expected/heard candidates, command cut ranges and measured
+file offsets. A [guided tour](guide/20-guided-tour.md) is optional, cancelable
+and rerunnable. Local transcription needs a separate optional Python runtime
+and model; import works without it. These additions require RC1.
+The stable feature summary below remains 1.2.0; the detailed grid labels both.
+
 **Sightline 1.2.0 · Stream Deck companion 0.2.0 · 4 November 2026**
 
 The [full feature grid](FEATURE-GRID.md) is the detailed reviewer reference:

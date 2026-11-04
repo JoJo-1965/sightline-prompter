@@ -35,6 +35,8 @@ import { createGuide } from "./guide.js";
 import { createGoogleDocs, GOOGLE_DOC_MESSAGES } from "./google-docs.js";
 import { takeLogCsv } from "./client/take-log.js";
 import { editPack } from "./client/edit-pack.js";
+import { createRecordingReview } from "./recording-review.js";
+import { reviewedLog } from "./recording-review-store.js";
 import { centredDisplayWindow, fitInside, keepTopReachable, sameRect } from "./utils/fit.js";
 import { isNewer } from "./utils/version.js";
 import { startRemoteServer, newToken } from "./remote.js";
@@ -1008,6 +1010,10 @@ const createWindow = ( state ) => {
 	// One log per script per day, saved as the takes happen, in the app's
 	// take-logs folder: "<script> <yyyy-mm-dd>.json".
 	const takeLogDir = takeLogFolder();
+	const recordingReview = createRecordingReview( { dir: __dirname, profile: app.getPath( "userData" ),
+		busy: () => rendererStatus.scrolling === true || [ "recording", "paused" ].includes( obs?.state().recording ),
+		readme: editPackBrief, openGuide: name => guide.open( name ) } );
+	win.once( "closed", () => recordingReview.dispose() );
 	const today = () => new Date().toLocaleDateString( "en-CA" ); // yyyy-mm-dd
 	const scriptName = file =>
 		path.basename( file ?? "Script", path.extname( file ?? "" ) )
@@ -1133,7 +1139,7 @@ const createWindow = ( state ) => {
 		for ( let n = 2; existsSync( folder ); n++ ) folder = path.join( result.filePaths[0], `${ name } (${ n })` );
 		try {
 			await fs.mkdir( folder, { recursive: true } );
-			for ( const [ file, contents ] of Object.entries( editPack( takeLog, await editPackBrief() ) ) ) {
+			for ( const [ file, contents ] of Object.entries( editPack( await reviewedLog( takeLog, app.getPath( "userData" ) ), await editPackBrief() ) ) ) {
 				await fs.writeFile( path.join( folder, file ), contents );
 			}
 			await copyScratchAudio( takeLog, folder );
@@ -1348,6 +1354,13 @@ const createWindow = ( state ) => {
 			}
 			case "export":
 				return { saved: await exportRecording( args.id, !!args.zip ) };
+			case "review":
+				await readRecording( takeLogDir, args.id );
+				await recordingReview.open( path.join( takeLogDir, args.id + ".json" ) );
+				return { ok: true };
+			case "review-current":
+				await recordingReview.open( currentFilePath ? takeLogFile( currentFilePath ) : null );
+				return { ok: true };
 			case "newLog":
 				await newTakeLog();
 				return { ok: true };
@@ -1463,6 +1476,7 @@ const createWindow = ( state ) => {
 			copyAiPrompt: () => copyAiPrompt( win ),
 			exportEditPack: () => exportEditPack(),
 			showRecordings: () => win.webContents.send( "showRecordings" ),
+			showRecordingReview: () => recordingReview.open( currentFilePath ? takeLogFile( currentFilePath ) : null ),
 			reloadGoogleDoc: () => refreshGoogleDoc( currentFilePath, true ),
 			openGuide: page => guide.open( page ),
 			toggleHeadGuide: () => framingGuide?.toggle(),
@@ -2597,6 +2611,7 @@ app.whenReady().then( async () => {
 		const slot = slots[activeSlot];
 		if ( !slots.some( Boolean ) ) {
 			await openSample( "welcome.md" );
+			setTimeout( () => { if ( !win.isDestroyed() ) win.webContents.send( "offerGuidedTour" ); }, 1000 );
 		} else if ( slot?.path ) {
 			const md = await openScriptFile( slot.path, {
 				scrollY: slot.scrollY ?? 0,

@@ -1,5 +1,11 @@
 # Sightline Prompter
 
+> **Development preview: 1.3.0 RC1, documentation revision 17.**
+> The public download below is stable 1.2.0. This candidate adds optional
+> [post-record audio review](docs/guide/19-post-record-review.md) and a
+> [rerunnable guided tour](docs/guide/20-guided-tour.md). Read the
+> [RC1 notes and limits](docs/RELEASE-1.3.0-rc.1.md) before testing.
+
 ![Sightline Prompter: your words, your pace](docs/images/hero.png)
 
 **The teleprompter that works with your AI.** Free, open source and see-through,
@@ -134,6 +140,14 @@ on your own setup. OBS-scene calibration is a sampled preview, not the encoder o
 · [Roadmap](ROADMAP.md)
 
 ## Change log
+
+### 1.3.0 RC1 preview — 4 November 2026
+
+Post-record transcript/import and script comparison, command cut ranges,
+measured per-file audio offsets, targeted command recognition regressions and
+optional coach marks. See the [grouped candidate notes](docs/RELEASE-1.3.0-rc.1.md).
+The original logs and live estimates remain available. This is a preview;
+[1.2.0 remains the stable download](https://github.com/JoJo-1965/sightline-prompter/releases/tag/v1.2.0).
 
 ### Read after installing
 

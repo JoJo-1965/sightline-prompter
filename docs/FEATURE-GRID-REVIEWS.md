@@ -1,5 +1,16 @@
 # Feature-matrix review record
 
+## 1.3.0 RC1 preview — 4 November 2026
+
+Reviewed 256 entries in 18 groups. Seven explicit candidate rows describe
+post-record transcription/import, delivery candidates, command ranges,
+per-file offsets, recorder-start reminder and optional guided coach marks.
+Stable remains 1.2.0 with unchanged companion 0.2.0. Native source checks cover
+the review window, cancellation, stale evidence and tour geometry/keyboard
+paths; recorded audio supplies ASR, correlation and command-replay evidence.
+The final candidate manifest records exact packaged validation separately.
+No public stable or Marketplace capability change is implied by this preview.
+
 ## Stable 1.2.0 review — 4 November 2026
 
 Promoted the approved RC5 functions to the 1.2.0 reference, documentation

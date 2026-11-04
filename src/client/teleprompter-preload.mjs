@@ -3,6 +3,8 @@ import { contextBridge, ipcRenderer, webUtils } from "electron";
 const on = ( channel, callback ) => ipcRenderer.on( channel, ( _event, ...args ) => callback( ...args ) );
 
 contextBridge.exposeInMainWorld( "electron", {
+	onGuidedTour: callback => on( "showGuidedTour", callback ),
+	onTourOffer: callback => on( "offerGuidedTour", callback ),
 	// A line in sightline.log, for tracking down a freeze.
 	debugLog: text => ipcRenderer.send( "debugLog", String( text ) ),
 	// Settings > About > Save a log for support: the file it saved, or null.

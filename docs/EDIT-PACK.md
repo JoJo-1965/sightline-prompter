@@ -1,5 +1,16 @@
 # Sightline edit pack
 
+## 1.3.0 RC1: optional post-record evidence
+
+[Recording review](guide/19-post-record-review.md) can add a fingerprinted sidecar
+to a finished session. Matching reviews replace standard words/sentences/draft
+captions with post-record evidence and retain exact `live-*` files. CSV column
+prefixes remain compatible; evidence fields are appended. `delivery-review.csv`,
+command ranges and per-file waveform offsets remain suggestions for listening.
+The original log is unchanged; stale source or input files require analysis again.
+No automatic cut or verified picture sync is implied. Without a matching review,
+the existing live export described below is unchanged.
+
 This folder comes from Sightline Prompter (**File > Export Edit Pack…**, or
 **Export edit pack…** on a session in **File > Recordings**). It describes one recording session of one script: every take of every section,
 its script-word alignment estimates, sentences, places worth reviewing, and

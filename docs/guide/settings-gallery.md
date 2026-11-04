@@ -1,5 +1,16 @@
 # Settings screenshot gallery
 
+## 1.3.0 RC1 additions
+
+Actual Windows preview captures using a disposable sample session. The main
+Settings composition stays as in 1.2.0; Getting started adds the tour entry and
+Recording > Takes adds the review action. Detailed instructions are in the
+[post-record guide](19-post-record-review.md) and [tour reference](20-guided-tour.md).
+
+![Nonmodal Recording review](images/recording-review-rc1.png)
+
+![Coach mark in compact Settings](images/guided-tour-rc1.png)
+
 ## Sightline 1.2.0
 
 Fresh captures from the packaged Windows app, 4 November 2026. Settings uses

@@ -17,6 +17,20 @@ assert.equal( matchCommand( [ "restart" ] ), "reset", "Bare restart still resets
 assert.equal( sectionNumber( [ "SECTION", "TWEL", "VE" ] ), 12, "Recogniser fragmentation observed in the promo recording" );
 assert.equal( sectionNumber( [ "section", "twel", "people" ] ), null );
 {
+	let now = 0; const got = [];
+	const replay = createCommandListener( { clock: () => now, onCommand: ( ...args ) => got.push( args ) } );
+	replay( [ "PROMPTER" ], false ); now = 1900; replay( [ "SECTION", "TWEL" ], true ); now = 4200; replay( [ "VE" ], true );
+	assert.deepEqual( got, [ [ "section", 12 ] ], "The observed delayed VE survives a late number fragment" );
+	replay( [ "SECTION" ], false ); replay( [ "TWELVE" ], false ); replay( [ "PROMPTER" ], true ); replay( [ "SECTION", "SEVEN" ], true );
+	assert.deepEqual( got.slice( 1 ), [ [ "section", 12 ], [ "section", 7 ] ], "A fresh finalised wake separates concatenated section attempts" );
+	replay( [ "POPTER", "SECTION", "SEVEN" ], true ); replay( [ "PUMPTER", "FINISH" ], true );
+	assert.deepEqual( got.slice( -2 ), [ [ "section", 7 ], [ "obs-finish" ] ], "Wake forms observed in the recording" );
+	replay( [ "PROMPTER", "TWELVE" ], true ); assert.deepEqual( got.at( -1 ), [ "section", 12 ] );
+	const before = got.length; replay( [ "TWELVE" ], true ); assert.equal( got.length, before, "An ordinary bare number never becomes a command" );
+	replay( [ "PROMPTER" ], false ); now += 3000; replay( [ "SECTION", "TWEL" ], true ); now += 3100; replay( [ "VE" ], true ); assert.equal( got.length, before, "A number fragment still expires six seconds after wake" );
+	replay( [ "PROMPTER" ], true ); now += 4100; replay( [ "FINISH" ], true ); assert.equal( got.length, before, "Recorder commands do not inherit the extended number timeout" );
+}
+{
 	let now = 0;
 	const commands = [];
 	const listen = createCommandListener( { clock: () => now, onCommand: ( ...args ) => commands.push( args ) } );

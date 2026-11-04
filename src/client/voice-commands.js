@@ -16,7 +16,7 @@ import { heardForms } from "./word-fixes.js";
 // The wake word, chosen in Settings > Voice, with what the recogniser tends
 // to hear for it.
 export const WAKE_WORDS = {
-	prompter: { label: "Prompter", heard: [ "prompter", "promptor", "prompters", "promoter" ] },
+	prompter: { label: "Prompter", heard: [ "prompter", "promptor", "prompters", "promoter", "popter", "pumpter" ] },
 	computer: { label: "Computer", heard: [ "computer", "computers", "compuder" ] },
 	teleprompter: { label: "Teleprompter", heard: [ "teleprompter", "teleprompters", "teleprompt", "tele prompter" ] },
 	director: { label: "Director", heard: [ "director", "directors", "directa" ] }
@@ -200,6 +200,7 @@ export const COMMAND_HELP = [
 	[ "from the top", "Back to the start" ],
 	[ "reset", "Back to the start, with the speed and clock reset" ],
 	[ "section 3", "Go to that section (also without “Prompter”)" ],
+	[ "twelve", "After the wake word, go to section 12; a bare number is ordinary speech", "Takes" ],
 	[ "again", "A retake: back to the start of this section" ],
 	[ "restart section", "Retake this section; restart alone resets the whole script", "Takes" ],
 	[ "marker", "Drop a marker for the edit" ],
@@ -319,9 +320,17 @@ export function createCommandListener( {
 		const pass = [];
 		// Expire before accepting more words: a later "reset" must not use an
 		// old wake word. No growing whole-phrase buffer during ordinary reading.
-		if ( held && clock() - held.at > 4000 ) {
+		const deadline = held?.numberFragmentAt === undefined ? ( held?.at ?? 0 ) + 4000 : Math.min( held.at + 6000, held.numberFragmentAt + 4000 );
+		if ( held && clock() > deadline ) {
+			if ( held.words.length <= 3 ) onMiss( held.words );
 			pass.push( ...held.wake, ...held.words );
 			held = null;
+		}
+		// The recogniser can join "section twelve" to the next repeated wake.
+		// A separately finalised wake safely ends that complete section request.
+		if ( !held && atStart && final && words.length === 1 && isWake( textOf( words ) ) ) {
+			const completed = sectionNumber( pending );
+			if ( completed ) { onCommand( "section", completed ); pending = []; }
 		}
 		for ( const word of words ) {
 			if ( held ) {
@@ -357,10 +366,12 @@ export function createCommandListener( {
 			if ( held?.words.length ) {
 				// The local recogniser can end a phrase with SECTION TWEL,
 				// then deliver VE separately. Keep this exact number fragment
-				// under the existing wake-word timeout; never guess a recorder action.
+				// for up to four seconds from the fragment, at most six from wake.
+				// Recorder commands retain the ordinary four-second deadline.
 				const fragment = held.words.map( normalize );
-				if ( fragment.length === 2 && fragment[0] === "section" && fragment[1].length >= 3 && !sectionNumber( held.words ) && Object.keys( NUMBER_WORDS ).some( word => word.startsWith( fragment[1] ) ) ) return pass;
-				const n = sectionNumber( held.words );
+				const numberWords = fragment[0] === "section" ? fragment.slice( 1 ) : fragment;
+				if ( numberWords.length === 1 && numberWords[0].length >= 3 && !sectionNumber( [ "section", ...numberWords ] ) && Object.keys( NUMBER_WORDS ).some( word => word.startsWith( numberWords[0] ) ) ) { held.numberFragmentAt ??= clock(); return pass; }
+				const n = sectionNumber( held.words ) ?? sectionNumber( [ "section", ...held.words ] );
 				const id = n ? null : matchCommand( held.words, options );
 				if ( n ) onCommand( "section", n );
 				else if ( id ) onCommand( id );

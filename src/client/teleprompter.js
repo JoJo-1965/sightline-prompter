@@ -54,6 +54,8 @@ import { createRecordingLink } from "./recording-link.js";
 import { createSettingsNavigation } from "./settings-sections.js";
 import { createSettingsWorkspace } from "./settings-workspace.js";
 import { createLiveTools } from "./live-tools.js";
+import { createCoachMarks } from "./coach-marks.js";
+import { createSyncReminder } from "./sync-reminder.js";
 import { createSettingsDraft } from "./settings-draft.js";
 import { APPEARANCE_KEYS, READING_FONTS, READING_PALETTES, TEXT_FIELDS } from "./reading-appearance.js";
 import { voiceInputEnabled, customInputEnabled } from "./interface-state.js";
@@ -135,6 +137,7 @@ const recording = createTakeLog( {
 	onOpen: ( index, title, take ) => obsUi.chapter( `Section ${ index + 1 } · Take ${ take } · ${ title }` ),
 	onMarker: label => obsUi.chapter( label || "Sightline marker" )
 } );
+const syncReminder = createSyncReminder( { getSettings: () => settings, canShow: () => !isScrolling(), notify: text => showToast( text, 7000 ) } );
 const obsUi = createObsUi( {
 	getSettings: () => settings,
 	canStart: () => !isEditMode && !isScrolling() && !autoScrollStarting && !slating && !pointsRunning && !!md.textContent.trim() && ( pointsMode() || settings.scrollMode !== "voice" || ( usesLocalVoice() ? speechModel.installed && !speechModel.downloading && !modelMaintenance : settings.hasDeepgramKey ) ),
@@ -145,7 +148,7 @@ const obsUi = createObsUi( {
 		if ( pointsRunning ) togglePoints();
 		feedTakeLog( false );
 	},
-	onChange: () => sendStatus(),
+	onChange: state => { syncReminder.observe( state ); sendStatus(); },
 	toast: text => showToast( text, 4500 )
 } );
 const linkedRecording = createRecordingLink( { getSettings: () => settings, getState: () => obsUi.state(), command: action => obsUi.action( action, { prompt: false } ) } );
@@ -1890,15 +1893,20 @@ function resyncAfterJump() {
 }
 
 // "Prompter": say so straight away, so you know it's listening for the rest.
+let voiceAttemptStartedAt = null;
 function voiceWake() {
 	if ( isEditMode ) return;
+	voiceAttemptStartedAt = Date.now();
 	showToast( "Listening… go · pause · again · marker", 3000 );
 	window.electron.debugLog?.( "voice: wake word acknowledged" );
 }
 
 function voiceMiss( words ) {
 	if ( isEditMode ) return;
-	showToast( `Didn't catch that: “${ words.join( " " ) }”`, 2500 );
+	recording.commandAttempt( { outcome: "unmatched", startAt: voiceAttemptStartedAt, heard: settings.traceCommands ? words.join( " " ) : null } );
+	voiceAttemptStartedAt = null;
+	feedTakeLog( isScrolling() );
+	showToast( words.length ? `Didn't catch that: “${ words.join( " " ) }”` : "Wake word heard, but no complete command. Try again.", 2500 );
 	window.electron.debugLog?.( "voice: wake heard; command not matched (see heard log)" );
 }
 
@@ -1985,6 +1993,9 @@ function resetPrompter() {
 
 async function runVoiceCommand( id, value ) {
 	if ( isEditMode ) return;
+	recording.commandAttempt( { action: id, value: value ?? null, outcome: id.startsWith( "obs-" ) && ( !settings.obsEnabled || !settings.obsControls ) ? "blocked — recording controls disabled" : "recognised", startAt: voiceAttemptStartedAt } );
+	voiceAttemptStartedAt = null;
+	feedTakeLog( isScrolling() );
 	if ( id.startsWith( "obs-" ) ) {
 		if ( !settings.obsEnabled || !settings.obsControls ) return;
 		runRemoteAction( id );
@@ -4012,6 +4023,7 @@ function menuGroups() {
 			heading: "Recording files",
 			items: [
 				[ "🗒", "Recordings…", "Ctrl+Shift+R", openRecordings ],
+				[ "◷", "Review recorded audio…", "", () => window.electron.recordings( "review-current" ) ],
 				[ "✂", "Export the edit pack…", "", () => window.electron.exportEditPack() ]
 			]
 		},
@@ -6353,6 +6365,7 @@ onClick( "recording-export", async () => {
 	const { saved } = await window.electron.recordings( "export", { id: openRecordingId } );
 	if ( saved ) showToast( `Edit pack saved: ${ saved }`, 2500 );
 } );
+onClick( "recording-review", () => window.electron.recordings( "review", { id: openRecordingId } ) );
 onClick( "recording-zip", async () => {
 	const { saved } = await window.electron.recordings( "export", { id: openRecordingId, zip: true } );
 	if ( saved ) showToast( `Edit pack saved: ${ saved }`, 2500 );
@@ -6869,3 +6882,14 @@ for ( const [ id, getSpec ] of Object.entries( NUMBER_BOXES ) ) {
 	const range = uiElement( id );
 	if ( range && !range.dataset.pairedNumber ) attachNumberBox( range, getSpec );
 }
+
+const guidedTour = createCoachMarks( {
+	getSettings: () => settings,
+	navigate: async name => { await openSettings(); showSettingsTab( name ); },
+	target: name => settingsModal.querySelector( `[data-settings-page="${ name }"]` ) ?? settingsModal.querySelector( `fieldset[data-tab="${ name }"]` ),
+	canStart: () => !isScrolling() && ![ "recording", "paused" ].includes( obsUi.state().recording ),
+	unavailable: () => showToast( "Finish the take before starting the tour. You can rerun it from Getting started or Help." )
+} );
+window.addEventListener( "sightline-guided-tour", () => guidedTour.start() );
+window.electron.onGuidedTour( () => guidedTour.start() );
+window.electron.onTourOffer( () => guidedTour.offer() );

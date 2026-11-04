@@ -116,3 +116,6 @@ scripts/sightline-mcp-LICENSE.txt
 # Local policy working papers and agent coordination (not public policies)
 docs/policy-drafts/
 POLICY-HANDOVER.md
+__pycache__/
+*.pyc
+.dependencies-shared/

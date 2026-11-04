@@ -9,6 +9,7 @@ import zlib from "node:zlib";
 import { editPack } from "./client/edit-pack.js";
 import { pickTakes } from "./client/take-log.js";
 import { rehearsalCoach } from "./client/rehearsal-coach.js";
+import { reviewedLog } from "./recording-review-store.js";
 
 const LIBRARY = "library.json";
 
@@ -185,7 +186,7 @@ export async function deleteRecording( dir, id, trash ) {
 export async function recordingPack( dir, id, readme = "" ) {
 	const file = await logPath( dir, id );
 	const log = JSON.parse( await fs.readFile( file, "utf-8" ) );
-	return editPack( log, readme );
+	return editPack( await reviewedLog( log, path.dirname( dir ) ), readme );
 }
 
 // A zip of { name: contents } (deflated, no folders), for "Export as zip".

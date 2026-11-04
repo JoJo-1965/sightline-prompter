@@ -19,6 +19,14 @@ their RC labels and old version buckets do not describe the current release.
 See [grouped release notes](docs/RELEASE-1.2.0.md) and the
 [249-row feature grid](docs/FEATURE-GRID.md) for exact behaviour and limits.
 
+## In 1.3.0 RC1 preview
+
+Explicit local post-record transcription/import, script comparison, command
+cut ranges, per-file audio offsets and optional coach marks are implemented
+for candidate testing. Original source logs remain intact. See the
+[RC1 notes](docs/RELEASE-1.3.0-rc.1.md). Windows native checks are recorded with
+the preview manifest; other platforms require acceptance.
+
 ## Next: recording accuracy and real-world feedback
 
 These are priorities, not release promises or dates.
@@ -29,10 +37,10 @@ already exist in 1.2.0; acoustic reliability still needs the real audio tests.
 
 | Topic | Next work | Acceptance evidence |
 | --- | --- | --- |
-| Edit timing | Derive word/caption timings from post-record transcription rather than live following; only flag missing words when a reviewed transcription supports it | Compare against actual recordings, including late/bunched live recognition and false starts |
-| Sync | Calculate and record audio-derived session/recording offsets where sufficient scratch/master audio exists | Start/middle/end alignment and explicit uncertainty; no invented clean-camera lip-sync result |
+| Edit timing | Add opt-in automatic processing after recording stops, human dispositions and broader transcript/long-take coverage to the explicit RC1 workflow | Compare against actual recordings, including late/bunched live recognition and false starts |
+| Sync | Extend RC1 per-file audio alignment with in-recording clap candidates and explicit human picture-sync review | Start/middle/end alignment and explicit uncertainty; no invented clean-camera lip-sync result |
 | Recording identity | Continue testing first-take/file association, external stop/restart and short extra recorder sessions | Saved logs checked against physical output files |
-| Voice commands | Improve difficult section numbers, pauses, end/finish and restart phrases from production examples | Reproducible recognition cases and no accidental recording actions |
+| Voice commands | Expand recorded acoustic fixtures beyond RC1's section 7/12 and finish-tail regressions; preserve deadlines and permission gates | Reproducible recognition cases and no accidental recording actions |
 | Framing | Gather feedback on target/crop consistency, movement advice and native toolbar stacking on real multi-screen setups | Camera/projector tests across Windows, Mac and Linux; preserve manual fallback |
 | Documentation | Keep current screenshots, topic-based notes, samples, feature grid and JL copy in the same deployment review | Versioned source, checked links and exported-file consistency |
 
