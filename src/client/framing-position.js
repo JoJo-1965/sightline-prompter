@@ -1,9 +1,29 @@
 // Camera-frame coordinates, independent of mirrored display or desktop geometry.
+import { guidePose } from "./guide-pose.js";
+
 export const FRAME_EYE_Y = 169 / 562.5;
 export function framingPose( value ) {
 	if ( !value || ![ value.x, value.y, value.size ].every( Number.isFinite ) ) throw new Error( "A complete framing position is required" );
 	if ( Math.abs( value.x ) > 45 || Math.abs( value.y ) > 45 || value.size < 40 || value.size > 200 ) throw new Error( "Framing position is outside the supported range" );
 	return { x: value.x, y: value.y, size: value.size };
+}
+// Detected face size is a measurement, not the guide's bounded Size slider.
+export function framingObservation( value ) {
+	if ( !value || ![ value.x, value.y, value.size ].every( Number.isFinite ) || Math.abs( value.x ) > 50 || value.y < -FRAME_EYE_Y * 100 || value.y > ( 1 - FRAME_EYE_Y ) * 100 || value.size <= 0 || value.size > 100 / 0.18 ) throw new Error( "A valid detected face is required" );
+	return { x: value.x, y: value.y, size: value.size };
+}
+function widthFactor( shape ) {
+	const p = guidePose( shape );
+	return p.width * ( p.left + p.right ) / 2;
+}
+export function visibleFramingTarget( target, shape ) {
+	return { ...target, size: target.size * widthFactor( shape ) };
+}
+export function detectedFramingTarget( current, shape ) {
+	const target = { ...framingObservation( current ), size: current.size / widthFactor( shape ) };
+	try { return framingPose( target ); } catch {
+		throw new Error( "This position is outside the guide's adjustment range. Adjust its Width or eye position, then try Lock current again." );
+	}
 }
 export function detectedPose( result ) {
 	if ( result?.detections?.length !== 1 ) return null;
@@ -12,7 +32,7 @@ export function detectedPose( result ) {
 	const eyeX = ( points[0].x + points[1].x ) / 2, eyeY = ( points[0].y + points[1].y ) / 2;
 	const width = face.boundingBox?.width / result.width;
 	const pose = { x: ( eyeX - 0.5 ) * 100, y: ( eyeY - FRAME_EYE_Y ) * 100, size: width / 0.18 * 100 };
-	return [ pose.x, pose.y, pose.size ].every( Number.isFinite ) && width > 0 ? pose : null;
+	try { return framingObservation( pose ); } catch { return null; }
 }
 export function framingMatch( current, target, { enabled = true, manual = false, mirror = false } = {} ) {
 	if ( !enabled ) return { kind: "manual", aligned: manual, arrow: "○", text: manual ? "Manual framing confirmed" : "Check the manual guide", detail: "Position feedback is off. Confirm the framing yourself." };
@@ -24,7 +44,7 @@ export function framingMatch( current, target, { enabled = true, manual = false,
 	const corrections = [
 		{ error: Math.abs( dx ) / 2, arrow: ( mirror ? -dx : dx ) > 0 ? "←" : "→", text: "Move towards the arrow", detail: "Bring your eye centre back to the reference." },
 		{ error: Math.abs( dy ) / 2, arrow: dy > 0 ? "↑" : "↓", text: dy > 0 ? "Move a little higher" : "Move a little lower", detail: "Match the saved eye height." },
-		{ error: Math.abs( ds ) / 5, arrow: ds > 0 ? "↔" : "↦↤", text: ds > 0 ? "Move a little further away" : "Move a little closer", detail: "Match the apparent head size from the saved framing." }
+		{ error: Math.abs( ds ) / 5, arrow: ds > 0 ? "↔" : "↦↤", text: ds > 0 ? "Move a little further away" : "Move a little closer", detail: `Head size is ${ Math.round( current.size / target.size * 100 ) }% of target. Aim for 95–105%. Keep looking towards the camera as you move.` }
 	].sort( ( a, b ) => b.error - a.error );
 	return { ...result, ...corrections[0] };
 }

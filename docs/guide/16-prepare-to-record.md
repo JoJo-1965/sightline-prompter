@@ -64,6 +64,13 @@ green means eye position and apparent face size are within tolerance, amber is
 close, red asks for a correction, and grey means no reliable single face.
 This estimates placement; it does not trace hair, identify you or correct gaze.
 
+Distance guidance uses apparent face width, not a measured distance in metres.
+The next candidate after RC 4 corrects this comparison to include the guide's
+Width and left/right adjustments as well as overall Size. Its distance hint
+shows face size as a percentage of that target: move towards 100%, with a
+95–105% size tolerance. Eye position must also match before the guide turns green.
+The target stays fixed while you move. Lock current keeps the custom proportions.
+
 **Lock current position** makes the measured position a draft target. It does
 not save or replace your recording reference. Manual adjustments change this
 draft. The model is bundled; there is no API key, cloud processing or download.

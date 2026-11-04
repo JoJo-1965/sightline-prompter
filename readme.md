@@ -248,6 +248,16 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ## Change log
 
+### After RC 4 · framing guidance correction (next combined candidate)
+
+- Distance feedback now includes Width and left/right adjustments, so a
+  narrowed outline no longer asks you to match the larger overall Size alone.
+  Lock current preserves custom proportions. A live target-size percentage
+  makes closer/further progress visible; mirrored arrows agree in both views.
+- Native tests use the bundled detector on a face growing/shrinking in the
+  camera feed, alongside the existing OBS, audio and reference checks. The
+  frozen RC 4 package is unchanged; this fix awaits the next combined build.
+
 ### 1.2.0 RC 4 · integrated preparation and visible controls
 
 - Prepare to record is the first workflow card and a direct toolbar action.

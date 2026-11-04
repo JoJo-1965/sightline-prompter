@@ -1,6 +1,6 @@
 import { guidePose, guideOutline } from "./guide-pose.js";
 import { roundControlNumber } from "./numeric-controls.js";
-import { framingMatch } from "./framing-position.js";
+import { framingMatch, visibleFramingTarget } from "./framing-position.js";
 
 const guide = window.headGuide;
 const svg = document.querySelector( "svg" );
@@ -138,7 +138,7 @@ guide.onState( ( value ) => {
 	svg.style.opacity = value.opacity;
 	svg.style.color = value.colour === "gold" ? "#fbd86c" : "#72efce";
 	const feedback = value.feedback ?? {}, calibration = value.calibration ?? {};
-	const result = framingMatch( feedback.active ? feedback.person : null, { x: value.x, y: value.y - 14 / 562.5 * 100, size: value.scale * 100 }, { enabled: feedback.enabled === true } );
+	const result = framingMatch( feedback.active ? feedback.person : null, visibleFramingTarget( { x: value.x, y: value.y - 14 / 562.5 * 100, size: value.scale * 100 }, value ), { enabled: feedback.enabled === true, mirror: feedback.mirror === true } );
 	const colour = { green: "#72dfad", amber: "#edc766", red: "#ff8585", lost: "#a7b2c0", manual: "#89c4ff" }[result.kind];
 	actualShape.style.color = feedback.enabled ? colour : "";
 	feedbackPill.hidden = !feedback.enabled;

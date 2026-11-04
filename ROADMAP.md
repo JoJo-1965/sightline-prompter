@@ -2,6 +2,12 @@
 
 ## Current delivery position
 
+**After RC 4 feedback:** the distance comparison ignored guide Width and side
+adjustments. A source fix and native moving-size detector regression now cover
+that mismatch, proportion-preserving Lock current, live size progress and shared
+mirrored arrows. Included in the next combined candidate after feedback review;
+the frozen RC 4 download is unchanged.
+
 **RC 4 integrated batch:** shared preparation/head-guide pose and live feedback,
 OBS scene calibration with conditional source controls, prominent preparation
 entry, complete pad/assignment lists, pad row alignment and MCP setup help are

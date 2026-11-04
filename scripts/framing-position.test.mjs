@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { audioCheckAdvice, checkedFramingReference, detectedPose, framingMatch } from "../src/client/framing-position.js";
+import { audioCheckAdvice, checkedFramingReference, detectedPose, detectedFramingTarget, framingObservation, framingMatch, visibleFramingTarget } from "../src/client/framing-position.js";
 
 const target = { x: 0, y: 0, size: 100 };
 assert.equal( framingMatch( target, target ).kind, "green" );
@@ -11,6 +11,20 @@ assert.equal( framingMatch( null, target, { enabled: false, manual: true } ).ali
 assert.equal( framingMatch( { ...target, x: 8 }, target ).arrow, "←" );
 assert.equal( framingMatch( { ...target, x: 8 }, target, { mirror: true } ).arrow, "→" );
 assert.equal( framingMatch( { ...target, size: 125 }, target ).text, "Move a little further away" );
+assert.equal( framingMatch( { ...target, size: 75 }, target ).text, "Move a little closer" );
+assert.match( framingMatch( { ...target, size: 75 }, target ).detail, /75% of target/ );
+const customShape = { width: .77, left: .91, right: .92 };
+const manualTarget = { ...target, size: 189 };
+const visibleTarget = visibleFramingTarget( manualTarget, customShape );
+assert.ok( Math.abs( visibleTarget.size - 133.15995 ) < .00001, "Distance follows overall size, width and both side adjustments" );
+assert.equal( framingMatch( visibleTarget, visibleTarget ).kind, "green" );
+assert.equal( framingMatch( visibleTarget, manualTarget ).text, "Move a little closer", "Regression: the old comparison asks for a larger face despite fitting the narrowed outline" );
+const lockedTarget = detectedFramingTarget( visibleTarget, customShape );
+assert.ok( Math.abs( lockedTarget.size - manualTarget.size ) < .00001, "Lock current keeps custom proportions without applying width twice" );
+assert.deepEqual( visibleFramingTarget( lockedTarget, customShape ), visibleTarget );
+assert.deepEqual( framingObservation( { ...target, size: 250 } ), { ...target, size: 250 }, "Measurements larger than the Size slider remain live on the overlay" );
+for ( const size of [ 0, -1, Infinity, 600 ] ) assert.throws( () => framingObservation( { ...target, size } ) );
+assert.throws( () => detectedFramingTarget( { ...target, size: 250 }, {} ), /adjustment range/ );
 assert.equal( audioCheckAdvice( { voice: -34, noise: -57, peak: -23 } ).usable, true );
 assert.equal( audioCheckAdvice( { voice: -34, noise: -57, peak: -23 } ).advisory, true );
 assert.equal( audioCheckAdvice( { voice: -90, noise: -95, peak: -85 } ).usable, false );

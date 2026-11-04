@@ -1,4 +1,4 @@
-import { framingPose, framingMatch, detectedPose, audioCheckAdvice } from "./framing-position.js";
+import { framingPose, framingMatch, detectedPose, detectedFramingTarget, visibleFramingTarget, audioCheckAdvice } from "./framing-position.js";
 import { guideOutline } from "./guide-pose.js";
 
 const $ = id => document.getElementById( id );
@@ -70,7 +70,7 @@ function say( text ) {
 function match() {
 	if ( !cameraStream ) return { kind: "lost", aligned: false, arrow: "—", text: "Camera is off", detail: "Enable a camera or virtual-camera feed to check your framing." };
 	if ( state.mode === "return" && saved && ( state.camera?.deviceId !== saved.camera.deviceId || state.camera?.width !== saved.camera.width || state.camera?.height !== saved.camera.height ) ) return { kind: "lost", aligned: false, arrow: "—", text: "Camera setup has changed", detail: "Use the saved camera and resolution, or choose New setup to establish a new reference." };
-	return framingMatch( performance.now() - lastDetection < 1400 ? state.person : null, state.target, { enabled: state.tracking, manual: state.manualConfirmed, mirror: state.mirror } );
+	return framingMatch( performance.now() - lastDetection < 1400 ? state.person : null, visibleFramingTarget( state.target, shared.pose ), { enabled: state.tracking, manual: state.manualConfirmed, mirror: state.mirror } );
 }
 function ready() {
 	return match().aligned && state.framingAccepted && state.audioAccepted && state.testApproved && state.referenceSaved;
@@ -539,7 +539,7 @@ async function saveReference() {
 }
 async function action( id ) {
 	if ( id === "lock-current" ) {
-		state.target = framingPose( state.person );
+		state.target = detectedFramingTarget( state.person, shared.pose );
 		await draft();
 		invalidate();
 		render();

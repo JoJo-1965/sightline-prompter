@@ -3,7 +3,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { protectWindow } from "./capture-policy.js";
-import { checkedFramingReference, framingPose } from "./client/framing-position.js";
+import { checkedFramingReference, framingPose, framingObservation } from "./client/framing-position.js";
 import { guidePose } from "./client/guide-pose.js";
 
 protocol.registerSchemesAsPrivileged( [ { scheme: "sightline", privileges: { standard: true, secure: true, supportFetchAPI: true, corsEnabled: true } } ] );
@@ -36,7 +36,7 @@ export function createPreRecord( { dir, prompter, getSettings, saveSettings, bus
 		if ( value?.feedback ) {
 			tracking = value.feedback.enabled === true;
 			let person = null;
-			try { if ( value.feedback.person ) person = framingPose( value.feedback.person ); } catch { /* Off-frame faces remain unavailable. */ }
+			try { if ( value.feedback.person ) person = framingObservation( value.feedback.person ); } catch { /* Off-frame faces remain unavailable. */ }
 			guide?.feedback( { enabled: tracking, active: value.feedback.active === true, person, mirror: value.feedback.mirror === true, error: typeof value.feedback.error === "string" ? value.feedback.error.slice( 0, 300 ) : "" } );
 		}
 		if ( [ "idle", "recording", "saving", "review", "passed", "failed", "stale" ].includes( value?.test?.state ) ) status.test = { state: value.test.state, at: new Date().toISOString() };

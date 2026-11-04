@@ -1,5 +1,31 @@
 # Feedback queued after UAT 09
 
+## After RC 4 · distance guidance fix ready for the next combined candidate
+
+- [x] Reproduce incorrect distance advice after changing guide Width and
+  left/right edges: the comparison used only overall Size. The native regression
+  fails on RC 4 source when the visible target width is kept unchanged.
+- [x] Compare against the full horizontal target dimensions in preparation
+  and Ctrl+Shift+H. Preserve existing manual proportions when Lock current
+  converts the detected position to a guide target.
+- [x] Retain live face measurements outside the Size slider's 40–200% range,
+  with separate validation. Do not silently discard larger observations on
+  the overlay while preparation still sees them.
+- [x] Show live head-size percentage in distance guidance and use the same
+  mirror setting for horizontal arrows in both views.
+- [x] Verify with the actual bundled detector on a synthetic moving-size
+  camera feed: smaller face → closer, increasing size → progress → green,
+  larger face → further away. The target stays fixed; custom proportions,
+  Lock current, OBS frames, audio/test/reference checks also pass.
+- [ ] Include in the next combined RC after reviewing delivered feedback.
+  RC 4's frozen ZIP/review remains unchanged; no one-item build was generated.
+
+Evidence: `D:/Sightline/Dev/Testing/RC-Feedback-20261104/closer-before` and
+`closer-after`. Physical response on Joanne's actual OBS/camera feed remains
+part of UAT. The follow-up question about how the instruction behaved has
+not been answered at this point; the reproduced geometry defect is confirmed,
+but a frozen/wrong source feed has not been ruled out for that recording setup.
+
 ## Preparation entry points · delivered in RC 4
 
 - [x] Make the significant camera/audio/test/reference workflow the first,

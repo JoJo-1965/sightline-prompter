@@ -57,6 +57,7 @@ try {
  await fs.writeFile(path.join(artifacts,"prepare-camera-recovery.png"),Buffer.from((await page.call("Page.captureScreenshot",{format:"png"})).data,"base64"));
  await page.evaluate(`navigator.mediaDevices.getUserMedia = window.actualCameraCapture; const picker = document.getElementById("camera-device"); picker.selectedIndex = 1; picker.dispatchEvent(new Event("change"));`);
  assert.equal(await page.evaluate('document.getElementById("camera-video").srcObject'),null,"Changing the input while off does not start capture");
+ await waitFor('document.getElementById("camera-status").hidden',"Selecting another input finishes clearing the previous error");
  assert.equal(await page.evaluate('document.getElementById("camera-status").hidden'),true,"Selecting another input clears the previous error");
  await click("connect-camera");
  await waitFor('!!document.getElementById("camera-video").srcObject',"Camera starts");
@@ -70,11 +71,50 @@ try {
  const overlay=await connect("head-guide.html");
  for(let n=0;n<50;n++){if(await overlay.evaluate('!!document.getElementById("framing-lock")&&!document.getElementById("framing-lock").disabled'))break;await pause(100);}
  assert.equal(await overlay.evaluate('document.getElementById("framing-lock").disabled'),false,"The existing head guide receives real detector feedback");
+ const lockedTarget=(await page.evaluate('window.preRecord.load()')).shared.target;
+ const widthFactor=1.25*(.91+.92)/2;
+ await overlay.evaluate('window.headGuide.action("preferences",'+JSON.stringify({scale:lockedTarget.size/100/widthFactor,width:1.25,left:.91,right:.92})+')');
+ await waitFor('Math.abs(Number(document.getElementById("guide-size").value)-'+Math.round(lockedTarget.size/widthFactor)+')<=1',"Manual proportions reach preparation");
+ await waitFor('!document.getElementById("accept-frame").disabled',"A visible target of unchanged width stays aligned after proportion changes");
+ await overlay.evaluate('document.getElementById("framing-lock").click()');
+ await waitFor('!document.getElementById("accept-frame").disabled',"Lock current retains custom proportions without applying width twice");
  await overlay.evaluate('window.headGuide.action("preferences",{x:12})');
  await waitFor('Number(document.getElementById("guide-x").value)===12',"Head guide manual adjustment reaches preparation");
+ assert.equal(await overlay.evaluate('document.getElementById("framing-pill").textContent.trim()[0]'),await page.evaluate('document.getElementById("direction-arrow").textContent'),"Mirrored horizontal directions agree in both views");
  await overlay.evaluate('document.getElementById("framing-lock").click()');
  await waitFor('!document.getElementById("accept-frame").disabled',"Lock current on the head guide updates the same preparation target");
  assert.match(await overlay.evaluate('document.getElementById("framing-pill").textContent'),/Within|✓/);
+ const distanceTarget=(await page.evaluate('window.preRecord.load()')).shared.target;
+ await page.evaluate(`(async()=>{
+  const video=document.getElementById("camera-video"),image=await createImageBitmap(video);
+  window.distanceOriginalStream=video.srcObject;
+  window.distanceScale=.72;
+  const canvas=document.createElement("canvas");canvas.width=640;canvas.height=360;
+  const context=canvas.getContext("2d"),x=${(distanceTarget.x/100+.5)*640},y=${(distanceTarget.y/100+169/562.5)*360};
+  const paint=()=>{const s=window.distanceScale;context.fillStyle="#666";context.fillRect(0,0,640,360);context.drawImage(image,x*(1-s),y*(1-s),640*s,360*s);};
+  paint();window.distanceTimer=setInterval(paint,100);window.distanceImage=image;
+  window.distanceStream=canvas.captureStream(10);video.srcObject=window.distanceStream;await video.play();
+ })()`);
+ await waitFor('document.getElementById("direction-text").textContent.includes("closer")',"Smaller detected face requests moving closer");
+ let smallerRatio,previousRatio,stableRatios=0;
+ for(let n=0;n<35;n++){
+  const ratio=await page.evaluate('Number(document.getElementById("direction-detail").textContent.match(/Head size is (\\d+)%/)?.[1])');
+  stableRatios=Number.isFinite(ratio)&&ratio===previousRatio?stableRatios+1:0;previousRatio=ratio;
+  if(stableRatios>=3&&ratio<95){smallerRatio=ratio;break;}await pause(160);
+ }
+ assert.ok(Number.isFinite(smallerRatio),"Distance readout settles below the fixed target");
+ assert.match(await overlay.evaluate('document.getElementById("framing-pill").textContent'),/closer/,"Overlay uses the same live distance measurement");
+ await page.evaluate('window.distanceScale=.9');
+ await waitFor('Number(document.getElementById("direction-detail").textContent.match(/Head size is (\\d+)%/)?.[1])>'+(smallerRatio+5),"Moving closer increases detected size towards the fixed target");
+ await fs.writeFile(path.join(artifacts,"distance-progress.png"),Buffer.from((await page.call("Page.captureScreenshot",{format:"png"})).data,"base64"));
+ await page.evaluate('window.distanceScale=1');
+ await waitFor('!document.getElementById("accept-frame").disabled',"Moving back to the reference reaches green");
+ await page.evaluate('window.distanceScale=1.2');
+ await waitFor('document.getElementById("direction-text").textContent.includes("further")',"A larger face requests moving further away");
+ assert.match(await overlay.evaluate('document.getElementById("framing-pill").textContent'),/further/);
+ assert.deepEqual((await page.evaluate('window.preRecord.load()')).shared.target,distanceTarget,"Moving the subject never moves the target");
+ await page.evaluate('(async()=>{clearInterval(window.distanceTimer);window.distanceStream.getTracks().forEach(t=>t.stop());document.getElementById("camera-video").srcObject=window.distanceOriginalStream;await document.getElementById("camera-video").play();window.distanceImage.close()})()');
+ await waitFor('!document.getElementById("accept-frame").disabled',"Original camera stream returns to green");
  if(obsMock){
   obsImage=await page.evaluate('(()=>{const c=document.createElement("canvas");c.width=640;c.height=360;c.getContext("2d").drawImage(document.getElementById("camera-video"),0,0,640,360);return c.toDataURL("image/jpeg",.8)})()');
   await page.evaluate('window.preRecord.input("obs-scenes")');

@@ -1,5 +1,16 @@
 # Feature-matrix review record
 
+4 November 2026, feedback after RC 4: corrected existing local position feedback
+to account for the guide's Width and independent side adjustments, and preserve
+those proportions on Lock current. Distance hints expose the existing measured
+size ratio; mirrored arrows now agree. No new integration, mode or capability
+row is introduced. The native regression reproduces the old mismatch and tests
+actual local inference on a face growing/shrinking against the fixed target.
+RC 4's 249-row exports and JL snapshot remain the record of that frozen package.
+The fix, help and review evidence are queued for the next combined candidate;
+refresh generated provenance and affected help/JL captures at that packaging
+point rather than relabelling RC 4's existing ZIP as fixed.
+
 3 November 2026, next-preview support reminder: Joanne requested reuse of the
 existing coffee note, repeating at a saved random 10–15 launch interval.
 Only scheduling changes; the support link, appearance, dismissal, delay and
