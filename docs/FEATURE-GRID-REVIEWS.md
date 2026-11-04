@@ -1,5 +1,18 @@
 # Feature-matrix review record
 
+## Companion current-device follow-up — 4 November 2026
+
+Companion 0.2.1.3 adds Galleon layered dial profiles, MK.2/Scissor exports,
+fitting Mobile/Virtual grids and inspector guidance for all public SDK families.
+The 44 prior definitions and all published action UUIDs are preserved. Manual
+macro/Studio/other hardware support remains qualified, pending physical UAT.
+The companion's DEVICE-SUPPORT.md is the maintained current-device matrix;
+its guide, changelog, roadmap and unpublished JL copy were reviewed together.
+No app function, Settings, script syntax, promo/demo flow or screenshot-layout
+change is introduced. Keep the frozen app RC2/grid snapshot and original
+0.2.1.1 pairing intact; the separate follow-up has its own index/checksums.
+Stable JL, release downloads and Marketplace remain unchanged.
+
 ## Companion profile coverage follow-up — 4 November 2026
 
 Companion 0.2.1.2 adds separate RC2 Standard/OBS starters for every supported
