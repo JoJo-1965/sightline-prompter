@@ -37,6 +37,7 @@ already exist in 1.2.0; acoustic reliability still needs the real audio tests.
 
 | Topic | Next work | Acceptance evidence |
 | --- | --- | --- |
+| Stream Deck companion 0.2.1 | Bundle on-screen Virtual Stream Deck standard/OBS profiles with the shared key icons and an 8 × 5 operator layout; standalone previews use existing 0.2.0 actions | Real type-11 profile import and key response, full layout visibility, retained existing profiles and OBS permission/hold checks; separate from the MCP Deck |
 | Edit timing | Add opt-in automatic processing after recording stops, human dispositions and broader transcript/long-take coverage to the explicit RC1 workflow | Compare against actual recordings, including late/bunched live recognition and false starts |
 | Sync | Extend RC1 per-file audio alignment with in-recording clap candidates and explicit human picture-sync review | Start/middle/end alignment and explicit uncertainty; no invented clean-camera lip-sync result |
 | Recording identity | Continue testing first-take/file association, external stop/restart and short extra recorder sessions | Saved logs checked against physical output files |

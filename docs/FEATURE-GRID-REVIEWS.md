@@ -1,5 +1,13 @@
 # Feature-matrix review record
 
+## Next companion 0.2.1 planning — 4 November 2026
+
+On-screen Virtual Stream Deck standard/OBS starter profiles are being prepared
+in the companion repository. They reuse 0.2.0 actions and do not add an app
+control or change the frozen RC1 installer. The app roadmap records this next
+companion work. No released feature-grid row or version is changed by that plan;
+review the exact profile and JL/guide claims when publishing the companion.
+
 ## 1.3.0 RC1 preview — 4 November 2026
 
 Reviewed 256 entries in 18 groups. Seven explicit candidate rows describe
