@@ -9,6 +9,7 @@ const run = promisify( execFile );
 export const KIT_FILES = [
 	"LICENSE",
 	"scripts/sightline.mjs", "scripts/check-script.mjs", "scripts/heard-report.mjs", "scripts/edit-pack.mjs",
+	"scripts/sightline-mcp.mjs", "scripts/sightline-mcp-LICENSE.txt", "docs/MCP.md",
 	"src/heard-report.js", "src/recordings.js", "src/client/edit-pack.js", "src/client/take-log.js", "src/client/obs-position.js",
 	"src/client/script-health.js", "src/client/rehearsal-coach.js",
 	"docs/script-directives.json", "docs/AI-SCRIPT-BRIEF.md", "docs/SCRIPT-DIRECTIVES.md", "docs/EDIT-PACK.md",
@@ -62,6 +63,7 @@ export function createAgentKit( { source, folder, version, trash = target => fs.
 				const files = Object.fromEntries( await Promise.all( KIT_FILES.map( async file => [ file, await digest( path.join( staging, file ) ) ] ) ) );
 				await fs.writeFile( path.join( staging, "sightline-kit.json" ), JSON.stringify( { version, files } ) );
 				await fs.writeFile( path.join( staging, "START-HERE.md" ), "# Sightline AI kit\n\nInstall Node.js 22.16 or later to run the commands. No npm install is needed.\n\n- Check a script: `node scripts/check-script.mjs your-script.md`\n- Check Sightline: `node scripts/sightline.mjs status`\n- Authoring instructions: skills/sightline-script/SKILL.md\n- Session instructions: skills/sightline-session/SKILL.md\n\nGive your assistant this kit folder as the Sightline source location. If its skill mentions `<sightline>`, use this folder. Enable AI & API in Sightline before sending commands. Installing this kit does not enable remote access or install skills into another application. Keep your own files elsewhere: Reinstall replaces this managed folder; Remove moves it to the system bin.\n" );
+				await fs.appendFile( path.join( staging, "START-HERE.md" ), "\n## Local MCP\n\nRead docs/MCP.md for desktop-client setup. Command: node; argument: this folder's absolute scripts/sightline-mcp.mjs path. Enable MCP in Connections > AI and API, then Apply. Its default access is read-only; scripting, prompting and recording need separate grants. No token belongs in client configuration.\n" );
 				await fs.rm( previous, { recursive: true, force: true } );
 				await fs.rename( folder, previous ).catch( ( err ) => {
 					if ( err.code !== "ENOENT" ) throw err;

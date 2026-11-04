@@ -1,9 +1,23 @@
 # Recording with OBS Studio
 
+## RC 1 connection and test results
+
+Open **Connections > OBS integration**. One sidebar entry contains visible
+**Connection**, **Recording control** and **Profile and scenes** buttons.
+Recording and setup tabs appear only while OBS integration is enabled.
+Connection and recorder state appear separately: **Connected / Not recording**
+means OBS is reachable and its recorder is idle. Disconnection means unknown.
+
+Apply connection changes before **Test saved connection**. Its running,
+passed or failed result remains in Settings and on the prompter. Changing
+connection settings or losing the connection marks a previous pass for recheck.
+A connection pass does not validate recorded picture or sound: use
+[Prepare to record](16-prepare-to-record.md) to review a real test.
+
 ## Linked recording in the next unpublished preview
 
 Continuous recording is the default: prompting stops and retakes leave OBS
-running. Opt in with **Controls > OBS recording control > Link recording to prompting**
+running. Opt in with **Connections > OBS integration > Recording control > Link recording to prompting**
 while OBS is stopped. Recording controls must also be enabled.
 Play starts/resumes recording and waits for confirmation; prompting pauses
 request recording pauses. The final stop or script end requests recording finish.

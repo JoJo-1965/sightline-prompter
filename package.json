@@ -1,14 +1,14 @@
 {
 	"name": "sightline-prompter",
 	"productName": "Sightline Prompter",
-	"version": "1.1.0",
-	"documentationRevision": 10,
-	"releaseDate": "2026-10-31",
+	"version": "1.2.0-rc.1",
+	"documentationRevision": 11,
+	"releaseDate": "2026-11-04",
 	"description": "Sightline Prompter",
 	"main": "src/main.js",
 	"type": "module",
 	"scripts": {
-		"build:editor": "esbuild src/client/editor.js --bundle --format=iife --global-name=EditorModule --outfile=src/client/editor-bundle.js && node scripts/build-framing-runtime.mjs",
+		"build:editor": "esbuild src/client/editor.js --bundle --format=iife --global-name=EditorModule --outfile=src/client/editor-bundle.js && node scripts/build-framing-runtime.mjs && node scripts/build-mcp.mjs",
 		"prestart": "pnpm build:editor",
 		"start": "electron .",
 		"prebuild": "pnpm check:feature-grid && pnpm build:editor",
@@ -30,7 +30,8 @@
 		"test:installer-directory": "node scripts/installer-directory.test.mjs",
 		"test:components-package": "node scripts/components-package.test.mjs",
 		"test:script-review-app": "node scripts/script-review-app.test.mjs",
-		"test:recorded-slate": "node scripts/recorded-slate.test.mjs"
+		"test:recorded-slate": "node scripts/recorded-slate.test.mjs",
+		"test:mcp": "node scripts/build-mcp.mjs && node scripts/mcp.test.mjs"
 	},
 	"author": "Joanne Lockwood (SEE Change Happen Ltd)",
 	"contributors": [
@@ -49,14 +50,18 @@
 		"@codemirror/language-data": "^6.5.2",
 		"@codemirror/state": "^6.7.6",
 		"@codemirror/theme-one-dark": "^6.1.3",
+		"@electron/osx-sign": "1.3.1",
 		"@electron/packager": "^20.3.0",
 		"@mediapipe/tasks-vision": "1.2.0",
+		"@modelcontextprotocol/client": "2.4.0",
+		"@modelcontextprotocol/server": "2.4.0",
 		"codemirror": "^6.0.2",
 		"electron": "45",
 		"electron-builder": "25.1.8",
 		"esbuild": "^0.28.2",
 		"eslint": "^10.13.0",
-		"eslint-config-reverentgeek": "^7.1.25"
+		"eslint-config-reverentgeek": "^7.1.25",
+		"zod": "4.2.0"
 	},
 	"dependencies": {
 		"@fontsource/atkinson-hyperlegible": "^5.3.0",
@@ -71,6 +76,7 @@
 	},
 	"packageManager": "pnpm@12.15.0+sha512.b3951d6d6ff4a9f13dc7cf56cd28d2b8eb37dbcc9c68e52e1e1191873ea9f82a017287ab50baadc5ccc494f036c67c0e47eb13608c2fa36f47711b61ea128e61",
 	"build": {
+		"afterPack": "scripts/sign-mac.mjs",
 		"appId": "uk.co.seechangehappen.sightline",
 		"productName": "Sightline Prompter",
 		"copyright": "© 2022–2026 David Neal and Joanne Lockwood (SEE Change Happen Ltd). MIT licence.",
@@ -82,6 +88,8 @@
 			"src/**/*",
 			"skills/**/*",
 			"scripts/sightline.mjs",
+			"scripts/sightline-mcp.mjs",
+			"scripts/sightline-mcp-LICENSE.txt",
 			"scripts/check-script.mjs",
 			"scripts/heard-report.mjs",
 			"scripts/edit-pack.mjs",
@@ -102,7 +110,10 @@
 		"icon": "build/icon.png",
 		"beforePack": "./scripts/build-installer-help.mjs",
 		"extraResources": [
-			{ "from": "build/installer-help", "to": "installer-help" }
+			{
+				"from": "build/installer-help",
+				"to": "installer-help"
+			}
 		],
 		"win": {
 			"target": [

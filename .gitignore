@@ -110,6 +110,8 @@ dist
 src/client/editor-bundle.js
 src/client/framing-worker-bundle.js
 src/client/vision-runtime/
+scripts/sightline-mcp.mjs
+scripts/sightline-mcp-LICENSE.txt
 
 # Local policy working papers and agent coordination (not public policies)
 docs/policy-drafts/

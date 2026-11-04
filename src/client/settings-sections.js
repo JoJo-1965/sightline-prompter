@@ -1,17 +1,19 @@
 import { settingsSectionAvailable } from "./interface-state.js";
 
 export const SETTINGS_GROUPS = [
-	{ id: "start", label: "Getting started", pages: [ [ "getting-started", "First setup" ] ] },
+	{ id: "start", label: "Getting started", pages: [ [ "getting-started", "First setup" ], [ "reset", "Restore defaults" ] ] },
 	{ id: "prepare", label: "Prepare to record", pages: [ [ "checklist", "Recording setup" ] ] },
 	{ id: "reading", label: "Reading", pages: [ [ "mode", "Mode and pace" ], [ "typography", "Text and directions" ], [ "background", "Theme and background" ], [ "layout", "Prompter layout" ], [ "aids", "Reading aids" ], [ "screens", "Screens and mirroring" ], [ "guide", "Head guide" ] ] },
 	{ id: "voice", label: "Voice", pages: [ [ "engine", "Speech engine" ], [ "microphone", "Microphone" ], [ "commands", "Commands" ], [ "words", "Your words" ] ] },
 	{ id: "recording", label: "Recording", pages: [ [ "takes", "Takes" ], [ "sound", "Sound check" ], [ "sync", "Slate and sync" ] ] },
-	{ id: "controls", label: "Controls", pages: [ [ "pad", "Pad and phone" ], [ "pairing", "Phone remote" ], [ "mappings", "Keyboard and clickers" ], [ "gamepad", "Game controller" ], [ "streamdeck", "Stream Deck" ], [ "obs", "OBS integration" ], [ "obs-recording", "OBS recording control" ], [ "obs-setup", "OBS profile and scenes" ], [ "api", "AI and API" ] ] },
-	{ id: "components", label: "Components", pages: [ [ "components", "Installed components" ], [ "reset", "Restore defaults" ] ] },
+	{ id: "controls", label: "Connections", pages: [ [ "pad", "Pad and phone" ], [ "pairing", "Phone remote" ], [ "mappings", "Keyboard and clickers" ], [ "gamepad", "Game controller" ], [ "streamdeck", "Stream Deck" ], [ "obs", "OBS integration" ], [ "obs-recording", "OBS recording control" ], [ "obs-setup", "OBS profile and scenes" ], [ "api", "AI and API" ], [ "components", "Apps and add-ons" ] ] },
 	{ id: "debug", label: "Debug", pages: [ [ "health", "Status and recovery" ], [ "trace", "Speech trace" ], [ "capture", "Capture for demos" ], [ "logs", "Support log" ] ] },
 	{ id: "about", label: "About", pages: [ [ "version", "Version and updates" ], [ "credits", "Credits and licences" ], [ "support", "Help and support" ] ] }
 ];
 const ALIASES = { scrolling: "mode", reading: "typography", directions: "typography", theme: "background", display: "screens", script: "aids", files: "aids", voice: "engine", recording: "takes", audio: "sound", buttons: "mappings", phone: "pairing", remotes: "api", about: "version", debug: "health", "component-model": "components", "component-kit": "components", "component-node": "components", "component-obs": "components", "component-streamdeck": "streamdeck" };
+const OBS_TOPICS = [ [ "obs", "Connection" ], [ "obs-recording", "Recording control" ], [ "obs-setup", "Profile and scenes" ] ];
+const obsPage = name => OBS_TOPICS.some( ( [ id ] ) => id === name );
+const obsChild = name => name === "obs-recording" || name === "obs-setup";
 
 // Follow the signed-off composition, not the old category/tab arrangement.
 export function createSettingsNavigation( modal, { onShow = () => {}, getState = () => ( {} ) } = {} ) {
@@ -102,6 +104,33 @@ export function createSettingsNavigation( modal, { onShow = () => {}, getState =
 			panel.id = "settings-page-" + name;
 			panel.dataset.settingsPage = name;
 			panel.setAttribute( "aria-label", label );
+			if ( obsPage( name ) ) {
+				const tabs = doc.createElement( "div" );
+				tabs.className = "settings-targets settings-topic-tabs";
+				tabs.setAttribute( "role", "tablist" );
+				tabs.setAttribute( "aria-label", "OBS integration" );
+				tabs.dataset.navigationChoice = "true";
+				for ( const [ target, title ] of OBS_TOPICS ) {
+					const tab = doc.createElement( "button" );
+					tab.type = "button";
+					tab.textContent = title;
+					tab.dataset.obsTopic = target;
+					tab.setAttribute( "role", "tab" );
+					tab.setAttribute( "aria-controls", "settings-page-" + target );
+					tab.addEventListener( "click", () => show( target ) );
+					tabs.append( tab );
+				}
+				tabs.addEventListener( "keydown", event => {
+					if ( ![ "ArrowLeft", "ArrowRight", "Home", "End" ].includes( event.key ) ) return;
+					event.preventDefault();
+					const choices = [ ...tabs.children ].filter( tab => !tab.hidden && !tab.disabled );
+					const index = choices.indexOf( event.target );
+					const next = event.key === "Home" ? 0 : event.key === "End" ? choices.length - 1 : ( index + ( event.key === "ArrowLeft" ? -1 : 1 ) + choices.length ) % choices.length;
+					show( choices[next].dataset.obsTopic );
+					pages.get( current ).querySelector( `[data-obs-topic="${ current }"]` ).focus();
+				} );
+				panel.append( tabs );
+			}
 			for ( const field of fields.filter( set => set.dataset.tab === name ).sort( ( a, b ) => Number( b.hasAttribute( "data-settings-first" ) ) - Number( a.hasAttribute( "data-settings-first" ) ) ) ) panel.append( field );
 			content.append( panel );
 			pages.set( name, panel );
@@ -127,6 +156,7 @@ export function createSettingsNavigation( modal, { onShow = () => {}, getState =
 		let name = ALIASES[requested] ?? requested;
 		if ( !parents.has( name ) ) name = "checklist";
 		if ( !available( name ) ) name = name.startsWith( "obs" ) ? "obs" : "engine";
+		if ( current !== name ) content.scrollTop = 0;
 		current = name;
 		const group = parents.get( name );
 		for ( const [ id, button ] of groupButtons ) {
@@ -136,17 +166,25 @@ export function createSettingsNavigation( modal, { onShow = () => {}, getState =
 			lists.get( id ).hidden = id !== group.id;
 		}
 		for ( const [ id, button ] of pageButtons ) {
-			button.hidden = !available( id );
-			button.classList.toggle( "active", id === name );
-			button.setAttribute( "aria-current", id === name ? "page" : "false" );
+			button.hidden = obsChild( id ) || !available( id );
+			const selected = id === name || ( id === "obs" && obsChild( name ) );
+			button.classList.toggle( "active", selected );
+			button.setAttribute( "aria-current", selected ? "page" : "false" );
 			pages.get( id ).hidden = id !== name;
 			if ( [ "commands", "words", "obs-recording", "obs-setup" ].includes( id ) ) for ( const field of pages.get( id ).querySelectorAll( "fieldset" ) ) field.disabled = !available( id );
+			for ( const tab of pages.get( id ).querySelectorAll( "[data-obs-topic]" ) ) {
+				const target = tab.dataset.obsTopic;
+				tab.hidden = tab.disabled = !available( target );
+				tab.setAttribute( "aria-selected", String( target === name ) );
+				tab.tabIndex = target === name ? 0 : -1;
+			}
 		}
+		pageButtons.get( "obs" ).setAttribute( "aria-controls", pages.get( obsPage( name ) ? name : "obs" ).id );
 		area.value = group.id;
-		topic.replaceChildren( ...group.pages.filter( ( [ id ] ) => available( id ) ).map( ( [ id, label ] ) => new Option( label, id ) ) );
-		topic.value = name;
+		topic.replaceChildren( ...group.pages.filter( ( [ id ] ) => !obsChild( id ) && available( id ) ).map( ( [ id, label ] ) => new Option( label, id ) ) );
+		topic.value = obsPage( name ) ? "obs" : name;
 		breadcrumb.textContent = group.label;
-		heading.textContent = pageButtons.get( name ).textContent;
+		heading.textContent = obsPage( name ) ? "OBS integration" : pageButtons.get( name ).textContent;
 		intro.hidden = name !== "typography";
 		if ( theme ) theme.hidden = name !== "typography";
 		hideSearch();
@@ -203,5 +241,5 @@ export function createSettingsNavigation( modal, { onShow = () => {}, getState =
 	} );
 	return { show, refresh: () => show( current ), get current() {
 		return current;
-	}, focus: () => ( compact.getClientRects().length ? topic : pageButtons.get( current ) ).focus( { preventScroll: true } ), pages };
+	}, focus: () => ( compact.getClientRects().length ? topic : obsChild( current ) ? pages.get( current ).querySelector( `[data-obs-topic="${ current }"]` ) : pageButtons.get( current ) ).focus( { preventScroll: true } ), pages };
 }

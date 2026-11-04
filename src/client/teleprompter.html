@@ -1082,7 +1082,7 @@
           >
           <p class="settings-about-actions">
             <button type="button" id="set-remote-help">How to set up your AI</button>
-            <button type="button" id="set-remote-components">Components…</button>
+            <button type="button" id="set-remote-components">Apps and add-ons…</button>
           </p>
           <p id="set-agent-readiness" class="field-hint" data-essential role="status" aria-live="polite">Checking local AI kit commands…</p>
           <p class="field-hint">The supplied command tools need the kit and Node.js. Other API clients, script review and rehearsal coaching work without them.</p>
@@ -1141,7 +1141,7 @@
           <legend>OBS Studio</legend>
           <label class="check"><input id="set-obs-enabled" type="checkbox" /> Enable OBS integration</label>
           <p id="set-obs-installation" class="field-hint" data-essential role="status" aria-live="polite">Checking for OBS Studio…</p>
-          <p class="settings-about-actions"><button type="button" id="set-obs-components">Components…</button></p>
+          <p class="settings-about-actions"><button type="button" id="set-obs-components">Apps and add-ons…</button></p>
           <p class="field-hint">Off by default. Disabled means no OBS connection or commands. Disabling or quitting Sightline leaves any OBS recording running. Apply saves these choices.</p>
           <label>Address <input id="set-obs-host" type="text" value="127.0.0.1" autocomplete="off" spellcheck="false" /></label>
           <label>Port <input id="set-obs-port" type="number" min="1" max="65535" value="4455" /></label>
@@ -1149,9 +1149,10 @@
           <label class="check"><input id="set-obs-clear-password" type="checkbox" /> Remove the saved OBS password</label>
           <p id="set-obs-password-status" class="field-hint"></p>
           <p class="field-hint">In OBS 28 or later: Tools &gt; WebSocket Server Settings. Enable its server and authentication. No additional OBS plugin is needed. Use 127.0.0.1 for OBS on this computer. Remote connections use unencrypted WebSocket: use a trusted network. The password is kept separately using your operating system's protected storage.</p>
-          <p id="set-obs-status" role="status" aria-live="polite">OBS disabled</p>
+          <div id="set-obs-status" role="status" aria-live="polite"><span id="set-obs-connection-state">Connection: Disabled</span><span id="set-obs-recording-state">Recording: Unknown</span><span id="set-obs-status-detail"></span></div>
           <button type="button" id="set-obs-test">Test saved connection</button>
-          <p class="field-hint" data-essential>Apply changes before testing. Recording permissions and the recorded slate are in Recording > OBS recording.</p>
+          <p id="set-obs-test-result" class="settings-test-result" role="status" aria-live="polite">Connection not tested.</p>
+          <p class="field-hint" data-essential>Apply changes before testing. Use the Recording control tab for recording permissions and the slate.</p>
         </fieldset>
         <fieldset data-tab="obs-recording">
           <legend>OBS recording and sync</legend>

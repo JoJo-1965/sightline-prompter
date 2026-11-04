@@ -33,6 +33,7 @@ async function connect( fragment ) {
 }
 try {
  const page = await connect("sightline://prepare/pre-record.html");
+ const main = await connect("teleprompter.html");
  await pause(500);
  const waitFor = async (expression,label,limit=15000) => {const start=Date.now();while(Date.now()-start<limit){if(await page.evaluate(expression))return;await pause(150);}throw new Error(label+": "+await page.evaluate('document.getElementById("direction-detail").textContent+" / "+document.getElementById("message").textContent'));};
  const click = async id => {assert.equal(await page.evaluate('!!document.getElementById('+JSON.stringify(id)+')&&!document.getElementById('+JSON.stringify(id)+').disabled'),true,"Enabled: "+id);await page.evaluate('document.getElementById('+JSON.stringify(id)+').click()');};
@@ -49,13 +50,26 @@ try {
  assert.equal(await page.evaluate('document.getElementById("framing-chip").textContent.includes("aligned")'),true);
  await fs.writeFile(path.join(artifacts,"framing-detection.png"),Buffer.from((await page.call("Page.captureScreenshot",{format:"png"})).data,"base64"));
  await click("accept-frame");await click("measure-audio");
+ await pause(400);
+ assert.equal(await main.evaluate('!document.getElementById("level-meter").classList.contains("hidden")'),true,"Room/voice preparation automatically shows the prompter meter even when its manual meter is off");
+ assert.match(await main.evaluate('document.querySelector("#level-meter .lm-text").textContent'),/Room noise check|Voice check/);
  await waitFor('!!document.getElementById("accept-audio-warning")||!document.getElementById("accept-audio").disabled',"Actual microphone check",10000);
  if(await page.evaluate('!!document.getElementById("accept-audio-warning")'))await click("accept-audio-warning");
+ assert.equal(await main.evaluate('document.getElementById("level-meter").classList.contains("hidden")'),true,"The automatic meter returns to the prior hidden state after measurement");
  await click("accept-audio");await click("record-test");await pause(1600);await click("stop-test");
  await waitFor('!!document.getElementById("play-test")',"Local clip saved");
+ assert.equal(await main.evaluate('document.getElementById("settings-test-recording-result").dataset.result'),"review","Saving a clip alone does not pass a test");
+ assert.equal(await main.evaluate('document.getElementById("preparation-test-result").dataset.result'),"review","Prompter shows review required too");
+ await click("fail-test");
+ assert.equal(await main.evaluate('document.getElementById("settings-test-recording-result").dataset.result'),"failed","A rejected test remains visibly failed in Settings");
+ assert.equal(await main.evaluate('document.getElementById("preparation-test-result").dataset.result'),"failed","A rejected test remains visibly failed on the prompter");
+ await click("record-test");await pause(1600);await click("stop-test");
+ await waitFor('!!document.getElementById("play-test")',"Replacement clip saved");
  await click("play-test");
  await waitFor('!!document.getElementById("test-picture")',"Actual clip playback completed",12000);
  await click("test-picture");await click("test-sound");await click("accept-test");await click("save-reference");
+ assert.equal(await main.evaluate('document.getElementById("settings-test-recording-result").dataset.result'),"passed","Settings retains reviewed picture-and-sound pass");
+ assert.equal(await main.evaluate('document.getElementById("preparation-test-result").dataset.result'),"passed","Prompter retains the same reviewed pass");
  await waitFor('document.getElementById("panel-title").textContent==="Ready to record"',"Reference saved");
  const stored=JSON.parse(await fs.readFile(path.join(profile,"app-state.json"),"utf8")).settings;
  assert.ok(stored.preRecordReference.testReviewed);

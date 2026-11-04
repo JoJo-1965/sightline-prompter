@@ -10,6 +10,12 @@ protocol.registerSchemesAsPrivileged( [ { scheme: "sightline", privileges: { sta
 
 export function createPreRecord( { dir, prompter, getSettings, saveSettings, busy } ) {
 	let window = null, recording = false, quitting = false, lastTestFile = null;
+	let status = { test: { state: getSettings().preRecordReference?.testReviewed ? "saved" : "idle", at: getSettings().preRecordReference?.savedAt ?? null }, meter: { active: false } };
+	const publish = ( value ) => {
+		if ( [ "idle", "recording", "saving", "review", "passed", "failed", "stale" ].includes( value?.test?.state ) ) status.test = { state: value.test.state, at: new Date().toISOString() };
+		if ( typeof value?.meter?.active === "boolean" ) status.meter = { active: value.meter.active, level: Math.max( -100, Math.min( 0, Number.isFinite( value.meter.level ) ? value.meter.level : -100 ) ), peak: Math.max( -100, Math.min( 0, Number.isFinite( value.meter.peak ) ? value.meter.peak : -100 ) ), phase: value.meter.phase === "voice" ? "voice" : "room" };
+		if ( !prompter.isDestroyed() ) prompter.webContents.send( "preRecordStatus", status );
+	};
 	protocol.handle( "sightline", ( request ) => {
 		const url = new URL( request.url ), name = url.pathname.slice( 1 );
 		const allowed = /^(pre-record\.(html|css|js)|framing-position\.js|framing-worker-bundle\.js|vision-runtime\/[a-zA-Z0-9_.-]+)$/.test( name );
@@ -45,6 +51,7 @@ export function createPreRecord( { dir, prompter, getSettings, saveSettings, bus
 			}
 		} );
 		window.on( "closed", () => {
+			publish( { ...( [ "recording", "saving" ].includes( status.test.state ) ? { test: { state: "failed" } } : {} ), meter: { active: false } } );
 			window = null;
 			recording = false;
 			quitting = false;
@@ -84,11 +91,17 @@ export function createPreRecord( { dir, prompter, getSettings, saveSettings, bus
 	const activity = ( event, value ) => {
 		if ( trusted( event ) ) recording = value === true;
 	};
+	const report = ( event, value ) => {
+		if ( trusted( event ) ) publish( value );
+	};
+	const getStatus = event => event.sender === prompter.webContents ? status : null;
 	const close = ( event ) => {
 		if ( trusted( event ) ) window.close();
 	};
 	ipcMain.on( "openPreRecord", open );
 	ipcMain.on( "preRecordActivity", activity );
+	ipcMain.on( "preRecordReport", report );
+	ipcMain.handle( "preRecordStatus", getStatus );
 	ipcMain.on( "closePreRecord", close );
 	ipcMain.handle( "preRecord", action );
 	return { open, dispose() {
@@ -96,6 +109,8 @@ export function createPreRecord( { dir, prompter, getSettings, saveSettings, bus
 		window?.destroy();
 		ipcMain.removeListener( "openPreRecord", open );
 		ipcMain.removeListener( "preRecordActivity", activity );
+		ipcMain.removeListener( "preRecordReport", report );
+		ipcMain.removeHandler( "preRecordStatus" );
 		ipcMain.removeListener( "closePreRecord", close );
 		ipcMain.removeHandler( "preRecord" );
 		protocol.unhandle( "sightline" );

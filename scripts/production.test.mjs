@@ -33,13 +33,36 @@ for ( const [ edge, dimension, fixed ] of [ [ "top", "cy", "bottom" ], [ "bottom
 const now = Date.parse( "2026-10-29T12:00:00Z" );
 const live = { connection: "connected", recording: "recording", recordingId: "recording-A", outputDuration: 10000, durationObservedAt: new Date( now ).toISOString() };
 assert.equal( obsPosition( live, now + 1200 ).seconds, 11.2 );
-assert.equal( obsPosition( live, now - 1000 ).seconds, 9 );
+assert.equal( obsPosition( live, now - 1000 ).seconds, null, "A later sample must not be backdated into an earlier event" );
+assert.equal( obsPosition( { ...live, recording: "stopped" }, now ).seconds, null, "Stopped OBS has no live recording position" );
 assert.equal( obsPosition( live, now + 6000 ).seconds, null );
 assert.equal( obsPosition( { ...live, connection: "disconnected" }, now ).seconds, null );
 assert.equal( obsPosition( { ...live, recording: null }, now ).seconds, null, "a starting/stopping transition does not expose a precise position" );
 assert.equal( obsPosition( { ...live, recording: "paused" }, now + 1200 ).seconds, 10 );
 assert.equal( obsPosition( null, now ), null );
 assert.equal( obsPosition( { ...live, fileClockUnknown: true }, now ).seconds, null );
+{
+	let time = now;
+	let state = { ...live, recording: "stopped", recordingId: "old-test-file", durationObservedAt: new Date( time ).toISOString(), observedAt: new Date( time ).toISOString() };
+	const log = createTakeLog( { clock: () => time, obsState: () => state } );
+	log.tick( { active: true, index: 0, advanced: true } );
+	time += 1000;
+	state = { ...state, recording: "recording", recordingId: "actual-recording", outputDuration: 0, durationObservedAt: new Date( time ).toISOString(), observedAt: new Date( time ).toISOString() };
+	log.obs( state );
+	time += 2000;
+	state = { ...state, outputDuration: 2000, durationObservedAt: new Date( time ).toISOString(), observedAt: new Date( time ).toISOString() };
+	log.tick( { active: true, index: 0, advanced: true } );
+	time += 36000;
+	state = { ...state, outputDuration: 38000, durationObservedAt: new Date( time ).toISOString(), observedAt: new Date( time ).toISOString() };
+	log.obs( state );
+	log.tick( { active: false, index: 0 } );
+	const take = log.data().takes[0];
+	assert.equal( take.obsStart, null, "A take that precedes Record must not inherit the previous stopped test file" );
+	assert.equal( take.obsEnd.recordingId, "actual-recording" );
+	assert.equal( take.obsEnd.seconds, 2, "Delayed take closure uses its historical OBS sample" );
+	assert.equal( take.obsEnd.ageMs, 0 );
+	assert.ok( Date.parse( take.obsEnd.sampleAt ) <= Date.parse( take.endedAt ) );
+}
 
 const containsObs = tabs => tabs.some( t => t.sections.some( s => /OBS/.test( s.section ) ) );
 assert.equal( containsObs( helpTabs( { obsEnabled: false, voiceCommands: "off" } ) ), false );

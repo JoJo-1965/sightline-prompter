@@ -3,6 +3,11 @@
 ## Current delivery position
 
 **Published baseline:** Sightline 1.1.0 with Stream Deck companion 0.2.0.
+**Current candidate:** 1.2.0 RC 1 combines the confirmed feedback batch with
+local MCP and ad-hoc Mac signing. Source unit, Settings, preparation and OBS
+checks have passed; candidate packaging and Mac CI verification are in progress.
+See [RC scope](docs/RELEASE-1.2.0-SCOPE.md). The UAT 09 baseline below remains
+available until this candidate's packaged verification is complete.
 **Latest packaged preview:** unpublished UAT 09, documentation revision 10.
 **Next deliverable:** one combined preview for the UAT 09 feedback, then RC
 acceptance. No newer preview or formal RC has been built from that feedback.

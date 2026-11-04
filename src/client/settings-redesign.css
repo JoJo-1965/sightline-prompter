@@ -189,3 +189,8 @@ body:not(.utility-window) #settings-modal.settings-redesign .settings-content {w
 #settings-modal.settings-redesign .settings-inline-actions {margin-top:5px;}
 #settings-modal.settings-redesign .settings-interface-status {margin:3px 0 6px;}
 }
+/* Result panels retain readable spacing inside the fixed three-column shell. */
+#settings-modal.settings-redesign .settings-section-content:has( > [data-settings-page="checklist"]:not([hidden]), > [data-settings-page="obs"]:not([hidden]), > [data-settings-page="api"]:not([hidden]) ) {
+	overflow-y: auto;
+	overscroll-behavior: contain;
+}

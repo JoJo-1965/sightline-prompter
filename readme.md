@@ -248,6 +248,27 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ## Change log
 
+### 1.2.0 RC 1 · 4 November 2026
+
+- Merge Controls and Components into **Connections**. Restore defaults moves
+  to Getting started; one OBS entry has three visible button subtabs.
+- Distinguish connection and recording state. Retain connection-test and actual
+  picture/sound review outcomes in Settings and on the main prompter.
+- Show the meter during audio checks and a yellow section/page status pill.
+- Accept finish/end and restart-section phrases, including split “twelve”.
+  Retakes consistently return to the current section.
+- Use historical OBS observations for delayed take endpoints. A take preceding
+  Record no longer inherits an earlier stopped test file. Export timing
+  qualifications alongside existing edit-pack files and the original brief.
+- Add optional [local MCP](docs/MCP.md): seven tools, app-enforced grants,
+  a dedicated credential and script loading that preserves existing files.
+- Ad-hoc Mac signing and packaged integrity checks require no paid certificate;
+  this does not provide Apple notarisation or remove all security warnings.
+- Carry forward UAT 09 and the existing coffee reminder on a saved random
+  interval of 10–15 launches.
+
+RC 1 is a test candidate. The stable public release remains 1.1.0.
+
 - **Next preview — voluntary support reminder:** reuse the existing coffee
   note at a saved random interval of 10–15 launches. Its appearance, link,
   dismissal, 30-second delay and reading/on-air checks are unchanged. A busy

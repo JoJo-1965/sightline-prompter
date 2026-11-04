@@ -51,7 +51,7 @@ function tokenMatches( given, token ) {
 // token: the full key (AI assistants and scripts), or null when that's off.
 // buttonToken: a second key that may only use buttonRoutes and /events (the
 // Stream Deck plugin), or null when that's off.
-export function startRemoteServer( { port, token, buttonToken = null, buttonRoutes = new Set(), routes, events, onError } ) {
+export function startRemoteServer( { port, token, buttonToken = null, mcpToken = null, allowMcp = () => false, buttonRoutes = new Set(), routes, events, onError } ) {
 	const server = http.createServer( async ( req, res ) => {
 		const reply = ( status, data ) => {
 			res.writeHead( status, { "Content-Type": "application/json" } );
@@ -72,10 +72,12 @@ export function startRemoteServer( { port, token, buttonToken = null, buttonRout
 			);
 			const full = tokenMatches( auth, token );
 			const buttons = !full && tokenMatches( auth, buttonToken );
-			if ( !full && !buttons ) {
+			const mcp = !full && !buttons && tokenMatches( auth, mcpToken );
+			if ( !full && !buttons && !mcp ) {
 				return reply( 401, { error: "Missing or wrong token" } );
 			}
 			const url = new URL( req.url, "http://127.0.0.1" );
+			if ( mcp && url.pathname === "/events" ) return reply( 403, { error: "MCP does not expose event streams" } );
 			if ( buttons && url.pathname !== "/events" && !buttonRoutes.has( `${ req.method } ${ url.pathname }` ) ) {
 				return reply( 403, { error: "The Stream Deck key can only press buttons" } );
 			}
@@ -103,7 +105,8 @@ export function startRemoteServer( { port, token, buttonToken = null, buttonRout
 				} );
 			// GET takes its values from the query: /recording?id=…
 			const body = req.method === "GET" ? Object.fromEntries( url.searchParams ) : await readBody( req );
-			const result = await route( body );
+			if ( mcp && !allowMcp( req.method, url.pathname, body ) ) return reply( 403, { error: "This MCP action is not allowed. Review MCP permissions in Connections > AI and API." } );
+			const result = await route( body, { mcp } );
 			reply( 200, result ?? { ok: true } );
 		} catch ( err ) {
 			reply( err.status ?? 400, { error: err.message } );

@@ -23,6 +23,25 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [],
 	let current = null; // the take in progress
 	let version = 0; // goes up with every change worth saving
 	let slated = null; // { section, at }: the last slate, for the take that follows it
+	const obsHistory = [];
+	function rememberObs( state = obsState() ) {
+		if ( !state ) return;
+		const observed = Date.parse( state.observedAt ?? state.durationObservedAt );
+		const at = Number.isFinite( observed ) ? observed : clock();
+		const sample = { at, connection: state.connection, recording: state.recording, recordingId: state.recordingId, outputPath: state.outputPath, outputDuration: state.outputDuration, durationObservedAt: state.durationObservedAt, fileClockUnknown: state.fileClockUnknown };
+		const last = obsHistory.at( -1 );
+		if ( last && Object.keys( sample ).every( key => sample[key] === last[key] ) ) return;
+		obsHistory.push( sample );
+		if ( obsHistory.length > 4096 ) obsHistory.shift();
+	}
+	function positionAt( at ) {
+		rememberObs();
+		// A take may close long after its final words. Use an observation from
+		// that time; a later poll must not invent a position in a different file.
+		const state = obsHistory.findLast( sample => sample.at <= at );
+		if ( !state || ![ "recording", "paused" ].includes( state.recording ) ) return null;
+		return obsPosition( state, at );
+	}
 
 	function empty() {
 		return { startedAt: null, takes: [], events: [], audio: [], soundChecks: [], obs: [], obsRecordings: [], scriptSnapshots: [], guideSnapshots: [], recordedSync: [] };
@@ -32,7 +51,7 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [],
 
 	function event( type, data = {} ) {
 		if ( !log.startedAt ) return;
-		log.events.push( { t: since( clock() ), type, ...data, obs: obsPosition( obsState(), clock() ) } );
+		log.events.push( { t: since( clock() ), type, ...data, obs: positionAt( clock() ) } );
 		version++;
 	}
 
@@ -51,7 +70,7 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [],
 			take,
 			openedAt: now,
 			scriptSnapshotId: script?.id ?? null,
-			obsStart: obsPosition( obsState(), now ),
+			obsStart: positionAt( now ),
 			lastAdvance: null,
 			markers: [],
 			markerList: [],
@@ -100,7 +119,7 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [],
 			startedAt: new Date( done.openedAt ).toISOString(),
 			scriptSnapshotId: done.scriptSnapshotId,
 			obsStart: done.obsStart,
-			obsEnd: obsPosition( obsState(), end ),
+			obsEnd: positionAt( end ),
 			endedAt: new Date( end ).toISOString(),
 			status,
 			rating: done.rating,
@@ -161,6 +180,7 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [],
 		// section at the reading line (-1 before the first). advanced: the text
 		// moved on since last time. atEnd: the reading line is at the section's end.
 		tick( { active, index, title = "", target = null, advanced = false, atEnd = false } ) {
+			rememberObs();
 			if ( !active ) {
 				if ( current ) close( atEnd ? "complete" : "stopped" );
 				return;
@@ -188,6 +208,7 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [],
 		// a wall-clock time in ms. Kept on the take as { i, w, t }, t in seconds
 		// on the log's clock (the same as the slate). Saved every few words.
 		words( list ) {
+			rememberObs();
 			if ( !current || !log.startedAt ) return;
 			for ( const { i, w, at } of list ) {
 				const t = Math.round( ( at - Date.parse( log.startedAt ) ) / 10 ) / 100;
@@ -234,6 +255,7 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [],
 		// Observations, not frame-accurate sync: OBS supplies the path on stop.
 		// Repeated meter/status polls do not grow the log.
 		obs( state ) {
+			rememberObs( state );
 			const recordingId = state?.recordingId ?? log.obs.at( -1 )?.recordingId;
 			if ( !log.startedAt || !recordingId ) return;
 			const observation = { recordingId, connection: state.connection, recording: state.recording, outputPath: state.outputPath ?? null };

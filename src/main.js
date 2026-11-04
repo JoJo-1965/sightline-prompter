@@ -49,6 +49,7 @@ import { createObsCredentials } from "./obs-credentials.js";
 import { createObsLedger } from "./obs-ledger.js";
 import { createRecordedSlate } from "./recorded-slate.js";
 import { obsPosition } from "./client/obs-position.js";
+import { allowMcpRequest } from "./mcp-permissions.js";
 import {
 	serialize as serializeSettings,
 	parse as parseSettings,
@@ -221,6 +222,10 @@ const defaultSettings = {
 	showProgress: true,
 	controlsPinned: false, // keep the control bar visible instead of auto-hiding it
 	remoteControl: false, // AI / script control over http://127.0.0.1 (see remote.js)
+	mcpEnabled: false,
+	mcpScripts: false,
+	mcpControls: false,
+	mcpRecording: false,
 	streamDeck: false, // the Stream Deck plugin: buttons only, its own key (stream-deck.json)
 	remotePort: 47615,
 	remoteDeleteRecordings: false, // the local API may delete recordings (Controls > AI and local API)
@@ -236,7 +241,7 @@ const defaultSettings = {
 };
 
 // Settings that a settings file or the remote API may not change.
-const PROTECTED_SETTINGS = [ "preRecordReference", "preRecordMicrophone", "remoteControl", "remotePort", "remoteDeleteRecordings", "streamDeck", "phoneRemote", "phonePort", "obsEnabled", "obsHost", "obsPort", "obsControls", "obsFollowPrompter", "obsMarkers", "obsRecordedSlate", "traceCommands", "coachFillers", "speechEnabled", "microphoneEnabled", "padEnabled", "gamepadEnabled", "keyboardMappingsEnabled" ];
+const PROTECTED_SETTINGS = [ "preRecordReference", "preRecordMicrophone", "remoteControl", "mcpEnabled", "mcpScripts", "mcpControls", "mcpRecording", "remotePort", "remoteDeleteRecordings", "streamDeck", "phoneRemote", "phonePort", "obsEnabled", "obsHost", "obsPort", "obsControls", "obsFollowPrompter", "obsMarkers", "obsRecordedSlate", "traceCommands", "coachFillers", "speechEnabled", "microphoneEnabled", "padEnabled", "gamepadEnabled", "keyboardMappingsEnabled" ];
 
 // Take logs, one per script per day: the recordings library (recordings.js).
 const takeLogFolder = () => path.join( app.getPath( "userData" ), "take-logs" );
@@ -400,6 +405,7 @@ let hasUnsavedChanges = false;
 let isClosing = false;
 let refreshMenus = () => {};
 let remoteToken = null;
+let mcpToken = null;
 let streamDeckToken = null; // Settings > Controls > Stream Deck: buttons only
 let phoneKey = null;
 let phoneServer = null;
@@ -1516,6 +1522,7 @@ app.whenReady().then( async () => {
 		= state.autoScrollSpeed ?? defaultConfig.autoScrollSpeed;
 	currentAudioDeviceId = state.audioDeviceId || null;
 	remoteToken = state.remoteToken || newToken();
+	mcpToken = newToken();
 	streamDeckToken = state.streamDeckToken || newToken();
 	phoneKey = state.phoneKey || newPhoneKey();
 	settings = { ...defaultSettings, ...upgradeInterfaceSettings( upgradeReadingAppearance( state.settings ?? defaultSettings ) ) };
@@ -1637,6 +1644,7 @@ app.whenReady().then( async () => {
 	// --- Remote control (AI assistants, scripts): see remote.js ---
 
 	const REMOTE_FILE = path.join( app.getPath( "userData" ), "remote-control.json" );
+	const MCP_FILE = path.join( app.getPath( "userData" ), "mcp-control.json" );
 	// Shown in the UI: a portable form of the path, without the user's name.
 	const APP_DATA_LABEL = { win32: "%APPDATA%", darwin: "~/Library/Application Support" }[process.platform] ?? "~/.config";
 	const REMOTE_FILE_LABEL = REMOTE_FILE.replace( app.getPath( "appData" ), APP_DATA_LABEL );
@@ -1785,14 +1793,14 @@ app.whenReady().then( async () => {
 			return remoteOpen( filePath, slotNumber( slot ) );
 		},
 		// Write a script sent as text into the scripts folder, then open it.
-		"POST /load-text": async ( { text, name = "script", format = "md", slot } ) => {
+		"POST /load-text": async ( { text, name = "script", format = "md", slot }, { mcp = false } = {} ) => {
 			if ( typeof text !== "string" || !text.trim() ) throw new Error( "text is required" );
 			const ext = format === "txt" ? "txt" : "md";
 			const safe = String( name ).replace( /[^\w .-]+/g, "_" ).replace( /^[. ]+/, "" ).slice( 0, 80 ) || "script";
 			const dir = path.join( app.getPath( "userData" ), "scripts" );
 			await fs.mkdir( dir, { recursive: true } );
 			const filePath = path.join( dir, `${ safe }.${ ext }` );
-			await fs.writeFile( filePath, text, "utf-8" );
+			await fs.writeFile( filePath, text, { encoding: "utf-8", flag: mcp ? "wx" : "w" } );
 			return remoteOpen( filePath, slotNumber( slot ) );
 		},
 		"POST /command": ( { action, value } ) => {
@@ -1878,17 +1886,20 @@ app.whenReady().then( async () => {
 		const on = settings.remoteControl || settings.streamDeck;
 		const wanted = on ? settings.remotePort : null;
 		// Restart when the port or which keys work changes.
-		const keys = `${ wanted }|${ !!settings.remoteControl }|${ !!settings.streamDeck }`;
+		const keys = `${ wanted }|${ !!settings.remoteControl }|${ !!settings.streamDeck }|${ !!settings.mcpEnabled }|${ !!settings.mcpScripts }|${ !!settings.mcpControls }|${ !!settings.mcpRecording }`;
 		if ( remoteServer && remoteServer.teleprompterKeys === keys ) return;
 		if ( remoteServer ) {
 			await closeServer( remoteServer );
 			remoteServer = null;
 		}
 		remoteError = null;
+		if ( !settings.mcpEnabled || !settings.remoteControl ) mcpToken = newToken();
 		if ( wanted ) {
 			remoteServer = startRemoteServer( {
 				port: wanted,
 				token: settings.remoteControl ? remoteToken : null,
+				mcpToken: settings.remoteControl && settings.mcpEnabled ? mcpToken : null,
+				allowMcp: ( method, route, body ) => allowMcpRequest( settings, method, route, body ),
 				buttonToken: settings.streamDeck ? streamDeckToken : null,
 				buttonRoutes: BUTTON_ROUTES,
 				routes: remoteRoutes,
@@ -1910,6 +1921,8 @@ app.whenReady().then( async () => {
 		const url = remoteInfo().url;
 		if ( wanted && settings.remoteControl ) await fs.writeFile( REMOTE_FILE, JSON.stringify( { url, token: remoteToken }, null, 2 ) );
 		else await fs.rm( REMOTE_FILE, { force: true } );
+		if ( wanted && settings.remoteControl && settings.mcpEnabled && remoteServer?.listening ) await fs.writeFile( MCP_FILE, JSON.stringify( { url, token: mcpToken, appVersion: app.getVersion(), permissions: { scripts: settings.mcpScripts === true, controls: settings.mcpControls === true, recording: settings.mcpRecording === true } }, null, 2 ), { mode: 0o600 } );
+		else await fs.rm( MCP_FILE, { force: true } );
 		if ( wanted && settings.streamDeck && remoteServer?.listening ) {
 			const descriptor = { url, token: streamDeckToken, appVersion: app.getVersion(), streamDeckApi: streamDeckContract() };
 			await fs.writeFile( STREAM_DECK_FILE, JSON.stringify( descriptor, null, 2 ) );

@@ -1,5 +1,13 @@
 # Sightline Prompter: what it adds to Electron Teleprompter
 
+**1.2.0 RC 1:** one Connections area, one OBS entry with three button subtabs,
+separate connection/recording state, persistent connection and reviewed test-clip
+outcomes, automatic meters during audio checks, and a yellow section/page pill.
+Finish/end and restart-section commands cover the observed recording variants.
+Local MCP adds seven scoped desktop-client tools through the optional AI kit.
+Mac packaging adds free ad-hoc signatures and CI integrity verification; this
+is not notarisation. Live word timing and coverage remain estimates.
+
 **Next preview:** the existing voluntary coffee reminder repeats after a saved
 random interval of 10–15 launches, including profiles that saw the old one-time
 note. Its appearance, dismissal and reading/on-air checks are unchanged.

@@ -7,5 +7,6 @@ contextBridge.exposeInMainWorld( "preRecord", {
 	saveTest: bytes => ipcRenderer.invoke( "preRecord", "test", bytes ),
 	readTest: () => ipcRenderer.invoke( "preRecord", "read-test" ),
 	activity: busy => ipcRenderer.send( "preRecordActivity", busy === true ),
+	report: result => ipcRenderer.send( "preRecordReport", result ),
 	close: () => ipcRenderer.send( "closePreRecord" )
 } );

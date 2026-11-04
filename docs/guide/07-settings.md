@@ -1,15 +1,15 @@
 # Settings
 
-This source guide describes **UAT Preview 09**, based on the
-approved interactive demo. It is an unpublished preview of Sightline 1.1.0.
+This source guide describes **1.2.0 RC 1**, based on the approved
+interactive demo and Joanne's combined Connections/recording feedback.
 For the released app, use the guide bundled with its installer.
 
 Open **Settings** on the toolbar, **Files (☰) > Settings**, or **Ctrl+,**
 (**Cmd+,** on Mac). Settings opens in an upright, movable window. It retains
 the same frame while you change sections; resizing never moves a control
-onto another page. Configuration sections have no internal scrolling or
-numbered pagination. Getting started alone scrolls its setup guidance in the
-centre pane, keeping navigation, the reading example and footer in place.
+onto another page. There is no numbered pagination. Longer Getting started,
+Recording setup, OBS connection and AI/API panels scroll in the centre pane,
+keeping navigation, the reading example and footer in place.
 
 On larger windows, choose an area and a named section in the sidebar, or use
 **Find a setting**. Compact windows use **Area** and **Section** selectors.
@@ -52,23 +52,33 @@ existing stored precision is retained until you adjust the value.
 
 | Area | Sections |
 | --- | --- |
-| Getting started | First setup: current configuration and guided next steps |
+| Getting started | First setup: current configuration and guided next steps; Restore defaults |
 | Prepare to record | Recording setup |
 | Reading | Mode and pace; Text and directions; Theme and background; Prompter layout; Reading aids; Screens and mirroring; Head guide |
 | Voice | Speech engine; Microphone; Commands; Your words |
 | Recording | Takes; Sound check; Slate and sync |
-| Controls | Pad and phone; Phone remote; Keyboard and clickers; Game controller; Stream Deck; OBS integration; OBS recording control; OBS profile and scenes; AI and API |
-| Components | Installed components; Restore defaults |
+| Connections | Pad and phone; Phone remote; Keyboard and clickers; Game controller; Stream Deck; OBS integration; AI and API; Apps and add-ons |
 | Debug | Status and recovery; Speech trace; Capture for demos; Support log |
 | About | Version and updates; Credits and licences; Help and support |
 
 ## Prepare and reading
 
-**Session checklist** opens the existing preparation checks and links directly
+**Recording setup** opens preparation checks and links directly
 to script review, appearance and framing.
 
 Its **Prepare to record** action opens the real camera/audio/test workflow.
 See [Prepare to record](16-prepare-to-record.md).
+
+Test recording results persist beside this action and on the prompter. A clip
+needs actual picture/sound review before passing. Audio checks show the main
+sound meter automatically, then restore its earlier visibility.
+
+**Connections > OBS integration** has three visible subtabs: Connection,
+Recording control, Profile and scenes. Connection and recording state are
+separate. Apply connection changes before testing; retained pass/fail feedback
+does not replace reviewing a recording. **AI and API** contains the optional
+[MCP connection and separate grants](../MCP.md). Installation/repair is under
+**Apps and add-ons**; Restore defaults is under **Getting started**.
 
 **Mode and pace** has one Mode selector offering
 Notes/page, Voice and Scroll. Voice shows response; Scroll shows WPM, script

@@ -420,9 +420,9 @@ export function createSettingsWorkspace( root, { getState, getGuideState = () =>
 		config.append( keep.get( "set-obs-password-status" ) );
 		const buttons = el( "div", { className: "settings-inline-actions" } );
 		buttons.append( take( "set-obs-test", "button" ), take( "set-obs-components", "button" ) );
-		config.append( buttons, keep.get( "set-obs-status" ) );
+		config.append( buttons, keep.get( "set-obs-test-result" ) );
 		const status = sections.get( "obs" ).querySelector( "[data-interface-status]" );
-		status.after( keep.get( "set-obs-installation" ) );
+		status.after( keep.get( "set-obs-installation" ), keep.get( "set-obs-status" ) );
 		status.hidden = true;
 	} );
 	compactForm( "api", ( config, keep ) => {
@@ -437,6 +437,13 @@ export function createSettingsWorkspace( root, { getState, getGuideState = () =>
 		const links = el( "div", { className: "settings-inline-actions" } );
 		links.append( take( "set-remote-help", "button" ), take( "set-remote-components", "button" ) );
 		config.append( links );
+		check( config, "set-mcp-enabled", "Enable local MCP", "mcpEnabled", false, "Optional stdio adapter for a desktop AI client. Read-only by default; scripts and controls require the separate grants below. Apply changes, then use the MCP instructions in your installed AI kit." );
+		const mcpOptions = el( "fieldset", { className: "settings-mcp-options" } );
+		mcpOptions.dataset.mcpOptions = "true";
+		check( mcpOptions, "set-mcp-scripts", "Allow script loading and slots", "mcpScripts", false, "Lets the MCP client load uniquely named scripts and select a script slot. Existing files are retained." );
+		check( mcpOptions, "set-mcp-controls", "Allow prompting controls", "mcpControls", false, "Allows Play, Pause, section navigation, pace and take markers. When OBS recording controls are enabled, also grant MCP recording permission because scripts and linked prompting can change the recorder." );
+		check( mcpOptions, "set-mcp-recording", "Allow OBS recording commands", "mcpRecording", false, "Allows the MCP client to start, stop, pause and resume OBS only when OBS integration and recording controls are also enabled. Your AI client should ask before changing a recording." );
+		config.append( mcpOptions );
 	} );
 	const move = ( id, destination ) => {
 		const node = controls.get( id ) ?? doc.getElementById( id );
@@ -490,6 +497,10 @@ export function createSettingsWorkspace( root, { getState, getGuideState = () =>
 	prepareButton.addEventListener( "click", () => window.electron.prepareRecording() );
 	prepareAction.append( prepareButton );
 	checklist.append( prepareAction );
+	const testResult = el( "p", { id: "settings-test-recording-result", className: "settings-test-result" }, "Test recording: Not checked. Open Prepare to record to review picture and sound." );
+	testResult.setAttribute( "role", "status" );
+	testResult.setAttribute( "aria-live", "polite" );
+	checklist.append( testResult );
 	const gettingStarted = section( "getting-started", "Getting started" );
 	gettingStarted.append( el( "p", { className: "settings-start-intro" }, "Open your script from Files, or choose a sample from Help. Choose how to read, make the text comfortable, then enable only the optional tools you need." ) );
 	const setupScript = el( "p", { className: "settings-start-script" } );
@@ -777,6 +788,9 @@ export function createSettingsWorkspace( root, { getState, getGuideState = () =>
 			bindings.get( id ).number.disabled = state.eyeLine !== true;
 		}
 		const focusEnabled = state.focusBand === true;
+		const mcpOptions = root.querySelector( "[data-mcp-options]" );
+		mcpOptions.hidden = !state.mcpEnabled;
+		mcpOptions.disabled = !state.mcpEnabled || !state.remoteControl;
 		focusStrength.control.closest( "[data-settings-control]" ).hidden = !focusEnabled;
 		focusStrength.control.disabled = focusStrength.number.disabled = !focusEnabled;
 		for ( const field of soundFields ) {

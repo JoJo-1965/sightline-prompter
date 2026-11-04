@@ -2,13 +2,22 @@
 
 ![Native preparation window before camera capture starts](images/prepare-to-record.png)
 
-This workflow is an **unpublished UAT Preview 08 addition**. It uses the approved
+This workflow is included in the **1.2.0 RC 1 candidate**. It uses the approved
 pre-record layout with real local camera detection, microphone measurement and
 a short recorded test. It supplements the existing manual Head guide.
 
 Open **Tools > Prepare > Prepare to record**, or **Settings > Prepare to record >
-Session checklist > Prepare to record**. Pause prompting and stop production
+Recording setup > Prepare to record**. Pause prompting and stop production
 recording first. The preparation window is non-modal.
+
+RC 1 retains test results in **Settings > Prepare to record > Recording setup**
+and on the main prompter. A saved clip initially says **Review required**.
+Review its picture and sound, confirm both, then select **Test checked** to pass.
+Use **Test failed · retry** to retain a failed result while correcting the setup.
+Changing the preparation setup marks it for recheck. An earlier saved test is
+labelled as previous; it does not automatically validate today's recording.
+The room/voice check shows its meter on the prompter using the same microphone
+measurements, without opening a second capture stream.
 
 ## Align the shot
 

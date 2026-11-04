@@ -1,6 +1,6 @@
 # Sightline Prompter user guide
 
-This source guide now follows the unpublished **UAT Preview 08**.
+This source guide follows the **1.2.0 RC 1 candidate**, documentation revision 11.
 The published 1.1.0 installer retains its bundled guide and previous layout.
 Use the preview folder/build manifest to identify the test package.
 

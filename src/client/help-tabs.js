@@ -56,8 +56,8 @@ export function helpTabs( settings, notes = false ) {
 	] ) );
 	if ( settings.obsEnabled ) {
 		const rows = [
-			[ "Settings > Controls > OBS connection", "Saved address, port and protected password; Apply, then Test saved connection" ],
-			[ "Controls > OBS profile and scenes", "Review a separate profile/scenes plan using configured sources, with OBS outputs stopped; physical recording checks remain" ],
+			[ "Connections > OBS integration > Connection", "Saved address, port and protected password; Apply, then Test saved connection. Connection and recording state are shown separately" ],
+			[ "OBS integration > Profile and scenes", "Review a separate profile/scenes plan using configured sources, with OBS outputs stopped; physical recording checks remain" ],
 			[ "Status only", "Read recording status without starting or stopping OBS" ],
 			[ "Edit pack", "Confirmed recording paths and observations stay in the take log" ],
 			[ "Disable OBS", "Disconnects Sightline; leaves an existing OBS recording running" ]
@@ -65,7 +65,7 @@ export function helpTabs( settings, notes = false ) {
 		if ( settings.obsControls ) rows.splice( 2, 0,
 			[ "Record take", "Confirm OBS recording before starting the prompter's normal slate/countdown" ],
 			[ "Finish recording", "Pause prompting, stop OBS and retain its confirmed file path" ],
-			[ "Link recording to prompting", "Controls > OBS recording: opt in to start with Play, pause/resume with prompting, and stop at the end. Continuous is the default" ],
+			[ "Link recording to prompting", "Connections > OBS integration > Recording control: opt in to start with Play, pause/resume with prompting, and stop at the end. Continuous is the default" ],
 			[ "Record on / off / pause / resume", "Explicit voice commands or optional {record: …} directives. Requires recording permission; directives never run on load" ],
 			[ "Recording pill", "OFF green · RECORDING red · PAUSED orange · UNKNOWN grey. Remains visible when the toolbar hides" ] );
 		if ( settings.obsControls && settings.obsMarkers ) rows.push( [ "Chapters", "Optional section/marker chapters, where the OBS format supports them" ] );
@@ -80,12 +80,13 @@ export function helpTabs( settings, notes = false ) {
 		{ label: "Recording", sections: recording },
 		{ label: "Head guide", sections: [ section( "Camera framing", guideRows.filter( ( [ label ] ) => label !== "Stream Deck" || settings.streamDeck ) ) ] }
 	];
-	tabs.push( { label: "Controls", sections: [ section( "Buttons and components", [
+	tabs.push( { label: "Connections", sections: [ section( "Inputs and add-ons", [
 		...( settings.keyboardMappingsEnabled !== false ? [ [ "Keyboard and clickers", "Choose an action, assign a plain key or Shift combination, then Apply. System shortcuts stay reserved; mappings stop during typing, editing and Settings" ] ] : [] ),
-		...( settings.gamepadEnabled !== false ? [ [ "Game controller", "Assign controller buttons in its own Controls section. Apply saves the draft; resetting one input type preserves the other" ] ] : [] ),
+		...( settings.gamepadEnabled !== false ? [ [ "Game controller", "Assign controller buttons in Connections > Game controller. Apply saves the draft; resetting one input type preserves the other" ] ] : [] ),
 		...( settings.padEnabled !== false || settings.phoneRemote ? [ [ "Pad and phone buttons", "Choose and arrange shared actions. Named button selection and Earlier/Later replace numbered pages" ] ] : [] ),
 		...( settings.obsEnabled && settings.obsControls ? [ [ "Finish recording hold", "Pad and phone require one second by default. Release early to cancel; Stream Deck has its own per-key setting" ] ] : [] ),
-		[ "Setup > Optional components", "Install, repair or remove the offline speech model and AI kit; check Node.js for AI commands" ]
+		[ "Connections > Apps and add-ons", "Install, repair or remove the offline speech model and AI kit; check Node.js for AI commands" ],
+		[ "Getting started > Restore defaults", "Reset preferences and pairings only after confirmation; scripts, recordings and installed add-ons are retained" ]
 	] ) ] } );
 	if ( voiceHelpTabs( settings ).length ) tabs.push( { label: "Voice", sections: voiceHelpTabs( settings ).flatMap( t => t.sections ) } );
 	return tabs;

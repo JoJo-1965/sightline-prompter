@@ -28,6 +28,7 @@ function ready() {
 	return match().aligned && state.framingAccepted && state.audioAccepted && state.testApproved && state.referenceSaved;
 }
 function invalidate() {
+	if ( state.testApproved ) window.preRecord.report( { test: { state: "stale" } } );
 	state.manualConfirmed = false;
 	state.framingAccepted = false;
 	state.testApproved = false;
@@ -123,6 +124,10 @@ function panel() {
 	} else if ( state.step === 3 ) html += "<h2 id=\"panel-title\">" + ( state.mode === "return" ? "Keep your recording reference" : "Save your recording reference" ) + "</h2><p>" + ( state.mode === "return" ? "Your original framing stays fixed for consistency between shots. The audio recheck is complete." : "Save the checked framing with its camera, audio baseline and reviewed local test clip." ) + "</p>" + referenceData() + "<div class=\"note\">" + ( state.mode === "return" ? "Returning keeps the original target and saved test. It does not silently replace them." : "The saved position can also be restored from the manual Head guide controls. Existing Ideal proportions are retained." ) + "</div><div class=\"next\"><button type=\"button\" class=\"primary\" id=\"save-reference\">" + ( state.mode === "return" ? "Keep saved reference · ready" : saved ? "Replace saved recording reference" : "Save recording reference" ) + "</button></div>";
 	else html += "<div class=\"ready-icon\" aria-hidden=\"true\">✓</div><h2 id=\"panel-title\">Ready to record</h2><p>Your framing, audio and test recording have been checked. Restore this reference to match shots after a break.</p><ul class=\"ready-list\"><li>Head position and size checked.</li><li>Microphone check accepted" + ( state.audioOverride ? " with an advisory result" : "" ) + ".</li><li>Test picture and sound reviewed.</li><li>Reference retained in this Sightline profile.</li></ul><div class=\"note success\">Return to your script to record. This check does not start your production recorder.</div><div class=\"actions\"><button type=\"button\" class=\"primary\" id=\"finish-prepare\">Return to script</button><button type=\"button\" id=\"ready-break\">Restore after a break</button></div>";
 	$( "step-panel" ).innerHTML = html;
+	if ( state.step === 2 && state.testState === "review" ) {
+		const fail = Object.assign( document.createElement( "button" ), { id: "fail-test", type: "button", textContent: "Test failed · retry" } );
+		$( "redo-test" ).after( fail );
+	}
 }
 function render() {
 	renderSteps();
@@ -260,12 +265,14 @@ async function measureAudio() {
 	state.audioAccepted = false;
 	state.audioOverride = false;
 	state.measuring = true;
+	window.preRecord.report( { meter: { active: true, phase: "room", level: -100, peak: -100 } } );
 	panel();
 	renderSteps();
 	try {
 		await connectMicrophone();
 	} catch ( error ) {
 		state.measuring = false;
+		window.preRecord.report( { meter: { active: false } } );
 		say( `Microphone unavailable: ${ error.name }. Choose an available input and try again.` );
 		panel();
 		renderSteps();
@@ -279,6 +286,7 @@ async function measureAudio() {
 		analyser.getFloatTimeDomainData( samples );
 		const rms = Math.sqrt( samples.reduce( ( sum, n ) => sum + n * n, 0 ) / samples.length ), peak = samples.reduce( ( max, n ) => Math.max( max, Math.abs( n ) ), 0 );
 		const db = Math.max( -100, 20 * Math.log10( Math.max( 0.00001, rms ) ) ), elapsed = performance.now() - start;
+		window.preRecord.report( { meter: { active: true, phase: elapsed < 1200 ? "room" : "voice", level: db, peak: Math.max( -100, 20 * Math.log10( Math.max( 0.00001, peak ) ) ) } } );
 		if ( $( "audio-meter" ) ) $( "audio-meter" ).style.setProperty( "--level", `${ Math.max( 0, Math.min( 100, ( db + 60 ) / 60 * 100 ) ) }%` );
 		if ( elapsed < 1200 ) noise.push( db );
 		else {
@@ -296,6 +304,7 @@ async function measureAudio() {
 			const percentile = ( values, p ) => values.sort( ( a, b ) => a - b )[Math.floor( ( values.length - 1 ) * p )] ?? -100;
 			state.audio = { noise: percentile( noise, 0.6 ), voice: percentile( voice, 0.75 ), peak: Math.max( -100, ...peaks ) };
 			state.measuring = false;
+			window.preRecord.report( { meter: { active: false } } );
 			panel();
 			renderSteps();
 			say( "Audio check complete. Review the readings and make a test recording." );
@@ -308,18 +317,27 @@ async function recordTest() {
 	const mimeType = [ "video/webm;codecs=vp8,opus", "video/webm" ].find( type => MediaRecorder.isTypeSupported( type ) );
 	if ( !mimeType ) throw new Error( "This system cannot create the local WebM test clip" );
 	const chunks = [];
+	let failed = false;
 	recorder = new MediaRecorder( stream, { mimeType, videoBitsPerSecond: 3000000, audioBitsPerSecond: 96000 } );
 	recorder.ondataavailable = ( event ) => {
 		if ( event.data.size ) chunks.push( event.data );
 	};
 	recorder.onerror = () => {
+		failed = true;
+		window.preRecord.report( { test: { state: "failed" } } );
 		say( "The test recording failed. Check the devices and try again." );
 	};
 	recorder.onstop = async () => {
 		clearInterval( recordTimer );
 		recordTimer = null;
 		window.preRecord.activity( false );
+		if ( disposed || failed ) {
+			state.testState = "idle";
+			if ( !disposed ) panel();
+			return;
+		}
 		state.testState = "saving";
+		window.preRecord.report( { test: { state: "saving" } } );
 		$( "clip-badge" ).hidden = true;
 		panel();
 		try {
@@ -329,11 +347,13 @@ async function recordTest() {
 			const result = await window.preRecord.saveTest( new Uint8Array( await testBlob.arrayBuffer() ) );
 			state.testFile = result.file;
 			state.testState = "review";
+			window.preRecord.report( { test: { state: "review" } } );
 			panel();
 			renderSteps();
 			say( "Test clip saved locally. Review its picture and sound." );
 		} catch ( error ) {
 			state.testState = "idle";
+			window.preRecord.report( { test: { state: "failed" } } );
 			panel();
 			say( "Could not save the test clip: " + error.message );
 		}
@@ -344,6 +364,7 @@ async function recordTest() {
 	state.testSound = false;
 	state.testApproved = false;
 	state.testState = "recording";
+	window.preRecord.report( { test: { state: "recording" } } );
 	window.preRecord.activity( true );
 	recorder.start( 250 );
 	$( "clip-badge" ).hidden = false;
@@ -417,14 +438,17 @@ async function action( id ) {
 	if ( id === "record-test" ) await recordTest();
 	if ( id === "stop-test" && recorder?.state === "recording" ) recorder.stop();
 	if ( id === "play-test" ) await reviewTest();
-	if ( id === "redo-test" ) {
+	if ( id === "redo-test" || id === "fail-test" ) {
+		window.preRecord.report( { test: { state: id === "fail-test" ? "failed" : "stale" } } );
 		state.testState = "idle";
 		state.testApproved = false;
 		state.referenceSaved = false;
 		panel();
 	}
 	if ( id === "accept-test" ) {
+		if ( !state.testReviewed || !state.testPicture || !state.testSound ) throw new Error( "Review and confirm the picture and sound first" );
 		state.testApproved = true;
+		window.preRecord.report( { test: { state: "passed" } } );
 		go( 3 );
 	}
 	if ( id === "save-reference" ) await saveReference();
@@ -432,7 +456,10 @@ async function action( id ) {
 }
 $( "step-panel" ).addEventListener( "click", ( event ) => {
 	const button = event.target.closest( "button" );
-	if ( button && !button.disabled ) action( button.id ).catch( error => say( error.message ) );
+	if ( button && !button.disabled ) action( button.id ).catch( error => {
+		if ( [ "record-test", "play-test" ].includes( button.id ) ) window.preRecord.report( { test: { state: "failed" } } );
+		say( error.message );
+	} );
 } );
 $( "step-panel" ).addEventListener( "input", ( event ) => {
 	if ( event.target.dataset.guide ) {
@@ -460,6 +487,7 @@ $( "step-panel" ).addEventListener( "change", ( event ) => {
 		render();
 	}
 	if ( event.target.id === "microphone-device" ) {
+		if ( state.testApproved ) window.preRecord.report( { test: { state: "stale" } } );
 		state.microphoneId = event.target.value;
 		state.audio = null;
 		state.audioAccepted = false;
@@ -497,6 +525,7 @@ $( "steps" ).onclick = ( event ) => {
 };
 $( "return-break" ).onclick = restoreReference;
 $( "new-setup" ).onclick = () => {
+	window.preRecord.report( { test: { state: "stale" } } );
 	state.mode = "setup";
 	state.step = 0;
 	state.target = copy( config.guide ?? { x: 0, y: 0, size: 100 } );

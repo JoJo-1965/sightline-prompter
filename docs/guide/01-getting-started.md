@@ -59,7 +59,10 @@ Silent installations do not open these pages.
 
 ### The security warnings, and how to get past them
 
-Sightline's installers are currently unsigned. That can trigger publisher or
+Windows installers do not have a paid publisher signature. RC 1 Mac bundles
+use a free ad-hoc signature to protect bundle integrity, with verification in
+the Mac build pipeline; this is not Developer ID signing or notarisation.
+These distribution limits can trigger publisher or
 download-reputation warnings. A warning is not proof that a file is safe or
 unsafe: check its source and the specific message. Use the
 [official releases](https://github.com/JoJo-1965/sightline-prompter/releases),
@@ -108,7 +111,9 @@ do not assume those messages mean the same thing. Re-download from the
 official release and check Apple's
 [guidance for apps from outside the App Store](https://support.apple.com/en-gb/102445).
 Use the normal Privacy & Security exception only when you have verified the
-source and chosen to trust it. macOS hardware testing for this build is deferred.
+source and chosen to trust it. Mac CI verifies signatures and the packaged
+Electron runtime; a physical Mac install and camera/microphone check are still
+needed. An ad-hoc signature does not promise a warning-free first launch.
 
 **Linux** doesn't warn. If the AppImage won't start, make sure it's
 executable; some distributions also need `libfuse2`.

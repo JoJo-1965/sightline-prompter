@@ -77,7 +77,7 @@ try {
 	await main.evaluate( 'window.sessionControlClasses=["guide-status","guide-controls","obs-status","capture-override-note"].map(id=>[id,document.getElementById(id).className]);sessionControlClasses.forEach(([id])=>document.getElementById(id).classList.remove("hidden"))' );
 	for ( const [ width, height ] of [ [ 1024, 600 ], [ 680, 500 ], [ 480, 300 ] ] ) {
 		await native.evaluate( `process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron').BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().includes('teleprompter.html')).setContentSize(${ width },${ height })` ); await pause( 100 );
-		assert.equal( await main.evaluate( '(()=>{const r=["guide-status","obs-status","capture-override-note"].map(id=>document.getElementById(id).getBoundingClientRect());return r.every(a=>a.left>=0&&a.right<=innerWidth&&a.top>=0&&a.bottom<=innerHeight)&&r.every((a,i)=>r.every((b,j)=>i===j||a.right<=b.left||b.right<=a.left||a.bottom<=b.top||b.bottom<=a.top))})()' ), true, `Session controls wrap without overlapping at ${ width }×${ height }` );
+		assert.equal( await main.evaluate( '(()=>{const r=["section-status","guide-status","obs-status","capture-override-note"].map(id=>document.getElementById(id).getBoundingClientRect());return r.every(a=>a.left>=0&&a.right<=innerWidth&&a.top>=0&&a.bottom<=innerHeight)&&r.every((a,i)=>r.every((b,j)=>i===j||a.right<=b.left||b.right<=a.left||a.bottom<=b.top||b.bottom<=a.top))})()' ), true, `Section pill and session controls wrap without overlapping at ${ width }×${ height }` );
 		assert.equal( await main.evaluate( '(()=>{const a=document.getElementById("guide-controls").getBoundingClientRect(),b=document.getElementById("guide-off").getBoundingClientRect();return b.left>=a.right&&Math.abs(a.top-b.top)<1&&Math.abs(a.height-b.height)<1})()' ), true, "Guide off stays beside the matching adjustment button" );
 		if ( width === 1024 && process.env.SIGHTLINE_TEST_ARTIFACTS ) {
 			const shot = await main.call( "Page.captureScreenshot", { format: "png" } );
@@ -89,7 +89,12 @@ try {
 	assert.equal( await settings.evaluate( '!!document.querySelector(".settings-workspace")' ), true );
 	const approvedSource = await fs.readFile( path.join( root, "docs/design/settings-and-tools-prototype.html" ), "utf8" );
 	const approvedAreas = [ ...approvedSource.slice( approvedSource.indexOf( "const areas=" ), approvedSource.indexOf( "const targets=" ) ).matchAll( /\{id:'[^']+',name:'([^']+)'/g ) ].map( match => match[1] );
-	assert.deepEqual( await settings.evaluate( '[...document.querySelectorAll("[data-settings-group]")].map(x=>x.textContent)' ), [ "Getting started", ...approvedAreas ], "Keep the approved layout with Joanne's new first navigation entry" );
+	assert.deepEqual( await settings.evaluate( '[...document.querySelectorAll("[data-settings-group]")].map(x=>x.textContent)' ), [ "Getting started", ...approvedAreas.filter( label => label !== "Components" ).map( label => label === "Controls" ? "Connections" : label ) ], "Keep the approved layout with Joanne's requested Connections merge" );
+	await settings.evaluate( 'document.querySelector("[data-tab=obs]").click()' );
+	assert.deepEqual( await settings.evaluate( '[...document.querySelectorAll("#settings-page-obs [data-obs-topic]")].filter(x=>!x.hidden).map(x=>x.textContent)' ), [ "Connection" ], "Disabled OBS exposes its master connection page only" );
+	assert.equal( await settings.evaluate( 'document.querySelector("[data-tab=obs-recording]").hidden&&document.querySelector("[data-tab=obs-setup]").hidden' ), true, "No duplicate OBS navigation entries" );
+	assert.equal( await settings.evaluate( 'document.querySelector("[data-tab=components]").closest("[data-settings-area]").dataset.settingsArea' ), "controls", "Apps and add-ons belongs to Connections" );
+	assert.equal( await settings.evaluate( 'document.querySelector("[data-tab=reset]").closest("[data-settings-area]").dataset.settingsArea' ), "start", "Restore defaults belongs to Getting started" );
 	await settings.evaluate( 'document.querySelector("[data-tab=getting-started]").click()' );
 	for ( let n = 0; n < 100 && !await settings.evaluate( 'document.querySelectorAll(".settings-start-step").length===5' ); n++ ) await pause( 100 );
 	assert.equal( await settings.evaluate( 'document.querySelectorAll(".settings-start-step").length' ), 5, "Getting started contains live setup guidance rather than three launch buttons" );
@@ -274,6 +279,10 @@ try {
 		assert.equal( await settings.evaluate( 'getComputedStyle(document.querySelector(".settings-section-content")).overflowY' ), "auto", "The setup guide scrolls inside the central pane, keeping navigation, preview and footer fixed" );
 		assert.equal( await settings.evaluate( '(()=>{const pane=document.querySelector(".settings-section-content"),page=document.querySelector("[data-settings-page=getting-started]"),floor=document.querySelector(".settings-actions").getBoundingClientRect().top;const buttons=[...page.querySelectorAll("button")];const fits=buttons.every(button=>{button.scrollIntoView({block:"nearest",inline:"nearest",behavior:"instant"});const r=button.getBoundingClientRect(),p=pane.getBoundingClientRect();return r.top>=p.top-1&&r.bottom<=Math.min(p.bottom,floor)+1&&r.left>=p.left&&r.right<=p.right;});pane.scrollTo({top:0,behavior:"instant"});return buttons.length===6&&fits&&pane.scrollWidth<=pane.clientWidth})()' ), true, "Every setup action is reachable without overlapping the footer or scrolling sideways" );
 	};
+	const checkResultPageReachable = async name => {
+		assert.equal( await settings.evaluate( 'getComputedStyle(document.querySelector(".settings-section-content")).overflowY' ), "auto", "Status-rich pages scroll inside the centre pane" );
+		assert.equal( await settings.evaluate( `(()=>{const pane=document.querySelector('.settings-section-content'),page=document.querySelector('[data-settings-page="${ name }"]'),footer=document.querySelector('.settings-actions').getBoundingClientRect();const controls=[...page.querySelectorAll('button,input,select,.settings-test-result')].filter(x=>x.getClientRects().length&&!x.closest('[hidden],.hidden'));const fits=controls.every(x=>{x.scrollIntoView({block:'nearest',inline:'nearest',behavior:'instant'});const r=x.getBoundingClientRect(),p=pane.getBoundingClientRect();return r.top>=p.top-1&&r.bottom<=Math.min(p.bottom,footer.top)+1&&r.left>=p.left-1&&r.right<=p.right+1;});pane.scrollTop=0;return controls.length>2&&fits&&pane.scrollWidth<=pane.clientWidth})()` ), true, `${ name }: controls and persistent results remain reachable above the fixed footer` );
+	};
 	const overflow = [];
 	for ( const name of sections ) {
 		await settings.evaluate( `document.querySelector('.settings-subtabs [data-tab="${ name }"]').click()` ); await pause( 30 );
@@ -283,6 +292,10 @@ try {
 				const shot = await settings.call( "Page.captureScreenshot", { format: "png" } );
 				await fs.writeFile( path.join( artifacts, "getting-started.png" ), Buffer.from( shot.data, "base64" ) );
 			}
+			continue;
+		}
+		if ( [ "checklist", "obs", "api" ].includes( name ) ) {
+			await checkResultPageReachable( name );
 			continue;
 		}
 		const clipped = await settings.evaluate( `(()=>{const panel=document.querySelector('[data-settings-page="${ name }"]'), floor=document.querySelector('.settings-actions').getBoundingClientRect().top;return [...panel.querySelectorAll('button,input,select,p,fieldset')].filter(x=>x.getClientRects().length&&!x.closest('[hidden],.hidden')).filter(x=>x.getBoundingClientRect().bottom>floor||x.getBoundingClientRect().right>innerWidth).map(x=>({id:x.id||x.className,text:x.innerText?.slice(0,45),bottom:Math.round(x.getBoundingClientRect().bottom)}))})()` );
@@ -307,6 +320,10 @@ try {
 			await settings.evaluate( `document.querySelector('.settings-subtabs [data-tab="${ name }"]').click()` );
 			if ( name === "getting-started" ) {
 				await checkSetupReachable();
+				continue;
+			}
+			if ( [ "checklist", "obs", "api" ].includes( name ) ) {
+				await checkResultPageReachable( name );
 				continue;
 			}
 			const spill = await settings.evaluate( `(()=>{const panel=document.querySelector('[data-settings-page="${ name }"]'),floor=document.querySelector('.settings-actions').getBoundingClientRect().top;return [...panel.querySelectorAll('input,select,button,p,fieldset')].filter(x=>x.getClientRects().length&&!x.closest('[hidden],.hidden')).filter(x=>x.getBoundingClientRect().bottom>floor||x.getBoundingClientRect().right>innerWidth).map(x=>x.id||x.className)})()` );
@@ -386,9 +403,11 @@ try {
 	await main.evaluate( 'document.getElementById("cb-settings").click()' ); await pause( 150 );
 	if ( process.env.SIGHTLINE_SCREENSHOT_GALLERY === "1" ) {
 		await settings.evaluate( '[...document.querySelectorAll("[data-interface-master] input")].forEach(x=>{x.checked=true;x.dispatchEvent(new Event("change",{bubbles:true}))})' );
+		await settings.evaluate( 'document.getElementById("set-mcp-enabled").click()' );
+		await settings.call( "Emulation.setDeviceMetricsOverride", { width: 1440, height: 900, deviceScaleFactor: 2, mobile: false } );
 		for ( const name of sections ) {
 			await settings.evaluate( `document.querySelector('.settings-subtabs [data-tab="${ name }"]').click()` ); await pause( 60 );
-			await settings.evaluate( `document.querySelector('[data-settings-page="${ name }"] .settings-topic-tabs [role=tab]')?.click()` );
+			if ( !name.startsWith( "obs" ) ) await settings.evaluate( `document.querySelector('[data-settings-page="${ name }"] .settings-topic-tabs [role=tab]')?.click()` );
 			const screenshot = await settings.call( "Page.captureScreenshot", { format: "png" } );
 			await fs.writeFile( path.join( artifacts, `settings-preview05-${ name }.png` ), Buffer.from( screenshot.data, "base64" ) );
 		}
@@ -399,6 +418,7 @@ try {
 			await fs.writeFile( path.join( artifacts, `settings-preview05-text-${ target }.png` ), Buffer.from( screenshot.data, "base64" ) );
 		}
 		await settings.evaluate( 'document.getElementById("settings-cancel").click()' );
+		await settings.call( "Emulation.clearDeviceMetricsOverride" );
 		await main.evaluate( 'document.getElementById("cb-settings").click()' ); await pause( 100 );
 	}
 	const image = await settings.call( "Page.captureScreenshot", { format: "png" } ); await fs.writeFile( path.join( artifacts, "01-settings.png" ), Buffer.from( image.data, "base64" ) );

@@ -4,10 +4,16 @@ Sightline is built to work with an AI at three points: **writing** the
 script, **running** the prompter while you record, and **editing** from the
 take log afterwards. How much your AI can do depends on where it runs.
 
-Sightline doesn't record video or audio: you record with OBS, Riverside,
-Zoom, your camera or anything else. Sightline gives your AI the accurate
-timings (takes, sections, words, retakes, markers, the slate) to find and
-cut the right parts of that recording.
+Your production recording stays in your chosen recorder. Sightline can retain
+optional scratch audio and a reviewed short preparation clip. Take/section
+times, retakes and markers help navigate the recording. Live word timings and
+coverage are estimates: use recorded-audio transcription for cuts and captions.
+
+**RC 1 adds [local MCP support](../MCP.md)** for compatible desktop AI clients.
+Enable the API and MCP under **Connections > AI and API**, install the AI kit
+from **Connections > Apps and add-ons**, and configure its stdio server.
+Read-only access is the default; scripts, prompting and recording have separate
+grants. Browser assistants cannot connect directly to this local server.
 
 | Your AI | Write scripts | Load scripts and run the prompter | Use the take log and edit pack |
 | --- | --- | --- | --- |

@@ -355,7 +355,12 @@ document.body.appendChild( hud );
 // independent fixed positions on small displays.
 const sessionControls = document.createElement( "div" );
 sessionControls.id = "session-controls";
-sessionControls.append( uiElement( "capture-override-note" ), uiElement( "guide-status" ), uiElement( "obs-status" ) );
+const sectionPill = Object.assign( document.createElement( "span" ), { id: "section-status", className: "hidden" } );
+sectionPill.setAttribute( "aria-label", "Current script section" );
+const preparationResult = Object.assign( document.createElement( "span" ), { id: "preparation-test-result", className: "hidden" } );
+preparationResult.setAttribute( "role", "status" );
+preparationResult.setAttribute( "aria-live", "polite" );
+sessionControls.append( uiElement( "capture-override-note" ), sectionPill, uiElement( "guide-status" ), uiElement( "obs-status" ), preparationResult );
 hud.append( sessionControls );
 
 function applyMirror() {
@@ -2042,7 +2047,10 @@ async function runVoiceCommand( id, value ) {
 		// Mark where it went wrong, then back to the start of the section.
 		dropMarker();
 		pendingJumpReason = "again";
-		runRemoteAction( "previous-section" );
+		if ( pointsMode() ) {
+			recording.jump( "again" );
+			goToPoint( pointsIndex );
+		} else jumpSection( 0 );
 		pendingJumpReason = null;
 		resyncAfterJump();
 		// Voice mode: a fresh slate for the retake, once the jump has settled.
@@ -5846,6 +5854,7 @@ function syncScratchAudio( active ) {
 // edge of the prompter, and each take's loudness in the take log. It runs
 // while the meter shows or a take is being measured, and not otherwise.
 let soundCheck = false;
+let preparationStatus = { meter: { active: false }, test: { state: "idle" } };
 let peakHold = { db: -Infinity, at: 0 };
 let clipAt = 0;
 const levelMeter = createLevelMeter( { onLevel: showLevel } );
@@ -5859,7 +5868,8 @@ hud.appendChild( meterEl );
 // -60 dBFS (empty) to 0 dBFS (full)
 const meterPercent = db => Math.min( 100, Math.max( 0, ( ( db + 60 ) / 60 ) * 100 ) );
 
-function showLevel( { level, peak, shortTerm, room } ) {
+function showLevel( { level, peak = null, shortTerm = null, room = null, preparation = false } ) {
+	if ( preparationStatus.meter.active && !preparation ) return;
 	// The control window shows the meter too, even while a take runs.
 	if ( controlOpen ) window.electron.sendPreviewLevel( { level, peak, shortTerm, room } );
 	if ( meterEl.classList.contains( "hidden" ) ) return;
@@ -5876,7 +5886,8 @@ function showLevel( { level, peak, shortTerm, room } ) {
 }
 
 function syncLevelMeter( active ) {
-	if ( settings.microphoneEnabled === false ) {
+	const forPreparation = preparationStatus.meter.active;
+	if ( settings.microphoneEnabled === false && !forPreparation ) {
 		meterEl.classList.add( "hidden" );
 		if ( levelMeter.running ) levelMeter.stop();
 		return;
@@ -5884,12 +5895,18 @@ function syncLevelMeter( active ) {
 	const how = settings.takeLoudness ?? "voice";
 	const micOnAnyway = autoScrollActive || settings.scratchAudio === true;
 	const measuring = active && !isEditMode && ( how === "always" || ( how === "voice" && micOnAnyway ) );
-	const show = soundCheck && !isEditMode && ( !active || settings.soundCheckDuringTakes === true );
+	const forScript = !!scriptCheck && !scriptCheck.done;
+	const show = forPreparation || ( !isEditMode && ( forScript || ( soundCheck && ( !active || settings.soundCheckDuringTakes === true ) ) ) );
 	meterEl.classList.toggle( "hidden", !show );
+	if ( forPreparation ) {
+		// Preparation already owns a microphone stream. Relay its measurements
+		// without opening a second stream or changing the manual meter setting.
+		if ( levelMeter.running ) levelMeter.stop();
+		return;
+	}
 	// With the control window open, it keeps measuring for that, out of sight.
 	const forControl = soundCheck && controlOpen && !isEditMode;
 	// A {soundcheck} in the script, while it measures.
-	const forScript = !!scriptCheck && !scriptCheck.done;
 	if ( ( show || measuring || forControl || forScript ) && !levelMeter.running ) {
 		levelMeter.start( audioDeviceId ).catch( ( err ) => {
 			console.warn( "[sound check]", err );
@@ -5899,6 +5916,39 @@ function syncLevelMeter( active ) {
 		} );
 	} else if ( !show && !measuring && !forControl && !forScript && levelMeter.running ) levelMeter.stop();
 }
+
+function receivePreparationStatus( next ) {
+	if ( !next ) return;
+	preparationStatus = next;
+	const result = next.test?.state ?? "idle";
+	const text = {
+		idle: "Not checked. Open Prepare to record to review picture and sound.",
+		recording: "Recording a local test clip…",
+		saving: "Saving the test clip…",
+		review: "Review required. Confirm the clip’s picture and sound before passing the test.",
+		passed: "Passed · You confirmed the test picture and sound.",
+		failed: "Failed · Check the camera and microphone, then make another test.",
+		stale: "Check again · The setup changed or a new test was requested.",
+		saved: `Previous test passed · ${ next.test?.at ? new Date( next.test.at ).toLocaleString() : "Saved reference" }. Recheck framing and audio for this session.`
+	}[result] ?? "Not checked.";
+	const output = uiElement( "settings-test-recording-result" );
+	if ( output ) {
+		output.dataset.result = result;
+		if ( output.textContent !== `Test recording: ${ text }` ) output.textContent = `Test recording: ${ text }`;
+	}
+	preparationResult.dataset.result = result;
+	const shortText = `Test recording: ${ { recording: "Recording…", saving: "Saving…", review: "Review required", passed: "Passed", failed: "Failed · retry", stale: "Check again", saved: "Previous test passed" }[result] ?? "Not checked" }`;
+	if ( preparationResult.textContent !== shortText ) preparationResult.textContent = shortText;
+	preparationResult.title = text;
+	preparationResult.classList.toggle( "hidden", result === "idle" );
+	syncLevelMeter( isScrolling() || cuePaused || pointsRunning );
+	if ( next.meter?.active ) {
+		showLevel( { ...next.meter, preparation: true } );
+		meterEl.querySelector( ".lm-text" ).textContent = `${ next.meter.phase === "room" ? "Room noise check · stay quiet" : "Voice check · speak normally" } · ${ Math.round( next.meter.level ) } dBFS`;
+	}
+}
+window.electron.onPreRecordStatus( receivePreparationStatus );
+window.electron.preRecordStatus().then( receivePreparationStatus ).catch( () => {} );
 
 function toggleSoundCheck() {
 	if ( settings.microphoneEnabled === false ) {
@@ -5988,6 +6038,11 @@ function rateTake( rating ) {
 }
 
 function pacingTick() {
+	const total = pointsMode() ? pointCount() : directivePoints.sections.length;
+	const currentIndex = pointsMode() ? pointsIndex : sectionIndexAt( readingLineY() );
+	sectionPill.classList.toggle( "hidden", isEditMode || total === 0 );
+	sectionPill.textContent = `${ pointsMode() && notePages ? "Page" : "Section" } ${ Math.min( total, Math.max( 1, currentIndex + 1 ) ) } / ${ total }`;
+	sectionPill.title = currentSectionTitle();
 	const active = isScrolling() || cuePaused || pointsRunning;
 	feedTakeLog( active );
 	if ( !active ) {
@@ -6489,7 +6544,7 @@ function pollGamepads() {
 }
 setInterval( pollGamepads, 40 );
 window.addEventListener( "gamepadconnected", () => {
-	if ( settings.gamepadEnabled ) showToast( "Controller connected · Settings > Controls > Game controller" );
+	if ( settings.gamepadEnabled ) showToast( "Controller connected · Settings > Connections > Game controller" );
 } );
 
 // --- Number boxes beside sliders ---

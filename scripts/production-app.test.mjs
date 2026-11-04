@@ -226,7 +226,7 @@ try {
 	// The redesigned native forms have their own full suite. Retain an inline
 	// fallback check here alongside the recorder/head-guide integration fixture.
 	await evaluate( "document.getElementById('cb-tools').click();document.getElementById('cb-settings').click()" );
-	assert.equal( await evaluate( "document.querySelectorAll('[data-settings-group]').length" ), 9 );
+	assert.equal( await evaluate( "document.querySelectorAll('[data-settings-group]').length" ), 8 );
 	assert.equal( await evaluate( "document.querySelectorAll('[data-settings-page]').length" ), 34 );
 	assert.equal( await evaluate( "document.querySelectorAll('.settings-pagination').length" ), 0 );
 	assert.equal( await evaluate( "document.querySelectorAll('#lp-production-colour').length" ), 1 );
@@ -258,7 +258,7 @@ try {
 	console.log( "PASS: visible slider labels at four window widths, including voice Response and on-air Background state." );
 	await evaluate( "document.body.dispatchEvent(new KeyboardEvent('keydown',{key:'F1',bubbles:true}))" );
 	assert.equal( await evaluate( "document.querySelectorAll('#help-list [role=tab]').length" ), 6 );
-	assert.equal( await evaluate( "[...document.querySelectorAll('#help-list [role=tab]')].some(tab=>tab.textContent==='Controls')" ), true );
+	assert.equal( await evaluate( "[...document.querySelectorAll('#help-list [role=tab]')].some(tab=>tab.textContent==='Connections')" ), true );
 	assert.equal( await evaluate( "/OBS recording|Record take|Finish recording/.test(document.querySelector('#help-list').textContent)" ), false );
 	assert.equal( await evaluate( "document.querySelectorAll('#help-list [role=tabpanel]:not([hidden])').length" ), 1 );
 	await evaluate( "document.querySelector('#help-list [role=tab]').dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true}))" );
@@ -568,8 +568,39 @@ try {
 	await pause( 200 );
 	console.log( "PASS: disabled OBS Finish leaves ordinary prompting running." );
 	await openSettings();
+	await evaluate( "document.getElementById('settings-topic-api').click();document.getElementById('set-mcp-enabled').click();document.getElementById('settings-apply').click()" );
+	const mcpFile = path.join( profile, "mcp-control.json" );
+	for ( let n = 0; n < 50 && !await fs.stat( mcpFile ).catch( () => null ); n++ ) await pause( 50 );
+	const mcp = JSON.parse( await fs.readFile( mcpFile, "utf8" ) );
+	assert.equal( mcp.permissions.scripts, false );
+	const mcpHeaders = { Authorization: `Bearer ${ mcp.token }`, "Content-Type": "application/json" };
+	assert.equal( ( await fetch( mcp.url + '/status', { headers: mcpHeaders } ) ).status, 200 );
+	assert.equal( ( await fetch( mcp.url + '/command', { method: 'POST', headers: mcpHeaders, body: JSON.stringify( { action: 'play' } ) } ) ).status, 403 );
+	await evaluate( "document.getElementById('set-mcp-scripts').click();document.getElementById('settings-apply').click()" );
+	await until( "document.getElementById('settings-applied').textContent==='Saved'" );
+	for ( let n = 0; n < 50 && !JSON.parse( await fs.readFile( mcpFile, 'utf8' ) ).permissions.scripts; n++ ) await pause( 50 );
+	assert.equal( JSON.parse( await fs.readFile( mcpFile, 'utf8' ) ).permissions.scripts, true );
+	await evaluate( "document.getElementById('set-mcp-enabled').click();document.getElementById('settings-apply').click()" );
+	for ( let n = 0; n < 50 && await fs.stat( mcpFile ).catch( () => null ); n++ ) await pause( 50 );
+	assert.equal( !!await fs.stat( mcpFile ).catch( () => null ), false );
+	assert.equal( ( await fetch( mcp.url + '/status', { headers: mcpHeaders } ) ).status, 401, "Disabled MCP revokes its distinct credential" );
+	await evaluate( "document.getElementById('settings-close').click()" );
+	console.log( "PASS: native MCP enable/Apply, read-only defaults, separate scripting grant and live credential revocation." );
+	await openSettings();
 	await evaluate( `(()=>{document.getElementById('set-obs-enabled').checked=true;document.getElementById('set-obs-host').value='127.0.0.1';document.getElementById('set-obs-port').value=${ port };document.getElementById('set-obs-password').value='sightline-test-only';document.getElementById('set-obs-markers').checked=true;document.getElementById('settings-apply').click()})()` );
 	await until( "window.electron.obs('status').then(r=>r.state.connection==='connected' && r.state.recording==='stopped')" );
+	await evaluate( "document.getElementById('settings-topic-obs').click()" );
+	assert.deepEqual( await evaluate( "[...document.querySelectorAll('#settings-page-obs [data-obs-topic]')].filter(x=>!x.hidden).map(x=>x.textContent)" ), [ "Connection", "Recording control", "Profile and scenes" ], "OBS has three visible subtabs" );
+	assert.equal( await evaluate( "document.getElementById('set-obs-connection-state').textContent" ), "Connection: Connected" );
+	assert.equal( await evaluate( "document.getElementById('set-obs-recording-state').textContent" ), "Recording: Not recording" );
+	await evaluate( "document.getElementById('set-obs-test').click()" );
+	await until( "document.getElementById('set-obs-test-result').dataset.result==='passed'" );
+	assert.equal( await evaluate( "document.querySelector('#obs-status .obs-test-result').dataset.result" ), "passed", "Connection test feedback is retained on the prompter too" );
+	await evaluate( "document.querySelector('#settings-page-obs [data-obs-topic=obs-recording]').click()" );
+	assert.equal( await evaluate( "!document.getElementById('settings-page-obs-recording').hidden&&document.getElementById('settings-topic-obs').getAttribute('aria-current')==='page'" ), true, "OBS subtabs retain a single selected sidebar home" );
+	await evaluate( "document.querySelector('#settings-page-obs-recording [data-obs-topic=obs]').click();document.getElementById('set-obs-port').value='4456';document.getElementById('set-obs-port').dispatchEvent(new Event('input',{bubbles:true}))" );
+	assert.equal( await evaluate( "document.getElementById('set-obs-test').disabled&&document.getElementById('set-obs-test-result').dataset.result==='stale'" ), true, "A passed test cannot validate unsaved connection changes" );
+	await evaluate( `document.getElementById('set-obs-port').value='${ port }';document.getElementById('set-obs-port').dispatchEvent(new Event('input',{bubbles:true}))` );
 	assert.ok( authOK );
 	assert.equal( ( await evaluate( "window.electron.obs('start')" ) ).ok, false );
 	assert.equal( active, false );

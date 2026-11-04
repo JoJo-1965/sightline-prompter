@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "basis": "UAT Preview 09, documentation revision 10, 3 November 2026",
-  "date": "3 November 2026",
-  "sourceBuild": "336e946",
-  "buildVersion": "1.1.0",
+  "basis": "RC 1 preview, documentation revision 11, 4 November 2026",
+  "date": "4 November 2026",
+  "sourceBuild": "2e138fa",
+  "buildVersion": "1.2.0-rc.1",
   "publicationStatus": "preview",
   "appRelease": "1.1.0",
   "pluginRelease": "0.2.0",
   "sourceUrl": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/FEATURE-GRID.md",
-  "sourceSha256": "210ca8678cbefcd5e429e6fc8278c1bb0c91e63a22279416a6acd119c9118f8f",
+  "sourceSha256": "0644019d981943ac39227f130afda0b01db2deb0df731fd32d8f228ac1ef1d2b",
   "support": [
     "Included",
     "Optional",
@@ -136,6 +136,12 @@
           "support": "Included",
           "options": "Toolbar, keyboard, voice and enabled remote controls.",
           "limits": "Recorder behaviour is separately configured in the OBS section."
+        },
+        {
+          "name": "Current-section status",
+          "support": "Included",
+          "options": "Yellow section/total pill on the persistent recorder status row; RC addition.",
+          "limits": "Explicitly paged Notes shows page/total. Follows script navigation and retakes, including when the toolbar hides."
         },
         {
           "name": "On air reading view",
@@ -816,6 +822,12 @@
           "support": "Optional",
           "options": "Up to eight seconds of selected camera/microphone, actual WebM playback and picture/sound confirmation; preview addition.",
           "limits": "Local profile storage; manual review and hardware UAT required. No guide is burned into the camera clip."
+        },
+        {
+          "name": "Persistent test outcomes",
+          "support": "Included",
+          "options": "Settings and the main prompter retain recording, review-required, passed, failed or check-again status; RC addition.",
+          "limits": "Saving a clip alone is not a pass; the user must review picture and sound. A saved earlier pass is labelled as previous."
         }
       ]
     },
@@ -1090,6 +1102,12 @@
           "limits": "Requires OBS with a compatible WebSocket server, enabled and reachable."
         },
         {
+          "name": "OBS connection test feedback",
+          "support": "Included",
+          "options": "Separate connection and recorder status; retained running/pass/fail test result in Settings and on the prompter; RC addition.",
+          "limits": "Apply connection changes before testing. A connection pass is not a picture/sound recording pass."
+        },
+        {
           "name": "Optional integration",
           "support": "Optional",
           "options": "OBS support is off until enabled; dependent help and controls follow that state.",
@@ -1234,8 +1252,8 @@
         {
           "name": "Room and voice checks",
           "support": "Optional",
-          "options": "Separate checks for background noise and speech level.",
-          "limits": "Room conditions, microphone placement and hardware gain affect the result."
+          "options": "Separate background-noise and speech checks; the prompter meter appears automatically during measurement.",
+          "limits": "Previous meter visibility returns afterwards. Preparation relays existing measurements without opening a second microphone stream."
         },
         {
           "name": "Advisory low-level handling",
@@ -1338,10 +1356,16 @@
           "limits": "Field availability can differ between older and newer sessions."
         },
         {
+          "name": "Timing qualifications",
+          "support": "Included",
+          "options": "`timing-quality.json` and `TIMING-NOTES.md` explain unverified alignment, caption and pace estimates; RC addition.",
+          "limits": "Original production brief and existing schemas are retained. Clock observations do not verify camera lip sync."
+        },
+        {
           "name": "Word and sentence detail",
           "support": "Optional",
-          "options": "`words.csv` and `sentences.csv` with recognised timing and coverage.",
-          "limits": "Requires voice alignment; recognition errors and paraphrases affect coverage."
+          "options": "`words.csv` and `sentences.csv` retain live voice-following estimates.",
+          "limits": "Word times can lag or bunch; unmatched words do not prove an omission. Use recorded-audio transcription for cuts and captions."
         },
         {
           "name": "Edit marks",
@@ -1508,6 +1532,18 @@
           "limits": "Off by default; intended for authorised local tools, not public web pages."
         },
         {
+          "name": "Local MCP connection",
+          "support": "Optional",
+          "options": "Seven stdio tools in the AI kit: status/version, load script, slots, prompting, OBS recording, recording list and textual edit pack; RC addition.",
+          "limits": "Node.js 22.16+, enabled local API and MCP switch. Separate credential; read-only by default. No cloud/network MCP endpoint. See [MCP setup](MCP.md)."
+        },
+        {
+          "name": "MCP permission grants",
+          "support": "Optional",
+          "options": "Script, prompting and OBS recording grants are enforced by the app; turning MCP off revokes active clients.",
+          "limits": "No settings edits, arbitrary file reads or recording deletion. Prompting requires the recording grant whenever OBS controls are enabled."
+        },
+        {
           "name": "Live automation feedback",
           "support": "Included",
           "options": "Status and event updates expose supported state and app/control-contract versions.",
@@ -1578,8 +1614,8 @@
         {
           "name": "Stable settings panel",
           "support": "Included",
-          "options": "Stable frame, nine areas and 34 named sections, permanent controls. Getting started is first and scrolls guidance in the centre pane; preview addition.",
-          "limits": "Configuration sections retain their fixed layout; resizing never reallocates a setting to another page. A minimum usable window is required."
+          "options": "Eight task areas; 32 navigation homes with two additional OBS subviews. Controls and Components merge into Connections; RC addition.",
+          "limits": "Approved navigation/control/sample composition is retained. Longer setup/result panels scroll centrally above a fixed footer; settings never migrate on resize."
         },
         {
           "name": "Settings example preview",
@@ -1602,8 +1638,8 @@
         {
           "name": "Named section navigation",
           "support": "Included",
-          "options": "Sidebar search, explicit sections and visible button subtabs for Text, Screens, Reading aids, Head guide and Installed components; compact area/section selectors.",
-          "limits": "Disabled OBS recording/setup and speech children are excluded until their parent is enabled."
+          "options": "Sidebar search and visible button subtabs for Text, Screens, Reading aids, Head guide, add-ons and the single OBS entry.",
+          "limits": "OBS Connection, Recording control and Profile and scenes share one sidebar home. Disabled OBS/speech subviews remain unavailable."
         },
         {
           "name": "Live Tools groups",
@@ -1632,8 +1668,8 @@
         {
           "name": "Restore defaults",
           "support": "Included",
-          "options": "Return preferences to the shipped starting setup and re-enter onboarding.",
-          "limits": "Does not uninstall components or delete the user's scripts and recording media."
+          "options": "Getting started > Restore defaults returns preferences to the initial setup after confirmation.",
+          "limits": "Does not uninstall add-ons or delete scripts and recording media."
         },
         {
           "name": "Settings transfer",
@@ -1732,8 +1768,8 @@
         {
           "name": "Published versus preview",
           "support": "Limited",
-          "options": "This grid covers Settings Preview 06 and companion 0.2.0 together.",
-          "limits": "Do not compare the public 1.1.0 installer as though it already includes all preview additions."
+          "options": "This grid covers the 1.2.0 RC 1 candidate and companion 0.2.0 together.",
+          "limits": "The stable public 1.1.0 installer does not include all RC additions."
         },
         {
           "name": "Reviewer comparison scope",

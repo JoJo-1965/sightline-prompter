@@ -3045,6 +3045,43 @@ body.notes-pages #md ol.current-section {
 #obs-status.hidden { display: none; }
 #session-controls {position:fixed;top:50px;left:12px;right:12px;z-index:1300;display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:flex-start;gap:8px;pointer-events:none;}
 #session-controls > * {pointer-events:auto;}
+#section-status {
+	margin-right: auto;
+	margin-top: 8px;
+	padding: 5px 10px;
+	border: 1px solid #f2cd64;
+	border-radius: 999px;
+	background: #f2cd64;
+	color: #231e0e;
+	font: 600 14px/1.4 system-ui, sans-serif;
+	white-space: nowrap;
+}
+#preparation-test-result {
+	flex: 0 0 auto;
+	margin-left: auto;
+	max-width: 100%;
+	padding: 6px 10px;
+	border: 1px solid #93a4b8;
+	border-radius: 6px;
+	background: #20242b;
+	color: #ffffff;
+	font: 13px/1.4 system-ui, sans-serif;
+	text-wrap: pretty;
+}
+#set-obs-status > span { display: block; margin-top: 4px; }
+#set-obs-status { display: flex; flex-wrap: wrap; gap: 2px 18px; margin: 8px 0; font: 13px/1.45 system-ui, sans-serif; }
+#set-obs-status-detail { flex-basis: 100%; }
+#set-obs-status-detail:empty { display: none; }
+.settings-test-result, .obs-test-result {
+	font: 13px/1.5 system-ui, sans-serif;
+	text-wrap: pretty;
+}
+.settings-test-result { padding: 8px 10px; border-left: 3px solid #93a4b8; background: #202630; }
+.obs-test-result { flex-basis: 100%; order: 1; }
+:is(.settings-test-result, .obs-test-result, #preparation-test-result)[data-result="passed"] { color: #94edbc; border-color: #94edbc; }
+:is(.settings-test-result, .obs-test-result, #preparation-test-result)[data-result="failed"] { color: #ffaaaa; border-color: #ffaaaa; }
+:is(.settings-test-result, .obs-test-result, #preparation-test-result):is([data-result="review"], [data-result="stale"], [data-result="saved"]) { color: #f5d784; border-color: #f5d784; }
+#section-status.hidden, #preparation-test-result.hidden, .obs-test-result[hidden], .settings-topic-tabs [hidden] { display: none !important; }
 #session-controls > .guide-status, #session-controls > #obs-status {position:static;box-sizing:border-box;max-width:100%;}
 #session-controls > #capture-override-note {position:static;box-sizing:border-box;flex:0 0 100%;width:100%;max-width:100%;margin:0;}
 #obs-status.obs-recording { border-left: 4px solid #ff5252; }

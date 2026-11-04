@@ -1,5 +1,22 @@
 # Scrolling and voice
 
+## RC 1 recording feedback
+
+**Prompter, restart section** (or **restart sections**, **again**, **retake**)
+returns to this section's start, including when you are near its start.
+**Prompter, next section** advances. **Prompter, restart** still resets the
+whole script. The usual enabled command-listening mode is required.
+
+With OBS integration and recording controls enabled, **Prompter, finish**,
+**end**, **end recording**, **finish recording** and **stop recording** finish
+recording. The recogniser's observed **stopped recording** variant is accepted.
+**Prompter, stop** continues to pause prompting. Recorder commands retain their
+wake-word/end-of-phrase guard and OBS permissions.
+
+Scripted voice or room checks show the sound meter automatically, then return
+to your previous visibility choice. A yellow Section pill shows the current
+section alongside recorder status; explicitly paged Notes show the current page.
+
 ## Recording commands in the next preview
 
 With OBS integration and recording controls enabled, say the wake word, then
@@ -198,7 +215,7 @@ every recognition error. This option saves no audio.
 | **from the top** (or top, start again) | Back to the start |
 | **reset** (or restart) | Back to the start, with the speed back to normal and the pacing clock cleared, ready for a fresh run |
 | **section 3** (1–99, including “section twenty one”) | To the start of that section. You can say it without "Prompter" too, as your spoken slate before each section: saying the section you're in counts as a retake |
-| **again** (or retake) | Drops a marker where you are, then goes back to the start of the section for a retake |
+| **again** (or retake, restart section, restart sections) | Drops a marker and restarts this section, including near its start |
 | **marker** | Drops a marker |
 | **back to the marker** (or from the marker, last marker) | Back to the last marker, to read on from there (Shift+B) |
 | **keeper** (or keep that, good take) | Marks the take you're on, or the one you've just finished, as a keeper in the [take log](05-recording-a-take.md#the-take-log) |
@@ -209,7 +226,7 @@ every recognition error. This option saves no audio.
 | **guide on · guide off** | Shows or hides the separate head-position guide; repeats keep the requested state |
 | **close** (or cancel, never mind) | Hides that list |
 | **record take** (or start recording) | Optional OBS integration: confirm recording, then start prompting. Requires enabled OBS recording controls |
-| **finish recording** (or stop recording) | Optional OBS integration: stop prompting and finish the OBS recording |
+| **finish recording** (or stop recording, stopped recording, end recording, finish, end) | Optional OBS integration: stop prompting and finish the OBS recording |
 | **record on / record off** | Next preview, with OBS recording permission: explicitly start or finish recording; off holds prompting |
 | **record pause / record resume** | Next preview: pause or resume the existing recording; pause holds prompting. Check your format supports pausing |
 

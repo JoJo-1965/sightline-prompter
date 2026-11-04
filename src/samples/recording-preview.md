@@ -2,6 +2,15 @@
 
 # Recording preview
 
+<!-- RC 1 CHECK. Connections merges installation and configuration. OBS has
+Connection, Recording control and Profile and scenes subtabs. Test the saved
+connection after Apply: its pass confirms connectivity, not picture and sound.
+Prepare to record retains a reviewed test result in Settings and on the prompter.
+The sound meter appears during room/voice checks. The yellow section pill shows
+your place. Try Prompter restart section and Prompter next section. With OBS
+recording permission, Prompter finish or Prompter end finishes the recording;
+Prompter stop only pauses prompting. Keep command examples silent until testing. -->
+
 <!-- PREPARE. This sample belongs to the next unpublished preview. Check your
 build before testing. Remember to press Record and confirm the recording pill.
 For one continuous file, leave Link recording to prompting off. To test linked

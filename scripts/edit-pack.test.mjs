@@ -85,9 +85,13 @@ assert.equal( takeCues( old )[0].text.startsWith( "Have you ever" ), true );
 // The pack: every file, with the README when given.
 const pack = editPack( data, "# brief" );
 assert.deepEqual( Object.keys( pack ).sort(), [
-	"README.md", "captions.srt", "captions.vtt", "edit-marks.csv", "edit-marks.json",
-	"rehearsal-coach.json", "sentences.csv", "take-log.json", "takes.csv", "words.csv"
+	"README.md", "TIMING-NOTES.md", "captions.srt", "captions.vtt", "edit-marks.csv", "edit-marks.json",
+	"rehearsal-coach.json", "sentences.csv", "take-log.json", "takes.csv", "timing-quality.json", "words.csv"
 ] );
+assert.equal( JSON.parse( pack["timing-quality.json"] ).verifiedAgainstAudio, false );
+assert.equal( pack["README.md"], "# brief", "Preserve a supplied production brief exactly" );
+assert.match( pack["TIMING-NOTES.md"], /not verified against recorded audio/ );
+assert.match( editPack( data )["README.md"], /Unmatched words do not prove an omission/ );
 assert.match( pack["words.csv"], /^section,take,sentence,word_index,word,start,end\r\n1,1,1,1,Have,3,3\.2\r\n/ );
 assert.match( pack["sentences.csv"], /1,1,yes,2,4\.6,[\d.]+,3,4,no,us,Most of us have\./ );
 

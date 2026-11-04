@@ -246,6 +246,7 @@ export function editPack( data, readme = "" ) {
 	const marks = ( data.takes ?? [] ).flatMap( take =>
 		takeMarks( take ).map( m => ( { section: take.section, take: take.take, ...m } ) ) );
 	const files = {
+		"timing-quality.json": JSON.stringify( { source: "live-voice-following", verifiedAgainstAudio: false, purpose: "Rough navigation and rehearsal review", limitations: [ "Word times may lag speech, share timestamps or omit spoken words.", "Unmatched or missing words are alignment candidates, not verified omissions.", "Pace, captions and edit marks require transcription and review against recorded media.", "OBS clock observations do not verify camera lip sync." ] }, null, 2 ),
 		"rehearsal-coach.json": JSON.stringify( rehearsalCoach( data ), null, 2 ),
 		// Sections worked out again, so a log saved before the pace was added has it too.
 		"take-log.json": JSON.stringify( { ...data, sections: pickTakes( data.takes ?? [] ) }, null, 2 ),
@@ -257,7 +258,8 @@ export function editPack( data, readme = "" ) {
 		"captions.srt": captions( data, "srt" ),
 		"captions.vtt": captions( data, "vtt" )
 	};
-	if ( readme ) files["README.md"] = readme;
+	files["TIMING-NOTES.md"] = "# Timing and alignment\n\nWords, captions, sentence matches, pace and skipped-word marks are estimates from live voice-following. They can lag or bunch up and are not verified against recorded audio. Unmatched words do not prove an omission. Use a transcription of the recording for final cuts and captions. OBS clock observations provide approximate navigation and do not verify camera picture-to-sound sync. See timing-quality.json.\n";
+	files["README.md"] = readme || files["TIMING-NOTES.md"];
 	if ( data.scriptSnapshots?.length ) {
 		files["script-snapshots.json"] = JSON.stringify( data.scriptSnapshots, null, 2 );
 		for ( const [ i, snapshot ] of data.scriptSnapshots.entries() ) {
