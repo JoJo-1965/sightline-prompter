@@ -1,5 +1,11 @@
 # Feature-matrix review record
 
+4 November 2026, feedback after RC 5: remove the redundant guide footer message.
+The reveal tab, shortcuts, controls and framing geometry remain unchanged.
+This cosmetic correction changes no capability, requirement or limit in RC 5's
+249-row matrix. Queue it for the next combined package; frozen exports and JL
+snapshot stay tied to RC 5 until that packaging review.
+
 4 November 2026, RC 5 packaging review: Joanne requested the combined build.
 The 249-row grid now describes 1.2.0-rc.5/docs 15 and source 29e32a8. Existing
 guide visibility, position feedback, Lock current and preparation rows cover

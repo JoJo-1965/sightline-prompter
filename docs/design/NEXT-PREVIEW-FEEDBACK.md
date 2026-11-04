@@ -1,5 +1,13 @@
 # Feedback queued after UAT 09
 
+## After RC 5 · next combined candidate
+
+- [x] Remove the redundant footer instruction strip below the guide now that
+  the Head guide reveal tab provides recovery. Keep the existing stage insets
+  and window geometry so saved framing does not move.
+- [ ] Include this source change with the next feedback batch. Frozen RC 5
+  remains available and unchanged; no single-item package was generated.
+
 ## RC 5 · combined head-guide feedback batch
 
 - [x] Reproduce incorrect distance advice after changing guide Width and

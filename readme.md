@@ -248,6 +248,11 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ## Change log
 
+### After RC 5 · next combined candidate
+
+- Remove the redundant instruction strip below the head guide. The bottom
+  Head guide tab remains available to recover controls. Framing bounds stay fixed.
+
 ### 1.2.0 RC 5 · head-guide corrections
 
 - Distance feedback now includes Width and left/right adjustments, so a
