@@ -28,6 +28,8 @@ if an attempt fails. Errors appear beside these controls, with a recovery hint.
 If your recording app owns the camera exclusively, choose its virtual camera
 or release the physical camera there, then try Enable camera again. Device
 changes refresh the list; they do not start capture automatically.
+
+![A busy camera leaves the input selector and retry available, with an error beside Enable camera](images/prepare-camera-recovery.png)
 The preparation view uses a centred 16:9 crop; verify that your recorder uses
 the same framing. Mirroring changes the view and arrow direction, not the file.
 

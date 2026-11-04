@@ -2,6 +2,13 @@
 
 ## Current delivery position
 
+**RC 3 camera recovery:** the default Facecam failure exposed a disabled input
+selector. The fix lists camera/virtual feeds before capture and leaves retry
+available after failure, with an error beside Enable camera. Real Elgato virtual
+capture and the complete source preparation regression pass. Packaging follows
+these checks; the Windows package passes the full preparation regression.
+RC 1/2 downloads remain available.
+
 **RC 2 content refresh:** the twelve shipped sample files and first-run tour
 are reviewed together for current features and safe recording practice. The
 tour, menu, AI brief, demo guide and feature exports are updated as one batch.
@@ -9,14 +16,14 @@ Packaged first-run checks and all four installer targets pass. RC 1 remains
 available alongside RC 2. See [the demo handover](docs/RC-1.2.0-2.md).
 
 **Published baseline:** Sightline 1.1.0 with Stream Deck companion 0.2.0.
-**Current candidate:** 1.2.0 RC 2 retains the confirmed RC 1 feedback batch,
+**Current candidate:** 1.2.0 RC 3 retains the confirmed RC 1 feedback batch,
 local MCP and ad-hoc Mac signing, with the refreshed demo library and AI kit.
 Source and packaged Windows checks passed;
 both Mac architectures and Linux passed installer CI. Physical recording UAT
 remains necessary before treating this candidate as the final release.
 See [RC scope](docs/RELEASE-1.2.0-SCOPE.md). The UAT 09 baseline below remains
 available alongside the verified candidate.
-**Latest packaged candidate:** 1.2.0 RC 2, documentation revision 12.
+**Latest packaged candidate:** 1.2.0 RC 3, documentation revision 13.
 **Next deliverable:** Joanne's physical recording UAT, then final release.
 The combined RC feedback batch is implemented and packaged. UAT 09 remains
 available as the previous accepted baseline.

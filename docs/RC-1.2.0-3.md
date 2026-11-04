@@ -18,7 +18,10 @@ started; no reliable single face was present during that probe. This validates
 capture recovery, not alignment accuracy on Joanne's face.
 
 RC 3 retains the approved layout, RC 1 app changes and RC 2 demo library.
-Packaging and native packaged checks follow before the download is offered.
+The Windows package passes the same full native preparation regression.
+Unit, offline-help, feature-grid and pending JL build checks pass. The updated
+help image is captured from the package. This changes camera selection and
+error recovery only; it does not alter the approved Settings composition.
 Stable remains 1.1.0. Existing profiles, slot 4, Ideal and recordings are retained.
 
 ## Test the corrected path

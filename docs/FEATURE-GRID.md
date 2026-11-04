@@ -1,11 +1,11 @@
 # Sightline Prompter feature grid
 
-**Review basis: RC 2 preview, documentation revision 12, 4 November 2026.**
-**Build version:** `1.2.0-rc.2` · **Publication status:** Preview
+**Review basis: RC 3 preview, documentation revision 13, 4 November 2026.**
+**Build version:** `1.2.0-rc.3` · **Publication status:** Preview
 
 **Maintained source:** [Feature grid](https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/FEATURE-GRID.md)
 
-This grid describes the preview built from `33ad364`, with companion Stream
+This grid describes the preview built from `8c7b8b8`, with companion Stream
 Deck plugin **0.2.0**. It includes the existing features and the unpublished
 preview additions. The build manifest also records the packaging/documentation
 snapshot. The public app release remains **1.1.0**; this document
