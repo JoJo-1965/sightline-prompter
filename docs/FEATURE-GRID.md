@@ -5,7 +5,7 @@
 
 **Maintained source:** [Feature grid](https://github.com/JoJo-1965/sightline-prompter/blob/codex/1.3.0-rc1-recording-evidence/docs/FEATURE-GRID.md)
 
-This grid describes the preview built from `7780d2d`, with companion Stream
+This grid describes the preview built from `67d879e`, with companion Stream
 Deck plugin **0.2.1.1** candidate. It includes stable 1.2.0 features plus the explicitly labelled RC additions. The build manifest also records the packaging/documentation
 snapshot. The public app release remains **1.2.0**; this document
 does not certify an individual recording setup.

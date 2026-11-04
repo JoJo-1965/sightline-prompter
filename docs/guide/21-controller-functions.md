@@ -69,6 +69,12 @@ focused dial assignments retain their original turn and press behaviour.
 
 ## Pad, phone and migration
 
+![RC2 recording-reference return in the packaged workflow](images/controller-rc2-preparation.png)
+
+Validation screenshot uses a synthetic picture and tone, not a camera/detection
+acceptance result. It shows the actual workflow after saving and restoring a
+checked reference. The approved Settings composition remains unchanged.
+
 In **Connections > Pad and phone**, add functions from the grouped picker.
 Your saved button IDs, order, columns and Finish hold setting stay unchanged.
 Mapped keys/controllers use the same operation guards. Disabled interfaces
