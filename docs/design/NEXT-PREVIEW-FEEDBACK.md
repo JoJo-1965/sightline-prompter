@@ -82,3 +82,16 @@ assertion that the current aliases or recorder timing already pass UAT.
 With the next combined build, update help, navigation paths, screenshots and
 feature-grid exports/JL snapshot together. Distinguish connection-test success
 from a reviewed recording and retain unknown states when evidence is missing.
+
+## Mac distribution report
+
+- [ ] A Mac user received the damaged / cannot be opened / move to Bin alert
+  for Sightline. The published v1.1.0 tag and current source set mac.identity
+  to null; the build workflow sets CSC_IDENTITY_AUTO_DISCOVERY=false and has
+  no notarisation step. Signing/package validation is a strong candidate, but
+  this screenshot alone does not rule out an altered or corrupt download.
+  Obtain the exact DMG, macOS version and processor architecture, compare its
+  checksum and inspect codesign/Gatekeeper results on a Mac. The durable public
+  distribution fix is Developer ID signing, notarisation/stapling and fresh
+  download validation for both supported Mac architectures. Preserve the
+  distinction between this alert and ordinary unidentified-developer prompts.

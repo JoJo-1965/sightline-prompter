@@ -1,5 +1,66 @@
 # Sightline Prompter roadmap
 
+## Current delivery position
+
+**Published baseline:** Sightline 1.1.0 with Stream Deck companion 0.2.0.
+**Latest packaged preview:** unpublished UAT 09, documentation revision 10.
+**Next deliverable:** one combined preview for the UAT 09 feedback, then RC
+acceptance. No newer preview or formal RC has been built from that feedback.
+The dated preview/RC notes below are history, not the current delivery status.
+
+UAT 09 includes the signed-off Settings composition, independent text styling,
+themes, real local pre-record detection and test recording, guide/reference
+controls, listening recovery, comment focus exclusions and centred 75%
+placement after a manual cross-screen move. Native/software checks pass.
+Joanne's real slot 4 run has now produced 15 takes across 12 sections, actual
+OBS/camera footage and a complete production handoff. The run also exposed
+voice-alias and recorder-association issues; it is not a clean RC sign-off.
+
+The [consolidated feedback queue](docs/design/NEXT-PREVIEW-FEEDBACK.md) is the
+implementation checklist for the next combined review:
+
+1. **Recording reliability:** investigate the first-take/previous-file link,
+   extra unlinked OBS session after stop and historical clock observations.
+   Add the actual finish/end and restart-section phrases, preserving existing
+   pause/reset behaviour and recorder permissions. Validate against the saved
+   recording evidence rather than relying solely on simulated protocol tests.
+2. **Recording visibility:** show persistent test outcomes in Settings and on
+   the prompter, distinguish OBS connection from recording state, show the
+   meter during voice/room checks and add the yellow current-section pill.
+3. **One Connections area:** merge Controls and Components, keep one OBS entry
+   with Connection/Recording/Profile button subtabs and move Restore defaults
+   to Getting started. Preserve feature gating and existing deep links.
+4. **Combined handover:** update help, screenshots, feature-grid exports and
+   the pending JL snapshot, run the relevant packaged regressions, and produce
+   one new preview for Joanne's review. The coffee reminder's repeating 10–15
+   launch schedule is already implemented/tested, but is not in UAT 09.
+
+**Mac distribution is a release priority:** an actual user has reported the
+damaged/cannot-open alert. Published v1.1.0 explicitly skips code signing and
+has no notarisation step. Confirm the affected asset and Mac, inspect the
+package and resolve signing/notarisation before claiming validated Mac
+distribution. Signing and credentials still need implementation/verification;
+the exact cause of that user's alert is not established by the screenshot.
+
+**MCP remains planned for the next candidate, not implemented.** The existing
+local API/agent kit is available; it is not a native Sightline MCP server.
+The scope and acceptance checks are below. Reliability and UAT feedback take
+priority while that adapter remains unbuilt.
+
+**Production and publication tracks:** the complete slot 4 handoff is under
+`D:/Production/Sightline-Academy/Marketing/videos/sightline-promo/handoff/2026-11-03-slot-04`.
+Recordings and edit metadata are present; media alignment still needs review.
+The dedicated JL Stream Deck page is live. The wider UAT documentation/grid
+snapshot is prepared on the website branch and is not deployed. Joanne has
+reported resubmitting the Marketplace listing and sending the reply; no
+Marketplace approval is recorded here. Publication remains a separate step.
+
+**Later development:** automatic updates follows signing; native MCP remains
+the next-candidate integration request. Zoom/Teams controls, script-folder
+sync, automatic slide advancement, general per-take in-app video recording and
+a browser edition remain backlog work. The short pre-record test clip already
+in the preview does not complete the broader per-take recording item.
+
 ## Next candidate — MCP support (planned)
 
 Requested by Joanne on 2 November 2026 for the next candidate after UAT
