@@ -4858,6 +4858,8 @@ function sendStatus() {
 		progress: progressText?.textContent ?? "",
 		editing: isEditMode,
 		points: pointsMode(),
+		readingMode: pointsMode() ? "notes" : settings.scrollMode === "voice" ? "voice" : "scroll",
+		readingModeLocked: [ "notes", "points" ].includes( scriptDirectives.script.mode ),
 		sectionTitle: currentSectionTitle(),
 		speed: settings.scrollMode === "voice" ? "Voice" : `${ getWpm() } wpm`,
 		soundCheck: soundCheckOn(),
@@ -5035,6 +5037,16 @@ function jumpSection( step ) {
 }
 
 function runRemoteAction( action, value ) {
+	if ( action === "again" && !isEditMode ) return runVoiceCommand( "retake" );
+	if ( [ "mode-notes", "mode-voice", "mode-scroll", "mode-cycle" ].includes( action ) ) {
+		if ( isEditMode || isScrolling() ) return showToast( "Pause prompting before changing reading mode" );
+		if ( [ "notes", "points" ].includes( scriptDirectives.script.mode ) && action !== "mode-notes" ) return showToast( "This script specifies Notes mode; change its mode directive first" );
+		const modes = settings.speechEnabled === false || settings.microphoneEnabled === false ? [ "notes", "scroll" ] : [ "notes", "voice", "scroll" ], current = pointsMode() ? "notes" : settings.scrollMode === "voice" ? "voice" : "scroll";
+		const mode = action === "mode-cycle" ? modes[( modes.indexOf( current ) + 1 ) % modes.length] : action.slice( 5 );
+		if ( mode === "voice" && ( settings.speechEnabled === false || settings.microphoneEnabled === false ) ) return showToast( "Enable speech and microphone in Connections first" );
+		window.electron.saveSettings( { pointsMode: mode === "notes", ...( mode !== "notes" ? { scrollMode: mode === "voice" ? "voice" : "steady" } : {} ) } );
+		return;
+	}
 	if ( [ "obs-on", "obs-off", "obs-pause", "obs-resume" ].includes( action ) ) {
 		if ( !settings.obsEnabled || !settings.obsControls ) return;
 		return obsUi.action( { "obs-on": "start", "obs-off": "stop", "obs-pause": "pause", "obs-resume": "resume" }[action], { prompt: action === "obs-off" || action === "obs-pause" } );
@@ -6535,6 +6547,10 @@ function mappingBlocked() {
 }
 function runMappedAction( action ) {
 	if ( action === "none" || mappingBlocked() ) return;
+	if ( [ "prepare-recording", "check-room-voice", "test-recording-start", "test-recording-stop", "test-recording-play", "recording-reference-save", "recording-reference-restore", "guide-lock-current", "back-after-break", "review-recording", "export-reviewed-pack", "guide-adjustments", "guide-eyes-lock", "guide-ideal-visible", "guide-match-ideal" ].includes( action ) ) {
+		window.electron.controllerCommand( action ).catch( error => showToast( error.message ) );
+		return;
+	}
 	if ( action === "next-marker" ) {
 		jumpToNextMarker();
 		return;

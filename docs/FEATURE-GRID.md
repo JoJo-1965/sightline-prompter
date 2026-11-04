@@ -1,12 +1,12 @@
 # Sightline Prompter feature grid
 
-**Review basis: Sightline 1.3.0 RC1 preview, documentation revision 17, 4 November 2026.**
-**Build version:** `1.3.0-rc.1` · **Publication status:** Preview
+**Review basis: Sightline 1.3.0 RC2 preview, documentation revision 18, 4 November 2026.**
+**Build version:** `1.3.0-rc.2` · **Publication status:** Preview
 
 **Maintained source:** [Feature grid](https://github.com/JoJo-1965/sightline-prompter/blob/codex/1.3.0-rc1-recording-evidence/docs/FEATURE-GRID.md)
 
 This grid describes the preview built from `7780d2d`, with companion Stream
-Deck plugin **0.2.0**. It includes stable 1.2.0 features plus the explicitly labelled RC1 additions. The build manifest also records the packaging/documentation
+Deck plugin **0.2.1.1** candidate. It includes stable 1.2.0 features plus the explicitly labelled RC additions. The build manifest also records the packaging/documentation
 snapshot. The public app release remains **1.2.0**; this document
 does not certify an individual recording setup.
 
@@ -235,7 +235,14 @@ Reference: [Stream Deck installation, permissions and profiles](guide/06-remotes
 
 | Capability | Availability | Options and behaviour | Dependencies and limits |
 | --- | --- | --- | --- |
-| Companion plugin | Dependent | Sightline Stream Deck 0.2.0, paired with the app's supported control contract. | Requires Elgato Stream Deck software; the companion is an optional installation. |
+| Companion plugin | Dependent | RC2 preview companion 0.2.1.1, paired with the app's supported control contract; stable companion remains 0.2.0. | Requires Elgato Stream Deck software; the companion is an optional installation. |
+| Grouped controller functions | Optional | RC2 preview: related new assignments use a Function selector and function-specific key artwork; all 34 published key/dial UUIDs remain registered. | No compulsory conversion or automatic profile switch; legacy settings, states and custom images retain their rules. |
+| Controller preparation workflow | Optional | RC2 preview: Prepare, combined room/voice check, test start/stop/play, detected draft lock, recording-reference restore/save and return after a break. | Explicit input enablement and existing framing/audio/test acceptance still apply; no automatic pass. Available from Stream Deck and shared pad/phone/mapped inputs. |
+| Explicit controller reading modes | Optional | RC2 preview: Notes, Voice or Scroll; cycle skips disabled voice interfaces. Again reuses the current-section retake operation. | Pause before changing mode; script-forced Notes is respected. Existing two-mode keys retain their original behaviour. |
+| Configurable Adjustment dial | Optional | RC2 preview: pace, text size, manual scroll, sections or backing, with visible press/tap behaviour. | Existing six dial UUIDs retain behaviour. New Sections turns move once per event; pace/size repeat up to five steps. Requires a dial-capable device. |
+| Workflow status and review keys | Optional | RC2 preview: recorder/framing/preparation display, optional press, open current logged review and export a reviewed edit pack. | New displays default to no press. Export requires matching analysis and destination selection; no automatic transcription/model download. |
+| Virtual RC profiles | Optional | RC2 preview: separate on-screen Virtual 8 × 5 and Plus layouts; existing standard/OBS profiles remain available. | Import explicitly. Virtual device type 11 is separate from MCP Deck type 14. |
+| Explicit recorder utilities | Dependent | RC2 preview: separate OBS pause and resume functions with confirmed-state feedback. | OBS enabled, connected and recording controls permitted; ordinary prompting pause retains its configured behaviour. |
 | Supported desktop hosts | Dependent | Plugin host support for Windows and macOS. | The Linux app does not imply an official Elgato Linux host. |
 | Keys, Mobile and Pedal | Included | Ready-made profiles for supported Stream Deck models, including Mobile and Pedal. | Requires the corresponding Elgato hardware/software entitlement where applicable. |
 | Stream Deck + dials | Included | Dial-based controls for supported reading and framing adjustments. | Requires Stream Deck + and the appropriate action configuration. |

@@ -1,13 +1,14 @@
 {
 	"name": "sightline-prompter",
 	"productName": "Sightline Prompter",
-	"version": "1.3.0-rc.1",
-	"documentationRevision": 17,
+	"version": "1.3.0-rc.2",
+	"documentationRevision": 18,
 	"releaseDate": "2026-11-04",
 	"description": "Sightline Prompter",
 	"main": "src/main.js",
 	"type": "module",
 	"scripts": {
+		"test:controllers": "node scripts/controller-workflow.test.mjs && node scripts/pad-layout.test.mjs && node scripts/input-mappings.test.mjs && node scripts/controller-app.test.mjs",
 		"build:editor": "esbuild src/client/editor.js --bundle --format=iife --global-name=EditorModule --outfile=src/client/editor-bundle.js && node scripts/build-framing-runtime.mjs && node scripts/build-mcp.mjs",
 		"prestart": "pnpm build:editor",
 		"start": "electron .",

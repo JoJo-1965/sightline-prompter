@@ -1,5 +1,9 @@
 # Start here and focused demos
 
+RC2's Start here notes include the grouped controller workflow. The optional
+RC2 profiles are separate imports. Use a disposable test, explicitly enable
+inputs, review picture/sound, save a checked reference and retain a fallback.
+
 Open **Files > Sample scripts > Start here: Sightline feature tour**.
 The same `welcome.md` opens automatically on a fresh profile with no scripts.
 It is a guided sample with fourteen stops, rather than a production recording.

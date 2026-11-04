@@ -1,9 +1,11 @@
 # Sightline Prompter user guide
 
-**Sightline 1.3.0 RC1 preview · companion 0.2.0 · documentation revision 17**
+**Sightline 1.3.0 RC2 preview · companion candidate 0.2.1.1 · documentation revision 18**
 
 Stable download remains Sightline 1.2.0. New preview workflows are described in
-[RC1 notes](../RELEASE-1.3.0-rc.1.md); they are not in the stable installer.
+[RC2 notes](../RELEASE-1.3.0-rc.2.md); they are not in the stable installer.
+
+New: [Controller functions and migration](21-controller-functions.md).
 
 This is the canonical web/wiki documentation and the source of the guide bundled
 with the installer. A separate GitHub wiki is intentionally disabled to avoid
@@ -51,6 +53,7 @@ review a short test and save a reference. Restore that reference after a break.
 18. [Download and installation help](18-installation.md): Edge Keep, Windows SmartScreen and macOS Open Anyway
 19. [Post-record audio review](19-post-record-review.md): local transcription, delivery candidates, command ranges and per-file offsets
 20. [Guided tour](20-guided-tour.md): first use, rerun, keyboard navigation and cancellation
+21. [Controller functions](21-controller-functions.md): grouped assignments, preparation controls, adjustment dials and migration
 
 Open this guide from **Help > User Guide** or the **?** menu. **F1** shows the
 enabled shortcuts. Use Settings search to find a control; use the searchable

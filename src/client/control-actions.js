@@ -1,6 +1,7 @@
 // One button vocabulary for the floating pad and phone. IDs match Stream Deck
 // commands; slot buttons carry a fixed, validated slot number.
 import { guideValue } from "./guide-values.js";
+import { preparationBlockReason } from "./controller-workflow.js";
 const groups = {
 	Prompting: [ [ "toggle", "Play / pause", "▶" ], [ "restart", "Top", "↤" ], [ "previous-section", "Previous", "◀" ], [ "next-section", "Next", "▶" ], [ "faster", "Faster", "+" ], [ "slower", "Slower", "−" ], [ "scroll-mode", "Voice / steady", "🎙" ] ],
 	Recording: [ [ "on-air", "On air", "●" ], [ "marker", "Marker", "⚑" ], [ "back-to-marker", "To marker", "↶" ], [ "keeper", "Keeper", "✓" ], [ "scrap", "Scrap", "×" ], [ "obs-record", "Record take", "●" ], [ "obs-finish", "Finish recording", "■" ], [ "sound-check", "Sound check", "▥" ] ],
@@ -11,6 +12,19 @@ const groups = {
 };
 export const CONTROL_ACTIONS = Object.entries( groups ).flatMap( ( [ group, actions ] ) => actions.map( ( [ id, label, icon ] ) => ( { id, label, icon, group } ) ) );
 CONTROL_ACTIONS.push( { id: "mirror", label: "Cycle mirror", icon: "↔", group: "View" }, { id: "status", label: "Section / time", icon: "▤", group: "Prompting" } );
+CONTROL_ACTIONS.push( ...[
+	[ "again", "Again / restart section", "↶", "Navigation" ], [ "reset-speed", "Reset pace", "↻", "Pace" ],
+	[ "mode-notes", "Notes / pages", "▤", "Reading mode" ], [ "mode-voice", "Voice following", "🎙", "Reading mode" ], [ "mode-scroll", "Steady scroll", "↓", "Reading mode" ], [ "mode-cycle", "Cycle reading mode", "↻", "Reading mode" ],
+	[ "prepare-recording", "Prepare to record", "✓", "Recording setup" ], [ "check-room-voice", "Room and voice check", "▥", "Recording setup" ],
+	[ "test-recording-start", "Start test clip", "●", "Recording setup" ], [ "test-recording-stop", "Stop test clip", "■", "Recording setup" ], [ "test-recording-play", "Review test clip", "▶", "Recording setup" ],
+	[ "recording-reference-save", "Save checked reference", "✓", "Recording setup" ], [ "back-after-break", "Back after a break", "↶", "Recording setup" ],
+	[ "guide-lock-current", "Lock detected position", "◎", "Head guide" ], [ "recording-reference-restore", "Restore recording reference", "↶", "Head guide" ],
+	[ "obs-pause", "Pause OBS recording", "Ⅱ", "Recorder utilities" ], [ "obs-resume", "Resume OBS recording", "▶", "Recorder utilities" ],
+	[ "review-recording", "Open recording review", "▤", "Recording review" ], [ "export-reviewed-pack", "Export reviewed edit pack", "↗", "Recording review" ]
+].map( ( [ id, label, icon, group ] ) => ( { id, label, icon, group } ) ) );
+// Group the picker without changing any persisted control ID or layout.
+const pickerGroups = { restart: "Navigation", "previous-section": "Navigation", "next-section": "Navigation", marker: "Take utilities", "back-to-marker": "Take utilities", keeper: "Take utilities", scrap: "Take utilities", faster: "Pace", slower: "Pace" };
+for ( const item of CONTROL_ACTIONS ) if ( pickerGroups[item.id] ) item.group = pickerGroups[item.id];
 export const DEFAULT_PAD_LAYOUT = { columns: 4, buttons: [ "restart", "previous-section", "toggle", "next-section" ] };
 export const PAD_PRESETS = {
 	compact: DEFAULT_PAD_LAYOUT,
@@ -35,6 +49,17 @@ export function controlView( id, status = {} ) {
 	const item = CONTROL_ACTIONS.find( a => a.id === ( id === "guide-adjust" ? "guide-adjustments" : id ) );
 	if ( !item ) return null;
 	const view = { ...item, active: false, hidden: false, disabled: !!status.editing, reason: "" };
+	const preparationReason = preparationBlockReason( id, status );
+	if ( preparationReason ) { view.disabled = true; view.reason = preparationReason; }
+	if ( id.startsWith( "mode-" ) ) {
+		view.active = status.readingMode === id.slice( 5 );
+		view.disabled ||= !!status.scrolling || ( status.readingModeLocked && id !== "mode-notes" ) || ( id === "mode-voice" && ( status.speechEnabled === false || status.microphoneEnabled === false ) );
+		if ( view.disabled ) view.reason = "Pause prompting; check script mode and voice setup";
+	}
+	if ( [ "review-recording", "export-reviewed-pack" ].includes( id ) ) {
+		view.disabled ||= !status.recordingReview?.available || !!status.scrolling || [ "recording", "paused" ].includes( status.obs?.recording );
+		if ( view.disabled ) view.reason = "Finish recording and select a script with logged takes first";
+	}
 	if ( ( id === "pad" && status.padEnabled === false ) || ( id === "sound-check" && status.microphoneEnabled === false ) || ( ( id.startsWith( "listening-" ) || id === "scroll-mode" ) && ( status.speechEnabled === false || status.microphoneEnabled === false ) ) ) {
 		view.hidden = true;
 		view.disabled = true;
@@ -88,6 +113,11 @@ export function controlView( id, status = {} ) {
 		view.hidden = !obs?.enabled || !obs.controls;
 		view.disabled = obs?.connection !== "connected" || !!obs.controlBusy || ![ "stopped", "recording", "paused" ].includes( obs?.recording ) || ( id === "obs-record" ? !!status.editing || !!status.scrolling || obs.recording === "paused" || obs.canRecord === false : obs.recording === "stopped" || obs.canFinish === false );
 		view.reason = obs?.connection !== "connected" ? "Connect OBS first" : obs.controlBusy ? "Wait for OBS confirmation" : obs.recording === "paused" && id === "obs-record" ? "Resume the recording in OBS first" : view.disabled ? "Check OBS state; pause prompting and close the editor before Record take" : "";
+		if ( id === "obs-pause" || id === "obs-resume" ) {
+			view.disabled = !!status.editing || obs?.connection !== "connected" || !!obs.controlBusy || obs.recording !== ( id === "obs-pause" ? "recording" : "paused" );
+			view.active = obs?.recording === "paused";
+			view.reason = view.disabled ? "Connect OBS, allow recording controls and check its confirmed recording state" : "";
+		}
 	}
 	const request = id === "guide-adjust" ? { action: "head-guide-adjust" } : controlAction( id );
 	if ( Array.isArray( status.commands ) && request?.action && !status.commands.includes( request.action ) ) {

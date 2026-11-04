@@ -13,6 +13,7 @@ contextBridge.exposeInMainWorld( "electron", {
 	windowControl: action => ipcRenderer.send( "windowControl", action ),
 	headGuide: ( action = "toggle", value ) => ipcRenderer.send( "headGuideAction", action, value ),
 	prepareRecording: () => ipcRenderer.send( "openPreRecord" ),
+	controllerCommand: id => ipcRenderer.invoke( "controllerCommand", id ),
 	preRecordStatus: () => ipcRenderer.invoke( "preRecordStatus" ),
 	onPreRecordStatus: callback => on( "preRecordStatus", callback ),
 	utilityPanel: ( kind, action, value ) => ipcRenderer.send( "utilityPanel", kind, action, value ),

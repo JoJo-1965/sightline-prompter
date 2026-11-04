@@ -1,5 +1,13 @@
 # Feature-matrix review record
 
+## 1.3.0 RC2 controller candidate — 4 November 2026
+
+Added seven qualified companion/workflow rows; reviewed preparation, mode and
+OBS guards, migration, dials, Virtual profiles and optional review/export.
+Generated Markdown/HTML/CSV/JSON together. Windows tests do not certify physical
+camera/audio or Mac/Linux behaviour. Stable JL remains on the released 1.2.0
+snapshot; preview marketing copy is supplied separately for release sign-off.
+
 ## Next companion 0.2.1 planning — 4 November 2026
 
 On-screen Virtual Stream Deck standard/OBS starter profiles are being prepared

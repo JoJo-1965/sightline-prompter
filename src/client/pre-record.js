@@ -1,5 +1,6 @@
 import { framingPose, framingMatch, detectedPose, detectedFramingTarget, visibleFramingTarget, audioCheckAdvice } from "./framing-position.js";
 import { guideOutline } from "./guide-pose.js";
+import { PREPARATION_COMMANDS, preparationBlockReason } from "./controller-workflow.js";
 
 const $ = id => document.getElementById( id );
 const copy = value => JSON.parse( JSON.stringify( value ) );
@@ -64,6 +65,20 @@ const state = { step: 0, mode: "setup", tracking: false, mirror: true, person: n
 const names = [ "Align head", "Check audio", "Test recording", "Save reference", "Ready" ];
 state.cameraId = shared.cameraId ?? "default";
 const colours = { green: "#72dfad", amber: "#edc766", red: "#ff8585", lost: "#a7b2c0", manual: "#89c4ff" };
+let lastControllerStatus = "";
+function controllerStatus() {
+	const frame = match();
+	return { open: true, hasReference: !!saved || !!shared.reference, measuring: state.measuring, frame: { kind: frame.kind, text: frame.text, aligned: frame.aligned },
+		testRecording: state.testState === "recording", testSaving: state.testState === "saving",
+		canLock: state.tracking && !!state.person && performance.now() - lastDetection < 1400,
+		canTest: !!cameraStream && !!microphoneStream && match().aligned && state.framingAccepted && state.audioAccepted,
+		canPlay: !!testURL || !!saved?.testFile,
+		canSave: match().aligned && state.framingAccepted && state.audioAccepted && state.testApproved };
+}
+function reportControllerStatus() {
+	const value = controllerStatus(), signature = JSON.stringify( value );
+	if ( signature !== lastControllerStatus ) { lastControllerStatus = signature; window.preRecord.report( { workflow: value } ); }
+}
 function say( text ) {
 	$( "message" ).textContent = text;
 }
@@ -109,6 +124,7 @@ async function listDevices() {
 	window.preRecord.report( { inputs: cameras.map( camera => ( { deviceId: camera.deviceId, label: camera.label } ) ), cameraId: state.cameraId } );
 }
 function renderSteps() {
+	reportControllerStatus();
 	const done = [ state.framingAccepted && match().aligned, state.audioAccepted, state.testApproved, state.referenceSaved, ready() ];
 	$( "steps" ).innerHTML = names.map( ( name, i ) => `<li><button type="button" class="step ${ done[i] ? "done" : "" }" data-step="${ i }" ${ i === state.step ? "aria-current=\"step\"" : "" } ${ allowed( i ) ? "" : "disabled" }><span class="number">${ done[i] ? "✓" : i + 1 }</span><span><strong>${ state.mode === "return" && i === 3 ? "Saved reference" : name }</strong><small>${ done[i] ? "Checked" : i === state.step ? "Current step" : "To check" }</small></span></button></li>` ).join( "" );
 	$( "session-chip" ).className = "chip " + ( ready() ? "good" : "neutral" );
@@ -120,6 +136,7 @@ function renderSteps() {
 	$( "mode-copy" ).textContent = state.mode === "return" ? "Your saved target stays fixed. Realign, then recheck audio before continuing." : "Align your head, check your audio and review a short test. Save the setup once you’re happy.";
 }
 function renderCamera() {
+	reportControllerStatus();
 	const m = match(), colour = colours[m.kind];
 	$( "camera" ).style.setProperty( "--signal", colour );
 	const mirrored = state.mirror ? "translate(1000 0) scale(-1 1)" : "";
@@ -391,7 +408,7 @@ async function measureAudio() {
 		say( `Microphone unavailable: ${ error.name }. Choose an available input and try again.` );
 		panel();
 		renderSteps();
-		return;
+		throw error;
 	}
 	const start = performance.now(), noise = [], voice = [], peaks = [], samples = new Float32Array( analyser.fftSize );
 	let announced = false;
@@ -711,6 +728,17 @@ window.preRecord.onShared( async value => {
 } );
 async function handleGuideAction( { name, value, background } ) {
 	try {
+		if ( name === "controller" ) {
+			const command = Object.keys( PREPARATION_COMMANDS ).find( key => PREPARATION_COMMANDS[key] === value.action );
+			const reason = preparationBlockReason( command, { preparation: controllerStatus() } );
+			if ( !command || reason ) throw new Error( reason ?? "Unknown controller operation" );
+			if ( value.action === "measure-audio" ) go( 1 );
+			if ( [ "record-test", "stop-test", "play-test" ].includes( value.action ) ) go( 2 );
+			await action( value.action );
+			reportControllerStatus();
+			window.preRecord.report( { controllerResult: { id: value.id, ok: true } } );
+			return;
+		}
 		if ( name === "background" ) {
 			clearInterval( measuringTimer ); state.measuring = false;
 			window.preRecord.report( { meter: { active: false } } );
@@ -730,7 +758,10 @@ async function handleGuideAction( { name, value, background } ) {
 			render();
 			if ( !state.tracking && background ) window.preRecord.close( true );
 		}
-	} catch ( error ) { state.error = error.message; say( error.message ); render(); }
+	} catch ( error ) {
+		if ( name === "controller" ) window.preRecord.report( { controllerResult: { id: value.id, ok: false, error: error.message } } );
+		state.error = error.message; say( error.message ); render();
+	}
 }
 let guideActions = Promise.resolve();
 window.preRecord.onGuideAction( value => { guideActions = guideActions.then( () => handleGuideAction( value ) ); } );

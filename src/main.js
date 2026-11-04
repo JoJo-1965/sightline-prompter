@@ -19,6 +19,7 @@ import { normalisePadLayout, controlAction, controlView } from "./client/control
 import { createControl } from "./control.js";
 import { createHeadGuide } from "./head-guide.js";
 import { createPreRecord } from "./pre-record.js";
+import { PREPARATION_COMMANDS, preparationBlockReason } from "./client/controller-workflow.js";
 import { createUtilityWindows } from "./utility-windows.js";
 import { captureOverride, protectWindow, setCaptureOverride, trackCaptureWindow } from "./capture-policy.js";
 import { settingsValues } from "./settings-values.js";
@@ -1498,6 +1499,15 @@ const createWindow = ( state ) => {
 		windowControl,
 		updateSettings,
 		flushRecordingBeforeScriptChange,
+		controllerReview: {
+			available: () => !!takeLog?.takes?.length,
+			open: () => recordingReview.open( currentFilePath ? takeLogFile( currentFilePath ) : null ),
+			export: async () => {
+				if ( !( await reviewedLog( takeLog, app.getPath( "userData" ) ) ).postRecord ) throw new Error( "Analyse this recording in Recording review before exporting a reviewed pack" );
+				exportEditPack().catch( error => win.webContents.send( "toast", error.message ) );
+				return { pending: true }; // The user chooses the folder in the app.
+			}
+		},
 		sendSettings,
 		sendSlots
 	};
@@ -1597,7 +1607,8 @@ app.whenReady().then( async () => {
 		updateSettings,
 		flushRecordingBeforeScriptChange,
 		sendSettings,
-		sendSlots
+		sendSlots,
+		controllerReview
 	} = createWindow( state );
 	mainWindow = win;
 
@@ -1670,6 +1681,7 @@ app.whenReady().then( async () => {
 	const APP_DATA_LABEL = { win32: "%APPDATA%", darwin: "~/Library/Application Support" }[process.platform] ?? "~/.config";
 	const REMOTE_FILE_LABEL = REMOTE_FILE.replace( app.getPath( "appData" ), APP_DATA_LABEL );
 	const REMOTE_COMMANDS = [
+		...Object.keys( PREPARATION_COMMANDS ), "again", "mode-notes", "mode-voice", "mode-scroll", "mode-cycle", "review-recording", "export-reviewed-pack",
 		"obs-on", "obs-off", "obs-pause", "obs-resume",
 		"obs-record",
 		"obs-finish",
@@ -1746,6 +1758,8 @@ app.whenReady().then( async () => {
 		padLayout: normalisePadLayout( settings.padLayout ),
 		captureOverride: captureOverride(),
 		...rendererStatus,
+		preparation: preRecord?.status() ?? {},
+		recordingReview: { available: controllerReview.available() },
 		commands: REMOTE_COMMANDS
 	} );
 	const remoteListeners = new Set();
@@ -1824,13 +1838,11 @@ app.whenReady().then( async () => {
 			await fs.writeFile( filePath, text, { encoding: "utf-8", flag: mcp ? "wx" : "w" } );
 			return remoteOpen( filePath, slotNumber( slot ) );
 		},
-		"POST /command": ( { action, value } ) => {
+		"POST /command": async ( { action, value } ) => {
 			if ( !REMOTE_COMMANDS.includes( action ) ) {
 				throw new Error( `action must be one of: ${ REMOTE_COMMANDS.join( ", " ) }` );
 			}
-			if ( action === "head-guide-adjust" ) framingGuide.adjust( value );
-			else if ( action === "head-guide-control" ) framingGuide.control( value );
-			else win.webContents.send( "remoteCommand", action, value );
+			await runControllerCommand( action, value );
 			return { ok: true, action };
 		},
 		"POST /slot": ( { slot } ) => {
@@ -1955,15 +1967,39 @@ app.whenReady().then( async () => {
 		win.webContents.send( "remoteInfo", remoteInfo() );
 	}
 
+	async function runControllerCommand( action, value ) {
+		if ( action === "again" || action.startsWith( "mode-" ) ) {
+			const view = controlView( action, remoteStatus() );
+			if ( !view || view.disabled || view.hidden ) throw new Error( view?.reason || "This control is unavailable" );
+		}
+		if ( Object.hasOwn( PREPARATION_COMMANDS, action ) ) {
+			const reason = preparationBlockReason( action, remoteStatus() );
+			if ( reason ) throw new Error( reason );
+			return preRecord.command( action );
+		}
+		if ( action === "review-recording" || action === "export-reviewed-pack" ) {
+			if ( rendererStatus.scrolling || [ "recording", "paused" ].includes( obs.state().recording ) ) throw new Error( "Finish recording before opening review" );
+			if ( !controllerReview.available() ) throw new Error( "No takes logged for the current script today" );
+			return action === "review-recording" ? controllerReview.open() : controllerReview.export();
+		}
+		if ( action === "head-guide-adjust" ) return framingGuide.adjust( value );
+		if ( action === "head-guide-control" ) return framingGuide.control( value );
+		win.webContents.send( "remoteCommand", action, value );
+	}
 	function runPadCommand( id, value ) {
 		const request = controlAction( id, value );
 		const view = controlView( id, remoteStatus() );
 		if ( !request || !view || view.disabled || view.hidden ) throw new Error( view?.reason || "This control is unavailable" );
 		if ( request.slot ) win.webContents.send( "menuSwitchSlot", request.slot - 1 );
-		else if ( request.action === "head-guide-adjust" ) framingGuide.adjust( request.value );
-		else if ( request.action === "head-guide-control" ) framingGuide.control( request.value );
-		else win.webContents.send( "remoteCommand", request.action, request.value );
+		else return runControllerCommand( request.action, request.value );
 	}
+	ipcMain.handle( "controllerCommand", ( event, id ) => {
+		if ( event.sender !== win.webContents ) throw new Error( "Prompter window required" );
+		// Mapped buttons use this path only for workflow and guide operations.
+		if ( !Object.hasOwn( PREPARATION_COMMANDS, id ) && ![ "review-recording", "export-reviewed-pack", "guide-adjustments", "guide-eyes-lock", "guide-ideal-visible", "guide-match-ideal" ].includes( id ) ) throw new Error( "Unsupported mapped workflow" );
+		return runPadCommand( id );
+	} );
+	win.once( "closed", () => ipcMain.removeHandler( "controllerCommand" ) );
 	controlPad = createPad( {
 		dir: __dirname,
 		prompter: win,
@@ -1990,7 +2026,7 @@ app.whenReady().then( async () => {
 	} );
 	framingGuide.apply();
 	win.on( "closed", () => framingGuide.dispose() );
-	preRecord = createPreRecord( { dir: __dirname, prompter: win, getSettings: () => settings, saveSettings: partial => updateSettings( partial ), guide: framingGuide, obs, probeObs: async () => obs.state().connection === "connected" || ( await externalComponents.status() ).obs.installed, busy: () => rendererStatus.scrolling === true || [ "recording", "paused" ].includes( obs.state().recording ) } );
+	preRecord = createPreRecord( { dir: __dirname, prompter: win, getSettings: () => settings, saveSettings: partial => updateSettings( partial ), guide: framingGuide, obs, onStatus: () => publishRemoteState(), probeObs: async () => obs.state().connection === "connected" || ( await externalComponents.status() ).obs.installed, busy: () => rendererStatus.scrolling === true || [ "recording", "paused" ].includes( obs.state().recording ) } );
 	win.on( "closed", () => preRecord.dispose() );
 	if ( process.argv.includes( "--prepare-recording" ) ) win.webContents.once( "did-finish-load", () => preRecord.open() );
 	const speech = createSpeech( { dir: __dirname, win, busy: () => !!rendererStatus.scrolling || [ "recording", "paused" ].includes( obs.state().recording ) } );

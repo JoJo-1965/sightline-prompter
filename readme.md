@@ -1,10 +1,12 @@
 # Sightline Prompter
 
-> **Development preview: 1.3.0 RC1, documentation revision 17.**
+> **Development preview: 1.3.0 RC2, documentation revision 18.**
 > The public download below is stable 1.2.0. This candidate adds optional
 > [post-record audio review](docs/guide/19-post-record-review.md) and a
 > [rerunnable guided tour](docs/guide/20-guided-tour.md). Read the
-> [RC1 notes and limits](docs/RELEASE-1.3.0-rc.1.md) before testing.
+> [RC2 notes and limits](docs/RELEASE-1.3.0-rc.2.md) before testing. This candidate
+> adds [grouped controller functions](docs/guide/21-controller-functions.md),
+> explicit reading modes, preparation/review controls and an Adjustment dial.
 
 ![Sightline Prompter: your words, your pace](docs/images/hero.png)
 

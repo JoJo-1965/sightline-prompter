@@ -1,5 +1,9 @@
 # Remotes and second screens
 
+**RC2 companion preview:** [Grouped controller functions](21-controller-functions.md)
+adds function selectors, workflow keys and an Adjustment dial while preserving
+existing keys/profiles. The stable companion download remains 0.2.0.
+
 **RC 4:** Connections > Pad and phone shows every selected button in a scrollable
 list, with drag, Earlier/Later and Remove controls on each row. Keyboard/clicker
 and game-controller pages likewise show all assignments, with action and Remove

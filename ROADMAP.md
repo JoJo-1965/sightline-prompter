@@ -21,6 +21,12 @@ See [grouped release notes](docs/RELEASE-1.2.0.md) and the
 
 ## In 1.3.0 RC1 preview
 
+**RC2 now adds controller consolidation for UAT:** function-specific grouped
+keys, useful preparation/review controls, explicit reading modes, Again,
+OBS pause/resume, status displays, Adjustment dial and separate Virtual/Plus
+test profiles. All published UUIDs remain registered. See the
+[RC2 notes](docs/RELEASE-1.3.0-rc.2.md). Physical morning UAT is outstanding.
+
 Explicit local post-record transcription/import, script comparison, command
 cut ranges, per-file audio offsets and optional coach marks are implemented
 for candidate testing. Original source logs remain intact. See the

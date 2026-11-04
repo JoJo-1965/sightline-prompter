@@ -203,6 +203,12 @@ The transcript gives me evidence to listen to, rather than an automatic verdict.
 
 ## Find your way around {target: 0:15}
 
+<!-- RC2 CONTROLLERS. Optional: open Connections > Pad and phone, or install
+the separate RC2 Stream Deck companion/profile. Choose a Function per key.
+Try Again while paused, then Notes and Scroll. Prepare to record opens the
+real checks; no controller accepts picture/sound or starts capture on assignment.
+Keep a Play/pause fallback. Use a disposable clip for recorder checks. -->
+
 <!-- TRY WHILE PAUSED. Getting started > Take a guided tour, or Help > Take a
 guided tour. Next and Back navigate. Skip tour or Escape cancels. Run it again
 whenever needed; it changes no functional settings and enables no devices. -->
