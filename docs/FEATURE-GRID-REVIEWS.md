@@ -1,5 +1,12 @@
 # Feature-matrix review record
 
+4 November 2026, RC 5 packaging review: Joanne requested the combined build.
+The 249-row grid now describes 1.2.0-rc.5/docs 15 and source 29e32a8. Existing
+guide visibility, position feedback, Lock current and preparation rows cover
+the corrected dimensions, hover toolbar and guide-only calibration. Help,
+screenshots, samples, release notes and generated exports agree. The JL review
+branch receives the same snapshot; public versions remain 1.1.0/0.2.0.
+
 4 November 2026, further guide feedback after RC 4: calibration now initialises
 its shared renderer in the background and opens the workflow only on request.
 The guide toolbar docks at the bottom with a hover-recoverable tab, pin option

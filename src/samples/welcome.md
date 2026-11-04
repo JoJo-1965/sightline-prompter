@@ -77,6 +77,8 @@ a beam splitter, and the control window can stay on my main screen.
 <!-- TRY BEFORE RECORDING. Use the main Prepare to record action, or Settings >
 Prepare to record > Overview > Open workflow. Ctrl+Shift+H shows the shared
 head guide; its adjustments and Lock current update the same target here.
+Hover the bottom Head guide tab to reveal its controls. Calibration stays in
+Guide adjustments until you explicitly open the full preparation workflow.
 With OBS enabled, select OBS scene preview and choose the scene matching
 your projector. This does not switch the recording scene.
 Align with the manual guide or enable local position feedback. Lock current

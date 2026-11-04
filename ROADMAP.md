@@ -2,15 +2,16 @@
 
 ## Current delivery position
 
-**After RC 4 feedback:** the distance comparison ignored guide Width and side
+**RC 5 feedback batch:** the distance comparison ignored guide Width and side
 adjustments. A source fix and native moving-size detector regression now cover
 that mismatch, proportion-preserving Lock current, live size progress and shared
-mirrored arrows. Included in the next combined candidate after feedback review;
-the frozen RC 4 download is unchanged.
+mirrored arrows. Joanne requested this combined candidate after feedback review;
+the frozen RC 4 download stays available.
 Guide calibration now stays in Guide adjustments, with background initialisation
 and ordered input choices. A bottom auto-hiding toolbar has a recoverable hover
 tab, pin option and independent window layer above the prompter. Native recovery,
-lock, fullscreen, Guide off and narrow-layout checks pass; queued in the same batch.
+lock, fullscreen, Guide off and narrow-layout checks pass. Package verification
+is recorded in RC 5's included build manifest.
 
 **RC 4 integrated batch:** shared preparation/head-guide pose and live feedback,
 OBS scene calibration with conditional source controls, prominent preparation
@@ -34,15 +35,14 @@ Packaged first-run checks and all four installer targets pass. RC 1 remains
 available alongside RC 2. See [the demo handover](docs/RC-1.2.0-2.md).
 
 **Published baseline:** Sightline 1.1.0 with Stream Deck companion 0.2.0.
-**Current candidate:** 1.2.0 RC 4 retains the confirmed RC 1 feedback batch,
+**Current candidate:** 1.2.0 RC 5 retains the confirmed RC 1 feedback batch,
 local MCP and ad-hoc Mac signing, with the refreshed demo library and AI kit.
 Source and packaged Windows checks passed;
 both Mac architectures and Linux passed installer CI. Physical recording UAT
 remains necessary before treating this candidate as the final release.
 See [RC scope](docs/RELEASE-1.2.0-SCOPE.md). The UAT 09 baseline below remains
 available alongside the verified candidate.
-**Latest packaged candidate:** RC 4, documentation revision 14. Earlier RCs
-remain available alongside it.
+**Candidate documentation:** revision 15. Earlier RCs remain available.
 **Next deliverable:** Joanne's physical recording UAT, then final release.
 The combined RC feedback batch is implemented and packaged. UAT 09 remains
 available as the previous accepted baseline.

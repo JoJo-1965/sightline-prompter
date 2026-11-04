@@ -1,11 +1,11 @@
 # Sightline Prompter feature grid
 
-**Review basis: RC 4 preview, documentation revision 14, 4 November 2026.**
-**Build version:** `1.2.0-rc.4` · **Publication status:** Preview
+**Review basis: RC 5 preview, documentation revision 15, 4 November 2026.**
+**Build version:** `1.2.0-rc.5` · **Publication status:** Preview
 
 **Maintained source:** [Feature grid](https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/FEATURE-GRID.md)
 
-This grid describes the preview built from `070e889`, with companion Stream
+This grid describes the preview built from `29e32a8`, with companion Stream
 Deck plugin **0.2.0**. It includes the existing features and the unpublished
 preview additions. The build manifest also records the packaging/documentation
 snapshot. The public app release remains **1.1.0**; this document
@@ -177,7 +177,7 @@ Reference: [Prepare to record](guide/16-prepare-to-record.md), [Head guide and c
 | Eye-line anchoring | Included | Set centre and eye level before adjusting the shape around the eyes. | Manual alignment must be repeated if camera framing changes. |
 | Head-edge adjustment | Included | Adjust top, bottom, left and right independently. | Changes the outline, not the camera crop or the person's image. |
 | Move and scale | Included | Horizontal/vertical position, overall size, width and height controls. | Shape adjustments are separate from moving the guide window itself. |
-| Guide visibility | Included | Stateful Show/Hide, Guide off beside floating Guide adjustments, Mint/Gold outline colour, outline/background opacity and Show Ideal in Head guide subtabs; preview addition. | Appearance and eye lock use Apply. Visibility is immediate; hidden guides retain their configuration and saved position. |
+| Guide visibility | Included | Stateful Show/Hide; bottom toolbar with hover-recoverable Head guide tab, Pin controls, lock/unlock, fullscreen, Move guide, Adjust and Guide off. Colour, opacity and Show Ideal remain in guide settings; RC addition. | Small toolbar surface stays above the prompter while the outline retains its bounds. Guide off removes the controls and releases a hidden picture feed. Appearance and eye lock use Apply. |
 | Session framing reference | Included | Keep the guide pose, appearance and saved Ideal across scripts. Preparation and Ctrl+Shift+H share draft adjustments, optional detection and the recording position; RC addition. | Target stays fixed as the person moves. Guide window/projector placement is manual; no automatic window fitting is claimed. |
 | Guide placements | Included | Centred and beside-prompter saved placements, plus window positioning and sizing; accessible from Settings and adjustments. | Placement/fullscreen actions act immediately; beside prompter means alongside the reading area. |
 | Fullscreen and chromeless guide | Included | Toggle the guide into and out of fullscreen; lock the adjustment view when ready. | Test stacking with the OBS projector and prompter on the chosen monitor. |
@@ -186,11 +186,11 @@ Reference: [Prepare to record](guide/16-prepare-to-record.md), [Head guide and c
 | Save and restore recording reference | Included | Save Actual position, dimensions and eye lock from Settings or adjustments; restore without overwriting Ideal; preview addition. | Restoring the shape does not restore the physical camera, body or guide window. |
 | Guide export metadata | Included | Record Ideal/Actual information, recording reference and guide window geometry in the edit pack. | Metadata describes the configured guide, not proof that it was absent from the video. |
 | Keep guide out of output | Limited | Capture protection and a camera-source recording workflow keep the guide on the operator's screen. | No universal automatic guarantee; verify the recorded file and chosen capture source. |
-| Local position feedback | Optional | Bundled local face/eye detection, fixed target and red/amber/green feedback in preparation and the existing Ctrl+Shift+H guide; RC addition. | One well-lit face; grey means unavailable. Same scene/crop and manually matched guide bounds are required. No identity or gaze correction. |
+| Local position feedback | Optional | Bundled local face/eye detection, fixed target and red/amber/green feedback in preparation and Ctrl+Shift+H. Distance includes overall Size, Width and both side adjustments, with a live target-size percentage and consistent mirrored arrows; RC addition. | One well-lit face; grey means unavailable. Apparent width is not physical distance. Same scene/crop and manually matched guide bounds are required. No identity or gaze correction. |
 | OBS calibration scene | Dependent | Choose an actual scene from the connected OBS instance and read its preview frames for local detection. No programme-scene switch or recording command; RC addition. | OBS integration must be enabled and available; camera choices remain when disabled. Sampled, centred 16:9 preview; does not test the production recording encoder or lip sync. |
 | Temporary calibration feed | Dependent | Explicitly start an OBS virtual camera for calibration, stopping it afterwards only when Sightline started it; RC addition. | An existing virtual-camera session is retained. Connection loss may require manual confirmation/cleanup in OBS. Does not reconfigure the output or recording route. |
-| Pre-record workflow | Optional | Camera alignment, manual fallback, audio check, actual short test recording and reviewed reference save. Select physical/virtual inputs before capture; errors beside the controls allow retry with another input; RC addition. | Explicit camera/microphone enable. Changing an input while capture is off keeps it off. A busy physical camera may require a virtual feed. Does not start OBS or production recording. |
-| Lock current framing | Optional | Use detected eye centre and apparent size as a draft target; preview addition. | Does not replace the recording reference until the reviewed setup is explicitly saved. |
+| Pre-record workflow | Optional | Camera alignment, manual fallback, audio check, actual short test recording and reviewed reference save. Calibration in Guide adjustments starts its shared service invisibly; only the explicit Prepare to record action opens the workflow. Inputs and retry remain available; RC addition. | Explicit camera/microphone enable. Changing an input while capture is off keeps it off. A busy physical camera may require a virtual feed. Does not start OBS or production recording. |
+| Lock current framing | Optional | Use detected eye centre and apparent size as a draft target while preserving custom guide proportions; RC addition. | Does not replace the recording reference until the reviewed setup is explicitly saved. Out-of-range positions require guide adjustment before locking. |
 | Return after a break | Optional | Restore the fixed target, match framing and recheck audio; preview addition. | Same camera and resolution; original target/test retained. No silent recalibration. |
 | Local test recording | Optional | Up to eight seconds of selected camera/microphone, actual WebM playback and picture/sound confirmation; preview addition. | Local profile storage; manual review and hardware UAT required. No guide is burned into the camera clip. |
 | Persistent test outcomes | Included | Settings and the main prompter retain recording, review-required, passed, failed or check-again status; RC addition. | Saving a clip alone is not a pass; the user must review picture and sound. A saved earlier pass is labelled as previous. |

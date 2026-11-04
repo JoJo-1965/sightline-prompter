@@ -11,7 +11,7 @@ Overview > Open workflow**, or use the main **Prepare to record** toolbar action
 Pause prompting and stop production
 recording first. The preparation window is non-modal.
 
-In the next candidate after RC 4, calibration controls in **Guide adjustments**
+In RC 5, calibration controls in **Guide adjustments**
 stay in that panel. Choosing a source does not open the workflow or enable its
 picture. **Enable picture** starts the selected feed explicitly. Use the
 separate **Prepare to record…** button when you want the full guided workflow.
@@ -70,7 +70,7 @@ close, red asks for a correction, and grey means no reliable single face.
 This estimates placement; it does not trace hair, identify you or correct gaze.
 
 Distance guidance uses apparent face width, not a measured distance in metres.
-The next candidate after RC 4 corrects this comparison to include the guide's
+RC 5 corrects this comparison to include the guide's
 Width and left/right adjustments as well as overall Size. Its distance hint
 shows face size as a percentage of that target: move towards 100%, with a
 95–105% size tolerance. Eye position must also match before the guide turns green.

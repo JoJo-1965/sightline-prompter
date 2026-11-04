@@ -248,7 +248,7 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ## Change log
 
-### After RC 4 · head-guide corrections (next combined candidate)
+### 1.2.0 RC 5 · head-guide corrections
 
 - Distance feedback now includes Width and left/right adjustments, so a
   narrowed outline no longer asks you to match the larger overall Size alone.
@@ -262,7 +262,8 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
   prompter; turning the guide off removes its controls and tab.
 - Native tests use the bundled detector on a face growing/shrinking in the
   camera feed, alongside the existing OBS, audio and reference checks. The
-  frozen RC 4 package is unchanged; this fix awaits the next combined build.
+  previous RC 4 package stays available. RC 5's manifest records packaged
+  verification; final camera/projector alignment remains physical UAT.
 
 ### 1.2.0 RC 4 · integrated preparation and visible controls
 

@@ -1,6 +1,6 @@
 # Feedback queued after UAT 09
 
-## After RC 4 · guide fixes ready for the next combined candidate
+## RC 5 · combined head-guide feedback batch
 
 - [x] Reproduce incorrect distance advice after changing guide Width and
   left/right edges: the comparison used only overall Size. The native regression
@@ -30,8 +30,8 @@
 - [x] Guide off releases a background picture even when detection was off.
   Background shutdown cannot close a workflow that has since been opened.
   Full native production/OBS, saved-reference and unit regressions pass.
-- [ ] Include in the next combined RC after reviewing delivered feedback.
-  RC 4's frozen ZIP/review remains unchanged; no one-item build was generated.
+- [x] Reconcile this delivered feedback as one RC 5 batch following Joanne's
+  request to build. RC 4 stays available. RC 5's manifest records package checks.
 
 Evidence: `D:/Sightline/Dev/Testing/RC-Feedback-20261104/closer-before`,
 `closer-final` and `guide-toolbar`. Joanne confirmed that the instruction kept

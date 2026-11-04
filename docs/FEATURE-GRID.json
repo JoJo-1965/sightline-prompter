@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "basis": "RC 4 preview, documentation revision 14, 4 November 2026",
+  "basis": "RC 5 preview, documentation revision 15, 4 November 2026",
   "date": "4 November 2026",
-  "sourceBuild": "070e889",
-  "buildVersion": "1.2.0-rc.4",
+  "sourceBuild": "29e32a8",
+  "buildVersion": "1.2.0-rc.5",
   "publicationStatus": "preview",
   "appRelease": "1.1.0",
   "pluginRelease": "0.2.0",
   "sourceUrl": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/FEATURE-GRID.md",
-  "sourceSha256": "e1460b0ee3895e534a90137d1231820000f55ba69569eb78b0a0e3672be2e4f3",
+  "sourceSha256": "8fb75539f2e40f26f47bd5fe1ec69b8731c0156270ed6ac74402506c36ab876d",
   "support": [
     "Included",
     "Optional",
@@ -742,8 +742,8 @@
         {
           "name": "Guide visibility",
           "support": "Included",
-          "options": "Stateful Show/Hide, Guide off beside floating Guide adjustments, Mint/Gold outline colour, outline/background opacity and Show Ideal in Head guide subtabs; preview addition.",
-          "limits": "Appearance and eye lock use Apply. Visibility is immediate; hidden guides retain their configuration and saved position."
+          "options": "Stateful Show/Hide; bottom toolbar with hover-recoverable Head guide tab, Pin controls, lock/unlock, fullscreen, Move guide, Adjust and Guide off. Colour, opacity and Show Ideal remain in guide settings; RC addition.",
+          "limits": "Small toolbar surface stays above the prompter while the outline retains its bounds. Guide off removes the controls and releases a hidden picture feed. Appearance and eye lock use Apply."
         },
         {
           "name": "Session framing reference",
@@ -796,8 +796,8 @@
         {
           "name": "Local position feedback",
           "support": "Optional",
-          "options": "Bundled local face/eye detection, fixed target and red/amber/green feedback in preparation and the existing Ctrl+Shift+H guide; RC addition.",
-          "limits": "One well-lit face; grey means unavailable. Same scene/crop and manually matched guide bounds are required. No identity or gaze correction."
+          "options": "Bundled local face/eye detection, fixed target and red/amber/green feedback in preparation and Ctrl+Shift+H. Distance includes overall Size, Width and both side adjustments, with a live target-size percentage and consistent mirrored arrows; RC addition.",
+          "limits": "One well-lit face; grey means unavailable. Apparent width is not physical distance. Same scene/crop and manually matched guide bounds are required. No identity or gaze correction."
         },
         {
           "name": "OBS calibration scene",
@@ -814,14 +814,14 @@
         {
           "name": "Pre-record workflow",
           "support": "Optional",
-          "options": "Camera alignment, manual fallback, audio check, actual short test recording and reviewed reference save. Select physical/virtual inputs before capture; errors beside the controls allow retry with another input; RC addition.",
+          "options": "Camera alignment, manual fallback, audio check, actual short test recording and reviewed reference save. Calibration in Guide adjustments starts its shared service invisibly; only the explicit Prepare to record action opens the workflow. Inputs and retry remain available; RC addition.",
           "limits": "Explicit camera/microphone enable. Changing an input while capture is off keeps it off. A busy physical camera may require a virtual feed. Does not start OBS or production recording."
         },
         {
           "name": "Lock current framing",
           "support": "Optional",
-          "options": "Use detected eye centre and apparent size as a draft target; preview addition.",
-          "limits": "Does not replace the recording reference until the reviewed setup is explicitly saved."
+          "options": "Use detected eye centre and apparent size as a draft target while preserving custom guide proportions; RC addition.",
+          "limits": "Does not replace the recording reference until the reviewed setup is explicitly saved. Out-of-range positions require guide adjustment before locking."
         },
         {
           "name": "Return after a break",

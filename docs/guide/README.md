@@ -1,6 +1,6 @@
 # Sightline Prompter user guide
 
-This source guide follows the **1.2.0 RC 4 candidate**, documentation revision 14.
+This source guide follows the **1.2.0 RC 5 candidate**, documentation revision 15.
 The published 1.1.0 installer retains its bundled guide and previous layout.
 Use the preview folder/build manifest to identify the test package.
 

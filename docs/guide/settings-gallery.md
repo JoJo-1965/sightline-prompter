@@ -1,5 +1,16 @@
 # Settings screenshot gallery
 
+## Current RC 5 guide controls
+
+The native implementation included in RC 5 moves guide controls to a small
+bottom toolbar above the prompter. Hover the retained tab to recover it.
+These captures show the validated runtime; the Settings composition below
+is retained from RC 4.
+
+![Expanded bottom guide toolbar](images/guide-toolbar-expanded.png)
+
+![Recoverable collapsed guide tab](images/guide-toolbar-collapsed.png)
+
 ## Current RC 4 changes
 
 Actual packaged Windows captures at 1440 × 900 with 2× pixel density,

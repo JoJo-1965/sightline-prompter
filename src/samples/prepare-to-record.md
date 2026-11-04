@@ -3,12 +3,17 @@
 # Framing, audio and recording reference
 
 <!-- BEFORE THE FIRST TAKE. Stop prompting and the production recorder.
-Open Prepare to record > Recording setup > Prepare to record. Enable only the
+Use the main Prepare to record action, or Settings > Prepare to record >
+Overview > Open workflow. Enable only the
 camera/microphone you want. Select the camera or virtual feed before Enable
 camera. If capture fails, read the error beside the controls and choose another
 input. Align manually or enable local position feedback.
 Ctrl+Shift+H shows the same shared guide. Its adjustments and Lock current
-update preparation too. With OBS enabled, choose OBS scene preview and the
+update preparation too. Hover the bottom Head guide tab to recover the toolbar;
+use Pin controls if needed. Calibration in Guide adjustments stays there;
+only its Prepare to record button opens the workflow. Watch the size percentage
+move towards 100% when following closer/further guidance.
+With OBS enabled, choose OBS scene preview and the
 scene matching your projector; calibration does not switch the recording scene.
 Lock current selects a draft target; it is not a saved recording reference.
 Check audio, record and review a short test, then save a recording reference.
