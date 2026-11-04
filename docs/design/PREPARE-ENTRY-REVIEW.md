@@ -70,6 +70,14 @@ through the existing connection. The official [OBS protocol](https://github.com/
 supports GetSourceScreenshot for inputs and scenes. This could avoid opening
 the physical camera twice or requiring a virtual-camera output. It still needs
 performance, active-source and coordinate checks against the actual OBS setup.
+Show an explicit OBS scene chooser for this route, populated from the actual
+connection. The mock uses example scene names and updates both views' picture
+labels when selected. Keep this visible under Calibration picture, not hidden
+in an unrelated navigation dropdown. Remember its selection across visits and
+flag a renamed/deleted scene. Choosing a calibration scene must never issue a
+programme-scene switch; it selects a measurement picture only. Hide the chooser
+when OBS is unavailable/disabled or the calibration input is a camera/virtual
+feed. The scene and crop belong to the recording-reference match metadata.
 Use the scene/source corresponding to the projector and recorded framing;
 do not silently switch OBS programme scenes, source filters, crop or recording.
 
@@ -87,6 +95,17 @@ calibration does not by itself provide an OBS recording test or lip-sync proof;
 the real recorder's output still needs review.
 
 ## Review verification
+
+OBS calibration choices require both confirmed OBS availability and enabled
+integration. Disabled or not installed hides the OBS scene/source option,
+temporary virtual-camera option and product OBS notes in both windows. The
+remaining generic camera path uses a fixed label instead of a one-choice
+dropdown. The mock's review bar exposes Installed/Integration enabled switches
+to inspect the four combinations; those switches are not product controls.
+Preferred source is retained when the options are hidden. A real app must stop
+OBS sampling without automatically enabling another capture input. Disconnected
+or not running is different from not installed; a configured remote OBS host
+must use its own confirmed availability, not a local executable lookup alone.
 
 The Settings entry mock renders at 1440 and 390 pixels without horizontal
 overflow. Its compact sample preview is non-modal and can be closed while

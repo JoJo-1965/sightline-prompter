@@ -17,6 +17,15 @@
   route. Assess selected scene/source frames first; temporary virtual camera
   is an explicit fallback that restores ownership correctly. A projector
   window is a display, not a currently supported detector input.
+- [ ] Hide OBS scene/source and temporary virtual-camera choices, OBS-specific
+  notes and related controls unless OBS is installed and integration is enabled.
+  Keep generic camera/virtual feeds available. Apply this in both guide and
+  preparation views. Do not equate disconnected/not running with not installed,
+  or start a different capture input automatically when OBS is disabled.
+- [ ] Show a visible OBS scene chooser for direct OBS calibration. List actual
+  scenes from the configured connection, retain the choice, and share it with
+  the head guide. Selecting it must not switch programme/recording scenes.
+  Hide it when OBS is unavailable/disabled or a different input type is selected.
 - [ ] Verify fixed-target behaviour, crop/aspect/projector mapping, two-way guide
   updates, manual controls, reference restore and camera/feed cleanup. Keep
   Ideal and retain the distinction between saved pose and checked recording.
