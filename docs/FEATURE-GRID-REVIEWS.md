@@ -1,5 +1,15 @@
 # Feature-matrix review record
 
+## Companion profile coverage follow-up — 4 November 2026
+
+Companion 0.2.1.2 adds separate RC2 Standard/OBS starters for every supported
+device, plus Guide layouts for both dial models. All functions already exist
+in the 0.2.1.1 runtime; the original 24 profile definitions remain unchanged.
+This adds starter-layout coverage, with no new app function or settings change.
+The frozen app RC2/grid snapshot still identifies its original paired 0.2.1.1
+artifact. The follow-up pack carries its own per-device table, requirements,
+checksums and physical-UAT limits; the original app ZIP/installer are retained.
+
 ## 1.3.0 RC2 controller candidate — 4 November 2026
 
 Added seven qualified companion/workflow rows; reviewed preparation, mode and
