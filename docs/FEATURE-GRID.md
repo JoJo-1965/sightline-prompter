@@ -18,8 +18,8 @@ notes column. Each section links to the detailed instructions and limitations.
 configuration or an optional download; **Dependent** needs external software,
 hardware or a service; **Limited** has a material qualification; **Not included**
 is outside the current product. These labels describe capability, not a test
-result. Options marked “included in 1.2.0” are present in this preview and
-must not be advertised as available in the published installer.
+result. This reference covers the published 1.2.0 installer. Later candidates
+use their own explicitly labelled preview reference.
 
 ## 01 · Product, platform and installation
 
@@ -141,7 +141,7 @@ Reference: [Layout and display](guide/04-layout-and-display.md) and [Settings](g
 | Alignment and margins | Included | Left or centred text; side, top and bottom margin controls. | Extreme settings can reduce the usable reading area. |
 | Background and text visibility | Included | Editable backing colour, off-air/on-air opacity, text opacity and brightness. | The appearance preview does not change the content behind the prompter. |
 | Text edge | Optional | None, outline or shadow to separate words from a busy background. | Preview against the intended slides, call or camera picture. |
-| Focus band | Optional | Dim spoken text away from the reading line; adjustable strength. Production comments and inline directions keep their own appearance; preview patch. | Strength appears only while enabled and is retained when off. Margin fading still applies to comments. No text is removed from the script or edit pack. |
+| Focus band | Optional | Dim spoken text away from the reading line; adjustable strength. Production comments and inline directions keep their own appearance. | Strength appears only while enabled and is retained when off. Margin fading still applies to comments. No text is removed from the script or edit pack. |
 | Reading marker and progress | Optional | Reading-line position and marker, sentence highlight, progress and time-left display. | Display aids can be configured separately from the script content. |
 
 ## 07 · Windows, screens and capture
@@ -154,7 +154,7 @@ Reference: [Layout and display](guide/04-layout-and-display.md) and [Remotes and
 | Always on top | Optional | Keep the prompter above ordinary application windows. | Operating-system window rules and other topmost windows can affect stacking. |
 | Windowed and fullscreen use | Included | Size and position the prompter, or use a fullscreen reading view. | Multi-window arrangements need checking on the intended display. |
 | Horizontal and vertical mirror | Included | Separate mirror controls, including toolbar icons. | Set the flips appropriate to the physical teleprompter glass or monitor. |
-| Prompter monitor | Optional | Explicit display selection opens full screen. A manual cross-screen drag restores a centred normal window at 75% of the destination work area; preview patch. | Windows drag handling clears eye-line mode and the pinned monitor choice. Same-display moves retain the chosen size. Requires a connected display. |
+| Prompter monitor | Optional | Explicit display selection opens full screen. A manual cross-screen drag restores a centred normal window at 75% of the destination work area. | Windows drag handling clears eye-line mode and the pinned monitor choice. Same-display moves retain the chosen size. Requires a connected display. |
 | Eye-line strip | Optional | Compact reading strip with configurable screen height and reading-line position. | Lens alignment is a manual setup task. |
 | Click-through | Optional | Let pointer interaction reach content beneath the overlay. | Use the documented shortcut or remote control to regain interaction. |
 | Operator window | Optional | Separate upright controls and script/session status while the reading window is mirrored. | A second monitor is useful but not required. |
@@ -291,7 +291,7 @@ Reference: [Sound check and scratch audio](guide/05-recording-a-take.md) and [Pr
 | Per-take loudness | Optional | Voice-mode-only, Always during prompting, or Off. | Always mode opens the microphone during prompting; monitoring is not a mastering process. |
 | Logged audio measures | Included | Loudness LUFS, peak dBFS, background noise, voice-above-noise and warnings. | Available only when measured; accepted warnings are retained with the session. |
 | Scratch recording | Optional | Independent local microphone WAVs for timing and edit checks. | Scratch audio is a reference, not a guarantee of production quality or a replacement for the clean mic master. |
-| Local take slate | Optional | Off, Flash and beep, or Flash only; visible choices in this preview. | A flash seen only on the operator display does not prove recorded camera/audio sync. |
+| Local take slate | Optional | Off, Flash and beep, or Flash only; visible choices. | A flash seen only on the operator display does not prove recorded camera/audio sync. |
 | Recorded sync reference | Dependent | Slate IDs and known picture/tone routing into OBS, logged against takes. | The selected recorded scene and audio track must actually contain the reference. |
 | Physical camera lip sync | Limited | Use visible/audible claps and inspect camera/mic recordings; compare later references for drift. | No automatic verified camera latency estimate or universal sync correction is claimed. |
 | Sync adjustment | Dependent | Apply verified offsets in OBS or in the external edit workflow. | Sightline metadata is a timing aid; validate the result by looking and listening. |
@@ -366,12 +366,12 @@ Reference: [Settings](guide/07-settings.md), [Screenshot gallery](guide/settings
 | Stable settings panel | Included | Eight task areas; 32 navigation homes with two additional OBS subviews. Controls and Components merge into Connections. | Approved navigation/control/sample composition is retained. Longer setup/result panels scroll centrally above a fixed footer; settings never migrate on resize. |
 | Settings example preview | Included | Inline example when width permits; movable non-modal companion on narrow windows. Both follow the same draft. | Settings remains usable while the companion is open. Examples never start prompting, a microphone or a recorder; the guide diagram is manual. |
 | Settings draft consistency | Included | Appearance previews; Apply persists, Save and close persists/closes, Cancel restores the last applied look. | Component installation, theme-library save/import, pairing reset, device tests and guide visibility/placement/reference saves are explicit actions. |
-| Numeric controls | Included | Slider/number pairs share whole-number or five-point increments; fine readouts have at most two decimals; preview patch. | Display rounding preserves stored precision until the control is adjusted. |
+| Numeric controls | Included | Slider/number pairs share whole-number or five-point increments; fine readouts have at most two decimals. | Display rounding preserves stored precision until the control is adjusted. |
 | Named section navigation | Included | Sidebar search and visible button subtabs for Text, Screens, Reading aids, Head guide, add-ons and the single OBS entry. | OBS Connection, Recording control and Profile and scenes share one sidebar home. Disabled OBS/speech subviews remain unavailable. |
 | Live Tools groups | Included | Prepare, Adjust and During take share saved values with Settings through separate controls. | Live changes are immediate; a short prompter uses a utility window instead of clipping the menu. |
 | Contextual explanations | Included | Small question-mark pills beside options explain purpose and consequences on hover, keyboard focus or click. Both Reading aids groups have explanations for every control. | Escape closes the explanation. Help follows the selected mode and enabled components. |
 | Apply, save and cancel | Included | Review changed settings, apply them and keep or cancel the dialog changes. | Some setup operations and permissions have their own explicit controls. |
-| Onboarding and components | Included | First-use setup plus Getting started at the top of Settings, showing the current script, mode, text appearance and optional-tool guidance; preview patch. | Components remain optional. Opening guidance does not enable devices or integrations; changes use Apply. |
+| Onboarding and components | Included | First-use setup plus Getting started at the top of Settings, showing the current script, mode, text appearance and optional-tool guidance. | Components remain optional. Opening guidance does not enable devices or integrations; changes use Apply. |
 | Restore defaults | Included | Getting started > Restore defaults returns preferences to the initial setup after confirmation. | Does not uninstall add-ons or delete scripts and recording media. |
 | Settings transfer | Optional | Import/export supported settings in JSON or XML, including structured pad layouts and word lists. | Secrets and sensitive opt-ins are not a way to bypass explicit permissions. |
 | Settings access | Included | Toolbar settings control and a Settings item in the hamburger menu. | The menu remains an accessible route when toolbar icons are less obvious. |

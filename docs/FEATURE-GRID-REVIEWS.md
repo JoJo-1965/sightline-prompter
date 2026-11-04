@@ -1,5 +1,11 @@
 # Feature-matrix review record
 
+4 November 2026, stable documentation erratum: removed leftover preview wording
+from the availability explanation and four already-published options. The 249
+capabilities, dependencies, functional source and installer versions are unchanged.
+The immutable v1.2.0 tag/installers remain the frozen release; current reference
+exports and JL copy receive this editorial clarification.
+
 ## Stable 1.2.0 review — 4 November 2026
 
 Promoted the approved RC5 functions to the 1.2.0 reference, documentation
