@@ -1,5 +1,30 @@
 # Feedback queued after UAT 09
 
+## Preparation entry points · queued after RC 3
+
+- [ ] Make the significant camera/audio/test/reference workflow the first,
+  prominent action under Prepare to record, using the same card style as the
+  six Settings shortcuts. Remove the small detached button below the grid.
+- [ ] Clarify the menu/page labels: Prepare to record > Overview, with detailed
+  guide/sound/connection settings below the actual workflow entry.
+- [ ] Show a direct main-toolbar entry and useful test/reference state.
+- [ ] Review the combined entry-point mock before implementation. Retain the
+  signed-off three-column Settings composition and non-modal preparation.
+- [ ] Integrate live detection and Lock current with the existing Ctrl+Shift+H
+  overlay. Use one shared pose/reference and the existing guide adjustments;
+  the current copy-on-open/save-only bridge is insufficient.
+- [ ] Support OBS calibration without requiring a change to the local recording
+  route. Assess selected scene/source frames first; temporary virtual camera
+  is an explicit fallback that restores ownership correctly. A projector
+  window is a display, not a currently supported detector input.
+- [ ] Verify fixed-target behaviour, crop/aspect/projector mapping, two-way guide
+  updates, manual controls, reference restore and camera/feed cleanup. Keep
+  Ideal and retain the distinction between saved pose and checked recording.
+
+See [the entry review](PREPARE-ENTRY-REVIEW.md) and its interactive mock. These
+are queued proposals, not features delivered in RC 3. No new RC is built for
+this single observation; collect the next feedback batch first.
+
 ## RC 1 handover · 4 November 2026
 
 All six changes explicitly confirmed for this RC are implemented and packaged:
