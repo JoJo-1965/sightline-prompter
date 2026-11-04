@@ -70,9 +70,10 @@ try {
 	await prep.evaluate( "document.querySelector('#test-picture').click(); document.querySelector('#test-sound').click(); document.querySelector('#accept-test').click()" );
 	await until( async () => ( await request( "/status" ) ).body.preparation.canSave, "manual acceptance" );
 	assert.equal( ( await command( "recording-reference-save" ) ).status, 200 );
-	const savedState = JSON.parse( await fs.readFile( path.join( profile, "app-state.json" ), "utf8" ) );
+	const readState = () => fs.readFile( path.join( profile, "app-state.json" ), "utf8" ).then( JSON.parse ).catch( () => null );
+	const savedState = await until( async () => { const value = await readState(); return value?.settings?.headGuideReference ? value : null; }, "persisted reference" );
 	assert.equal( ( await command( "back-after-break" ) ).status, 200 );
-	assert.deepEqual( JSON.parse( await fs.readFile( path.join( profile, "app-state.json" ), "utf8" ) ).settings.headGuideReference, savedState.settings.headGuideReference, "Return does not replace the reference" );
+	assert.deepEqual( ( await until( readState, "persisted return" ) ).settings.headGuideReference, savedState.settings.headGuideReference, "Return does not replace the reference" );
 	assert.equal( errors.length, 0, errors.join( "\n" ) );
 	const artifacts = process.env.SIGHTLINE_TEST_ARTIFACTS;
 	if ( artifacts ) { await fs.mkdir( artifacts, { recursive: true } ); const image = await prep.call( "Page.captureScreenshot", { format: "png" } ); await fs.writeFile( path.join( artifacts, "controller-preparation.png" ), Buffer.from( image.data, "base64" ) ); }
