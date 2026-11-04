@@ -709,7 +709,7 @@ window.preRecord.onShared( async value => {
 	}
 	renderInput(); if ( changed ) render(); else renderCamera();
 } );
-window.preRecord.onGuideAction( async ( { name, value, background } ) => {
+async function handleGuideAction( { name, value, background } ) {
 	try {
 		if ( name === "background" ) {
 			clearInterval( measuringTimer ); state.measuring = false;
@@ -728,10 +728,12 @@ window.preRecord.onGuideAction( async ( { name, value, background } ) => {
 			if ( state.tracking ) { if ( !cameraStream ) await connectCamera(); else await startTracking(); }
 			else { stopTracking(); if ( background ) await stopInput(); }
 			render();
-			if ( !state.tracking && background ) window.preRecord.close();
+			if ( !state.tracking && background ) window.preRecord.close( true );
 		}
 	} catch ( error ) { state.error = error.message; say( error.message ); render(); }
-} );
+}
+let guideActions = Promise.resolve();
+window.preRecord.onGuideAction( value => { guideActions = guideActions.then( () => handleGuideAction( value ) ); } );
 navigator.mediaDevices.addEventListener( "devicechange", refreshDevices );
 refreshDevices();
 renderInput();

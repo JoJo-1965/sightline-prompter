@@ -10,7 +10,7 @@ protocol.registerSchemesAsPrivileged( [ { scheme: "sightline", privileges: { sta
 
 export function createPreRecord( { dir, prompter, getSettings, saveSettings, busy, guide, obs, probeObs = async () => false } ) {
 	let window = null, recording = false, quitting = false, lastTestFile = null;
-	let tracking = false, ready = false, pendingAction = null, installed = false, scenes = [], cameras = [], cameraId = getSettings().preRecordCameraId ?? "default";
+	let tracking = false, pictureActive = false, ready = false, pendingActions = [], installed = false, scenes = [], cameras = [], cameraId = getSettings().preRecordCameraId ?? "default";
 	const target = () => ( { x: getSettings().headGuideX ?? 0, y: ( getSettings().headGuideY ?? 0 ) - 14 / 562.5 * 100, size: ( getSettings().headGuideScale ?? 1 ) * 100 } );
 	const shared = () => ( { target: target(), pose: guide?.status(), reference: getSettings().headGuideReference ?? null, cameras, cameraId, source: getSettings().preRecordSource ?? "camera", scene: getSettings().preRecordScene ?? "", obs: { available: getSettings().obsEnabled === true && ( installed || obs?.state().connection === "connected" ), connected: obs?.state().connection === "connected", scenes } } );
 	const sync = () => {
@@ -18,12 +18,15 @@ export function createPreRecord( { dir, prompter, getSettings, saveSettings, bus
 		const value = shared(); guide?.calibration( value );
 		if ( window && !window.isDestroyed() ) {
 			window.webContents.send( "preRecordShared", value );
-			if ( tracking && !window.isVisible() && !getSettings().showHeadGuide ) window.webContents.send( "preRecordGuideAction", { name: "tracking", value: false, background: true } );
+			if ( ( tracking || pictureActive ) && !window.isVisible() && !getSettings().showHeadGuide ) window.webContents.send( "preRecordGuideAction", { name: "tracking", value: false, background: true } );
 		}
 	};
 	const guideAction = async ( name, value ) => {
 		if ( name === "open" ) { await open(); return; }
-		if ( !window || window.isDestroyed() || !ready ) { pendingAction = { name, value }; await open(); }
+		if ( !window || window.isDestroyed() || !ready ) {
+			pendingActions.push( { name, value } );
+			if ( !await open( undefined, { background: true } ) ) pendingActions = [];
+		}
 		else window.webContents.send( "preRecordGuideAction", { name, value, background: !window.isVisible() } );
 	};
 	let status = { test: { state: getSettings().preRecordReference?.testReviewed ? "saved" : "idle", at: getSettings().preRecordReference?.savedAt ?? null }, meter: { active: false } };
@@ -35,9 +38,11 @@ export function createPreRecord( { dir, prompter, getSettings, saveSettings, bus
 		}
 		if ( value?.feedback ) {
 			tracking = value.feedback.enabled === true;
+			pictureActive = value.feedback.active === true;
 			let person = null;
 			try { if ( value.feedback.person ) person = framingObservation( value.feedback.person ); } catch { /* Off-frame faces remain unavailable. */ }
 			guide?.feedback( { enabled: tracking, active: value.feedback.active === true, person, mirror: value.feedback.mirror === true, error: typeof value.feedback.error === "string" ? value.feedback.error.slice( 0, 300 ) : "" } );
+			if ( ( tracking || pictureActive ) && window && !window.isVisible() && !getSettings().showHeadGuide ) sync();
 		}
 		if ( [ "idle", "recording", "saving", "review", "passed", "failed", "stale" ].includes( value?.test?.state ) ) status.test = { state: value.test.state, at: new Date().toISOString() };
 		if ( typeof value?.meter?.active === "boolean" ) status.meter = { active: value.meter.active, level: Math.max( -100, Math.min( 0, Number.isFinite( value.meter.level ) ? value.meter.level : -100 ) ), peak: Math.max( -100, Math.min( 0, Number.isFinite( value.meter.peak ) ? value.meter.peak : -100 ) ), phase: value.meter.phase === "voice" ? "voice" : "room" };
@@ -50,19 +55,21 @@ export function createPreRecord( { dir, prompter, getSettings, saveSettings, bus
 		return net.fetch( pathToFileURL( path.join( dir, "client", name ) ).href );
 	} );
 	const trusted = event => window && event.sender === window.webContents;
-	const open = async ( event ) => {
+	const open = async ( event, { background = false } = {} ) => {
 		if ( event && event.sender !== prompter.webContents ) return;
 		if ( busy() ) {
-			await dialog.showMessageBox( prompter, { type: "info", message: "Pause prompting and stop the current recording before preparing a new setup." } );
-			return;
+			if ( background ) {
+				sync();
+				guide?.feedback( { enabled: false, active: false, person: null, error: "Pause prompting and stop the current recording before enabling calibration." } );
+			} else await dialog.showMessageBox( prompter, { type: "info", message: "Pause prompting and stop the current recording before preparing a new setup." } );
+			return false;
 		}
 		if ( window && !window.isDestroyed() ) {
-			window.show();
-			window.focus();
-			return;
+			if ( !background ) { window.show(); window.focus(); }
+			return true;
 		}
 		ready = false;
-		window = new BrowserWindow( { width: 1440, height: 980, minWidth: 600, minHeight: 580, title: "Sightline · Prepare to record", parent: prompter, modal: false, backgroundColor: "#14171c", webPreferences: { backgroundThrottling: false, nodeIntegration: false, sandbox: false, preload: path.join( dir, "client/pre-record-preload.mjs" ) } } );
+		window = new BrowserWindow( { width: 1440, height: 980, minWidth: 600, minHeight: 580, show: !background, title: "Sightline · Prepare to record", parent: prompter, modal: false, backgroundColor: "#14171c", webPreferences: { backgroundThrottling: false, nodeIntegration: false, sandbox: false, preload: path.join( dir, "client/pre-record-preload.mjs" ) } } );
 		protectWindow( window, getSettings().hideFromCapture === true );
 		window.setAlwaysOnTop( true, "screen-saver" );
 		window.webContents.setWindowOpenHandler( () => ( { action: "deny" } ) );
@@ -84,7 +91,8 @@ export function createPreRecord( { dir, prompter, getSettings, saveSettings, bus
 			}
 		} );
 		window.on( "closed", () => {
-			tracking = ready = false;
+			tracking = pictureActive = ready = false;
+			pendingActions = [];
 			guide?.feedback( { enabled: false, active: false, person: null } );
 			obs?.calibration( "virtual-stop" ).catch( () => {} );
 			publish( { ...( [ "recording", "saving" ].includes( status.test.state ) ? { test: { state: "failed" } } : {} ), meter: { active: false } } );
@@ -92,6 +100,7 @@ export function createPreRecord( { dir, prompter, getSettings, saveSettings, bus
 			recording = false;
 			quitting = false;
 		} );
+		return true;
 	};
 	const action = async ( event, name, value ) => {
 		if ( !trusted( event ) ) throw new Error( "Preparation window required" );
@@ -101,7 +110,11 @@ export function createPreRecord( { dir, prompter, getSettings, saveSettings, bus
 			sync();
 			return { reference: getSettings().preRecordReference ?? null, guide: target(), microphoneId: getSettings().preRecordMicrophone ?? "default", shared: shared() };
 		}
-		if ( name === "ready" ) { ready = true; if ( pendingAction ) window.webContents.send( "preRecordGuideAction", pendingAction ); pendingAction = null; return; }
+		if ( name === "ready" ) {
+			ready = true;
+			for ( const pending of pendingActions ) window.webContents.send( "preRecordGuideAction", { ...pending, background: !window.isVisible() } );
+			pendingActions = []; return;
+		}
 		if ( name === "draft" ) { await guide.pose( framingPose( value ) ); return; }
 		if ( name === "guide" ) { if ( value === "adjust" ) guide.showAdjustments(); else if ( value === "show" ) await saveSettings( { showHeadGuide: true } ); return; }
 		if ( name === "source" ) {
@@ -153,8 +166,8 @@ export function createPreRecord( { dir, prompter, getSettings, saveSettings, bus
 		if ( trusted( event ) ) publish( value );
 	};
 	const getStatus = event => event.sender === prompter.webContents ? status : null;
-	const close = ( event ) => {
-		if ( trusted( event ) ) window.close();
+	const close = ( event, backgroundOnly = false ) => {
+		if ( trusted( event ) && ( backgroundOnly !== true || !window.isVisible() ) ) window.close();
 	};
 	ipcMain.on( "openPreRecord", open );
 	ipcMain.on( "preRecordActivity", activity );

@@ -1,5 +1,16 @@
 # Feature-matrix review record
 
+4 November 2026, further guide feedback after RC 4: calibration now initialises
+its shared renderer in the background and opens the workflow only on request.
+The guide toolbar docks at the bottom with a hover-recoverable tab, pin option
+and its own small window layer above the prompter. Lock/unlock, fullscreen and
+Guide off remain reachable; turning the guide off removes the toolbar. Native
+tests cover these states, cold input choices and unclipped 920/560/320px layouts.
+This changes the existing guide visibility/control behaviour, not the row count.
+Help and actual captures are updated in source. Frozen RC 4/JL exports stay tied
+to that package; update their existing visibility/placement options and snapshot
+provenance with the next combined RC. No website deployment occurred here.
+
 4 November 2026, feedback after RC 4: corrected existing local position feedback
 to account for the guide's Width and independent side adjustments, and preserve
 those proportions on Lock current. Distance hints expose the existing measured

@@ -11,6 +11,11 @@ Overview > Open workflow**, or use the main **Prepare to record** toolbar action
 Pause prompting and stop production
 recording first. The preparation window is non-modal.
 
+In the next candidate after RC 4, calibration controls in **Guide adjustments**
+stay in that panel. Choosing a source does not open the workflow or enable its
+picture. **Enable picture** starts the selected feed explicitly. Use the
+separate **Prepare to record…** button when you want the full guided workflow.
+
 Test results appear in **Settings > Prepare to record > Overview**
 and on the main prompter. A saved clip initially says **Review required**.
 Review its picture and sound, confirm both, then select **Test checked** to pass.

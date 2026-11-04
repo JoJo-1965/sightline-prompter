@@ -12,6 +12,7 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 	let feedback = { enabled: false, active: false, person: null }, calibration = {};
 	let overlay = null;
 	let controls = null;
+	let toolbar = null, toolbarTimer = null, toolbarExpanded = true, toolbarPinned = false, toolbarUntil = 0, toolbarCursor = null, moving = null;
 	let locked = false;
 	let resizing = null;
 	let saveTimer;
@@ -26,10 +27,13 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 		const value = snapshot();
 		value.reference = getSettings().headGuideReference ?? null;
 		value.controlsShown = controls?.isVisible() ?? false;
+		value.toolbarExpanded = toolbarExpanded;
+		value.toolbarPinned = toolbarPinned;
 		value.feedback = { ...feedback, person: Date.now() - ( feedback.at ?? 0 ) < 1500 ? feedback.person : null };
 		value.calibration = calibration;
 		overlay?.webContents.send( "headGuideState", value );
 		controls?.webContents.send( "headGuideState", { ...value, controlsOnly: true } );
+		toolbar?.webContents.send( "headGuideState", { ...value, toolbarOnly: true } );
 		if ( !prompter.isDestroyed() ) prompter.webContents.send( "headGuideState", value );
 	};
 	function remember() {
@@ -51,6 +55,8 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 	}
 	function close() {
 		clearTimeout( saveTimer );
+		clearInterval( toolbarTimer ); toolbarTimer = null;
+		toolbar?.destroy(); toolbar = null; moving = null;
 		controls?.destroy();
 		controls = null;
 		if ( overlay ) {
@@ -71,11 +77,49 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 		overlay.moveTop();
 		prompter.setAlwaysOnTop( true, "screen-saver" );
 		prompter.moveTop();
+		if ( toolbar?.isVisible() ) { toolbar.setAlwaysOnTop( true, "screen-saver", 1 ); toolbar.moveTop(); }
 		if ( controls?.isVisible() ) {
 			controls.setAlwaysOnTop( true, "screen-saver" );
 			controls.moveTop();
 		}
 		restackUtilities?.();
+	}
+	function toolbarBounds( expanded ) {
+		const area = screen.getDisplayMatching( overlay.getBounds() ).workArea;
+		const fullWidth = Math.max( 100, Math.min( 920, area.width - 24 ) );
+		const width = expanded ? fullWidth : Math.min( 140, fullWidth );
+		const height = expanded ? fullWidth >= 760 ? 46 : fullWidth >= 500 ? 82 : 118 : 26;
+		return { x: Math.round( area.x + ( area.width - width ) / 2 ), y: area.y + area.height - height - 12, width, height };
+	}
+	function updateToolbar( reveal = false ) {
+		if ( !overlay || !toolbar || toolbar.isDestroyed() ) return;
+		const cursor = screen.getCursorScreenPoint(), now = Date.now();
+		const full = toolbarBounds( true ), tab = toolbarBounds( false );
+		const inside = bounds => cursor.x >= bounds.x - 4 && cursor.x <= bounds.x + bounds.width + 4 && cursor.y >= bounds.y - 4 && cursor.y <= bounds.y + bounds.height + 4;
+		const moved = toolbarCursor && ( cursor.x !== toolbarCursor.x || cursor.y !== toolbarCursor.y );
+		toolbarCursor = cursor;
+		if ( reveal || inside( toolbarExpanded ? full : tab ) || moving || resizing ) toolbarUntil = now + 900;
+		const area = screen.getDisplayMatching( overlay.getBounds() ).workArea;
+		const far = Math.max( full.x - cursor.x, cursor.x - full.x - full.width ) > area.width * .1 || Math.max( full.y - cursor.y, cursor.y - full.y - full.height ) > area.height * .1;
+		const expanded = toolbarPinned || reveal || !!moving || !!resizing || inside( toolbarExpanded ? full : tab ) || ( now < toolbarUntil && !( moved && far ) );
+		const changed = toolbarExpanded !== expanded; toolbarExpanded = expanded;
+		const bounds = expanded ? full : tab, previous = toolbar.getBounds();
+		if ( Object.keys( bounds ).some( key => bounds[key] !== previous[key] ) ) toolbar.setBounds( bounds );
+		if ( changed ) send();
+	}
+	function ensureToolbar() {
+		if ( toolbar || !overlay ) return;
+		toolbarExpanded = true; toolbarUntil = Date.now() + 1800; toolbarCursor = screen.getCursorScreenPoint();
+		toolbar = new BrowserWindow( { ...toolbarBounds( true ), frame: false, transparent: true, backgroundColor: "#00000000", resizable: false, maximizable: false, minimizable: false, fullscreenable: false, skipTaskbar: true, show: false, title: "Sightline head-guide toolbar", webPreferences: { nodeIntegration: false, contextIsolation: true, sandbox: false, preload: path.join( dir, "client", "head-guide-preload.mjs" ) } } );
+		protectWindow( toolbar, true );
+		toolbar.setAlwaysOnTop( true, "screen-saver", 1 );
+		toolbar.loadFile( path.join( dir, "client", "head-guide.html" ), { query: { toolbar: "1" } } );
+		toolbar.once( "ready-to-show", () => { toolbar?.showInactive(); updateToolbar(); restack(); send(); } );
+		toolbar.on( "focus", restack );
+		toolbar.on( "close", event => { event.preventDefault(); toolbarPinned = false; toolbarUntil = 0; updateToolbar(); } );
+		toolbar.webContents.on( "will-navigate", event => event.preventDefault() );
+		toolbar.webContents.setWindowOpenHandler( () => ( { action: "deny" } ) );
+		toolbarTimer = setInterval( updateToolbar, 100 );
 	}
 	function toggleControls() {
 		if ( !overlay ) return;
@@ -156,6 +200,7 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 			overlay.loadFile( path.join( dir, "client", "head-guide.html" ) );
 			overlay.once( "ready-to-show", () => {
 				overlay?.showInactive();
+				ensureToolbar();
 				restack();
 			} );
 			overlay.on( "focus", restack );
@@ -192,7 +237,17 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 	function action( event, name, value ) {
 		const fromOverlay = overlay && event.sender === overlay.webContents;
 		const fromControls = controls && event.sender === controls.webContents;
-		if ( !fromOverlay && !fromControls && event.sender !== prompter.webContents ) return;
+		const fromToolbar = toolbar && event.sender === toolbar.webContents;
+		if ( !fromOverlay && !fromControls && !fromToolbar && event.sender !== prompter.webContents ) return;
+		if ( fromToolbar && name === "toolbar-reveal" ) { updateToolbar( true ); return; }
+		if ( fromToolbar && name === "toolbar-pin" ) { toolbarPinned = !toolbarPinned; updateToolbar( true ); send(); return; }
+		if ( fromToolbar && name === "move-start" && !fullscreen ) moving = { cursor: screen.getCursorScreenPoint(), bounds: overlay.getBounds() };
+		if ( fromToolbar && name === "move" && moving ) {
+			const cursor = screen.getCursorScreenPoint();
+			const bounds = { ...moving.bounds, x: moving.bounds.x + cursor.x - moving.cursor.x, y: moving.bounds.y + cursor.y - moving.cursor.y };
+			overlay.setBounds( fitInside( bounds, screen.getDisplayMatching( bounds ).workArea ) ); updateToolbar( true );
+		}
+		if ( fromToolbar && name === "move-end" ) { moving = null; remember(); }
 		if ( name.startsWith( "framing-" ) ) { onFramingAction( name.slice( 8 ), value ); return; }
 		if ( name === "adjust" ) {
 			toggleControls();
@@ -220,7 +275,7 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 			return;
 		}
 		const fromSettings = event.sender === prompter.webContents && [ "place", "save-reference", "restore-reference", "save-ideal", "reset-pose" ].includes( name );
-		if ( !fromOverlay && !fromControls && !fromSettings ) return;
+		if ( !fromOverlay && !fromControls && !fromToolbar && !fromSettings ) return;
 		if ( fromSettings && !overlay ) return;
 		if ( name === "ready" ) {
 			send();
@@ -242,6 +297,7 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 			send();
 		}
 		if ( name === "lock" ) {
+			if ( locked ) { unlock(); return; }
 			locked = true;
 			send();
 			overlay.setIgnoreMouseEvents( true, { forward: true } );

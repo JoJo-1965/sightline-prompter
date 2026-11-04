@@ -18,14 +18,14 @@ if ( process.env.SIGHTLINE_TEST_OBS === "1" ) {
  obsMock.on("connection",socket=>{socket.send(JSON.stringify({op:0,d:{rpcVersion:1}}));socket.on("message",raw=>{const {op,d}=JSON.parse(raw);if(op===1)return socket.send(JSON.stringify({op:2,d:{negotiatedRpcVersion:1}}));obsRequests.push(d);let responseData={};if(d.requestType==="GetVersion")responseData={availableRequests:["GetSourceScreenshot","GetSceneList"]};if(d.requestType==="GetRecordStatus")responseData={outputActive:false,outputPaused:false};if(d.requestType==="GetSceneList")responseData={scenes:[{sceneName:"Camera clean"},{sceneName:"Slides"}],currentProgramSceneName:"Camera clean"};if(d.requestType==="GetSourceScreenshot")responseData={imageData:obsImage};socket.send(JSON.stringify({op:7,d:{requestId:d.requestId,requestType:d.requestType,requestStatus:{result:true},responseData}}));});});
  const seed=JSON.parse(await fs.readFile(path.join(profile,"app-state.json"),"utf8")); Object.assign(seed.settings,{obsEnabled:true,obsHost:"127.0.0.1",obsPort:obsMock.address().port,obsControls:false,obsPassword:""});await fs.writeFile(path.join(profile,"app-state.json"),JSON.stringify(seed));
 }
-const child = spawn( process.env.SIGHTLINE_TEST_EXE ?? require( "electron" ), [ ...( process.env.SIGHTLINE_TEST_EXE ? [] : [ "." ] ), "--inspect=0", `--user-data-dir=${ profile }`, `--remote-debugging-port=${ port }`, "--disable-renderer-backgrounding", "--prepare-recording", "--use-fake-ui-for-media-stream", "--use-file-for-fake-audio-capture=D:/Sightline/Dev/Testing/Pre-Record-UAT/microphone.wav", "--use-fake-device-for-media-stream", "--use-file-for-fake-video-capture=D:/Sightline/Dev/Testing/Pre-Record-UAT/camera.y4m" ], { cwd: root, env, windowsHide: true, stdio: [ "ignore", "pipe", "pipe" ] } );
+const child = spawn( process.env.SIGHTLINE_TEST_EXE ?? require( "electron" ), [ ...( process.env.SIGHTLINE_TEST_EXE ? [] : [ "." ] ), "--inspect=0", `--user-data-dir=${ profile }`, `--remote-debugging-port=${ port }`, "--disable-renderer-backgrounding", "--use-fake-ui-for-media-stream", "--use-file-for-fake-audio-capture=D:/Sightline/Dev/Testing/Pre-Record-UAT/microphone.wav", "--use-fake-device-for-media-stream", "--use-file-for-fake-video-capture=D:/Sightline/Dev/Testing/Pre-Record-UAT/camera.y4m" ], { cwd: root, env, windowsHide: true, stdio: [ "ignore", "pipe", "pipe" ] } );
 let stderr = ""; child.stderr.on( "data", data => stderr += data ); child.stdout.resume();
 const pause = ms => new Promise( resolve => setTimeout( resolve, ms ) );
 const sockets = [], errors = [];
 async function connect( fragment ) {
 	let target;
 	for ( let n = 0; n < 100; n++ ) {
-		target = fragment === "main-process" ? { webSocketDebuggerUrl: stderr.match( /Debugger listening on (ws:\/\/127\.0\.0\.1:\d+\/[^\s]+)/ )?.[1] } : ( await fetch( `http://127.0.0.1:${ port }/json/list` ).then( r => r.json() ).catch( () => [] ) ).find( t => t.url.includes( fragment ) );
+		target = fragment === "main-process" ? { webSocketDebuggerUrl: stderr.match( /Debugger listening on (ws:\/\/127\.0\.0\.1:\d+\/[^\s]+)/ )?.[1] } : ( await fetch( `http://127.0.0.1:${ port }/json/list` ).then( r => r.json() ).catch( () => [] ) ).find( t => t.url.includes( fragment ) && ( fragment !== "head-guide.html" || !t.url.includes( "?" ) ) );
 		if ( target?.webSocketDebuggerUrl ) break;
 		await pause( 100 );
 	}
@@ -37,12 +37,77 @@ async function connect( fragment ) {
 	const evaluate = async expression => { const result = await call( "Runtime.evaluate", { expression, awaitPromise: true, returnByValue: true, userGesture: true } ); if ( result.exceptionDetails ) throw new Error( result.exceptionDetails.exception?.description ?? result.exceptionDetails.text ); return result.result.value; };
 	await call( "Runtime.enable" ); return { call, evaluate };
 }
+async function waitIn(client,expression,label,limit=10000){
+ const started=Date.now();while(Date.now()-started<limit){if(await client.evaluate(expression))return;await pause(100);}throw new Error(label);
+}
 try {
- const page = await connect("sightline://prepare/pre-record.html");
  const main = await connect("teleprompter.html");
+ const native=await connect("main-process");
  await pause(500);
+ await main.evaluate('window.electron.headGuide("show")');await connect("head-guide.html");
+ const toolbar=await connect("head-guide.html?toolbar=1");
+ await waitIn(toolbar,'!!document.getElementById("toolbar-reveal")&&document.readyState==="complete"',"Bottom guide toolbar loads");
+ const electronNative="process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron')";
+ const toolbarNative=electronNative+".BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().includes('toolbar=1'))";
+ await native.evaluate("globalThis.originalGuideCursor="+electronNative+".screen.getCursorScreenPoint;globalThis.testGuideCursor={x:-10000,y:-10000};"+electronNative+".screen.getCursorScreenPoint=()=>globalThis.testGuideCursor");
+ await waitIn(toolbar,'document.body.classList.contains("toolbar-collapsed")',"Moving far away quickly collapses the toolbar");
+ assert.equal(await toolbar.evaluate('!!document.getElementById("toolbar-reveal").getClientRects().length'),true,"A recoverable Head guide tab remains visible");
+ const revealToolbar=async()=>{
+  const bounds=await native.evaluate(toolbarNative+".getBounds()");
+  await native.evaluate("globalThis.testGuideCursor="+JSON.stringify({x:bounds.x+bounds.width/2,y:bounds.y+bounds.height/2}));
+  await waitIn(toolbar,'!document.body.classList.contains("toolbar-collapsed")',"Hovering the tab restores the controls");
+ };
+ await revealToolbar();
+ assert.equal(await native.evaluate(toolbarNative+".isAlwaysOnTop()"),true,"Only the small toolbar surface is kept above the prompter");
+ await toolbar.evaluate('document.getElementById("chrome").click()');
+ await waitIn(toolbar,'document.getElementById("chrome").textContent==="Auto-hide"',"Pin controls retains the bar");
+ await native.evaluate('globalThis.testGuideCursor={x:-10000,y:-10000}');await pause(220);
+ assert.equal(await toolbar.evaluate('document.body.classList.contains("toolbar-collapsed")'),false,"Pinned controls remain available away from the pointer");
+ for(const [width,height] of [[920,46],[560,82],[320,118]]){
+  await toolbar.call("Emulation.setDeviceMetricsOverride",{width,height,deviceScaleFactor:1,mobile:false});
+  const overflow=await toolbar.evaluate('(()=>({horizontal:document.documentElement.scrollWidth>innerWidth+1,buttons:[...document.querySelectorAll("header button:not([hidden]),header input")].filter(el=>{const r=el.getBoundingClientRect();return r.left<0||r.right>innerWidth+1||r.top<0||r.bottom>innerHeight+1}).map(el=>el.id)}))()');
+  assert.deepEqual(overflow,{horizontal:false,buttons:[]},"Guide toolbar fits without clipped controls at "+width);
+ }
+ await toolbar.call("Emulation.clearDeviceMetricsOverride");
+ await fs.writeFile(path.join(artifacts,"guide-toolbar-expanded.png"),Buffer.from((await toolbar.call("Page.captureScreenshot",{format:"png"})).data,"base64"));
+ await toolbar.evaluate('document.getElementById("lock").click()');
+ await waitIn(toolbar,'document.getElementById("lock").textContent==="Unlock clicks"',"Click-through lock leaves toolbar controls reachable");
+ assert.equal(await toolbar.evaluate('getComputedStyle(document.querySelector("header")).visibility'),"visible");
+ await toolbar.evaluate('document.getElementById("lock").click()');
+ await waitIn(toolbar,'document.getElementById("lock").textContent==="Lock clicks"',"Toolbar restores mouse control without a hidden-window hotkey");
+ await toolbar.evaluate('document.getElementById("fullscreen").click()');
+ await waitIn(toolbar,'document.getElementById("fullscreen").textContent==="Restore"',"Fullscreen keeps the bottom toolbar available");
+ await toolbar.evaluate('document.getElementById("fullscreen").click()');
+ await waitIn(toolbar,'document.getElementById("fullscreen").textContent==="Fullscreen"',"Restore keeps the same controls");
+ await toolbar.evaluate('document.getElementById("chrome").click()');
+ await waitIn(toolbar,'document.body.classList.contains("toolbar-collapsed")',"Unpinned toolbar returns to its reveal tab");
+ await fs.writeFile(path.join(artifacts,"guide-toolbar-collapsed.png"),Buffer.from((await toolbar.call("Page.captureScreenshot",{format:"png"})).data,"base64"));
+ await revealToolbar();await toolbar.evaluate('document.getElementById("adjust").click()');
+ await native.evaluate(electronNative+".screen.getCursorScreenPoint=globalThis.originalGuideCursor");
+ const guideControls=await connect("head-guide.html?controls=1");
+ for(let n=0;n<60&&!await guideControls.evaluate('!!document.getElementById("framing-source")');n++)await pause(100);
+ const preparationVisible=()=>native.evaluate("process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron').BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().startsWith('sightline:'))?.isVisible()??false");
+ if(obsMock)await waitIn(guideControls,'!document.getElementById("framing-inputs").hidden',"Connected OBS choices are available in Guide adjustments");
+ const initialSource=obsMock?"temporary":"camera";
+ await guideControls.evaluate('document.getElementById("framing-source").value='+JSON.stringify(initialSource)+';document.getElementById("framing-source").dispatchEvent(new Event("change"));document.getElementById("framing-camera").value="default";document.getElementById("framing-camera").dispatchEvent(new Event("change"))');
+ const page = await connect("sightline://prepare/pre-record.html");await pause(500);
  const waitFor = async (expression,label,limit=15000) => {const start=Date.now();while(Date.now()-start<limit){if(await page.evaluate(expression))return;await pause(150);}throw new Error(label+": "+await page.evaluate('document.getElementById("direction-detail").textContent+" / "+document.getElementById("message").textContent'));};
  const click = async id => {assert.equal(await page.evaluate('!!document.getElementById('+JSON.stringify(id)+')&&!document.getElementById('+JSON.stringify(id)+').disabled'),true,"Enabled: "+id);await page.evaluate('document.getElementById('+JSON.stringify(id)+').click()');};
+ await waitFor('document.getElementById("camera-device").options.length>1',"Guide-only calibration lists cameras in its hidden host");
+ await waitFor('document.getElementById("calibration-source").value==='+JSON.stringify(initialSource),"Cold-start selections are retained in order without opening another input");
+ assert.equal(await preparationVisible(),false,"Cold calibration in Guide adjustments does not open the workflow");
+ assert.equal(await page.evaluate('document.getElementById("camera-video").srcObject'),null,"Selecting calibration alone does not capture");
+ await guideControls.evaluate('document.getElementById("framing-source").value="camera";document.getElementById("framing-source").dispatchEvent(new Event("change"))');
+ await waitFor('document.getElementById("calibration-source").value==="camera"',"Returning to a generic camera stays in the same hidden service");
+ await guideControls.evaluate('document.getElementById("framing-picture").click()');
+ await waitFor('!!document.getElementById("camera-video").srcObject',"Guide-only Enable picture opens the selected feed");
+ assert.equal(await preparationVisible(),false,"Explicit guide capture stays in Guide adjustments");
+ await guideControls.evaluate('document.getElementById("framing-picture").click()');
+ await waitFor('document.getElementById("camera-video").srcObject===null',"Guide-only picture can be stopped");
+ await guideControls.evaluate('document.getElementById("framing-open").click()');
+ for(let n=0;n<40&&!await preparationVisible();n++)await pause(100);
+ assert.equal(await preparationVisible(),true,"Only the explicit Prepare to record action opens the workflow");
+ await guideControls.evaluate('window.headGuide.action("adjust-hide")');
  assert.equal(await page.evaluate('isSecureContext&&!!navigator.mediaDevices'),true,"Secure local origin supports camera");
  assert.equal(await page.evaluate('document.getElementById("camera-video").srcObject'),null,"No automatic camera permission or capture");
  await waitFor('document.getElementById("camera-device").options.length>1',"Camera inputs listed before capture");
@@ -169,7 +234,6 @@ try {
  assert.equal(JSON.stringify(JSON.parse(await fs.readFile(path.join(profile,"app-state.json"),"utf8")).settings.preRecordReference),original,"Returning never replaces saved reference");
  await click("new-setup");
  assert.equal(JSON.stringify(JSON.parse(await fs.readFile(path.join(profile,"app-state.json"),"utf8")).settings.preRecordReference),original,"New draft retains saved reference");
- const native=await connect("main-process");
  for(const [w,h] of [[1440,940],[1024,720],[600,600]]){
   await native.evaluate("process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron').BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().startsWith('sightline:')).setContentSize("+w+","+h+")");
   await pause(250);
@@ -177,6 +241,12 @@ try {
  }
  assert.deepEqual(errors,[]);
  if(obsMock){await main.evaluate('window.electron.saveSettings({obsEnabled:false})');await waitFor('document.getElementById("calibration-source-field").hidden',"Disabled OBS hides its calibration choices");assert.equal(await overlay.evaluate('document.getElementById("framing-inputs").hidden'),true,"The head guide uses the same OBS gate");}
+ await native.evaluate(electronNative+".BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().startsWith('sightline:')).hide()");
+ await toolbar.evaluate('setTimeout(()=>document.getElementById("close").click(),25);true');
+ for(let n=0;n<40;n++){if(await native.evaluate(electronNative+".BrowserWindow.getAllWindows().every(w=>!w.webContents.getURL().includes('head-guide.html'))"))break;await pause(100);}
+ assert.equal(await native.evaluate(electronNative+".BrowserWindow.getAllWindows().every(w=>!w.webContents.getURL().includes('head-guide.html'))"),true,"Guide off removes the overlay, controls and bottom reveal surface");
+ for(let n=0;n<60;n++){if(await native.evaluate(electronNative+".BrowserWindow.getAllWindows().every(w=>!w.webContents.getURL().startsWith('sightline:'))"))break;await pause(100);}
+ assert.equal(await native.evaluate(electronNative+".BrowserWindow.getAllWindows().every(w=>!w.webContents.getURL().startsWith('sightline:'))"),true,"Guide off releases a hidden picture feed even when tracking was off");
  console.log("PASS: real local model inference, microphone measurement, recorded WebM playback, fixed reference and manual fallback. Synthetic devices only. Artifacts: "+artifacts);
 } finally {
  for(const socket of sockets)socket.close();

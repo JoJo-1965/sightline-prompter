@@ -7,8 +7,10 @@
 <link rel="stylesheet" href="head-guide.css">
 </head>
 <body>
-<header>
+<button id="toolbar-reveal" type="button" hidden aria-label="Show head-guide controls">Head guide ▴</button>
+<header role="toolbar" aria-label="Head-guide controls">
 <strong>Head-position guide</strong>
+<button id="move-guide" type="button" hidden title="Drag to move the guide window">Move guide</button>
 <button id="smaller" title="Smaller actual position outline" aria-label="Smaller actual position outline">−</button>
 <button id="bigger" title="Larger actual position outline" aria-label="Larger actual position outline">+</button>
 <input id="opacity" aria-label="Guide opacity" title="Guide opacity" type="range" min="20" max="100" value="75">
@@ -92,7 +94,7 @@
 <path class="line quiet" d="M603 66H590M590 40V66M583 40H597"/>
 </svg>
 </div>
-<footer>Guide adjustments: prompter or Tools · Ctrl+Shift+H show/unlock · Ctrl+Alt+H fullscreen/restore</footer>
+<footer>Hover the Head guide tab at the bottom for controls · Ctrl+Shift+H show/unlock · Ctrl+Alt+H fullscreen/restore</footer>
 <div id="resize" title="Drag to resize"></div>
 <script type="module" src="head-guide.js"></script>
 </body>

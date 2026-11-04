@@ -171,6 +171,18 @@ after a reference exists. The right-hand manual diagram is not camera tracking.
 Use **Adjust guide** to fit eye centre/level, then top/bottom and sides.
 See [head guide and capture limits](04-layout-and-display.md).
 
+The next candidate after RC 4 restores the guide toolbar at the bottom of its
+monitor. It collapses to a **Head guide ▴** tab; hover or click the tab to bring
+the controls back. **Pin controls** keeps them visible and **Auto-hide** releases
+the pin. **Adjust**, **Guide off**, **Move guide**, fullscreen and click-through
+lock/unlock remain available. The toolbar has its own small window layer above
+the prompter, including while the guide is locked or fullscreen. Turning the
+guide off removes the toolbar and its tab. Existing guide picture bounds stay fixed.
+
+![Expanded bottom head-guide toolbar, next candidate after RC 4](images/guide-toolbar-expanded.png)
+
+![Collapsed Head guide tab that reveals the controls on hover](images/guide-toolbar-collapsed.png)
+
 ## Voice
 
 **Speech engine** has an enable switch, engine choice, readiness and service

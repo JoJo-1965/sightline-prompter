@@ -7,6 +7,10 @@ adjustments. A source fix and native moving-size detector regression now cover
 that mismatch, proportion-preserving Lock current, live size progress and shared
 mirrored arrows. Included in the next combined candidate after feedback review;
 the frozen RC 4 download is unchanged.
+Guide calibration now stays in Guide adjustments, with background initialisation
+and ordered input choices. A bottom auto-hiding toolbar has a recoverable hover
+tab, pin option and independent window layer above the prompter. Native recovery,
+lock, fullscreen, Guide off and narrow-layout checks pass; queued in the same batch.
 
 **RC 4 integrated batch:** shared preparation/head-guide pose and live feedback,
 OBS scene calibration with conditional source controls, prominent preparation

@@ -282,7 +282,7 @@ try {
 	await evaluate( "window.electron.headGuide()" );
 	let guideTarget;
 	for ( let n = 0; n < 60; n++ ) {
-		guideTarget = ( await ( await fetch( "http://127.0.0.1:9335/json" ) ).json() ).find( t => t.url.includes( "head-guide.html" ) );
+		guideTarget = ( await ( await fetch( "http://127.0.0.1:9335/json" ) ).json() ).find( t => t.url.includes( "head-guide.html" ) && !t.url.includes( "?" ) );
 		if ( guideTarget ) break;
 		await pause( 100 );
 	}
@@ -359,7 +359,8 @@ try {
 		await pause( 100 );
 	}
 	assert.equal( await ce( "document.body.classList.contains('controls-only')&&!document.querySelector('#adjust-panel').hidden" ), true );
-	assert.equal( await ce( "document.querySelector('#adjust-panel').scrollHeight<=document.querySelector('#adjust-panel').clientHeight" ), true, "The main fitting controls fit without scrolling on the test display" );
+	assert.equal( await ce( "(()=>{const panel=document.querySelector('#adjust-panel'),input=document.querySelector('#shape-right');input.scrollIntoView({block:'nearest'});const p=panel.getBoundingClientRect(),r=input.getBoundingClientRect();return panel.scrollWidth<=panel.clientWidth&&r.top>=p.top&&r.bottom<=p.bottom;})()" ), true, "All fitting controls remain reachable in the scrollable guide panel" );
+	await ce( "document.querySelector('#adjust-panel').scrollTop=0" );
 	await pause( 200 );
 	await ge( "document.querySelector('[data-y=\"-1\"]').click()" );
 	await pause( 200 );
@@ -439,7 +440,7 @@ try {
 	await pause( 200 );
 	assert.equal( await ge( "document.querySelector('#head').getAttribute('transform')" ), savedIdealTransform, "reset must restore ideal pose" );
 	assert.equal( await ge( "document.querySelector('#ideal-head .pose-label').textContent" ), "Ideal position" );
-	assert.equal( await ge( "document.querySelector('#head .pose-label').textContent" ), "Actual position" );
+	assert.equal( await ge( "document.querySelector('#head .pose-label').textContent" ), "Recording target" );
 	// Real pointer input exercises the SVG coordinate mapping and drag capture.
 	const dragPoint = await ge( "(()=>{const p=new DOMPoint(500,187).matrixTransform(document.querySelector('#head').getScreenCTM());return {x:p.x,y:p.y};})()" );
 	await gc( "Input.dispatchMouseEvent", { type: "mousePressed", x: dragPoint.x, y: dragPoint.y, button: "left", clickCount: 1 } );
@@ -540,7 +541,7 @@ try {
 	cws.close();
 	gws.close();
 	await press();
-	const reopened = ( await ( await fetch( "http://127.0.0.1:9335/json" ) ).json() ).find( t => t.url.includes( "head-guide.html" ) );
+	const reopened = ( await ( await fetch( "http://127.0.0.1:9335/json" ) ).json() ).find( t => t.url.includes( "head-guide.html" ) && !t.url.includes( "?" ) );
 	assert.ok( reopened );
 	const saved = JSON.parse( await fs.readFile( path.join( profile, "app-state.json" ), "utf8" ) );
 	assert.equal( saved.settings.headGuideScale, 1.05 );
@@ -644,7 +645,8 @@ try {
 	console.log( "PASS: module handover flushes the old recording before loading the new script." );
 	await evaluate( "window.electron.openSample('voice-and-stops.md')" );
 	await until( "document.getElementById('md').textContent.includes('Voice')" );
-	assert.equal( await evaluate( "document.getElementById('cb-tools').previousElementSibling.id" ), "cb-edit" );
+	assert.equal( await evaluate( "document.getElementById('cb-tools').previousElementSibling.id" ), "cb-prepare" );
+	assert.equal( await evaluate( "document.getElementById('cb-prepare').previousElementSibling.id" ), "cb-edit" );
 	await evaluate( "document.getElementById('cb-edit').click()" );
 	await until( "document.querySelector('#editor .cm-content')?.getAttribute('aria-readonly')==='true'" );
 	assert.equal( await evaluate( "document.activeElement === document.querySelector('#editor .cm-content')" ), true, "read-only source stays keyboard-focusable for selection and copying" );

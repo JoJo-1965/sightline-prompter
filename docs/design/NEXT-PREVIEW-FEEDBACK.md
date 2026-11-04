@@ -1,6 +1,6 @@
 # Feedback queued after UAT 09
 
-## After RC 4 · distance guidance fix ready for the next combined candidate
+## After RC 4 · guide fixes ready for the next combined candidate
 
 - [x] Reproduce incorrect distance advice after changing guide Width and
   left/right edges: the comparison used only overall Size. The native regression
@@ -17,14 +17,26 @@
   camera feed: smaller face → closer, increasing size → progress → green,
   larger face → further away. The target stays fixed; custom proportions,
   Lock current, OBS frames, audio/test/reference checks also pass.
+- [x] Calibration choices and Enable picture in Guide adjustments initialise
+  the shared detection service invisibly. They do not open Prepare to record.
+  Cold-start choices are retained in order; picture capture remains explicit.
+  Only the explicit Prepare to record button opens that workflow window.
+- [x] Restore the requested bottom head-guide toolbar with automatic hiding
+  and a persistent Head guide reveal tab. Its own small window stays above
+  the prompter while the outline retains its existing picture geometry.
+  Hover restores controls even in click-through lock or fullscreen; Pin controls
+  is available. Guide off removes all guide surfaces. Native checks cover
+  recovery, lock/unlock, pin/unpin and unclipped 920/560/320px layouts.
+- [x] Guide off releases a background picture even when detection was off.
+  Background shutdown cannot close a workflow that has since been opened.
+  Full native production/OBS, saved-reference and unit regressions pass.
 - [ ] Include in the next combined RC after reviewing delivered feedback.
   RC 4's frozen ZIP/review remains unchanged; no one-item build was generated.
 
-Evidence: `D:/Sightline/Dev/Testing/RC-Feedback-20261104/closer-before` and
-`closer-after`. Physical response on Joanne's actual OBS/camera feed remains
-part of UAT. The follow-up question about how the instruction behaved has
-not been answered at this point; the reproduced geometry defect is confirmed,
-but a frozen/wrong source feed has not been ruled out for that recording setup.
+Evidence: `D:/Sightline/Dev/Testing/RC-Feedback-20261104/closer-before`,
+`closer-final` and `guide-toolbar`. Joanne confirmed that the instruction kept
+saying "move closer". The reproduced geometry defect is fixed; physical
+response and window stacking on Joanne's actual OBS/camera setup remain UAT.
 
 ## Preparation entry points · delivered in RC 4
 

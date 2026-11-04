@@ -11,5 +11,5 @@ contextBridge.exposeInMainWorld( "preRecord", {
 	readTest: () => ipcRenderer.invoke( "preRecord", "read-test" ),
 	activity: busy => ipcRenderer.send( "preRecordActivity", busy === true ),
 	report: result => ipcRenderer.send( "preRecordReport", result ),
-	close: () => ipcRenderer.send( "closePreRecord" )
+	close: backgroundOnly => ipcRenderer.send( "closePreRecord", backgroundOnly === true )
 } );

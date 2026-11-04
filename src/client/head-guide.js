@@ -5,9 +5,24 @@ import { framingMatch, visibleFramingTarget } from "./framing-position.js";
 const guide = window.headGuide;
 const svg = document.querySelector( "svg" );
 const controlsOnly = new URLSearchParams( window.location.search ).get( "controls" ) === "1";
+const toolbarOnly = new URLSearchParams( window.location.search ).get( "toolbar" ) === "1";
 if ( controlsOnly ) document.title = "Guide adjustments";
+if ( toolbarOnly ) document.title = "Sightline head-guide toolbar";
 document.body.classList.toggle( "controls-only", controlsOnly );
+document.body.classList.toggle( "toolbar-only", toolbarOnly );
 document.querySelector( "#adjust-panel" ).hidden = !controlsOnly;
+if ( toolbarOnly ) {
+	document.querySelector( "#toolbar-reveal" ).hidden = false;
+	document.querySelector( "#move-guide" ).hidden = false;
+	document.querySelector( "#close" ).textContent = "Guide off";
+	document.querySelector( "#close" ).setAttribute( "aria-label", "Turn head guide off" );
+}
+document.querySelector( "#toolbar-reveal" ).onclick = () => guide.action( "toolbar-reveal" );
+if ( toolbarOnly ) document.addEventListener( "keydown", () => guide.action( "toolbar-reveal" ) );
+const moveGuide = document.querySelector( "#move-guide" );
+moveGuide.onpointerdown = event => { if ( event.button !== 0 ) return; moveGuide.setPointerCapture( event.pointerId ); guide.action( "move-start" ); event.preventDefault(); };
+moveGuide.onpointermove = event => { if ( moveGuide.hasPointerCapture( event.pointerId ) ) guide.action( "move" ); };
+moveGuide.onpointerup = moveGuide.onlostpointercapture = () => guide.action( "move-end" );
 let scale = 1;
 let resize = false;
 let pose = { x: 0, y: 0 };
@@ -97,8 +112,17 @@ for ( const button of document.querySelectorAll( "[data-place]" ) ) button.oncli
 document.querySelector( "#close" ).onclick = () => guide.action( "hide" );
 document.querySelector( "#lock" ).onclick = () => guide.action( "lock" );
 document.querySelector( "#fullscreen" ).onclick = () => guide.action( "fullscreen" );
-document.querySelector( "#chrome" ).onclick = () => guide.action( "chrome" );
+document.querySelector( "#chrome" ).onclick = () => guide.action( toolbarOnly ? "toolbar-pin" : "chrome" );
 guide.onState( ( value ) => {
+	if ( toolbarOnly ) {
+		document.body.classList.toggle( "toolbar-collapsed", value.toolbarExpanded === false );
+		document.querySelector( "#chrome" ).textContent = value.toolbarPinned ? "Auto-hide" : "Pin controls";
+		document.querySelector( "#chrome" ).title = value.toolbarPinned ? "Let the controls hide when the pointer moves away" : "Keep head-guide controls visible";
+		document.querySelector( "#chrome" ).setAttribute( "aria-pressed", String( value.toolbarPinned === true ) );
+		document.querySelector( "#lock" ).textContent = value.locked ? "Unlock clicks" : "Lock clicks";
+		document.querySelector( "#lock" ).title = value.locked ? "Restore mouse control of the guide" : "Pass mouse clicks through the guide; this toolbar remains available";
+		document.querySelector( "#move-guide" ).disabled = value.fullscreen === true;
+	}
 	document.body.classList.toggle( "locked", !controlsOnly && value.locked );
 	document.body.classList.toggle( "fullscreen", !controlsOnly && value.fullscreen );
 	document.body.classList.toggle( "chromeless", !controlsOnly && value.chromeless );
@@ -145,7 +169,7 @@ guide.onState( ( value ) => {
 	feedbackPill.style.color = colour; feedbackPill.textContent = result.arrow + " " + result.text;
 	feedbackArrow.textContent = feedback.enabled ? result.arrow : ""; feedbackArrow.setAttribute( "fill", colour );
 	document.querySelector( "#framing-detail" ).textContent = feedback.enabled ? result.detail : "Position feedback is off. Manual guide controls remain available.";
-	if ( feedback.enabled && !feedback.active ) document.querySelector( "#framing-detail" ).textContent = feedback.error || "Enable the selected calibration picture.";
+	if ( !feedback.active && ( feedback.enabled || feedback.error ) ) document.querySelector( "#framing-detail" ).textContent = feedback.error || "Enable the selected calibration picture.";
 	for ( const key of [ "cx", "cy", "rx", "ry" ] ) hole.setAttribute( key, actualShape.querySelector( "ellipse" ).getAttribute( key ) );
 	holeGroup.setAttribute( "transform", transform( value ) ); hole.setAttribute( "transform", shapeTransform( value ) ); tint.setAttribute( "fill", colour ); tint.setAttribute( "opacity", feedback.enabled ? ".10" : "0" );
 	document.querySelector( "#framing-tracking" ).checked = feedback.enabled === true;
