@@ -8,7 +8,7 @@
   "appRelease": "1.2.0",
   "pluginRelease": "0.2.0",
   "sourceUrl": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/FEATURE-GRID.md",
-  "sourceSha256": "29c17d5a633d5658943bd88adb0165ea6bef89b3a8e604403969d371bf8f7d19",
+  "sourceSha256": "e50d8fd7e76fa834ca3a807d5c2bd85a3a96abf615076d577ebb6c0f148b5fce",
   "support": [
     "Included",
     "Optional",
@@ -580,7 +580,7 @@
         {
           "name": "Focus band",
           "support": "Optional",
-          "options": "Dim spoken text away from the reading line; adjustable strength. Production comments and inline directions keep their own appearance; preview patch.",
+          "options": "Dim spoken text away from the reading line; adjustable strength. Production comments and inline directions keep their own appearance.",
           "limits": "Strength appears only while enabled and is retained when off. Margin fading still applies to comments. No text is removed from the script or edit pack."
         },
         {
@@ -632,7 +632,7 @@
         {
           "name": "Prompter monitor",
           "support": "Optional",
-          "options": "Explicit display selection opens full screen. A manual cross-screen drag restores a centred normal window at 75% of the destination work area; preview patch.",
+          "options": "Explicit display selection opens full screen. A manual cross-screen drag restores a centred normal window at 75% of the destination work area.",
           "limits": "Windows drag handling clears eye-line mode and the pinned monitor choice. Same-display moves retain the chosen size. Requires a connected display."
         },
         {
@@ -1294,7 +1294,7 @@
         {
           "name": "Local take slate",
           "support": "Optional",
-          "options": "Off, Flash and beep, or Flash only; visible choices in this preview.",
+          "options": "Off, Flash and beep, or Flash only; visible choices.",
           "limits": "A flash seen only on the operator display does not prove recorded camera/audio sync."
         },
         {
@@ -1644,7 +1644,7 @@
         {
           "name": "Numeric controls",
           "support": "Included",
-          "options": "Slider/number pairs share whole-number or five-point increments; fine readouts have at most two decimals; preview patch.",
+          "options": "Slider/number pairs share whole-number or five-point increments; fine readouts have at most two decimals.",
           "limits": "Display rounding preserves stored precision until the control is adjusted."
         },
         {
@@ -1674,7 +1674,7 @@
         {
           "name": "Onboarding and components",
           "support": "Included",
-          "options": "First-use setup plus Getting started at the top of Settings, showing the current script, mode, text appearance and optional-tool guidance; preview patch.",
+          "options": "First-use setup plus Getting started at the top of Settings, showing the current script, mode, text appearance and optional-tool guidance.",
           "limits": "Components remain optional. Opening guidance does not enable devices or integrations; changes use Apply."
         },
         {
