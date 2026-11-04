@@ -23,14 +23,15 @@ Packaged first-run checks and all four installer targets pass. RC 1 remains
 available alongside RC 2. See [the demo handover](docs/RC-1.2.0-2.md).
 
 **Published baseline:** Sightline 1.1.0 with Stream Deck companion 0.2.0.
-**Current candidate:** 1.2.0 RC 3 retains the confirmed RC 1 feedback batch,
+**Current candidate:** 1.2.0 RC 4 retains the confirmed RC 1 feedback batch,
 local MCP and ad-hoc Mac signing, with the refreshed demo library and AI kit.
 Source and packaged Windows checks passed;
 both Mac architectures and Linux passed installer CI. Physical recording UAT
 remains necessary before treating this candidate as the final release.
 See [RC scope](docs/RELEASE-1.2.0-SCOPE.md). The UAT 09 baseline below remains
 available alongside the verified candidate.
-**Latest packaged candidate:** 1.2.0 RC 3, documentation revision 13.
+**Latest packaged candidate:** RC 3 remains available while RC 4, documentation
+revision 14, completes its combined packaged checks.
 **Next deliverable:** Joanne's physical recording UAT, then final release.
 The combined RC feedback batch is implemented and packaged. UAT 09 remains
 available as the previous accepted baseline.
