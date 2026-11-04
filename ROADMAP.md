@@ -9,9 +9,10 @@ both Mac architectures and Linux passed installer CI. Physical recording UAT
 remains necessary before treating this candidate as the final release.
 See [RC scope](docs/RELEASE-1.2.0-SCOPE.md). The UAT 09 baseline below remains
 available until this candidate's packaged verification is complete.
-**Latest packaged preview:** unpublished UAT 09, documentation revision 10.
-**Next deliverable:** one combined preview for the UAT 09 feedback, then RC
-acceptance. No newer preview or formal RC has been built from that feedback.
+**Latest packaged candidate:** 1.2.0 RC 1, documentation revision 11.
+**Next deliverable:** Joanne's physical recording UAT, then final release.
+The combined RC feedback batch is implemented and packaged. UAT 09 remains
+available as the previous accepted baseline.
 The dated preview/RC notes below are history, not the current delivery status.
 
 UAT 09 includes the signed-off Settings composition, independent text styling,

@@ -1,5 +1,24 @@
 # Feedback queued after UAT 09
 
+## RC 1 handover · 4 November 2026
+
+All six changes explicitly confirmed for this RC are implemented and packaged:
+Connections merge, single OBS home/subtabs, separate OBS states, persistent
+test outcomes, automatic audio-check meters and yellow section/page status.
+Source and packaged Windows checks pass. Finish/end and restart-section
+aliases, split-twelve handling, historical OBS endpoint mapping and timing
+qualifications are also included. Local MCP has app-enforced grants and passes
+official SDK and native integration checks. Both Mac architectures pass ad-hoc
+signature and packaged-runtime verification; all installer targets passed CI
+run `41812255674` at `454ee3a`.
+
+Candidate: `D:/Sightline/Dev/Builds/Release-Candidates/sightline-1.2.0-rc.1`.
+Review/download: `http://100.72.209.97:4882/rc`. Source `5656b9c`, packaging
+snapshot `454ee3a`, docs 11. The stable public app remains 1.1.0. Physical UAT
+and the unexplained short OBS identity need follow-up; no final release is
+claimed. Earlier unchecked collection notes below are historical scope, not
+a request to reimplement these completed changes.
+
 Keep UAT 09 available for Joanne's combined review. Collect observations here
 and produce one subsequent preview after reviewing the complete queue.
 
