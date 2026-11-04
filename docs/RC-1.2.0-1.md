@@ -22,7 +22,11 @@ ad-hoc Mac packaging, UAT 09 and the repeated 10–15 launch coffee reminder.
   playback, retained reference, mirrored test outcomes and automatic meter passed.
 - Native OBS/MCP app integration: connection/recording states, subtabs, Apply,
   recording lifecycle and live MCP grants/revocation passed against a test server.
-- Packaged Windows checks and cross-platform CI: pending candidate packaging.
+- Packaged Windows Settings, preparation and OBS/MCP checks: passed with
+  isolated profiles, synthetic camera/mic and a local OBS protocol fixture.
+- Cross-platform CI: all four targets passed in run `41810670083`. Both Mac
+  DMGs passed deep/strict ad-hoc signature and packaged-runtime verification.
+- Current RC help captures are refreshed from the packaged Windows app.
 
 ## UAT focus
 

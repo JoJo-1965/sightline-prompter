@@ -1,4 +1,26 @@
-# Settings screenshot gallery — UAT Preview 09
+# Settings screenshot gallery — RC 1
+
+## Current RC 1 changes
+
+Actual packaged Windows captures at 1440 × 900 with 2× pixel density,
+4 November 2026. Optional integrations are enabled in an unapplied draft to
+show their controls; connection/status lines identify what is actually saved.
+
+![Connections: OBS connection and separate status](images/settings-rc1-obs.png)
+
+![OBS recording-control subtab](images/settings-rc1-obs-recording.png)
+
+![OBS profile-and-scenes subtab](images/settings-rc1-obs-setup.png)
+
+![AI/API with MCP and separate grants](images/settings-rc1-api.png)
+
+![Recording setup with retained test outcome](images/settings-rc1-checklist.png)
+
+## Earlier UAT 09 reference captures
+
+The captures below document UAT 09. The RC images above supersede its old
+Controls/Components navigation and OBS pages. Unchanged reading controls retain
+the signed-off composition; these older images do not describe the RC's menu labels.
 
 These are actual Windows Electron Settings captures from the unpublished
 UAT Preview 09, 3 November 2026. They replace the Preview 03

@@ -61,7 +61,7 @@ const env = { ...process.env };
 delete env.ELECTRON_RUN_AS_NODE;
 // Native window occlusion must not suspend frame-based checks behind the
 // user's projector or always-on-top prompter. These flags affect this test only.
-const child = spawn( require( "electron" ), [ ".", `--user-data-dir=${ profile }`, "--remote-debugging-port=9335", "--disable-renderer-backgrounding", "--disable-backgrounding-occluded-windows", "--disable-features=CalculateNativeWinOcclusion" ], { cwd: root, env, windowsHide: true, stdio: [ "ignore", "pipe", "pipe" ] } );
+const child = spawn( process.env.SIGHTLINE_TEST_EXE ?? require( "electron" ), [ ...( process.env.SIGHTLINE_TEST_EXE ? [] : [ "." ] ), `--user-data-dir=${ profile }`, "--remote-debugging-port=9335", "--disable-renderer-backgrounding", "--disable-backgrounding-occluded-windows", "--disable-features=CalculateNativeWinOcclusion" ], { cwd: root, env, windowsHide: true, stdio: [ "ignore", "pipe", "pipe" ] } );
 let errors = "";
 child.stderr.on( "data", ( b ) => {
 	errors += b.toString();
