@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "basis": "RC 5 preview, documentation revision 15, 4 November 2026",
+  "basis": "Sightline 1.2.0 release, documentation revision 16, 4 November 2026",
   "date": "4 November 2026",
-  "sourceBuild": "29e32a8",
-  "buildVersion": "1.2.0-rc.5",
-  "publicationStatus": "preview",
-  "appRelease": "1.1.0",
+  "sourceBuild": "d18db7a",
+  "buildVersion": "1.2.0",
+  "publicationStatus": "released",
+  "appRelease": "1.2.0",
   "pluginRelease": "0.2.0",
-  "sourceUrl": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/FEATURE-GRID.md",
-  "sourceSha256": "8fb75539f2e40f26f47bd5fe1ec69b8731c0156270ed6ac74402506c36ab876d",
+  "sourceUrl": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/FEATURE-GRID.md",
+  "sourceSha256": "4b8b950694eea84cd40f534dd84e5c5be8260e31840a47c8a5d12bb9d08cfc2d",
   "support": [
     "Included",
     "Optional",
@@ -23,11 +23,11 @@
       "references": [
         {
           "name": "Getting started",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/01-getting-started.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/01-getting-started.md"
         },
         {
           "name": "Policies",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/POLICIES.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/POLICIES.md"
         }
       ],
       "rows": [
@@ -70,7 +70,7 @@
         {
           "name": "Windows process identity",
           "support": "Included",
-          "options": "Short Sightline Prompter name in packaged Windows metadata; preview addition.",
+          "options": "Short Sightline Prompter name in packaged Windows metadata.",
           "limits": "Existing installed releases need an updated build to change their process description."
         },
         {
@@ -99,11 +99,11 @@
       "references": [
         {
           "name": "Scrolling and voice",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/03-scrolling-and-voice.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/03-scrolling-and-voice.md"
         },
         {
           "name": "Recording a take",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/05-recording-a-take.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/05-recording-a-take.md"
         }
       ],
       "rows": [
@@ -140,7 +140,7 @@
         {
           "name": "Current-section status",
           "support": "Included",
-          "options": "Yellow section/total pill on the persistent recorder status row; RC addition.",
+          "options": "Yellow section/total pill on the persistent recorder status row.",
           "limits": "Explicitly paged Notes shows page/total. Follows script navigation and retakes, including when the toolbar hides."
         },
         {
@@ -194,7 +194,7 @@
         {
           "name": "First spoken line at start",
           "support": "Included",
-          "options": "Long preparation notes are removed from the delivery view and the first spoken line is positioned for reading; preview addition.",
+          "options": "Long preparation notes are removed from the delivery view and the first spoken line is positioned for reading.",
           "limits": "Use production comments for long instructions and pause to inspect them."
         }
       ]
@@ -205,7 +205,7 @@
       "references": [
         {
           "name": "Speech engines and command phrases",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/03-scrolling-and-voice.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/03-scrolling-and-voice.md"
         }
       ],
       "rows": [
@@ -266,7 +266,7 @@
         {
           "name": "Explicit recording commands",
           "support": "Dependent",
-          "options": "Record take, finish recording, and record on, off, pause or resume; explicit recorder commands are a preview addition.",
+          "options": "Record take, finish recording, and record on, off, pause or resume; explicit recorder commands are a included in 1.2.0.",
           "limits": "OBS integration and recording-control permission must be enabled."
         },
         {
@@ -307,7 +307,7 @@
       "references": [
         {
           "name": "Writing scripts",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/02-scripts.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/02-scripts.md"
         }
       ],
       "rows": [
@@ -374,7 +374,7 @@
         {
           "name": "Recording preview sample",
           "support": "Included",
-          "options": "Preparation, Continuous and linked recording, explicit commands and handover walkthrough; preview addition.",
+          "options": "Preparation, Continuous and linked recording, explicit commands and handover walkthrough.",
           "limits": "Exercise recorder controls only with the intended test setup connected."
         },
         {
@@ -391,11 +391,11 @@
       "references": [
         {
           "name": "Script directives",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/SCRIPT-DIRECTIVES.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/SCRIPT-DIRECTIVES.md"
         },
         {
           "name": "AI script brief",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/AI-SCRIPT-BRIEF.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/AI-SCRIPT-BRIEF.md"
         }
       ],
       "rows": [
@@ -426,7 +426,7 @@
         {
           "name": "Long production comments",
           "support": "Included",
-          "options": "HTML comments hold preparation instructions; visible while paused and hidden during delivery; preview addition.",
+          "options": "HTML comments hold preparation instructions; visible while paused and hidden during delivery.",
           "limits": "All comment contents, including quoted words and directive examples, are excluded from speech tracking and command execution."
         },
         {
@@ -474,7 +474,7 @@
         {
           "name": "Script recording commands",
           "support": "Dependent",
-          "options": "Optional `{record: on}`, `{record: off}`, `{record: pause}` and `{record: resume}`; preview addition.",
+          "options": "Optional `{record: on}`, `{record: off}`, `{record: pause}` and `{record: resume}`.",
           "limits": "Require enabled OBS recording controls; loading a script never executes them."
         },
         {
@@ -491,42 +491,42 @@
       "references": [
         {
           "name": "Layout and display",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/04-layout-and-display.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/04-layout-and-display.md"
         },
         {
           "name": "Settings",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/07-settings.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/07-settings.md"
         }
       ],
       "rows": [
         {
           "name": "Theme settings",
           "support": "Included",
-          "options": "Reading > Theme and background contains four built-in palettes and named custom reading themes; preview addition.",
+          "options": "Reading > Theme and background contains four built-in palettes and named custom reading themes.",
           "limits": "Soft cream has a configurable light backing; existing cream profiles retain their prior colours until changed."
         },
         {
           "name": "Colours and themes",
           "support": "Included",
-          "options": "Independent script, heading, inline-direction, production-note and background colour pickers; per-item Use theme reset; preview addition.",
+          "options": "Independent script, heading, inline-direction, production-note and background colour pickers; per-item Use theme reset.",
           "limits": "Palette changes preserve custom colours; Use theme restores inheritance. Colour is separate from opacity and brightness."
         },
         {
           "name": "Script view preview",
           "support": "Included",
-          "options": "Dedicated right column with Paused/Reading examples; compact windows use a Preview dialog; preview addition.",
+          "options": "Dedicated right column with Paused/Reading examples; compact windows use a Preview dialog.",
           "limits": "Example controls never start prompting, microphone capture or recording."
         },
         {
           "name": "Portable reading themes",
           "support": "Optional",
-          "options": "Save current appearance under a name; restore, import or export reading-theme JSON; preview addition.",
+          "options": "Save current appearance under a name; restore, import or export reading-theme JSON.",
           "limits": "Stores typography and reading background only, excluding controllers, recordings, windows, scripts and credentials."
         },
         {
           "name": "Text and heading fonts",
           "support": "Included",
-          "options": "Four complete text targets: Segoe UI, Atkinson Hyperlegible, OpenDyslexic and Verdana, with Follow script for non-script text; preview addition.",
+          "options": "Four complete text targets: Segoe UI, Atkinson Hyperlegible, OpenDyslexic and Verdana, with Follow script for non-script text.",
           "limits": "Fonts are installed/bundled locally; preference is not an accessibility certification."
         },
         {
@@ -544,19 +544,19 @@
         {
           "name": "Inline direction appearance",
           "support": "Included",
-          "options": "Independent font, size, colour, bold, italic and line spacing; Normal/Dimmed/Hidden visibility; preview addition.",
+          "options": "Independent font, size, colour, bold, italic and line spacing; Normal/Dimmed/Hidden visibility.",
           "limits": "Visibility no longer changes size. Explicit spoken quotations retain script styling and tracking."
         },
         {
           "name": "Production note appearance",
           "support": "Included",
-          "options": "Independent font, size, colour, bold, italic and line spacing for HTML production notes; preview addition.",
+          "options": "Independent font, size, colour, bold, italic and line spacing for HTML production notes.",
           "limits": "Notes remain silent, show paused and hide during delivery. Existing note size remains independent of heading containers."
         },
         {
           "name": "Independent line spacing",
           "support": "Included",
-          "options": "Separate script, heading, inline-direction and production-note spacing from 100–250%; preview addition.",
+          "options": "Separate script, heading, inline-direction and production-note spacing from 100–250%.",
           "limits": "Each percentage is relative to that text type’s font height; paragraph gaps remain as written."
         },
         {
@@ -568,7 +568,7 @@
         {
           "name": "Background and text visibility",
           "support": "Included",
-          "options": "Editable backing colour, off-air/on-air opacity, text opacity and brightness; preview addition.",
+          "options": "Editable backing colour, off-air/on-air opacity, text opacity and brightness.",
           "limits": "The appearance preview does not change the content behind the prompter."
         },
         {
@@ -597,11 +597,11 @@
       "references": [
         {
           "name": "Layout and display",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/04-layout-and-display.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/04-layout-and-display.md"
         },
         {
           "name": "Remotes and screens",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/06-remotes-and-screens.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/06-remotes-and-screens.md"
         }
       ],
       "rows": [
@@ -656,13 +656,13 @@
         {
           "name": "Toolbar hiding",
           "support": "Included",
-          "options": "Toolbar retreats when the pointer moves away; faster distance-based hiding is a preview addition.",
+          "options": "Toolbar retreats when the pointer moves away; faster distance-based hiding is included in 1.2.0.",
           "limits": "Keyboard focus keeps controls available while they are in use."
         },
         {
           "name": "Pointer visibility",
           "support": "Included",
-          "options": "Mouse pointer stays visible when the toolbar hides; preview addition.",
+          "options": "Mouse pointer stays visible when the toolbar hides.",
           "limits": "Click-through remains an independent preference."
         },
         {
@@ -686,7 +686,7 @@
         {
           "name": "Small-screen layout",
           "support": "Included",
-          "options": "Expanding area list, fixed named sections and compact Area/Section selectors with Preview action; no automatic pagination. Getting started alone scrolls its guidance in the centre pane; preview addition.",
+          "options": "Expanding area list, fixed named sections and compact Area/Section selectors with Preview action; no automatic pagination. Getting started alone scrolls its guidance in the centre pane.",
           "limits": "Native checks cover 560 × 500 content and larger frames. Physical display/zoom and fullscreen stacking still require acceptance checks."
         }
       ]
@@ -697,15 +697,15 @@
       "references": [
         {
           "name": "Prepare to record",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/16-prepare-to-record.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/16-prepare-to-record.md"
         },
         {
           "name": "Head guide and controls",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/06-remotes-and-screens.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/06-remotes-and-screens.md"
         },
         {
           "name": "Production handover",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/12-production-handover.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/12-production-handover.md"
         }
       ],
       "rows": [
@@ -742,13 +742,13 @@
         {
           "name": "Guide visibility",
           "support": "Included",
-          "options": "Stateful Show/Hide; bottom toolbar with hover-recoverable Head guide tab, Pin controls, lock/unlock, fullscreen, Move guide, Adjust and Guide off. Colour, opacity and Show Ideal remain in guide settings; RC addition.",
+          "options": "Stateful Show/Hide; bottom toolbar with hover-recoverable Head guide tab, Pin controls, lock/unlock, fullscreen, Move guide, Adjust and Guide off. Colour, opacity and Show Ideal remain in guide settings.",
           "limits": "Small toolbar surface stays above the prompter while the outline retains its bounds. Guide off removes the controls and releases a hidden picture feed. Appearance and eye lock use Apply."
         },
         {
           "name": "Session framing reference",
           "support": "Included",
-          "options": "Keep the guide pose, appearance and saved Ideal across scripts. Preparation and Ctrl+Shift+H share draft adjustments, optional detection and the recording position; RC addition.",
+          "options": "Keep the guide pose, appearance and saved Ideal across scripts. Preparation and Ctrl+Shift+H share draft adjustments, optional detection and the recording position.",
           "limits": "Target stays fixed as the person moves. Guide window/projector placement is manual; no automatic window fitting is claimed."
         },
         {
@@ -778,7 +778,7 @@
         {
           "name": "Save and restore recording reference",
           "support": "Included",
-          "options": "Save Actual position, dimensions and eye lock from Settings or adjustments; restore without overwriting Ideal; preview addition.",
+          "options": "Save Actual position, dimensions and eye lock from Settings or adjustments; restore without overwriting Ideal.",
           "limits": "Restoring the shape does not restore the physical camera, body or guide window."
         },
         {
@@ -796,49 +796,49 @@
         {
           "name": "Local position feedback",
           "support": "Optional",
-          "options": "Bundled local face/eye detection, fixed target and red/amber/green feedback in preparation and Ctrl+Shift+H. Distance includes overall Size, Width and both side adjustments, with a live target-size percentage and consistent mirrored arrows; RC addition.",
+          "options": "Bundled local face/eye detection, fixed target and red/amber/green feedback in preparation and Ctrl+Shift+H. Distance includes overall Size, Width and both side adjustments, with a live target-size percentage and consistent mirrored arrows.",
           "limits": "One well-lit face; grey means unavailable. Apparent width is not physical distance. Same scene/crop and manually matched guide bounds are required. No identity or gaze correction."
         },
         {
           "name": "OBS calibration scene",
           "support": "Dependent",
-          "options": "Choose an actual scene from the connected OBS instance and read its preview frames for local detection. No programme-scene switch or recording command; RC addition.",
+          "options": "Choose an actual scene from the connected OBS instance and read its preview frames for local detection. No programme-scene switch or recording command.",
           "limits": "OBS integration must be enabled and available; camera choices remain when disabled. Sampled, centred 16:9 preview; does not test the production recording encoder or lip sync."
         },
         {
           "name": "Temporary calibration feed",
           "support": "Dependent",
-          "options": "Explicitly start an OBS virtual camera for calibration, stopping it afterwards only when Sightline started it; RC addition.",
+          "options": "Explicitly start an OBS virtual camera for calibration, stopping it afterwards only when Sightline started it.",
           "limits": "An existing virtual-camera session is retained. Connection loss may require manual confirmation/cleanup in OBS. Does not reconfigure the output or recording route."
         },
         {
           "name": "Pre-record workflow",
           "support": "Optional",
-          "options": "Camera alignment, manual fallback, audio check, actual short test recording and reviewed reference save. Calibration in Guide adjustments starts its shared service invisibly; only the explicit Prepare to record action opens the workflow. Inputs and retry remain available; RC addition.",
+          "options": "Camera alignment, manual fallback, audio check, actual short test recording and reviewed reference save. Calibration in Guide adjustments starts its shared service invisibly; only the explicit Prepare to record action opens the workflow. Inputs and retry remain available.",
           "limits": "Explicit camera/microphone enable. Changing an input while capture is off keeps it off. A busy physical camera may require a virtual feed. Does not start OBS or production recording."
         },
         {
           "name": "Lock current framing",
           "support": "Optional",
-          "options": "Use detected eye centre and apparent size as a draft target while preserving custom guide proportions; RC addition.",
+          "options": "Use detected eye centre and apparent size as a draft target while preserving custom guide proportions.",
           "limits": "Does not replace the recording reference until the reviewed setup is explicitly saved. Out-of-range positions require guide adjustment before locking."
         },
         {
           "name": "Return after a break",
           "support": "Optional",
-          "options": "Restore the fixed target, match framing and recheck audio; preview addition.",
+          "options": "Restore the fixed target, match framing and recheck audio.",
           "limits": "Same camera and resolution; original target/test retained. No silent recalibration."
         },
         {
           "name": "Local test recording",
           "support": "Optional",
-          "options": "Up to eight seconds of selected camera/microphone, actual WebM playback and picture/sound confirmation; preview addition.",
+          "options": "Up to eight seconds of selected camera/microphone, actual WebM playback and picture/sound confirmation.",
           "limits": "Local profile storage; manual review and hardware UAT required. No guide is burned into the camera clip."
         },
         {
           "name": "Persistent test outcomes",
           "support": "Included",
-          "options": "Settings and the main prompter retain recording, review-required, passed, failed or check-again status; RC addition.",
+          "options": "Settings and the main prompter retain recording, review-required, passed, failed or check-again status.",
           "limits": "Saving a clip alone is not a pass; the user must review picture and sound. A saved earlier pass is labelled as previous."
         }
       ]
@@ -849,11 +849,11 @@
       "references": [
         {
           "name": "Remotes and screens",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/06-remotes-and-screens.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/06-remotes-and-screens.md"
         },
         {
           "name": "Shortcuts",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/08-shortcuts-and-troubleshooting.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/08-shortcuts-and-troubleshooting.md"
         }
       ],
       "rows": [
@@ -878,7 +878,7 @@
         {
           "name": "Learn and customise input",
           "support": "Optional",
-          "options": "All keyboard/clicker and game-controller assignments appear in scrollable lists, with editable action and Remove on each row; RC addition.",
+          "options": "All keyboard/clicker and game-controller assignments appear in scrollable lists, with editable action and Remove on each row.",
           "limits": "Driver/device support varies. No assignment is hidden solely by the selected row or window height."
         },
         {
@@ -901,26 +901,26 @@
       "references": [
         {
           "name": "Pad and phone setup",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/06-remotes-and-screens.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/06-remotes-and-screens.md"
         }
       ],
       "rows": [
         {
           "name": "Floating control pad",
           "support": "Optional",
-          "options": "Separate touch/mouse window with configurable buttons. Settings shows the complete ordered list with drag, Earlier/Later and Remove; RC addition.",
+          "options": "Separate touch/mouse window with configurable buttons. Settings shows the complete ordered list with drag, Earlier/Later and Remove.",
           "limits": "Enable under Connections > Pad and phone. Longer lists scroll within Settings; presets replace the draft selection."
         },
         {
           "name": "Interface enable switches",
           "support": "Included",
-          "options": "Speech, microphone, pad, phone, custom keys, game controller, Stream Deck, OBS and local API each have an enable switch; preview addition.",
+          "options": "Speech, microphone, pad, phone, custom keys, game controller, Stream Deck, OBS and local API each have an enable switch.",
           "limits": "Off hides configuration, preserves saved values and omits disabled actions/help. Dependencies remain a separate readiness check."
         },
         {
           "name": "Separate input mappings",
           "support": "Optional",
-          "options": "Keyboard/clickers and game controllers have distinct setup homes and enable switches; preview addition.",
+          "options": "Keyboard/clickers and game controllers have distinct setup homes and enable switches.",
           "limits": "Disabling custom mappings retains core shortcuts. Resetting one type preserves the other type."
         },
         {
@@ -1003,7 +1003,7 @@
       "references": [
         {
           "name": "Stream Deck installation, permissions and profiles",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/06-remotes-and-screens.md#stream-deck"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/06-remotes-and-screens.md#stream-deck"
         }
       ],
       "rows": [
@@ -1099,11 +1099,11 @@
       "references": [
         {
           "name": "Recording with OBS",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/11-obs.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/11-obs.md"
         },
         {
           "name": "OBS setup assistant",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/15-obs-setup.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/15-obs-setup.md"
         }
       ],
       "rows": [
@@ -1116,7 +1116,7 @@
         {
           "name": "OBS connection test feedback",
           "support": "Included",
-          "options": "Separate connection and recorder status; retained running/pass/fail test result in Settings and on the prompter; RC addition.",
+          "options": "Separate connection and recorder status; retained running/pass/fail test result in Settings and on the prompter.",
           "limits": "Apply connection changes before testing. A connection pass is not a picture/sound recording pass."
         },
         {
@@ -1140,7 +1140,7 @@
         {
           "name": "Confirmed recording pill",
           "support": "Included",
-          "options": "OFF green, RECORDING red, PAUSED orange and UNKNOWN grey; persistent preview addition.",
+          "options": "OFF green, RECORDING red, PAUSED orange and UNKNOWN grey; persistent included in 1.2.0.",
           "limits": "Text accompanies colour; OBS-disabled mode hides it."
         },
         {
@@ -1164,13 +1164,13 @@
         {
           "name": "Linked recording",
           "support": "Optional",
-          "options": "Link recording to prompting: confirmed start/resume, pauses with holds, finish at final stop/end; preview addition.",
+          "options": "Link recording to prompting: confirmed start/resume, pauses with holds, finish at final stop/end.",
           "limits": "Enable with OBS stopped; requires recording permission and a pause-capable recording format."
         },
         {
           "name": "Explicit recorder actions",
           "support": "Included",
-          "options": "Record on, off, pause and resume through supported controls, voice or optional directives; preview addition.",
+          "options": "Record on, off, pause and resume through supported controls, voice or optional directives.",
           "limits": "OBS/format limitations apply; script loading alone cannot trigger recording."
         },
         {
@@ -1247,11 +1247,11 @@
       "references": [
         {
           "name": "Sound check and scratch audio",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/05-recording-a-take.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/05-recording-a-take.md"
         },
         {
           "name": "Production handover",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/12-production-handover.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/12-production-handover.md"
         }
       ],
       "rows": [
@@ -1270,7 +1270,7 @@
         {
           "name": "Advisory low-level handling",
           "support": "Included",
-          "options": "Explain quiet/noisy/clipping conditions and allow Continue anyway; preview addition.",
+          "options": "Explain quiet/noisy/clipping conditions and allow Continue anyway.",
           "limits": "Increasing gain can also increase background noise; the user decides the compromise."
         },
         {
@@ -1323,11 +1323,11 @@
       "references": [
         {
           "name": "Take log and edit pack",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/05-recording-a-take.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/05-recording-a-take.md"
         },
         {
           "name": "Production handover",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/12-production-handover.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/12-production-handover.md"
         }
       ],
       "rows": [
@@ -1370,7 +1370,7 @@
         {
           "name": "Timing qualifications",
           "support": "Included",
-          "options": "`timing-quality.json` and `TIMING-NOTES.md` explain unverified alignment, caption and pace estimates; RC addition.",
+          "options": "`timing-quality.json` and `TIMING-NOTES.md` explain unverified alignment, caption and pace estimates.",
           "limits": "Original production brief and existing schemas are retained. Clock observations do not verify camera lip sync."
         },
         {
@@ -1407,7 +1407,7 @@
           "name": "Head-guide export",
           "support": "Included",
           "options": "`head-guide.json` includes Ideal, Actual, saved reference and window geometry.",
-          "limits": "Reference save/restore is a preview addition."
+          "limits": "Reference save/restore is included in 1.2.0."
         },
         {
           "name": "Rehearsal export",
@@ -1441,11 +1441,11 @@
       "references": [
         {
           "name": "Script health",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/02-scripts.md#script-health-before-you-read"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/02-scripts.md#script-health-before-you-read"
         },
         {
           "name": "Rehearsal coaching",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/05-recording-a-take.md#rehearsal-coaching"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/05-recording-a-take.md#rehearsal-coaching"
         }
       ],
       "rows": [
@@ -1511,11 +1511,11 @@
       "references": [
         {
           "name": "Working with AI and the local API",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/09-working-with-ai.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/09-working-with-ai.md"
         },
         {
           "name": "Setting up your AI",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/10-setting-up-your-ai.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/10-setting-up-your-ai.md"
         }
       ],
       "rows": [
@@ -1546,7 +1546,7 @@
         {
           "name": "Local MCP connection",
           "support": "Optional",
-          "options": "Seven stdio tools in the AI kit; Connections > MCP, AI, and API includes a Configure MCP guide beside the switch; RC addition.",
+          "options": "Seven stdio tools in the AI kit; Connections > MCP, AI, and API includes a Configure MCP guide beside the switch.",
           "limits": "Node.js 22.16+, local API/MCP enabled and applied. Separate grants; read-only by default. No cloud MCP endpoint. See [client configuration](guide/17-configure-mcp.md)."
         },
         {
@@ -1605,15 +1605,15 @@
       "references": [
         {
           "name": "Settings",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/07-settings.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/07-settings.md"
         },
         {
           "name": "Screenshot gallery",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/settings-gallery.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/settings-gallery.md"
         },
         {
           "name": "User guide",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/README.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/README.md"
         }
       ],
       "rows": [
@@ -1626,19 +1626,19 @@
         {
           "name": "Stable settings panel",
           "support": "Included",
-          "options": "Eight task areas; 32 navigation homes with two additional OBS subviews. Controls and Components merge into Connections; RC addition.",
+          "options": "Eight task areas; 32 navigation homes with two additional OBS subviews. Controls and Components merge into Connections.",
           "limits": "Approved navigation/control/sample composition is retained. Longer setup/result panels scroll centrally above a fixed footer; settings never migrate on resize."
         },
         {
           "name": "Settings example preview",
           "support": "Included",
-          "options": "Inline example when width permits; movable non-modal companion on narrow windows. Both follow the same draft; preview addition.",
+          "options": "Inline example when width permits; movable non-modal companion on narrow windows. Both follow the same draft.",
           "limits": "Settings remains usable while the companion is open. Examples never start prompting, a microphone or a recorder; the guide diagram is manual."
         },
         {
           "name": "Settings draft consistency",
           "support": "Included",
-          "options": "Appearance previews; Apply persists, Save and close persists/closes, Cancel restores the last applied look; preview addition.",
+          "options": "Appearance previews; Apply persists, Save and close persists/closes, Cancel restores the last applied look.",
           "limits": "Component installation, theme-library save/import, pairing reset, device tests and guide visibility/placement/reference saves are explicit actions."
         },
         {
@@ -1656,7 +1656,7 @@
         {
           "name": "Live Tools groups",
           "support": "Included",
-          "options": "Prepare, Adjust and During take share saved values with Settings through separate controls; preview addition.",
+          "options": "Prepare, Adjust and During take share saved values with Settings through separate controls.",
           "limits": "Live changes are immediate; a short prompter uses a utility window instead of clipping the menu."
         },
         {
@@ -1727,11 +1727,11 @@
       "references": [
         {
           "name": "Privacy and accessibility policies",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/POLICIES.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/POLICIES.md"
         },
         {
           "name": "Acceptance walkthrough",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/guide/14-acceptance-test.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/14-acceptance-test.md"
         }
       ],
       "rows": [
@@ -1778,10 +1778,10 @@
           "limits": "Local automated tests do not replace camera/mic and physical-control testing."
         },
         {
-          "name": "Published versus preview",
-          "support": "Limited",
-          "options": "This grid covers the 1.2.0 RC 2 candidate and companion 0.2.0 together.",
-          "limits": "The stable public 1.1.0 installer does not include all RC additions."
+          "name": "Release and reference basis",
+          "support": "Included",
+          "options": "This grid describes Sightline 1.2.0 and companion 0.2.0, with versioned source and downloadable references.",
+          "limits": "Platform/device acceptance and the listed feature limits still apply. Historical RC notes are archived separately."
         },
         {
           "name": "Reviewer comparison scope",

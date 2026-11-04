@@ -1,7 +1,6 @@
 # Layout and display
 
-This source guide follows **Settings Redesign Preview 05**. The released
-1.1.0 installer has its own bundled guide.
+This guide describes Sightline 1.2.0 and is also bundled with the installer.
 
 ## Toolbar and live tools
 

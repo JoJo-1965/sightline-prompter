@@ -1,11 +1,10 @@
 # From recording to the editor
 
-**Published baseline: Sightline 1.1.0 + Stream Deck 0.2.0.** This source guide
-also covers the next unpublished recording preview where marked. Verify the
+**Sightline 1.2.0 + Stream Deck 0.2.0.** Verify the
 camera, microphone, capture route and sync on your own setup.
 
 Use the [two-module acceptance walkthrough](14-acceptance-test.md) and its
-preview checklist to collect the evidence for your workflow.
+checklist to collect the evidence for your workflow.
 
 In the preview's Files > Sample scripts menu, choose **Recording preview** for
 the focused new-feature check, or **Recording walkthrough: module A/B** for
@@ -24,7 +23,7 @@ Open the right script and check its section names and slide cues. Keep delivery
 directions such as `[smile]` or `[point]` in square brackets: they stay visible
 without counting as spoken words. No extra OBS directives are required.
 
-In the next preview, place longer setup and edit instructions in `<!-- ... -->`
+In Sightline 1.2.0, place longer setup and edit instructions in `<!-- ... -->`
 production comments. They return while paused and hide during delivery. Keep
 spoken lines outside them, including quotations. The exact source script still
 goes into the edit pack. Save Actual as a **recording reference** before the
@@ -42,13 +41,13 @@ production master. Choose steady or voice scrolling for the session. In voice
 mode with Continuous recording, take your own beat at timed pauses; `{stop}`
 still holds the prompter. Linked mode also honours timed pauses as recording pauses.
 
-In **Settings > Controls > OBS integration**, connect to OBS; allow controls in
+In **Settings > Connections > OBS integration**, connect to OBS; allow controls in
 **Controls > OBS recording control**. With OBS
 stopped, enable **Include the slate in the OBS recording**, **Apply**, then
 **Prepare recorded slate**. Prepare again after restarting Sightline or changing
 the OBS scene. Include OBS audio track 1 so the recorded tone reaches the file.
 
-![The OBS settings tab, including recording controls and recorded-slate preparation](images/settings-preview05-obs.png)
+![The OBS settings tab, including recording controls and recorded-slate preparation](images/settings-1.2.0-obs.png)
 
 For the Academy setup, check the camera and output are **3840 × 2160 at 30 fps**.
 Keep the microphone before OBS processing. The workstation test used **48 kHz,

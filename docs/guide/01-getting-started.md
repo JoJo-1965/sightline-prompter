@@ -7,20 +7,20 @@ It works without optional devices or services. Use Space at each planned stop,
 try its suggested action, and continue. Reopen it from Files > Sample scripts.
 The [demo guide](../DEMO-SCRIPTS.md) explains the focused recording/Notes samples.
 
-In UAT Preview 09, **Settings > Getting started > First setup** is the first
+In Sightline 1.2.0, **Settings > Getting started > First setup** is the first
 navigation entry. It shows the current script, reading mode, text appearance
 and optional tools, with instructions and links to their settings. The guide
 scrolls in the centre pane while navigation, the sample and footer stay fixed.
 Opening this page does not enable a camera, microphone or external integration.
 
-In 1.1.0, a new profile opens **Get ready with Sightline**.
+The optional **Get ready with Sightline** checklist is also available.
 Choose prompting and microphone settings, try a sample, and optionally set up
 OBS, controls or your AI. Skip optional parts with **Later**. Reopen it from
 **Help > Getting started…**, or the Getting started button in F1 Help.
 
 ![First-use checklist with optional tools](images/getting-started.png)
 
-To recreate the shipped setup, use **Settings > Setup > Restore defaults…**.
+To recreate the shipped setup, use **Settings > Getting started > Restore defaults…**.
 After confirmation Sightline restarts into this checklist. Installed components,
 script files, recordings and service keys remain. Preferences, layouts, slots
 and pairings reset; integrations start off. See [Settings](07-settings.md).
@@ -34,7 +34,7 @@ still needed to confirm the captured picture and sound.
 
 ## Installing Sightline
 
-For the unpublished UAT workflow, open **Tools > Prepare > Prepare to record**.
+For the preparation workflow, open **Tools > Prepare > Prepare to record**.
 Align the shot, verify audio, review a real recorded test and explicitly save
 a reference. See [Prepare to record](16-prepare-to-record.md).
 
@@ -62,66 +62,21 @@ Silent installations do not open these pages.
 
 ![The Windows installer's finish choices](images/installer-finish.png)
 
-### The security warnings, and how to get past them
+### Browser and security confirmations
 
-Windows installers do not have a paid publisher signature. RC 1 Mac bundles
-use a free ad-hoc signature to protect bundle integrity, with verification in
-the Mac build pipeline; this is not Developer ID signing or notarisation.
-These distribution limits can trigger publisher or
-download-reputation warnings. A warning is not proof that a file is safe or
-unsafe: check its source and the specific message. Use the
-[official releases](https://github.com/JoJo-1965/sightline-prompter/releases),
-or a test package supplied by Joanne, and compare supplied checksums.
-Public installers are built by GitHub; local acceptance packages are built
-separately and have a build manifest. Your organisation's device policy applies.
+**Windows installers are unsigned; Mac apps are ad-hoc signed and unnotarised.**
+Use the [illustrated download and installation guide](18-installation.md) for
+your exact message. It is also in **Help > Download and installation help**.
 
-**Downloading (any browser)**
+- **Edge:** Downloads (Ctrl+J) > the file's … menu > Keep. If asked, select
+  Show more > Keep anyway before opening the saved installer.
+- **Windows SmartScreen:** More info > check the Sightline filename > Run anyway.
+- **macOS:** copy to Applications, try opening, then System Settings > Privacy &
+  Security > Open Anyway for the blocked Sightline app.
 
-- **Edge** may say the file *isn't commonly downloaded*. Point at the
-  download, choose **…** > **Keep**, then **Show more** > **Keep anyway**.
-- **Chrome** may say it's *suspicious* or *unverified*. Choose **Keep** (in
-  the downloads list, the **⋮** menu > **Keep**).
-- **Safari** and **Firefox** usually download it without asking.
-
-**Windows: "Windows protected your PC"**
-
-Microsoft Defender SmartScreen shows this the first time you run the
-installer. Choose **More info**, check it says *Sightline-Prompter-Setup*, then
-**Run anyway**. It won't ask again for that version.
-
-- **"Smart App Control blocked an app"**: this is a different control from
-  SmartScreen and may offer no per-app bypass. Follow your organisation's
-  policy or ask its administrator. See Microsoft's
-  [current Smart App Control guidance](https://support.microsoft.com/en-gb/windows/security/threat-malware-protection/smart-app-control-frequently-asked-questions).
-- **Your antivirus quarantines it**: keep it quarantined while checking the
-  exact detection, source and hash. Report the details through the project's
-  support route; a detection should not be dismissed merely because the app
-  is unsigned. Do not disable antivirus to install Sightline.
-
-**Mac: "Apple could not verify Sightline Prompter"**
-
-macOS shows this the first time you open the app (older versions say it's
-*from an unidentified developer*). Choose **Done** (not **Move to Bin**), then:
-
-1. Open **System Settings > Privacy & Security**.
-2. Scroll down to **Security**. Next to *Sightline Prompter was blocked*,
-   choose **Open Anyway**, and enter your password.
-3. Open Sightline again and choose **Open Anyway**.
-
-On macOS 14 and earlier, right-clicking the app in Applications and choosing
-**Open** does the same.
-
-If the Mac says the app is damaged, cannot be checked, or contains malware,
-do not assume those messages mean the same thing. Re-download from the
-official release and check Apple's
-[guidance for apps from outside the App Store](https://support.apple.com/en-gb/102445).
-Use the normal Privacy & Security exception only when you have verified the
-source and chosen to trust it. Mac CI verifies signatures and the packaged
-Electron runtime; a physical Mac install and camera/microphone check are still
-needed. An ad-hoc signature does not promise a warning-free first launch.
-
-**Linux** doesn't warn. If the AppImage won't start, make sure it's
-executable; some distributions also need `libfuse2`.
+These steps concern a chosen official download. A malware detection or damaged
+file needs a separate source/hash check. Device policy may prevent an exception;
+do not disable protection globally. The full guide includes pictures and checksums.
 
 ### Uninstalling
 

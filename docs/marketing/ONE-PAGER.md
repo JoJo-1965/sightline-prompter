@@ -27,15 +27,14 @@ mark a keeper without losing the thread of what you wanted to say.
 - **Review:** keep section/take references, markers, keeper choices and
   estimated word alignment in an edit pack for your external editing workflow.
 
-### Recording controls in 1.1.0
+### Preparation and control in 1.2.0
 
-Optional OBS recording controls, a recorded-slate route and a manual Ideal/Actual
-head guide support a studio workflow. Shared pad/phone controls add local guide
-fitting, listening controls and session checks. Script health and rehearsal
-review offer local checks and estimates. Stream Deck 0.2.0 adds guide
-dials, listening/recovery and an optional one-second hold to finish recording.
+Shared manual/local head-position feedback, audio checks, a reviewed short test
+and a saved reference support consistent shots. A recoverable bottom guide
+toolbar keeps controls within reach. Optional OBS control and Stream Deck 0.2.0
+fit an existing recording workflow; local MCP lets an authorised AI help.
 
-**Released 31 October 2026: Sightline 1.1.0 + Stream Deck 0.2.0.** Download
+**Sightline 1.2.0 + Stream Deck 0.2.0 — 4 November 2026.** Download
 both from the app release. The plugin source stays private; Marketplace
 listing is pending. The app targets Windows, macOS and Linux; Stream Deck is
 for Windows and macOS. Check your own recording and sync route.
@@ -48,7 +47,9 @@ Deepgram sends audio online. Your chosen AI service has its own terms.
 
 Keep your usual recorder for production video and audio. Sightline can save
 optional microphone scratch audio for sync; timing and captions need review.
-The head guide is manual, and capture exclusion must be checked on your setup.
+Head detection supplements manual placement; check capture exclusion and sync
+on your actual setup. Windows is unsigned and Mac is ad-hoc signed/unnotarised;
+the download page links illustrated installation help.
 
 **Explore and download:** <https://joannelockwood.co.uk/sightline>
 

@@ -11,7 +11,7 @@ same target in both views. Calibration picture, OBS scene (when available),
 camera selection and capture are available in its adjustments. See
 [Prepare to record](16-prepare-to-record.md) for source and reference limits.
 
-In the next preview, **Settings > Controls > Stream Deck** is the single home
+In Sightline 1.2.0, **Settings > Connections > Stream Deck** is the single home
 for optional installation, **Locate**, **Check again**, pairing and compatibility.
 The published 1.1.0 layout also lists installation under Components.
 It checks the app and Sightline plugin files separately. **Controls > Stream
@@ -116,7 +116,7 @@ fullscreen. **Lock** additionally passes clicks through. Windowed and
 fullscreen choices are remembered, as is the original window position.
 The separate **Guide adjustments** button stays available on the prompter
 while the guide is shown, so no shortcut is needed to adjust a fullscreen guide.
-In UAT Preview 09, **Guide off** sits beside it in a matching control group.
+In Sightline 1.2.0, **Guide off** sits beside it in a matching control group.
 It hides the guide and its adjustments without changing the saved position.
 
 The companion Stream Deck development branch adds a **Head-position guide**
@@ -189,7 +189,7 @@ on the [Sightline page](https://joannelockwood.co.uk/sightline#stream-deck).
 
 **Setting it up:**
 
-1. In Sightline, **Settings > Controls > Stream Deck**, tick **Let the
+1. In Sightline, **Settings > Connections > Stream Deck**, tick **Let the
    Sightline plugin for Stream Deck control the prompter**, and **Save**. The
    plugin finds Sightline itself, so there's no code or token to type. It gets
    its own key, for buttons only: it can play and pause, move through the
@@ -228,7 +228,7 @@ Deck doesn't run on Linux).
 
 ### Compatibility and updates
 
-In **Settings > Controls > Stream Deck**, choose **Check compatibility**.
+In **Settings > Connections > Stream Deck**, choose **Check compatibility**.
 Sightline shows its running version, the version reported by the connected
 plugin and any required update. The plugin's **Test connection** reports the
 same pairing, plus whether OBS and guide commands are supported. It runs
@@ -291,7 +291,7 @@ After a failure, select that key/dial in Stream Deck to read its full reason.
 Enable the floating pad in **Controls > Pad and phone**, then use
 **Ctrl+Shift+P** or **Tools > Prepare > Control pad** to open its button grid.
 The Compact preset starts with Top, Previous, Start / Pause and Next.
-**Customise** on the pad opens **Settings > Controls > Pad and phone**.
+**Customise** on the pad opens **Settings > Connections > Pad and phone**.
 
 Choose **Compact**, **Reading**, **Studio** or **Framing & checks**, then **Use preset**, or add
 individual functions from the list. Presets replace your selection; Compact
@@ -341,7 +341,7 @@ reported OBS state afterwards. Ordinary Play/Pause never finishes the OBS file.
 
 ![Framing and session controls in phone landscape](images/phone-framing-landscape.png)
 
-![Choosing and arranging pad and phone buttons](images/settings-pad.png)
+![Choosing and arranging pad and phone buttons](images/settings-1.2.0-pad.png)
 
 ![The floating pad](images/pad.png)
 
@@ -381,7 +381,7 @@ and too far away to work Settings on:
 
 ## The phone remote
 
-On **Settings > Controls > Phone remote**, tick **Control the prompter from a phone on the
+On **Settings > Connections > Phone remote**, tick **Control the prompter from a phone on the
 same Wi-Fi** and save. Scan the QR code with your phone for the same buttons
 and order as the floating pad, with larger touch targets and the current
 section showing. Choose your layout in **Controls > Pad and phone**. It updates on
@@ -415,7 +415,7 @@ disconnects any phone already connected. The first time, Windows may ask
 whether to let Sightline Prompter use the network. Allow it on private
 networks.
 
-![Settings > Controls](images/settings-preview05-api.png)
+![Settings > Controls](images/settings-1.2.0-api.png)
 
 ## Choose your buttons and keys
 
@@ -444,11 +444,11 @@ device-specific entry reveals any generic default underneath. Keyboard pedals
 work as local keys. Stream Deck uses its own profiles and buttons-only API.
 OBS actions still require the existing connection and recording permissions.
 
-![Learning and arranging key and controller mappings](images/settings-preview05-mappings.png)
+![Learning and arranging key and controller mappings](images/settings-1.2.0-mappings.png)
 
 ## AI and remote control
 
-On **Settings > Controls > AI & API**, you can let an AI assistant (such as Claude
+On **Settings > Connections > MCP, AI, and API**, you can let an AI assistant (such as Claude
 Code or Codex) or a script on this computer load scripts and control the
 prompter. It's off by default, and only programs on this computer that have
 the token can connect. **How to set up your AI** on that tab opens

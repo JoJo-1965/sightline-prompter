@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self'; style-src 'self' 'unsafe-inline'; media-src 'self' blob:; img-src 'self' data: blob:; connect-src 'self'"><link rel="stylesheet" href="./pre-record.css">
 </head>
 <body>
-<div class="prototype"><span><strong>UAT preview</strong> · camera processing stays on this computer.</span><button id="return-script" type="button">Return to script</button></div>
+<div class="prototype"><span><strong>Prepare to record</strong> · camera processing stays on this computer.</span><button id="return-script" type="button">Return to script</button></div>
 <header><div class="brand"><svg viewBox="0 0 32 36" aria-hidden="true"><rect x="1" y="2" width="30" height="32" rx="8" fill="#edc766"/><path d="m12 10 13 8-13 8z" fill="#20252d"/></svg><div><h1>Prepare to record</h1><p class="muted">Find your frame. Return to it between shots.</p></div></div><div class="session-state"><span id="session-chip" class="chip neutral"><i class="dot"></i>Setup in progress</span><button id="new-setup" type="button">New setup</button></div></header>
 <div class="workspace">
 <nav class="workflow" aria-label="Pre-record workflow"><h2>This recording</h2><ol id="steps"></ol><div class="return-link"><p id="saved-summary">No recording reference saved yet.</p><button id="return-break" type="button" disabled>Back after a break</button></div></nav>

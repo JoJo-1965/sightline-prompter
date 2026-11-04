@@ -1,0 +1,483 @@
+# Historical roadmap through RC 5
+
+Archived before the 1.2.0 release on 4 November 2026. This is development
+history, not the current feature, release or roadmap reference.
+
+# Sightline Prompter roadmap
+
+## Current delivery position
+
+**RC 5 feedback batch:** the distance comparison ignored guide Width and side
+adjustments. A source fix and native moving-size detector regression now cover
+that mismatch, proportion-preserving Lock current, live size progress and shared
+mirrored arrows. Joanne requested this combined candidate after feedback review;
+the frozen RC 4 download stays available.
+Guide calibration now stays in Guide adjustments, with background initialisation
+and ordered input choices. A bottom auto-hiding toolbar has a recoverable hover
+tab, pin option and independent window layer above the prompter. Native recovery,
+lock, fullscreen, Guide off and narrow-layout checks pass. Package verification
+is recorded in RC 5's included build manifest.
+
+**RC 4 integrated batch:** shared preparation/head-guide pose and live feedback,
+OBS scene calibration with conditional source controls, prominent preparation
+entry, complete pad/assignment lists, pad row alignment and MCP setup help are
+implemented. Source unit, native Settings (five sizes) and native camera/OBS
+preparation checks pass. Both native suites pass against the Windows package;
+all four installer targets pass CI run 41836022786. RC 4 is ready for physical UAT.
+The Settings composition stays as approved; no personal profile is reset.
+
+**RC 3 camera recovery:** the default Facecam failure exposed a disabled input
+selector. The fix lists camera/virtual feeds before capture and leaves retry
+available after failure, with an error beside Enable camera. Real Elgato virtual
+capture and the complete source preparation regression pass. Packaging follows
+these checks; the Windows package passes the full preparation regression.
+RC 1/2 downloads remain available.
+
+**RC 2 content refresh:** the twelve shipped sample files and first-run tour
+are reviewed together for current features and safe recording practice. The
+tour, menu, AI brief, demo guide and feature exports are updated as one batch.
+Packaged first-run checks and all four installer targets pass. RC 1 remains
+available alongside RC 2. See [the demo handover](RC-1.2.0-2.md).
+
+**Published baseline:** Sightline 1.1.0 with Stream Deck companion 0.2.0.
+**Current candidate:** 1.2.0 RC 5 retains the confirmed RC 1 feedback batch,
+local MCP and ad-hoc Mac signing, with the refreshed demo library and AI kit.
+Source and packaged Windows checks passed;
+both Mac architectures and Linux passed installer CI. Physical recording UAT
+remains necessary before treating this candidate as the final release.
+See [RC scope](RELEASE-1.2.0-SCOPE.md). The UAT 09 baseline below remains
+available alongside the verified candidate.
+**Candidate documentation:** revision 15. Earlier RCs remain available.
+**Next deliverable:** Joanne's physical recording UAT, then final release.
+The combined RC feedback batch is implemented and packaged. UAT 09 remains
+available as the previous accepted baseline.
+The dated preview/RC notes below are history, not the current delivery status.
+
+UAT 09 includes the signed-off Settings composition, independent text styling,
+themes, real local pre-record detection and test recording, guide/reference
+controls, listening recovery, comment focus exclusions and centred 75%
+placement after a manual cross-screen move. Native/software checks pass.
+Joanne's real slot 4 run has now produced 15 takes across 12 sections, actual
+OBS/camera footage and a complete production handoff. The run also exposed
+voice-alias and recorder-association issues; it is not a clean RC sign-off.
+
+The [consolidated feedback queue](design/NEXT-PREVIEW-FEEDBACK.md) is the
+implementation checklist for the next combined review:
+
+1. **Recording reliability:** investigate the first-take/previous-file link,
+   extra unlinked OBS session after stop and historical clock observations.
+   Add the actual finish/end and restart-section phrases, preserving existing
+   pause/reset behaviour and recorder permissions. Validate against the saved
+   recording evidence rather than relying solely on simulated protocol tests.
+2. **Recording visibility:** show persistent test outcomes in Settings and on
+   the prompter, distinguish OBS connection from recording state, show the
+   meter during voice/room checks and add the yellow current-section pill.
+3. **One Connections area:** merge Controls and Components, keep one OBS entry
+   with Connection/Recording/Profile button subtabs and move Restore defaults
+   to Getting started. Preserve feature gating and existing deep links.
+4. **Combined handover:** update help, screenshots, feature-grid exports and
+   the pending JL snapshot, run the relevant packaged regressions, and produce
+   one new preview for Joanne's review. The coffee reminder's repeating 10–15
+   launch schedule is already implemented/tested, but is not in UAT 09.
+
+**Production validation adds a correctness gate:** the independent recording
+review reports stable take/file audio alignment (main offset 658.951 s, camera
+659.096 s; no drift) and sensible take/chapter structure. Live voice-following
+word estimates delayed/bunched timestamps and produced false missing-word
+flags and misleading pace. Before RC, qualify those estimates and avoid
+presenting live alignment as verified omissions, final cuts or final captions.
+Include the section-twelve recognition misses and recording-before-sync-cue
+instructions in the combined batch. Possible misreads in sections 4 and 10
+remain production listening checks, not confirmed errors or automatic pickups.
+
+Post-record transcription/alignment, verified missing-word checks and automatic
+media-derived offset export are follow-up scope requiring their own validation.
+The measured production offsets are now preserved in the handoff notes; the
+current app did not calculate them. Clean-camera picture/sound sync is still
+unmeasured even though its audio has been aligned.
+
+**Mac distribution is a release priority:** an actual user has reported the
+damaged/cannot-open alert. Published v1.1.0 explicitly skips code signing and
+has no notarisation step. Confirm the affected asset and Mac, inspect the
+package and resolve signing/notarisation before claiming validated Mac
+distribution. Signing and credentials still need implementation/verification;
+the exact cause of that user's alert is not established by the screenshot.
+
+**MCP remains planned for the next candidate, not implemented.** The existing
+local API/agent kit is available; it is not a native Sightline MCP server.
+The scope and acceptance checks are below. Reliability and UAT feedback take
+priority while that adapter remains unbuilt.
+
+**Production and publication tracks:** the complete slot 4 handoff is under
+`D:/Production/Sightline-Academy/Marketing/videos/sightline-promo/handoff/2026-11-03-slot-04`.
+Recordings and edit metadata are present; media alignment still needs review.
+The dedicated JL Stream Deck page is live. The wider UAT documentation/grid
+snapshot is prepared on the website branch and is not deployed. Joanne has
+reported resubmitting the Marketplace listing and sending the reply; no
+Marketplace approval is recorded here. Publication remains a separate step.
+
+**Later development:** automatic updates follows signing; native MCP remains
+the next-candidate integration request. Zoom/Teams controls, script-folder
+sync, automatic slide advancement, general per-take in-app video recording and
+a browser edition remain backlog work. The short pre-record test clip already
+in the preview does not complete the broader per-take recording item.
+
+## Next candidate — MCP support (planned)
+
+Requested by Joanne on 2 November 2026 for the next candidate after UAT
+Preview 08. **Planned, not implemented or included in the current preview.**
+
+Add an optional Model Context Protocol (MCP) server adapter over Sightline's
+existing token-protected local API. Compatible AI assistants can discover
+supported tools and use the existing app functions through a standard
+connection. Retain the current API, command tools and agent kit.
+
+Initial scope:
+
+- Test the connection and report app, adapter and control-contract versions,
+  available capabilities and actionable setup errors.
+- Validate scripts, list slots and load or select an approved script.
+- Report preparation readiness, saved-reference availability and session
+  status, without automatically enabling the camera or microphone.
+- Expose supported prompting controls, section navigation, pace and markers.
+- Provide authorised access to take logs and edit-pack information for
+  production handover. This does not add a built-in video editor.
+- Provide explicit enable/disable and setup guidance, with separate access
+  to status/data, script/settings changes and recording controls. Honour
+  existing feature gates and recorder permissions; the adapter cannot enable
+  itself or bypass them.
+
+Start with local MCP-capable desktop agents. Remote/cloud access requires a
+separately designed authenticated connection and is outside the initial scope.
+Reuse the established Settings grouping and enable-dependent configuration;
+review any new interface before implementation.
+
+Candidate acceptance includes protocol/tool discovery, connection and version
+checks, input validation, permission enforcement, disabled-feature handling,
+reconnection and clear errors. Verify the packaged setup with Codex and Claude
+Code, preserve current API/Stream Deck behaviour and keep tokens out of output.
+
+Position the benefit as **Works with your AI assistant**, with **MCP support**
+as the technical feature. Until implemented and validated, use **MCP support —
+planned** only in roadmap/planning material. Update help, setup instructions,
+the feature grid, reviewer brief and JL draft together when it becomes a
+supported candidate capability; publication remains a separate decision.
+
+## Recording feedback batch — unpublished preview
+
+Settings Preview 07 rolls the compact toolbar-icon mirror buttons into the
+approved Preview 06 batch. It changes no function or permission. The previous
+UI fixes remain included; documentation revision 8 identifies this new package.
+
+Joanne approved the combined layout on 2 November. Settings Preview 06 includes
+all stacked observations: context-aware modes, visible group tabs, mirror
+spacing, inset focus, Head guide setup/reference controls and width-based
+inline versus non-modal preview. Eye-line configuration uses the shared
+controls and follows its enable switch. All subtabs fit the tested desktop and
+compact frames; mode/guide persistence and recorder regression checks pass.
+Published app/plugin versions remain 1.1.0/0.2.0.
+
+The final queue review also includes Prompter layout naming, toolbar-matched
+mirror icons and the older Guide/OBS shortcut collision. These belong to the
+same preview. Dated candidate and installation notes below are historical;
+they do not override this current preview status or imply hardware acceptance.
+
+Reading aids follow-up: Focus strength follows the Focus band switch and keeps
+its saved value when off. Both aid groups have contextual ? help. Native hover,
+dependency and compact-layout checks cover the patch; screenshots are refreshed.
+
+Numeric-control follow-up: bounded display precision and matching slider/number
+steps are implemented and checked without changing the signed-off layout.
+
+Preview 05 restores the signed-off Settings composition. Layout fidelity,
+preview-only example controls and compact behaviour are checked separately
+from the recording workflow. The public release remains unchanged.
+
+Documentation follow-through covers the shared guide/wiki content, native help
+and Settings explanations, refreshed screenshots, reusable recording demos,
+the promo's Markdown/HTML/PDF reader and staged JL page/FAQ/carousel copy.
+The separate GitHub wiki is disabled; the shared guide remains canonical.
+The website branch is prepared for review, with no live deployment.
+
+Built for validation: production comments, first-line positioning, advisory
+sound-check acceptance, Actual framing references, clearer navigation/slate
+choices, one Stream Deck setup and preview pairing. Optional linked recording
+and explicit voice/script recording commands keep continuous as the default.
+Native fixtures cover UI and recorder transitions. Joanne's camera, microphone,
+pause-compatible recording format and final handover remain the live acceptance test.
+
+**Settings redesign, signed off and implemented for Preview 05:** permanent
+forms, eight areas/34 named sections, four complete typography targets, editable
+backing, named portable reading themes and one Settings Apply/Cancel contract.
+Optional interfaces have enable switches, preserved hidden configuration and
+matching help. OBS is under Controls; game-controller and keyboard mappings
+have separate homes. Tools has three live groups and a short-window fallback.
+Native checks cover compact frames, theme files, cancellation, microphone-test
+cleanup, retained core keys, Tools-first opening and pointer visibility.
+Preview packaging, documentation and Joanne's live acceptance remain separate
+from publication. The public app is still 1.1.0 with Stream Deck 0.2.0.
+
+What's planned and in which order. Joanne approved every item on 27 October
+2026, apart from the one on hold. The [change log in the README](../readme.md#change-log)
+records what has shipped.
+
+**How it's ordered:** first by **value**, meaning what makes recording to camera better, then by **effort**. Quick wins come first; long,
+complex builds come later.
+
+- **Value:** ★★★ changes recording day · ★★ clearly better · ★ nice to have
+- **Size:** **S** about a day · **M** a few days · **L** a week or more, for a person. Built with Claude Code, most take minutes to an hour, plus testing
+
+## Where it stands (31 October 2026)
+
+**Post-release changes, awaiting publication:** Windows executable naming,
+independent text formatting and the signed-off Settings/Tools redesign,
+named themes and conditional interface setup. These are separate from published 1.1.0
+freeze; no new release has been tagged.
+
+**Released: Sightline 1.1.0 + Stream Deck 0.2.0.** The app release includes the
+plugin installer; the plugin source repository stays private. Marketplace
+submission remains separate. Earlier RC identifiers are test history. Existing
+0.1.9 assignments remain supported. See the [release](https://github.com/JoJo-1965/sightline-prompter/releases/tag/v1.1.0)
+and [validation record](BUILD-FREEZE-1.1.0.md).
+
+Documentation revision 1 adds the [help/marketing audit](marketing/AUDIT-2026-10-31.md),
+corrected version/feature claims and a printable overview. Feature scope stays
+frozen; revised artifacts keep their own source record and checksums.
+
+**Stream Deck 0.2.0:** the plugin adds a
+listening toggle/recovery key, software session status with error guidance,
+optional hold-to-finish and head-guide adjustment dials. Eye-position lock
+keeps outline fitting anchored; opt-in + and + XL Guide profiles are included.
+Related actions share settings, leaving 30 visible actions and preserving
+saved UUIDs. Strict Marketplace-manifest validation passes; physical hardware
+acceptance and submission remain. The shared pad/phone now includes listening,
+session checks, eye lock, ideal-reference controls and local Eyes/Outline/Compare
+adjustments, with an opt-in Framing & checks preset. Finish recording uses a
+default one-second hold; each interface retains its own hold preference.
+
+**Local Windows release candidate:** RC1 established the feature baseline.
+RC2 refreshed the documentation and added reusable acceptance samples.
+**1.0.7-rc.3** adds local compatibility checks and version reporting with
+the matching private Stream Deck plugin **0.1.9**. Unsupported actions and
+known protocol/minimum-version mismatches are blocked; legacy versions stay
+unconfirmed rather than being described as up to date.
+**1.0.7-rc.4** retains compact labels above every visible toolbar slider,
+including Response in voice mode and the on-air background state.
+**1.0.7-rc.5** adds independent head-guide Width/Height fitting around fixed
+eye marks, an eye-position lock and saved/exported shape proportions.
+**1.0.7-rc.6** adds Edit beside Tools, anchors the Tools dropdown to its button,
+and centres Settings on opening and window resize. Manual dragging still works.
+**1.0.7-rc.7** adds a separate guide-adjustments window, available over a
+fullscreen or locked guide. Fit eye centre/level, then independent top/bottom
+and left/right edges. Separate Background and Outline sliders improve contrast.
+**1.0.7-rc.8** moves Settings and F1 Help into independent upright windows,
+with saved geometry, stable tab sizes and the existing unsaved-change checks.
+The latest published app is still **1.0.6**. Work remains on
+`codex/obs-integration`; no merge, tag, public release, Marketplace submission
+or website deployment is authorised by preparing or testing this candidate.
+
+**Settings and help are built:** Prompting, Appearance, Recording, Controls,
+Components, Debug and About have focused topics. Files handles input/output and Tools holds
+live helpers. The Settings panel is stable across topics; pages replace
+scrolling. Approved mini help pills, explicit labels, draft/save feedback and
+validation are included. F1 and voice help use grouped tabs and follow enabled
+modes. The approved screenshots are in the offline guide and website preview.
+RC3 also fixes help-frame resizing, adds independent toolbar mirrors and a
+labelled Files > Settings entry, confirms slot clearing, and protects sample
+source with a read-only editor and Save a copy.
+RC8 also completes the separate-window implementation of 48, now awaiting acceptance.
+RC9 adds independent Windows installer finish choices for release notes and
+Getting Started, bundled as offline pages matching the installed version.
+RC10 fixes the phone QR in native Settings, puts mirroring only under Screens,
+makes voice-command help movable and applies the capture preference live to
+Settings, both help windows and Guide adjustments. The guide overlay stays protected.
+OBS connection, recording and setup now sit together under Recording. Recorded-slate setup explains
+blocked prerequisites and reports its progress and errors in Settings.
+RC11 improves contrast on the OBS status buttons and gives Settings and both
+help windows native ownership so they stay above the fullscreen prompter.
+RC12 adds independent size and colour for square-bracket delivery comments
+under Appearance > Text, following Heading font while retaining speech exclusions.
+RC13 completes the customisable pad (#56), shares its layout with the phone,
+and adds bounded listening recovery, immediate wake-word changes and opt-in tracing.
+RC14 puts support logs and the optional word trace in **About > Debug**, with
+the trace off by default and a visible nearby-conversation warning.
+**Included in 1.1.0:** compact phone landscape controls are built and
+checked in portrait/landscape previews. Studio uses six columns and two rows,
+with extra footer spacing. The final pair is frozen for local acceptance.
+The same review batch adds API/import layout validation, structured XML
+exports, phone command acknowledgements and the session capture override (57).
+Components (47) now also checks optional OBS/Stream Deck applications and
+plugin files, with installer/Locate links and visible dependency reasons.
+Disabled controls retain their preferences; remote OBS and general API clients
+remain independent of local-only prerequisites. Script health (30) and the
+rehearsal coach (28) are also built for this review batch.
+The install helper plans the intended destination first and verifies it after
+an explicitly requested install. Correcting the live installation location
+waits for that later installation. See the [batch review](RC15-REVIEW.md).
+
+The [acceptance walkthrough](guide/14-acceptance-test.md) and two bundled
+sample scripts cover natural voice, physical Stream Deck controls, stops,
+retakes, the guide/projector stack and a continuous two-module recording.
+The illustrated [production handover](guide/12-production-handover.md)
+explains what to collect afterwards.
+
+| Academy requirement | Evidence already checked | Acceptance still required |
+| --- | --- | --- |
+| Exact recording script | Unit checks and real two-module rehearsal retained each module's source snapshot | Match the final test's scripts, section identities and slide note |
+| OBS recording files and take clocks | Confirmed main filename across three takes/two modules; additive clock references and measured digital file offset | Review final logs and keeper/marker positions; clock estimates are not frame-accurate |
+| Session guide and metadata | Ideal/Actual poses, placements and window snapshots persist; tested camera-source route excluded the guide | Real projector order, physical controls and exclusion in the chosen recorded files |
+| Separate clean camera and microphone | Separate 4K/30 outputs, independent 48 kHz/24-bit PCM and sample-identical WAV extraction checked | Confirm the normal camera/mic route and retain the actual clean/main pair |
+| Recorded picture/sound reference | Prepared OBS source, additive manifest and actual digital flash/tone file checks passed | Early/late physical claps and normal speech; digital slate delay is not lip sync |
+
+**Windows accessibility:** keyboard/layout and labelled-control automation
+passed. Manual NVDA, Magnifier and OS high-contrast checks remain. macOS and
+VoiceOver testing are deferred to a future Mac tester, not a gate for this
+Windows candidate. See the [Settings audit](SETTINGS-UX-AUDIT.md).
+
+**Before another RC:** reconcile pending conversation requests, unfinished fixes
+and companion work before choosing a version or building. Finish the current
+batch and its supporting updates, then check for new messages before packaging.
+Planned roadmap work and physical acceptance checks stay separately identified.
+
+**Next development:** signing (27) awaits the arrangements below; automatic
+updates (29) and the remaining lower-priority items stay planned. Script health
+(30), rehearsal coaching (28), components (47) and input mappings (40) are built
+for review, absent from installed RC14. Zoom (53) and Teams (54)
+remain investigations. No new compulsory script directives are needed.
+
+## Built, awaiting acceptance and publication
+
+These are implemented in the candidate, not new development tasks. They
+move to Done only when released.
+
+| # | Item | Value | Size | RC status |
+| --- | --- | --- | --- | --- |
+| 58 | **Setup and session workflow** | ★★ | S | Built for review: seven Settings groups, named Components subtabs, Getting started, Session check and confirmed Restore defaults/restart. Reset clears preferences, layouts, slots and pairings while retaining components, files and service keys; blocks recording/maintenance and reopens onboarding. Frequent controls stay on the toolbar/pad. RC14 is unchanged |
+| 59 | **Optional OBS setup assistant** | ★★ | M | Built for review: choose configured camera/mic, folder and canvas; review before creating a separate profile and three scenes. Existing setups retained, idle-only writes, expiring plan and restoration on partial failure. Guide distinguishes settings from actual native 4K, clean-camera/WAV outputs and physical sync; recording acceptance remains |
+| 30 | **Script health in the editor** | ★ | S | Included in frozen 1.1.0: current/unsaved text, section word/time estimates, pace/target context, long sentences and similar-word-start prompts, plus section navigation. Shared rendering excludes unspoken directions/headings/commands and includes quoted speech. Heuristics are suggestions; no script rewrite or save. Native editor checks pass; final acceptance pending |
+| 28 | **Rehearsal coach** | ★★ | M | Built for review: per-take pace, qualified sentence coverage/reread prompts and optional recognised filler/repetition aggregates. Counting defaults off, uses existing active voice following only and adds no transcript/audio. Tools, take summary, saved Recordings, CLI/API and additive edit-pack report. Native/simulated speech checks pass; normal-voice acceptance remains |
+| 47 | **Components manager** | ★★ | M | Included in frozen 1.1.0: Components manages the optional offline model and bundled AI kit with status, Install/Reinstall/Remove and a separate Node.js check. Named subtabs also check OBS and Stream Deck. Voice has model repair/removal; the first-run offer remains. Failed repairs preserve previous files. Standalone kit and native Settings checks pass; final acceptance pending |
+| 40 | **Choose your buttons and keys** | ★★ | S–M | Built for review: Controls > Buttons & keys learns plain keys/Shift combinations and controller buttons with shared pad actions, device overrides, pages, immediate saving and reset. Reserved shortcuts remain intact; typing, editing and Settings suspend actions. Native key and simulated button checks pass; physical controller/pedal acceptance remains |
+| 57 | **Debug capture override** | ★★ | S | Built for the next candidate: Debug permits all existing and newly opened windows in captures, with a persistent warning and phone notice. Session-only; restores current normal preferences and resets on restart. Native policy, lifecycle and restore checks pass; awaiting review and packaging |
+| 56 | **Customisable virtual pad and phone layout** | ★★ | M | Built in RC13: select up to 36 functions, drag or use Earlier/Later to reorder, choose columns and Compact/Reading/Studio presets. Pad and phone share choices/order and Stream Deck artwork. Hardware profiles remain independent. Native pad, portrait phone, persistence and permission checks pass; physical iPhone acceptance remains |
+| 48 | **Settings in its own window**, plus movable F1 Help | ★★ | M | Built in RC8: independent upright windows, native title-bar dragging across screens, saved geometry, stable sizes, paged Settings, live controls, Apply/Save/Cancel and unsaved-change guards on window/app close. Native window and inline-fallback tests pass; manual acceptance remains |
+| 52 | **Optional OBS integration** | ★★★ | M | Built in the Windows 1.1.0 candidate: authenticated connection, status-only/recording permissions, confirmed Record take/Finish, optional chapters, recorded slate and edit-pack references. Default off; ordinary prompting, stops, retakes and On air leave OBS recording. Physical workflow validation and evidence review remain. No separate OBS plugin is needed; optional dock/scene switching are later scope |
+| 55 | **Floating head-position guide** | ★★ | S | Built in the candidate: manual Ideal/Actual comparison, movement/scaling, Centre/Beside placements, chromeless fullscreen/restore, lock, voice on/off, hotkeys and Stream Deck. Separate from OBS sources, with capture protection enabled. It does not detect faces; actual exclusion depends on the chosen capture method and needs recording verification |
+| 39 | **Stream Deck companion** | ★★★ | M | Private 0.2.0 source: 30 visible grouped actions including 6 dials; existing hidden UUIDs still work. Listening recovery/toggle, session status/error help, optional hold-to-finish and guide eye/edge dials. 20 profile files, 18 advertised by the strictly validated Marketplace manifest; MCP profiles/metadata remain available for manual/development setup. Installed 0.1.9 stays unchanged. Physical acceptance and publication remain; add the real listing link only once live |
+
+## To do
+
+Work still to develop, ordered by value for the time. Code signing (27)
+waits for the signing arrangements and Joanne's accounts; it is not in this RC.
+
+| #   | Item | Value | Size | Notes |
+| --- | ---- | ----- | ---- | ----- |
+| 27  | **Code signing for Windows and Mac:** no more "unknown publisher" warnings | ★★★ | S | Moved up from Later. Needs a code-signing certificate and an Apple Developer account (Joanne's decision) |
+| 29  | **Automatic updates:** new versions download and install themselves, so users get fixes without reinstalling | ★★ | M | Moved up from Later. Best done with code signing (27), which Mac updates need |
+| 53 | **Optional Zoom controls:** investigate microphone, camera and bringing the meeting forward from Sightline, with phone, voice and control-window actions | ★ | To assess | Joanne requested, 29 Oct. Feasibility first: Zoom's [Plugin SDK](https://developers.zoom.us/docs/plugin-sdk/) connects native Windows/macOS companion apps to the installed Zoom Workplace client. Assess permissions, distribution and dependable state feedback before implementation. Off by default; independent of normal prompting. Not built or scheduled for release |
+| 54 | **Optional Teams controls:** investigate microphone, camera and bringing the meeting forward from Sightline | ★ | To assess | Joanne requested, 29 Oct. [Elgato reports](https://www.elgato.com/us/en/explorer/products/stream-deck/control-microsoft-teams-meetings-with-stream-deck/) the previous third-party API was discontinued. Keyboard shortcuts require Teams to be in the foreground and do not verify mic/camera state. Assess a maintainable approach; show unverified actions as command sent, not confirmed state. Off by default; not built or scheduled for release |
+| 31  | **Scripts folder sync:** choose a OneDrive, Dropbox or other folder, and scripts saved there from another computer appear in Sightline | ★ | S | |
+| 32  | **Advance slides at cue words:** when you say a slide-cue phrase, press the next-slide key in PowerPoint or Keynote, for live talks and webinars | ★ | M | Builds on the slide-cue highlighting that's already there |
+| 34  | **Record a quick take:** webcam and microphone recording inside Sightline, one file per take, named and rated from the take log, for people with no recording software | ★ | L | Joanne's idea, 28 Oct. Not for masters: browser-engine encoding is fine for reference copies but below Riverside's local 4K quality |
+| 22  | **Sightline in a browser** (Cloudflare Pages): the prompter, steady and voice scrolling (speech on the device, in WebAssembly), talking points and the pacing light, for a tablet or phone used as a prompter, or a computer where nothing can be installed. The desktop-only parts stay in the app: floating over other windows, hiding from capture, click-through, monitor choice and global shortcuts | ★★    | L    | Same script format and settings files, so the two can be used side by side |
+
+## Done
+
+Everything here has shipped. The stage names are the plan's stages, not version numbers: all of it shipped in the 1.0 releases (1.0.0 on 27 October 2026; 1.0.1, 1.0.2 and 1.0.3 on 28 October).
+
+### 1.0: first public release
+
+
+
+| Item                                                                                                | Size | Notes                                                                                                                            |
+| --------------------------------------------------------------------------------------------------- | ---- | -------------------------------------------------------------------------------------------------------------------------------- |
+| ✅ Installers for Windows (`.exe`), Mac (`.dmg`, Intel and Apple Silicon) and Linux (AppImage)         | M    | Built by GitHub Actions and attached to GitHub Releases. Not code-signed at first, so the README explains the first-run warnings |
+| ✅ Public GitHub repo `JoJo-1965/sightline-prompter`, forked from `reverentgeek/electron-teleprompter` | S    | Profile first: bio, website, profile README, private commit email (done), two-factor login                                       |
+| ✅ README with screenshots, a download section and topics                                              | S    |                                                                                                                                  |
+| ✅ Sightline page on joannelockwood.co.uk, linked from the sites that already cross-link               | S    |                                                                                                                                  |
+| ✅ A note to David Neal, offering focused pull requests                                                | S    | Sent 27 October, by email and as an issue on his repo                                                                                       |
+| ✅ Built-in sample scripts: a welcome tour, batch, single take, formatting test and plain text         | S    | **Done.** Script > Sample scripts; the tour opens on first run                                                                   |
+
+### 1.1: quick wins for recording
+
+Small builds, each with a big effect on a recording day. Hiding from screen sharing, click-through and game controllers still need a real-world check by Joanne.
+
+| #   | Item                                                                                                                                                                                                                                                                                                                                                                                                                                            | Value | Size | Notes                                                                                                                                                                                                                                                                                                  |
+| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 51 | ✅ **Policies:** terms and fair use, warranty, privacy and UK data protection, accessibility and voluntary support for Sightline, the Stream Deck plugin and Joanne's tip jar | ★★★ | S | Approved for publication by Joanne, 29 October 2026. [Policy hub](POLICIES.md), linked from About, the readme, user guide, plugin help and website. Includes ICO ZB020601, England/UK context and applicable overseas rights. The MIT licence is unchanged. Internal procedures and review notes remain separate from public policies |
+| 1   | ✅ **Script directives and cue pause.** `{curly braces}` are instructions to the app and are hidden while reading; `[square brackets]` stay as notes to the speaker. Adds script settings (`pacing`, `wpm`, `target`, `mode`), section targets, and inline `{pause}`, `{pause: 3s}` and `{marker}`. Scrolling stops at each `{pause}` until you press Space, the clicker or the remote. See [docs/SCRIPT-DIRECTIVES.md](SCRIPT-DIRECTIVES.md) | ★★★   | M    | Syntax agreed on 27 October 2026, and **hiding directives is done**. Also covers in-app help, a script checker (in the editor and from the command line, for AI pipelines) and keeping the [AI script brief](AI-SCRIPT-BRIEF.md) in step. Items 10 to 13 read their targets from these directives |
+| 2   | ✅ **Focus band.** Dims the lines away from the reading line                                                                                                                                                                                                                                                                                                                                                                                       | ★★★   | S    | Keeps your eye on the current line                                                                                                                                                                                                                                                                     |
+| 3   | ✅ **Markers.** Drop a bookmark during a take with one key, and jump back to it                                                                                                                                                                                                                                                                                                                                                                    | ★★★   | S    | Quicker retakes in batch recording                                                                                                                                                                                                                                                                     |
+| 4   | ✅ **On-air light and start beep** when the countdown ends                                                                                                                                                                                                                                                                                                                                                                                         | ★★    | S    | A clear "you're live" cue                                                                                                                                                                                                                                                                              |
+| 5   | ✅ **Text outline or shadow.** Keeps see-through text readable over busy slides and video                                                                                                                                                                                                                                                                                                                                                          | ★★    | S    |                                                                                                                                                                                                                                                                                                        |
+| 6   | ✅ **Hidden from screen sharing and recording.** The prompter window doesn't show in Zoom, Teams, Riverside or screen recordings                                                                                                                                                                                                                                                                                                                   | ★★    | S    | The script never leaks into a recording                                                                                                                                                                                                                                                                |
+| 7   | ✅ **Click-through mode.** Mouse clicks pass through the script to the window behind it (Riverside, slides)                                                                                                                                                                                                                                                                                                                                        | ★★    | S    | Operate other apps without moving the prompter                                                                                                                                                                                                                                                         |
+| 8   | ✅ **Colour themes,** for example yellow on black and high contrast, plus a dyslexia-friendly font option                                                                                                                                                                                                                                                                                                                                          | ★★    | S    | Saved per slot                                                                                                                                                                                                                                                                                         |
+| 9   | ✅ **Foot pedals and game controllers** for hands-free scrolling                                                                                                                                                                                                                                                                                                                                                                                   | ★     | S    | USB pedals that act as keyboards already work; this adds mapping and controller support                                                                                                                                                                                                                |
+
+### 1.2: pacing and speaking
+
+The features asked for around pace and speaking style, building on the directives in 1.1.
+
+| #   | Item                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | Value | Size | Notes                                                                                                                |
+| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | ---- | -------------------------------------------------------------------------------------------------------------------- |
+| 10  | ✅ **Pacing indicator, with two modes.** **Section mode** (the default, for batch and modular recording with pause points): the timer restarts at each section and stops while paused, and each section shows its target time or words per minute against your actual pace, with an on-track / ahead / behind light (green, amber or red, always with words). A short per-section log appears after each take. **Whole-session mode** (one continuous recording): elapsed against target time, overall on/off track, and target against actual words per minute. Set per slot | ★★★   | M    | Joanne's request. Actual pace comes from voice recognition in voice mode, and from progress over time in steady mode |
+| 11  | ✅ **Talking-points mode, for speaking off script.** Each section is shown on its own as large bullet points, with no scrolling. Move on with the arrow keys, clicker or remote. A section timer shows time against the section's target with the on-track light, plus overall time and the sections still to come. `{mode: points}` in the script, or per slot                                                                                                                                                                                                               | ★★★   | M    | Joanne's request, for themed talks around bullet points. Reuses item 10's section timers                             |
+| 12  | ✅ **Finish by a target time.** The speed adjusts so a section or script lands on its target                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | ★★    | M    | Uses the same targets as item 10                                                                                     |
+| 13  | ✅ **Rehearsal timer.** Times each section in a practice run, then offers those times as targets and suggests your pace                                                                                                                                                                                                                                                                                                                                                                                                                                                       | ★★    | M    |                                                                                                                      |
+| 14  | ✅ **Phone remote.** Start, pause, change speed, jump sections and see the pacing light from your phone over Wi-Fi                                                                                                                                                                                                                                                                                                                                                                                                                                                            | ★★    | M    | Builds on the existing local API, with pairing by QR code                                                            |
+| 14a | ✅ **Floating control pad.** A small window that stays on top of everything and can be dragged anywhere, even onto another monitor or over Riverside. It has Start / Pause, Back to the top, Previous section and Next section, with room for more later (speed, marker). It takes on the prompter's mirror setting when it is over the prompter window (judged by where the pad's centre sits), so it reads correctly in the beam-splitter glass, and goes back to normal when dragged off onto the control screen or another monitor. It changes over again straight away if the mirror setting changes (Ctrl+M) while it is over the prompter. It remembers where you left it | ★★★ | S–M | Joanne's request (27 October 2026). A first step towards the full control window (item 15), which will reuse its controls |
+
+### 1.3: bigger builds
+
+The bigger builds.
+
+| #   | Item                                                                                                                                                                                                                                                                                                                                          | Value | Size | Notes                                                                                                                    |
+| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- | ---- | ------------------------------------------------------------------------------------------------------------------------ |
+| 15  | ✅ **Control window and monitor choice.** Choose which monitor the prompter uses (full screen, mirrored if needed) and control it from a separate operator window. The operator window stays the right way round and shows a live preview, progress and the pacing light                                                                         | ★★★   | L    | Suits beam-splitter rigs and second monitors                                                                             |
+| 16  | ✅ **Free on-device speech recognition as the default for voice scrolling** (done with the sherpa-onnx streaming Zipformer: 96% on the reader's line against Moonshine's 75% in the side-by-side test, so neither Moonshine nor Vosk was needed): no account or key, works offline, audio stays private. Cloud services (Deepgram, AssemblyAI, Speechmatics) stay as options with the person's own key, including short-lived Deepgram tokens and key terms | ★★    | L    | On-device by default **if it works**: first a side-by-side test against Deepgram with Joanne's RØDE mic and real scripts |
+| 17  | ✅ **Highlight the sentence you're on** (voice mode: the next to say)                                                                                                                                                                                                                                                                                            | ★★    | M    | Needs item 16's recognition                                                                                              |
+| 17b | ✅ **Voice commands** ("Prompter, pause", slower, back, again, resync…), in voice mode and optionally while steady scrolling | ★★    | M    | Joanne's idea, 27 Oct |
+| 17c | ✅ **Stops and timed pauses in scripts:** `{stop}` waits for "Prompter, go", Space or the clicker; `{pause: 5s}` shows a countdown, then carries on. Steady and voice scrolling | ★★    | S    | Joanne's idea, 27 Oct |
+| 18  | ✅ **Open PDFs and Google Docs links** directly                                                                                                                                                                                                                                                                                                  | ★     | M    |                                                                                                                          |
+
+### 1.4: recording workflow
+
+Keeping what voice scrolling knows (which word was said when, which section, each retake) and putting it to work in the edit.
+
+| #   | Item | Value | Size | Notes |
+| --- | ---- | ----- | ---- | ----- |
+| 23  | ✅ **Take log for the edit:** record each section and take as it happens (start and end times, retakes from "Prompter, again", markers) and export it when you stop, as JSON for an edit pipeline (and CSV), so the edit can pick the last good take of each section and cut false starts automatically | ★★★ | M | Recommended next, ahead of 20, so it pays off on the next module recording. Times line up with the recording by the slate (25) or the take's start |
+| 24  | ✅ **"Prompter, keeper" and "Prompter, scrap that":** rate a take as you go; the rating goes into the take log, so the edit uses your verdict rather than just the last take | ★★★ | S | Builds on 23 |
+| 25  | ✅ **Slate and sync mark:** at the start of each take, a full-screen slate ("M2 · Section 3 · Take 2") for a second, with a sharp beep and a white flash, giving the edit a sync point and a label in the footage | ★★ | S | Replaces the hand clap, which lands late when clapped straight after pressing record |
+| 26  | ✅ **Word-level timing, edit marks and captions:** in voice mode, record when each script word was spoken (from the speech engine's own word timings, about a twentieth of a second apart, not from when the screen scrolled) and save it with each take: every word, its start and end, and the sentence and section it belongs to, plus pauses and stumbles (words said twice, skipped or not in the script). Export it with the take log as JSON and CSV, as edit marks (sentence starts, long pauses, fluffs) for cutting, and as SRT or VTT captions in the script's own wording, with nothing sent anywhere; and a "script against what you said" comparison | ★★★ | M | **Done (28 Oct):** File > Export Edit Pack writes the take log, words with start and end, sentences with any words missed, edit marks (sentence starts, pauses, re-reads, skipped words, markers) and SRT and VTT captions to one folder, with docs/EDIT-PACK.md as its README. Before that, voice mode began recording each script word with the time it was said (from sherpa's token timestamps) on every take in the take log JSON, a re-read replacing the first reading. Raised from ★★ on 28 Oct (Joanne asked for word-level timing for editing marks). Export it as an **edit pack** an editing and assembly agent can use whole: the take log, word timings, edit marks and captions in one folder, with a schema and a brief for edit agents (docs/EDIT-PACK.md, like the AI script brief), so an agent can pick takes, cut to sentence boundaries and line up the recording from the slate. Steady scrolling has no word timings (nothing is listening), so this is voice mode, or steady with voice commands on |
+| 37  | ✅ **Clickable progress bar:** click or drag the progress bar to jump to any point in the script, with a tooltip showing the section and time at that point; section boundaries marked as ticks along the bar. Replaces the scroll bar the script no longer shows, without the risk of grabbing it mid-take (clicks are ignored while scrolling unless paused) | ★★ | S | Joanne's idea, 28 Oct, after the scroll bar was removed |
+| 38  | ✅ **Check for updates:** a **Check for updates** button on Settings > About, and an optional quiet check when the app starts (on by default, off in Settings), against the latest GitHub release. If there's a newer version, a note says so with a link to the download and what's new; nothing downloads or installs by itself, and nothing else is sent | ★★ | S | Joanne's idea, 28 Oct. Automatic installing (electron-updater) needs signed builds, so it waits for 27 |
+| 43  | ✅ **Pace for each take in the edit pack:** words spoken, speaking time (leaving out pauses of a second or more), speaking and overall words per minute, and the section target with the difference from it, as new columns in takes.csv and a summary for each section in take-log.json (for example "S3: 2:31 spoken, 151 wpm speaking, 138 wpm overall, target 2:40") | ★★★ | S | From the Inclusion Bites Academy authoring agent via Joanne, 28 Oct (inclusion-bites-academy issue #66): the Academy records 20 modules section by section and its assembler reads the edit pack. Edit pack: add columns and fields only, never rename or remove. Must match figures worked out from words.csv, or say how they differ **Done (28 Oct):** File > Export Edit Pack and sightline.mjs pack; definitions in docs/EDIT-PACK.md > Pace |
+| 44  | ✅ **Rehearsal results outside the app:** the section times and pace from a practice run (the rehearsal timer, 13) as a file in the edit pack and through `sightline.mjs` (for example `rehearsal [script] [date]`). A rehearsal is already logged as takes, so this builds on 43 | ★★ | S | From the Academy authoring agent, 28 Oct (issue #66) **Done (28 Oct):** sightline.mjs pace (also rehearsal), and the pace in takes.csv and take-log.json (43) |
+| 49  | ✅ **Notes mode** (talking points, reworked): `{mode: notes}` (`{mode: points}` still works) shows the script a page at a time, never scrolled. An H1 starts a new page with that heading as its title; `{page}` starts one without a heading; each H2 on a page is a large bullet, with any text under it as smaller lines. A script with no H1s or `{page}` after its title keeps one H2 per page, as now. Page Down, →, "Prompter, next page" (or next) forward; Page Up, ←, "previous page" (or back) back. A page is the unit for timing and the take log; a `{target}` on an H1 times its page. Spec, checker, AI script prompt and guide updated together | ★★★ | M | Joanne, 28 Oct: for speaking from notes rather than a script. Builds on talking points (11), renamed Notes in the menus **Done (28 Oct):** sample Notes, a page at a time |
+| 45  | ✅ **Labelled markers:** `{marker: Setup}` as an optional form of `{marker}`, so a marker in a long section carries its name into the take log and the edit marks. Plain `{marker}` keeps working. Spec, script-directives.json, the checker and the AI script brief updated together | ★★★ | S | From the Academy authoring agent, 28 Oct (issue #66): long scenario sections (2:50 to 4:05) would have one at each label (Setup, Context, Challenges, Action plan, If nobody acts, Final thought) **Done (28 Oct):** take logs get markerList (label, from); edit marks carry the label; checker, spec 0.3 and AI brief updated |
+| 46  | ✅ **Restart from a marker, mid-section:** going back to a marker partway through a section and reading on is recorded in the edit pack, so an editor or assembler can cut to the second reading, as a re-read works today; described in docs/EDIT-PACK.md | ★★★ | S–M | From the Academy authoring agent, 28 Oct (issue #66): saves a whole new take for a late fluff. The Academy assembler will read it **Done (28 Oct):** Shift+B and "Prompter, back to the marker"; takes gain restarts { t, label, markerAt }; edit mark type restart; docs/EDIT-PACK.md > Restarts from a marker |
+| 36  | ✅ **Recordings library, and agent access to it:** a panel (File > Recordings) listing every recording session: script, date, takes, keepers and length. Open one to see its takes and words; **rename** it, add a note, **delete** it (to the Recycle Bin, with a confirmation), start a new one, and **export** its edit pack as a folder or zip. An AI agent on the same computer can do the same through the token-protected local API: list sessions, fetch a session's edit pack, rename, mark as processed or delete (only if allowed in Settings > Remotes). The edit-pack brief (docs/EDIT-PACK.md, also on the clipboard from Help) tells the agent how to ask for a session, what each file holds and how to process it: line up the recording from the slate, choose the takes, cut at sentence boundaries, assemble in script order | ★★★ | M | Joanne's idea, 28 Oct. Built 28 Oct (with 26's data); replaced File > Export Take Log, Start a New Take Log and Show Take Logs Folder. Names and notes live in library.json beside the logs, so take logs are never rewritten. The API's push channel waits for 39 |
+| 20  | ✅ **Teach it your words:** a log of what voice scrolling heard (the heard log), and fixes for what it mishears: words that sound alike count as the script word, and lists of your script words and command words, including the wake word (Settings > Voice > Your words), with what it hears instead, as synonyms rather than replacements, with suggestions from the heard log and a **Teach…** button that listens while you say the word | ★★★   | M    | Joanne's idea, 27 Oct; sound-alike matching and synonyms rather than replacements asked for on 28 Oct. Built 28 Oct. Not built: biasing the recogniser itself (sherpa-onnx hotwords, which needs the model's BPE vocabulary); worth it only if the matching isn't enough |
+| 35  | ✅ **Script-controlled listening and prompter commands**: `{listen: off}` suspends voice following and command recognition for an ad-lib, demonstration or Q&A; `{listen: on}` resumes them. Space, a clicker or the remote can carry on while off script. Enabled scratch capture and a production recording may continue: this is not a whole-microphone privacy switch. `{prompter: slower}`, `{prompter: bigger}` and `{prompter: marker}` run supported actions at that point. The directive spec, checker, AI brief and edit-pack off-script marks describe the same behaviour. | ★★★ | M | Joanne's idea, 28 Oct. Built 28 Oct; RC 2 clarifies the distinction between recognition and recording. Pairs with 26: the scripting agent writes directions and the editing agent reads the result. |
+| 33  | ✅ **Scratch audio for syncing:** record a plain audio file from the microphone while the prompter runs, stamped to the take log, so an edit pipeline can line up the master recording (Riverside or anything else) by matching the two soundtracks, with no clap or beep needed | ★★★ | M | Joanne's idea, 28 Oct. Riverside stays the master recording; this is only a sync reference. **Done 28 Oct:** Settings > Scrolling, WAV 16 kHz mono, one file per run, placed on the take log's clock (`audio`), in the edit pack |
+| 41  | ✅ **Sound-check meter:** a level meter you can switch on and off (a button in the Voice panel, a shortcut, and an option to keep it on screen during takes): a bar in dBFS with green, amber and red zones, a peak hold, a clip light, and short-term loudness in LUFS, small enough to sit at the edge of the prompter. For checking the mic before a take and keeping an eye on it during one | ★★ | S–M | Joanne asked, 28 Oct. Today there's only the small meter beside the microphone list in the Voice panel, for picking the mic. Shares its measuring with 42. **Done 29 Oct:** Ctrl+Shift+D, Sound check in the Voice panel; also shows the room's background noise (Joanne asked) |
+| 42  | ✅ **Loudness per take:** for each take, the mean loudness (integrated LUFS) and the peak (dBFS) of the microphone Sightline listens to, with warnings for clipping or too quiet; shown in the take summary and saved in the take log and edit pack, so you know straight away whether a take's level is usable | ★★ | M | Joanne asked, 28 Oct. Sightline doesn't record, so this measures the mic as Sightline hears it, before any processing in OBS or Riverside: a reliable guide when they share the mic, not the final figure. Voice mode already has the mic open; steady scrolling needs a "measure the mic" option. Builds on 41. **Done 29 Oct:** Settings > Scrolling > Loudness for each take; also background noise and a noisy warning; take log `loudness`, takes.csv's last columns |
+| 50  | ✅ **Sound checks in the script:** `{soundcheck: room}` (the room's background noise) and `{soundcheck: voice}` (the speaker's level, with how far to turn the gain), saved with the session (`soundChecks`), so the AI that writes the script can ask for them | ★★ | S | Joanne's idea, 29 Oct. Built 29 Oct, with a Sound check key on the Stream Deck and a `sound-check` command in the API. Auto-gain was ruled out: Sightline doesn't make the recording, so it says how far to turn the gain instead |
+
+## Later
+
+| Item                             | Notes                                                                              |
+| -------------------------------- | ---------------------------------------------------------------------------------- |
+| Start and stop OBS recording with the prompter, with markers in OBS | Parked for the longer term at Joanne's request (27 October 2026): not using OBS at the moment. Would use OBS's built-in WebSocket remote control |
+| Supporters wall and goal progress on the website | Not needed yet (Joanne, 29 October 2026): Ko-fi emails each tip and Stripe records every payment. When there are supporters to thank, a small Cloudflare Worker would take Ko-fi's webhook (Settings > API; check the verification token, kept as a Worker secret, never in a repo) and Stripe's for the tip jar link, save public tips (Ko-fi's `is_public` must be honoured) and show names, messages and goal progress (such as code signing) on joannelockwood.co.uk/sightline |
+| Opt-in telemetry, then debug mode off by default | Joanne, 29 Oct: debug mode (Settings > About) is on by default in 1.0.7 while problems are tracked down on real machines. With opt-in, anonymous crash and hang reports (asked once, off unless agreed, covered by the privacy policy), switch it off by default in the build |
+
+## On hold
+
+| Item                                   | Notes                                                                                  |
+| -------------------------------------- | -------------------------------------------------------------------------------------- |
+| Right-to-left scripts (Arabic, Hebrew) (was 19) | On hold at Joanne's request (27 October 2026) |
+| Language packs for the interface (was 21): menus, Settings, the guide and messages in other languages; directives, the wake word and commands stay in English to start with | On hold at Joanne's request (27 October 2026). Needs every string moved into a language file first |
+| Start Riverside recording from the app | On hold at Joanne's request (27 October 2026). Depends on what Riverside's tools allow |

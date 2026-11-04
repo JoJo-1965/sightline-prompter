@@ -1,519 +1,112 @@
-# Sightline Prompter: what it adds to Electron Teleprompter
+# Sightline Prompter features
 
-**RC 4 integration:** preparation has a first workflow card and a direct toolbar
-entry. The existing Ctrl+Shift+H guide shares live feedback and its draft target
-with preparation. OBS calibration can read a selected scene without changing
-recording; optional temporary virtual-camera capture retains existing sessions.
-OBS choices require enabled integration and confirmed availability. Pad buttons
-and controller/key assignments are full scrollable lists. Connections explicitly
-names MCP, AI, and API, with a Configure MCP guide beside the switch.
+**Sightline 1.2.0 · Stream Deck companion 0.2.0 · 4 November 2026**
 
-**RC 2 demo refresh:** twelve sample files reviewed together. The first-run
-Start here tour explores core and RC features in twelve stops; focused samples
-demonstrate actual Notes, preparation and recording workflows. Setup/commands
-stay in paused-only production comments, with brief delivery cues inline.
-The AI writing brief and installed AI kit follow the same practices.
-
-**1.2.0 RC 1:** one Connections area, one OBS entry with three button subtabs,
-separate connection/recording state, persistent connection and reviewed test-clip
-outcomes, automatic meters during audio checks, and a yellow section/page pill.
-Finish/end and restart-section commands cover the observed recording variants.
-Local MCP adds seven scoped desktop-client tools through the optional AI kit.
-Mac packaging adds free ad-hoc signatures and CI integrity verification; this
-is not notarisation. Live word timing and coverage remain estimates.
-
-**Next preview:** the existing voluntary coffee reminder repeats after a saved
-random interval of 10–15 launches, including profiles that saw the old one-time
-note. Its appearance, dismissal and reading/on-air checks are unchanged.
-This scheduling change is not in the packaged UAT 09 build.
-
-**UAT Preview 09:** Getting started is first in Settings and provides current
-setup guidance. Debug shows listening health and recovery. Guide adjustments
-and Guide off share a compact control group; slate options stay on one line.
-The focus band excludes comments and inline directions. Cross-screen dragging
-restores a centred normal window at 75% of the destination work area.
-See the [combined UAT checklist](PREVIEW-09.md).
-
-**UAT Preview 08:** preserves the approved Settings composition and adds the
-approved preparation workflow with real local face detection, manual fallback,
-audio advice, an actual reviewed test clip and a fixed recording reference.
-Headings, subtabs and actions have more breathing room. See the
-[preparation guide](guide/16-prepare-to-record.md) and [UAT checklist](PREVIEW-08.md).
-
-**Settings Preview 07:** retains the approved combined layout: visible
-button subtabs, three context-aware reading modes, complete Head guide setup and
-recording-reference controls, width-based inline preview and a non-modal
-companion. Shared controls, eye-line gating, focus and mirror spacing are
-checked together. Mirror buttons are now compact and reuse the toolbar icons.
-The app remains an unpublished 1.1.0 preview. The Preview 06 capabilities
-described below remain included.
-
-Preview 06's Reading aids patch reveals Focus strength only when Focus band is
-on, retaining its value when off. Both aid groups now have small contextual
-help pills on every control.
-
-Preview 06's numeric patch gives slider/number pairs consistent whole-number
-or five-point steps. Fine readouts have at most two decimals. Display rounding
-preserves saved precision until adjustment; the signed-off layout is unchanged.
-
-For a detailed reviewer comparison, use the [current preview feature grid](FEATURE-GRID.md),
-with dedicated Stream Deck and OBS sections, configuration choices, dependencies
-and limits. A [searchable view](FEATURE-GRID.html) and [comparison CSV](FEATURE-GRID.csv)
-are generated from the same tables.
-
-**Unpublished Settings Redesign Preview 06:** the signed-off design is implemented
-in the app and covered by native UI checks. It includes the prior recording
-preview, plus permanent named Settings sections, four complete typography targets,
-editable backing, portable reading themes, optional-interface gates and live Tools.
-The public installer remains 1.1.0; camera/recording-route acceptance and publication
-are separate. See the [implementation record](design/IMPLEMENTATION-STATUS.md).
-
-**Sightline 1.1.0, released 31 October 2026:** includes OBS integration (52),
-the manual head guide (55), production exports, voice tuning, component checks,
-onboarding, script/rehearsal review and the Settings/help updates below.
-The matching Stream Deck plugin is **0.2.0**, downloadable from the app release
-while its source stays private and Marketplace submission is prepared.
-New controls check advertised app capabilities; older unreported versions are
-unconfirmed. See the [workflow walkthrough](guide/14-acceptance-test.md),
-[validation limits](BUILD-FREEZE-1.1.0.md) and [roadmap](../ROADMAP.md).
-
-**Preview 06 navigation:** eight areas and 34 named sections separate reading,
-voice, recording, controllers, setup, debug and About. Settings owns its forms
-permanently. A fixed frame, sidebar search and compact selectors replace
-automatic pages and control borrowing. Small raised ? pills support hover,
-keyboard and touch, with Escape to dismiss.
-
-**Complete appearance:** spoken script, headings, inline directions and production
-notes each have font, size, colour, bold, italic and line spacing. Editable backing
-colour and separate opacity/brightness controls show a live sample. Named reading
-themes can be saved, restored and moved between computers as JSON; they exclude
-controllers, recorder setup, windows, scripts and credentials.
-
-**One draft contract:** appearance previews; Apply saves, Save & close saves and
-closes, Cancel restores the last applied look. Explicit device tests, component
-installation, theme-library operations and pairing resets are separate actions.
-Tools has matching Prepare, Adjust and During take tabs, labelled Live adjustments.
-It has its own controls and opens a utility window if the prompter is too short.
-
-**Optional interfaces:** speech, microphone, pad, phone, custom keys, game
-controller, Stream Deck, OBS and local API each have an enable switch. Off hides
-configuration and preserves values. Disabled actions/help are omitted; component
-installation/readiness remains separate. Stream Deck has one setup home.
-OBS connection, recording and profile/scene setup live under Controls.
-
-**Input configuration:** Keyboard and clickers and Game controller have separate
-homes, named mapping selectors and Apply/Cancel. Core shortcuts remain usable
-when custom mappings are disabled. Resetting one type preserves the other.
-The pad/phone layout uses named button selection, Earlier/Later and neighbouring
-drag/drop instead of arbitrary pages.
-
-**Components > Installed components** manages the offline model and AI kit and checks
-Node.js/OBS readiness. The kit needs no repository clone or npm dependency setup.
-**Setup > Restore defaults** confirms a restart into onboarding, retains installed
-components, scripts, recordings and service keys, and resets preferences/pairings.
-The existing idle/maintenance guards and private local backup remain.
-
-The optional [OBS setup assistant](guide/15-obs-setup.md) (59) reuses configured
-camera/mic sources, offers a folder and 1080p/4K canvas, then shows a plan.
-Only Create applies a separate profile and three scenes. It retains previous
-setups, requires idle outputs and starts no recording. Actual capture mode,
-encoder quality, clean camera/WAV and sync need a physical recording test.
-
-The development guide includes [From recording to the editor](guide/12-production-handover.md):
-an illustrated session checklist covering setup, framing, a short test,
-retakes, keeper choices and collecting the master files alongside each edit
-pack. It is available offline through **Help > User Guide**.
-
-The published Stream Deck companion **0.2.0** includes OBS Record take
-and Finish recording keys, confirmed-state feedback and optional recording
-layouts for each model. The OBS development app enforces saved permissions
-and waits for actual recording state changes. The preview adds optional linked
-recording; hardware checks remain specific to each user's recording route.
-
-Sightline also has an optional recorded OBS slate: Prepare adds a
-dedicated flash/tone source to the current scene, with acknowledgements and
-estimated file-clock references in the edit pack. A cached transparent page
-keeps the source blank after Sightline closes. Module changes flush the old
-take and scratch WAV before loading the new script. A real two-module test
-retained three takes under one OBS recording. Separate clean 4K camera and
-PCM/WAV outputs passed; physical camera lip sync remains unvalidated.
-
-On the development branch, the head guide also has labelled **Ideal position**
-and **Actual position** outlines. Drag, nudge or scale the actual outline
-against a saved ideal, and recall Centre or Beside panel window placements.
-This is a manual reference check. Both poses persist between scripts and
-are saved with new takes. Help uses tabs and follows enabled modes; voice
-commands **guide on** and **guide off** set the guide's visibility explicitly.
-
-The prompter's **Guide adjustments** button and **Tools > Guide adjustments…**
-toggle a separate control window, including while the guide is fullscreen,
-Clean or click-through locked. Set eye centre/level, lock the eyes, then fit
-Top/Bottom and Left/Right independently. A **Background** slider dims the
-preview behind the guide (0–80%, initially 12%); **Outline** controls line
-opacity separately, and the dashed Ideal reference is brighter. Shape and
-background settings persist between scripts and in the edit-pack snapshots.
-
-**Included in 1.1.0:** a floating head-position guide for camera framing, with
-an eye line, head/shoulder outline, adjustable size/opacity/colour, saved
-placement, click-through lock, global Ctrl+Shift+H hotkey and Stream Deck
-OFF/ON/LOCK action. Separate from OBS scenes; capture protection stays on.
-
-It also fills its monitor as a borderless overlay, with hidden controls and
-window-size restore (Ctrl+Alt+H or the fullscreen Stream Deck action). Intended
-order: OBS projector, head guide, then prompter text. Actual projector stacking
-and other screen-capture methods remain to be checked; the camera-source
-recording route excluded the guide in the workstation test.
-
-Sightline Prompter began as a fork of David Neal's
-[Electron Teleprompter](https://github.com/reverentgeek/electron-teleprompter)
-(version 4.1.20): a see-through, always-on-top teleprompter with a built-in
-Markdown editor, section jumps from the arrow keys or a clicker, a mirror
-mode, and scrolling that followed your voice through Deepgram. Thank you,
-David.
-
-Sightline keeps that heart and rebuilds almost everything around it into a
-teleprompter that works with your AI, for content creators and learning and
-development teams recording to camera at a desk or in a studio, on Windows,
-macOS and Linux. Your AI writes the script and its directions, Sightline
-follows your voice through the take, and the take log goes back to your AI
-for the edit.
-
-Sightline does not record production video. Keep OBS, Riverside, Zoom or your
-camera for the master recording. Sightline adds section/take timings,
-word-alignment estimates, retakes, markers and ratings for the edit. Optional
-scratch audio records the microphone as a sync reference. A slate reaches an
-OBS recording only through a prepared recorded source or another verified
-capture route; check the actual recorded picture and sound.
-
-This page lists what's new. The [change log](../readme.md#change-log) has the
-details, and the [user guide](guide/README.md) shows every screen.
-
-**At a glance**
-
-|                     | Electron Teleprompter 4.1.20                                                          | Sightline Prompter 1.0                                                                                                                                         |
-| ------------------- | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| AI                  |                                                                                       | **AI writes the script and its directions, can run the prompter, and gets the take log for the edit**                                                                                         |
-| Scrolling           | Follows your voice (Deepgram, with your own key)                                      | Follows your voice **on your own computer**, free and offline, or steady at a set pace                                                                         |
-| Voice control       |                                                                                       | "Prompter, pause", go, slower, again, resync and more                                                                                                          |
-| Script formats      | Markdown and HTML, with a built-in Markdown editor                                    | Adds plain text, Word, rich text, **PDF** and **Google Docs links**                                                                                            |
-| Script instructions |                                                                                       | Stops, countdowns, markers, pace and target times in `{curly braces}`; notes in `[brackets]`                                                                   |
-| Pacing and takes | | Pacing light, section targets, take summary, rehearsal timer, and a **take log** for the edit with keeper and scrap ratings |
-| Controls | Keyboard shortcuts; arrow keys and a clicker jump between sections; microphone choice | Live control bar, Files menu, recording Tools, grouped Settings with focused subtabs, nine slots, pad, phone remote, operator window, controllers and Stream Deck |
-| Recording rigs      | Mirror (flip) mode                                                                    | Mirroring in any direction, prompter monitor (Elgato Prompter), eye-line mode, one-click mirroring, hide from screen capture, click-through                    |
-| Reading aids        | Background opacity and font size                                                      | Sentence highlight, focus band, text edge, colour themes, Atkinson Hyperlegible and OpenDyslexic                                                               |
-| Help                | Readme; recently opened files                                                         | Built-in user guide with screenshots, sample scripts, shortcuts panel                                                                                          |
-| Installers          | Build from source                                                                     | Windows, macOS (Apple silicon and Intel) and Linux, built on GitHub                                                                                            |
-
-## AI-assisted production
-
-The whole workflow is in the guide:
-[Working with AI](guide/09-working-with-ai.md).
-
-- **Write:** Help > Copy the AI Script Prompt puts instructions for ChatGPT,
-  Claude, Gemini or Copilot on the clipboard. The scripts they write come with
-  sections, target times, stops, countdowns, markers and notes to the speaker
-  ([AI-SCRIPT-BRIEF.md](AI-SCRIPT-BRIEF.md)). Draft in Google Docs, Word or
-  PDF and open it as it is.
-- **Check:** directives Sightline doesn't recognise are marked ⚠ on screen,
-  and the command-line checker (`npm run check-script`) reports unknown
-  directives, bad values and sections without a target, so an AI pipeline can
-  fix a script before you see it.
-- **Record:** an optional local API lets an AI agent on your own computer
-  write a script into a slot, start, pause, jump sections, change speed, drop
-  markers and rate takes as keeper or scrap. Off by default, token-protected
-  and closed to web pages.
-- **Edit:** the take log records every take of every section, with its start
-  and end, retakes, markers, rating, pace and (in voice mode) when each word
-  was said, and picks the take to use for each section. The **edit pack**
-  turns it into what an editing agent cuts with: words, sentences, edit marks
-  and captions.
-- **Recordings library** (File > Recordings): every session to name, note,
-  mark as edited, export as a folder or zip, or delete; an agent can list
-  them and fetch any edit pack through the local API.
-- **The script directs the prompter:** `{listen: off}` before an ad-lib, a demo
-  or questions mutes the microphone and holds until you carry on from
-  `{listen: on}`, and the edit pack marks the time off script;
-  `{prompter: slower}` (or faster, bigger, smaller, marker) runs a command at
-  that point.
-
-## Voice
-
-- **Speech recognition on your own computer** (sherpa-onnx, streaming
-  Zipformer): free, private and offline after a one-off 73 MB download.
-  Nothing you say leaves the PC. On a real 9-minute take with retakes it kept
-  the prompter on the reader's line 96% of the time. Deepgram stays as a
-  choice.
-- **Words arrive while you speak**, not at the next pause, so the scroll keeps
-  up with fast delivery, ad-libs and re-reads.
-- **"Prompter, …" voice commands:** pause, go, slower, faster, back, next
-  section, from the top, again (marker and retake), marker, resync (finds your
-  place anywhere in the script), bigger and smaller. Commands only count at the
-  end of what you say. Choose a wake word your scripts don't use as an
-  instruction. Known mishearings and taught synonyms work; loose spelling
-  guesses do not. Recording and guide states require explicit phrases.
-  Optionally, commands also work during steady scrolling.
-- **It answers you:** saying the wake word shows *Listening…* straight away,
-  *Didn't catch that* if what follows isn't a command, and "what can I say"
-  shows every command on the prompter. **Choose the wake word:** Prompter,
-  Computer, Teleprompter or Director.
-- **Say "Section 3"** (a spoken slate) to go to that section, **"reset"** to
-  go back to the top with the speed and clock reset, and **"back to the
-  marker"** to read on from the last marker.
-- **Heard log:** every word it heard, beside the script words it matched, to
-  find words it keeps mishearing.
-- **Your words** (Settings > Voice > Your words): words that **sound alike** count as the
-  script word ("marsha" for "Moshe") or the command ("prompta" for
-  "Prompter"), and lists of script words and command words it mishears, as
-  synonyms rather than replacements, with suggestions from the heard log and
-  **Teach…** (say it, and it adds what it hears).
-- **Stops honoured in voice mode:** the prompter holds at a `{stop}` until
-  you say "Prompter, go". A countdown, `{pause: 5s}`, shows as a **⏸ 5s** mark
-  instead: you take the beat yourself.
-- **Highlights the sentence you're about to say.**
-- A live microphone level meter and a responsiveness setting.
-
-## Scrolling and pacing
-
-- **Rehearsal coach, next candidate:** saved-take pace, sentence alignment
-  coverage, lines outside the matched reading range and logged rereads.
-  Optional recognised filler/repetition counts default off and collect only
-  during active voice following. No extra mic listener, transcript or audio.
-  Recognition errors and deliberate wording can affect the results; the
-  coach does not score speakers or change keeper choices. Available in the
-  take summary, Tools, Recordings, CLI/API and additive edit-pack report.
-
-- **Steady scrolling** at a set words per minute, with ↑ and ↓ to adjust it on
-  the fly, and a countdown before it starts.
-- **Section targets** (`{target: 1:20}` or `{wpm: 140}`) set the pace section
-  by section; a single take can be paced to finish on time.
-- **Pacing light:** green, amber or red, with "On track", "Ahead 5 s" or
-  "Behind 8 s".
-- **Take summary** after each run, and a **rehearsal timer** that writes your
-  practice times back into the script as targets.
-- **Stops and countdowns:** `{stop}` waits for "Prompter, go", Space or a
-  clicker, with a yellow label; `{pause: 5s}` shows a blue countdown with a bar
-  that runs down (in voice mode, a mark instead). The mic listens for
-  "Prompter, go" at a stop.
-- **Markers:** `{marker}` in the script, or press B during a take; Ctrl+B
-  jumps between them. Name one, `{marker: Setup}`, and the name goes into the
-  take log and edit pack. **Shift+B** goes back to the last marker to read on,
-  logged as a restart so the edit can cut to the second reading.
-- **Slate and sync mark:** a white flash and a beep at the start of each
-  take, then the section and take number, so the edit can line every take up
-  with the recording; no clap needed (Settings > Recording > Audio).
-- **Take log for the edit:** every take of every section, with its start and
-  end, whether it was read to the end or retaken, and its markers, saved as
-  you go and kept in **File > Recordings**, to name, note and export. Say
-  **"Prompter, keeper"** or **"Prompter, scrap that"** (or press K or
-  Shift+K) to rate a take; the log picks the take to use for each section.
-  In voice mode it also records **when you said each word** and each take's
-  **pace** (words, speaking time, words per minute against the target), for
-  cutting on words and sentences and setting targets from a rehearsal.
-- **Skills for AI agents:** `sightline-script` and `sightline-session` for
-  Claude Code and Codex, a `sightline` command for driving the app, and setup
-  steps for ChatGPT, Claude and Gemini ([Setting up your AI](guide/10-setting-up-your-ai.md)).
-- **Edit pack** (File > Export Edit Pack): the take log, word timings,
-  sentences, edit marks (sentence starts, pauses, re-reads, skipped words)
-  and captions in the script's own wording, in one folder with a brief for
-  AI editing agents.
-- **Sound-check meter** (Ctrl+Shift+D, or Sound check in the Voice panel):
-  the mic's level, peak, clip light, loudness in LUFS and the room's
-  background noise, at the edge of the prompter.
-- **Sound checks in the script:** `{soundcheck: room}` and
-  `{soundcheck: voice}` check the room's background noise and your level
-  before you start, say how far to turn the gain, and keep the results with
-  the session.
-- **Loudness for each take** (Settings > Recording > Audio): each take's loudness,
-  peak and background noise in the take log and edit pack, with a warning as
-  it ends if it clipped, was very quiet or had a noisy room.
-- **Scratch audio for syncing** (Settings > Recording > Audio): a plain microphone
-  recording while the prompter runs, placed on the take log's clock, so an
-  editor can line the real recording up by matching soundtracks, with no
-  slate needed.
-- **Notes** for speaking from notes: a page at a time, never scrolled. A
-  `# heading` or `{page}` starts a page and each `## heading` is a bullet, with
-  a page timer against each page's `{target}`.
-- A progress bar you can click or drag to jump through the script, with
-  section ticks and a tip showing the section and time at each point.
-- Progress bar, time left, an ON AIR light and an optional end-of-countdown
-  beep.
+The [full feature grid](FEATURE-GRID.md) is the detailed reviewer reference:
+249 capabilities in 18 groups, with options, requirements and limitations.
+Use its [searchable HTML](FEATURE-GRID.html) or [comparison CSV](FEATURE-GRID.csv).
+This page groups the product's main functions; it does not mix future plans
+with shipped features. [Development history](FEATURES-DEVELOPMENT-HISTORY.md)
+and the [roadmap](../ROADMAP.md) are separate.
 
 ## Scripts
 
-- **Script health, next candidate:** editor button and Tools review window.
-  Uses current unsaved text, with per-section word/time estimates, section
-  pace/targets, timed-pause information, long-sentence prompts and similar
-  word starts to try aloud. Spoken quoted directions count; headings,
-  unspoken directions, code and commands do not. Nothing rewrites the script.
+Open Markdown, text, Word, PDF or a supported Google Docs link. Edit Markdown
+in the app, retain recent files and nine script slots, and watch external edits.
+Sections, pacing targets, stops, countdowns and markers can guide the read.
+Production comments hide during delivery; inline cues remain separate from
+spoken words. Protected samples can be saved as personal copies.
 
-- Opens **Word, rich text, plain text, PDF and Google Docs links** as well as
-  Markdown and HTML. PDFs have their paragraphs and headings rebuilt; Google
-  Docs are fetched afresh each time they open.
-- **Notes to the speaker** in `[square brackets]` are dimmed, with any
-  "quoted words" inside them kept bright.
-- **Script directives** in `{curly braces}` are hidden while you read, or shown
-  as tags for checking, with ⚠ on typos. See
-  [SCRIPT-DIRECTIVES.md](SCRIPT-DIRECTIVES.md).
-- **Nine script slots** (the numbered buttons, or Ctrl+1 to 9), each
-  remembering its place, even after a restart.
-- Drag and drop, built-in sample scripts, and slide-cue phrases from a
-  `cues.yaml` file.
-- **Script checker** on the command line (`npm run check-script`), for AI
-  script pipelines.
+## Scrolling and pacing
 
-## Controls
-
-- **Control bar** that hides while you read: nine slots, restart, play/pause,
-  On air, speed, size, backing, independent mirror-axis icons and explicit Steady/Voice switching. Tools,
-  Settings and Help stay reachable on narrow windows.
-- **Edit beside Tools** for direct script/source access; the Tools dropdown
-  follows its toolbar button and stays within the window edges, including
-  mirrored views.
-- **Movable Settings and Help windows:** drag their native title bars across
-  screens; each remembers its position and size and stays upright when the
-  prompter is mirrored. Settings keeps a stable frame with named sections instead of
-  scrolling or automatic pages. Apply stays open; Save & close, Cancel and native Close preserve
-  the existing draft checks. Quitting with a Settings draft asks before
-  discarding it. Opening the same window again keeps the draft and brings it
-  forward. Both stay above the prompter and follow **Hide from capture**.
-- **Movable voice-command help:** “Prompter, what can I say?” opens a separate
-  window with a draggable title bar, saved geometry and stable grouped tabs.
-- **Mirroring in one Settings topic:** **Reading > Screens and mirroring** holds both
-  beam-splitter toggles. The toolbar mirrors stay available and in sync.
-- **OBS under Controls in Preview 06:** recorded-slate
-  preparation shows prerequisites, progress, readiness and errors in Settings.
-- **Clear OBS button states:** dark controls with readable enabled/disabled
-  labels and a visible focus outline. Settings and help stay above their
-  prompter owner, including fullscreen.
-- **Visible slider labels:** Speed/Response, Text size and Background remain
-  identifiable at a glance. On-air BG identifies the background used on air;
-  tooltips explain the controls.
-- **Files menu (☰)** for scripts, recordings, edit packs, settings-file
-  import/export, a labelled Settings entry and Quit, with shortcuts shown. Recording helpers and quick
-  adjustments live under Tools.
-- **Protected sample scripts:** inspect and copy their read-only source; Save a
-  copy makes an editable version. Clearing any loaded slot asks for confirmation
-  and leaves the saved script intact.
-- **Stable keyboard and voice help:** grouped topics share a fixed frame;
-  disabled-feature help stays hidden.
-- **Check for updates** on Settings > About, and a quiet check at start-up
-  (can be turned off). Nothing downloads by itself.
-- **Preview 06 Settings:** eight areas, named sections and permanent forms. File operations stay
-  in Files; settings still import/export as JSON or XML.
-- **Live Tools** has Prepare, Adjust and During take. Its changes are immediate;
-  Settings has a separate Apply/Cancel draft.
-- **Settings** with **Apply** (save and stay) and a prompt before closing with
-  unsaved changes; **Quit Sightline** always at the foot of the ☰ menu; and a
-  **check for updates** on Settings > About.
-- **On air** on the control bar, mirror axes in **Tools > Spacing and mirror**,
-  and quick panels for text/colour, take display and voice/microphone.
-- **Floating button pad** that stays on top, even over the prompter, and flips
-  with the mirror setting. Select up to 36 functions, drag or use Earlier/Later
-  to reorder, choose columns and apply Compact, Reading, Studio or Framing & checks presets.
-  **Controls > Pad** and the pad's Customise button share one editor.
-- **Phone remote:** scan a QR code and your phone gets big buttons, over your
-  own Wi-Fi, protected by the code in the QR. It follows the pad's button
-  selection and order with larger touch targets. Both reuse Stream Deck
-  artwork and actions; hardware profiles stay independent.
-  Version 1.1.0 adds a compact landscape layout: four or six columns
-  with the same order, two rows for Studio, and browser-safe footer spacing.
-  Taps have separate sending/accepted feedback, with clear refusal or missing
-  acknowledgement states and no automatic command replay.
-- **Shared operator controls:** pad and phone offer local Eyes/Outline/Compare
-  guide panels, eye locking, ideal visibility/restoration, session checks and
-  listening off/on or recovery. Existing layouts stay intact. Finish recording
-  uses a default one-second hold with server-side duration checks and single-use
-  tickets; connection or recording changes cancel it. Its pad/phone preference
-  is separate from Stream Deck's per-key choice.
-- **Session capture override:** Debug can temporarily permit every
-  window, including the head guide, in screenshots and demo recordings.
-  A persistent warning and phone notice show when it is active; turning it
-  off restores the latest normal rules. Quitting resets it.
-- **Listening recovery:** health checks restart interrupted capture or speech
-  processing without moving the script or changing its hold. Silence and
-  intentional listening-off do not cause restarts. Retries are bounded, with
-  a manual Restart listening button and live state. Optional local word tracing
-  lives in **Settings > Debug**, alongside support logs. It is off by
-  default, independent of Debug mode, and warns about nearby conversation.
-- **Control window** for a second screen: an upright, live copy of the script
-  with big buttons. Click any line to move the prompter there. Its broadcast
-  row sets the prompter's on air, text size, backing, mirroring, eye-line and
-  voice or steady scrolling, and shows the sound-check meter, even during a take.
-- **Presenter clickers that start and pause** as well as jump sections, **USB
-  foot pedals** and **game controllers**.
-- **Stream Deck plugin** (coming to the Elgato Marketplace): keys that light up
-  to match the prompter (▶ or ❚❚, On air, the open slot, the time left), keys for scroll mode, the
-  pad and the control window, descriptions and optional profiles for AI/MCP setup,
-  dials on the Stream Deck + and the three-pedal Stream Deck Pedal, with a
-  sample profile for every model. See
-  [Remotes and second screens](guide/06-remotes-and-screens.md#stream-deck).
-- **Stream Deck 0.2.0 frozen test build:** listening off/on or recovery, session
-  status and detailed error help, optional hold-to-finish and guide dials for
-  eye centre/level, independent edges, proportions and visibility levels.
-  Eye lock fixes the reference while shaping. Two opt-in Guide profiles
-  cover + and + XL. Existing buttons remain supported; new controls need
-  the matching app capabilities and are not in the installed RC14/plugin 0.1.9.
-- A keyboard shortcuts panel (F1) and an About page.
-- **Windows installer reading options:** separate finish-page tick boxes open
-  the release notes and Getting Started guide in your browser. Both are bundled,
-  show the installed version and work offline; neither requires launching Sightline.
-
-## Recording setups
-
-- **Eye-anchored head fitting:** independent Actual width/height controls,
-  an eye-position lock, saved Ideal proportions and additive guide dimensions
-  in the edit pack. The guide stays a separate manual overlay.
-
-- **Mirroring** horizontally, vertically or both (the original flipped
-  horizontally), with the whole display, controls included, mirrored so it all
-  reads correctly in the glass.
-- **Prompter monitor:** choose a monitor (the Elgato Prompter shows up by name)
-  and the prompter opens full screen there. In Preview 09, dragging it to a
-  different screen clears the pinned choice and restores a centred normal
-  window at 75% of that screen's usable width and height.
-- **Eye-line mode:** a narrow strip right under the webcam.
-- **Mirroring in one click:** ↔ and ↕ toolbar icons, also in Reading > Screens and mirroring.
-- **Hide from screen sharing and recordings**, and **click-through** so clicks
-  reach the app behind (Ctrl+Shift+X from anywhere).
-- Windows that stay reachable when a monitor is unplugged or the resolution
-  changes.
+Choose Scroll, Voice or Notes / page mode. Use the controls that apply to that
+mode, navigate sections and markers, pause or restart, and monitor pacing.
+Voice following uses local recognition after the model download, with optional
+Deepgram. Recognition and pacing are estimates, not a transcript of record.
 
 ## Reading and accessibility
 
-- Sentence highlight, a **focus band** that dims the lines away from the
-  reading line, and a **text edge** for reading over busy backgrounds.
-  Preview 09 leaves production comments and inline directions undimmed by
-  the focus band; their own typography and margin fading still apply.
-- **Colour themes:** standard, yellow on dark, high contrast and soft cream,
-  in the dedicated **Reading > Theme and background** topic.
-- **Fonts** including Atkinson Hyperlegible, OpenDyslexic and Verdana, with a
-  separate **heading font** and **heading size**, so big headings stay
-  readable with a dyslexia font.
-- **Preview 06 text styling:** **Reading > Text and directions** gives all four
-  text types independent font, size, colour, bold, italic and line spacing.
-  Inline visibility is independent of size. Use theme resets a colour;
-  Apply keeps the appearance draft. Production notes hide
-  during delivery, including their quoted contents; quoted spoken words in
-  inline directions keep the script style and remain spoken.
-- Independent text opacity, background opacity and text brightness, margins
-  that fade out at the edges and alignment. **Reading > Text and directions** has all four independent spacing controls;
-  **Reading > Prompter layout** contains margins, alignment and reading line.
-  Quotes to read aloud retain script
-  spacing. Settings uses aligned rows with space between labels and controls.
+Keep the script translucent over a call, slides or a camera picture. Configure
+speech, headings, cues and comments independently: font, size, colour, bold,
+italic and line spacing. Choose a theme or save your current reading appearance.
+Adjust backing colour/opacity, margins, reading line, focus band, markers,
+eye-line strip and mirroring. Themes exclude device credentials and scripts.
+
+## Prepare to record
+
+Align manually or use the bundled local face/eye-position detector. The
+preparation window and Ctrl+Shift+H guide share a fixed target, Lock current
+and recording reference. Distance feedback accounts for custom guide width
+and side adjustments; it compares apparent face size rather than metres.
+
+The guide's bottom toolbar hides to a recoverable hover tab and stays above
+the prompter. Pin, lock/unlock, fullscreen, Move guide, Adjust and Guide off
+remain accessible. Calibration stays in Guide adjustments until you choose
+the full workflow. Guide off releases a picture running only for the guide.
+
+Measure room and voice levels, listen to a real short test and explicitly save
+the reviewed reference. Quiet/noisy results are advisory; unusable input needs
+correcting. Restore the reference after a break and recheck the real picture
+and sound. Manual placement and the production capture route remain your checks.
+
+## Controls
+
+Use keyboard shortcuts, custom clickers/pedals, a game controller, floating pad,
+phone remote or upright control window. Optional interfaces have enable gates.
+Mapping lists show every assignment and pad layouts show every configured
+button, with drag and Earlier/Later ordering. Complete lists scroll.
+
+### Stream Deck
+
+The 0.2.0 companion supplies keys, supported dials and pedal actions, starter
+profiles, status feedback and connection/version checks. Its source repository
+remains private; the free installer accompanies the app release. Marketplace
+review is separate. Configuration and capabilities vary by device/action.
+
+## Recording setups
+
+### OBS
+
+One Connections home contains Connection, Recording control and Profile and
+scenes subtabs. Connection and recording state are distinct. Explicit recording
+commands and optional linked prompting require recording permission. Recorded
+slates, markers and file/clock observations support the handover.
+
+Choose an OBS calibration scene without switching the programme scene or
+starting a recording. OBS-only controls hide when unavailable or disabled.
+Temporary virtual camera capture preserves an existing virtual output and
+stops only one Sightline started; a lost connection can require manual checking.
+The optional setup assistant reviews a separate profile/scene plan before applying it.
+
+## AI-assisted production
+
+Your preferred AI can write a structured script from the published brief.
+The optional local API and stdio MCP adapter let authorised clients inspect
+status, load scripts, select slots, control prompting and access recording
+information. MCP is read-only by default, with separate script/prompt/record
+grants. It is not a cloud MCP endpoint or automatic editor.
+
+Take logs and edit packs retain sections, retakes, keeper choices, markers,
+script snapshots, available recorder references and optional scratch audio.
+Live word alignment, coverage, pace and draft captions need review against
+the recording. They are navigation/editing aids, not dependable word-level cuts.
+
+## Voice
+
+Use configured “Prompter” commands for prompting, navigation, markers and take
+choices. Finish/end, recording on/off/pause/resume and section/restart aliases
+are supported where the corresponding feature is enabled. Recorder permission
+and confirmed state remain important. Background noise and difficult phrases
+can still affect recognition; use another controller when needed.
 
 ## Help and installers
 
-- **Optional OBS integration** (1.1.0 candidate): **Settings > Recording > OBS connection**
-  and **OBS recording**,
-  off by default; status-only or recording control; Record take and Finish
-  recording from Sightline, its control window, phone and voice commands;
-  optional recording chapters and file references in the take log.
-  See [OBS setup](guide/11-obs.md). Does not change normal Play or On air.
+Getting started is prominent; the welcome tour and focused samples demonstrate
+safe recording practice. Help, tooltips, shortcuts, offline user guide and this
+feature reference accompany the build. Optional component checks and MCP setup
+live beside their interfaces. Voluntary coffee reminders do not restrict use.
 
-- [Privacy, terms, accessibility and voluntary support](POLICIES.md), linked
-  from About and the user guide, covering Sightline and its Stream Deck plugin.
-- **User guide** with screenshots, built into the app (Shift+F1) and on GitHub.
-- **Installers** for Windows, macOS (Apple silicon and Intel) and Linux
-  (AppImage and .deb), built on GitHub for every release.
-- Your Electron Teleprompter settings, slots and scripts are copied across the
-  first time Sightline starts.
+Installers target Windows, Mac (Apple silicon/Intel) and Linux. Mac bundles use
+verified free ad-hoc signing and are not notarised. Read the installation guide.
+Keep using your usual recorder for production video, and verify device support,
+capture exclusion and actual picture/sound sync on your setup.

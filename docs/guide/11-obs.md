@@ -14,7 +14,7 @@ connection settings or losing the connection marks a previous pass for recheck.
 A connection pass does not validate recorded picture or sound: use
 [Prepare to record](16-prepare-to-record.md) to review a real test.
 
-## Linked recording in the next unpublished preview
+## Linked recording
 
 Continuous recording is the default: prompting stops and retakes leave OBS
 running. Opt in with **Connections > OBS integration > Recording control > Link recording to prompting**
@@ -42,9 +42,9 @@ OBS topics are under **Settings > Recording**. On **OBS recording**,
 **Prepare recorded slate** explains any unmet prerequisite, then displays
 progress, readiness or errors beside the button. Apply permission changes first.
 
-**Published baseline: Sightline 1.1.0 + Stream Deck 0.2.0.** Linked recording,
-explicit record on/off/pause/resume commands and the new pill belong to the
-next unpublished preview. Check your build before testing them. Use the
+**Sightline 1.2.0 + Stream Deck 0.2.0.** Linked recording,
+explicit record on/off/pause/resume commands and the recording pill are included.
+Use the
 [acceptance walkthrough](14-acceptance-test.md) for your recording route.
 
 Sightline connects to OBS Studio's built-in WebSocket interface. OBS handles
@@ -60,13 +60,13 @@ separate from a confirmed WebSocket connection and recording permissions.
 For the session checklist and which files to send to Production, follow
 [From recording to the editor](12-production-handover.md).
 
-![The OBS settings tab](images/settings-preview05-obs.png)
+![The OBS settings tab](images/settings-1.2.0-obs.png)
 
 ## Connect once
 
 1. In OBS Studio 28 or later, open **Tools > WebSocket Server Settings**.
    Enable the server and authentication. Note its port and password.
-2. In Sightline, open **Settings > Controls > OBS integration**. Tick **Enable OBS integration**.
+2. In Sightline, open **Settings > Connections > OBS integration**. Tick **Enable OBS integration**.
 3. Use **127.0.0.1** for OBS on this computer. Enter OBS's port (normally
    **4455**) and password, then click **Apply**.
 4. Click **Test saved connection**. Test uses the saved values; apply any
@@ -96,7 +96,7 @@ the same information in its control window. A lost connection shows
 RC11 gives **Record take** and **Finish recording** explicit dark styles with
 readable disabled labels and a clear keyboard-focus outline.
 
-In **Settings > Controls > OBS recording control**, enable recording controls to get **Record take** and **Finish recording**
+In **Settings > Connections > OBS recording control**, enable recording controls to get **Record take** and **Finish recording**
 beside the script, in the control window and on the phone remote:
 
 - **Record take** checks OBS first. If OBS is stopped, it asks it to record,
@@ -137,7 +137,7 @@ enabled. It uses OBS's included Browser source, not the protected head guide.
 
 1. Stop recording and streaming in OBS.
 2. In **Settings > Recording > Takes > Slate**, choose **Flash and beep** or **Flash**.
-3. In **Settings > Controls > OBS recording control**, tick **Include the slate in the OBS recording**,
+3. In **Settings > Connections > OBS recording control**, tick **Include the slate in the OBS recording**,
    then **Apply** and **Prepare recorded slate**.
 4. Preparation adds or updates only **Sightline recorded sync** above the
    current scene. It leaves your camera, microphone, profile and scene choice
@@ -146,7 +146,7 @@ enabled. It uses OBS's included Browser source, not the protected head guide.
 5. Use **Record take**. Keep the normal scratch audio enabled for an independent
    microphone reference. Check a short recording before the full session.
 
-![OBS recording permissions, chapters and recorded-slate preparation](images/settings-preview05-obs-recording.png)
+![OBS recording permissions, chapters and recorded-slate preparation](images/settings-1.2.0-obs-recording.png)
 
 Prepare again after restarting Sightline or changing scenes. The status line
 shows whether the source is ready. Hidden, moved, cropped or muted sources

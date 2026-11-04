@@ -99,7 +99,7 @@ const html = `<!doctype html>
 <button type="button" id="reset">Clear filters</button></div>
 <p id="result" class="result" role="status" aria-live="polite">${ titles.length } capabilities · ${ sections.length } groups</p>
 <div class="legend"><p><span class="badge included">Included</span> Part of the app or named companion.</p><p><span class="badge optional">Optional</span> Enable, configure or download.</p><p><span class="badge dependent">Dependent</span> Needs an external tool or service.</p><p><span class="badge limited">Limited</span> Read the qualification.</p><p><span class="badge not-included">Not included</span> Outside this build.</p></div>
-<p class="reference">“Preview addition” identifies unpublished changes. Requirements still apply to features labelled Included. Every group links to its instructions.</p>
+<p class="reference">${ publicationStatus === "preview" ? "Preview additions identify unpublished changes." : "This reference describes the named released build." } Requirements still apply to features labelled Included. Every group links to its instructions.</p>
 ${ body }
 <div id="empty" class="closing" hidden><h2>No matching features</h2><p>Try a shorter search or clear the group and availability filters.</p></div>
 <footer class="closing"><h2>Record the setup behind the verdict</h2><p>Note the OS, app/plugin versions, speech engine, camera, microphone, recording format and tested control surfaces. Measure recognition, latency and sync on that setup. A feature tick is not a measured result.</p><p>The CSV provides space for reviewer notes. This grid makes no competitor, performance-ranking or endorsement claim.</p><button type="button" id="print">Print full grid / save PDF</button></footer>

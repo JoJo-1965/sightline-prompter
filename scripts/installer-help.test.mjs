@@ -8,12 +8,13 @@ const out = await fs.mkdtemp( path.join( os.tmpdir(), "sightline-installer-help-
 await buildInstallerHelp( process.cwd(), out, "1.1.0-rc.1" );
 let checked = 0;
 const broken = [];
+const grid = JSON.parse( await fs.readFile( "docs/FEATURE-GRID.json", "utf8" ) );
 for ( const file of await fs.readdir( out, { recursive: true } ) ) {
 	if ( !file.endsWith( ".html" ) ) continue;
 	const html = await fs.readFile( path.join( out, file ), "utf8" );
 	if ( file.replace( /\\/g, "/" ) === "docs/FEATURE-GRID-search.html" ) {
 		assert.ok( html.includes( 'type="search"' ), "The offline feature reference retains working search" );
-		assert.ok( html.includes( "1.1.0" ), "The reference identifies its build" );
+		assert.ok( html.includes( grid.buildVersion ), "The reference identifies its reviewed build independently of the installer fixture" );
 	} else {
 		assert.ok( html.includes( "Installed version 1.1.0-rc.1" ), file );
 		assert.ok( !/<script[\s>]/i.test( html ), "Guide pages need no JavaScript" );

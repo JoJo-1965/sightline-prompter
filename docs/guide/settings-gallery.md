@@ -1,6 +1,36 @@
 # Settings screenshot gallery
 
-## Current RC 5 guide controls
+## Sightline 1.2.0
+
+Fresh captures from the packaged Windows app, 4 November 2026. Settings uses
+the approved left navigation, central controls and persistent reading example.
+The native checks cover all 34 sections at five window sizes. Demonstration
+assignments and unapplied integration switches show available configuration;
+they do not claim a connected physical device. Settings images are rendered
+at 1440 × 900 with 2× pixel density.
+
+![Current recording setup and reviewed-test status](images/settings-1.2.0-checklist.png)
+
+![Current text controls with independent formatting tabs](images/settings-1.2.0-typography.png)
+
+![Current themes and editable backing](images/settings-1.2.0-background.png)
+
+![Current pad layout with every button](images/settings-1.2.0-pad.png)
+
+![Current game-controller assignment list](images/settings-1.2.0-gamepad.png)
+
+![Current OBS connection and recorder status](images/settings-1.2.0-obs.png)
+
+![Current MCP, AI, and API permissions](images/settings-1.2.0-api.png)
+
+![Recoverable bottom head-guide toolbar](images/guide-toolbar-expanded.png)
+
+![Collapsed guide tab remains available](images/guide-toolbar-collapsed.png)
+
+The rest of this page preserves earlier reviews as labelled history.
+Current instructions and navigation refer to 1.2.0.
+
+## Archived RC 5 guide controls
 
 The native implementation included in RC 5 moves guide controls to a small
 bottom toolbar above the prompter. Hover the retained tab to recover it.
@@ -11,7 +41,7 @@ is retained from RC 4.
 
 ![Recoverable collapsed guide tab](images/guide-toolbar-collapsed.png)
 
-## Current RC 4 changes
+## Archived RC 4 changes
 
 Actual packaged Windows captures at 1440 × 900 with 2× pixel density,
 4 November 2026. These supersede the corresponding earlier pages below.

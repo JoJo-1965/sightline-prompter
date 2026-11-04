@@ -1,6 +1,6 @@
 # Writing scripts
 
-## Production notes in the next preview
+## Production notes
 
 Use `<!-- Check framing and remember to press Record. -->` for preparation
 and edit instructions in Markdown/HTML scripts. They show before starting and
@@ -18,7 +18,7 @@ Ordinary scripts and retakes need no new directives.
 
 ## Script health before you read
 
-In the next candidate, **Script health…** on the editor toolbar opens the
+In Sightline 1.2.0, **Script health…** on the editor toolbar opens the
 **Script health** tab of **Script & rehearsal review**. It checks your current
 editor text, including unsaved changes, without saving or rewriting it.
 Outside the editor, use **Tools > Script & rehearsal review…** and select

@@ -17,7 +17,7 @@ Scripted voice or room checks show the sound meter automatically, then return
 to your previous visibility choice. A yellow Section pill shows the current
 section alongside recorder status; explicitly paged Notes show the current page.
 
-## Recording commands in the next preview
+## Recording commands
 
 With OBS integration and recording controls enabled, say the wake word, then
 **record on**, **record off**, **record pause** or **record resume**. Off and
@@ -44,7 +44,7 @@ In voice mode the prompter listens to you and keeps the words you're saying on
 the reading line. Speed up, slow down, pause to think or ad-lib a line, and it
 waits for you and then catches up.
 
-![Settings > Voice > Speech engine](images/settings-preview05-engine.png)
+![Settings > Voice > Speech engine](images/settings-1.2.0-engine.png)
 
 ### Speech recognition on this computer (the default)
 
@@ -55,8 +55,8 @@ The first time you open Sightline, a small note at the bottom right offers it:
 choose **Download**. Or open **Settings > Voice > Speech engine** (or the Voice panel) and
 click **Download speech model**.
 It's a one-off download of about 73 MB, and progress is shown as it goes.
-In the next candidate, the same Voice page also has Reinstall and Remove.
-**Settings > Components** lists the model and the optional AI kit,
+In Sightline 1.2.0, the same Voice page also has Reinstall and Remove.
+**Settings > Connections > Apps and add-ons** lists the model and the optional AI kit,
 with their status and maintenance controls. Stop prompting and recording
 before repairing/removing the model; a failed repair keeps the old copy.
 After that, voice scrolling works with no internet connection at all.
@@ -114,7 +114,7 @@ Names and unusual words are what speech recognition gets wrong most:
 *Siobhan* heard as *shivawn*, *Sightline* as *site line*, and sometimes the
 wake word or a command. **Settings > Voice > Your words** fixes them.
 
-![Settings > Voice > Your words](images/settings-preview05-words.png)
+![Settings > Voice > Your words](images/settings-1.2.0-words.png)
 
 - **Match words that sound alike** (on unless you turn it off): a word heard
   that isn't in the script but sounds like a longer script word, starts with
@@ -227,8 +227,8 @@ every recognition error. This option saves no audio.
 | **close** (or cancel, never mind) | Hides that list |
 | **record take** (or start recording) | Optional OBS integration: confirm recording, then start prompting. Requires enabled OBS recording controls |
 | **finish recording** (or stop recording, stopped recording, end recording, finish, end) | Optional OBS integration: stop prompting and finish the OBS recording |
-| **record on / record off** | Next preview, with OBS recording permission: explicitly start or finish recording; off holds prompting |
-| **record pause / record resume** | Next preview: pause or resume the existing recording; pause holds prompting. Check your format supports pausing |
+| **record on / record off** | With OBS recording permission: explicitly start or finish recording; off holds prompting |
+| **record pause / record resume** | When enabled: pause or resume the existing recording; pause holds prompting. Check your format supports pausing |
 
 In RC10, **“Prompter, what can I say?”** opens a separate upright window.
 Drag its title bar onto another screen; its position and size are remembered.

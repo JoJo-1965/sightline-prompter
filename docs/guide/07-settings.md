@@ -1,8 +1,8 @@
 # Settings
 
-This source guide describes **1.2.0 RC 4**, based on the approved
+This source guide describes **Sightline 1.2.0**, based on the approved
 interactive demo and Joanne's combined Connections/recording feedback.
-For the released app, use the guide bundled with its installer.
+The same guide is bundled with the installer and available from Help.
 
 Open **Settings** on the toolbar, **Files (☰) > Settings**, or **Ctrl+,**
 (**Cmd+,** on Mac). Settings opens in an upright, movable window. It retains
@@ -171,7 +171,7 @@ after a reference exists. The right-hand manual diagram is not camera tracking.
 Use **Adjust guide** to fit eye centre/level, then top/bottom and sides.
 See [head guide and capture limits](04-layout-and-display.md).
 
-RC 5 restores the guide toolbar at the bottom of its
+Sightline 1.2.0 restores the guide toolbar at the bottom of its
 monitor. It collapses to a **Head guide ▴** tab; hover or click the tab to bring
 the controls back. **Pin controls** keeps them visible and **Auto-hide** releases
 the pin. **Adjust**, **Guide off**, **Move guide**, fullscreen and click-through
@@ -179,14 +179,14 @@ lock/unlock remain available. The toolbar has its own small window layer above
 the prompter, including while the guide is locked or fullscreen. Turning the
 guide off removes the toolbar and its tab. Existing guide picture bounds stay fixed.
 
-![Expanded bottom head-guide toolbar, RC 5](images/guide-toolbar-expanded.png)
+![Expanded bottom head-guide toolbar, Sightline 1.2.0](images/guide-toolbar-expanded.png)
 
 ![Collapsed Head guide tab that reveals the controls on hover](images/guide-toolbar-collapsed.png)
 
 ## Voice
 
 **Speech engine** has an enable switch, engine choice, readiness and service
-key controls. Manage the offline model in **Components > Installed components**.
+key controls. Manage the offline model in **Connections > Apps and add-ons**.
 The local engine runs on the computer; Deepgram is an optional online service.
 
 **Microphone** has a separate enable switch, input selector and explicit
@@ -244,7 +244,7 @@ Disabling an interface does not uninstall its software.
   clients can use it; the supplied AI kit commands additionally need the
   optional kit and a suitable Node.js installation.
 
-**Components > Installed components** selects the offline model, AI kit, Node.js
+**Connections > Apps and add-ons** selects the offline model, AI kit, Node.js
 readiness or OBS installation. External apps keep their own update process.
 **Restore defaults** confirms a restart into onboarding; components, scripts,
 recordings and retained service keys are not uninstalled.

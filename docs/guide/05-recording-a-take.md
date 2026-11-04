@@ -1,6 +1,6 @@
 # Recording a take
 
-## Preparation in the next preview
+## Preparation
 
 **Slate at the start of each take** uses visible Off, Flash and beep, and Flash only
 choices. A local flash alone is a rehearsal cue; use a confirmed recorded
@@ -47,7 +47,7 @@ Rehearsing? **Use these times as targets** writes each time into the script as
 
 ## Rehearsal coaching
 
-The next candidate adds **Rehearsal** in **Tools > Script & rehearsal review…**.
+Sightline 1.2.0 includes **Rehearsal** in **Tools > Script & rehearsal review…**.
 Pause prompting before opening it. Choose a finished take to see speaking and
 overall pace, its target, sentence coverage and logged rereads. The latest
 finished take is selected first. The take summary has **Rehearsal coach…**;

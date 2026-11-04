@@ -1,79 +1,63 @@
 # Sightline Prompter user guide
 
-This source guide follows the **1.2.0 RC 5 candidate**, documentation revision 15.
-The published 1.1.0 installer retains its bundled guide and previous layout.
-Use the preview folder/build manifest to identify the test package.
+**Sightline 1.2.0 · Stream Deck companion 0.2.0 · documentation revision 16**
 
-Sightline Prompter is a see-through teleprompter for speakers, content creators
-and learning teams recording to camera. Choose voice following or a steady
-pace, keep your words near the lens and collect take information for the edit.
-It is voice controlled too. Your favourite AI can prepare scripts and, through
-an authorised local agent, configure and control it. Optional script directions
-steer its operation. AI remains optional. See
-[Working with AI](09-working-with-ai.md).
+This is the canonical web/wiki documentation and the source of the guide bundled
+with the installer. A separate GitHub wiki is intentionally disabled to avoid
+diverging copies. Historical RC and preview notes are kept in
+[development history](../CHANGELOG-HISTORY.md), not mixed into these instructions.
 
-For a detailed comparison of the current preview's capabilities, see the
-[reviewer feature grid](../FEATURE-GRID.md), including separate Stream Deck
-and OBS sections, available options, dependencies and qualifications.
+Sightline keeps your script near the lens while showing the call, slides or
+camera picture behind it. Choose steady scrolling, voice following or Notes /
+page mode. Voice commands, controllers and your preferred AI are optional.
+Keep your normal production recorder; Sightline adds prompting and take context.
 
-The script floats over your screen, close to the webcam, and scrolls at a
-steady pace or follows your voice.
+[Download 1.2.0](https://github.com/JoJo-1965/sightline-prompter/releases/tag/v1.2.0)
+· [Grouped release notes](../RELEASE-1.2.0.md)
+· [Feature grid](../FEATURE-GRID.md)
+· [Roadmap](../../ROADMAP.md)
 
-**Current release: Sightline 1.1.0 + Stream Deck 0.2.0.** This guide covers
-OBS recording, the manual head guide, shared controls and regrouped Settings.
-[Download the app and plugin](https://github.com/JoJo-1965/sightline-prompter/releases/tag/v1.1.0).
-The plugin source remains private; Marketplace listing is pending. Test your
-own recording route using the workflow walkthrough. Earlier
-**1.0.7-rc.1–rc.14** names below are test history; no public 1.0.7 release was made.
-RC1 established the feature baseline; RC2 refreshes the bundled documentation
-and adds the reusable acceptance samples. RC3 adds compatibility reporting in
-Sightline and the plugin. These are local test builds, not public releases.
-RC9 adds optional offline release notes and Getting Started reading at the end
-of Windows installation, independently of opening the app.
-RC10 fixes the phone QR in Settings, moves mirroring to Screens and makes
-voice help movable. Helper windows now follow Hide from capture.
+## Start or return to a recording
 
-![The prompter with the control bar, mid-take](images/running.png)
+Start with **Files > Sample scripts > Start here: Sightline feature tour** or
+**Settings > Getting started > First setup**. The tour works without optional
+devices. Before a take, open **Prepare to record**, align the guide, check audio,
+review a short test and save a reference. Restore that reference after a break.
+
+![The prompter and control bar](images/running.png)
 
 ## Contents
 
-[Prepare to record](16-prepare-to-record.md) adds local position feedback,
-audio measurement, a real test clip and a fixed reference for returning after
-a break. This is an unpublished preview addition.
+1. [Getting started](01-getting-started.md): installation, security warnings, first setup and a first read
+2. [Writing scripts](02-scripts.md): file types, sections, inline cues, production notes and directives
+3. [Scrolling and voice](03-scrolling-and-voice.md): reading modes, voice following and commands
+4. [Layout and display](04-layout-and-display.md): fonts, backing, margins, mirroring and reading aids
+5. [Recording a take](05-recording-a-take.md): sections, retakes, pacing and take choices
+6. [Remotes and second screens](06-remotes-and-screens.md): pad, phone, keyboard, game controller and Stream Deck
+7. [Settings](07-settings.md): named sections, controls, previews and save behaviour
+8. [Shortcuts and troubleshooting](08-shortcuts-and-troubleshooting.md): input help and recovery
+9. [Working with AI](09-working-with-ai.md): script writing, local control and edit-pack review
+10. [Setting up your AI](10-setting-up-your-ai.md): installed kit and local API configuration
+11. [Recording with OBS](11-obs.md): connection, permissions, linked prompting, states and slates
+12. [Production handover](12-production-handover.md): test, sync reference, takes and files for the editor
+13. [Settings screenshot gallery](settings-gallery.md): current controls, destinations and example states
+14. [Recording acceptance walkthrough](14-acceptance-test.md): checks on your actual camera, recorder and controls
+15. [OBS setup assistant](15-obs-setup.md): review a separate profile/scene plan without replacing your setup
+16. [Prepare to record](16-prepare-to-record.md): shared guide, local feedback, audio/test and saved reference
+17. [Configure MCP](17-configure-mcp.md): client examples, isolated profiles, permissions and revocation
+18. [Download and installation help](18-installation.md): Edge Keep, Windows SmartScreen and macOS Open Anyway
 
-1. [Getting started](01-getting-started.md): installing it (and getting past the security warnings), the control bar, opening a script, your first take
-2. [Writing scripts](02-scripts.md): file types, sections, notes to yourself and instructions to the app
-3. [Scrolling and voice](03-scrolling-and-voice.md): steady pace, voice scrolling, the sentence highlight
-4. [Layout and display](04-layout-and-display.md): text size, backing, the reading line, mirroring, reading aids
-5. [Recording a take](05-recording-a-take.md): the pacing light, take summary, markers, talking points
-6. [Remotes and second screens](06-remotes-and-screens.md): the pad, control window, phone remote, prompter monitor
-7. [Settings](07-settings.md): every tab explained
-8. [Shortcuts and troubleshooting](08-shortcuts-and-troubleshooting.md)
-9. [Working with AI](09-working-with-ai.md): AI-written scripts, letting an AI run the prompter, the take log and edit pack, and what's coming next
-10. [Setting up your AI](10-setting-up-your-ai.md): Claude Code, Codex, ChatGPT, Claude or Gemini, and the AI and remote control settings
-11. [Recording with OBS](11-obs.md): connection, permissions, Continuous mode and next-preview linked recording
-12. [Production handover](12-production-handover.md): preparation, framing references, retakes and the files to hand over
-13. [Settings screenshot gallery](settings-gallery.md): grouped controls, named destinations and contextual help; preview images labelled
-14. [Recording acceptance walkthrough](14-acceptance-test.md): published baseline, next-preview checks and recording samples
-15. [OBS setup assistant](15-obs-setup.md): review a separate profile/scenes plan, preserve existing setups and verify 4K, clean audio and sync
-16. [Prepare to record](16-prepare-to-record.md): shared head guide, OBS calibration pictures, audio, a reviewed test and saved reference
-17. [Configure MCP](17-configure-mcp.md): installed kit, client configuration, preview profiles and access grants
+Open this guide from **Help > User Guide** or the **?** menu. **F1** shows the
+enabled shortcuts. Use Settings search to find a control; use the searchable
+feature reference to compare capabilities and requirements.
 
-Inside the app, open this guide from **Help > User Guide** or the **?** menu.
-**F1** shows the keyboard shortcuts.
+## Limits and support
 
-**Source preview:** the next update adds production comments, saved Actual
-recording references and optional linked recording. Start with **Files > Sample
-scripts > Recording preview** and the acceptance checklist. These features are
-unpublished. This guide is also the canonical web documentation; a separate
-GitHub wiki is not enabled, avoiding a second copy of the instructions.
+Local recognition works offline after the model download; framing detection
+is bundled. Optional online services have their own terms. Live word timings
+and captions are estimates. The preparation clip does not prove your production
+recorder's capture or lip sync. Mac builds are ad-hoc signed and unnotarised.
 
-[Privacy, terms, accessibility and voluntary support](../POLICIES.md)
-explain the microphone and local files, online services, your rights and
-Joanne's tip jar. The same policies are linked from **Settings > About**.
-
-**Next preview:** the existing coffee note repeats every 10–15 launches,
-with a random saved interval. It keeps its 30-second startup delay and skips
-reading, on-air and open-Settings sessions. A skipped reminder remains due for
-a later launch. Closing it leaves Sightline fully usable; support is voluntary.
-The packaged UAT 09 retains the previous one-time schedule.
+[Privacy, terms, accessibility and voluntary support](../POLICIES.md) explain
+microphone use, local files, online services and Joanne's tip jar. The existing
+coffee note recurs at a saved interval of 10–15 launches, deferring while busy.

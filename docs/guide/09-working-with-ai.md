@@ -58,7 +58,7 @@ before you see it.
 
 ## 2. Record: let the AI run the prompter
 
-On **Settings > Controls > AI & API**, tick **Let an AI assistant or script on this
+On **Settings > Connections > MCP, AI, and API**, tick **Let an AI assistant or script on this
 computer load scripts and control the teleprompter**. Sightline then listens
 on `127.0.0.1` (this computer only) and writes its address and a secret token
 to `remote-control.json` in its settings folder:
@@ -80,7 +80,7 @@ that file and sends each request with the header
 | `GET /events`     | A live stream (server-sent events) of the state, sent again each time something changes: playing, on air, mirror, slot, section, time left, speed, backing |
 | `POST /slot`      | Switch to a slot `{ slot }`                                          |
 | `POST /stream-deck/hello` | Local plugin version report `{ pluginVersion, protocolVersion }`; requires Stream Deck enabled, works with its restricted key, grants no settings or OBS permissions |
-| `POST /settings`  | Change display settings and the shared pad layout (next candidate)    |
+| `POST /settings`  | Change display settings and the shared pad layout (when enabled)    |
 | `GET /recordings` | Every recording session, newest first, with its id                  |
 | `GET /recording?id=…` | One session: its takes and which ones the edit uses            |
 | `GET /recording/pack?id=…` | A session's edit pack, as `{ files: { name: contents } }` |
@@ -144,7 +144,7 @@ up with the recording from the first beep or flash.
 
 ## Review a rehearsal
 
-The next candidate's edit pack adds `rehearsal-coach.json`. The recordings
+The edit pack includes `rehearsal-coach.json`. The recordings
 API includes the same report as `coach` when you read a saved recording.
 From the source folder or installed AI kit:
 

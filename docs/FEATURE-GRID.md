@@ -1,15 +1,14 @@
 # Sightline Prompter feature grid
 
-**Review basis: RC 5 preview, documentation revision 15, 4 November 2026.**
-**Build version:** `1.2.0-rc.5` · **Publication status:** Preview
+**Review basis: Sightline 1.2.0 release, documentation revision 16, 4 November 2026.**
+**Build version:** `1.2.0` · **Publication status:** Released
 
-**Maintained source:** [Feature grid](https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/FEATURE-GRID.md)
+**Maintained source:** [Feature grid](https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/FEATURE-GRID.md)
 
-This grid describes the preview built from `29e32a8`, with companion Stream
-Deck plugin **0.2.0**. It includes the existing features and the unpublished
-preview additions. The build manifest also records the packaging/documentation
-snapshot. The public app release remains **1.1.0**; this document
-does not announce a new release or certify a recording setup.
+This grid describes the release built from `d18db7a`, with companion Stream
+Deck plugin **0.2.0**. It includes the features shipped in Sightline 1.2.0. The build manifest also records the packaging/documentation
+snapshot. The public app release remains **1.2.0**; this document
+does not certify an individual recording setup.
 
 Use the [searchable grid](FEATURE-GRID.html) to browse by subject or support
 level. The [CSV comparison sheet](FEATURE-GRID.csv) includes a blank reviewer
@@ -19,7 +18,7 @@ notes column. Each section links to the detailed instructions and limitations.
 configuration or an optional download; **Dependent** needs external software,
 hardware or a service; **Limited** has a material qualification; **Not included**
 is outside the current product. These labels describe capability, not a test
-result. Options marked “preview addition” are present in this preview and
+result. Options marked “included in 1.2.0” are present in this preview and
 must not be advertised as available in the published installer.
 
 ## 01 · Product, platform and installation
@@ -34,7 +33,7 @@ Reference: [Getting started](guide/01-getting-started.md) and [Policies](POLICIE
 | Desktop platforms | Included | Windows, macOS Apple silicon and Intel, and Linux distribution targets. | Physical hardware validation varies by platform; macOS hardware and VoiceOver checks remain outstanding. |
 | Local desktop operation | Included | Ordinary reading, editing and steady prompting run on the computer. | First downloads, updates, linked documents and online services require connectivity. |
 | Packaged installation | Included | Downloadable desktop packages; Windows installer and app branding. | Signing and operating-system security prompts are described in the installation guide. |
-| Windows process identity | Included | Short Sightline Prompter name in packaged Windows metadata; preview addition. | Existing installed releases need an updated build to change their process description. |
+| Windows process identity | Included | Short Sightline Prompter name in packaged Windows metadata. | Existing installed releases need an updated build to change their process description. |
 | Optional components | Optional | Component checks and setup for the offline speech model, AI agent kit and external integrations. | Detecting a component does not validate its hardware, permissions or complete configuration. |
 | Missing dependency feedback | Included | Dependent controls explain missing components and offer the relevant setup route. | Available functions still depend on connection and permission state. |
 | Update and compatibility checks | Included | Version information and app/plugin compatibility feedback. | A detected version is not automatic installation or a passed acceptance test. |
@@ -50,7 +49,7 @@ Reference: [Scrolling and voice](guide/03-scrolling-and-voice.md) and [Recording
 | Voice following | Optional | Advances through the script as recognised speech matches the words being read. | Requires microphone access and a configured local or online speech engine. |
 | Page and talking-point mode | Included | Notes mode displays pages of talking points; headings or explicit page breaks divide them. | Pages advance through navigation controls rather than continuous speech alignment. |
 | Start, pause and resume | Included | Toolbar, keyboard, voice and enabled remote controls. | Recorder behaviour is separately configured in the OBS section. |
-| Current-section status | Included | Yellow section/total pill on the persistent recorder status row; RC addition. | Explicitly paged Notes shows page/total. Follows script navigation and retakes, including when the toolbar hides. |
+| Current-section status | Included | Yellow section/total pill on the persistent recorder status row. | Explicitly paged Notes shows page/total. Follows script navigation and retakes, including when the toolbar hides. |
 | On air reading view | Included | A separate On air state changes the operator/reading presentation and configured backing. | On air describes the prompter view; use the confirmed recording pill to check the recorder. |
 | Restart and return to top | Included | Return to the beginning; reset can also restore normal pace and clear the pacing clock. | Returning to top and starting a fresh timed run are distinct actions. |
 | Section navigation | Included | Previous, next and numbered section jumps; section retakes. | Section boundaries come from the script structure. |
@@ -59,7 +58,7 @@ Reference: [Scrolling and voice](guide/03-scrolling-and-voice.md) and [Recording
 | Section targets | Optional | Per-section WPM and target duration, plus script-wide pacing instructions. | Targets guide delivery; they do not guarantee the final running time. |
 | Pace feedback | Included | Pacing light, elapsed time, progress and estimated time remaining. | Speech-derived figures require useful recognition data. |
 | Sentence and reading position | Optional | Reading-line marker, sentence highlight and focus band. | These are reading aids rather than a measure of eye contact. |
-| First spoken line at start | Included | Long preparation notes are removed from the delivery view and the first spoken line is positioned for reading; preview addition. | Use production comments for long instructions and pause to inspect them. |
+| First spoken line at start | Included | Long preparation notes are removed from the delivery view and the first spoken line is positioned for reading. | Use production comments for long instructions and pause to inspect them. |
 
 ## 03 · Speech recognition and voice commands
 
@@ -76,7 +75,7 @@ Reference: [Speech engines and command phrases](guide/03-scrolling-and-voice.md)
 | Reading and display commands | Optional | Go, pause, slower, faster, bigger, smaller, back, next and return to top. | Enable command listening; several phrases have documented aliases. |
 | Retake and edit commands | Optional | Again, marker, back to marker, keeper and scrap that. | Ratings and markers describe the take log; they do not cut video automatically. |
 | Spoken section selection | Optional | Select numbered sections, including natural spoken numbers. | A section number can act as a spoken slate and a retake instruction. |
-| Explicit recording commands | Dependent | Record take, finish recording, and record on, off, pause or resume; explicit recorder commands are a preview addition. | OBS integration and recording-control permission must be enabled. |
+| Explicit recording commands | Dependent | Record take, finish recording, and record on, off, pause or resume; explicit recorder commands are a included in 1.2.0. | OBS integration and recording-control permission must be enabled. |
 | Head-guide voice commands | Optional | Guide on and guide off request a definite visible or hidden state. | Controls the manual guide; it does not detect a face. |
 | Voice recovery and resync | Included | Listener health/recovery events and a resync command to find the reading position. | Noise, silence, paraphrasing and lost recognition can still require intervention. |
 | Recognition corrections | Optional | Personal word corrections and sound-alike handling for script alignment. | Corrections do not retrain the speech engine or guarantee command recognition. |
@@ -99,7 +98,7 @@ Reference: [Writing scripts](guide/02-scripts.md).
 | Script slots | Included | Nine quick-access slots, recent files and switching controls. | A slot points to its script; clearing a slot is separately confirmed. |
 | Slot clearing protection | Included | Confirmation before clearing an occupied slot. | Keep source files backed up independently of slot assignments. |
 | Sample scripts | Included | Twelve shipped samples; Start here is a twelve-stop core/RC feature tour. Focused voice, framing, recording, Notes and handover demos use separate setup comments and short cues. | Protected originals: save a copy to edit. Recording actions are opt-in exercises. The formatting diagnostic intentionally contains one unknown tag. See [Demo guide](DEMO-SCRIPTS.md). |
-| Recording preview sample | Included | Preparation, Continuous and linked recording, explicit commands and handover walkthrough; preview addition. | Exercise recorder controls only with the intended test setup connected. |
+| Recording preview sample | Included | Preparation, Continuous and linked recording, explicit commands and handover walkthrough. | Exercise recorder controls only with the intended test setup connected. |
 | Exact recording script | Included | Preserve the source actually used, including section IDs, slide cues and directions, in the edit pack. | The export is the recording snapshot, which can differ from a later file edit. |
 
 ## 05 · Script directions and production notes
@@ -112,7 +111,7 @@ Reference: [Script directives](SCRIPT-DIRECTIVES.md) and [AI script brief](AI-SC
 | Sections and IDs | Included | Structured headings organise navigation, takes, targets and handover. | Stable section identity helps an editor match the recording script. |
 | Short delivery cues | Included | Square-bracket notes such as `[smile]`, `[think]` or `[point]` remain available inline. | Unquoted direction words are excluded from spoken word counts and alignment. |
 | Quoted spoken cues | Included | `[Say: "Section one"]` distinguishes words intended to be spoken. | Quoted words are included in the spoken script; do not use this form for silent instructions. |
-| Long production comments | Included | HTML comments hold preparation instructions; visible while paused and hidden during delivery; preview addition. | All comment contents, including quoted words and directive examples, are excluded from speech tracking and command execution. |
+| Long production comments | Included | HTML comments hold preparation instructions; visible while paused and hidden during delivery. | All comment contents, including quoted words and directive examples, are excluded from speech tracking and command execution. |
 | Direction display | Optional | Normal, dimmed or hidden bracket directions; quoted spoken words remain visible. | Long production comments follow the separate paused/delivering rule. |
 | Manual script stops | Included | `{stop}` or `{pause}` holds prompting until the user continues. | Continuous recording keeps OBS running; linked recording changes that behaviour explicitly. |
 | Timed pauses | Included | `{pause: 3s}` provides a timed beat. | In voice mode it is a visible pause cue rather than a forced timed scroll. |
@@ -120,7 +119,7 @@ Reference: [Script directives](SCRIPT-DIRECTIVES.md) and [AI script brief](AI-SC
 | Off-script passages | Optional | `{listen: off}` and `{listen: on}` hold following and voice commands during ad-libs; manual continuation is required. | Enabled scratch audio and production recording can continue independently; this is not a whole-microphone privacy switch. |
 | Script sound checks | Optional | `{soundcheck: room}` and `{soundcheck: voice}` request the appropriate check. | Measurement uses the selected input and the current acoustic conditions. |
 | Script control commands | Optional | `{prompter: ...}` supports documented display, pace and marker actions. | Only documented commands are supported. |
-| Script recording commands | Dependent | Optional `{record: on}`, `{record: off}`, `{record: pause}` and `{record: resume}`; preview addition. | Require enabled OBS recording controls; loading a script never executes them. |
+| Script recording commands | Dependent | Optional `{record: on}`, `{record: off}`, `{record: pause}` and `{record: resume}`. | Require enabled OBS recording controls; loading a script never executes them. |
 | Pace, notes and page directives | Optional | Section WPM/targets, script pacing, `{mode: notes}` and `{page}`. | The script checker documents supported values and catches unknown directives. |
 
 ## 06 · Theme, typography and reading aids
@@ -129,18 +128,18 @@ Reference: [Layout and display](guide/04-layout-and-display.md) and [Settings](g
 
 | Capability | Availability | Options and behaviour | Dependencies and limits |
 | --- | --- | --- | --- |
-| Theme settings | Included | Reading > Theme and background contains four built-in palettes and named custom reading themes; preview addition. | Soft cream has a configurable light backing; existing cream profiles retain their prior colours until changed. |
-| Colours and themes | Included | Independent script, heading, inline-direction, production-note and background colour pickers; per-item Use theme reset; preview addition. | Palette changes preserve custom colours; Use theme restores inheritance. Colour is separate from opacity and brightness. |
-| Script view preview | Included | Dedicated right column with Paused/Reading examples; compact windows use a Preview dialog; preview addition. | Example controls never start prompting, microphone capture or recording. |
-| Portable reading themes | Optional | Save current appearance under a name; restore, import or export reading-theme JSON; preview addition. | Stores typography and reading background only, excluding controllers, recordings, windows, scripts and credentials. |
-| Text and heading fonts | Included | Four complete text targets: Segoe UI, Atkinson Hyperlegible, OpenDyslexic and Verdana, with Follow script for non-script text; preview addition. | Fonts are installed/bundled locally; preference is not an accessibility certification. |
+| Theme settings | Included | Reading > Theme and background contains four built-in palettes and named custom reading themes. | Soft cream has a configurable light backing; existing cream profiles retain their prior colours until changed. |
+| Colours and themes | Included | Independent script, heading, inline-direction, production-note and background colour pickers; per-item Use theme reset. | Palette changes preserve custom colours; Use theme restores inheritance. Colour is separate from opacity and brightness. |
+| Script view preview | Included | Dedicated right column with Paused/Reading examples; compact windows use a Preview dialog. | Example controls never start prompting, microphone capture or recording. |
+| Portable reading themes | Optional | Save current appearance under a name; restore, import or export reading-theme JSON. | Stores typography and reading background only, excluding controllers, recordings, windows, scripts and credentials. |
+| Text and heading fonts | Included | Four complete text targets: Segoe UI, Atkinson Hyperlegible, OpenDyslexic and Verdana, with Follow script for non-script text. | Fonts are installed/bundled locally; preference is not an accessibility certification. |
 | Script text size | Included | Toolbar and settings adjustment, with remote and voice size actions. | Available reading area depends on window dimensions and margins. |
 | Heading size | Included | Heading scale independent of the body text. | Long headings can require rewording or a smaller scale. |
-| Inline direction appearance | Included | Independent font, size, colour, bold, italic and line spacing; Normal/Dimmed/Hidden visibility; preview addition. | Visibility no longer changes size. Explicit spoken quotations retain script styling and tracking. |
-| Production note appearance | Included | Independent font, size, colour, bold, italic and line spacing for HTML production notes; preview addition. | Notes remain silent, show paused and hide during delivery. Existing note size remains independent of heading containers. |
-| Independent line spacing | Included | Separate script, heading, inline-direction and production-note spacing from 100–250%; preview addition. | Each percentage is relative to that text type’s font height; paragraph gaps remain as written. |
+| Inline direction appearance | Included | Independent font, size, colour, bold, italic and line spacing; Normal/Dimmed/Hidden visibility. | Visibility no longer changes size. Explicit spoken quotations retain script styling and tracking. |
+| Production note appearance | Included | Independent font, size, colour, bold, italic and line spacing for HTML production notes. | Notes remain silent, show paused and hide during delivery. Existing note size remains independent of heading containers. |
+| Independent line spacing | Included | Separate script, heading, inline-direction and production-note spacing from 100–250%. | Each percentage is relative to that text type’s font height; paragraph gaps remain as written. |
 | Alignment and margins | Included | Left or centred text; side, top and bottom margin controls. | Extreme settings can reduce the usable reading area. |
-| Background and text visibility | Included | Editable backing colour, off-air/on-air opacity, text opacity and brightness; preview addition. | The appearance preview does not change the content behind the prompter. |
+| Background and text visibility | Included | Editable backing colour, off-air/on-air opacity, text opacity and brightness. | The appearance preview does not change the content behind the prompter. |
 | Text edge | Optional | None, outline or shadow to separate words from a busy background. | Preview against the intended slides, call or camera picture. |
 | Focus band | Optional | Dim spoken text away from the reading line; adjustable strength. Production comments and inline directions keep their own appearance; preview patch. | Strength appears only while enabled and is retained when off. Margin fading still applies to comments. No text is removed from the script or edit pack. |
 | Reading marker and progress | Optional | Reading-line position and marker, sentence highlight, progress and time-left display. | Display aids can be configured separately from the script content. |
@@ -159,12 +158,12 @@ Reference: [Layout and display](guide/04-layout-and-display.md) and [Remotes and
 | Eye-line strip | Optional | Compact reading strip with configurable screen height and reading-line position. | Lens alignment is a manual setup task. |
 | Click-through | Optional | Let pointer interaction reach content beneath the overlay. | Use the documented shortcut or remote control to regain interaction. |
 | Operator window | Optional | Separate upright controls and script/session status while the reading window is mirrored. | A second monitor is useful but not required. |
-| Toolbar hiding | Included | Toolbar retreats when the pointer moves away; faster distance-based hiding is a preview addition. | Keyboard focus keeps controls available while they are in use. |
-| Pointer visibility | Included | Mouse pointer stays visible when the toolbar hides; preview addition. | Click-through remains an independent preference. |
+| Toolbar hiding | Included | Toolbar retreats when the pointer moves away; faster distance-based hiding is included in 1.2.0. | Keyboard focus keeps controls available while they are in use. |
+| Pointer visibility | Included | Mouse pointer stays visible when the toolbar hides. | Click-through remains an independent preference. |
 | Utility windows | Included | Separate Settings, help and command windows, with movable positioning. | Window stacking must still be checked in the user's chosen fullscreen arrangement. |
 | Capture protection | Limited | Request that supported capture paths exclude Sightline utility/reading windows. | Platform, capture method and compositor determine the result; verify the actual recording. |
 | Capture override for testing | Optional | Debug control allows capture of Sightline windows for demonstrations and diagnostics. | This intentionally removes protection; inspect every captured output before recording. |
-| Small-screen layout | Included | Expanding area list, fixed named sections and compact Area/Section selectors with Preview action; no automatic pagination. Getting started alone scrolls its guidance in the centre pane; preview addition. | Native checks cover 560 × 500 content and larger frames. Physical display/zoom and fullscreen stacking still require acceptance checks. |
+| Small-screen layout | Included | Expanding area list, fixed named sections and compact Area/Section selectors with Preview action; no automatic pagination. Getting started alone scrolls its guidance in the centre pane. | Native checks cover 560 × 500 content and larger frames. Physical display/zoom and fullscreen stacking still require acceptance checks. |
 
 ## 08 · Head positioning and framing reference
 
@@ -177,23 +176,23 @@ Reference: [Prepare to record](guide/16-prepare-to-record.md), [Head guide and c
 | Eye-line anchoring | Included | Set centre and eye level before adjusting the shape around the eyes. | Manual alignment must be repeated if camera framing changes. |
 | Head-edge adjustment | Included | Adjust top, bottom, left and right independently. | Changes the outline, not the camera crop or the person's image. |
 | Move and scale | Included | Horizontal/vertical position, overall size, width and height controls. | Shape adjustments are separate from moving the guide window itself. |
-| Guide visibility | Included | Stateful Show/Hide; bottom toolbar with hover-recoverable Head guide tab, Pin controls, lock/unlock, fullscreen, Move guide, Adjust and Guide off. Colour, opacity and Show Ideal remain in guide settings; RC addition. | Small toolbar surface stays above the prompter while the outline retains its bounds. Guide off removes the controls and releases a hidden picture feed. Appearance and eye lock use Apply. |
-| Session framing reference | Included | Keep the guide pose, appearance and saved Ideal across scripts. Preparation and Ctrl+Shift+H share draft adjustments, optional detection and the recording position; RC addition. | Target stays fixed as the person moves. Guide window/projector placement is manual; no automatic window fitting is claimed. |
+| Guide visibility | Included | Stateful Show/Hide; bottom toolbar with hover-recoverable Head guide tab, Pin controls, lock/unlock, fullscreen, Move guide, Adjust and Guide off. Colour, opacity and Show Ideal remain in guide settings. | Small toolbar surface stays above the prompter while the outline retains its bounds. Guide off removes the controls and releases a hidden picture feed. Appearance and eye lock use Apply. |
+| Session framing reference | Included | Keep the guide pose, appearance and saved Ideal across scripts. Preparation and Ctrl+Shift+H share draft adjustments, optional detection and the recording position. | Target stays fixed as the person moves. Guide window/projector placement is manual; no automatic window fitting is claimed. |
 | Guide placements | Included | Centred and beside-prompter saved placements, plus window positioning and sizing; accessible from Settings and adjustments. | Placement/fullscreen actions act immediately; beside prompter means alongside the reading area. |
 | Fullscreen and chromeless guide | Included | Toggle the guide into and out of fullscreen; lock the adjustment view when ready. | Test stacking with the OBS projector and prompter on the chosen monitor. |
 | Adjustment panel | Included | Movable controls; bottom placement avoids the main top toolbar by default; preview refinement. | Dense small-screen combinations still have the separate known toolbar issue. |
 | Save Ideal | Included | Save the preferred target outline for repeatable framing. | This is distinct from saving an Actual reference for a recording. |
-| Save and restore recording reference | Included | Save Actual position, dimensions and eye lock from Settings or adjustments; restore without overwriting Ideal; preview addition. | Restoring the shape does not restore the physical camera, body or guide window. |
+| Save and restore recording reference | Included | Save Actual position, dimensions and eye lock from Settings or adjustments; restore without overwriting Ideal. | Restoring the shape does not restore the physical camera, body or guide window. |
 | Guide export metadata | Included | Record Ideal/Actual information, recording reference and guide window geometry in the edit pack. | Metadata describes the configured guide, not proof that it was absent from the video. |
 | Keep guide out of output | Limited | Capture protection and a camera-source recording workflow keep the guide on the operator's screen. | No universal automatic guarantee; verify the recorded file and chosen capture source. |
-| Local position feedback | Optional | Bundled local face/eye detection, fixed target and red/amber/green feedback in preparation and Ctrl+Shift+H. Distance includes overall Size, Width and both side adjustments, with a live target-size percentage and consistent mirrored arrows; RC addition. | One well-lit face; grey means unavailable. Apparent width is not physical distance. Same scene/crop and manually matched guide bounds are required. No identity or gaze correction. |
-| OBS calibration scene | Dependent | Choose an actual scene from the connected OBS instance and read its preview frames for local detection. No programme-scene switch or recording command; RC addition. | OBS integration must be enabled and available; camera choices remain when disabled. Sampled, centred 16:9 preview; does not test the production recording encoder or lip sync. |
-| Temporary calibration feed | Dependent | Explicitly start an OBS virtual camera for calibration, stopping it afterwards only when Sightline started it; RC addition. | An existing virtual-camera session is retained. Connection loss may require manual confirmation/cleanup in OBS. Does not reconfigure the output or recording route. |
-| Pre-record workflow | Optional | Camera alignment, manual fallback, audio check, actual short test recording and reviewed reference save. Calibration in Guide adjustments starts its shared service invisibly; only the explicit Prepare to record action opens the workflow. Inputs and retry remain available; RC addition. | Explicit camera/microphone enable. Changing an input while capture is off keeps it off. A busy physical camera may require a virtual feed. Does not start OBS or production recording. |
-| Lock current framing | Optional | Use detected eye centre and apparent size as a draft target while preserving custom guide proportions; RC addition. | Does not replace the recording reference until the reviewed setup is explicitly saved. Out-of-range positions require guide adjustment before locking. |
-| Return after a break | Optional | Restore the fixed target, match framing and recheck audio; preview addition. | Same camera and resolution; original target/test retained. No silent recalibration. |
-| Local test recording | Optional | Up to eight seconds of selected camera/microphone, actual WebM playback and picture/sound confirmation; preview addition. | Local profile storage; manual review and hardware UAT required. No guide is burned into the camera clip. |
-| Persistent test outcomes | Included | Settings and the main prompter retain recording, review-required, passed, failed or check-again status; RC addition. | Saving a clip alone is not a pass; the user must review picture and sound. A saved earlier pass is labelled as previous. |
+| Local position feedback | Optional | Bundled local face/eye detection, fixed target and red/amber/green feedback in preparation and Ctrl+Shift+H. Distance includes overall Size, Width and both side adjustments, with a live target-size percentage and consistent mirrored arrows. | One well-lit face; grey means unavailable. Apparent width is not physical distance. Same scene/crop and manually matched guide bounds are required. No identity or gaze correction. |
+| OBS calibration scene | Dependent | Choose an actual scene from the connected OBS instance and read its preview frames for local detection. No programme-scene switch or recording command. | OBS integration must be enabled and available; camera choices remain when disabled. Sampled, centred 16:9 preview; does not test the production recording encoder or lip sync. |
+| Temporary calibration feed | Dependent | Explicitly start an OBS virtual camera for calibration, stopping it afterwards only when Sightline started it. | An existing virtual-camera session is retained. Connection loss may require manual confirmation/cleanup in OBS. Does not reconfigure the output or recording route. |
+| Pre-record workflow | Optional | Camera alignment, manual fallback, audio check, actual short test recording and reviewed reference save. Calibration in Guide adjustments starts its shared service invisibly; only the explicit Prepare to record action opens the workflow. Inputs and retry remain available. | Explicit camera/microphone enable. Changing an input while capture is off keeps it off. A busy physical camera may require a virtual feed. Does not start OBS or production recording. |
+| Lock current framing | Optional | Use detected eye centre and apparent size as a draft target while preserving custom guide proportions. | Does not replace the recording reference until the reviewed setup is explicitly saved. Out-of-range positions require guide adjustment before locking. |
+| Return after a break | Optional | Restore the fixed target, match framing and recheck audio. | Same camera and resolution; original target/test retained. No silent recalibration. |
+| Local test recording | Optional | Up to eight seconds of selected camera/microphone, actual WebM playback and picture/sound confirmation. | Local profile storage; manual review and hardware UAT required. No guide is burned into the camera clip. |
+| Persistent test outcomes | Included | Settings and the main prompter retain recording, review-required, passed, failed or check-again status. | Saving a clip alone is not a pass; the user must review picture and sound. A saved earlier pass is labelled as previous. |
 
 ## 09 · Keyboard, clickers and controllers
 
@@ -204,7 +203,7 @@ Reference: [Remotes and screens](guide/06-remotes-and-screens.md) and [Shortcuts
 | Keyboard control | Included | Start/pause, sections, markers, display actions and documented shortcuts. | Some shortcuts depend on focused windows; documented global shortcuts cover specific actions. |
 | Presentation clickers | Dependent | Navigate using compatible keyboard-like presentation remotes. | Button codes vary by device and may need mapping. |
 | Pedals and gamepads | Dependent | Map supported input events to prompter actions. | Hardware, drivers and device-event support vary. |
-| Learn and customise input | Optional | All keyboard/clicker and game-controller assignments appear in scrollable lists, with editable action and Remove on each row; RC addition. | Driver/device support varies. No assignment is hidden solely by the selected row or window height. |
+| Learn and customise input | Optional | All keyboard/clicker and game-controller assignments appear in scrollable lists, with editable action and Remove on each row. | Driver/device support varies. No assignment is hidden solely by the selected row or window height. |
 | Editing input safeguards | Included | Reading-oriented mappings are suspended where editing requires ordinary input. | Check unusual remotes against the editor before live use. |
 | Common action model | Included | Navigation, display, take and framing actions are shared across applicable control surfaces. | Available buttons and feedback depend on the surface and enabled features. |
 
@@ -214,9 +213,9 @@ Reference: [Pad and phone setup](guide/06-remotes-and-screens.md).
 
 | Capability | Availability | Options and behaviour | Dependencies and limits |
 | --- | --- | --- | --- |
-| Floating control pad | Optional | Separate touch/mouse window with configurable buttons. Settings shows the complete ordered list with drag, Earlier/Later and Remove; RC addition. | Enable under Connections > Pad and phone. Longer lists scroll within Settings; presets replace the draft selection. |
-| Interface enable switches | Included | Speech, microphone, pad, phone, custom keys, game controller, Stream Deck, OBS and local API each have an enable switch; preview addition. | Off hides configuration, preserves saved values and omits disabled actions/help. Dependencies remain a separate readiness check. |
-| Separate input mappings | Optional | Keyboard/clickers and game controllers have distinct setup homes and enable switches; preview addition. | Disabling custom mappings retains core shortcuts. Resetting one type preserves the other type. |
+| Floating control pad | Optional | Separate touch/mouse window with configurable buttons. Settings shows the complete ordered list with drag, Earlier/Later and Remove. | Enable under Connections > Pad and phone. Longer lists scroll within Settings; presets replace the draft selection. |
+| Interface enable switches | Included | Speech, microphone, pad, phone, custom keys, game controller, Stream Deck, OBS and local API each have an enable switch. | Off hides configuration, preserves saved values and omits disabled actions/help. Dependencies remain a separate readiness check. |
+| Separate input mappings | Optional | Keyboard/clickers and game controllers have distinct setup homes and enable switches. | Disabling custom mappings retains core shortcuts. Resetting one type preserves the other type. |
 | Select and reorder actions | Included | Choose the supported actions and drag to arrange their order. | The layout uses a defined action catalogue, not arbitrary third-party plugins. |
 | Pad column count | Included | Two, three, four or six columns. | Choose a count suitable for the available pad width. |
 | Layout presets | Included | Compact, Reading, Studio, and Framing & checks presets. | Applying a preset replaces the current selected layout. |
@@ -258,16 +257,16 @@ Reference: [Recording with OBS](guide/11-obs.md) and [OBS setup assistant](guide
 | Capability | Availability | Options and behaviour | Dependencies and limits |
 | --- | --- | --- | --- |
 | Standalone OBS connection | Dependent | Connect through OBS WebSocket with address, port and password. | Requires OBS with a compatible WebSocket server, enabled and reachable. |
-| OBS connection test feedback | Included | Separate connection and recorder status; retained running/pass/fail test result in Settings and on the prompter; RC addition. | Apply connection changes before testing. A connection pass is not a picture/sound recording pass. |
+| OBS connection test feedback | Included | Separate connection and recorder status; retained running/pass/fail test result in Settings and on the prompter. | Apply connection changes before testing. A connection pass is not a picture/sound recording pass. |
 | Optional integration | Optional | OBS support is off until enabled; dependent help and controls follow that state. | Ordinary prompting works without OBS. |
 | Credentials | Included | Save the OBS password using supported operating-system protection; remove it from settings. | Operating-system credential protection availability and user profile apply. |
 | Status versus control permission | Included | Observe recorder state separately from permission to start, stop, pause and resume. | Connecting alone does not authorise recorder commands. |
-| Confirmed recording pill | Included | OFF green, RECORDING red, PAUSED orange and UNKNOWN grey; persistent preview addition. | Text accompanies colour; OBS-disabled mode hides it. |
+| Confirmed recording pill | Included | OFF green, RECORDING red, PAUSED orange and UNKNOWN grey; persistent included in 1.2.0. | Text accompanies colour; OBS-disabled mode hides it. |
 | Record take | Included | Confirm OBS recording before starting the prompter. | Needs a healthy connection and recording-control permission. |
 | Finish recording | Included | Finish the prompter session and request the end of the OBS recording. | Verify the acknowledged state and resolved file before handover. |
 | Continuous recording | Included | Keep one OBS recording running through prompting holds, section stops and retakes. | Default behaviour; a prompter pause is not an OBS pause. |
-| Linked recording | Optional | Link recording to prompting: confirmed start/resume, pauses with holds, finish at final stop/end; preview addition. | Enable with OBS stopped; requires recording permission and a pause-capable recording format. |
-| Explicit recorder actions | Included | Record on, off, pause and resume through supported controls, voice or optional directives; preview addition. | OBS/format limitations apply; script loading alone cannot trigger recording. |
+| Linked recording | Optional | Link recording to prompting: confirmed start/resume, pauses with holds, finish at final stop/end. | Enable with OBS stopped; requires recording permission and a pause-capable recording format. |
+| Explicit recorder actions | Included | Record on, off, pause and resume through supported controls, voice or optional directives. | OBS/format limitations apply; script loading alone cannot trigger recording. |
 | Recording reminder | Included | Visible recording state and start/finish controls help distinguish prompting from recording. | A reminder or On air display is not proof of a running recorder. |
 | Recording file and clock | Included | Log OBS recording starts/stops, pause/resume/restart events, file identity and reported time references. | File names and offsets remain unknown where OBS has not supplied enough information. |
 | Take-to-file references | Included | Section starts, takes and markers link to OBS recording segments and clock positions. | Estimated timing and discontinuities are retained as such; inspect the media for precise edits. |
@@ -288,7 +287,7 @@ Reference: [Sound check and scratch audio](guide/05-recording-a-take.md) and [Pr
 | --- | --- | --- | --- |
 | Microphone level display | Optional | Live sound-level information during applicable microphone use. | Measures the input as Sightline receives it, before another tool's later processing. |
 | Room and voice checks | Optional | Separate background-noise and speech checks; the prompter meter appears automatically during measurement. | Previous meter visibility returns afterwards. Preparation relays existing measurements without opening a second microphone stream. |
-| Advisory low-level handling | Included | Explain quiet/noisy/clipping conditions and allow Continue anyway; preview addition. | Increasing gain can also increase background noise; the user decides the compromise. |
+| Advisory low-level handling | Included | Explain quiet/noisy/clipping conditions and allow Continue anyway. | Increasing gain can also increase background noise; the user decides the compromise. |
 | Per-take loudness | Optional | Voice-mode-only, Always during prompting, or Off. | Always mode opens the microphone during prompting; monitoring is not a mastering process. |
 | Logged audio measures | Included | Loudness LUFS, peak dBFS, background noise, voice-above-noise and warnings. | Available only when measured; accepted warnings are retained with the session. |
 | Scratch recording | Optional | Independent local microphone WAVs for timing and edit checks. | Scratch audio is a reference, not a guarantee of production quality or a replacement for the clean mic master. |
@@ -309,13 +308,13 @@ Reference: [Take log and edit pack](guide/05-recording-a-take.md) and [Productio
 | Take summary | Included | Review pace, target difference, completion and available sound/recognition feedback. | Results depend on the information captured for that take. |
 | Saved recording browser | Included | Revisit saved sessions and export reports/edit packs. | The log browser is not a video editor or media-management system. |
 | Core log exports | Included | `take-log.json` and `takes.csv`. | Field availability can differ between older and newer sessions. |
-| Timing qualifications | Included | `timing-quality.json` and `TIMING-NOTES.md` explain unverified alignment, caption and pace estimates; RC addition. | Original production brief and existing schemas are retained. Clock observations do not verify camera lip sync. |
+| Timing qualifications | Included | `timing-quality.json` and `TIMING-NOTES.md` explain unverified alignment, caption and pace estimates. | Original production brief and existing schemas are retained. Clock observations do not verify camera lip sync. |
 | Word and sentence detail | Optional | `words.csv` and `sentences.csv` retain live voice-following estimates. | Word times can lag or bunch; unmatched words do not prove an omission. Use recorded-audio transcription for cuts and captions. |
 | Edit marks | Included | `edit-marks.csv` and `edit-marks.json`, including markers, pauses and rereads where available. | Suggestions and recognition-derived boundaries need editorial review. |
 | Draft captions | Optional | `captions.srt` and `captions.vtt`, built from available aligned speech/script data. | Review text and timing before publication; not a guaranteed verbatim transcript. |
 | Script snapshot files | Included | `script-snapshots.json` plus numbered source snapshots tie words, IDs and cues to the recording. | Later edits to the source file do not replace the captured version. |
 | Recorded sync export | Included | `recorded-sync.json` preserves reference IDs, routing and take/recording links. | Reference metadata does not certify the physical camera/microphone path. |
-| Head-guide export | Included | `head-guide.json` includes Ideal, Actual, saved reference and window geometry. | Reference save/restore is a preview addition. |
+| Head-guide export | Included | `head-guide.json` includes Ideal, Actual, saved reference and window geometry. | Reference save/restore is included in 1.2.0. |
 | Rehearsal export | Included | `rehearsal-coach.json` provides the available coaching report. | No performance score or automatic keeper reassignment is produced. |
 | Scratch WAV handover | Optional | Include available independent mic recordings with their session/timing references. | Audio exists only when scratch capture was enabled and succeeded. |
 | External recording collection | Limited | Main OBS filename is resolved when reported; collect video, clean camera and clean mic masters separately. | The edit pack does not automatically locate or bundle every external recording file. |
@@ -347,7 +346,7 @@ Reference: [Working with AI and the local API](guide/09-working-with-ai.md) and 
 | AI script brief | Included | Copy documented instructions for sections, targets, cues, stops and optional control directives. | The chosen assistant generates the script; check its output before use. |
 | Assistant choice | Dependent | ChatGPT, Claude, Gemini, Copilot or another assistant can prepare a compatible script. | Assistant capabilities, costs and privacy terms are external. |
 | Local control API | Optional | Enable token-protected local endpoints to load scripts, select slots and issue supported commands. | Off by default; intended for authorised local tools, not public web pages. |
-| Local MCP connection | Optional | Seven stdio tools in the AI kit; Connections > MCP, AI, and API includes a Configure MCP guide beside the switch; RC addition. | Node.js 22.16+, local API/MCP enabled and applied. Separate grants; read-only by default. No cloud MCP endpoint. See [client configuration](guide/17-configure-mcp.md). |
+| Local MCP connection | Optional | Seven stdio tools in the AI kit; Connections > MCP, AI, and API includes a Configure MCP guide beside the switch. | Node.js 22.16+, local API/MCP enabled and applied. Separate grants; read-only by default. No cloud MCP endpoint. See [client configuration](guide/17-configure-mcp.md). |
 | MCP permission grants | Optional | Script, prompting and OBS recording grants are enforced by the app; turning MCP off revokes active clients. | No settings edits, arbitrary file reads or recording deletion. Prompting requires the recording grant whenever OBS controls are enabled. |
 | Live automation feedback | Included | Status and event updates expose supported state and app/control-contract versions. | Clients need to handle connection loss, permissions and unsupported capabilities. |
 | Configure through an agent | Optional | An authorised local agent can change supported settings and control prompting. | General API access is separate from the restricted Stream Deck credential. |
@@ -364,12 +363,12 @@ Reference: [Settings](guide/07-settings.md), [Screenshot gallery](guide/settings
 | Capability | Availability | Options and behaviour | Dependencies and limits |
 | --- | --- | --- | --- |
 | Grouped settings | Included | Top-level task groups and focused subtabs separate prompting, appearance, recording and controls. | The detailed settings guide describes the current placement of each tool. |
-| Stable settings panel | Included | Eight task areas; 32 navigation homes with two additional OBS subviews. Controls and Components merge into Connections; RC addition. | Approved navigation/control/sample composition is retained. Longer setup/result panels scroll centrally above a fixed footer; settings never migrate on resize. |
-| Settings example preview | Included | Inline example when width permits; movable non-modal companion on narrow windows. Both follow the same draft; preview addition. | Settings remains usable while the companion is open. Examples never start prompting, a microphone or a recorder; the guide diagram is manual. |
-| Settings draft consistency | Included | Appearance previews; Apply persists, Save and close persists/closes, Cancel restores the last applied look; preview addition. | Component installation, theme-library save/import, pairing reset, device tests and guide visibility/placement/reference saves are explicit actions. |
+| Stable settings panel | Included | Eight task areas; 32 navigation homes with two additional OBS subviews. Controls and Components merge into Connections. | Approved navigation/control/sample composition is retained. Longer setup/result panels scroll centrally above a fixed footer; settings never migrate on resize. |
+| Settings example preview | Included | Inline example when width permits; movable non-modal companion on narrow windows. Both follow the same draft. | Settings remains usable while the companion is open. Examples never start prompting, a microphone or a recorder; the guide diagram is manual. |
+| Settings draft consistency | Included | Appearance previews; Apply persists, Save and close persists/closes, Cancel restores the last applied look. | Component installation, theme-library save/import, pairing reset, device tests and guide visibility/placement/reference saves are explicit actions. |
 | Numeric controls | Included | Slider/number pairs share whole-number or five-point increments; fine readouts have at most two decimals; preview patch. | Display rounding preserves stored precision until the control is adjusted. |
 | Named section navigation | Included | Sidebar search and visible button subtabs for Text, Screens, Reading aids, Head guide, add-ons and the single OBS entry. | OBS Connection, Recording control and Profile and scenes share one sidebar home. Disabled OBS/speech subviews remain unavailable. |
-| Live Tools groups | Included | Prepare, Adjust and During take share saved values with Settings through separate controls; preview addition. | Live changes are immediate; a short prompter uses a utility window instead of clipping the menu. |
+| Live Tools groups | Included | Prepare, Adjust and During take share saved values with Settings through separate controls. | Live changes are immediate; a short prompter uses a utility window instead of clipping the menu. |
 | Contextual explanations | Included | Small question-mark pills beside options explain purpose and consequences on hover, keyboard focus or click. Both Reading aids groups have explanations for every control. | Escape closes the explanation. Help follows the selected mode and enabled components. |
 | Apply, save and cancel | Included | Review changed settings, apply them and keep or cancel the dialog changes. | Some setup operations and permissions have their own explicit controls. |
 | Onboarding and components | Included | First-use setup plus Getting started at the top of Settings, showing the current script, mode, text appearance and optional-tool guidance; preview patch. | Components remain optional. Opening guidance does not enable devices or integrations; changes use Apply. |
@@ -394,7 +393,7 @@ Reference: [Privacy and accessibility policies](POLICIES.md) and [Acceptance wal
 | Optional word tracing | Optional | Enable recognised command-word logging to investigate actual mishearings. | May include nearby speech; only enable it for the intended diagnostic period. |
 | Recording-state honesty | Included | Confirmed stopped/recording/paused states are distinct from unknown/disconnected. | UI state cannot certify that the resulting picture/audio is usable. |
 | Hardware acceptance | Limited | Walkthrough covers real camera, mic, controls, clean tracks, sync and output inspection. | Local automated tests do not replace camera/mic and physical-control testing. |
-| Published versus preview | Limited | This grid covers the 1.2.0 RC 2 candidate and companion 0.2.0 together. | The stable public 1.1.0 installer does not include all RC additions. |
+| Release and reference basis | Included | This grid describes Sightline 1.2.0 and companion 0.2.0, with versioned source and downloadable references. | Platform/device acceptance and the listed feature limits still apply. Historical RC notes are archived separately. |
 | Reviewer comparison scope | Included | Compare prompting, control, scripting, production handover, privacy and setup effort separately. | No competitor feature, price, performance ranking or endorsement is asserted here. |
 
 ## Maintaining this grid

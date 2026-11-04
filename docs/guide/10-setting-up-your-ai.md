@@ -38,7 +38,7 @@ grants. Browser assistants cannot connect directly to this local server.
 These run on your computer, so they can check scripts, load them into
 Sightline and read its take logs.
 
-**1. Get the files.** In the next candidate, use **Settings > Components
+**1. Get the files.** In Sightline 1.2.0, use **Settings > Connections > Apps and add-ons
 > AI kit > Install**, then **Open folder**. It copies the skills, briefs,
 samples, checker and command tool from the installed app. No clone or npm
 install is needed. Read START-HERE.md and use that kit folder below wherever
@@ -94,7 +94,7 @@ spec, the checker and the `sightline` command.
 
 ## Letting an AI run the prompter
 
-On **Settings > Controls > AI & API**, under **AI and remote control**:
+On **Settings > Connections > MCP, AI, and API**, under **AI and remote control**:
 
 - Tick **Let an AI assistant or script on this computer load scripts and
   control the teleprompter**, and save. It's off until you do.

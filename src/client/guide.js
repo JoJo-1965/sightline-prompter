@@ -3,6 +3,8 @@
 // window; web links open in the browser.
 
 const contents = document.getElementById( "contents" );
+import { guideTarget } from "./guide-links.js";
+
 const pageEl = document.getElementById( "page" );
 let current = null;
 
@@ -53,7 +55,10 @@ document.addEventListener( "click", ( event ) => {
 	event.preventDefault();
 	const href = a.dataset.page ?? a.getAttribute( "href" ) ?? "";
 	if ( /^https:\/\//.test( href ) ) window.guide.openExternal( href );
-	else if ( /\.md(#.*)?$/.test( href ) ) show( href );
+	else if ( /\.md(#.*)?$/.test( href ) ) {
+		const target = a.dataset.page ? href : guideTarget( current, href );
+		if ( target ) show( target );
+	}
 } );
 
 window.guide.onShow( name => show( name ) );

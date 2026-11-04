@@ -1,5 +1,18 @@
 # Feature-matrix review record
 
+## Stable 1.2.0 review — 4 November 2026
+
+Promoted the approved RC5 functions to the 1.2.0 reference, documentation
+revision 16. Reviewed all 249 entries across 18 groups with the built-in wiki,
+grouped release notes, roadmap, demo scripts and current packaged screenshots.
+Connections, OBS and Stream Deck retain separate capability groups. Local
+position feedback uses a fixed target and manual fallback; MCP permission
+gates and estimated live timings are explicit. Download approval illustrations
+and corrected built-in reference navigation add help, not new product claims.
+JL receives this same reviewed Markdown/HTML/CSV/JSON snapshot.
+
+## Earlier reviews
+
 4 November 2026, feedback after RC 5: remove the redundant guide footer message.
 The reveal tab, shortcuts, controls and framing geometry remain unchanged.
 This cosmetic correction changes no capability, requirement or limit in RC 5's

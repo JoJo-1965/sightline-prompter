@@ -36,7 +36,7 @@ export async function buildInstallerHelp( root, out, version ) {
 body{display:block;height:auto}nav{padding:16px 24px;background:var(--panel);display:flex;flex-wrap:wrap;gap:10px 24px}
 #page{max-width:1000px;margin:auto;overflow:visible}table{display:block;overflow-x:auto}pre{overflow-x:auto}
 @media(max-width:600px){#page{padding:20px}h1{font-size:24px}}
-</style></head><body><nav aria-label="Installation help"><a href="${ href( "release-notes.html" ) }">Release notes</a><a href="${ href( "docs/guide/01-getting-started.html" ) }">Getting Started</a><a href="${ href( "docs/guide/README.html" ) }">Full user guide</a><span>Installed version ${ escapeHtml( version ) }</span></nav><main id="page">${ html }</main></body></html>` );
+</style></head><body><nav aria-label="Installation help"><a href="${ href( "release-notes.html" ) }">Release notes</a><a href="${ href( "docs/guide/18-installation.html" ) }">Installation help</a><a href="${ href( "docs/guide/01-getting-started.html" ) }">Getting Started</a><a href="${ href( "docs/guide/README.html" ) }">Full user guide</a><span>Installed version ${ escapeHtml( version ) }</span></nav><main id="page">${ html }</main></body></html>` );
 	};
 	await render( "release-notes.html", `# Release notes\n\nThis copy is bundled with **Sightline Prompter ${ version }**.\n\n${ readme.slice( offset + marker.length ).trim() }` );
 	for ( const [ file, markdown ] of pages ) await render( file.replace( /\.md$/, ".html" ), markdown );

@@ -2,7 +2,7 @@
 
 ![Native preparation window before camera capture starts](images/prepare-to-record.png)
 
-This workflow is included in the **1.2.0 candidate**. It uses the approved
+This workflow is included in the **Sightline 1.2.0 release**. It uses the approved
 pre-record layout with real local camera detection, microphone measurement and
 a short recorded test. It supplements the existing manual Head guide.
 
@@ -11,7 +11,7 @@ Overview > Open workflow**, or use the main **Prepare to record** toolbar action
 Pause prompting and stop production
 recording first. The preparation window is non-modal.
 
-In RC 5, calibration controls in **Guide adjustments**
+In Sightline 1.2.0, calibration controls in **Guide adjustments**
 stay in that panel. Choosing a source does not open the workflow or enable its
 picture. **Enable picture** starts the selected feed explicitly. Use the
 separate **Prepare to record…** button when you want the full guided workflow.
@@ -27,7 +27,7 @@ measurements, without opening a second capture stream.
 
 ## Align the shot
 
-RC 4 uses the existing **Ctrl+Shift+H head guide** for live feedback as well as
+Sightline 1.2.0 uses the existing **Ctrl+Shift+H head guide** for live feedback as well as
 manual alignment. Show the guide or open Head guide adjustments from this step.
 Its position, size, manual shape and recording reference are shared. Lock current
 in either view updates the same draft; it never replaces Ideal automatically.
@@ -70,7 +70,7 @@ close, red asks for a correction, and grey means no reliable single face.
 This estimates placement; it does not trace hair, identify you or correct gaze.
 
 Distance guidance uses apparent face width, not a measured distance in metres.
-RC 5 corrects this comparison to include the guide's
+Sightline 1.2.0 corrects this comparison to include the guide's
 Width and left/right adjustments as well as overall Size. Its distance hint
 shows face size as a percentage of that target: move towards 100%, with a
 95–105% size tolerance. Eye position must also match before the guide turns green.
