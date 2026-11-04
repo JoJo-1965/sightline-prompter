@@ -13,6 +13,7 @@ let cameraStream = null, microphoneStream = null, audioContext = null, analyser 
 let worker = null, workerReady = false, workerBusy = false, frameTimer = null, lastDetection = 0;
 let recorder = null, recordTimer = null, testURL = null, testBlob = null, measuringTimer = null;
 let generation = 0, disposed = false;
+let cameraConnecting = false, cameraError = "";
 const state = { step: 0, mode: "setup", tracking: false, mirror: true, person: null, target: copy( config.guide ?? { x: 0, y: 0, size: 100 } ), manualConfirmed: false, framingAccepted: false, audio: null, audioAccepted: false, audioOverride: false, measuring: false, testState: "idle", testSeconds: 0, testApproved: false, testReviewed: false, testPicture: false, testSound: false, referenceSaved: false, microphoneId: config.microphoneId || "default", cameraId: "default", camera: null, testFile: null, error: "" };
 const names = [ "Align head", "Check audio", "Test recording", "Save reference", "Ready" ];
 const colours = { green: "#72dfad", amber: "#edc766", red: "#ff8585", lost: "#a7b2c0", manual: "#89c4ff" };
@@ -51,9 +52,13 @@ function escape( value ) {
 }
 let knownDevices = [];
 async function listDevices() {
-	knownDevices = await navigator.mediaDevices.enumerateDevices();
-	$( "camera-device" ).innerHTML = deviceOptions( "videoinput", state.cameraId );
-	if ( knownDevices.some( d => d.kind === "videoinput" && d.deviceId === state.cameraId ) ) $( "camera-device" ).value = state.cameraId;
+	const devices = await navigator.mediaDevices.enumerateDevices();
+	if ( disposed ) return;
+	knownDevices = devices;
+	const cameras = knownDevices.filter( d => d.kind === "videoinput" );
+	$( "camera-device" ).innerHTML = '<option value="default">Default camera</option>' + ( cameras.length ? deviceOptions( "videoinput", state.cameraId ) : "" );
+	if ( state.cameraId !== "default" && !cameras.some( d => d.deviceId === state.cameraId ) ) $( "camera-device" ).insertAdjacentHTML( "beforeend", `<option value="${ escape( state.cameraId ) }">Selected camera unavailable</option>` );
+	$( "camera-device" ).value = state.cameraId;
 }
 function renderSteps() {
 	const done = [ state.framingAccepted && match().aligned, state.audioAccepted, state.testApproved, state.referenceSaved, ready() ];
@@ -91,9 +96,12 @@ function renderCamera() {
 	$( "camera-video" ).hidden = !cameraStream;
 	$( "camera-empty" ).hidden = !!cameraStream;
 	$( "camera-svg" ).toggleAttribute( "hidden", !cameraStream );
-	$( "connect-camera" ).textContent = cameraStream ? "Turn camera off" : "Enable camera";
-	$( "connect-camera" ).disabled = [ "recording", "saving" ].includes( state.testState );
-	$( "camera-device" ).disabled = !cameraStream || [ "recording", "saving" ].includes( state.testState );
+	$( "connect-camera" ).textContent = cameraConnecting ? "Opening camera…" : cameraStream ? "Turn camera off" : "Enable camera";
+	$( "connect-camera" ).disabled = cameraConnecting || [ "recording", "saving" ].includes( state.testState );
+	$( "camera-device" ).disabled = cameraConnecting || [ "recording", "saving" ].includes( state.testState );
+	$( "camera-status" ).textContent = cameraError || ( cameraConnecting ? "Opening the selected camera. Capture starts only after your request." : "" );
+	$( "camera-status" ).hidden = !cameraError && !cameraConnecting;
+	$( "camera-status" ).className = cameraError ? "note danger" : "note";
 	const accept = $( "accept-frame" );
 	if ( accept ) accept.disabled = !m.aligned;
 	const record = $( "record-test" );
@@ -213,6 +221,9 @@ async function startTracking() {
 	}, 140 );
 }
 async function connectCamera() {
+	if ( cameraConnecting || [ "recording", "saving" ].includes( state.testState ) ) return;
+	cameraError = "";
+	state.error = "";
 	if ( cameraStream ) {
 		stopTracking();
 		cameraStream.getTracks().forEach( t => t.stop() );
@@ -222,31 +233,53 @@ async function connectCamera() {
 		render();
 		return;
 	}
-	$( "connect-camera" ).disabled = true;
+	cameraConnecting = true;
+	renderCamera();
 	try {
-		cameraStream = await navigator.mediaDevices.getUserMedia( { audio: false, video: { ...( state.cameraId !== "default" ? { deviceId: { exact: state.cameraId } } : {} ), width: { ideal: 1280 }, height: { ideal: 720 } } } );
+		const stream = await navigator.mediaDevices.getUserMedia( { audio: false, video: { ...( state.cameraId !== "default" ? { deviceId: { exact: state.cameraId } } : {} ), width: { ideal: 1280 }, height: { ideal: 720 } } } );
+		if ( disposed ) {
+			stream.getTracks().forEach( t => t.stop() );
+			return;
+		}
+		cameraStream = stream;
 		const track = cameraStream.getVideoTracks()[0], settings = track.getSettings();
 		state.cameraId = settings.deviceId || state.cameraId;
 		state.camera = { deviceId: state.cameraId, label: track.label, width: settings.width, height: settings.height };
 		track.onended = () => {
 			cameraStream = null;
+			state.camera = null;
 			stopTracking();
 			invalidate();
-			state.error = "Camera disconnected. Choose an available input.";
+			cameraError = "Camera disconnected. Choose an available input and select Enable camera.";
+			state.error = cameraError;
 			render();
 		};
 		$( "camera-video" ).srcObject = cameraStream;
 		await $( "camera-video" ).play();
-		await listDevices();
+		await listDevices().catch( () => {} );
 		state.error = "";
 		render();
-		if ( state.tracking ) await startTracking();
 	} catch ( error ) {
 		cameraStream?.getTracks().forEach( t => t.stop() );
 		cameraStream = null;
-		state.error = `Camera unavailable: ${ error.name }. If another app owns the camera, select its virtual-camera output or release it there.`;
-		render();
+		state.camera = null;
+		const advice = {
+			NotReadableError: "The camera could not open. It may be in use by another app. Choose a virtual camera, or release the camera there and try again.",
+			NotAllowedError: "Camera access was denied. Check camera permission for Sightline in your system settings, then try again.",
+			NotFoundError: "No camera input is available. Connect a camera or enable a virtual-camera feed, then try again.",
+			OverconstrainedError: "The selected camera is unavailable. Choose another camera or virtual-camera feed, then try again."
+		};
+		cameraError = `${ advice[error.name] ?? "The camera could not open. Choose another input and try again." } (${ error.name })`;
+		state.error = cameraError;
+		await listDevices().catch( () => {} );
+	} finally {
+		cameraConnecting = false;
+		if ( !disposed ) render();
 	}
+	if ( !disposed && cameraStream && state.tracking ) await startTracking().catch( error => {
+		state.error = "Position feedback unavailable: " + error.message;
+		render();
+	} );
 }
 async function connectMicrophone() {
 	microphoneStream?.getTracks().forEach( t => t.stop() );
@@ -511,9 +544,13 @@ $( "step-panel" ).addEventListener( "change", ( event ) => {
 $( "connect-camera" ).onclick = () => connectCamera().catch( error => say( error.message ) );
 $( "camera-device" ).onchange = async ( event ) => {
 	const id = event.target.value;
-	if ( cameraStream ) await connectCamera();
+	const reconnect = !!cameraStream;
+	if ( reconnect ) await connectCamera();
 	state.cameraId = id;
-	await connectCamera();
+	cameraError = "";
+	state.error = "";
+	if ( reconnect ) await connectCamera();
+	else renderCamera();
 };
 $( "mirror" ).onchange = ( event ) => {
 	state.mirror = event.target.checked;
@@ -541,6 +578,7 @@ $( "new-setup" ).onclick = () => {
 $( "return-script" ).onclick = $( "close-prepare" ).onclick = () => window.preRecord.close();
 window.addEventListener( "beforeunload", () => {
 	disposed = true;
+	navigator.mediaDevices.removeEventListener( "devicechange", refreshDevices );
 	stopTracking();
 	clearInterval( measuringTimer );
 	clearInterval( recordTimer );
@@ -550,5 +588,14 @@ window.addEventListener( "beforeunload", () => {
 	audioContext?.close();
 	if ( testURL ) URL.revokeObjectURL( testURL );
 } );
+function refreshDevices() {
+	listDevices().then( () => { if ( !disposed ) renderCamera(); } ).catch( error => {
+		if ( disposed ) return;
+		cameraError = "Could not list camera inputs. Try Enable camera to request access. (" + error.name + ")";
+		renderCamera();
+	} );
+}
+navigator.mediaDevices.addEventListener( "devicechange", refreshDevices );
+refreshDevices();
 render();
 if ( saved ) say( "A recording reference is available. Choose Restore saved reference to match previous shots." );

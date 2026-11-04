@@ -2,7 +2,7 @@
 
 ![Native preparation window before camera capture starts](images/prepare-to-record.png)
 
-This workflow is included in the **1.2.0 RC 1 candidate**. It uses the approved
+This workflow is included in the **1.2.0 candidate**. It uses the approved
 pre-record layout with real local camera detection, microphone measurement and
 a short recorded test. It supplements the existing manual Head guide.
 
@@ -21,9 +21,13 @@ measurements, without opening a second capture stream.
 
 ## Align the shot
 
-Select **Enable camera**. Camera capture starts only after this action. Choose
-the camera or virtual-camera feed that matches your production picture. If your
-recording app owns the camera exclusively, use its virtual camera or release it.
+Choose the camera or virtual-camera feed that matches your production picture,
+then select **Enable camera**. Selecting an input while capture is off does not
+start it. RC 3 lists the inputs before capture and leaves the selector available
+if an attempt fails. Errors appear beside these controls, with a recovery hint.
+If your recording app owns the camera exclusively, choose its virtual camera
+or release the physical camera there, then try Enable camera again. Device
+changes refresh the list; they do not start capture automatically.
 The preparation view uses a centred 16:9 crop; verify that your recorder uses
 the same framing. Mirroring changes the view and arrow direction, not the file.
 

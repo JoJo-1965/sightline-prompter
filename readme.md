@@ -248,6 +248,17 @@ Planned features and their order are in [ROADMAP.md](ROADMAP.md).
 
 ## Change log
 
+### 1.2.0 RC 3 · camera recovery
+
+- List physical and virtual cameras before capture starts, and keep the input
+  selector available after a failed attempt. Selecting an input while camera
+  capture is off leaves it off until Enable camera is pressed.
+- Show capture errors beside the camera controls, including a busy-camera
+  explanation and virtual-camera recovery. Opening a camera blocks duplicate
+  requests; connected/disconnected devices refresh without starting capture.
+- The preparation regression covers a busy default camera, alternative input
+  selection and successful retry before running the complete framing/test flow.
+
 ### 1.2.0 RC 2 · refreshed demo scripts
 
 - Start here becomes a twelve-stop first-run tour covering core reading,

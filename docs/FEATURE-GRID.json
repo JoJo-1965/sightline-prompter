@@ -8,7 +8,7 @@
   "appRelease": "1.1.0",
   "pluginRelease": "0.2.0",
   "sourceUrl": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/reading-appearance/docs/FEATURE-GRID.md",
-  "sourceSha256": "487ee877cb4cdc7936dbf66170083b9ce3b6eca0ed7d16ef8ce653f56756ef34",
+  "sourceSha256": "6cd6da0a0324cb864b703a83a1ea691b95f57143de873e59df16f89b4a57725b",
   "support": [
     "Included",
     "Optional",
@@ -802,8 +802,8 @@
         {
           "name": "Pre-record workflow",
           "support": "Optional",
-          "options": "Camera alignment, manual fallback, audio check, actual short test recording and reviewed reference save; preview addition.",
-          "limits": "Explicit camera/microphone enable. Does not start OBS or production recording."
+          "options": "Camera alignment, manual fallback, audio check, actual short test recording and reviewed reference save. Select physical/virtual inputs before capture; errors beside the controls allow retry with another input; RC addition.",
+          "limits": "Explicit camera/microphone enable. Changing an input while capture is off keeps it off. A busy physical camera may require a virtual feed. Does not start OBS or production recording."
         },
         {
           "name": "Lock current framing",
