@@ -5,7 +5,7 @@
 
 **Maintained source:** [Feature grid](https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/FEATURE-GRID.md)
 
-This grid describes the release built from `d18db7a`, with companion Stream
+This grid describes the release built from `ac5e172`, with companion Stream
 Deck plugin **0.2.0**. It includes the features shipped in Sightline 1.2.0. The build manifest also records the packaging/documentation
 snapshot. The public app release remains **1.2.0**; this document
 does not certify an individual recording setup.
