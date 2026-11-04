@@ -11,7 +11,7 @@ Overview > Open workflow**, or use the main **Prepare to record** toolbar action
 Pause prompting and stop production
 recording first. The preparation window is non-modal.
 
-RC 1 retains test results in **Settings > Prepare to record > Recording setup**
+Test results appear in **Settings > Prepare to record > Overview**
 and on the main prompter. A saved clip initially says **Review required**.
 Review its picture and sound, confirm both, then select **Test checked** to pass.
 Use **Test failed · retry** to retain a failed result while correcting the setup.
@@ -28,6 +28,11 @@ Its position, size, manual shape and recording reference are shared. Lock curren
 in either view updates the same draft; it never replaces Ideal automatically.
 Use the guide's normal placement/size controls to match the camera/projector
 picture. Keep the same crop and aspect ratio; this is not automatic window fitting.
+
+![Existing head guide showing local position feedback and a fixed target](images/head-guide-feedback.png)
+
+This isolated test capture shows the transparent guide without the desktop
+picture behind it. In use, place it over the matching camera/projector picture.
 
 When OBS integration is enabled and available, Calibration picture offers
 **OBS scene preview** and a visible **OBS scene** list. Choose the scene matching
@@ -89,7 +94,9 @@ target. Align yourself and recheck audio. It retains the original target and
 test; current movement never silently replaces them. A different camera or
 resolution requires a new setup. **New setup** retains the old reference until
 you explicitly replace it after a new test. Returning to the script releases
-the preparation camera and microphone and leaves production recording stopped.
+the preparation microphone. Position feedback can continue while the head guide
+is visible; hiding both views or disabling feedback releases its picture feed.
+Preparation leaves production recording stopped.
 
 ## Storage and limitations
 

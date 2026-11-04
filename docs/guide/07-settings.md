@@ -1,6 +1,6 @@
 # Settings
 
-This source guide describes **1.2.0 RC 1**, based on the approved
+This source guide describes **1.2.0 RC 4**, based on the approved
 interactive demo and Joanne's combined Connections/recording feedback.
 For the released app, use the guide bundled with its installer.
 
@@ -8,7 +8,7 @@ Open **Settings** on the toolbar, **Files (☰) > Settings**, or **Ctrl+,**
 (**Cmd+,** on Mac). Settings opens in an upright, movable window. It retains
 the same frame while you change sections; resizing never moves a control
 onto another page. There is no numbered pagination. Longer Getting started,
-Recording setup, OBS connection and AI/API panels scroll in the centre pane,
+Preparation, OBS connection, MCP/API and assignment panels scroll in the centre pane,
 keeping navigation, the reading example and footer in place.
 
 On larger windows, choose an area and a named section in the sidebar, or use
@@ -53,20 +53,21 @@ existing stored precision is retained until you adjust the value.
 | Area | Sections |
 | --- | --- |
 | Getting started | First setup: current configuration and guided next steps; Restore defaults |
-| Prepare to record | Recording setup |
+| Prepare to record | Overview |
 | Reading | Mode and pace; Text and directions; Theme and background; Prompter layout; Reading aids; Screens and mirroring; Head guide |
 | Voice | Speech engine; Microphone; Commands; Your words |
 | Recording | Takes; Sound check; Slate and sync |
-| Connections | Pad and phone; Phone remote; Keyboard and clickers; Game controller; Stream Deck; OBS integration; AI and API; Apps and add-ons |
+| Connections | Pad and phone; Phone remote; Keyboard and clickers; Game controller; Stream Deck; OBS integration; MCP, AI, and API; Apps and add-ons |
 | Debug | Status and recovery; Speech trace; Capture for demos; Support log |
 | About | Version and updates; Credits and licences; Help and support |
 
 ## Prepare and reading
 
-**Recording setup** opens preparation checks and links directly
-to script review, appearance and framing.
-
-Its **Prepare to record** action opens the real camera/audio/test workflow.
+**Prepare to record > Overview** puts the real head-guide/audio/test workflow
+first, with Open workflow and retained test/reference outcomes. Detailed reading,
+guide, sound and recorder settings sit below it. The main toolbar also has a
+direct Prepare to record action. Guide position and detection feedback are shared
+with the Ctrl+Shift+H overlay; choose a camera or an available OBS scene there.
 See [Prepare to record](16-prepare-to-record.md).
 
 Test recording results persist beside this action and on the prompter. A clip
@@ -76,7 +77,7 @@ sound meter automatically, then restore its earlier visibility.
 **Connections > OBS integration** has three visible subtabs: Connection,
 Recording control, Profile and scenes. Connection and recording state are
 separate. Apply connection changes before testing; retained pass/fail feedback
-does not replace reviewing a recording. **AI and API** contains the optional
+does not replace reviewing a recording. **MCP, AI, and API** contains the optional
 [MCP connection and separate grants](../MCP.md). Installation/repair is under
 **Apps and add-ons**; Restore defaults is under **Getting started**.
 
@@ -227,7 +228,7 @@ Disabling an interface does not uninstall its software.
 - **OBS integration** lives under Controls. Enable it before its recording
   and profile/scene sections appear. Apply, start OBS and test the saved
   WebSocket connection. Recording control is a separate permission.
-- **AI and API** uses a local port and access token. General authorised
+- **MCP, AI, and API** uses a local port and access token. General authorised
   clients can use it; the supplied AI kit commands additionally need the
   optional kit and a suitable Node.js installation.
 

@@ -1,6 +1,25 @@
-# Settings screenshot gallery — RC 1
+# Settings screenshot gallery
 
-## Current RC 1 changes
+## Current RC 4 changes
+
+Actual packaged Windows captures at 1440 × 900 with 2× pixel density,
+4 November 2026. These supersede the corresponding earlier pages below.
+Demonstration assignments and unapplied switches show the available controls.
+
+![Prepare to record: prominent workflow and test/reference state](images/settings-rc4-checklist.png)
+
+![Game controller: every assignment with its action and Remove button](images/settings-rc4-gamepad.png)
+
+![Keyboard and clickers: complete assignment list](images/settings-rc4-mappings.png)
+
+![Pad and phone: aligned preset controls and all buttons in the selected layout](images/settings-rc4-pad.png)
+
+![MCP, AI, and API with Configure MCP beside its switch](images/settings-rc4-api.png)
+
+Long assignment lists scroll within the page. Pad buttons retain drag and
+Earlier/Later controls; the first and last disable the unavailable direction.
+
+## Earlier RC 1 captures
 
 Actual packaged Windows captures at 1440 × 900 with 2× pixel density,
 4 November 2026. Optional integrations are enabled in an unapplied draft to

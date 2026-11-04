@@ -23,7 +23,10 @@ nine visible pad rows and controller assignments. Native preparation verifies
 two-way guide updates, actual bundled inference, measured audio, real WebM
 review and fixed-reference handling. The local OBS protocol fixture verifies
 scene selection and preview-frame calibration without recording/scene changes.
-Packaged checks and cross-platform installer CI follow before handover.
+The packaged Windows build passes both native suites. All four installer
+targets pass [CI run 41836022786](https://github.com/JoJo-1965/sightline-prompter/actions/runs/41836022786),
+including strict ad-hoc signature and packaged-runtime checks on both Macs.
+Current captures are in the [Settings gallery](guide/settings-gallery.md).
 
 ## UAT
 

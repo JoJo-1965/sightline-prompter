@@ -1,38 +1,48 @@
 # Feedback queued after UAT 09
 
-## Preparation entry points · queued after RC 3
+## Preparation entry points · delivered in RC 4
 
-- [ ] Make the significant camera/audio/test/reference workflow the first,
+- [x] Make the significant camera/audio/test/reference workflow the first,
   prominent action under Prepare to record, using the same card style as the
   six Settings shortcuts. Remove the small detached button below the grid.
-- [ ] Clarify the menu/page labels: Prepare to record > Overview, with detailed
+- [x] Clarify the menu/page labels: Prepare to record > Overview, with detailed
   guide/sound/connection settings below the actual workflow entry.
-- [ ] Show a direct main-toolbar entry and useful test/reference state.
-- [ ] Review the combined entry-point mock before implementation. Retain the
+- [x] Show a direct main-toolbar entry and useful test/reference state.
+- [x] Review the combined entry-point mock before implementation. Retain the
   signed-off three-column Settings composition and non-modal preparation.
-- [ ] Integrate live detection and Lock current with the existing Ctrl+Shift+H
+- [x] Integrate live detection and Lock current with the existing Ctrl+Shift+H
   overlay. Use one shared pose/reference and the existing guide adjustments;
   the current copy-on-open/save-only bridge is insufficient.
-- [ ] Support OBS calibration without requiring a change to the local recording
+- [x] Support OBS calibration without requiring a change to the local recording
   route. Assess selected scene/source frames first; temporary virtual camera
   is an explicit fallback that restores ownership correctly. A projector
   window is a display, not a currently supported detector input.
-- [ ] Hide OBS scene/source and temporary virtual-camera choices, OBS-specific
+- [x] Hide OBS scene/source and temporary virtual-camera choices, OBS-specific
   notes and related controls unless OBS is installed and integration is enabled.
   Keep generic camera/virtual feeds available. Apply this in both guide and
   preparation views. Do not equate disconnected/not running with not installed,
   or start a different capture input automatically when OBS is disabled.
-- [ ] Show a visible OBS scene chooser for direct OBS calibration. List actual
+- [x] Show a visible OBS scene chooser for direct OBS calibration. List actual
   scenes from the configured connection, retain the choice, and share it with
   the head guide. Selecting it must not switch programme/recording scenes.
   Hide it when OBS is unavailable/disabled or a different input type is selected.
-- [ ] Verify fixed-target behaviour, crop/aspect/projector mapping, two-way guide
+- [x] Verify fixed-target behaviour, crop/aspect/projector mapping, two-way guide
   updates, manual controls, reference restore and camera/feed cleanup. Keep
   Ideal and retain the distinction between saved pose and checked recording.
 
-See [the entry review](PREPARE-ENTRY-REVIEW.md) and its interactive mock. These
-are queued proposals, not features delivered in RC 3. No new RC is built for
-this single observation; collect the next feedback batch first.
+- [x] Align the pad Columns/preset row and show all nine buttons without a
+  selected-row picker. Keep every row reachable, with reorder and Remove.
+- [x] Show every game-controller and keyboard/clicker assignment with its
+  action and Remove control; scroll long lists rather than hiding mappings.
+- [x] Rename the connection page MCP, AI, and API and add Configure MCP beside
+  the switch, opening the included offline setup guide.
+
+See [the entry review](PREPARE-ENTRY-REVIEW.md) and its interactive mock.
+Joanne requested the build after reviewing the entry/shared-guide mock. These
+delivered messages were reconciled as one RC 4 batch; no unseen pending queue
+is claimed as reviewed. Source and packaged Windows checks pass, including
+real local inference and a scene-frame OBS protocol fixture. All four installer
+targets pass CI run 41836022786. Physical camera/projector/OBS UAT remains.
 
 ## RC 1 handover · 4 November 2026
 

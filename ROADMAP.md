@@ -6,7 +6,8 @@
 OBS scene calibration with conditional source controls, prominent preparation
 entry, complete pad/assignment lists, pad row alignment and MCP setup help are
 implemented. Source unit, native Settings (five sizes) and native camera/OBS
-preparation checks pass. Packaging and installer verification follow together.
+preparation checks pass. Both native suites pass against the Windows package;
+all four installer targets pass CI run 41836022786. RC 4 is ready for physical UAT.
 The Settings composition stays as approved; no personal profile is reset.
 
 **RC 3 camera recovery:** the default Facecam failure exposed a disabled input
@@ -30,8 +31,8 @@ both Mac architectures and Linux passed installer CI. Physical recording UAT
 remains necessary before treating this candidate as the final release.
 See [RC scope](docs/RELEASE-1.2.0-SCOPE.md). The UAT 09 baseline below remains
 available alongside the verified candidate.
-**Latest packaged candidate:** RC 3 remains available while RC 4, documentation
-revision 14, completes its combined packaged checks.
+**Latest packaged candidate:** RC 4, documentation revision 14. Earlier RCs
+remain available alongside it.
 **Next deliverable:** Joanne's physical recording UAT, then final release.
 The combined RC feedback batch is implemented and packaged. UAT 09 remains
 available as the previous accepted baseline.
