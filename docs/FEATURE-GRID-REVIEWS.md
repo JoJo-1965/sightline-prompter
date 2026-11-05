@@ -1,10 +1,79 @@
 # Feature-matrix review record
 
-4 November 2026, stable documentation erratum: removed leftover preview wording
-from the availability explanation and four already-published options. The 249
-capabilities, dependencies, functional source and installer versions are unchanged.
-The immutable v1.2.0 tag/installers remain the frozen release; current reference
-exports and JL copy receive this editorial clarification.
+## Companion core layouts and palettes — 5 November 2026
+
+Companion 0.2.1.5 adds fifteen opt-in Core Pages imports: four native linked
+layouts, a deliberately reduced six-key set and styled key backgrounds with
+state colours preserved. CORE-PAGES.md owns their current options/requirements
+table alongside DEVICE-SUPPORT.md. Native Virtual folder/return checks pass;
+the original Virtual profile was restored. Source/SDK colour checks and archive
+guards retain all 84 previous exports. Updated the controller wiki, companion
+help, preview screenshot, notes, roadmap and unpublished JL copy together.
+These are new companion navigation/appearance features; no app binary, script
+syntax or approved Settings layout change is made. Preserve the frozen app
+RC2 matrix/installer pairing and use the separately versioned companion matrix
+for this follow-up. Advance the combined app/JL snapshot at publication review;
+stable website/downloads remain unchanged. Physical/Mac acceptance is qualified.
+
+## Companion help and release-note refresh — 5 November 2026
+
+Companion 0.2.1.4 retains .3 control/profile behaviour. Consolidated listing
+release notes and roadmap, corrected current setup paths and canonical help,
+and separated legacy/RC2 requirements, manual guide adjustments from optional
+detection, and test clips from production recording. Updated controller wiki
+and unpublished JL review. No app capability, matrix row, script, artwork or
+layout contract changes; preserve the frozen app RC2 snapshot and installer.
+Companion inspector captures and validation accompany its separate refresh.
+
+## Companion current-device follow-up — 4 November 2026
+
+Companion 0.2.1.3 adds Galleon layered dial profiles, MK.2/Scissor exports,
+fitting Mobile/Virtual grids and inspector guidance for all public SDK families.
+The 44 prior definitions and all published action UUIDs are preserved. Manual
+macro/Studio/other hardware support remains qualified, pending physical UAT.
+The companion's DEVICE-SUPPORT.md is the maintained current-device matrix;
+its guide, changelog, roadmap and unpublished JL copy were reviewed together.
+No app function, Settings, script syntax, promo/demo flow or screenshot-layout
+change is introduced. Keep the frozen app RC2/grid snapshot and original
+0.2.1.1 pairing intact; the separate follow-up has its own index/checksums.
+Stable JL, release downloads and Marketplace remain unchanged.
+
+## Companion profile coverage follow-up — 4 November 2026
+
+Companion 0.2.1.2 adds separate RC2 Standard/OBS starters for every supported
+device, plus Guide layouts for both dial models. All functions already exist
+in the 0.2.1.1 runtime; the original 24 profile definitions remain unchanged.
+This adds starter-layout coverage, with no new app function or settings change.
+The frozen app RC2/grid snapshot still identifies its original paired 0.2.1.1
+artifact. The follow-up pack carries its own per-device table, requirements,
+checksums and physical-UAT limits; the original app ZIP/installer are retained.
+
+## 1.3.0 RC2 controller candidate — 4 November 2026
+
+Added seven qualified companion/workflow rows; reviewed preparation, mode and
+OBS guards, migration, dials, Virtual profiles and optional review/export.
+Generated Markdown/HTML/CSV/JSON together. Windows tests do not certify physical
+camera/audio or Mac/Linux behaviour. Stable JL remains on the released 1.2.0
+snapshot; preview marketing copy is supplied separately for release sign-off.
+
+## Next companion 0.2.1 planning — 4 November 2026
+
+On-screen Virtual Stream Deck standard/OBS starter profiles are being prepared
+in the companion repository. They reuse 0.2.0 actions and do not add an app
+control or change the frozen RC1 installer. The app roadmap records this next
+companion work. No released feature-grid row or version is changed by that plan;
+review the exact profile and JL/guide claims when publishing the companion.
+
+## 1.3.0 RC1 preview — 4 November 2026
+
+Reviewed 256 entries in 18 groups. Seven explicit candidate rows describe
+post-record transcription/import, delivery candidates, command ranges,
+per-file offsets, recorder-start reminder and optional guided coach marks.
+Stable remains 1.2.0 with unchanged companion 0.2.0. Native source checks cover
+the review window, cancellation, stale evidence and tour geometry/keyboard
+paths; recorded audio supplies ASR, correlation and command-replay evidence.
+The final candidate manifest records exact packaged validation separately.
+No public stable or Marketplace capability change is implied by this preview.
 
 ## Stable 1.2.0 review — 4 November 2026
 

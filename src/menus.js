@@ -6,7 +6,7 @@ import { SUPPORT_URL } from "./client/links.js";
 export function buildMenus( browserWindow, {
 	openScriptFile, showOpenScriptDialog, recentFiles, clearRecentFiles,
 	settings, updateSettings, slots, activeSlot, isMaximized, samples = [],
-	openSample, openGoogleDoc, copyAiPrompt, exportEditPack, showRecordings,
+	openSample, openGoogleDoc, copyAiPrompt, exportEditPack, showRecordings, showRecordingReview,
 	reloadGoogleDoc, openGuide, toggleHeadGuide, toggleHeadGuideFullscreen, displays = []
 } ) {
 	const send = ( channel, ...args ) => browserWindow.webContents.send( channel, ...args );
@@ -39,6 +39,7 @@ export function buildMenus( browserWindow, {
 			separator, item( "Save", "menuSave", "CmdOrCtrl+S" ), item( "Save as…", "menuSaveAs", "CmdOrCtrl+Shift+S" ),
 			separator,
 			{ label: "Recordings…", accelerator: "CmdOrCtrl+Shift+R", click: () => showRecordings?.() },
+			{ label: "Review recorded audio…", click: () => showRecordingReview?.() },
 			{ label: "Export edit pack…", click: () => exportEditPack?.() },
 			separator, item( "Import settings…", "menuImportSettings" ), item( "Export settings…", "menuExportSettings" ),
 			item( "Settings…", "menuSettings", "CmdOrCtrl+," ), separator, { role: "quit" }
@@ -79,6 +80,7 @@ export function buildMenus( browserWindow, {
 			] }, separator, item( "Close", "menuWindowControl", "CmdOrCtrl+W", "close" )
 		] },
 		{ label: "Help", submenu: [
+			item( "Take a guided tour…", "showGuidedTour" ),
 			item( "Getting started…", "menuWorkflow", undefined, "start" ),
 			{ label: "User guide", accelerator: "Shift+F1", click: () => openGuide?.() }, item( "Help and shortcuts", "menuHelp", "F1" ),
 			{ label: "Download and installation help", click: () => openGuide?.( "18-installation.md" ) },

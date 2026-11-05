@@ -1,5 +1,22 @@
 # Sightline Prompter features
 
+## 1.3.0 RC2 controller additions
+
+Companion 0.2.1.1 groups related new assignments with function-specific icons.
+Preparation, reviewed export, explicit reading modes, Again, OBS pause/resume,
+display-only status and configurable adjustment dials supplement the existing
+controls. Published UUIDs and saved layouts remain intact. Read the
+[controller guide](guide/21-controller-functions.md) for gates and limits.
+
+## 1.3.0 RC1 additions
+
+The candidate adds [post-record review](guide/19-post-record-review.md), timed
+transcript import, expected/heard candidates, command cut ranges and measured
+file offsets. A [guided tour](guide/20-guided-tour.md) is optional, cancelable
+and rerunnable. Local transcription needs a separate optional Python runtime
+and model; import works without it. These additions require RC1.
+The stable feature summary below remains 1.2.0; the detailed grid labels both.
+
 **Sightline 1.2.0 · Stream Deck companion 0.2.0 · 4 November 2026**
 
 The [full feature grid](FEATURE-GRID.md) is the detailed reviewer reference:

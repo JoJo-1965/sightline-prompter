@@ -47,6 +47,10 @@ try {
  await guide.evaluate("document.querySelector('#contents .home').click()"); await pause(100);
  await guide.evaluate("[...document.querySelectorAll('#page a')].find(a=>a.textContent==='Feature grid').click()"); await pause(150);
  assert.equal(await guide.evaluate("document.querySelectorAll('#page table').length>10"),true);
+ await guide.evaluate("document.querySelector('#contents [data-page=\"19-post-record-review.md\"]').click()"); await pause(150);
+ assert.match(await guide.evaluate("document.querySelector('#page h1').textContent"), /recorded audio/i);
+ await guide.evaluate("document.querySelector('#contents [data-page=\"20-guided-tour.md\"]').click()"); await pause(150);
+ assert.match(await guide.evaluate("document.querySelector('#page h1').textContent"), /Guided tour/i);
  await guide.evaluate("document.querySelector('#contents [data-page=\"18-installation.md\"]').click()"); await pause(150);
  assert.match(await guide.evaluate("document.querySelector('#page h1').textContent"), /Download and install/);
  assert.deepEqual(errors,[]);

@@ -1,6 +1,23 @@
 // Original Sightline Stream Deck glyphs, reused for the pad and phone.
 // Copyright 2026 Joanne Lockwood, SEE Change Happen Ltd. MIT licence.
 const GLYPHS = {
+	"again": "<path d=\"M5 8V3m0 5h5M5 8a8 8 0 1 1-1 9\"/><path d=\"m11 10 5 3-5 3Z\"/>",
+	"reset-speed": "<path d=\"M4 10a8 8 0 1 1 0 6M4 10V4m0 6h6m2 2 4-4\"/>",
+	"notes": "<rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"3\"/><path d=\"M7 8h2m3 0h5M7 12h2m3 0h5M7 16h2m3 0h3\"/>",
+	"mode-cycle": "<path d=\"M4 8a9 9 0 0 1 15-3m0 0v5h-5M20 16a9 9 0 0 1-15 3m0 0v-5h5\"/><path d=\"M9 12h6\"/>",
+	"prepare": "<rect x=\"5\" y=\"4\" width=\"14\" height=\"18\" rx=\"2\"/><path d=\"M9 2h6v4H9Zm-1 12 3 3 6-7\"/>",
+	"audio-check": "<path d=\"M3 12v5m4-9v9m4-13v13m4-7v7m2 3 2 2 4-5\"/>",
+	"test-start": "<rect x=\"2\" y=\"4\" width=\"15\" height=\"16\" rx=\"3\"/><path d=\"m17 9 5-3v12l-5-3\"/><circle cx=\"9.5\" cy=\"12\" r=\"3\"/>",
+	"test-stop": "<rect x=\"2\" y=\"4\" width=\"15\" height=\"16\" rx=\"3\"/><path d=\"m17 9 5-3v12l-5-3\"/><path d=\"M7 9h5v6H7Z\"/>",
+	"test-play": "<rect x=\"2\" y=\"4\" width=\"15\" height=\"16\" rx=\"3\"/><path d=\"m17 9 5-3v12l-5-3M7 8l6 4-6 4Z\"/>",
+	"reference-save": "<path d=\"M4 3h13l4 4v14H3V3Zm3 0v6h10V3M7 21v-8h10v8\"/><path d=\"m9 17 2 2 4-4\"/>",
+	"reference-restore": "<path d=\"M8 4h12v16H8M3 12h12m-8-4-4 4 4 4\"/><path d=\"M12 7h5m-5 10h5\"/>",
+	"back-after-break": "<path d=\"M4 9V4m0 5h5M4 9a9 9 0 1 1-1 7\"/><path d=\"M10 8v8m5-8v8\"/>",
+	"guide-detected": "<path d=\"M2 8V2h6m8 0h6v6M2 16v6h6m8 0h6v-6\"/><ellipse cx=\"12\" cy=\"9\" rx=\"4\" ry=\"5\"/><path d=\"m8 19 3 3 6-7\"/>",
+	"obs-pause": "<rect x=\"2\" y=\"3\" width=\"20\" height=\"15\" rx=\"3\"/><path d=\"M8 22h8m-4-4v4M9 7v7m6-7v7\"/>",
+	"obs-resume": "<rect x=\"2\" y=\"3\" width=\"20\" height=\"15\" rx=\"3\"/><path d=\"M8 22h8m-4-4v4M9 7l7 4-7 4Z\"/>",
+	"review": "<path d=\"M3 3h12v18H3ZM7 7h4M7 11h3\"/><circle cx=\"16\" cy=\"14\" r=\"4\"/><path d=\"m19 17 4 4\"/>",
+	"export-pack": "<path d=\"M13 3H3v18h18V11M14 3h7v7m0-7L10 14M7 17h7\"/>",
 	mirror: "<path d=\"M12 3v18M3 12h18m-12-6 3-3 3 3m-6 12 3 3 3-3M6 9l-3 3 3 3m12-6 3 3-3 3\"/>",
 	status: "<rect x=\"2\" y=\"3\" width=\"4\" height=\"4\" rx=\"1\"/><path d=\"M11 5h11M11 12h8M11 19h11\"/><rect x=\"2\" y=\"10\" width=\"4\" height=\"4\" rx=\"1\"/><rect x=\"2\" y=\"17\" width=\"4\" height=\"4\" rx=\"1\"/>",
 	play: "<path d=\"m9 5 11 7-11 7Z\" fill=\"currentColor\" stroke=\"none\"/>",
@@ -43,6 +60,7 @@ GLYPHS["guide-adjustments"] = "<path d=\"M4 5h16M4 12h16M4 19h16\"/><circle cx=\
 GLYPHS["guide-ideal-visible"] = "<ellipse cx=\"9\" cy=\"10\" rx=\"5\" ry=\"7\" stroke-dasharray=\"2 3\"/><ellipse cx=\"15\" cy=\"13\" rx=\"5\" ry=\"7\"/>";
 GLYPHS["guide-match-ideal"] = "<ellipse cx=\"15\" cy=\"12\" rx=\"5\" ry=\"8\" stroke-dasharray=\"2 3\"/><path d=\"M2 12h12m-4-4 4 4-4 4\"/>";
 export function controlIcon( id, status ) {
+	id = ( { "mode-notes": "notes", "mode-voice": "voice", "mode-scroll": "steady", "prepare-recording": "prepare", "check-room-voice": "audio-check", "test-recording-start": "test-start", "test-recording-stop": "test-stop", "test-recording-play": "test-play", "recording-reference-save": "reference-save", "recording-reference-restore": "reference-restore", "guide-lock-current": "guide-detected", "review-recording": "review", "export-reviewed-pack": "export-pack" } )[id] ?? id;
 	if ( /^slot-[1-9]$/.test( id ) ) return id.slice( 5 );
 	if ( id === "listening-toggle" ) id = status.listeningControl?.suspended ? "mic-off" : "voice";
 	if ( id === "listening-restart" ) id = "listen-restart";

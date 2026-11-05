@@ -1,12 +1,12 @@
 # Sightline Prompter feature grid
 
-**Review basis: Sightline 1.2.0 release, documentation revision 16, 4 November 2026.**
-**Build version:** `1.2.0` · **Publication status:** Released
+**Review basis: Sightline 1.3.0 RC2 preview, documentation revision 18, 4 November 2026.**
+**Build version:** `1.3.0-rc.2` · **Publication status:** Preview
 
-**Maintained source:** [Feature grid](https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/FEATURE-GRID.md)
+**Maintained source:** [Feature grid](https://github.com/JoJo-1965/sightline-prompter/blob/codex/1.3.0-rc1-recording-evidence/docs/FEATURE-GRID.md)
 
-This grid describes the release built from `ac5e172`, with companion Stream
-Deck plugin **0.2.0**. It includes the features shipped in Sightline 1.2.0. The build manifest also records the packaging/documentation
+This grid describes the preview built from `67d879e`, with companion Stream
+Deck plugin **0.2.1.1** candidate. It includes stable 1.2.0 features plus the explicitly labelled RC additions. The build manifest also records the packaging/documentation
 snapshot. The public app release remains **1.2.0**; this document
 does not certify an individual recording setup.
 
@@ -18,8 +18,8 @@ notes column. Each section links to the detailed instructions and limitations.
 configuration or an optional download; **Dependent** needs external software,
 hardware or a service; **Limited** has a material qualification; **Not included**
 is outside the current product. These labels describe capability, not a test
-result. This reference covers the published 1.2.0 installer. Later candidates
-use their own explicitly labelled preview reference.
+result. Options marked “RC1 preview” require this candidate and are not part
+of the stable 1.2.0 installer. Published and preview versions remain distinct.
 
 ## 01 · Product, platform and installation
 
@@ -141,7 +141,7 @@ Reference: [Layout and display](guide/04-layout-and-display.md) and [Settings](g
 | Alignment and margins | Included | Left or centred text; side, top and bottom margin controls. | Extreme settings can reduce the usable reading area. |
 | Background and text visibility | Included | Editable backing colour, off-air/on-air opacity, text opacity and brightness. | The appearance preview does not change the content behind the prompter. |
 | Text edge | Optional | None, outline or shadow to separate words from a busy background. | Preview against the intended slides, call or camera picture. |
-| Focus band | Optional | Dim spoken text away from the reading line; adjustable strength. Production comments and inline directions keep their own appearance. | Strength appears only while enabled and is retained when off. Margin fading still applies to comments. No text is removed from the script or edit pack. |
+| Focus band | Optional | Dim spoken text away from the reading line; adjustable strength. Production comments and inline directions keep their own appearance; included in the reading workflow. | Strength appears only while enabled and is retained when off. Margin fading still applies to comments. No text is removed from the script or edit pack. |
 | Reading marker and progress | Optional | Reading-line position and marker, sentence highlight, progress and time-left display. | Display aids can be configured separately from the script content. |
 
 ## 07 · Windows, screens and capture
@@ -154,7 +154,7 @@ Reference: [Layout and display](guide/04-layout-and-display.md) and [Remotes and
 | Always on top | Optional | Keep the prompter above ordinary application windows. | Operating-system window rules and other topmost windows can affect stacking. |
 | Windowed and fullscreen use | Included | Size and position the prompter, or use a fullscreen reading view. | Multi-window arrangements need checking on the intended display. |
 | Horizontal and vertical mirror | Included | Separate mirror controls, including toolbar icons. | Set the flips appropriate to the physical teleprompter glass or monitor. |
-| Prompter monitor | Optional | Explicit display selection opens full screen. A manual cross-screen drag restores a centred normal window at 75% of the destination work area. | Windows drag handling clears eye-line mode and the pinned monitor choice. Same-display moves retain the chosen size. Requires a connected display. |
+| Prompter monitor | Optional | Explicit display selection opens full screen. A manual cross-screen drag restores a centred normal window at 75% of the destination work area; included in the reading workflow. | Windows drag handling clears eye-line mode and the pinned monitor choice. Same-display moves retain the chosen size. Requires a connected display. |
 | Eye-line strip | Optional | Compact reading strip with configurable screen height and reading-line position. | Lens alignment is a manual setup task. |
 | Click-through | Optional | Let pointer interaction reach content beneath the overlay. | Use the documented shortcut or remote control to regain interaction. |
 | Operator window | Optional | Separate upright controls and script/session status while the reading window is mirrored. | A second monitor is useful but not required. |
@@ -235,7 +235,14 @@ Reference: [Stream Deck installation, permissions and profiles](guide/06-remotes
 
 | Capability | Availability | Options and behaviour | Dependencies and limits |
 | --- | --- | --- | --- |
-| Companion plugin | Dependent | Sightline Stream Deck 0.2.0, paired with the app's supported control contract. | Requires Elgato Stream Deck software; the companion is an optional installation. |
+| Companion plugin | Dependent | RC2 preview companion 0.2.1.1, paired with the app's supported control contract; stable companion remains 0.2.0. | Requires Elgato Stream Deck software; the companion is an optional installation. |
+| Grouped controller functions | Optional | RC2 preview: related new assignments use a Function selector and function-specific key artwork; all 34 published key/dial UUIDs remain registered. | No compulsory conversion or automatic profile switch; legacy settings, states and custom images retain their rules. |
+| Controller preparation workflow | Optional | RC2 preview: Prepare, combined room/voice check, test start/stop/play, detected draft lock, recording-reference restore/save and return after a break. | Explicit input enablement and existing framing/audio/test acceptance still apply; no automatic pass. Available from Stream Deck and shared pad/phone/mapped inputs. |
+| Explicit controller reading modes | Optional | RC2 preview: Notes, Voice or Scroll; cycle skips disabled voice interfaces. Again reuses the current-section retake operation. | Pause before changing mode; script-forced Notes is respected. Existing two-mode keys retain their original behaviour. |
+| Configurable Adjustment dial | Optional | RC2 preview: pace, text size, manual scroll, sections or backing, with visible press/tap behaviour. | Existing six dial UUIDs retain behaviour. New Sections turns move once per event; pace/size repeat up to five steps. Requires a dial-capable device. |
+| Workflow status and review keys | Optional | RC2 preview: recorder/framing/preparation display, optional press, open current logged review and export a reviewed edit pack. | New displays default to no press. Export requires matching analysis and destination selection; no automatic transcription/model download. |
+| Virtual RC profiles | Optional | RC2 preview: separate on-screen Virtual 8 × 5 and Plus layouts; existing standard/OBS profiles remain available. | Import explicitly. Virtual device type 11 is separate from MCP Deck type 14. |
+| Explicit recorder utilities | Dependent | RC2 preview: separate OBS pause and resume functions with confirmed-state feedback. | OBS enabled, connected and recording controls permitted; ordinary prompting pause retains its configured behaviour. |
 | Supported desktop hosts | Dependent | Plugin host support for Windows and macOS. | The Linux app does not imply an official Elgato Linux host. |
 | Keys, Mobile and Pedal | Included | Ready-made profiles for supported Stream Deck models, including Mobile and Pedal. | Requires the corresponding Elgato hardware/software entitlement where applicable. |
 | Stream Deck + dials | Included | Dial-based controls for supported reading and framing adjustments. | Requires Stream Deck + and the appropriate action configuration. |
@@ -296,6 +303,9 @@ Reference: [Sound check and scratch audio](guide/05-recording-a-take.md) and [Pr
 | Physical camera lip sync | Limited | Use visible/audible claps and inspect camera/mic recordings; compare later references for drift. | No automatic verified camera latency estimate or universal sync correction is claimed. |
 | Sync adjustment | Dependent | Apply verified offsets in OBS or in the external edit workflow. | Sightline metadata is a timing aid; validate the result by looking and listening. |
 
+| Measured file offsets | Optional | RC1 preview: compare three audio windows for each master/clean-camera file; record method, scores, drift, source hashes and a session offset. | Optional local Python runtime. Ambiguous matches remain uncertain; audio alignment does not establish picture sync. |
+| Recorder-start sync reminder | Optional | RC1 preview: remind after confirmed recording when a recorded slate route is unavailable. | No automatic clap verification or picture-sync pass. Prompter and recorder state remain separate. |
+
 ## 14 · Takes, logs and production handover
 
 Reference: [Take log and edit pack](guide/05-recording-a-take.md) and [Production handover](guide/12-production-handover.md).
@@ -319,6 +329,11 @@ Reference: [Take log and edit pack](guide/05-recording-a-take.md) and [Productio
 | Scratch WAV handover | Optional | Include available independent mic recordings with their session/timing references. | Audio exists only when scratch capture was enabled and succeeded. |
 | External recording collection | Limited | Main OBS filename is resolved when reported; collect video, clean camera and clean mic masters separately. | The edit pack does not automatically locate or bundle every external recording file. |
 | Automatic finished video | Not included | Logs and edit packs support a human or an external editing agent. | Sightline does not render a finished promotional film or automatically edit the production master. |
+
+| Local post-record transcript | Optional | RC1 preview: explicitly transcribe the selected reference audio with local faster-whisper small.en; progress, cancellation and recording guard. | Separate Python environment and cached English model; about 500 MB model download. No automatic post-stop job or cloud upload. |
+| Timed transcript import | Optional | RC1 preview: import word/start/end or w/s/e JSON; choose session clock or provide a file offset. | Ordered finite word times required. No Python needed; an imported transcript still needs review. |
+| Recorded delivery comparison | Optional | RC1 preview: expected/heard substitutions, insertions and omission candidates, with single-take priority and listening links. | Low agreement is uncertain, not a confirmed misread. Original take choices remain unchanged. |
+| Command cut ranges | Optional | RC1 preview: post-record start/end ranges for recognised or missed attempts, with available live callback outcomes. | Review before cutting quoted commands. Legacy execution may be unknown; live callback times remain estimates and raw speech tracing stays opt-in. |
 
 ## 15 · Script review and rehearsal coaching
 
@@ -366,12 +381,12 @@ Reference: [Settings](guide/07-settings.md), [Screenshot gallery](guide/settings
 | Stable settings panel | Included | Eight task areas; 32 navigation homes with two additional OBS subviews. Controls and Components merge into Connections. | Approved navigation/control/sample composition is retained. Longer setup/result panels scroll centrally above a fixed footer; settings never migrate on resize. |
 | Settings example preview | Included | Inline example when width permits; movable non-modal companion on narrow windows. Both follow the same draft. | Settings remains usable while the companion is open. Examples never start prompting, a microphone or a recorder; the guide diagram is manual. |
 | Settings draft consistency | Included | Appearance previews; Apply persists, Save and close persists/closes, Cancel restores the last applied look. | Component installation, theme-library save/import, pairing reset, device tests and guide visibility/placement/reference saves are explicit actions. |
-| Numeric controls | Included | Slider/number pairs share whole-number or five-point increments; fine readouts have at most two decimals. | Display rounding preserves stored precision until the control is adjusted. |
+| Numeric controls | Included | Slider/number pairs share whole-number or five-point increments; fine readouts have at most two decimals; included in the reading workflow. | Display rounding preserves stored precision until the control is adjusted. |
 | Named section navigation | Included | Sidebar search and visible button subtabs for Text, Screens, Reading aids, Head guide, add-ons and the single OBS entry. | OBS Connection, Recording control and Profile and scenes share one sidebar home. Disabled OBS/speech subviews remain unavailable. |
 | Live Tools groups | Included | Prepare, Adjust and During take share saved values with Settings through separate controls. | Live changes are immediate; a short prompter uses a utility window instead of clipping the menu. |
 | Contextual explanations | Included | Small question-mark pills beside options explain purpose and consequences on hover, keyboard focus or click. Both Reading aids groups have explanations for every control. | Escape closes the explanation. Help follows the selected mode and enabled components. |
 | Apply, save and cancel | Included | Review changed settings, apply them and keep or cancel the dialog changes. | Some setup operations and permissions have their own explicit controls. |
-| Onboarding and components | Included | First-use setup plus Getting started at the top of Settings, showing the current script, mode, text appearance and optional-tool guidance. | Components remain optional. Opening guidance does not enable devices or integrations; changes use Apply. |
+| Onboarding and components | Included | First-use setup plus Getting started at the top of Settings, showing the current script, mode, text appearance and optional-tool guidance; included in the reading workflow. | Components remain optional. Opening guidance does not enable devices or integrations; changes use Apply. |
 | Restore defaults | Included | Getting started > Restore defaults returns preferences to the initial setup after confirmation. | Does not uninstall add-ons or delete scripts and recording media. |
 | Settings transfer | Optional | Import/export supported settings in JSON or XML, including structured pad layouts and word lists. | Secrets and sensitive opt-ins are not a way to bypass explicit permissions. |
 | Settings access | Included | Toolbar settings control and a Settings item in the hamburger menu. | The menu remains an accessible route when toolbar icons are less obvious. |
@@ -379,6 +394,8 @@ Reference: [Settings](guide/07-settings.md), [Screenshot gallery](guide/settings
 | Built-in user guide | Included | Illustrated guide, settings screenshots, samples and recording acceptance walkthrough. | The shared source guide is canonical; a separate GitHub wiki is not enabled. |
 | Credits and attribution | Included | Product credits and attribution grouped in About. | Third-party licence notices still accompany their relevant distributions. |
 | Accessibility support | Limited | Keyboard access, readable fonts, contrast themes, contextual explanations and consistent panels. | Manual screen-reader/magnification checks remain; no full accessibility-conformance claim. |
+
+| Guided coach marks | Optional | RC1 preview: first-use offer; rerun from Getting started or Help; Next/Back, Skip, Escape and Finish; skip disabled integrations. | Navigation only: no Apply, device activation or model download. Pause prompting and finish recording before the tour. |
 
 ## 18 · Privacy, diagnostics and review qualifications
 

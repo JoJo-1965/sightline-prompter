@@ -291,3 +291,19 @@ work or the alleged infringement; the
 You can contact us first, but that is not a condition of exercising your
 right to complain. We will date updates to this notice and explain
 material changes.
+
+
+## 1.3.0 RC1 preview: post-record review and guided tour
+
+Post-record review is explicitly started on selected local audio or an imported
+transcript. Optional faster-whisper processing stays on the computer. Installing
+its Python packages and model uses their download services; audio is not uploaded
+by this workflow and no API key is required. Transcripts, heard/script comparisons,
+command candidates, file hashes and local paths are stored in a profile sidecar
+and can be included in an edit pack you choose to export. Original media/logs
+are not overwritten. Existing opt-in raw command tracing remains separate from
+action/outcome callback metadata. Delete a review sidecar to remove that saved
+analysis; exported copies are managed separately.
+
+The optional tour stores a local first-use-offer flag, changes no functional
+preferences and starts no devices or downloads. No tour telemetry is sent.

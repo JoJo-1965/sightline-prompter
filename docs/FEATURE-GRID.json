@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "basis": "Sightline 1.2.0 release, documentation revision 16, 4 November 2026",
+  "basis": "Sightline 1.3.0 RC2 preview, documentation revision 18, 4 November 2026",
   "date": "4 November 2026",
-  "sourceBuild": "ac5e172",
-  "buildVersion": "1.2.0",
-  "publicationStatus": "released",
+  "sourceBuild": "67d879e",
+  "buildVersion": "1.3.0-rc.2",
+  "publicationStatus": "preview",
   "appRelease": "1.2.0",
-  "pluginRelease": "0.2.0",
-  "sourceUrl": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/FEATURE-GRID.md",
-  "sourceSha256": "e50d8fd7e76fa834ca3a807d5c2bd85a3a96abf615076d577ebb6c0f148b5fce",
+  "pluginRelease": "0.2.1.1",
+  "sourceUrl": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/1.3.0-rc1-recording-evidence/docs/FEATURE-GRID.md",
+  "sourceSha256": "6b946a183f44544f7c5fe3ab8ddc15cd563c32cacb52b19f7d23d5bf1fbb40e6",
   "support": [
     "Included",
     "Optional",
@@ -23,11 +23,11 @@
       "references": [
         {
           "name": "Getting started",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/01-getting-started.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/1.3.0-rc1-recording-evidence/docs/guide/01-getting-started.md"
         },
         {
           "name": "Policies",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/POLICIES.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/1.3.0-rc1-recording-evidence/docs/POLICIES.md"
         }
       ],
       "rows": [
@@ -99,11 +99,11 @@
       "references": [
         {
           "name": "Scrolling and voice",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/03-scrolling-and-voice.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/1.3.0-rc1-recording-evidence/docs/guide/03-scrolling-and-voice.md"
         },
         {
           "name": "Recording a take",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/05-recording-a-take.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/1.3.0-rc1-recording-evidence/docs/guide/05-recording-a-take.md"
         }
       ],
       "rows": [
@@ -205,7 +205,7 @@
       "references": [
         {
           "name": "Speech engines and command phrases",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/03-scrolling-and-voice.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/1.3.0-rc1-recording-evidence/docs/guide/03-scrolling-and-voice.md"
         }
       ],
       "rows": [
@@ -307,7 +307,7 @@
       "references": [
         {
           "name": "Writing scripts",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/02-scripts.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/1.3.0-rc1-recording-evidence/docs/guide/02-scripts.md"
         }
       ],
       "rows": [
@@ -391,11 +391,11 @@
       "references": [
         {
           "name": "Script directives",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/SCRIPT-DIRECTIVES.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/1.3.0-rc1-recording-evidence/docs/SCRIPT-DIRECTIVES.md"
         },
         {
           "name": "AI script brief",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/AI-SCRIPT-BRIEF.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/1.3.0-rc1-recording-evidence/docs/AI-SCRIPT-BRIEF.md"
         }
       ],
       "rows": [
@@ -491,11 +491,11 @@
       "references": [
         {
           "name": "Layout and display",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/04-layout-and-display.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/1.3.0-rc1-recording-evidence/docs/guide/04-layout-and-display.md"
         },
         {
           "name": "Settings",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/07-settings.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/1.3.0-rc1-recording-evidence/docs/guide/07-settings.md"
         }
       ],
       "rows": [
@@ -580,7 +580,7 @@
         {
           "name": "Focus band",
           "support": "Optional",
-          "options": "Dim spoken text away from the reading line; adjustable strength. Production comments and inline directions keep their own appearance.",
+          "options": "Dim spoken text away from the reading line; adjustable strength. Production comments and inline directions keep their own appearance; included in the reading workflow.",
           "limits": "Strength appears only while enabled and is retained when off. Margin fading still applies to comments. No text is removed from the script or edit pack."
         },
         {
@@ -597,11 +597,11 @@
       "references": [
         {
           "name": "Layout and display",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/04-layout-and-display.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/1.3.0-rc1-recording-evidence/docs/guide/04-layout-and-display.md"
         },
         {
           "name": "Remotes and screens",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/06-remotes-and-screens.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/1.3.0-rc1-recording-evidence/docs/guide/06-remotes-and-screens.md"
         }
       ],
       "rows": [
@@ -632,7 +632,7 @@
         {
           "name": "Prompter monitor",
           "support": "Optional",
-          "options": "Explicit display selection opens full screen. A manual cross-screen drag restores a centred normal window at 75% of the destination work area.",
+          "options": "Explicit display selection opens full screen. A manual cross-screen drag restores a centred normal window at 75% of the destination work area; included in the reading workflow.",
           "limits": "Windows drag handling clears eye-line mode and the pinned monitor choice. Same-display moves retain the chosen size. Requires a connected display."
         },
         {
@@ -697,15 +697,15 @@
       "references": [
         {
           "name": "Prepare to record",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/16-prepare-to-record.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/1.3.0-rc1-recording-evidence/docs/guide/16-prepare-to-record.md"
         },
         {
           "name": "Head guide and controls",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/06-remotes-and-screens.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/1.3.0-rc1-recording-evidence/docs/guide/06-remotes-and-screens.md"
         },
         {
           "name": "Production handover",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/12-production-handover.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/1.3.0-rc1-recording-evidence/docs/guide/12-production-handover.md"
         }
       ],
       "rows": [
@@ -849,11 +849,11 @@
       "references": [
         {
           "name": "Remotes and screens",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/06-remotes-and-screens.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/1.3.0-rc1-recording-evidence/docs/guide/06-remotes-and-screens.md"
         },
         {
           "name": "Shortcuts",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/08-shortcuts-and-troubleshooting.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/1.3.0-rc1-recording-evidence/docs/guide/08-shortcuts-and-troubleshooting.md"
         }
       ],
       "rows": [
@@ -901,7 +901,7 @@
       "references": [
         {
           "name": "Pad and phone setup",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/06-remotes-and-screens.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/1.3.0-rc1-recording-evidence/docs/guide/06-remotes-and-screens.md"
         }
       ],
       "rows": [
@@ -1003,15 +1003,57 @@
       "references": [
         {
           "name": "Stream Deck installation, permissions and profiles",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/06-remotes-and-screens.md#stream-deck"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/1.3.0-rc1-recording-evidence/docs/guide/06-remotes-and-screens.md#stream-deck"
         }
       ],
       "rows": [
         {
           "name": "Companion plugin",
           "support": "Dependent",
-          "options": "Sightline Stream Deck 0.2.0, paired with the app's supported control contract.",
+          "options": "RC2 preview companion 0.2.1.1, paired with the app's supported control contract; stable companion remains 0.2.0.",
           "limits": "Requires Elgato Stream Deck software; the companion is an optional installation."
+        },
+        {
+          "name": "Grouped controller functions",
+          "support": "Optional",
+          "options": "RC2 preview: related new assignments use a Function selector and function-specific key artwork; all 34 published key/dial UUIDs remain registered.",
+          "limits": "No compulsory conversion or automatic profile switch; legacy settings, states and custom images retain their rules."
+        },
+        {
+          "name": "Controller preparation workflow",
+          "support": "Optional",
+          "options": "RC2 preview: Prepare, combined room/voice check, test start/stop/play, detected draft lock, recording-reference restore/save and return after a break.",
+          "limits": "Explicit input enablement and existing framing/audio/test acceptance still apply; no automatic pass. Available from Stream Deck and shared pad/phone/mapped inputs."
+        },
+        {
+          "name": "Explicit controller reading modes",
+          "support": "Optional",
+          "options": "RC2 preview: Notes, Voice or Scroll; cycle skips disabled voice interfaces. Again reuses the current-section retake operation.",
+          "limits": "Pause before changing mode; script-forced Notes is respected. Existing two-mode keys retain their original behaviour."
+        },
+        {
+          "name": "Configurable Adjustment dial",
+          "support": "Optional",
+          "options": "RC2 preview: pace, text size, manual scroll, sections or backing, with visible press/tap behaviour.",
+          "limits": "Existing six dial UUIDs retain behaviour. New Sections turns move once per event; pace/size repeat up to five steps. Requires a dial-capable device."
+        },
+        {
+          "name": "Workflow status and review keys",
+          "support": "Optional",
+          "options": "RC2 preview: recorder/framing/preparation display, optional press, open current logged review and export a reviewed edit pack.",
+          "limits": "New displays default to no press. Export requires matching analysis and destination selection; no automatic transcription/model download."
+        },
+        {
+          "name": "Virtual RC profiles",
+          "support": "Optional",
+          "options": "RC2 preview: separate on-screen Virtual 8 × 5 and Plus layouts; existing standard/OBS profiles remain available.",
+          "limits": "Import explicitly. Virtual device type 11 is separate from MCP Deck type 14."
+        },
+        {
+          "name": "Explicit recorder utilities",
+          "support": "Dependent",
+          "options": "RC2 preview: separate OBS pause and resume functions with confirmed-state feedback.",
+          "limits": "OBS enabled, connected and recording controls permitted; ordinary prompting pause retains its configured behaviour."
         },
         {
           "name": "Supported desktop hosts",
@@ -1099,11 +1141,11 @@
       "references": [
         {
           "name": "Recording with OBS",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/11-obs.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/1.3.0-rc1-recording-evidence/docs/guide/11-obs.md"
         },
         {
           "name": "OBS setup assistant",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/15-obs-setup.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/1.3.0-rc1-recording-evidence/docs/guide/15-obs-setup.md"
         }
       ],
       "rows": [
@@ -1247,11 +1289,11 @@
       "references": [
         {
           "name": "Sound check and scratch audio",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/05-recording-a-take.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/1.3.0-rc1-recording-evidence/docs/guide/05-recording-a-take.md"
         },
         {
           "name": "Production handover",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/12-production-handover.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/1.3.0-rc1-recording-evidence/docs/guide/12-production-handover.md"
         }
       ],
       "rows": [
@@ -1314,6 +1356,18 @@
           "support": "Dependent",
           "options": "Apply verified offsets in OBS or in the external edit workflow.",
           "limits": "Sightline metadata is a timing aid; validate the result by looking and listening."
+        },
+        {
+          "name": "Measured file offsets",
+          "support": "Optional",
+          "options": "RC1 preview: compare three audio windows for each master/clean-camera file; record method, scores, drift, source hashes and a session offset.",
+          "limits": "Optional local Python runtime. Ambiguous matches remain uncertain; audio alignment does not establish picture sync."
+        },
+        {
+          "name": "Recorder-start sync reminder",
+          "support": "Optional",
+          "options": "RC1 preview: remind after confirmed recording when a recorded slate route is unavailable.",
+          "limits": "No automatic clap verification or picture-sync pass. Prompter and recorder state remain separate."
         }
       ]
     },
@@ -1323,11 +1377,11 @@
       "references": [
         {
           "name": "Take log and edit pack",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/05-recording-a-take.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/1.3.0-rc1-recording-evidence/docs/guide/05-recording-a-take.md"
         },
         {
           "name": "Production handover",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/12-production-handover.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/1.3.0-rc1-recording-evidence/docs/guide/12-production-handover.md"
         }
       ],
       "rows": [
@@ -1432,6 +1486,30 @@
           "support": "Not included",
           "options": "Logs and edit packs support a human or an external editing agent.",
           "limits": "Sightline does not render a finished promotional film or automatically edit the production master."
+        },
+        {
+          "name": "Local post-record transcript",
+          "support": "Optional",
+          "options": "RC1 preview: explicitly transcribe the selected reference audio with local faster-whisper small.en; progress, cancellation and recording guard.",
+          "limits": "Separate Python environment and cached English model; about 500 MB model download. No automatic post-stop job or cloud upload."
+        },
+        {
+          "name": "Timed transcript import",
+          "support": "Optional",
+          "options": "RC1 preview: import word/start/end or w/s/e JSON; choose session clock or provide a file offset.",
+          "limits": "Ordered finite word times required. No Python needed; an imported transcript still needs review."
+        },
+        {
+          "name": "Recorded delivery comparison",
+          "support": "Optional",
+          "options": "RC1 preview: expected/heard substitutions, insertions and omission candidates, with single-take priority and listening links.",
+          "limits": "Low agreement is uncertain, not a confirmed misread. Original take choices remain unchanged."
+        },
+        {
+          "name": "Command cut ranges",
+          "support": "Optional",
+          "options": "RC1 preview: post-record start/end ranges for recognised or missed attempts, with available live callback outcomes.",
+          "limits": "Review before cutting quoted commands. Legacy execution may be unknown; live callback times remain estimates and raw speech tracing stays opt-in."
         }
       ]
     },
@@ -1441,11 +1519,11 @@
       "references": [
         {
           "name": "Script health",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/02-scripts.md#script-health-before-you-read"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/1.3.0-rc1-recording-evidence/docs/guide/02-scripts.md#script-health-before-you-read"
         },
         {
           "name": "Rehearsal coaching",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/05-recording-a-take.md#rehearsal-coaching"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/1.3.0-rc1-recording-evidence/docs/guide/05-recording-a-take.md#rehearsal-coaching"
         }
       ],
       "rows": [
@@ -1511,11 +1589,11 @@
       "references": [
         {
           "name": "Working with AI and the local API",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/09-working-with-ai.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/1.3.0-rc1-recording-evidence/docs/guide/09-working-with-ai.md"
         },
         {
           "name": "Setting up your AI",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/10-setting-up-your-ai.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/1.3.0-rc1-recording-evidence/docs/guide/10-setting-up-your-ai.md"
         }
       ],
       "rows": [
@@ -1605,15 +1683,15 @@
       "references": [
         {
           "name": "Settings",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/07-settings.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/1.3.0-rc1-recording-evidence/docs/guide/07-settings.md"
         },
         {
           "name": "Screenshot gallery",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/settings-gallery.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/1.3.0-rc1-recording-evidence/docs/guide/settings-gallery.md"
         },
         {
           "name": "User guide",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/README.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/1.3.0-rc1-recording-evidence/docs/guide/README.md"
         }
       ],
       "rows": [
@@ -1644,7 +1722,7 @@
         {
           "name": "Numeric controls",
           "support": "Included",
-          "options": "Slider/number pairs share whole-number or five-point increments; fine readouts have at most two decimals.",
+          "options": "Slider/number pairs share whole-number or five-point increments; fine readouts have at most two decimals; included in the reading workflow.",
           "limits": "Display rounding preserves stored precision until the control is adjusted."
         },
         {
@@ -1674,7 +1752,7 @@
         {
           "name": "Onboarding and components",
           "support": "Included",
-          "options": "First-use setup plus Getting started at the top of Settings, showing the current script, mode, text appearance and optional-tool guidance.",
+          "options": "First-use setup plus Getting started at the top of Settings, showing the current script, mode, text appearance and optional-tool guidance; included in the reading workflow.",
           "limits": "Components remain optional. Opening guidance does not enable devices or integrations; changes use Apply."
         },
         {
@@ -1718,6 +1796,12 @@
           "support": "Limited",
           "options": "Keyboard access, readable fonts, contrast themes, contextual explanations and consistent panels.",
           "limits": "Manual screen-reader/magnification checks remain; no full accessibility-conformance claim."
+        },
+        {
+          "name": "Guided coach marks",
+          "support": "Optional",
+          "options": "RC1 preview: first-use offer; rerun from Getting started or Help; Next/Back, Skip, Escape and Finish; skip disabled integrations.",
+          "limits": "Navigation only: no Apply, device activation or model download. Pause prompting and finish recording before the tour."
         }
       ]
     },
@@ -1727,11 +1811,11 @@
       "references": [
         {
           "name": "Privacy and accessibility policies",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/POLICIES.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/1.3.0-rc1-recording-evidence/docs/POLICIES.md"
         },
         {
           "name": "Acceptance walkthrough",
-          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/guide/14-acceptance-test.md"
+          "href": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/1.3.0-rc1-recording-evidence/docs/guide/14-acceptance-test.md"
         }
       ],
       "rows": [

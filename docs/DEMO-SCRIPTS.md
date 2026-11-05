@@ -1,8 +1,12 @@
 # Start here and focused demos
 
+RC2's Start here notes include the grouped controller workflow. The optional
+RC2 profiles are separate imports. Use a disposable test, explicitly enable
+inputs, review picture/sound, save a checked reference and retain a fallback.
+
 Open **Files > Sample scripts > Start here: Sightline feature tour**.
 The same `welcome.md` opens automatically on a fresh profile with no scripts.
-It is a guided tour with twelve stops, rather than a production recording.
+It is a guided sample with fourteen stops, rather than a production recording.
 It works in Scroll mode without enabling a camera, microphone, AI or recorder.
 
 The tour covers transparency over slides/calls/camera previews; Scroll, Voice
@@ -44,3 +48,8 @@ and linked modes behave differently at a prompting pause; test the selected
 mode before production. `stop` pauses prompting; explicit `finish` / `end`
 finishes OBS with permission. `restart section` retakes this section;
 `restart` alone resets the script.
+
+
+RC1 adds two final stops for post-record review and the cancelable Settings tour.
+Use [post-record setup](guide/19-post-record-review.md) for local runtime/import
+instructions. A tour never starts a device or applies preferences.

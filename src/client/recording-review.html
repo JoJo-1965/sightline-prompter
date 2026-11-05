@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; media-src 'self' file:; connect-src 'none'">
+  <title>Sightline Recording review</title>
+  <link rel="stylesheet" href="recording-review.css">
+</head>
+<body>
+  <header><div><p class="eyebrow">Sightline · 1.3.0 RC1 preview</p><h1>Recording review</h1></div><button id="help" type="button">How this works</button></header>
+  <p class="intro">Use the recorded audio to review timing and delivery. Keep your original log, take choices and recordings; save the new evidence beside them.</p>
+  <div class="status" id="status" role="status" aria-live="polite">Choose a finished session.</div>
+  <main>
+    <section aria-labelledby="session-title">
+      <h2 id="session-title">1 · Session and sound</h2>
+      <div class="actions"><button id="choose-log" type="button">Choose take log…</button><span id="session-summary">No session selected</span></div>
+      <div class="actions"><button id="choose-reference" type="button">Choose reference audio…</button><span id="reference-summary">Scratch audio is selected automatically when available.</span></div>
+      <label class="offset">Reference file starts at session time<input id="reference-offset" type="number" step="0.001" placeholder="Seconds" aria-describedby="offset-help"><span>seconds</span></label>
+      <p class="hint" id="offset-help">Scratch audio uses the start saved in its log. Other files need a known session offset. This is an audio clock, not a picture-sync check.</p>
+      <audio id="player" controls preload="metadata" aria-label="Review the selected reference soundtrack"></audio>
+    </section>
+    <section aria-labelledby="transcript-title">
+      <h2 id="transcript-title">2 · Transcribe or import</h2>
+      <p>Transcription runs locally after the take. Model words and times still need listening and editorial review.</p>
+      <div class="actions"><button id="check" type="button">Check local runtime</button><button id="choose-python" type="button">Choose Python…</button><span id="runtime-summary">Optional local Python environment</span></div>
+      <div class="actions"><button id="download" type="button">Download small.en model</button><button id="transcribe" class="primary" type="button">Transcribe reference audio</button></div>
+      <p class="hint">The optional model download is about 500 MB. Audio stays on this computer. Importing a timed JSON transcript works without Python.</p>
+      <div class="import-row"><label>Imported transcript clock<select id="import-clock"><option value="session">Session clock</option><option value="file">File clock</option></select></label><label id="import-offset-label" hidden>File start in session seconds<input id="import-offset" type="number" step="0.001" placeholder="Enter known offset"></label><button id="import" type="button">Import timed transcript…</button></div>
+      <p class="hint" id="transcript-summary">No post-record transcript yet.</p>
+    </section>
+    <section aria-labelledby="sync-title">
+      <h2 id="sync-title">3 · Align each recording</h2>
+      <p>Compare the scratch soundtrack with each master or clean-camera file. Three waveform checks estimate its own offset and expose drift or uncertain matches.</p>
+      <button id="add-media" type="button">Add a recording…</button>
+      <div id="recordings" class="recording-list"></div>
+      <p class="warning">Audio alignment does not prove picture-to-sound sync. Review a slate or visible clap captured after the recorder started. A clap before Record cannot verify that file.</p>
+    </section>
+    <section class="review-section" aria-labelledby="review-title">
+      <h2 id="review-title">4 · Listen and hand over</h2>
+      <p id="review-summary">Transcribe or import to compare the script with the recorded words.</p>
+      <div id="review-takes"></div>
+      <details><summary id="commands-summary">Command cut ranges</summary><div id="commands"></div></details>
+      <p class="hint">Differences are candidates, not confirmed mistakes. Single-take sections are prioritised. Command ranges require review before removal; quoted commands may be part of the performance.</p>
+      <div class="actions"><button id="export" class="primary" type="button">Export reviewed edit pack…</button><span>Original live estimates are retained as <code>live-*</code> files.</span></div>
+    </section>
+  </main>
+  <footer><span id="privacy">Local processing · no API key · no automatic cuts</span><button id="cancel" type="button" disabled>Cancel analysis</button></footer>
+  <script type="module" src="recording-review-ui.js"></script>
+</body>
+</html>

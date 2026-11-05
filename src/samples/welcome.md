@@ -172,7 +172,7 @@ AI remains optional, and recording commands require their own permissions.
 
 ## Take the next step {target: 0:25}
 
-<!-- TRY. The yellow pill should now show section 12 of 12. With commands
+<!-- TRY. The yellow pill should now show section 12 of 14. With commands
 enabled, try Prompter, section twelve, then Prompter, restart section.
 For recording exercises use Recording preview or Framing, audio and reference.
 For a call use either Notes sample. F1 opens contextual help and the User Guide.
@@ -184,5 +184,36 @@ available recording references. Live word timings are estimates, so final
 cuts and captions need checking against the recording.
 
 Choose a focused sample to practise, or save a copy and make the script yours.
+
+{stop}
+
+
+## Review the recorded words {target: 0:20}
+
+<!-- TRY AFTER RECORDING. Open File > Review recorded audio, or Recording > Takes.
+Choose a finished session. Use the optional local model or import a timed JSON
+transcript with the correct session mapping. Listen before trusting a difference.
+Measure each master separately; audio alignment is not a picture-sync check. -->
+
+After a session, I can compare the recorded words with the script and review
+command ranges for the edit. My original log and keeper choices stay intact.
+The transcript gives me evidence to listen to, rather than an automatic verdict.
+
+{stop}
+
+## Find your way around {target: 0:15}
+
+<!-- RC2 CONTROLLERS. Optional: open Connections > Pad and phone, or install
+the separate RC2 Stream Deck companion/profile. Choose a Function per key.
+Try Again while paused, then Notes and Scroll. Prepare to record opens the
+real checks; no controller accepts picture/sound or starts capture on assignment.
+Keep a Play/pause fallback. Use a disposable clip for recorder checks. -->
+
+<!-- TRY WHILE PAUSED. Getting started > Take a guided tour, or Help > Take a
+guided tour. Next and Back navigate. Skip tour or Escape cancels. Run it again
+whenever needed; it changes no functional settings and enables no devices. -->
+
+The guided tour points out the main controls. I can leave at any point and
+rerun it whenever I need a reminder. Disabled connections stay out of the way.
 
 {stop}

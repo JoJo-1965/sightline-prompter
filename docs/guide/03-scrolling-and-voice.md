@@ -1,5 +1,25 @@
 # Scrolling and voice
 
+## RC1: recorded section-number fixes
+
+In 1.3.0 RC1, say **Prompter, section twelve** or **Prompter twelve**.
+**Section twelve** also works at a phrase boundary; a bare **twelve** is
+ordinary speech. **Prompter, next section** advances and **Prompter, restart
+section** repeats this section. **Prompter, finish recording** or **Prompter,
+finish** ends the recorder only when enabled and permitted; plain **stop**
+pauses prompting.
+
+The recorded wake mishearings `popter` and `pumpter` are accepted. A split
+number such as `twel` then `ve` can wait four seconds from that fragment,
+with a hard six-second wake limit. Recording commands retain four seconds.
+A fresh, separately finalised wake also separates consecutive section attempts.
+The original slot-04 section 7/12 and finish-tail audio is a regression case;
+other voices and microphones can still need tuning or a controller fallback.
+
+[Post-record command cut ranges](19-post-record-review.md) are review
+suggestions, including attempts that did not execute. Callback-time metadata
+is not audio alignment; raw command tracing remains an explicit preference.
+
 ## RC 1 recording feedback
 
 **Prompter, restart section** (or **restart sections**, **again**, **retake**)

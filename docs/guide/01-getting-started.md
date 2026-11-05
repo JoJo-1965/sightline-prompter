@@ -1,5 +1,10 @@
 # Getting started
 
+For an optional walkthrough, choose **Getting started > Take a guided tour…**
+in Settings or **Help > Take a guided tour…**. Next/Back move between topics;
+Skip or Escape ends the tour. You can rerun it and it applies no preferences.
+See the [tour reference](20-guided-tour.md).
+
 ## Set up once, check before a session
 
 With no saved scripts, Sightline opens **Start here: Sightline feature tour**.

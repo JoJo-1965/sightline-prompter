@@ -1,0 +1,30 @@
+import assert from "node:assert/strict";
+import { PREPARATION_COMMANDS, preparationBlockReason } from "../src/client/controller-workflow.js";
+import { CONTROL_ACTIONS, controlAction, controlView, normalisePadLayout } from "../src/client/control-actions.js";
+const preparation = { open: true, hasReference: true, canLock: true, canTest: true, canPlay: true, canSave: true };
+for ( const action of Object.keys( PREPARATION_COMMANDS ) ) {
+	assert.equal( preparationBlockReason( action, { preparation: { ...preparation, testRecording: action === "test-recording-stop" } } ), null, action );
+	assert.ok( preparationBlockReason( action, { preparation, scrolling: true } ), action );
+	assert.ok( controlAction( action ), action );
+}
+assert.match( preparationBlockReason( "recording-reference-save", { preparation: { open: true } } ), /Review and accept/ );
+assert.match( preparationBlockReason( "guide-lock-current", { preparation: { open: true } } ), /detect/ );
+assert.match( preparationBlockReason( "test-recording-start", { preparation: { ...preparation, canTest: false } } ), /Confirm framing and audio/ );
+assert.match( preparationBlockReason( "test-recording-start", { preparation: { ...preparation, testRecording: true } } ), /Finish/ );
+assert.equal( preparationBlockReason( "test-recording-stop", { preparation: { ...preparation, testRecording: true } } ), null );
+assert.match( preparationBlockReason( "recording-reference-restore", { preparation: {} } ), /Save a recording reference/ );
+const legacy = [ "restart", "previous-section", "toggle", "next-section", "guide-eyes-lock", "obs-finish", "slot-4" ];
+assert.deepEqual( normalisePadLayout( { columns: 6, buttons: legacy, holdToFinish: false } ), { columns: 6, buttons: legacy, holdToFinish: false } );
+assert.deepEqual( controlAction( "guide-match-ideal" ), { action: "head-guide-control", value: "reset-pose" } );
+assert.deepEqual( controlAction( "recording-reference-restore" ), { action: "recording-reference-restore" } );
+assert.deepEqual( controlAction( "status" ), { action: "toggle" } );
+assert.equal( controlView( "mode-scroll", { readingModeLocked: true } ).disabled, true );
+assert.equal( controlView( "mode-voice", { scrolling: true } ).disabled, true );
+assert.equal( controlView( "mode-voice", { microphoneEnabled: false } ).disabled, true );
+const obs = { enabled: true, controls: true, connection: "connected", recording: "recording" };
+assert.equal( controlView( "obs-pause", { obs } ).disabled, false );
+assert.equal( controlView( "obs-resume", { obs } ).disabled, true );
+assert.equal( controlView( "obs-pause", { obs: { ...obs, controls: false } } ).hidden, true );
+assert.equal( controlView( "obs-resume", { obs: { ...obs, recording: "paused" } } ).disabled, false );
+assert.equal( new Set( CONTROL_ACTIONS.map( item => item.id ) ).size, CONTROL_ACTIONS.length );
+console.log( "Controller workflow: preparation gates, reference/ideal separation, unchanged persisted IDs, explicit modes and OBS pause/resume pass" );

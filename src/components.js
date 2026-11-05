@@ -11,6 +11,7 @@ export const KIT_FILES = [
 	"scripts/sightline.mjs", "scripts/check-script.mjs", "scripts/heard-report.mjs", "scripts/edit-pack.mjs",
 	"scripts/sightline-mcp.mjs", "scripts/sightline-mcp-LICENSE.txt", "docs/MCP.md",
 	"src/heard-report.js", "src/recordings.js", "src/client/edit-pack.js", "src/client/take-log.js", "src/client/obs-position.js",
+	"src/recording-review-store.js", "src/client/post-record.js", "src/client/voice-commands.js", "src/client/sound-alike.js", "src/client/word-fixes.js",
 	"src/client/script-health.js", "src/client/rehearsal-coach.js",
 	"docs/script-directives.json", "docs/AI-SCRIPT-BRIEF.md", "docs/SCRIPT-DIRECTIVES.md", "docs/EDIT-PACK.md",
 	"src/samples/batch-module.md", "src/samples/single-take.md", "src/samples/voice-and-stops.md", "src/samples/talking-points.md", "src/samples/notes.md",

@@ -5,10 +5,27 @@ import { pathToFileURL } from "node:url";
 import { protectWindow } from "./capture-policy.js";
 import { checkedFramingReference, framingPose, framingObservation } from "./client/framing-position.js";
 import { guidePose } from "./client/guide-pose.js";
+import { PREPARATION_COMMANDS, preparationBlockReason } from "./client/controller-workflow.js";
+import { randomUUID } from "node:crypto";
 
 protocol.registerSchemesAsPrivileged( [ { scheme: "sightline", privileges: { standard: true, secure: true, supportFetchAPI: true, corsEnabled: true } } ] );
 
-export function createPreRecord( { dir, prompter, getSettings, saveSettings, busy, guide, obs, probeObs = async () => false } ) {
+export function createPreRecord( { dir, prompter, getSettings, saveSettings, busy, guide, obs, probeObs = async () => false, onStatus = () => {} } ) {
+	const requests = new Map();
+	let workflow = {};
+	const controllerStatus = () => ( { ...workflow, open: !!window && !window.isDestroyed() && window.isVisible(), hasReference: !!getSettings().headGuideReference || !!getSettings().preRecordReference, testRecording: recording, testSaving: status.test.state === "saving", test: status.test.state } );
+	const command = async action => {
+		const reason = preparationBlockReason( action, { preparation: controllerStatus(), scrolling: busy() } );
+		if ( reason ) throw new Error( reason );
+		if ( action === "prepare-recording" ) return open();
+		if ( !await open() ) throw new Error( "Preparation is unavailable during a recording" );
+		return new Promise( ( resolve, reject ) => {
+			const id = randomUUID();
+			const timer = setTimeout( () => { requests.delete( id ); reject( new Error( "Preparation did not confirm this action" ) ); }, 20000 );
+			requests.set( id, { resolve, reject, timer } );
+			guideAction( "controller", { id, action: PREPARATION_COMMANDS[action] } ).catch( error => { clearTimeout( timer ); requests.delete( id ); reject( error ); } );
+		} );
+	};
 	let window = null, recording = false, quitting = false, lastTestFile = null;
 	let tracking = false, pictureActive = false, ready = false, pendingActions = [], installed = false, scenes = [], cameras = [], cameraId = getSettings().preRecordCameraId ?? "default";
 	const target = () => ( { x: getSettings().headGuideX ?? 0, y: ( getSettings().headGuideY ?? 0 ) - 14 / 562.5 * 100, size: ( getSettings().headGuideScale ?? 1 ) * 100 } );
@@ -31,6 +48,16 @@ export function createPreRecord( { dir, prompter, getSettings, saveSettings, bus
 	};
 	let status = { test: { state: getSettings().preRecordReference?.testReviewed ? "saved" : "idle", at: getSettings().preRecordReference?.savedAt ?? null }, meter: { active: false } };
 	const publish = ( value ) => {
+		if ( value?.controllerResult && requests.has( value.controllerResult.id ) ) {
+			const request = requests.get( value.controllerResult.id );
+			clearTimeout( request.timer ); requests.delete( value.controllerResult.id );
+			if ( value.controllerResult.ok === true ) request.resolve( { ok: true } );
+			else request.reject( new Error( String( value.controllerResult.error ?? "Preparation action failed" ).slice( 0, 300 ) ) );
+		}
+		if ( value?.workflow ) {
+			workflow = Object.fromEntries( [ "measuring", "canLock", "canTest", "canPlay", "canSave" ].map( key => [ key, value.workflow[key] === true ] ) );
+			workflow.frame = { kind: String( value.workflow.frame?.kind ?? "lost" ).slice( 0, 20 ), text: String( value.workflow.frame?.text ?? "Not detected" ).slice( 0, 160 ), aligned: value.workflow.frame?.aligned === true };
+		}
 		if ( Array.isArray( value?.inputs ) ) {
 			cameras = value.inputs.filter( item => typeof item.deviceId === "string" && item.deviceId.length <= 512 && typeof item.label === "string" ).slice( 0, 64 ).map( item => ( { deviceId: item.deviceId, label: item.label.slice( 0, 160 ) } ) );
 			if ( typeof value.cameraId === "string" && ( value.cameraId === "default" || cameras.some( item => item.deviceId === value.cameraId ) ) ) cameraId = value.cameraId;
@@ -47,10 +74,11 @@ export function createPreRecord( { dir, prompter, getSettings, saveSettings, bus
 		if ( [ "idle", "recording", "saving", "review", "passed", "failed", "stale" ].includes( value?.test?.state ) ) status.test = { state: value.test.state, at: new Date().toISOString() };
 		if ( typeof value?.meter?.active === "boolean" ) status.meter = { active: value.meter.active, level: Math.max( -100, Math.min( 0, Number.isFinite( value.meter.level ) ? value.meter.level : -100 ) ), peak: Math.max( -100, Math.min( 0, Number.isFinite( value.meter.peak ) ? value.meter.peak : -100 ) ), phase: value.meter.phase === "voice" ? "voice" : "room" };
 		if ( !prompter.isDestroyed() ) prompter.webContents.send( "preRecordStatus", status );
+		onStatus( controllerStatus() );
 	};
 	protocol.handle( "sightline", ( request ) => {
 		const url = new URL( request.url ), name = url.pathname.slice( 1 );
-		const allowed = /^(pre-record\.(html|css|js)|framing-position\.js|guide-pose\.js|framing-worker-bundle\.js|vision-runtime\/[a-zA-Z0-9_.-]+)$/.test( name );
+		const allowed = /^(pre-record\.(html|css|js)|controller-workflow\.js|framing-position\.js|guide-pose\.js|framing-worker-bundle\.js|vision-runtime\/[a-zA-Z0-9_.-]+)$/.test( name );
 		if ( url.hostname !== "prepare" || !allowed ) return new Response( "Not found", { status: 404 } );
 		return net.fetch( pathToFileURL( path.join( dir, "client", name ) ).href );
 	} );
@@ -91,6 +119,8 @@ export function createPreRecord( { dir, prompter, getSettings, saveSettings, bus
 			}
 		} );
 		window.on( "closed", () => {
+			for ( const request of requests.values() ) { clearTimeout( request.timer ); request.reject( new Error( "Preparation closed before confirming the action" ) ); }
+			requests.clear();
 			tracking = pictureActive = ready = false;
 			pendingActions = [];
 			guide?.feedback( { enabled: false, active: false, person: null } );
@@ -160,7 +190,7 @@ export function createPreRecord( { dir, prompter, getSettings, saveSettings, bus
 		throw new Error( "Unknown preparation action" );
 	};
 	const activity = ( event, value ) => {
-		if ( trusted( event ) ) recording = value === true;
+		if ( trusted( event ) ) { recording = value === true; publish( {} ); }
 	};
 	const report = ( event, value ) => {
 		if ( trusted( event ) ) publish( value );
@@ -175,7 +205,9 @@ export function createPreRecord( { dir, prompter, getSettings, saveSettings, bus
 	ipcMain.handle( "preRecordStatus", getStatus );
 	ipcMain.on( "closePreRecord", close );
 	ipcMain.handle( "preRecord", action );
-	return { open, sync, guideAction, dispose() {
+	return { open, sync, guideAction, command, status: controllerStatus, dispose() {
+		for ( const request of requests.values() ) { clearTimeout( request.timer ); request.reject( new Error( "Preparation closed" ) ); }
+		requests.clear();
 		quitting = true;
 		window?.destroy();
 		ipcMain.removeListener( "openPreRecord", open );

@@ -194,6 +194,14 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [],
 			if ( current ) current.atEnd = atEnd;
 		},
 
+		// Callback-time evidence contains no raw speech unless explicitly supplied.
+		commandAttempt( { action = null, value = null, outcome, startAt = null, heard = null } ) {
+			const now = clock();
+			event( "voice-command", { action, value, outcome,
+				start: startAt === null || now - startAt > 15000 ? null : since( Math.min( now, startAt ) ), end: since( now ),
+				timingSource: "live-callback-estimate", reviewRequired: true, ...( heard ? { heard } : {} ) } );
+		},
+
 		// Before a jump: "again" (a retake), "back", "next" or "top".
 		jump( reason ) {
 			event( "jump", { reason } );
