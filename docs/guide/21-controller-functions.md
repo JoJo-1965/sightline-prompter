@@ -1,6 +1,6 @@
 # Controller functions — RC2 preview
 
-Use these with Sightline **1.3.0 RC2** and companion **0.2.1.1**. Existing keys
+Use these with Sightline **1.3.0 RC2** and companion **0.2.1.1 or later**. Existing keys
 continue to work. New assignments are optional; no conversion is required.
 
 ## One function per key
@@ -84,3 +84,11 @@ The optional **Sightline Virtual RC2** and **Sightline Plus RC2** profiles are
 separate test layouts. Import them rather than replacing an existing profile.
 The on-screen Virtual Stream Deck is device type 11; MCP Deck is a separate
 device and is not the same interface.
+
+Companion **0.2.1.3** adds Galleon, MK.2/Scissor and fitting Mobile/Virtual
+presets. **0.2.1.4** refreshes help and release notes with the same controls.
+Choose the grid before importing a separate profile. The profile helper uses
+reported dimensions and leaves the current layout intact if no preset fits.
+Macro/Studio/other hardware uses qualified manual assignments; a matching key
+count alone does not make another product's profile suitable. The companion's
+device matrix owns those export/host limits; physical acceptance remains UAT.

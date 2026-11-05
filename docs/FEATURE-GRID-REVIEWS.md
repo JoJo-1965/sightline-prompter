@@ -1,5 +1,15 @@
 # Feature-matrix review record
 
+## Companion help and release-note refresh — 5 November 2026
+
+Companion 0.2.1.4 retains .3 control/profile behaviour. Consolidated listing
+release notes and roadmap, corrected current setup paths and canonical help,
+and separated legacy/RC2 requirements, manual guide adjustments from optional
+detection, and test clips from production recording. Updated controller wiki
+and unpublished JL review. No app capability, matrix row, script, artwork or
+layout contract changes; preserve the frozen app RC2 snapshot and installer.
+Companion inspector captures and validation accompany its separate refresh.
+
 ## Companion current-device follow-up — 4 November 2026
 
 Companion 0.2.1.3 adds Galleon layered dial profiles, MK.2/Scissor exports,
