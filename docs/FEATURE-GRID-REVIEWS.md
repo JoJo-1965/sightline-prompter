@@ -1,5 +1,20 @@
 # Feature-matrix review record
 
+## Companion core layouts and palettes — 5 November 2026
+
+Companion 0.2.1.5 adds fifteen opt-in Core Pages imports: four native linked
+layouts, a deliberately reduced six-key set and styled key backgrounds with
+state colours preserved. CORE-PAGES.md owns their current options/requirements
+table alongside DEVICE-SUPPORT.md. Native Virtual folder/return checks pass;
+the original Virtual profile was restored. Source/SDK colour checks and archive
+guards retain all 84 previous exports. Updated the controller wiki, companion
+help, preview screenshot, notes, roadmap and unpublished JL copy together.
+These are new companion navigation/appearance features; no app binary, script
+syntax or approved Settings layout change is made. Preserve the frozen app
+RC2 matrix/installer pairing and use the separately versioned companion matrix
+for this follow-up. Advance the combined app/JL snapshot at publication review;
+stable website/downloads remain unchanged. Physical/Mac acceptance is qualified.
+
 ## Companion help and release-note refresh — 5 November 2026
 
 Companion 0.2.1.4 retains .3 control/profile behaviour. Consolidated listing

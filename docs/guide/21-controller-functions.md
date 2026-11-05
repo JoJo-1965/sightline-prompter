@@ -92,3 +92,14 @@ reported dimensions and leaves the current layout intact if no preset fits.
 Macro/Studio/other hardware uses qualified manual assignments; a matching key
 count alone does not make another product's profile suitable. The companion's
 device matrix owns those export/host limits; physical acceptance remains UAT.
+
+Companion **0.2.1.5** adds optional **Core Pages RC2** profiles for smaller
+decks. Six keys use four layouts only: Read, Record, Prepare and Adjust.
+Read contains three core reading controls plus named links to the other
+layouts. Each subpage returns through its upper-left Read key. Larger small
+decks add useful controls while keeping the same four groups. Pedal stays direct.
+The preset's live key backgrounds use teal/plum/amber/blue; recording and
+warnings retain their actual-state colours. **Key background** in a placed
+key's settings changes that key, not the whole page or virtual panel frame.
+Earlier profiles and custom-image behaviour remain unchanged with Original
+colours. Use the companion's Core pages guide and preview image for layouts.
