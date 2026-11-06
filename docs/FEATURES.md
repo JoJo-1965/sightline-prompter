@@ -10,6 +10,8 @@ The production agent verifies the actual gesture and recording orientation;
 Sightline does not insert an asset or detect the pointing movement.
 Try the **Pointing and graphic cues** sample and read the
 [RC3 notes](RELEASE-1.3.0-rc.3.md).
+The [authoring/production contract](POINTING-CUE-AUTHORING.md) keeps graphic
+labels, presenter directions and spoken anchors consistent in plan and script.
 
 ## 1.3.0 RC2 controller additions
 

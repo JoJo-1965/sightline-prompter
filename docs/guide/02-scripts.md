@@ -28,6 +28,9 @@ Open **Files > Sample scripts > Pointing and graphic cues** to try it.
 The [production handoff](12-production-handover.md#pointing-and-graphics-in-rc3)
 includes structured cue files tied to the captured script and each take.
 The editor still verifies the actual gesture and recorded orientation.
+Authoring agents should follow the
+[cue planning contract](../POINTING-CUE-AUTHORING.md), matching labels and spoken
+anchors in the directions and final generated script.
 
 ## Script health before you read
 

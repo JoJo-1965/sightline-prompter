@@ -65,6 +65,9 @@ Sightline does not find or insert the graphic automatically.
 
 Try **Files > Sample scripts > Pointing and graphic cues**. See
 [edit-pack details](EDIT-PACK.md#pointing-and-graphic-intent-13-rc3).
+Script writers and production agents should use the same
+[cue plan and handoff contract](POINTING-CUE-AUTHORING.md), including verification
+of generated scripts and matching labels in production directions.
 
 ## Script settings
 

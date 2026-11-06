@@ -5,8 +5,8 @@ description: Use when working with Sightline Prompter around a recording session
 
 # Running a Sightline session: before, during and after
 
-**Where Sightline is:** the managed AI kit from **Settings > Components
-> AI kit > Install > Open folder**, or the Sightline Prompter source folder, a clone of
+**Where Sightline is:** the managed AI kit from **Settings > Connections
+> Apps and add-ons > AI kit**, or the Sightline Prompter source folder, a clone of
 https://github.com/JoJo-1965/sightline-prompter. Use the `SIGHTLINE_HOME`
 environment variable if it's set; otherwise, if this skill sits in that
 repo's `skills` folder, it's two folders up; otherwise ask the user. Below,
@@ -23,6 +23,23 @@ Run it with no verb for its help. Never read out, print or copy the token
 from `remote-control.json`.
 
 ## Before: load the scripts
+
+### Pointing cues: authoring to production
+
+For RC3 gestures and graphic inserts, read
+`<sightline>/docs/POINTING-CUE-AUTHORING.md`. Require matching graphic labels,
+presenter-relative directions and spoken anchors in the direction plan and
+final `[point left: label]` script cues. The whole cue stays silent, including
+quoted labels. Verify generated Sightline cues are outside HTML comments;
+Academy's source wrapper `<!--[point left: label]-->` must be converted first.
+
+After recording, use `production-cues.json`, CSV and `PRODUCTION-CUES.md` with
+the captured `scriptSnapshotId`, section/take and keeper selection. Resolve
+the intended graphic from the plan; a label is not an asset file. Confirm
+the visible gesture and actual recorded orientation before placing it.
+Reviewed transcript anchors are preferred, live timings are estimates and
+null is unavailable, not zero. Never retrofit a new draft into old take evidence
+or infer output mirroring from the preview. Flag missing cues/assets/gestures.
 
 For occasional configuration, Help > Getting started links to existing setup
 screens; Tools > Session check links to script review, sound, framing, enabled

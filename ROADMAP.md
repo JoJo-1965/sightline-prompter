@@ -27,6 +27,11 @@ Use existing inline appearance controls. The editor must verify the gesture,
 output orientation and asset; automatic gesture detection/insertion is deferred.
 See the [RC3 notes](docs/RELEASE-1.3.0-rc.3.md). RC1/RC2 features remain included.
 
+Authoring follow-up: the shared script/production cue contract and matched
+promo direction plan are written, with local agent instructions updated.
+Academy's source-to-Sightline generator still needs its actual output checked
+by Production before a cue-bearing module is marked Ready to record.
+
 **RC2 now adds controller consolidation for UAT:** function-specific grouped
 keys, useful preparation/review controls, explicit reading modes, Again,
 OBS pause/resume, status displays, Adjustment dial and separate Virtual/Plus

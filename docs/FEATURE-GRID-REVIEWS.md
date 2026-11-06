@@ -293,6 +293,14 @@ are copy/validation corrections to the same capabilities; no matrix row changes.
 Automated guards check consistency. They cannot prove a capability or hardware
 claim; review the exact build before publication.
 
+RC3 authoring follow-up, 6 November: script writing and production/session
+instructions now share graphic labels, presenter directions and spoken anchors
+between a direction plan and the final script. Added a complete new promo
+rehearsal draft and an explicit Academy source-comment conversion check.
+This changes authoring guidance and AI-kit contents, not runtime capabilities
+or supported matrix rows. The 265-entry RC3 reference and frozen installer
+remain unchanged; local installed skills/project handoff are updated separately.
+
 UAT 08 handover verification, 2 November 2026: recorded final executable/archive
 hashes, controlled-fixture versus physical acceptance limits, retained-profile
 checks and installed Stream Deck compatibility. This supplemental evidence and

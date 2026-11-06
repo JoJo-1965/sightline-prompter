@@ -7,7 +7,7 @@ down automatically. In the app, **Help > Copy the AI Script Prompt** (or ☰ >
 Help) puts it on the clipboard for you.
 
 Spec version: **0.7 (silent pointing cues and production intent)**.
-Authoring guidance reviewed 4 November 2026 for the current RC. Full spec:
+Authoring guidance reviewed 6 November 2026 for the current RC. Full spec:
 [SCRIPT-DIRECTIVES.md](SCRIPT-DIRECTIVES.md). Machine-readable definition:
 [script-directives.json](script-directives.json).
 
@@ -51,6 +51,22 @@ insert an asset. Ask the editor to check the recorded orientation and visible
 gesture before placing graphics. Plain `[point]` remains an ordinary note.
 
 ## 2. Structure
+
+For a gesture-led graphic, plan it in the directions **and** the script.
+Choose one stable graphic label, presenter-relative direction, exact spoken
+anchor and visual purpose. Match that label in a paused-only production
+comment and a short inline cue immediately before the phrase. For example:
+
+```md
+<!-- GRAPHIC growth-chart. Use the reviewed chart; verify recorded orientation. -->
+[point left: growth-chart]
+Here is how the figures changed.
+```
+
+Use a gesture only when it helps the visual explanation. Keep asset status
+explicit; a label is not an attached file. For generated scripts, verify that
+the final Sightline copy contains the cue outside HTML comments. See
+[the authoring/production contract](POINTING-CUE-AUTHORING.md).
 
 - Start with exactly one **script settings** line (or YAML front matter in
   markdown), before the first section:
@@ -142,6 +158,10 @@ It exits with 1 if anything below is broken.
       as shown.
 - [ ] Every `{` has a matching `}`, and no braces appear anywhere else.
 - [ ] Notes in `[ ]` contain no directives.
+- [ ] Each planned pointing moment has the same graphic label, direction and
+      spoken anchor in the shot plan and final script; its cue is outside comments.
+- [ ] Left/right are presenter-relative. Graphic labels stay silent, assets
+      are identified honestly and the editor is told to verify the actual gesture.
 - [ ] Every section in batch recording ends with `{stop}`.
 - [ ] No literal control commands are embedded in spoken copy; no unrequested
       executable recording directive appears outside a production comment.

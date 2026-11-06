@@ -3,7 +3,7 @@
 	"name": "sightline-script-directives",
 	"version": "0.7.0",
 	"status": "syntax agreed; implemented in the app (27 October 2026): pause, marker, wpm, target, pacing, mode",
-	"date": "2026-11-01",
+	"date": "2026-11-06",
 	"syntax": {
 		"directive": "{ name[: value] [, name[: value]]... }",
 		"directiveDelimiters": [
@@ -24,6 +24,8 @@
 		"separator": ","
 	},
 	"pointingCues": {
+		"authoringContract": "POINTING-CUE-AUTHORING.md",
+		"authoring": "Match graphic label, presenter direction and exact spoken anchor across the shot plan, preparation comment and inline cue. Generated Sightline cues must be outside HTML comments; source wrappers require conversion. Verify output before Ready to record.",
 		"syntax": "[point direction: optional graphic label]",
 		"directions": [ "left", "right", "up", "down", "up-left", "up-right", "down-left", "down-right", "centre" ],
 		"directionBasis": "presenter",

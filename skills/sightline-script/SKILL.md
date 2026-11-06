@@ -5,8 +5,8 @@ description: Use when writing, rewriting or checking a script to be read from Si
 
 # Writing a Sightline Prompter script
 
-**Where Sightline is:** the managed AI kit from **Settings > Components
-> AI kit > Install > Open folder**, or the Sightline Prompter source folder, a clone of
+**Where Sightline is:** the managed AI kit from **Settings > Connections
+> Apps and add-ons > AI kit**, or the Sightline Prompter source folder, a clone of
 https://github.com/JoJo-1965/sightline-prompter. Use the `SIGHTLINE_HOME`
 environment variable if it's set; otherwise, if this skill sits in that
 repo's `skills` folder, it's two folders up; otherwise ask the user. Below,
@@ -61,6 +61,21 @@ and say the checker couldn't be run.
   in the folder the user is working in unless they say otherwise.
 
 ## Check before handing it over
+
+### Coordinate pointing cues with production
+
+Read `<sightline>/docs/POINTING-CUE-AUTHORING.md` when planning a gesture or
+graphic. Choose a useful visual, stable graphic label, presenter-relative
+direction and exact spoken anchor. Keep that label/direction/anchor consistent
+in the shot plan, paused production comment and `[point left: label]` cue.
+Add only purposeful gestures; identify assets still to be supplied.
+
+For Academy source using `<!--[direction]-->`, the final generated Sightline
+copy must contain the bracket cue outside comments. Check the actual output,
+preserve existing section mappings and do not mark Ready to record on the
+strength of a hand-written sample. Runtime HTML comments never become live
+pointing cues. The production agent uses captured per-take metadata and checks
+the actual gesture/orientation; a new draft cannot rewrite earlier take evidence.
 
 Run the checker on every script you write or change:
 

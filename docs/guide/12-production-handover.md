@@ -27,6 +27,8 @@ it does not attach an asset. Word anchors use the session clock and can be
 approximate or unavailable. Transcription cannot prove a gesture occurred.
 Check horizontal orientation in the recorded frame before placing the graphic.
 For field definitions see [edit-pack cue files](../EDIT-PACK.md#pointing-and-graphic-intent-13-rc3).
+The [authoring/production contract](../POINTING-CUE-AUTHORING.md) explains how
+to carry the same graphic labels and performance cues from plan to final script.
 
 Use **Help > Getting started…** when setting up a new system. The optional
 [OBS setup assistant](15-obs-setup.md) creates a separate profile/collection

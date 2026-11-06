@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "status": "rehearsal draft for wording and direction review",
+  "requires": "Sightline 1.3.0-rc.3 or later",
+  "script": "PROMO-SCRIPT-1.3.0-RC3.md",
+  "directionBasis": "presenter",
+  "timingBasis": "planned spoken anchors; verify actual selected take and visible gesture",
+  "recordedEvidence": false,
+  "orientation": "Verify actual output. Presenter-left appears viewer-right in an unmirrored camera shot; a mirrored preview is not proof.",
+  "cues": [
+    {
+      "section": 5,
+      "title": "Prepare a consistent shot",
+      "graphic": "preparation-checklist",
+      "direction": "right",
+      "spokenAnchor": "Before recording, align your head, check your sound and review a short test.",
+      "visual": "Four short steps: framing, sound, test, reference.",
+      "assetStatus": "To prepare from current RC3 workflow; no asset file attached."
+    },
+    {
+      "section": 7,
+      "title": "Control a take",
+      "graphic": "controller-options",
+      "direction": "left",
+      "spokenAnchor": "You can also use a keyboard, a floating pad, your phone or a Stream Deck.",
+      "visual": "Pad/phone renders and our actual Stream Deck key icons in consistent device frames.",
+      "assetStatus": "Use verified current assets; confirm final selection before editing."
+    },
+    {
+      "section": 10,
+      "title": "Cue a graphic",
+      "graphic": "pointing-cue-example",
+      "direction": "up",
+      "spokenAnchor": "A pointing cue reminds me where to gesture and tells my editor which graphic I have in mind.",
+      "visual": "Actual RC3 inline cue, then matching production-cues entry; no automatic edit claim.",
+      "assetStatus": "New actual RC3 script/export capture required."
+    },
+    {
+      "section": 11,
+      "title": "Hand over the recording",
+      "graphic": "edit-pack-overview",
+      "direction": "left",
+      "spokenAnchor": "The handover keeps the script, takes, markers and keeper choices with your recordings.",
+      "visual": "Short card showing the captured script, take choices and production cue files.",
+      "assetStatus": "New actual exported entries required; labels do not attach files."
+    }
+  ]
+}

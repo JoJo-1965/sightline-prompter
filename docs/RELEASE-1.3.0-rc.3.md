@@ -38,6 +38,12 @@ recorded scripts, master media and old snapshots remain unchanged.
 
 ## Validation and remaining acceptance
 
+Authoring follow-up in the source branch: script and production agents share
+`POINTING-CUE-AUTHORING.md`, with a complete promo draft and matching cue plan.
+It also requires a check of Academy source-comment conversion in generated
+scripts. Installed local skills can use this now; the frozen installer receipt
+predates this documentation/kit follow-up and is not silently replaced.
+
 Parser/export tests cover all directions, silent labels, retakes, snapshot
 matching, reviewed/live/missing anchors and legacy packs. A native isolated
 Windows check covers real rendering, speech exclusions and saved take snapshots.

@@ -11,6 +11,8 @@ take choice and output orientation before placing each graphic. -->
 
 ## Show a chart {target: 0:10}
 
+<!-- GRAPHIC growth-chart. This sample label is a placeholder. Choose a reviewed
+chart for a real recording and verify the visible gesture/output orientation. -->
 [point left: growth-chart]
 Here is how the figures changed. The chart gives us a clear view of the trend.
 

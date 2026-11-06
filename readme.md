@@ -157,6 +157,14 @@ No automatic graphic insertion or gesture detection is claimed.
 
 [RC3 notes and testing limits](docs/RELEASE-1.3.0-rc.3.md)
 
+**Authoring follow-up:** the script-writing and session/production skills now
+share a [cue planning contract](docs/POINTING-CUE-AUTHORING.md). A complete
+[RC3 promo rehearsal script](docs/marketing/PROMO-SCRIPT-1.3.0-RC3.md) matches
+its [direction plan](docs/marketing/PROMO-POINTING-DIRECTIONS-RC3.md).
+Academy generators must preserve source directions as visible cues in the
+final Sightline copy. This documentation/kit follow-up is for the next bundle;
+the existing RC3 installer receipt remains frozen.
+
 ### 1.3.0 RC1 preview — 4 November 2026
 
 Post-record transcript/import and script comparison, command cut ranges,
