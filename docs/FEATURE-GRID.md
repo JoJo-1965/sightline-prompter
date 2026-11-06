@@ -1,12 +1,12 @@
 # Sightline Prompter feature grid
 
-**Review basis: Sightline 1.3.0 RC2 preview, documentation revision 18, 4 November 2026.**
-**Build version:** `1.3.0-rc.2` · **Publication status:** Preview
+**Review basis: Sightline 1.3.0 RC3 preview, documentation revision 19, 6 November 2026.**
+**Build version:** `1.3.0-rc.3` · **Publication status:** Preview
 
-**Maintained source:** [Feature grid](https://github.com/JoJo-1965/sightline-prompter/blob/codex/1.3.0-rc1-recording-evidence/docs/FEATURE-GRID.md)
+**Maintained source:** [Feature grid](https://github.com/JoJo-1965/sightline-prompter/blob/codex/pointing-production-cues/docs/FEATURE-GRID.md)
 
 This grid describes the preview built from `67d879e`, with companion Stream
-Deck plugin **0.2.1.1** candidate. It includes stable 1.2.0 features plus the explicitly labelled RC additions. The build manifest also records the packaging/documentation
+Deck plugin **0.2.1.5** candidate. It includes stable 1.2.0 features plus the explicitly labelled RC additions. The build manifest also records the packaging/documentation
 snapshot. The public app release remains **1.2.0**; this document
 does not certify an individual recording setup.
 
@@ -110,9 +110,10 @@ Reference: [Script directives](SCRIPT-DIRECTIVES.md) and [AI script brief](AI-SC
 | Ordinary scripts | Included | Read a script without adding compulsory application directives. | Optional directions add workflow control when needed. |
 | Sections and IDs | Included | Structured headings organise navigation, takes, targets and handover. | Stable section identity helps an editor match the recording script. |
 | Short delivery cues | Included | Square-bracket notes such as `[smile]`, `[think]` or `[point]` remain available inline. | Unquoted direction words are excluded from spoken word counts and alignment. |
+| Pointing and graphic intent | Included | RC3 preview: `[point left: graphic-label]`, right/up/down, diagonals and centre. Uses existing inline appearance controls; optional labels remain silent even in quotes. | Directions mean the presenter's own sides. Section-body cues are captured with the script and take; the editor verifies gesture and recorded orientation. No automatic asset insertion or gesture detection. |
 | Quoted spoken cues | Included | `[Say: "Section one"]` distinguishes words intended to be spoken. | Quoted words are included in the spoken script; do not use this form for silent instructions. |
 | Long production comments | Included | HTML comments hold preparation instructions; visible while paused and hidden during delivery. | All comment contents, including quoted words and directive examples, are excluded from speech tracking and command execution. |
-| Direction display | Optional | Normal, dimmed or hidden bracket directions; quoted spoken words remain visible. | Long production comments follow the separate paused/delivering rule. |
+| Direction display | Optional | Normal, dimmed or hidden bracket directions; quoted spoken words remain visible. | RC3 pointing labels stay silent, including quotes. Long production comments follow the separate paused/delivering rule. |
 | Manual script stops | Included | `{stop}` or `{pause}` holds prompting until the user continues. | Continuous recording keeps OBS running; linked recording changes that behaviour explicitly. |
 | Timed pauses | Included | `{pause: 3s}` provides a timed beat. | In voice mode it is a visible pause cue rather than a forced timed scroll. |
 | Named markers | Included | `{marker}` or `{marker: Setup}` creates a navigation and edit reference. | Marker positions are timing references, not verified frame-accurate cuts. |
@@ -323,6 +324,7 @@ Reference: [Take log and edit pack](guide/05-recording-a-take.md) and [Productio
 | Edit marks | Included | `edit-marks.csv` and `edit-marks.json`, including markers, pauses and rereads where available. | Suggestions and recognition-derived boundaries need editorial review. |
 | Draft captions | Optional | `captions.srt` and `captions.vtt`, built from available aligned speech/script data. | Review text and timing before publication; not a guaranteed verbatim transcript. |
 | Script snapshot files | Included | `script-snapshots.json` plus numbered source snapshots tie words, IDs and cues to the recording. | Later edits to the source file do not replace the captured version. |
+| Production cue files | Included | RC3 preview: `production-cues.json`, CSV and human instructions retain authored cues plus per-take occurrences and keeper selection, with nearby spoken anchors. | Only exported for captured structured cues. Reviewed transcript anchors take priority; live estimates require review, unavailable time is null. Timing does not prove a gesture. |
 | Recorded sync export | Included | `recorded-sync.json` preserves reference IDs, routing and take/recording links. | Reference metadata does not certify the physical camera/microphone path. |
 | Head-guide export | Included | `head-guide.json` includes Ideal, Actual, saved reference and window geometry. | Reference save/restore is included in 1.2.0. |
 | Rehearsal export | Included | `rehearsal-coach.json` provides the available coaching report. | No performance score or automatic keeper reassignment is produced. |

@@ -39,7 +39,40 @@ For the OBS workflow, [From recording to the editor](guide/12-production-handove
 is the illustrated checklist for setup, retakes, keeper choices and collecting
 the master recordings alongside each module's pack.
 
-## Rehearsal review (next candidate)
+## Pointing and graphic intent (1.3 RC3)
+
+Scripts can include `[point left: growth-chart]` and other directional cues.
+These are silent performance notes; left/right mean the presenter's own sides.
+Snapshot `pointingCues` entries contain `id`, `action`, `direction`,
+`directionBasis: "presenter"`, optional `graphic`, the original `instruction`,
+one-based `section`, global spoken-word `anchor` indexes and surrounding text.
+Headings/code/comments are excluded as cue locations and spoken anchors.
+
+Only packs with captured structured cues add these files:
+
+- `production-cues.json`: schema version 1, authored `scriptCues` and per-take
+  `occurrences`, joined by script snapshot ID and section. Retakes are retained;
+  `selectedTake` follows the existing keeper choices. Unrecorded cues remain
+  in `scriptCues` without an invented occurrence.
+- `production-cues.csv`: section, take, selection, cue ID, direction/basis,
+  graphic label, session seconds, timing source/anchor and surrounding text.
+  Spreadsheet formula-like strings are exported as text.
+- `PRODUCTION-CUES.md`: the production agent's orientation and review instructions.
+
+`sessionSeconds` is a candidate spoken anchor, using the next spoken word's
+start or the previous word's end. `timingSource` is
+`post-record-transcription`, `live-voice-following` or `unavailable`.
+Matching reviewed evidence takes priority; uncertain evidence does not silently
+fall back to a live estimate. Null means unavailable, never zero.
+`gestureVerified` is always false and `reviewRequired` true. Apply measured
+file offsets as described below, then inspect the gesture in the actual video.
+
+Graphic labels do not resolve/download assets or perform edits. Preview
+mirroring does not establish output orientation. In an unmirrored shot,
+presenter-left appears viewer-right; verify before positioning the graphic.
+Older snapshots without this metadata still export their original files.
+
+## Rehearsal review details
 
 `rehearsal-coach.json` is an additive, derived report. It includes `version`,
 `basis` and `takes`. Each take identifies its section, take number, status,

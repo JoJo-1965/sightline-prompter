@@ -27,6 +27,7 @@ example deliberately, rather than narrating it.
 | Start here: Sightline feature tour | Twelve practical stops across core and RC features | Space works without optional services; enable only what you want to try |
 | Voice control, stops and countdowns | Follow speech, pause/resume, retake, navigate and step off script | Enable speech, microphone and the chosen command-listening mode; retain a button fallback |
 | Recording preview | Production comments, sound checks, persistent test results, section pill and recorder modes | Use a disposable test; confirm recording and sync before delivery |
+| Pointing and graphic cues (RC3) | Silent presenter-relative gestures with optional graphic labels and per-take production metadata | Keep inline cues visible; verify output orientation, gesture and sync in the recording |
 | Framing, audio and reference | Manual/local framing, audio advice, reviewed test clip, saved target and return after a break | Stop production recording before opening preparation; keep Ideal unless deliberately replacing it |
 | Recording walkthrough: module A/B | One continuous recording across two scripts, takes, markers and recorded sync | Review the acceptance guide; configure your actual capture route and keep linked recording off for this exercise |
 | Batch recording, section by section | Planned stops, consistent section retakes and keeper choices | Complete preparation, choose your recording mode and confirm a recorded sync reference |

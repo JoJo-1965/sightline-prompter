@@ -7,6 +7,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { parsePointingCue, POINT_DIRECTIONS } from "../src/client/pointing-cues.js";
 
 const here = path.dirname( fileURLToPath( import.meta.url ) );
 const spec = JSON.parse(
@@ -50,6 +51,9 @@ function check( file ) {
 		if ( inFront ) {
 			if ( i > 0 && text.trim() === "---" ) inFront = false;
 			return;
+		}
+		for ( const cue of text.matchAll( /\[point\s+[^\u005b\]]*:[^\u005b\]]*\]/gi ) ) {
+			if ( !parsePointingCue( cue[0] ) ) add( "warning", n, `Unrecognised pointing cue: use ${ POINT_DIRECTIONS.join( ", " ) }. It remains an ordinary speaker note without structured production metadata.` );
 		}
 		const isHeading = /^##\s/.test( text ) || /^={3,}\s*SECTION/i.test( text );
 		if ( isHeading ) {

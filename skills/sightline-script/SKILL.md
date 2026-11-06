@@ -40,6 +40,11 @@ and say the checker couldn't be run.
   `{curly braces}`. Never put spoken words inside either, except quoted words
   in a note.
 - Use only the directives the brief allows. Don't invent new ones.
+- In RC3, use `[point left: graphic-label]` for a planned graphic cue, placed
+  immediately before its spoken phrase in a section body. Left/right mean the
+  presenter's own sides. Up/down, diagonals and centre also work; quoted asset
+  labels remain silent. The production agent checks the visible gesture and
+  recorded orientation using the take-linked cue export; no insertion is automatic.
 - In a long section, name a marker at the start of each part,
   `{marker: Setup}`, so the edit can find and recut each part.
 - For a recording session, start with `{soundcheck: room}` and

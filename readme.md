@@ -1,12 +1,14 @@
 # Sightline Prompter
 
-> **Development preview: 1.3.0 RC2, documentation revision 18.**
+> **Development preview: 1.3.0 RC3, documentation revision 19.**
 > The public download below is stable 1.2.0. This candidate adds optional
 > [post-record audio review](docs/guide/19-post-record-review.md) and a
 > [rerunnable guided tour](docs/guide/20-guided-tour.md). Read the
-> [RC2 notes and limits](docs/RELEASE-1.3.0-rc.2.md) before testing. This candidate
+> [RC3 notes and limits](docs/RELEASE-1.3.0-rc.3.md) before testing. This candidate
 > adds [grouped controller functions](docs/guide/21-controller-functions.md),
 > explicit reading modes, preparation/review controls and an Adjustment dial.
+> RC3 adds silent `[point left: graphic-label]` cues with presenter-relative
+> directions and structured, take-linked production intent in the edit pack.
 
 ![Sightline Prompter: your words, your pace](docs/images/hero.png)
 
@@ -142,6 +144,18 @@ on your own setup. OBS-scene calibration is a sampled preview, not the encoder o
 · [Roadmap](ROADMAP.md)
 
 ## Change log
+
+### 1.3.0 RC3 preview
+
+**Pointing and graphics:** inline left/right/up/down, diagonal and centre cues
+can name a graphic. Directions mean the presenter's own sides. Quoted asset
+labels remain silent. Existing inline appearance controls apply. Captured
+script snapshots and edit packs retain cue/section/take associations and
+qualified spoken anchors for the editor to review against the visible gesture.
+Includes a focused sample, refreshed AI brief/spec/checker and handoff guide.
+No automatic graphic insertion or gesture detection is claimed.
+
+[RC3 notes and testing limits](docs/RELEASE-1.3.0-rc.3.md)
 
 ### 1.3.0 RC1 preview — 4 November 2026
 

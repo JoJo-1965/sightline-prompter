@@ -6,7 +6,7 @@ you want. It produces scripts that Sightline Prompter can pace, stop and count
 down automatically. In the app, **Help > Copy the AI Script Prompt** (or ☰ >
 Help) puts it on the clipboard for you.
 
-Spec version: **0.6 (recording directives and production comments)**.
+Spec version: **0.7 (silent pointing cues and production intent)**.
 Authoring guidance reviewed 4 November 2026 for the current RC. Full spec:
 [SCRIPT-DIRECTIVES.md](SCRIPT-DIRECTIVES.md). Machine-readable definition:
 [script-directives.json](script-directives.json).
@@ -38,6 +38,17 @@ Continuous recording remains the default.
 
 Never use `{` or `}` for anything else. Never put directives inside
 `[square brackets]`, or notes inside `{curly braces}`.
+
+For a planned gesture/graphic insert in Sightline 1.3.0 RC3, use
+`[point left: growth-chart]` immediately before the relevant spoken phrase.
+Use left/right/up/down, up-left/up-right/down-left/down-right or centre.
+Directions always mean the presenter's own sides. The optional label names
+the graphic for the editor; the whole cue, including a quoted label, is silent.
+Keep these short cues in section body text, outside comments, code and headings.
+They use the existing inline-direction styling. The edit pack retains their
+section, script snapshot and take anchors; it does not verify a gesture or
+insert an asset. Ask the editor to check the recorded orientation and visible
+gesture before placing graphics. Plain `[point]` remains an ordinary note.
 
 ## 2. Structure
 

@@ -16,6 +16,19 @@ which words are spoken or when production notes hide.
 Optional recording directives are covered in [Recording with OBS](11-obs.md).
 Ordinary scripts and retakes need no new directives.
 
+## Pointing cues in RC3
+
+Write `[point left: growth-chart]` just before the relevant spoken line.
+Left/right mean your own sides while presenting. Up/down, diagonals and centre
+also work. The optional label tells the editor which graphic you intend;
+it remains silent even in quotes. Keep cues in section body text. Their font,
+colour and visibility use the existing Inline directions controls above.
+
+Open **Files > Sample scripts > Pointing and graphic cues** to try it.
+The [production handoff](12-production-handover.md#pointing-and-graphics-in-rc3)
+includes structured cue files tied to the captured script and each take.
+The editor still verifies the actual gesture and recorded orientation.
+
 ## Script health before you read
 
 In Sightline 1.2.0, **Script health…** on the editor toolbar opens the

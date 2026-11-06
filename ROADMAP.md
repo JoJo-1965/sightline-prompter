@@ -21,6 +21,12 @@ See [grouped release notes](docs/RELEASE-1.2.0.md) and the
 
 ## In 1.3.0 RC1 preview
 
+**RC3 adds pointing cues:** silent presenter-relative directions with optional
+graphic labels, captured-script anchors and take-linked production exports.
+Use existing inline appearance controls. The editor must verify the gesture,
+output orientation and asset; automatic gesture detection/insertion is deferred.
+See the [RC3 notes](docs/RELEASE-1.3.0-rc.3.md). RC1/RC2 features remain included.
+
 **RC2 now adds controller consolidation for UAT:** function-specific grouped
 keys, useful preparation/review controls, explicit reading modes, Again,
 OBS pause/resume, status displays, Adjustment dial and separate Virtual/Plus

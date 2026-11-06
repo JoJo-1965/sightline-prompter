@@ -1,7 +1,7 @@
 {
-	"$comment": "Machine-readable directive syntax, unchanged at 0.6.0. Authoring guidance reviewed 4 November 2026: brief inline cues, paused-only production notes, deliberate command exercises and recorded sync after Record. See SCRIPT-DIRECTIVES.md, AI-SCRIPT-BRIEF.md and DEMO-SCRIPTS.md.",
+	"$comment": "Version 0.7.0 adds structured silent pointing cues. Curly-brace app directive syntax remains unchanged. See SCRIPT-DIRECTIVES.md, AI-SCRIPT-BRIEF.md and DEMO-SCRIPTS.md.",
 	"name": "sightline-script-directives",
-	"version": "0.6.0",
+	"version": "0.7.0",
 	"status": "syntax agreed; implemented in the app (27 October 2026): pause, marker, wpm, target, pacing, mode",
 	"date": "2026-11-01",
 	"syntax": {
@@ -22,6 +22,14 @@
 		"caseSensitive": false,
 		"whitespaceInsideBraces": "ignored",
 		"separator": ","
+	},
+	"pointingCues": {
+		"syntax": "[point direction: optional graphic label]",
+		"directions": [ "left", "right", "up", "down", "up-left", "up-right", "down-left", "down-right", "centre" ],
+		"directionBasis": "presenter",
+		"spoken": false,
+		"quotedLabelsSpoken": false,
+		"description": "In RC3, pointing cues are silent inline speaker directions with structured graphic intent in captured script snapshots and production-cues.json/csv. Use in section body text. Horizontal sides mean the presenter's own sides; verify recorded orientation. Labels do not resolve assets or insert graphics. Word anchors require gesture review; they are not observed gesture times. Generic [point] notes remain supported."
 	},
 	"sections": {
 		"markdown": "A level-2 heading (## ) starts a section",

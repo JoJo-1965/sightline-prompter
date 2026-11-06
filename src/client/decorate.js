@@ -7,6 +7,7 @@
 //   - slide-cue phrases from cues.yaml are highlighted in script order
 
 import { decorateProductionNotes } from "./production-notes.js";
+import { parsePointingCue } from "./pointing-cues.js";
 
 const QUOTE_REGEX = /("[^"]+"|“[^”]+”)/;
 
@@ -49,6 +50,19 @@ function numberSections( root ) {
 function buildDirection( text ) {
 	const span = document.createElement( "span" );
 	span.className = "direction";
+	const pointing = parsePointingCue( text );
+	if ( pointing ) {
+		span.classList.add( "pointing-cue" );
+		span.dataset.direction = pointing.direction;
+		span.dataset.directionBasis = "presenter";
+		if ( pointing.graphic ) span.dataset.graphic = pointing.graphic;
+		span.setAttribute( "aria-label", `Point ${ pointing.direction }, presenter direction${ pointing.graphic ? `: ${ pointing.graphic }` : "" }` );
+		const note = document.createElement( "span" );
+		note.className = "dir-text";
+		note.textContent = text;
+		span.append( note );
+		return span;
+	}
 	for ( const part of text.split( QUOTE_REGEX ) ) {
 		if ( !part ) continue;
 		const el = document.createElement(

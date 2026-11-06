@@ -1,11 +1,13 @@
 # Sightline Prompter user guide
 
-**Sightline 1.3.0 RC2 preview · companion candidate 0.2.1.1 · documentation revision 18**
+**Sightline 1.3.0 RC3 preview · companion candidate 0.2.1.5 · documentation revision 19**
 
 Stable download remains Sightline 1.2.0. New preview workflows are described in
-[RC2 notes](../RELEASE-1.3.0-rc.2.md); they are not in the stable installer.
+[RC3 notes](../RELEASE-1.3.0-rc.3.md); they are not in the stable installer.
 
 New: [Controller functions and migration](21-controller-functions.md).
+RC3 adds [pointing and graphic cues](02-scripts.md#pointing-cues-in-rc3), with
+presenter-relative intent carried into the production handoff.
 
 This is the canonical web/wiki documentation and the source of the guide bundled
 with the installer. A separate GitHub wiki is intentionally disabled to avoid

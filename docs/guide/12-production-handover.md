@@ -13,6 +13,21 @@ creates an editable recording script.
 
 ## 1. Set up before the session
 
+### Pointing and graphics in RC3
+
+Place a short cue such as `[point right: product-screenshot]` before the
+spoken phrase. Directions use the presenter's own sides. Keep it visible
+using the usual Inline directions appearance; don't speak the cue or label.
+
+When the captured script contains these cues, the edit pack includes
+`production-cues.json`, `production-cues.csv` and `PRODUCTION-CUES.md`.
+Match the selected take, its script snapshot and nearby spoken text before
+checking the gesture in the video. The optional graphic label expresses intent;
+it does not attach an asset. Word anchors use the session clock and can be
+approximate or unavailable. Transcription cannot prove a gesture occurred.
+Check horizontal orientation in the recorded frame before placing the graphic.
+For field definitions see [edit-pack cue files](../EDIT-PACK.md#pointing-and-graphic-intent-13-rc3).
+
 Use **Help > Getting started…** when setting up a new system. The optional
 [OBS setup assistant](15-obs-setup.md) creates a separate profile/collection
 after you review its plan. It is a starting point, not proof of a production

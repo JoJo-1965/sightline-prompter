@@ -39,6 +39,7 @@ import {
 	WPM_STEP
 } from "./steady-scroll.js";
 import { decorateScript } from "./decorate.js";
+import { collectPointingCues } from "./pointing-cues.js";
 import { annotationMask } from "./focus-mask.js";
 import { setProductionNotesActive } from "./production-notes.js";
 import { readDirectives, parseDirective, parseDuration } from "./directives.js";
@@ -192,9 +193,10 @@ let sourceSnapshot = null;
 let recordingSnapshotCache = null;
 function recordingScriptSnapshot() {
 	const sections = [ ...md.querySelectorAll( "h2" ) ].map( ( el, i ) => ( { section: i + 1, id: el.id || String( i + 1 ), title: el.textContent } ) );
-	const key = JSON.stringify( { source: sourceSnapshot?.id, html: lastScriptHtml, cues: cuePhrases, sections } );
+	const pointingCues = collectPointingCues( md, buildWordIndex( md ).ranges );
+	const key = JSON.stringify( { source: sourceSnapshot?.id, html: lastScriptHtml, cues: cuePhrases, sections, pointingCues } );
 	if ( recordingSnapshotCache?.key === key ) return recordingSnapshotCache.value;
-	const value = { ...sourceSnapshot, id: crypto.randomUUID(), html: lastScriptHtml ?? "", renderedHtml: md.innerHTML, capturedAt: new Date().toISOString(), sections, cuePhrases: [ ...cuePhrases ] };
+	const value = { ...sourceSnapshot, id: crypto.randomUUID(), html: lastScriptHtml ?? "", renderedHtml: md.innerHTML, capturedAt: new Date().toISOString(), sections, cuePhrases: [ ...cuePhrases ], pointingCues };
 	recordingSnapshotCache = { key, value };
 	return value;
 }

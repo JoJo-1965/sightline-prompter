@@ -201,6 +201,18 @@ The transcript gives me evidence to listen to, rather than an automatic verdict.
 
 {stop}
 
+## Cue a graphic {target: 0:15}
+
+<!-- RC3 POINTING. [point left: feature-card] means your own left while presenting.
+Use the Pointing and graphic cues sample for a focused rehearsal. The edit pack
+records intent and take anchors; the editor verifies the visible gesture. -->
+
+[point left: feature-card]
+I can add a pointing cue where I want a graphic. My editor receives the direction
+and its place in the script, so we can check the gesture in the recorded take.
+
+{stop}
+
 ## Find your way around {target: 0:15}
 
 <!-- RC2 CONTROLLERS. Optional: open Connections > Pad and phone, or install

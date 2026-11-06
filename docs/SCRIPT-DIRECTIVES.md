@@ -20,7 +20,7 @@ A script distinguishes these kinds of text:
 
 | Mark                | Who it's for                                                                      | On screen                                                                                                 |
 | ------------------- | --------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| `[square brackets]` | **You, the speaker.** Reminders such as `[Say: Section one. Pause.]` or `[smile]` | Dimmed (or hidden, or normal, in Settings). Any `"quoted words"` inside stay bright, because you say them |
+| `[square brackets]` | **You, the speaker.** Reminders such as `[Say: "Section one."]` or `[smile]` | Dimmed, hidden or normal in Settings. Quoted words are spoken, except asset labels in structured pointing cues |
 | `{curly braces}`    | **The app.** Pace targets, pause points, pacing mode                              | Hidden while you read. Settings > **Show directives** shows them as small grey tags for checking a script |
 | `<!-- production comments -->` | **Preparation, command exercises and editing.** Keep spoken lines outside | Visible while paused; hidden during delivery. Quotes and directives inside are never spoken or executed |
 
@@ -35,6 +35,36 @@ unless executing that command is deliberate. The yellow section pill removes
 the need for spoken section slates. Check audio once, keep a recording reference
 separate from Ideal, and put a clap/slate in the file after Record starts.
 See the [demo-script guide](DEMO-SCRIPTS.md) for the shipped examples and limits.
+
+## Pointing and graphic cues (1.3.0 RC3)
+
+Use `[point left: growth-chart]` immediately before the line where you want
+to point. The optional label identifies the intended graphic or artifact for
+the production agent. The entire cue stays silent, including quoted labels:
+`[point right: "Product screenshot"]` does not add words to speech or captions.
+
+Directions are `left`, `right`, `up`, `down`, `up-left`, `up-right`,
+`down-left`, `down-right` and `centre`. Left/right mean **your own sides while
+presenting**. In an unmirrored shot your left appears on the viewer's right;
+the editor must check the actual recording. Preview mirroring does not prove
+the recorded orientation.
+
+Put cues in a section's body, outside headings, code and production comments.
+They inherit **Reading > Text and directions > Inline directions** appearance
+and Normal/Dimmed/Hidden visibility. Use Normal or Dimmed when following them.
+Generic `[point]` and existing notes still work; only recognised directional
+cues carry structured production metadata. Curly-brace app commands are unchanged.
+
+The captured script stores direction, label, section and nearby spoken-word
+anchors. The edit pack adds `production-cues.json`, `production-cues.csv` and
+`PRODUCTION-CUES.md`, with occurrences for each take and its selection status.
+Transcript anchors are preferred when reviewed evidence exists; live timings
+are approximate. Missing anchors have a null time. These are intended gestures,
+not detected movements: confirm the picture before inserting an asset or cutting.
+Sightline does not find or insert the graphic automatically.
+
+Try **Files > Sample scripts > Pointing and graphic cues**. See
+[edit-pack details](EDIT-PACK.md#pointing-and-graphic-intent-13-rc3).
 
 ## Script settings
 

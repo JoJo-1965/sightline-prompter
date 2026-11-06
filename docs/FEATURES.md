@@ -1,5 +1,16 @@
 # Sightline Prompter features
 
+## 1.3.0 RC3 pointing cues
+
+Silent `[point left: graphic-label]` cues cover four directions, diagonals and
+centre. Left/right mean the presenter's own sides. Existing inline appearance
+controls apply; labels stay silent even in quotes. Captured scripts preserve
+intent and per-take edit-pack occurrences, with qualified spoken-word anchors.
+The production agent verifies the actual gesture and recording orientation;
+Sightline does not insert an asset or detect the pointing movement.
+Try the **Pointing and graphic cues** sample and read the
+[RC3 notes](RELEASE-1.3.0-rc.3.md).
+
 ## 1.3.0 RC2 controller additions
 
 Companion 0.2.1.1 groups related new assignments with function-specific icons.
