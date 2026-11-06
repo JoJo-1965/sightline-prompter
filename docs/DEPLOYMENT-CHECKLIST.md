@@ -5,6 +5,10 @@ Complete for the combined batch before tagging, publishing or deploying.
 
 ## Review together
 
+- [ ] Human UAT previews start from a backed-up copy of Joanne's saved setup,
+  retaining appearance, connections, controller assignments and script slots.
+  Keep candidate changes separate and verify profile-local references/models.
+  Use a blank human UAT profile only when requested; automated fixtures stay isolated.
 - [ ] Help, tooltips, commands and Settings paths match the built app.
 - [ ] User guide/canonical wiki and getting-started instructions agree.
 - [ ] Affected screenshots/examples and their JL copies show the correct build.
