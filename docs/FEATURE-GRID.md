@@ -1,12 +1,12 @@
 # Sightline Prompter feature grid
 
-**Review basis: Sightline 1.3.0 RC3 preview, documentation revision 19, 6 November 2026.**
-**Build version:** `1.3.0-rc.3` · **Publication status:** Preview
+**Review basis: Sightline 1.3.0 RC4 preview, documentation revision 20, 6 November 2026.**
+**Build version:** `1.3.0-rc.4` · **Publication status:** Preview
 
 **Maintained source:** [Feature grid](https://github.com/JoJo-1965/sightline-prompter/blob/codex/pointing-production-cues/docs/FEATURE-GRID.md)
 
 This grid describes the preview built from `ad11f94`, with companion Stream
-Deck plugin **0.2.1.5** candidate. It includes stable 1.2.0 features plus the explicitly labelled RC additions. The build manifest also records the packaging/documentation
+Deck plugin **0.2.1.6** candidate. It includes stable 1.2.0 features plus the explicitly labelled RC additions. The build manifest also records the packaging/documentation
 snapshot. The public app release remains **1.2.0**; this document
 does not certify an individual recording setup.
 
@@ -122,6 +122,10 @@ Reference: [Script directives](SCRIPT-DIRECTIVES.md) and [AI script brief](AI-SC
 | Script control commands | Optional | `{prompter: ...}` supports documented display, pace and marker actions. | Only documented commands are supported. |
 | Script recording commands | Dependent | Optional `{record: on}`, `{record: off}`, `{record: pause}` and `{record: resume}`. | Require enabled OBS recording controls; loading a script never executes them. |
 | Pace, notes and page directives | Optional | Section WPM/targets, script pacing, `{mode: notes}` and `{page}`. | The script checker documents supported values and catches unknown directives. |
+
+| Floating HUD cues | Optional | RC4: a gold short-cue pill during delivery; paused Review restores inline bracket directions. | No cue-induced script reflow; quoted Say speech and preparation notes remain distinct. |
+| Head-relative pointing targets | Optional | RC4: centres bisect each saved head-edge/prompter-edge gap, at a shared below-eye height; words render above fixed markers. | Local reference geometry, not live gesture detection. Actual camera, mirror and multi-screen placement require UAT. |
+| HUD controller visibility | Optional | RC4: one optional action across pad, phone and mapped inputs; companion 0.2.1.6 adds a Display function with its own icon. | Capability-gated; no per-direction keys, recorder action or automatic profile replacement. |
 
 ## 06 · Theme, typography and reading aids
 

@@ -46,7 +46,9 @@ export function helpTabs( settings, notes = false ) {
 	if ( settings.scrollMode === "voice" && settings.speechEnabled !== false && settings.microphoneEnabled !== false ) readingSections.push( get( "Voice scroll sync" ) );
 	const recording = [ takes ];
 	recording.push( section( "Recording preparation", [
-		[ "Production comments", "HTML comments <!-- like this --> show while paused and hide during delivery; short [smile] cues remain inline" ],
+		[ "Production comments", "HTML comments show while paused and hide during delivery. Review keeps inline [smile] directions; delivery uses the HUD" ],
+		[ "HUD cues", "Gold delivery cues and pointing targets follow the script. Side targets bisect the head-edge/screen-edge gaps, below the saved eyes and behind your words" ],
+		[ "HUD visibility", "Reading > Text and directions > Inline directions; optional HUD cues on/off in pad, phone or mappings. Companion 0.2.1.6 adds Display > HUD cues" ],
 		[ "Sound checks", "Review level and noise together. Continue anyway accepts a warning and logs it; adding gain also raises background noise" ]
 	] ) );
 	recording.push( section( "Rehearsal review", [

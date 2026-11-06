@@ -87,3 +87,14 @@ The [script spec](SCRIPT-DIRECTIVES.md), [AI brief](AI-SCRIPT-BRIEF.md) and
 [edit-pack fields](EDIT-PACK.md#pointing-and-graphic-intent-13-rc3) are the
 technical reference. No asset insertion, new recorder action or automatic
 pointing detection is added by these instructions.
+
+## HUD delivery in RC4
+
+Author the same square-bracket source cues; no new directive or gesture key is
+needed. In the HUD-enabled RC4, delivery shows the current short cue/pointing
+target and Review keeps the inline display. Directions still mean the presenter's
+own sides. Complete the gesture towards the marker, then return to the lens;
+do not prescribe a hand or ask the performer to mentally reverse the picture.
+The marker is fixed relative to the saved framing and sits behind scrolling
+text. RC3 keeps its original inline behaviour. Confirm the actual target build
+before writing a shot that demonstrates the HUD. See the [HUD guide](guide/22-hud-cues.md).

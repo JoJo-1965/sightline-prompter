@@ -22,6 +22,7 @@ export function createSettingsPreview( root, getState ) {
 				<div data-sample="production">Check the framing, camera and microphone before you record.</div>
 				<p data-sample="script">Look towards the lens. Speak at your own pace.</p>
 				<span data-sample="inline">[smile]</span>
+				<span class="settings-hud-example" hidden>Smile</span>
 				<p data-sample="script">Keep your place.</p>
 			</div>
 			<div class="settings-guide-preview" hidden></div>
@@ -112,7 +113,9 @@ export function createSettingsPreview( root, getState ) {
 			}
 			for ( const button of host.querySelectorAll( "[data-preview-reading]" ) ) button.setAttribute( "aria-pressed", String( ( button.dataset.previewReading === "true" ) === reading ) );
 			host.querySelector( ".settings-script-preview" ).style.backgroundColor = `rgba(${ rgb.join( "," ) },${ backing })`;
-			host.querySelector( ".settings-preview-explainer" ).textContent = isGuide ? "Manual reference · no face tracking." : reading ? "Reading: notes hidden." : "Paused: notes shown.";
+			const hud = reading && state.hudCues !== false && state.directions !== "hide";
+			host.querySelector( ".settings-hud-example" ).hidden = !hud;
+			host.querySelector( ".settings-preview-explainer" ).textContent = isGuide ? "Manual reference · no face tracking." : reading ? ( hud ? "Reading: HUD cue; notes hidden." : "Reading: notes hidden." ) : "Paused: notes shown.";
 			for ( const node of host.querySelectorAll( "[data-sample]" ) ) {
 				const target = node.dataset.sample;
 				const style = appearance.text[target];
@@ -126,7 +129,7 @@ export function createSettingsPreview( root, getState ) {
 					opacity: String( ( state.textOpacity ?? 1 ) * ( target === "inline" && state.directions === "dim" && state.theme !== "contrast" ? 0.65 : 1 ) ),
 					filter: `brightness(${ state.textBrightness ?? 1 })`
 				} );
-				node.hidden = target === "production" ? reading : target === "inline" && state.directions === "hide";
+				node.hidden = target === "production" ? reading : target === "inline" && ( state.directions === "hide" || hud );
 			}
 		}
 	}

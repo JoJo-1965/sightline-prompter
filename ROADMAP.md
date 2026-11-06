@@ -46,6 +46,14 @@ the preview manifest; other platforms require acceptance.
 
 ## Next: recording accuracy and real-world feedback
 
+**RC4 candidate:** the approved HUD layout is implemented for UAT: gold short
+cues, fixed head-edge/screen-edge midpoint targets below the eyes, foreground
+script text and Review's inline directions. One optional shared visibility
+action covers pad/phone/mappings and companion 0.2.1.6 Display keys. Navigation
+hold/position fixes, product-name wake protection, note wrapping and consolidated
+About/coffee controls accompany the same batch. Packaged UAT and actual device
+acceptance remain required. See [RC4 notes](docs/RELEASE-1.3.0-rc.4.md).
+
 These are priorities, not release promises or dates.
 The [1.3.0 RC1 checklist](docs/PLAN-1.3.0-RC1.md) records the production desk's
 timing, transcript, command-range and in-recording sync requirements, with

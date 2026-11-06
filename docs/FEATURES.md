@@ -1,5 +1,14 @@
 # Sightline Prompter features
 
+## 1.3.0 RC4 HUD preview
+
+Short delivery directions use a gold HUD pill while reading; paused Review
+keeps the inline bracket view. Pointing targets use the saved head reference,
+stay fixed during the cue and sit behind spoken text. One optional HUD visibility
+function is available across controller mappings and companion preview 0.2.1.6.
+Read the [HUD guide](guide/22-hud-cues.md) and [RC4 notes](RELEASE-1.3.0-rc.4.md).
+The preview grid has 268 entries; the stable summary below remains 1.2.0.
+
 ## 1.3.0 RC3 pointing cues
 
 Silent `[point left: graphic-label]` cues cover four directions, diagonals and

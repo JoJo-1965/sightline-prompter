@@ -54,6 +54,7 @@ export const COMMANDS = [
 			"go",
 			"go on",
 			"start",
+			"begin",
 			"play",
 			"resume",
 			"continue",
@@ -304,6 +305,7 @@ export function createCommandListener( {
 	let pending = []; // possible wake phrase, bare section or paused resume
 	let held = null; // { wake, words, at }: an acknowledged wake word
 	let atStart = true;
+	let previousInput = "", previousInputAt = -Infinity;
 	const textOf = words => words.map( normalize ).filter( Boolean ).join( " " );
 	const bareCommand = ( words ) => {
 		const n = sectionNumber( words );
@@ -333,6 +335,12 @@ export function createCommandListener( {
 			if ( completed ) { onCommand( "section", completed ); pending = []; }
 		}
 		for ( const word of words ) {
+			const productName = wakeKey === "prompter" && previousInput === "sightline" && clock() - previousInputAt < 1800 && normalize( word ) === "prompter";
+			previousInput = normalize( word ); previousInputAt = clock();
+			if ( productName && !held ) {
+				pass.push( ...pending, word ); pending = []; atStart = false;
+				continue;
+			}
 			if ( held ) {
 				held.words.push( word );
 				// A repeated wake word starts a fresh request.

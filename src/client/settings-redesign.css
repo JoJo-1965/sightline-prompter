@@ -202,3 +202,5 @@ body:not(.utility-window) #settings-modal.settings-redesign .settings-content {w
 	overflow-y: auto;
 	overscroll-behavior: contain;
 }
+.settings-hud-example { display: inline-flex; align-items: center; padding: 7px 14px; margin: 4px 0 8px; border-radius: 999px; background: #f3d16a; color: #30260d; font: 700 15px/1.2 "Segoe UI", sans-serif; }
+.settings-hud-example[hidden] { display: none; }

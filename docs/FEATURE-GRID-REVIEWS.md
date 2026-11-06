@@ -1,5 +1,17 @@
 # Feature-matrix review record
 
+## RC4 HUD batch — 6 November 2026
+
+The preview reference advances to 268 capabilities: delivery HUD directions,
+saved-reference pointing targets and one optional controller visibility action.
+Review retains inline cues; Say quotations, production comments and operational
+directives keep their distinct meanings. Native checks cover geometry, layering,
+mode transitions and bounded Settings scrolling. Physical gesture/voice/camera
+acceptance remains part of Joanne's UAT. About consolidation and version-scoped
+coffee opt-out update existing guidance rather than adding feature-count rows.
+Help, screenshots, sample/promo drafts and the JL preview section are reviewed
+with this candidate; published app/plugin references remain 1.2.0/0.2.0.
+
 ## Companion core layouts and palettes — 5 November 2026
 
 Companion 0.2.1.5 adds fifteen opt-in Core Pages imports: four native linked

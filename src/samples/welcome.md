@@ -229,3 +229,15 @@ The guided tour points out the main controls. I can leave at any point and
 rerun it whenever I need a reminder. Disabled connections stay out of the way.
 
 {stop}
+
+
+## Short cues while I speak {target: 0:15}
+
+<!-- RC4 HUD. Align/save the shared head guide before judging placement. The script drives cues; do not add a gesture key. Pause to compare the inline Review view. No recorder starts from this example. -->
+[smile]
+A short cue can remind me to smile without becoming part of the spoken script.
+
+[point right: hud-example]
+For a graphic, I point towards the marker, then return to the lens. The words scroll in front of the target.
+
+{stop}

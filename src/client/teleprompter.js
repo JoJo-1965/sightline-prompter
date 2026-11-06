@@ -40,6 +40,7 @@ import {
 } from "./steady-scroll.js";
 import { decorateScript } from "./decorate.js";
 import { collectPointingCues } from "./pointing-cues.js";
+import { createHudCues } from "./hud-cues.js";
 import { annotationMask } from "./focus-mask.js";
 import { setProductionNotesActive } from "./production-notes.js";
 import { readDirectives, parseDirective, parseDuration } from "./directives.js";
@@ -161,6 +162,12 @@ const THEMES = [ "default", "yellow", "contrast", "cream" ];
 const FONTS = [ "default", "atkinson", "opendyslexic", "verdana" ];
 const EFFECTS = [ "none", "outline", "shadow" ];
 const md = uiElement( "md" );
+const hudCues = createHudCues( md, {
+	getState: () => settings,
+	getGuide: () => headGuideState ?? { pose: { x: settings.headGuideX, y: settings.headGuideY, scale: settings.headGuideScale, width: settings.headGuideWidth, height: settings.headGuideHeight, top: settings.headGuideTop, bottom: settings.headGuideBottom, left: settings.headGuideLeft, right: settings.headGuideRight }, bounds: settings.headGuideBounds, reference: settings.headGuideReference },
+	getCursor: () => autoScrollActive ? voiceWordIdx : null,
+	readingAnchor: getReadingAnchor
+} );
 
 // Recording settings (from main; edited on the Settings page).
 let settings = {
@@ -168,6 +175,7 @@ let settings = {
 	steadyWpm: 140,
 	countdown: 3,
 	directions: "dim",
+	hudCues: true,
 	showReadingMarker: true,
 	readingLine: 33,
 	highlightCues: true,
@@ -471,7 +479,14 @@ function sectionStartScroll( index ) {
 	if ( el?.tagName === "H2" && el.nextElementSibling ) el = el.nextElementSibling;
 	// Past anything not shown (a settings line, a hidden note).
 	while ( el && !el.offsetHeight && el.nextElementSibling ) el = el.nextElementSibling;
-	const top = layoutTop( el ?? anchor );
+	const spoken = buildWordIndex( md ).ranges.find( range => {
+		const parent = range.startContainer.parentElement;
+		if ( parent.closest( "h1,h2,h3,h4,h5,h6,.dir-text,.app-directive" ) ) return false;
+		if ( !( anchor.compareDocumentPosition( range.startContainer ) & Node.DOCUMENT_POSITION_FOLLOWING ) ) return false;
+		const next = document.getElementsByName( index + 1 )[0];
+		return !next || !!( next.compareDocumentPosition( range.startContainer ) & Node.DOCUMENT_POSITION_PRECEDING );
+	} );
+	const top = spoken ? spoken.getBoundingClientRect().top + window.scrollY : layoutTop( el ?? anchor );
 	return Math.max( 0, top - window.innerHeight * getReadingAnchor() );
 }
 
@@ -1448,7 +1463,8 @@ async function prepareReading() {
 			linkedRecording.pause();
 			return false;
 		}
-		setProductionNotesActive( md, true, { alignFirst: window.scrollY < 4, readingAnchor: getReadingAnchor() } );
+		hudCues.prepare();
+		setProductionNotesActive( md, true, { alignFirst: window.scrollY < 4, readingAnchor: getReadingAnchor(), hud: settings.hudCues !== false } );
 		measureDirectives( buildWordIndex( md ).ranges );
 		return true;
 	} finally {
@@ -1959,7 +1975,7 @@ document.addEventListener( "keydown", ( e ) => {
 
 // "Section 3", said on its own or after "Prompter": to the start of that
 // section. Said again for the section you're in, it's a retake.
-function goToSpokenSection( n, voice ) {
+async function goToSpokenSection( n, voice ) {
 	const anchor = document.getElementsByName( n )[0];
 	if ( !anchor ) {
 		showToast( `There's no section ${ n } in this script`, 2500 );
@@ -1969,6 +1985,7 @@ function goToSpokenSection( n, voice ) {
 		goToPoint( n - 1 );
 		return;
 	}
+	if ( voice && !await prepareReading() ) return;
 	pendingJumpReason = sectionOnScreen() === n ? "again" : null;
 	jumpSection( n - sectionOnScreen() );
 	pendingJumpReason = null;
@@ -2019,7 +2036,7 @@ async function runVoiceCommand( id, value ) {
 	if ( id === "close" ) return;
 	const voice = autoScrollActive && autoScrollHandle;
 	if ( id === "section" ) {
-		goToSpokenSection( value, voice );
+		await goToSpokenSection( value, voice );
 		return;
 	}
 	if ( id === "reset" ) {
@@ -2048,11 +2065,11 @@ async function runVoiceCommand( id, value ) {
 		// Steady pace moves 10 words a minute a time when spoken.
 		if ( settings.scrollMode !== "voice" ) runRemoteAction( step );
 	} else if ( id === "back" ) {
-		runRemoteAction( "previous-section" );
-		resyncAfterJump();
+		await runRemoteAction( "previous-section" );
+		if ( !voice ) resyncAfterJump();
 	} else if ( id === "next" ) {
-		runRemoteAction( "next-section" );
-		resyncAfterJump();
+		await runRemoteAction( "next-section" );
+		if ( !voice ) resyncAfterJump();
 	} else if ( id === "top" ) {
 		runRemoteAction( "restart" );
 		resyncAfterJump();
@@ -4751,6 +4768,7 @@ function showUpdateNote( info ) {
 // Reuse the support note every 10–15 launches, never while reading or on air.
 
 function maybeAskForSupport() {
+	if ( settings.hideSupportReminder === true ) return;
 	try {
 		if ( !recordSupportLaunch( localStorage ) ) return;
 	} catch {
@@ -4758,7 +4776,7 @@ function maybeAskForSupport() {
 	}
 	setTimeout( () => {
 		const busy = steadySessionActive() || autoScrollActive || onAir() || !settingsModal?.classList.contains( "hidden" );
-		if ( busy || uiElement( "support-note" ) ) return;
+		if ( busy || settings.hideSupportReminder === true || uiElement( "support-note" ) ) return;
 		try {
 			recordSupportShown( localStorage );
 		} catch {
@@ -4852,6 +4870,7 @@ function sendStatus() {
 		scrolling: isScrolling(),
 		preparing: autoScrollStarting || slating,
 		onAir: onAir(),
+		hud: hudCues.status(),
 		backing: Math.round( liveBacking() * 100 ),
 		panel: settingsModal.classList.contains( "hidden" ) ? null : ( { typography: "reading", engine: "voice", takes: "recording" }[settingsNavigation.current] ?? settingsNavigation.current ),
 		speechEnabled: settings.speechEnabled, microphoneEnabled: settings.microphoneEnabled, padEnabled: settings.padEnabled, gamepadEnabled: settings.gamepadEnabled, keyboardMappingsEnabled: settings.keyboardMappingsEnabled,
@@ -5077,9 +5096,14 @@ function runRemoteAction( action, value ) {
 		else goToStart();
 	} else if ( action === "next-section" ) {
 		if ( pointsMode() ) goToPoint( pointsIndex + 1 );
+		else if ( autoScrollActive && autoScrollHandle ) return goToSpokenSection( sectionOnScreen() + 1, autoScrollHandle );
 		else jumpSection( 1 );
 	} else if ( action === "previous-section" ) {
 		if ( pointsMode() ) goToPoint( pointsIndex - 1 );
+		else if ( autoScrollActive && autoScrollHandle ) {
+			const current = sectionOnScreen(), start = sectionStartScroll( current );
+			return goToSpokenSection( start !== null && window.scrollY > start + 40 ? current : current - 1, autoScrollHandle );
+		}
 		else jumpSection( -1 );
 	} else if ( action === "faster" ) adjustAutoScrollSpeed( "up" );
 	else if ( action === "slower" ) adjustAutoScrollSpeed( "down" );
@@ -5095,6 +5119,12 @@ function runRemoteAction( action, value ) {
 	else if ( action === "keeper" || action === "scrap" ) rateTake( action );
 	else if ( action === "help" ) openHelp();
 	else if ( action === "on-air" ) toggleOnAir();
+	else if ( action === "hud-cues" ) {
+		const hudCuesEnabled = value === "on" ? true : value === "off" ? false : settings.hudCues === false;
+		settings.hudCues = hudCuesEnabled;
+		window.electron.saveSettings( { hudCues: hudCuesEnabled } );
+		feedTakeLog( isScrolling() );
+	}
 	else if ( action === "mirror" ) cycleMirror();
 	else if ( action === "mirror-h" || action === "mirror-v" ) toggleMirrorAxis( action.slice( -1 ) );
 	else if ( action === "bigger" ) setFontSize( fontSize + FONT_SIZE_STEP );
@@ -6009,11 +6039,13 @@ function takeLogged( take ) {
 function feedTakeLog( active ) {
 	if ( changingRecordingScript ) return;
 	const delivering = !scriptCheck && !cuePaused && !autoScrollStarting && ( isSteadyRunning() || pointsRunning || ( autoScrollActive && !autoScrollHandle?.isHeld() ) );
-	if ( setProductionNotesActive( md, delivering, { readingAnchor: getReadingAnchor() } ) ) {
+	hudCues.prepare();
+	if ( setProductionNotesActive( md, delivering, { readingAnchor: getReadingAnchor(), hud: settings.hudCues !== false } ) ) {
 		const { ranges } = buildWordIndex( md );
 		measureDirectives( ranges );
 		recalculateSteady();
 	}
+	hudCues.update( delivering && !isEditMode );
 	syncScratchAudio( active );
 	syncLevelMeter( active );
 	// Waiting for the slate: the take opens after it, so it gets the slate.

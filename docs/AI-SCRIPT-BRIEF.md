@@ -50,6 +50,13 @@ section, script snapshot and take anchors; it does not verify a gesture or
 insert an asset. Ask the editor to check the recorded orientation and visible
 gesture before placing graphics. Plain `[point]` remains an ordinary note.
 
+HUD-enabled RC4 uses the same bracket syntax. During delivery a short cue or
+pointing target appears automatically; Review retains inline directions. Ask
+the presenter to point towards the marker, finish the gesture, then return to
+the lens. Do not prescribe a hand, invent HUD directives or require a gesture
+button. The recorded script and production metadata keep the original labels.
+Confirm the actual app version before promising this display in a demo shot.
+
 ## 2. Structure
 
 For a gesture-led graphic, plan it in the directions **and** the script.

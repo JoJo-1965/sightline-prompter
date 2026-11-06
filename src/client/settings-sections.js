@@ -8,10 +8,11 @@ export const SETTINGS_GROUPS = [
 	{ id: "recording", label: "Recording", pages: [ [ "takes", "Takes" ], [ "sound", "Sound check" ], [ "sync", "Slate and sync" ] ] },
 	{ id: "controls", label: "Connections", pages: [ [ "pad", "Pad and phone" ], [ "pairing", "Phone remote" ], [ "mappings", "Keyboard and clickers" ], [ "gamepad", "Game controller" ], [ "streamdeck", "Stream Deck" ], [ "obs", "OBS integration" ], [ "obs-recording", "OBS recording control" ], [ "obs-setup", "OBS profile and scenes" ], [ "api", "MCP, AI, and API" ], [ "components", "Apps and add-ons" ] ] },
 	{ id: "debug", label: "Debug", pages: [ [ "health", "Status and recovery" ], [ "trace", "Speech trace" ], [ "capture", "Capture for demos" ], [ "logs", "Support log" ] ] },
-	{ id: "about", label: "About", pages: [ [ "version", "Version and updates" ], [ "credits", "Credits and licences" ], [ "support", "Help and support" ] ] }
+	{ id: "about", label: "About", pages: [ [ "version", "About Sightline" ] ] }
 ];
 const ALIASES = { scrolling: "mode", reading: "typography", directions: "typography", theme: "background", display: "screens", script: "aids", files: "aids", voice: "engine", recording: "takes", audio: "sound", buttons: "mappings", phone: "pairing", remotes: "api", about: "version", debug: "health", "component-model": "components", "component-kit": "components", "component-node": "components", "component-obs": "components", "component-streamdeck": "streamdeck" };
 const OBS_TOPICS = [ [ "obs", "Connection" ], [ "obs-recording", "Recording control" ], [ "obs-setup", "Profile and scenes" ] ];
+ALIASES.credits = ALIASES.support = "version";
 const obsPage = name => OBS_TOPICS.some( ( [ id ] ) => id === name );
 const obsChild = name => name === "obs-recording" || name === "obs-setup";
 

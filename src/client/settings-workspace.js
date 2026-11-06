@@ -236,8 +236,9 @@ export function createSettingsWorkspace( root, { getState, getGuideState = () =>
 		row( panel, "Style", styles );
 		range( panel, ( { script: "lp-line-height", headings: "lp-heading-line-height", inline: "lp-direction-line-height", production: "lp-production-line-height" } )[target], "Line spacing", f.spacing, { step: 5, min: 100, max: 250, scale: 100, help: "Line spacing as a percentage of this text type’s font height. Paragraph gaps remain as written." } );
 		if ( target === "inline" ) choice( panel, "set-directions", "Visibility", "directions", [ [ "normal", "Normal" ], [ "dim", "Dimmed" ], [ "hide", "Hidden" ] ], true );
-		panel.append( el( "p", { className: "settings-inline-note" }, target === "production" ? "Production notes show while paused and hide during delivery. Everything inside stays silent, including quoted words." : target === "inline" ? "Short cues stay beside your words. Quoted words intended for speech keep the spoken-script style." : "The same font, size, colour, style and spacing pattern is used for every text target." ) );
+		panel.append( el( "p", { className: "settings-inline-note" }, target === "production" ? "Production notes show while paused and hide during delivery. Everything inside stays silent, including quoted words." : target === "inline" ? "Review keeps inline bracket directions. During delivery, short silent cues use the floating HUD. Quoted words intended for speech keep the spoken-script style." : "The same font, size, colour, style and spacing pattern is used for every text target." ) );
 	}
+	check( targetPanels.get( "inline" ), "set-hud-cues", "Floating HUD cues during delivery", "hudCues", true, "Show short directions in a gold cue pill while reading a take. Pointing marks stay behind your text, midway between the saved head edge and screen edge. Pausing restores the inline bracket view. This does not start a recorder." );
 	function selectTarget( target ) {
 		for ( const button of targets.children ) {
 			button.setAttribute( "aria-selected", String( button.dataset.textTarget === target ) );
@@ -464,6 +465,8 @@ export function createSettingsWorkspace( root, { getState, getGuideState = () =>
 	const credits = section( "credits", "Credits" );
 	credits.append( el( "p", {}, "Sightline Prompter is developed by Joanne Lockwood, SEE Change Happen Ltd, from David Neal’s Electron Teleprompter. Distributed under the MIT licence." ) );
 	move( "settings-about-full", credits );
+	support.dataset.tab = credits.dataset.tab = "version";
+	check( support, "set-hide-support-reminder", "Hide coffee reminders for this version", "hideSupportReminder", false, "Stops the occasional coffee reminder for this version. A new release resets this choice. You can still use the Support Sightline link here." );
 	const logs = section( "logs", "Support logs" );
 	const soundDependency = section( "sound", "Microphone input" );
 	soundDependency.dataset.settingsFirst = "true";

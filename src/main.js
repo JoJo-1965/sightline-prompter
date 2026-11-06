@@ -143,6 +143,9 @@ const defaultSettings = {
 	countdown: 3,
 	slate: "off", // at the start of each take: "beep" (flash and beep), "flash" or "off"
 	directions: "dim", // "dim", "hide" or "normal" for [bracketed] directions
+	hudCues: true,
+	hideSupportReminder: false,
+	supportReminderVersion: app.getVersion(),
 	showReadingMarker: true,
 	highlightSentence: true, // light up the sentence you're on (the next to say, in voice mode)
 	readingLine: 33, // % from the top of the window
@@ -381,6 +384,7 @@ export const SAMPLE_SCRIPTS = [
 	{ file: "voice-and-stops.md", label: "Voice control, stops and countdowns" },
 	{ file: "recording-preview.md", label: "Recording preview: preparation, modes and handover" },
 	{ file: "pointing-cues.md", label: "Pointing and graphic cues" },
+	{ file: "hud-cues.md", label: "HUD cues and pointing targets" },
 	{ file: "prepare-to-record.md", label: "Framing, audio and reference" },
 	{ file: "acceptance-main.md", label: "Recording walkthrough: module A" },
 	{ file: "acceptance-module-change.md", label: "Recording walkthrough: module B" },
@@ -1558,6 +1562,7 @@ app.whenReady().then( async () => {
 	streamDeckToken = state.streamDeckToken || newToken();
 	phoneKey = state.phoneKey || newPhoneKey();
 	settings = { ...defaultSettings, ...upgradeInterfaceSettings( upgradeReadingAppearance( state.settings ?? defaultSettings ) ) };
+	if ( settings.supportReminderVersion !== app.getVersion() ) { settings.hideSupportReminder = false; settings.supportReminderVersion = app.getVersion(); }
 	// Existing profiles used one spacing value for every kind of text.
 	for ( const key of [ "headingLineHeight", "directionLineHeight" ] ) {
 		if ( !Object.hasOwn( state.settings ?? {}, key ) ) {
@@ -1682,6 +1687,7 @@ app.whenReady().then( async () => {
 	const APP_DATA_LABEL = { win32: "%APPDATA%", darwin: "~/Library/Application Support" }[process.platform] ?? "~/.config";
 	const REMOTE_FILE_LABEL = REMOTE_FILE.replace( app.getPath( "appData" ), APP_DATA_LABEL );
 	const REMOTE_COMMANDS = [
+		"hud-cues",
 		...Object.keys( PREPARATION_COMMANDS ), "again", "mode-notes", "mode-voice", "mode-scroll", "mode-cycle", "review-recording", "export-reviewed-pack",
 		"obs-on", "obs-off", "obs-pause", "obs-resume",
 		"obs-record",

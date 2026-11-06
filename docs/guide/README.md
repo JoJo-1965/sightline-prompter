@@ -1,11 +1,14 @@
 # Sightline Prompter user guide
 
-**Sightline 1.3.0 RC3 preview · companion candidate 0.2.1.5 · documentation revision 19**
+**Sightline 1.3.0 RC4 preview · companion candidate 0.2.1.6 · documentation revision 20**
 
 Stable download remains Sightline 1.2.0. New preview workflows are described in
 [RC3 notes](../RELEASE-1.3.0-rc.3.md); they are not in the stable installer.
 
 New: [Controller functions and migration](21-controller-functions.md).
+RC4 adds [HUD directions and pointing targets](22-hud-cues.md), with a gold cue
+pill during delivery and the familiar inline directions when reviewing.
+
 RC3 adds [pointing and graphic cues](02-scripts.md#pointing-cues-in-rc3), with
 presenter-relative intent carried into the production handoff.
 
@@ -56,6 +59,7 @@ review a short test and save a reference. Restore that reference after a break.
 19. [Post-record audio review](19-post-record-review.md): local transcription, delivery candidates, command ranges and per-file offsets
 20. [Guided tour](20-guided-tour.md): first use, rerun, keyboard navigation and cancellation
 21. [Controller functions](21-controller-functions.md): grouped assignments, preparation controls, adjustment dials and migration
+22. [HUD cues](22-hud-cues.md): delivery directions, head-relative targets, inline Review and optional controller visibility
 
 Open this guide from **Help > User Guide** or the **?** menu. **F1** shows the
 enabled shortcuts. Use Settings search to find a control; use the searchable

@@ -398,3 +398,12 @@ Otherwise it's the sentence on the reading line.
 
 Turn it off or on in **Settings > Reading > Reading aids** under Reading
 indicators. **Tools > Adjust** provides separate live size and spacing controls.
+
+
+## RC4 navigation corrections
+
+Begin is an alias for Go. Next, Previous and explicit Section N commands release
+the previous voice stop and position the spoken opening at the reading marker.
+The ordinary product name Sightline Prompter is protected against arming the
+following word as a section command. Keep a keyboard/pad fallback and verify
+recognition with your own microphone; a parser test does not prove acoustics.

@@ -273,6 +273,9 @@ try {
 	await main.evaluate( 'navigator.mediaDevices.getUserMedia=globalThis.originalSettingsMedia;settingsToneContext.close()' );
 	await settings.evaluate( 'if(!document.getElementById("lp-focus-band").checked)document.getElementById("lp-focus-band").click()' );
 	const sections = await settings.evaluate( '[...document.querySelectorAll(".settings-subtabs [data-tab]")].map(x=>x.dataset.tab)' );
+	await settings.evaluate( 'document.querySelector("[data-tab=typography]").click();document.querySelector("[data-text-target=inline]").click();document.querySelector(".settings-workspace [data-preview-reading=true]").click()' );
+	assert.equal( await settings.evaluate( '!document.querySelector(".settings-workspace .settings-hud-example").hidden&&document.querySelector(".settings-workspace [data-sample=inline]").hidden' ), true, "Reading sample uses the enabled HUD; inline Review remains separate" );
+	await settings.evaluate( 'document.querySelector(".settings-workspace [data-preview-reading=false]").click()' );
 	const subtopicSpills = async () => settings.evaluate( `(()=>{const failures=[],floor=document.querySelector('.settings-actions').getBoundingClientRect().top;for(const name of ['screens','aids','components','guide']){document.querySelector('.settings-subtabs [data-tab="'+name+'"]').click();const page=document.querySelector('[data-settings-page="'+name+'"]');for(const tab of page.querySelectorAll('.settings-topic-tabs [role=tab]')){tab.click();const spill=[...page.querySelectorAll('input,select,button,p,fieldset')].filter(x=>x.getClientRects().length&&!x.closest('[hidden],.hidden')).filter(x=>x.getBoundingClientRect().bottom>floor||x.getBoundingClientRect().right>innerWidth).map(x=>x.id||x.className);if(spill.length)failures.push({name,group:tab.textContent,spill});}}return failures})()` );
 	assert.deepEqual( await subtopicSpills(), [], "Every visible group fits the desktop frame" );
 	const checkSetupReachable = async () => {
@@ -329,7 +332,7 @@ try {
 				await checkSetupReachable();
 				continue;
 			}
-			if ( [ "checklist", "obs", "api", "pad", "mappings", "gamepad" ].includes( name ) ) {
+			if ( [ "checklist", "obs", "api", "pad", "mappings", "gamepad", "version" ].includes( name ) ) {
 				await checkResultPageReachable( name );
 				continue;
 			}
@@ -368,6 +371,12 @@ try {
 		await settings.evaluate( 'document.querySelector("[data-tab=typography]").click()' );
 		for ( const target of [ "script", "headings", "inline", "production" ] ) {
 			await settings.evaluate( `document.querySelector('[data-text-target="${ target }"]').click()` );
+			if ( target === "inline" && height === 500 ) {
+				// The HUD preference uses the centre pane's existing scroll, keeping
+				// readable control spacing and the fixed action footer intact.
+				await checkResultPageReachable( "typography" );
+				continue;
+			}
 			assert.equal( await settings.evaluate( 'document.querySelector("#set-reading-host").getBoundingClientRect().bottom<=document.querySelector(".settings-actions").getBoundingClientRect().top' ), true, `${ target } fits at ${ width }×${ height }` );
 		}
 	}

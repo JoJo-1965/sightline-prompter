@@ -12,6 +12,7 @@ const groups = {
 };
 export const CONTROL_ACTIONS = Object.entries( groups ).flatMap( ( [ group, actions ] ) => actions.map( ( [ id, label, icon ] ) => ( { id, label, icon, group } ) ) );
 CONTROL_ACTIONS.push( { id: "mirror", label: "Cycle mirror", icon: "↔", group: "View" }, { id: "status", label: "Section / time", icon: "▤", group: "Prompting" } );
+CONTROL_ACTIONS.push( { id: "hud-cues", label: "HUD cues on / off", icon: "◉", group: "View" } );
 CONTROL_ACTIONS.push( ...[
 	[ "again", "Again / restart section", "↶", "Navigation" ], [ "reset-speed", "Reset pace", "↻", "Pace" ],
 	[ "mode-notes", "Notes / pages", "▤", "Reading mode" ], [ "mode-voice", "Voice following", "🎙", "Reading mode" ], [ "mode-scroll", "Steady scroll", "↓", "Reading mode" ], [ "mode-cycle", "Cycle reading mode", "↻", "Reading mode" ],
@@ -70,6 +71,10 @@ export function controlView( id, status = {} ) {
 		view.label = status.scrolling ? "Pause" : "Start";
 		view.icon = status.scrolling ? "Ⅱ" : "▶";
 		view.active = !!status.scrolling;
+	}
+	if ( id === "hud-cues" ) {
+		view.active = status.hud?.enabled === true;
+		view.label = view.active ? "HUD cues on" : "HUD cues off";
 	}
 	const toggles = { "on-air": "onAir", "sound-check": "soundCheck", "eye-line": "eyeLine", "click-through": "clickThrough", control: "showControl", pad: "showPad", "head-guide": "showHeadGuide", "head-guide-fullscreen": "headGuideFullscreen" };
 	if ( toggles[id] ) view.active = !!status[toggles[id]];

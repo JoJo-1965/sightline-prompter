@@ -6,7 +6,7 @@ inputs, review picture/sound, save a checked reference and retain a fallback.
 
 Open **Files > Sample scripts > Start here: Sightline feature tour**.
 The same `welcome.md` opens automatically on a fresh profile with no scripts.
-It is a guided sample with fourteen stops, rather than a production recording.
+It is a guided sample with focused stops, including the new delivery HUD.
 It works in Scroll mode without enabling a camera, microphone, AI or recorder.
 
 The tour covers transparency over slides/calls/camera previews; Scroll, Voice
@@ -24,10 +24,11 @@ example deliberately, rather than narrating it.
 
 | Sample | Purpose | Before using it |
 | --- | --- | --- |
-| Start here: Sightline feature tour | Twelve practical stops across core and RC features | Space works without optional services; enable only what you want to try |
+| Start here: Sightline feature tour | Practical stops across core and RC features | Space works without optional services; enable only what you want to try |
 | Voice control, stops and countdowns | Follow speech, pause/resume, retake, navigate and step off script | Enable speech, microphone and the chosen command-listening mode; retain a button fallback |
 | Recording preview | Production comments, sound checks, persistent test results, section pill and recorder modes | Use a disposable test; confirm recording and sync before delivery |
 | Pointing and graphic cues (RC3) | Silent presenter-relative gestures with optional graphic labels and per-take production metadata | Keep inline cues visible; verify output orientation, gesture and sync in the recording |
+| HUD cues: Review and delivery (RC4) | Smile and four pointing targets, inline Review and floating delivery cues | Align the shared head guide; enable Floating HUD cues. Reading the sample does not start a recorder |
 | Framing, audio and reference | Manual/local framing, audio advice, reviewed test clip, saved target and return after a break | Stop production recording before opening preparation; keep Ideal unless deliberately replacing it |
 | Recording walkthrough: module A/B | One continuous recording across two scripts, takes, markers and recorded sync | Review the acceptance guide; configure your actual capture route and keep linked recording off for this exercise |
 | Batch recording, section by section | Planned stops, consistent section retakes and keeper choices | Complete preparation, choose your recording mode and confirm a recorded sync reference |

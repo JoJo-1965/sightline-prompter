@@ -103,3 +103,12 @@ warnings retain their actual-state colours. **Key background** in a placed
 key's settings changes that key, not the whole page or virtual panel frame.
 Earlier profiles and custom-image behaviour remain unchanged with Original
 colours. Use the companion's Core pages guide and preview image for layouts.
+
+
+## RC4 HUD visibility
+
+Companion 0.2.1.6 adds Display > HUD cues on / off for the HUD-enabled RC4 app.
+Pad/phone and mapped inputs use the same optional action. Your existing profiles,
+buttons and dial assignments remain intact; optional 64-cell HUD variants fill
+an unused cell and are separate imports. Gestures follow authored script cues,
+so there are no separate left/right/smile keys. See [HUD cues](22-hud-cues.md).

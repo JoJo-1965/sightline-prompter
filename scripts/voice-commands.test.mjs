@@ -295,3 +295,14 @@ assert.equal( matchCommand( [ "culer" ], { soundAlike: true, extra: { keeper: [ 
 assert.equal( matchCommand( [ "cansel" ], { soundAlike: true } ), "close", "observed on-device Cancel spelling" );
 const conflictingResume = createCommandListener( { isPaused: () => true, commandWords: [ { id: "go", heard: "pause" } ], onCommand: () => assert.fail( "a taught resume form cannot override built-in Pause" ) } );
 assert.deepEqual( conflictingResume( [ "pause" ], true ), [ "pause" ] );
+
+let brandClock = 0;
+const branded = createCommandListener( { clock: () => brandClock, onCommand: () => assert.fail( "Sightline Prompter. Free is not a Section 3 request" ) } );
+branded( [ "SIGHTLINE" ], false ); brandClock = 503;
+branded( [ "PROMPTER" ], true ); brandClock = 1802;
+branded( [ "THREE" ], true );
+const deliberate = [];
+const afterBrand = createCommandListener( { clock: () => brandClock, onCommand: ( ...args ) => deliberate.push( args ) } );
+afterBrand( [ "SIGHTLINE", "PROMPTER", "FREE" ], true ); brandClock += 3000;
+afterBrand( [ "PROMPTER", "SECTION", "THREE" ], true );
+assert.deepEqual( deliberate, [ [ "section", 3 ] ] );

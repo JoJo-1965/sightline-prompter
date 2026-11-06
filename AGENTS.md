@@ -12,6 +12,10 @@
   tests. A passing overflow/control test does not establish design acceptance.
 - Show and obtain approval for any proposed departure before implementing it.
   Preserve working behaviour and user settings while correcting presentation.
+- HUD cues were signed off on 6 November 2026. Follow
+  `docs/design/HUD-CUES-APPROVED.md` and its frozen private visual reference.
+  Head-edge/screen-edge gap midpoints supersede earlier screen-thirds mocks;
+  pointing targets sit behind spoken text. Do not substitute an older layout.
 
 Follow [docs/DEPLOYMENT-CHECKLIST.md](docs/DEPLOYMENT-CHECKLIST.md) for every
 app, companion, RC/preview or website deployment, alongside the user's project
