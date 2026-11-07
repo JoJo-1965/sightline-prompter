@@ -15,11 +15,11 @@ export function decorateProductionNotes( root ) {
 	}
 }
 
-export function setProductionNotesActive( root, active, { alignFirst = false, readingAnchor = 0.33, hud = false } = {} ) {
+export function setProductionNotesActive( root, active, { alignFirst = false, readingAnchor = 0.33, hud = false, includeHeadings = false } = {} ) {
 	const changed = root.classList.contains( "take-reading" ) !== active || root.classList.contains( "hud-reading" ) !== ( active && hud );
 	if ( !changed && !alignFirst ) return false;
 	const walker = document.createTreeWalker( root, NodeFilter.SHOW_TEXT, {
-		acceptNode: node => node.nodeValue.trim() && !node.parentElement?.closest( ".dir-text, .app-directive, h1, h2, h3, h4, h5, h6, code, pre" ) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT
+		acceptNode: node => node.nodeValue.trim() && !node.parentElement?.closest( includeHeadings ? ".dir-text, .app-directive, h1, h3, h4, h5, h6, code, pre" : ".dir-text, .app-directive, h1, h2, h3, h4, h5, h6, code, pre" ) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT
 	} );
 	const candidates = [];
 	while ( walker.nextNode() ) {

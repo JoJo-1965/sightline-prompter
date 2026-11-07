@@ -1,5 +1,13 @@
 # Sightline Prompter features
 
+## 1.3.0 RC5 heading lead-in
+
+In Voice mode, optionally start at the H2 section title for a spoken warm-up
+before the actual script. Cold starts, section navigation and retakes use the
+preference; the editor retains the heading/body distinction. The option defaults
+off and does not affect Scroll/Notes. See [voice guidance](guide/03-scrolling-and-voice.md)
+and [RC5 notes](RELEASE-1.3.0-rc.5.md). The feature count remains 268.
+
 ## 1.3.0 RC4 HUD preview
 
 Short delivery directions use a gold HUD pill while reading; paused Review

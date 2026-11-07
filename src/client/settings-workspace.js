@@ -302,6 +302,7 @@ export function createSettingsWorkspace( root, { getState, getGuideState = () =>
 	readingMode.replaceChildren( new Option( "Notes / page", "notes" ), new Option( "Voice", "voice" ), new Option( "Scroll", "steady" ) );
 	addHelp( readingMode.closest( "[data-settings-control]" ).querySelector( ".settings-option-name" ), "Reading mode", "Choose one reading mode. Notes / page advances through speaking notes; Voice follows recognised speech; Scroll moves at a set words-per-minute pace. Each mode shows only its relevant controls. Saved pace and response values are retained when switching." );
 	check( mode, "lp-follow-pace", "Follow script pacing", "followScriptPace", false, "In Scroll mode, use the script's WPM pacing directives where present. Scroll speed supplies the starting or fallback pace. This does not set the pace in Voice or Notes / page mode." );
+	check( mode, "set-start-from-heading", "Start from section heading", "startFromSectionHeading", false, "In Voice mode, start at the section heading when beginning or navigating a section, so you can read it as a lead-in before the actual script. The heading keeps its section identity for the editor. Off starts at the first script line. This does not start a recorder or mark a verified edit cut." );
 	const takes = section( "takes", "Takes", doc.getElementById( "set-recording-host" ) );
 	const reviewAudio = el( "button", { id: "settings-review-recorded-audio", type: "button" }, "Review recorded audio…" );
 	reviewAudio.addEventListener( "click", () => window.electron.recordings( "review-current" ) );
@@ -817,7 +818,7 @@ export function createSettingsWorkspace( root, { getState, getGuideState = () =>
 		for ( const option of modeChoice.options ) if ( option.value === "voice" ) option.disabled = !voiceReady;
 		const voiceMode = state.scrollMode === "voice" && !state.pointsMode;
 		const scrollMode = !voiceMode && state.pointsMode !== true;
-		for ( const [ id, active ] of [ [ "set-voice-speed", voiceMode ], [ "set-steady-wpm", scrollMode ], [ "lp-follow-pace", scrollMode ], [ "set-countdown", scrollMode ] ] ) {
+		for ( const [ id, active ] of [ [ "set-voice-speed", voiceMode ], [ "set-start-from-heading", voiceMode ], [ "set-steady-wpm", scrollMode ], [ "lp-follow-pace", scrollMode ], [ "set-countdown", scrollMode ] ] ) {
 			const control = controls.get( id );
 			control.closest( "[data-settings-control]" ).hidden = !active;
 			control.disabled = !active;

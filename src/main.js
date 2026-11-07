@@ -128,6 +128,7 @@ const defaultSettings = {
 	...APPEARANCE_DEFAULTS,
 	...INTERFACE_DEFAULTS,
 	scrollMode: "steady", // "steady" (fixed words per minute) or "voice" (follows what you say)
+	startFromSectionHeading: false,
 	voiceEngine: "local", // "local" (on this computer) or "deepgram" (online, needs a key)
 	voiceCommands: "voice", // "Prompter, pause": "voice" (voice mode), "always" (steady too) or "off"
 	wakeWord: "prompter", // prompter, computer, teleprompter or director
@@ -385,6 +386,7 @@ export const SAMPLE_SCRIPTS = [
 	{ file: "recording-preview.md", label: "Recording preview: preparation, modes and handover" },
 	{ file: "pointing-cues.md", label: "Pointing and graphic cues" },
 	{ file: "hud-cues.md", label: "HUD cues and pointing targets" },
+	{ file: "spoken-heading-lead-in.md", label: "A natural start: spoken section headings" },
 	{ file: "prepare-to-record.md", label: "Framing, audio and reference" },
 	{ file: "acceptance-main.md", label: "Recording walkthrough: module A" },
 	{ file: "acceptance-module-change.md", label: "Recording walkthrough: module B" },

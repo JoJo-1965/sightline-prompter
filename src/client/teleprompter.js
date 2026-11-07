@@ -468,9 +468,12 @@ window.electron.onMirrored( ( value ) => {
 	setMirrored( settingsDraft?.value.mirrored ?? value, false );
 } );
 
-// Where a section starts: its first line after the heading at the reading
-// line, where following your voice puts the line you're on, so the reading
-// arrow points at the middle of it. The start of the script is the top.
+function readSectionHeading() {
+	return settings.startFromSectionHeading === true && settings.scrollMode === "voice" && !pointsMode();
+}
+
+// Voice can optionally start at the H2 as a spoken lead-in. Other modes and
+// the default continue to position the first script line at the reading line.
 function sectionStartScroll( index ) {
 	if ( index <= 0 ) return 0;
 	const anchor = document.getElementsByName( index )[0];
@@ -481,7 +484,7 @@ function sectionStartScroll( index ) {
 	while ( el && !el.offsetHeight && el.nextElementSibling ) el = el.nextElementSibling;
 	const spoken = buildWordIndex( md ).ranges.find( range => {
 		const parent = range.startContainer.parentElement;
-		if ( parent.closest( "h1,h2,h3,h4,h5,h6,.dir-text,.app-directive" ) ) return false;
+		if ( parent.closest( readSectionHeading() ? "h1,h3,h4,h5,h6,.dir-text,.app-directive" : "h1,h2,h3,h4,h5,h6,.dir-text,.app-directive" ) ) return false;
 		if ( !( anchor.compareDocumentPosition( range.startContainer ) & Node.DOCUMENT_POSITION_FOLLOWING ) ) return false;
 		const next = document.getElementsByName( index + 1 )[0];
 		return !next || !!( next.compareDocumentPosition( range.startContainer ) & Node.DOCUMENT_POSITION_PRECEDING );
@@ -492,7 +495,10 @@ function sectionStartScroll( index ) {
 
 function jumpToSection( index ) {
 	const y = sectionStartScroll( index );
-	if ( y !== null ) window.scrollTo( 0, y );
+	if ( y !== null ) {
+		cancelScroll();
+		window.scrollTo( 0, y );
+	}
 }
 
 // --- Editor mode state ---
@@ -1464,7 +1470,7 @@ async function prepareReading() {
 			return false;
 		}
 		hudCues.prepare();
-		setProductionNotesActive( md, true, { alignFirst: window.scrollY < 4, readingAnchor: getReadingAnchor(), hud: settings.hudCues !== false } );
+		setProductionNotesActive( md, true, { alignFirst: window.scrollY < 4, readingAnchor: getReadingAnchor(), hud: settings.hudCues !== false, includeHeadings: readSectionHeading() } );
 		measureDirectives( buildWordIndex( md ).ranges );
 		return true;
 	} finally {
@@ -6040,7 +6046,7 @@ function feedTakeLog( active ) {
 	if ( changingRecordingScript ) return;
 	const delivering = !scriptCheck && !cuePaused && !autoScrollStarting && ( isSteadyRunning() || pointsRunning || ( autoScrollActive && !autoScrollHandle?.isHeld() ) );
 	hudCues.prepare();
-	if ( setProductionNotesActive( md, delivering, { readingAnchor: getReadingAnchor(), hud: settings.hudCues !== false } ) ) {
+	if ( setProductionNotesActive( md, delivering, { readingAnchor: getReadingAnchor(), hud: settings.hudCues !== false, includeHeadings: readSectionHeading() } ) ) {
 		const { ranges } = buildWordIndex( md );
 		measureDirectives( ranges );
 		recalculateSteady();

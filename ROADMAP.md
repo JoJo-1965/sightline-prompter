@@ -21,6 +21,12 @@ See [grouped release notes](docs/RELEASE-1.2.0.md) and the
 
 ## In 1.3.0 RC1 preview
 
+**RC5 candidate:** optional Voice-mode start at the section heading, so a
+presenter can warm up, read the title and continue naturally into the body.
+The existing heading/body structure remains available for editorial trimming;
+automatic verified cut boundaries are outside this setting. First body line
+remains the default; Scroll and Notes keep their existing behaviour.
+
 **RC3 adds pointing cues:** silent presenter-relative directions with optional
 graphic labels, captured-script anchors and take-linked production exports.
 Use existing inline appearance controls. The editor must verify the gesture,

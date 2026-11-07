@@ -1,5 +1,14 @@
 # Settings screenshot gallery
 
+## 1.3.0 RC5 voice lead-in
+
+The Voice-only **Start from section heading** preference appears in Reading >
+Mode and pace. It retains the approved Settings composition and the default
+first-body-line start. See [voice guidance](03-scrolling-and-voice.md) for the
+warm-up/title/body workflow and editorial limits.
+
+![Voice-mode heading start preference](images/voice-heading-start-rc5.png)
+
 ## 1.3.0 RC1 additions
 
 Actual Windows preview captures using a disposable sample session. The main

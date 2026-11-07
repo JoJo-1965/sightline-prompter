@@ -241,3 +241,10 @@ A short cue can remind me to smile without becoming part of the spoken script.
 For a graphic, I point towards the marker, then return to the lens. The words scroll in front of the target.
 
 {stop}
+## A natural start to the next take {target: 0:15}
+
+<!-- RC5 OPTIONAL EXERCISE. Pause before changing modes. In Voice mode, enable Reading > Mode and pace > Start from section heading. Open the focused A natural start sample, wait for Listening, warm up naturally, read its section title and continue into the body. The editor keeps the heading/body distinction and trims the lead-in against the recording. No duplicated title or extra device key is needed. -->
+
+Read the section title to find your rhythm, settle for a beat, then begin the script with a relaxed expression.
+
+{stop}

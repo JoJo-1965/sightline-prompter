@@ -1,7 +1,7 @@
 # Sightline Prompter feature grid
 
-**Review basis: Sightline 1.3.0 RC4 preview, documentation revision 20, 6 November 2026.**
-**Build version:** `1.3.0-rc.4` · **Publication status:** Preview
+**Review basis: Sightline 1.3.0 RC5 preview, documentation revision 21, 7 November 2026.**
+**Build version:** `1.3.0-rc.5` · **Publication status:** Preview
 
 **Maintained source:** [Feature grid](https://github.com/JoJo-1965/sightline-prompter/blob/codex/pointing-production-cues/docs/FEATURE-GRID.md)
 
@@ -52,13 +52,13 @@ Reference: [Scrolling and voice](guide/03-scrolling-and-voice.md) and [Recording
 | Current-section status | Included | Yellow section/total pill on the persistent recorder status row. | Explicitly paged Notes shows page/total. Follows script navigation and retakes, including when the toolbar hides. |
 | On air reading view | Included | A separate On air state changes the operator/reading presentation and configured backing. | On air describes the prompter view; use the confirmed recording pill to check the recorder. |
 | Restart and return to top | Included | Return to the beginning; reset can also restore normal pace and clear the pacing clock. | Returning to top and starting a fresh timed run are distinct actions. |
-| Section navigation | Included | Previous, next and numbered section jumps; section retakes. | Section boundaries come from the script structure. |
+| Section navigation | Included | Previous, next and numbered section jumps; section retakes. RC5 adds an optional Voice-only Start from section heading preference for a spoken lead-in. | Off by default; first body line remains the default. Headings retain their section identity for editorial trimming; no automatic verified cut boundary. |
 | Speed and responsiveness | Included | Change steady WPM or voice-following responsiveness during use. | Recognition accuracy and responsiveness are different concerns. |
 | Start countdown | Optional | Set a countdown before Scroll mode starts moving. | Does not delay Voice or Notes/page mode, and does not itself start an external recorder. |
 | Section targets | Optional | Per-section WPM and target duration, plus script-wide pacing instructions. | Targets guide delivery; they do not guarantee the final running time. |
 | Pace feedback | Included | Pacing light, elapsed time, progress and estimated time remaining. | Speech-derived figures require useful recognition data. |
 | Sentence and reading position | Optional | Reading-line marker, sentence highlight and focus band. | These are reading aids rather than a measure of eye contact. |
-| First spoken line at start | Included | Long preparation notes are removed from the delivery view and the first spoken line is positioned for reading. | Use production comments for long instructions and pause to inspect them. |
+| First spoken line at start | Included | Long preparation notes hide for delivery. Position the first body line, or optionally the section heading in RC5 Voice mode. | Use production comments for setup. The Voice-only heading preference is retained but unused in Scroll/Notes. |
 
 ## 03 · Speech recognition and voice commands
 

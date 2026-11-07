@@ -1,10 +1,10 @@
 # Sightline Prompter
 
-> **Development preview: 1.3.0 RC4, documentation revision 20.**
+> **Development preview: 1.3.0 RC5, documentation revision 21.**
 > The public download below is stable 1.2.0. This candidate adds optional
 > [post-record audio review](docs/guide/19-post-record-review.md) and a
 > [rerunnable guided tour](docs/guide/20-guided-tour.md). Read the
-> [RC4 notes and limits](docs/RELEASE-1.3.0-rc.4.md) before testing. This candidate
+> [RC5 notes and limits](docs/RELEASE-1.3.0-rc.5.md) before testing. This candidate
 > adds [grouped controller functions](docs/guide/21-controller-functions.md),
 > explicit reading modes, preparation/review controls and an Adjustment dial.
 > RC3 adds silent `[point left: graphic-label]` cues with presenter-relative
@@ -12,6 +12,8 @@
 > RC4 adds [floating HUD cues](docs/guide/22-hud-cues.md), corrected Next/section
 > positioning, product-name wake protection, naturally wrapped production notes
 > and consolidated About controls. [RC4 notes](docs/RELEASE-1.3.0-rc.4.md).
+> RC5 adds an optional spoken section-heading lead-in in Voice mode, preserving
+> the heading/body distinction for editorial trimming and the existing default.
 
 ![Sightline Prompter: your words, your pace](docs/images/hero.png)
 

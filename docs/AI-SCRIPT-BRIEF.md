@@ -59,6 +59,15 @@ Confirm the actual app version before promising this display in a demo shot.
 
 ## 2. Structure
 
+For an optional natural lead-in in Sightline 1.3.0 RC5, keep each section title
+as an ordinary H2 heading. Ask the presenter to enable **Start from section
+heading** in Voice mode, wait for Listening, say a short warm-up phrase, read
+the heading, settle, then deliver the body. The editor trims the spoken lead-in
+using the section/body structure and recording. Do not repeat the title as body
+copy, invent a lead-in directive or promise a verified automatic cut boundary.
+Keep any editor instructions in a preparation comment. The preference is off
+by default; Scroll/Notes retain their existing behaviour.
+
 For a gesture-led graphic, plan it in the directions **and** the script.
 Choose one stable graphic label, presenter-relative direction, exact spoken
 anchor and visual purpose. Match that label in a paused-only production

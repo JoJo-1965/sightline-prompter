@@ -90,6 +90,27 @@ computer and is never written to exported settings files.
 
 ### Using it
 
+#### Start naturally with the section heading (RC5 preview)
+
+In **Reading > Mode and pace**, enable **Start from section heading** in Voice
+mode. A cold start, Next/Previous, numbered jump or section retake then positions
+the section heading at the reading line. With the recorder already running and
+Listening ready, say a short warm-up phrase, read that heading, settle for a
+beat and continue into the script. Keep the heading as an H2; do not duplicate
+it in the body or turn it into a silent bracket direction.
+
+The editor can distinguish the section title from the body in the original
+script/handover and trim the lead-in against the recording. It is not an exact
+automatic edit boundary. Use natural titles; phrases that are voice commands
+can still be interpreted as commands when command listening is enabled.
+The default is off and starts at the first body line. Scroll and Notes do not
+use this Voice-only preference. Try **A natural start: spoken section headings**
+from Files > Sample scripts. Opening the sample starts no device or recorder.
+
+![Voice-mode heading start preference](images/voice-heading-start-rc5.png)
+
+#### Start voice following
+
 1. Choose **Voice** as the scroll mode.
 2. Pick your microphone in the Voice panel. Speak a few words and check the
    meter moves.

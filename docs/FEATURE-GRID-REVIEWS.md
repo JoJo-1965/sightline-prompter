@@ -1,5 +1,15 @@
 # Feature-matrix review record
 
+## RC5 heading lead-in — 7 November 2026
+
+The 268-row preview matrix updates existing section-navigation and initial
+positioning rows for the optional Voice-only heading start. No new directive,
+controller action, editing guarantee or feature-count row is added. Review
+help, Voice settings screenshot, natural-start sample, authoring brief and
+versioned JL guidance together. Default first-body positioning, Scroll/Notes,
+structured section titles and existing captures remain intact. Public versions
+remain 1.2.0/0.2.0; companion candidate 0.2.1.6 needs no code/profile change.
+
 ## RC4 HUD batch — 6 November 2026
 
 The preview reference advances to 268 capabilities: delivery HUD directions,

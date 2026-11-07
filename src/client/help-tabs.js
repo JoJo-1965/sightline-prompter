@@ -49,6 +49,7 @@ export function helpTabs( settings, notes = false ) {
 		[ "Production comments", "HTML comments show while paused and hide during delivery. Review keeps inline [smile] directions; delivery uses the HUD" ],
 		[ "HUD cues", "Gold delivery cues and pointing targets follow the script. Side targets bisect the head-edge/screen-edge gaps, below the saved eyes and behind your words" ],
 		[ "HUD visibility", "Reading > Text and directions > Inline directions; optional HUD cues on/off in pad, phone or mappings. Companion 0.2.1.6 adds Display > HUD cues" ],
+		[ "Spoken heading lead-in", "In Voice mode enable Reading > Mode and pace > Start from section heading. Warm up, read the title, settle and deliver the body; the editor trims the heading from the recording" ],
 		[ "Sound checks", "Review level and noise together. Continue anyway accepts a warning and logs it; adding gain also raises background noise" ]
 	] ) );
 	recording.push( section( "Rehearsal review", [

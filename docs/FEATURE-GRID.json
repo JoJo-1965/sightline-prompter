@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "basis": "Sightline 1.3.0 RC4 preview, documentation revision 20, 6 November 2026",
-  "date": "6 November 2026",
+  "basis": "Sightline 1.3.0 RC5 preview, documentation revision 21, 7 November 2026",
+  "date": "7 November 2026",
   "sourceBuild": "178dc50",
-  "buildVersion": "1.3.0-rc.4",
+  "buildVersion": "1.3.0-rc.5",
   "publicationStatus": "preview",
   "appRelease": "1.2.0",
   "pluginRelease": "0.2.1.6",
   "sourceUrl": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/pointing-production-cues/docs/FEATURE-GRID.md",
-  "sourceSha256": "8a46465475a3b4bbf7b7ed554415824a3d2455be2882d746a67ef53f824113ca",
+  "sourceSha256": "b9442e12d9340e8bf064a577cbe233d6de12d56f45bfd43a60aed286c7ed0dfc",
   "support": [
     "Included",
     "Optional",
@@ -158,8 +158,8 @@
         {
           "name": "Section navigation",
           "support": "Included",
-          "options": "Previous, next and numbered section jumps; section retakes.",
-          "limits": "Section boundaries come from the script structure."
+          "options": "Previous, next and numbered section jumps; section retakes. RC5 adds an optional Voice-only Start from section heading preference for a spoken lead-in.",
+          "limits": "Off by default; first body line remains the default. Headings retain their section identity for editorial trimming; no automatic verified cut boundary."
         },
         {
           "name": "Speed and responsiveness",
@@ -194,8 +194,8 @@
         {
           "name": "First spoken line at start",
           "support": "Included",
-          "options": "Long preparation notes are removed from the delivery view and the first spoken line is positioned for reading.",
-          "limits": "Use production comments for long instructions and pause to inspect them."
+          "options": "Long preparation notes hide for delivery. Position the first body line, or optionally the section heading in RC5 Voice mode.",
+          "limits": "Use production comments for setup. The Voice-only heading preference is retained but unused in Scroll/Notes."
         }
       ]
     },
