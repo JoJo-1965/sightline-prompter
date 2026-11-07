@@ -17,6 +17,11 @@ Stream Deck and other controllers; OBS state and modes; local MCP grants; and
 retakes and edit-pack handover. Pause at a stop to try its suggested action.
 
 Samples open read-only. Use **Save a copy** before personalising a script.
+
+For the marketing video, use the separate
+[RC5 refresh brief](marketing/VIDEO-REFRESH-1.3.0-RC5.md) with the new promo draft.
+It maps current HUD/setup captures and natural-start pickups to the existing
+cut; the labelled Stream Deck 0.2.0 evidence video remains a separate asset.
 Opening them does not enable integrations or run a recording command.
 Long setup/command instructions use paused-only production comments. Inline
 brackets hold brief delivery cues. Read the ordinary text; use a command

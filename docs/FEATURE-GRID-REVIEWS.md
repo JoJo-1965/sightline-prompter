@@ -1,5 +1,11 @@
 # Feature-matrix review record
 
+RC5 promo review, 7 November: the demo/recording scripts already contain the
+heading lead-in. A video refresh brief identifies current HUD/setup captures,
+selective performance pickups and reuse of suitable existing media. The
+versioned Stream Deck 0.2.0 evidence remains separate. This is production
+guidance only: no runtime, capability count, candidate binary or live-site change.
+
 ## RC5 heading lead-in — 7 November 2026
 
 The 268-row preview matrix updates existing section-navigation and initial
