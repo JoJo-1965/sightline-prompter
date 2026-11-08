@@ -44,7 +44,7 @@ The ones you'll use most:
 
 | Keys                     | What they do                                   |
 | ------------------------ | ---------------------------------------------- |
-| **Space**                | Start / pause (and carry on after a `{pause}`) |
+| **Space**                | Start / pause; continue after `{stop}` or a Scroll-mode `{pause}` |
 | **↑** / **↓**            | While scrolling: faster / slower               |
 | **→** / **←**            | Next / previous section                        |
 | **Ctrl+Home**            | Back to the start                              |

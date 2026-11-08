@@ -8,7 +8,7 @@
 	"main": "src/main.js",
 	"type": "module",
 	"scripts": {
-		"posttest": "node scripts/pointing-cues.test.mjs && node scripts/hud-cues.test.mjs",
+		"posttest": "node scripts/pointing-cues.test.mjs && node scripts/hud-cues.test.mjs && node scripts/directive-modes.test.mjs",
 		"test:pointing": "node scripts/pointing-cues.test.mjs && node scripts/pointing-cues-app.test.mjs",
 		"test:controllers": "node scripts/controller-workflow.test.mjs && node scripts/pad-layout.test.mjs && node scripts/input-mappings.test.mjs && node scripts/controller-app.test.mjs",
 		"build:editor": "esbuild src/client/editor.js --bundle --format=iife --global-name=EditorModule --outfile=src/client/editor-bundle.js && node scripts/build-framing-runtime.mjs && node scripts/build-mcp.mjs",

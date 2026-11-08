@@ -10,6 +10,11 @@ Deck plugin **0.2.1.6** candidate. It includes stable 1.2.0 features plus the ex
 snapshot. The public app release remains **1.2.0**; this document
 does not certify an individual recording setup.
 
+**Queued after RC5:** bare and timed `{pause}` directives will apply only to
+Scroll; Voice will keep following naturally, including linked recording.
+Explicit `{stop}` remains a hold in either mode. This source correction is
+not in the frozen RC5 installer; the rows below still describe that package.
+
 Use the [searchable grid](FEATURE-GRID.html) to browse by subject or support
 level. The [CSV comparison sheet](FEATURE-GRID.csv) includes a blank reviewer
 notes column. Each section links to the detailed instructions and limitations.

@@ -1,5 +1,10 @@
 # Sightline Prompter features
 
+**Queued after RC5:** bare and timed `{pause}` directives are Scroll-only.
+Voice follows natural beats, including linked recording. Explicit `{stop}`
+and spoken pause commands remain deliberate. This source correction is not
+in the frozen RC5 package and does not add a feature-grid row.
+
 ## 1.3.0 RC5 heading lead-in
 
 In Voice mode, optionally start at the H2 section title for a spoken warm-up

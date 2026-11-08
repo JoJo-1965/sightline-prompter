@@ -341,3 +341,13 @@ bounded Rust/Tauri feasibility study and a separate commercial/licensing
 review. Neither is implemented or committed for release. No current runtime,
 price, licence, supported capability, feature-grid export, help screenshot or
 JL website claim changes. RC5's package and feature reference remain unchanged.
+
+Pause-mode correction, 8 November 2026: source now treats both bare and timed
+pause directives as Scroll-only, including when OBS recording is linked.
+Explicit stops, off-script holds, sound checks and spoken pause commands keep
+their meaning. Help, script schema/authoring brief and mode-comparison samples
+describe the correction. A clearly labelled pending note accompanies the RC5
+grid; its capability rows and frozen build reference remain unchanged until a
+new preview is packaged. No live JL claim or approved promo changes are needed.
+Review the manual-stop/timed-pause rows and remove the pending note when the
+corrected package becomes the reference. This is not a no-feature-impact claim.

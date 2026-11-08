@@ -43,7 +43,7 @@ import { collectPointingCues } from "./pointing-cues.js";
 import { createHudCues } from "./hud-cues.js";
 import { annotationMask } from "./focus-mask.js";
 import { setProductionNotesActive } from "./production-notes.js";
-import { readDirectives, parseDirective, parseDuration } from "./directives.js";
+import { readDirectives, parseDirective, parseDuration, pausesForMode } from "./directives.js";
 import { createTakeLog } from "./take-log.js";
 import { COMMANDS, wakeLabel } from "./voice-commands.js";
 import { heardForms, normalizeWord } from "./word-fixes.js";
@@ -1201,16 +1201,13 @@ function lastWordBefore( point, ranges ) {
 	return point.lastWord;
 }
 
-// The stop whose last word before it the speaker has just said, if any. Timed
-// pauses don't hold in voice mode: the text only moves when the speaker does,
-// so they see {pause: 3s} in the script and take the beat themselves.
+// The explicit stop whose preceding word the speaker has just said, if any.
+// Bare and timed {pause} directives never hold Voice, including linked recording.
 function voicePauseCrossed( wordIdx, ranges ) {
 	const before = voiceWordIdx;
 	voiceWordIdx = wordIdx;
 	if ( before === null || wordIdx <= before || autoScrollHandle?.isHeld() ) return null;
-	return directivePoints.pauses.find( ( pause ) => {
-		if ( pause.seconds && !linkedRecording.enabled() ) return false;
-
+	return pausesForMode( directivePoints.pauses, "voice" ).find( ( pause ) => {
 		const last = lastWordBefore( pause, ranges );
 		return last > before && last <= wordIdx;
 	} );
@@ -1344,7 +1341,7 @@ async function startScriptSoundCheck( kind, pause = null ) {
 // The sound check straight after this one, with nothing to read between them
 // (room, then voice): carrying on from one goes to the next.
 function nextSoundCheck( pause ) {
-	const list = directivePoints.pauses;
+	const list = pausesForMode( directivePoints.pauses, settings.scrollMode );
 	const next = list[list.indexOf( pause ) + 1];
 	if ( !pause || !next?.soundcheck ) return null;
 	return directivePoints.wordTops.some( t => t > pause.y + 1 && t < next.y - 1 ) ? null : next;
@@ -1354,7 +1351,7 @@ function nextSoundCheck( pause ) {
 // above the reading line, so it would never be passed. It runs straight away.
 function openingSoundCheck() {
 	if ( window.scrollY > 4 ) return null;
-	const first = directivePoints.pauses[0];
+	const first = pausesForMode( directivePoints.pauses, settings.scrollMode )[0];
 	return first?.soundcheck && first.y <= readingLineY() + 1 ? first : null;
 }
 

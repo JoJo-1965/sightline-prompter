@@ -53,6 +53,12 @@ the preview manifest; other platforms require acceptance.
 
 ## Next: recording accuracy and real-world feedback
 
+**Next preview correction:** bare and timed `{pause}` directives are Scroll-only.
+Voice follows natural pauses without a forced hold or linked-recorder pause;
+explicit `{stop}`, sound checks and spoken pause commands remain deliberate.
+Source and authoring/help updates are queued after RC5. The packaged RC5 already
+includes the separate Next/section-jump fix that resumes Voice without another Go.
+
 **RC4 candidate:** the approved HUD layout is implemented for UAT: gold short
 cues, fixed head-edge/screen-edge midpoint targets below the eyes, foreground
 script text and Review's inline directions. One optional shared visibility

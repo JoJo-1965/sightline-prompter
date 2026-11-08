@@ -150,6 +150,15 @@ on your own setup. OBS-scene calibration is a sampled preview, not the encoder o
 
 ## Change log
 
+### Queued after RC5 — pause directives
+
+Voice ignores bare and timed `{pause}` directives, including linked recording;
+take the beat naturally. Scroll retains manual holds and timed countdowns.
+Explicit `{stop}`, off-script holds, sound checks and spoken pause commands
+remain deliberate controls. Source correction only: existing RC3–RC5 packages
+are unchanged. RC5 already fixes Next/section navigation resuming Voice without
+an extra Go. Help, authoring instructions and the mode-comparison demo agree.
+
 ### 1.3.0 RC3 preview
 
 **Pointing and graphics:** inline left/right/up/down, diagonal and centre cues

@@ -138,7 +138,8 @@ read.
 
 | Directive                     | What it does                                              |
 | ----------------------------- | --------------------------------------------------------- |
-| `{stop}` (or `{pause}`)       | Stops here until you say "Prompter, go", or press Space or the clicker |
+| `{stop}`                    | Holds Scroll or Voice until you say "Prompter, go", or press Space or the clicker |
+| `{pause}`                   | Next preview: a Scroll-only hold; Voice ignores it. Existing RC3–RC5 packages still treat it as stop |
 | `{pause: 3s}`                 | A 3-second countdown, then it carries on by itself. In voice mode, a **⏸ 3s** mark: take the beat yourself |
 | `{marker}` or `{marker: Setup}` | A bookmark for retakes. **Ctrl+B** jumps to the next one. A name, such as `{marker: Setup}`, shows in the take log and the edit pack |
 | `{listen: off}` … `{listen: on}` | Off script (an ad-lib, a demo, questions): the microphone is off and the prompter holds; Space carries on from `{listen: on}` |

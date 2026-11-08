@@ -119,7 +119,7 @@ next line:
 | Directive     | What it does                                                                                                             |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------ |
 | `{stop}`      | Stops here until you carry on: say "Prompter, go" (or just "go"), or press Space, the clicker or the phone remote. A yellow **Stopped** label shows. Works in steady and voice scrolling. In section mode the section timer stops too |
-| `{pause}`     | The same as `{stop}`                                                                                                     |
+| `{pause}`     | In Scroll mode, waits until you continue. Voice mode ignores this directive, including when recording is linked. Use `{stop}` for an intentional Voice hold |
 | `{pause: 3s}` | Stops for 3 seconds, with a blue **Carrying on in 3** countdown, then carries on by itself. "Prompter, go" carries on sooner; "Prompter, pause" turns it into a stop. In voice scrolling it doesn't hold: the text only moves when you speak, so it shows as a small blue **⏸ 3s** mark and you take the beat yourself |
 | `{marker}`    | A bookmark you can jump to (`Ctrl+B` cycles through them), useful for retakes. Optionally named: `{marker: Setup}` (up to 40 characters) puts the name in the take log and the edit pack's marks. Each marker is logged with the take when it's read past |
 | `{listen: off}` | Off script: before an ad-lib, a demo or questions. The microphone is muted (nothing is listened to) and the prompter holds, in steady and voice scrolling, with **Off script · mic off · Space to carry on**. Space, the clicker, the remote or the Stream Deck carries on from the next `{listen: on}`, where voice following picks up again. The take log and edit pack record the time off script |
@@ -128,6 +128,12 @@ next line:
 | `{soundcheck: voice}` | The same for your voice: read the line on the card at your normal level for 7 seconds, and it says **Good level ✓**, **Too quiet**, **Loud** or **Clipping ✗**, with how far to turn the mic's gain up or down. Sightline can't change the gain itself: the recording isn't its own |
 | `{prompter: slower}` | Runs a prompter command as the reading reaches it: `slower` or `faster` (the steady speed), `bigger` or `smaller` (the text), or `marker`. In voice scrolling it runs when the word before it is said |
 | `{wpm: n}`    | Changes the target pace from this point until the end of the section                                                     |
+
+The scroll-only behaviour of bare `{pause}` is a correction queued after the
+RC5 package. Existing RC3–RC5 packages still treat it as `{stop}`. Timed pauses
+in Voice must also remain beat marks when recording is linked; they must not
+pause either voice following or the linked recorder. Explicit `{record: pause}`
+and spoken pause commands remain independent recording/prompting actions.
 
 ## Notes (talking points)
 
@@ -173,8 +179,9 @@ you move on with the arrow keys, clicker, remote or "Prompter, next page".
   write `\{` or `\}`.
 - An unknown directive is hidden as usual. The editor and Show directives mark it
   with a ⚠, so typos are easy to spot.
-- `[square brackets]` never control the app. Writing `[Pause.]` as a note to
-  yourself won't stop the scroll; use `{pause}` for that.
+- `[square brackets]` never control the app. `[pause]` is a natural delivery
+  cue. Use `{stop}` for an intentional hold in either reading mode; `{pause}`
+  is Scroll-only in the correction after RC5.
 
 ## Example
 

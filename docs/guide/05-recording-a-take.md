@@ -36,7 +36,9 @@ in words per minute against the target pace, and a plain verdict.
 - **Red**: more than 10% out.
 
 By default each section is timed on its own (good for recording a module one
-section at a time), and the timer stops at each `{pause}`. Put
+section at a time), and the timer stops at each intentional hold. A `{pause}`
+directive controls Scroll mode; Voice pauses naturally when you stop speaking.
+Use `{stop}` for an intentional hold in either mode. Put
 `{pacing: session}` at the top of a script to time the whole take instead.
 
 The **ON AIR** light at the top right shows while the script is scrolling.

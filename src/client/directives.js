@@ -67,10 +67,18 @@ export const SOUND_CHECKS = [ "room", "voice" ];
 // What {prompter: …} may do at a point in the script.
 export const PROMPTER_COMMANDS = [ "slower", "faster", "bigger", "smaller", "marker" ];
 
+// Voice following already waits for the speaker. Script pauses are scroll-only;
+// explicit stops, off-script holds and sound checks remain deliberate holds.
+export function pausesForMode( pauses, mode ) {
+	return mode === "voice" || mode === "notes"
+		? pauses.filter( pause => !pause.scrollOnly )
+		: pauses;
+}
+
 export function readDirectives( root ) {
 	const script = {};
 	const sections = []; // { heading, targetSeconds?, wpm?, mode? }
-	const pauses = []; // { el, seconds } (0 = wait for the speaker), with listen or soundcheck
+	const pauses = []; // { el, seconds, scrollOnly? }, with listen or soundcheck
 	const markers = []; // { el, label } (label: {marker: Setup}, else null)
 	const paceChanges = []; // { el, wpm }
 	const listenOns = []; // { el }: {listen: on}, where voice following picks up again
@@ -93,7 +101,7 @@ export function readDirectives( root ) {
 		}
 		if ( "pause" in d ) {
 			const seconds = parsePauseSeconds( d.pause );
-			pauses.push( { el, seconds } );
+			pauses.push( { el, seconds, scrollOnly: true } );
 			// A timed pause: a beat mark in voice mode (see .beat in the CSS).
 			if ( seconds ) el.dataset.beat = `${ seconds }s`;
 		} else if ( "stop" in d ) pauses.push( { el, seconds: 0 } );

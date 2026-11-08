@@ -5,15 +5,15 @@
 [plain-text example]
 
 Plain text scripts mark each section with three equals signs and the word
-SECTION. Sightline turns those lines into sections you can jump between. {pause}
+SECTION. Sightline turns those lines into sections you can jump between. {stop}
 
 === SECTION 2 · NOTES AND DIRECTIVES {wpm: 140}
 
 [take a breath]
 
 And instructions to the app still go in curly brackets, which you never see.
-{pause}
+{stop}
 
 === SECTION 3 · THE END {target: 0:05}
 
-That's all there is to it. {pause}
+That's all there is to it. {stop}

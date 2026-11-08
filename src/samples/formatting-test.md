@@ -38,9 +38,9 @@ A note that holds “curly quotes” works too. [Say: “Like this”.]
 
 Everything in curly brackets is hidden while you read. {marker}
 
-A pause stops the scroll here. {pause}
+A pause holds Scroll mode; Voice takes a natural beat. {pause}
 
-A timed pause waits three seconds. {pause: 3s}
+A timed pause waits three seconds in Scroll; Voice keeps following. {pause: 3s}
 
 A pace change applies to the rest of the section. {wpm: 130}
 

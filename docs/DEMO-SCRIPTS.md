@@ -57,6 +57,12 @@ mode before production. `stop` pauses prompting; explicit `finish` / `end`
 finishes OBS with permission. `restart section` retakes this section;
 `restart` alone resets the script.
 
+Pause-directive correction queued after RC5: the voice-and-stops sample now
+contrasts bare and timed `{pause}`. Both leave Voice following and linked
+recording active; Scroll honours their manual hold/countdown. `{stop}` remains
+the intentional hold in both modes. The frozen RC3–RC5 packages still hold at
+bare pause; test the corrected source separately until the next preview build.
+
 
 RC1 adds two final stops for post-record review and the cancelable Settings tour.
 Use [post-record setup](guide/19-post-record-review.md) for local runtime/import
