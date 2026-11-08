@@ -335,3 +335,9 @@ checks and installed Stream Deck compatibility. This supplemental evidence and
 the updated promo recording guide change no product capabilities or matrix
 rows; the revision 9 snapshot stays pinned to implementation `228b4f8` and
 packaging source `67c9060`. Elgato evidence separately uses released binaries.
+
+Future exploration, 8 November 2026: added a Sightline 2.0 roadmap item for a
+bounded Rust/Tauri feasibility study and a separate commercial/licensing
+review. Neither is implemented or committed for release. No current runtime,
+price, licence, supported capability, feature-grid export, help screenshot or
+JL website claim changes. RC5's package and feature reference remain unchanged.

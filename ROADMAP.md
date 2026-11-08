@@ -1,6 +1,7 @@
 # Sightline Prompter roadmap
 
-Updated 4 November 2026 for **Sightline 1.2.0** and **Stream Deck companion 0.2.0**.
+Updated 8 November 2026. Released baseline: **Sightline 1.2.0** and
+**Stream Deck companion 0.2.0**.
 This is the current plan. [Earlier plans](docs/ROADMAP-HISTORY.md) are archived;
 their RC labels and old version buckets do not describe the current release.
 
@@ -86,6 +87,32 @@ already exist in 1.2.0; acoustic reliability still needs the real audio tests.
 | Additional recording services | Investigate only where supported interfaces and user demand justify it; no current Zoom, Teams or Riverside recording-control claim |
 | Privacy and diagnostics | Improve opt-in diagnostics without collecting scripts, recordings or secrets by default |
 | Support | Consider a supporters wall when useful, respecting visibility choices. Voluntary support does not gate app features |
+
+## Explore for Sightline 2.0: platform and commercial model
+
+Saved at Joanne's request, 8 November 2026. These are separate research
+questions, with no commitment to migrate, introduce charges or change licensing.
+They do not change RC5's scope or interrupt its UAT and release work.
+
+| Topic | Exploration and decision criteria |
+| --- | --- |
+| Rust / Tauri feasibility | Investigate retaining the approved HTML/CSS/JavaScript interface and editor while replacing Electron's desktop layer. Start with a separate bounded prototype. Compare installer size, startup, memory, CPU and voice responsiveness against Electron under the same recording workload. Proceed only if measurable benefits justify the migration and maintenance cost. |
+| Commercial model and licensing | Explore paid editions and possible proprietary distribution independently of the framework choice. Review code ownership, contributions, dependencies and notices before choosing terms. No current licence or pricing change is approved. |
+
+The platform prototype must check transparent overlays, click-through,
+always-on-top behaviour, capture exclusion and multiple monitors on Windows
+and macOS. Include microphone/audio capture, local speech bindings, camera
+and head-guide behaviour. Preserve settings and script migration, existing
+Stream Deck actions/profiles, and the OBS, pad/phone, API and MCP contracts.
+A smaller shell alone does not establish better speech recognition.
+
+MIT already permits commercial use and distribution without source code,
+subject to its notice requirements; a Rust port does not erase obligations
+for retained or adapted code. Existing MIT releases retain their permissions.
+Any new terms must distinguish code we own from third-party components.
+See [MIT permissions](https://choosealicense.com/licenses/mit/), the
+[MIT licence](https://opensource.org/license/mit) and
+[Tauri's architecture and licensing](https://v2.tauri.app/concept/architecture/).
 
 ## On hold or outside the current scope
 
