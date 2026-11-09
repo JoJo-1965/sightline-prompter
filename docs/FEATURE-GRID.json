@@ -8,7 +8,7 @@
   "appRelease": "1.2.0",
   "pluginRelease": "0.2.0",
   "sourceUrl": "https://github.com/JoJo-1965/sightline-prompter/blob/v1.2.0/docs/FEATURE-GRID.md",
-  "sourceSha256": "e50d8fd7e76fa834ca3a807d5c2bd85a3a96abf615076d577ebb6c0f148b5fce",
+  "sourceSha256": "17bcc18248a44ed4348c191b223a858bcc1bcb44d125d33f342d3dbabaaff4b7",
   "support": [
     "Included",
     "Optional",
@@ -1088,8 +1088,8 @@
         {
           "name": "Distribution and source",
           "support": "Limited",
-          "options": "Installer available with the app release; source repository remains private.",
-          "limits": "Elgato Marketplace submission is pending review, not an approved live listing."
+          "options": "[Published on Elgato Marketplace](https://marketplace.elgato.com/product/sightline-prompter-34676f28-e2e5-422d-9b48-e03dfd80bebe) as version 0.2; direct 0.2.0 installer also available with the app release. Source repository remains private.",
+          "limits": "Publication verified 9 November 2026. The 0.2.1 candidate is separate and not published; device, app and permission requirements still apply."
         }
       ]
     },

@@ -60,8 +60,9 @@ button, with drag and Earlier/Later ordering. Complete lists scroll.
 
 The 0.2.0 companion supplies keys, supported dials and pedal actions, starter
 profiles, status feedback and connection/version checks. Its source repository
-remains private; the free installer accompanies the app release. Marketplace
-review is separate. Configuration and capabilities vary by device/action.
+remains private. [Get the free plugin on Elgato Marketplace](https://marketplace.elgato.com/product/sightline-prompter-34676f28-e2e5-422d-9b48-e03dfd80bebe),
+where it is listed as version 0.2, or use the direct installer with the app
+release. Configuration and capabilities vary by device/action.
 
 ## Recording setups
 

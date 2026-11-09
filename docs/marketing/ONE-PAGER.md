@@ -35,8 +35,9 @@ toolbar keeps controls within reach. Optional OBS control and Stream Deck 0.2.0
 fit an existing recording workflow; local MCP lets an authorised AI help.
 
 **Sightline 1.2.0 + Stream Deck 0.2.0 — 4 November 2026.** Download
-both from the app release. The plugin source stays private; Marketplace
-listing is pending. The app targets Windows, macOS and Linux; Stream Deck is
+the app from its release and the free plugin from
+[Elgato Marketplace](https://marketplace.elgato.com/product/sightline-prompter-34676f28-e2e5-422d-9b48-e03dfd80bebe), listed as version 0.2.
+The direct plugin download is also available; its source stays private. The app targets Windows, macOS and Linux; Stream Deck is
 for Windows and macOS. Check your own recording and sync route.
 
 ### Know what you are getting

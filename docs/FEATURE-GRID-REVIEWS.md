@@ -1,5 +1,15 @@
 # Feature-matrix review record
 
+## Marketplace publication — 9 November 2026
+
+Verified the public [Sightline Prompter listing](https://marketplace.elgato.com/product/sightline-prompter-34676f28-e2e5-422d-9b48-e03dfd80bebe):
+Elgato displays version 0.2 for the released 0.2.0 companion. Updated its
+distribution row, README, guide, current marketing instructions and roadmap;
+regenerated HTML/CSV/JSON. Stable JL references use the 1.2.0 matrix; RC5
+keeps its separate preview rows. Capability counts, app/plugin packages,
+settings, profiles, screenshot artwork and promo video remain unchanged.
+The newer 0.2.1 candidate still needs its own review and submission.
+
 4 November 2026, stable documentation erratum: removed leftover preview wording
 from the availability explanation and four already-published options. The 249
 capabilities, dependencies, functional source and installer versions are unchanged.

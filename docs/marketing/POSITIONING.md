@@ -2,7 +2,8 @@
 
 Reviewed 4 November 2026 for Sightline 1.2.0 and Stream Deck 0.2.0.
 The plugin installer is available with the app release; its source stays private.
-Marketplace listing is pending. This is the editorial source for the
+[Marketplace version 0.2 is published](https://marketplace.elgato.com/product/sightline-prompter-34676f28-e2e5-422d-9b48-e03dfd80bebe)
+(publication verified 9 November 2026). This is the editorial source for the
 [one-pager](ONE-PAGER.md), [channel copy](COPY.md) and JL product page.
 
 ## Positioning
@@ -83,7 +84,7 @@ No competitor comparison establishes that Sightline is the only or best option.
 | Script health/rehearsal review uses local checks and estimates | The coach is an AI judge or detects every delivery problem |
 | Manual framing and optional local face-position feedback against a saved reference | Identity recognition, gaze tracking or automatic camera reframing |
 | Capture protection depends on platform and capture method; verify a recording | Guaranteed invisible in every recording or screen share |
-| Plugin installer is available with the app release; source private, Marketplace pending | Install it from Marketplace now; a made-up listing link |
+| Plugin 0.2.0 is published on Elgato Marketplace as 0.2, with a direct installer alternative; source private | Claim the newer 0.2.1 candidate is published, or imply Elgato has certified every recording setup |
 | App targets Windows, macOS and Linux | This build has passed physical Mac/VoiceOver acceptance |
 | OBS is optional and has dedicated permissions | Sightline automatically controls Teams, Zoom or Riverside recording |
 

@@ -85,8 +85,9 @@ what you use; disabled interfaces hide their configuration and retain values.
   The pad shows all configured buttons with drag and Earlier/Later controls.
 - The **Stream Deck 0.2.0** companion: keys, compatible dials and pedal actions,
   connection/version checks and starter profiles. Its source remains private;
-  its free installer is included with the app release. Marketplace review is
-  separate from this app release. Existing supported assignments are retained.
+  install it free from [Elgato Marketplace](https://marketplace.elgato.com/product/sightline-prompter-34676f28-e2e5-422d-9b48-e03dfd80bebe),
+  where it is listed as version 0.2. A direct installer also accompanies the
+  app release. Existing supported assignments are retained.
 - **OBS integration**, with one sidebar home and Connection, Recording control
   and Profile and scenes subtabs. Connection status and recorder state are
   separate. Recording controls and linked prompting require explicit permission.
@@ -134,6 +135,13 @@ on your own setup. OBS-scene calibration is a sampled preview, not the encoder o
 · [Roadmap](ROADMAP.md)
 
 ## Change log
+
+### 9 November 2026 — Stream Deck plugin published
+
+The free Stream Deck companion 0.2.0 is now published on
+[Elgato Marketplace](https://marketplace.elgato.com/product/sightline-prompter-34676f28-e2e5-422d-9b48-e03dfd80bebe) as version 0.2.
+The direct package remains available. This distribution update does not change
+app features, existing installations or the separate 0.2.1 preview candidate.
 
 ### Read after installing
 
