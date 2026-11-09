@@ -1,5 +1,14 @@
 # Feature-matrix review record
 
+## RC6 combined correction batch — 9 November 2026
+
+Promoted the two queued runtime fixes into the 1.3.0 RC6 reference, revision
+22: Scroll-only pause directives and reachable opening comments in paused
+review. Updated the existing comment/stop/pause rows and retained 268 entries.
+Help, authoring instructions, demos, screenshots, release notes and roadmap
+are reviewed together. The Marketplace 0.2 publication remains distinct from
+the optional companion candidate 0.2.1.6. No stable app publication is implied.
+
 ## Marketplace publication — 9 November 2026
 
 Verified the public [Sightline Prompter listing](https://marketplace.elgato.com/product/sightline-prompter-34676f28-e2e5-422d-9b48-e03dfd80bebe):

@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "basis": "Sightline 1.3.0 RC5 preview, documentation revision 21, 7 November 2026",
-  "date": "7 November 2026",
-  "sourceBuild": "c292d4e",
-  "buildVersion": "1.3.0-rc.5",
+  "basis": "Sightline 1.3.0 RC6 preview, documentation revision 22, 9 November 2026",
+  "date": "9 November 2026",
+  "sourceBuild": "50eb095",
+  "buildVersion": "1.3.0-rc.6",
   "publicationStatus": "preview",
   "appRelease": "1.2.0",
   "pluginRelease": "0.2.1.6",
   "sourceUrl": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/pointing-production-cues/docs/FEATURE-GRID.md",
-  "sourceSha256": "11091ef99108bab1702f70a911916d7a3d99a269e3766f70afb91772eabd5aae",
+  "sourceSha256": "bddecb21d08da69e87bb0489a12228e952dbca5cedbd33ab582e0c4b89ff8067",
   "support": [
     "Included",
     "Optional",
@@ -432,7 +432,7 @@
         {
           "name": "Long production comments",
           "support": "Included",
-          "options": "HTML comments hold preparation instructions; visible while paused and hidden during delivery.",
+          "options": "HTML comments hold preparation instructions; visible while paused and hidden during delivery. RC6 leaves opening comments clear of floating session controls, including wrapped rows.",
           "limits": "All comment contents, including quoted words and directive examples, are excluded from speech tracking and command execution."
         },
         {
@@ -444,14 +444,14 @@
         {
           "name": "Manual script stops",
           "support": "Included",
-          "options": "`{stop}` or `{pause}` holds prompting until the user continues.",
-          "limits": "Continuous recording keeps OBS running; linked recording changes that behaviour explicitly."
+          "options": "`{stop}` holds Scroll or Voice until the user continues. Bare `{pause}` holds Scroll only in RC6.",
+          "limits": "Voice/Notes ignore script pause directives, including linked recording. Explicit stops and spoken pause commands remain deliberate."
         },
         {
           "name": "Timed pauses",
           "support": "Included",
-          "options": "`{pause: 3s}` provides a timed beat.",
-          "limits": "In voice mode it is a visible pause cue rather than a forced timed scroll."
+          "options": "`{pause: 3s}` provides a countdown in Scroll mode.",
+          "limits": "Voice treats the timed tag as a visible beat cue; it does not hold, count down or pause linked recording."
         },
         {
           "name": "Named markers",

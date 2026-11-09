@@ -129,8 +129,8 @@ next line:
 | `{prompter: slower}` | Runs a prompter command as the reading reaches it: `slower` or `faster` (the steady speed), `bigger` or `smaller` (the text), or `marker`. In voice scrolling it runs when the word before it is said |
 | `{wpm: n}`    | Changes the target pace from this point until the end of the section                                                     |
 
-The scroll-only behaviour of bare `{pause}` is a correction queued after the
-RC5 package. Existing RC3–RC5 packages still treat it as `{stop}`. Timed pauses
+The scroll-only behaviour of bare `{pause}` is included in RC6. Existing
+RC3–RC5 packages still treat it as `{stop}`. Timed pauses
 in Voice must also remain beat marks when recording is linked; they must not
 pause either voice following or the linked recorder. Explicit `{record: pause}`
 and spoken pause commands remain independent recording/prompting actions.
@@ -181,7 +181,7 @@ you move on with the arrow keys, clicker, remote or "Prompter, next page".
   with a ⚠, so typos are easy to spot.
 - `[square brackets]` never control the app. `[pause]` is a natural delivery
   cue. Use `{stop}` for an intentional hold in either reading mode; `{pause}`
-  is Scroll-only in the correction after RC5.
+  is Scroll-only in RC6.
 
 ## Example
 

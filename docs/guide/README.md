@@ -1,9 +1,9 @@
 # Sightline Prompter user guide
 
-**Sightline 1.3.0 RC5 preview · companion candidate 0.2.1.6 · documentation revision 21**
+**Sightline 1.3.0 RC6 preview · companion candidate 0.2.1.6 · documentation revision 22**
 
 Stable download remains Sightline 1.2.0. New preview workflows are described in
-[RC5 notes](../RELEASE-1.3.0-rc.5.md); they are not in the stable installer.
+[RC6 notes](../RELEASE-1.3.0-rc.6.md); they are not in the stable installer.
 
 New: [Controller functions and migration](21-controller-functions.md).
 RC4 adds [HUD directions and pointing targets](22-hud-cues.md), with a gold cue

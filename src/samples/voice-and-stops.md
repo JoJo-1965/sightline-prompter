@@ -95,7 +95,7 @@ session information, with the recording continuing if that is how I set it up.
 <!-- TRY. First read in Voice mode: both pause forms leave following active,
 even with linked recording. Take your own beat. In Scroll, the bare pause
 waits for Go or a controller; the timed pause counts down and resumes.
-Bare pause is Scroll-only in the correction after RC5; RC3–RC5 still hold there.
+Bare pause is Scroll-only in RC6; RC3–RC5 still hold there.
 The mode choice is Reading > Mode and pace. -->
 
 This is a natural breath, without another start command in Voice. {pause}

@@ -1,5 +1,5 @@
 {
-	"$comment": "Version 0.7.0 syntax remains unchanged. A correction queued after RC5 makes bare and timed pause directives Scroll-only; explicit stops remain active in Voice.",
+	"$comment": "Version 0.7.0 syntax remains unchanged. RC6 makes bare and timed pause directives Scroll-only; explicit stops remain active in Voice.",
 	"name": "sightline-script-directives",
 	"version": "0.7.0",
 	"status": "syntax agreed; implemented in the app (27 October 2026): pause, marker, wpm, target, pacing, mode",
@@ -99,7 +99,7 @@
 				"maximum": 30,
 				"example": "3s"
 			},
-			"description": "Scroll mode only: without a value, wait until the speaker continues; with a value, count down for that many seconds and resume. Voice ignores both forms, including linked recording; a timed tag remains a visual beat mark. Use {stop} for a deliberate hold in either mode. This correction follows the RC5 package; RC3–RC5 still hold at bare pause."
+			"description": "Scroll mode only: without a value, wait until the speaker continues; with a value, count down for that many seconds and resume. Voice ignores both forms, including linked recording; a timed tag remains a visual beat mark. Use {stop} for a deliberate hold in either mode. This correction is included in RC6; RC3–RC5 still hold at bare pause."
 		},
 		"page": {
 			"scopes": [
@@ -117,7 +117,7 @@
 			"value": {
 				"type": "none"
 			},
-			"description": "Hold until the speaker deliberately continues with Prompter, go, Space, the clicker or remote. Works in Scroll and Voice. Bare {pause} is Scroll-only in the correction after RC5."
+			"description": "Hold until the speaker deliberately continues with Prompter, go, Space, the clicker or remote. Works in Scroll and Voice. Bare {pause} is Scroll-only in RC6."
 		},
 		"marker": {
 			"scopes": [

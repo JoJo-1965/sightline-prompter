@@ -1,24 +1,20 @@
 # Sightline Prompter feature grid
 
-**Review basis: Sightline 1.3.0 RC5 preview, documentation revision 21, 7 November 2026.**
-**Build version:** `1.3.0-rc.5` · **Publication status:** Preview
+**Review basis: Sightline 1.3.0 RC6 preview, documentation revision 22, 9 November 2026.**
+**Build version:** `1.3.0-rc.6` · **Publication status:** Preview
 
 **Maintained source:** [Feature grid](https://github.com/JoJo-1965/sightline-prompter/blob/codex/pointing-production-cues/docs/FEATURE-GRID.md)
 
-This grid describes the preview built from `c292d4e`, with companion Stream
+This grid describes the preview built from `50eb095`, with companion Stream
 Deck plugin **0.2.1.6** candidate. It includes stable 1.2.0 features plus the explicitly labelled RC additions. The build manifest also records the packaging/documentation
 snapshot. The public app release remains **1.2.0**; this document
 does not certify an individual recording setup.
 
-**Queued after RC5:** bare and timed `{pause}` directives will apply only to
-Scroll; Voice will keep following naturally, including linked recording.
-Explicit `{stop}` remains a hold in either mode. This source correction is
-not in the frozen RC5 installer; the rows below still describe that package.
-
-Also queued: review scrolling will leave opening comments clear of the fixed
-session controls, including when those controls wrap on a small screen.
-Delivery keeps its reading-line layout. This is an existing-capability fix,
-not an additional feature or a change to the frozen RC5 package.
+**RC6 corrections:** bare and timed `{pause}` directives apply only to Scroll;
+Voice follows naturally, including linked recording. Explicit `{stop}` remains
+a deliberate hold. Paused review leaves opening comments clear of the floating
+session controls, including wrapped rows. Delivery keeps its reading-line layout.
+These fixes do not add capabilities or change earlier frozen packages.
 
 Use the [searchable grid](FEATURE-GRID.html) to browse by subject or support
 level. The [CSV comparison sheet](FEATURE-GRID.csv) includes a blank reviewer
@@ -122,10 +118,10 @@ Reference: [Script directives](SCRIPT-DIRECTIVES.md) and [AI script brief](AI-SC
 | Short delivery cues | Included | Square-bracket notes such as `[smile]`, `[think]` or `[point]` remain available inline. | Unquoted direction words are excluded from spoken word counts and alignment. |
 | Pointing and graphic intent | Included | RC3 preview: `[point left: graphic-label]`, right/up/down, diagonals and centre. Uses existing inline appearance controls; optional labels remain silent even in quotes. | Directions mean the presenter's own sides. Section-body cues are captured with the script and take; the editor verifies gesture and recorded orientation. No automatic asset insertion or gesture detection. |
 | Quoted spoken cues | Included | `[Say: "Section one"]` distinguishes words intended to be spoken. | Quoted words are included in the spoken script; do not use this form for silent instructions. |
-| Long production comments | Included | HTML comments hold preparation instructions; visible while paused and hidden during delivery. | All comment contents, including quoted words and directive examples, are excluded from speech tracking and command execution. |
+| Long production comments | Included | HTML comments hold preparation instructions; visible while paused and hidden during delivery. RC6 leaves opening comments clear of floating session controls, including wrapped rows. | All comment contents, including quoted words and directive examples, are excluded from speech tracking and command execution. |
 | Direction display | Optional | Normal, dimmed or hidden bracket directions; quoted spoken words remain visible. | RC3 pointing labels stay silent, including quotes. Long production comments follow the separate paused/delivering rule. |
-| Manual script stops | Included | `{stop}` or `{pause}` holds prompting until the user continues. | Continuous recording keeps OBS running; linked recording changes that behaviour explicitly. |
-| Timed pauses | Included | `{pause: 3s}` provides a timed beat. | In voice mode it is a visible pause cue rather than a forced timed scroll. |
+| Manual script stops | Included | `{stop}` holds Scroll or Voice until the user continues. Bare `{pause}` holds Scroll only in RC6. | Voice/Notes ignore script pause directives, including linked recording. Explicit stops and spoken pause commands remain deliberate. |
+| Timed pauses | Included | `{pause: 3s}` provides a countdown in Scroll mode. | Voice treats the timed tag as a visible beat cue; it does not hold, count down or pause linked recording. |
 | Named markers | Included | `{marker}` or `{marker: Setup}` creates a navigation and edit reference. | Marker positions are timing references, not verified frame-accurate cuts. |
 | Off-script passages | Optional | `{listen: off}` and `{listen: on}` hold following and voice commands during ad-libs; manual continuation is required. | Enabled scratch audio and production recording can continue independently; this is not a whole-microphone privacy switch. |
 | Script sound checks | Optional | `{soundcheck: room}` and `{soundcheck: voice}` request the appropriate check. | Measurement uses the selected input and the current acoustic conditions. |

@@ -9,11 +9,16 @@ inline. Unquoted cues stay outside speech tracking; quoted words in a `[Say:
 "..."]` direction are spoken. Production comments are never spoken or executable.
 Keep all spoken lines outside production comments, including quotations.
 
-**Queued after RC5:** paused/review mode leaves space above the opening script
+**In RC6:** paused/review mode leaves space above the opening script
 for the floating session controls, including wrapped rows on smaller screens.
 Scroll up, or use **Back to the start**, to read the first comment in full.
 Delivery still hides preparation notes and aligns the script for reading.
-This correction is not in the existing RC5 package.
+Earlier RC5 packages do not include this correction.
+
+![Opening preparation comment clear of the floating controls in RC6 review mode](images/review-comments-rc6.png)
+
+Review layout example from an isolated test script; no camera or recorder is
+connected. The same clearance follows wrapped controls in smaller windows.
 
 In Preview 04, **Reading > Text and directions** has separate Spoken script,
 Headings, Inline directions and Production notes targets. Each has its own
@@ -145,7 +150,7 @@ read.
 | Directive                     | What it does                                              |
 | ----------------------------- | --------------------------------------------------------- |
 | `{stop}`                    | Holds Scroll or Voice until you say "Prompter, go", or press Space or the clicker |
-| `{pause}`                   | Next preview: a Scroll-only hold; Voice ignores it. Existing RC3–RC5 packages still treat it as stop |
+| `{pause}`                   | RC6: a Scroll-only hold; Voice ignores it, including linked recording. Earlier RC3–RC5 packages treat it as stop |
 | `{pause: 3s}`                 | A 3-second countdown, then it carries on by itself. In voice mode, a **⏸ 3s** mark: take the beat yourself |
 | `{marker}` or `{marker: Setup}` | A bookmark for retakes. **Ctrl+B** jumps to the next one. A name, such as `{marker: Setup}`, shows in the take log and the edit pack |
 | `{listen: off}` … `{listen: on}` | Off script (an ad-lib, a demo, questions): the microphone is off and the prompter holds; Space carries on from `{listen: on}` |

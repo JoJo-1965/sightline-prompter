@@ -1,9 +1,10 @@
 # Sightline Prompter features
 
-**Queued after RC5:** bare and timed `{pause}` directives are Scroll-only.
-Voice follows natural beats, including linked recording. Explicit `{stop}`
-and spoken pause commands remain deliberate. This source correction is not
-in the frozen RC5 package and does not add a feature-grid row.
+**1.3.0 RC6:** bare and timed `{pause}` directives are Scroll-only. Voice
+follows natural beats, including linked recording. Explicit `{stop}` and
+spoken pause commands remain deliberate. Paused review also leaves opening
+comments clear of floating controls. See [RC6 notes](RELEASE-1.3.0-rc.6.md).
+These corrections retain the 268 existing feature-grid rows.
 
 ## 1.3.0 RC5 heading lead-in
 

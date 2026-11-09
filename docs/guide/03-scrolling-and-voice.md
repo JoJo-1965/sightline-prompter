@@ -321,7 +321,7 @@ steady and voice scrolling. A countdown only holds in steady scrolling (see
 | In the script | What happens |
 | --- | --- |
 | `{stop}` | The prompter stops, and a yellow **Stopped** label shows at the bottom right. Say **"Prompter, go"** (or just **"go"**), or press Space, the clicker or the remote, to carry on |
-| `{pause}` | A manual hold in Scroll mode. The correction queued after RC5 ignores it in Voice; existing RC3–RC5 packages still treat it as stop |
+| `{pause}` | RC6: a manual hold in Scroll mode only. Voice ignores it, including linked recording; earlier RC3–RC5 packages treat it as stop |
 | `{pause: 5s}` | The prompter waits 5 seconds (up to 30), with a blue **Carrying on in 5** countdown and a bar that runs down, then carries on by itself |
 
 ![A countdown: the blue label at the bottom right](images/pill-countdown.png)
@@ -349,8 +349,8 @@ as a small blue **⏸ 3s** mark in the script, and you take the beat yourself.
 Scripts can carry countdowns for steady scrolling without them getting in the
 way when you read by voice.
 
-The next preview also ignores bare `{pause}` in Voice, and linked recording
-must not turn either pause form into a forced hold or countdown. Use `{stop}`
+RC6 also ignores bare `{pause}` in Voice. Linked recording does not turn
+either pause form into a forced hold or countdown. Use `{stop}`
 where an intentional hold is required. Spoken **"Prompter, pause"** still
 pauses deliberately; **Next section** resumes following at the selected
 section without a separate **Go**. The navigation fix is already in RC5.

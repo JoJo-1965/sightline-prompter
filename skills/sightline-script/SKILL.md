@@ -42,7 +42,7 @@ and say the checker couldn't be run.
 - Use only the directives the brief allows. Don't invent new ones.
 - Use `{stop}` for a deliberate hold in either reading mode. `[pause]` or
   `[breathe]` is a natural delivery cue. Bare and timed `{pause}` are Scroll-only
-  in the correction after RC5; earlier packages still hold at bare pause.
+  in RC6; earlier packages still hold at bare pause.
 - In RC3, use `[point left: graphic-label]` for a planned graphic cue, placed
   immediately before its spoken phrase in a section body. Left/right mean the
   presenter's own sides. Up/down, diagonals and centre also work; quoted asset
