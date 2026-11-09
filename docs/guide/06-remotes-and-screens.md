@@ -175,7 +175,8 @@ separate recording layout for that model, including Mobile and Pedal.
 The Pedal recording layout is Record take, Play/Pause, Finish recording;
 the last pedal finishes the whole file. Standard profiles remain available.
 These additions require Sightline 1.1.0 with OBS enabled; they are not in
-the earlier 1.0.6 app. The Marketplace listing is pending.
+the earlier 1.0.6 app. The released companion is now
+[published on Elgato Marketplace](https://marketplace.elgato.com/product/sightline-prompter-34676f28-e2e5-422d-9b48-e03dfd80bebe) as version 0.2.
 
 Use the matching app and plugin rather than older local installers.
 The [acceptance test](14-acceptance-test.md) checks the physical keys, guide
@@ -186,10 +187,12 @@ Elgato Stream Deck's keys, the Stream Deck + dials and the Stream Deck Pedal,
 and the keys show what the prompter is doing: ▶ or ❚❚, On air in red, the
 script slot that's open, the section and the time left.
 
-**Getting it:** [download Stream Deck 0.2.0](https://github.com/JoJo-1965/sightline-prompter/releases/download/v1.1.0/Sightline-StreamDeck-0.2.0.streamDeckPlugin)
-from the app release, then double-click it to open Stream Deck. The source
-repository stays private; Marketplace listing is pending. Current links are
-on the [Sightline page](https://joannelockwood.co.uk/sightline#stream-deck).
+**Getting it:** open [Sightline Prompter on Elgato Marketplace](https://marketplace.elgato.com/product/sightline-prompter-34676f28-e2e5-422d-9b48-e03dfd80bebe)
+and choose **Get** to install it in Stream Deck. Marketplace labels the released
+0.2.0 companion as **0.2**. Alternatively, [download the plugin file](https://github.com/JoJo-1965/sightline-prompter/releases/download/v1.2.0/Sightline-StreamDeck-0.2.0.streamDeckPlugin)
+and double-click it to open Stream Deck. The source repository stays private.
+The [plugin page](https://joannelockwood.co.uk/sightline/stream-deck/) has the
+demo, setup and current installation links.
 
 **Setting it up:**
 
@@ -258,8 +261,10 @@ not a search of installed files or a guarantee that the program is genuine.
 **Compatible** and **latest** are different. The local check compares the
 minimum/recommended versions known by the app and the actions it supports.
 For the latest public Sightline release, use **About > Check for updates**.
-Download the current plugin from the app's public release. Its source stays
-private. Marketplace updates apply once a real listing is live.
+Use the [published Marketplace listing](https://marketplace.elgato.com/product/sightline-prompter-34676f28-e2e5-422d-9b48-e03dfd80bebe)
+for the released plugin, or the direct file from the app's public release.
+Its source stays private. Candidate builds are separate from Marketplace
+updates; an unreleased 0.2.1 preview is not the published 0.2 listing.
 
 ## Stream Deck operator controls (0.2.0)
 

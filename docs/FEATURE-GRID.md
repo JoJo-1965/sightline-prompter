@@ -270,7 +270,7 @@ Reference: [Stream Deck installation, permissions and profiles](guide/06-remotes
 | Discovery and pairing | Included | Enable once under Controls > Stream Deck; local discovery avoids manual token entry. | Preview pairing is separate from the normal installed app's discovery. |
 | Permission separation | Included | Dedicated restricted companion credential, separate from general AI/API access. | No arbitrary settings, recording-file access or broad AI permission is granted. |
 | Version compatibility | Included | App/plugin version reporting and required-feature compatibility feedback. | Use a matched app/plugin pair; successful installation is not hardware validation. |
-| Distribution and source | Limited | Installer available with the app release; source repository remains private. | Elgato Marketplace submission is pending review, not an approved live listing. |
+| Distribution and source | Limited | [Published on Elgato Marketplace](https://marketplace.elgato.com/product/sightline-prompter-34676f28-e2e5-422d-9b48-e03dfd80bebe) as version 0.2; direct 0.2.0 installer also available with the app release. Source repository remains private. | Publication verified 9 November 2026. The 0.2.1 candidate is separate and not published; device, app and permission requirements still apply. |
 
 ## 12 · OBS connection, recording and setup
 

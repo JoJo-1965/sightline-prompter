@@ -1,9 +1,17 @@
 # Sightline Prompter roadmap
 
-Updated 8 November 2026. Released baseline: **Sightline 1.2.0** and
+Updated 9 November 2026. Released baseline: **Sightline 1.2.0** and
 **Stream Deck companion 0.2.0**.
 This is the current plan. [Earlier plans](docs/ROADMAP-HISTORY.md) are archived;
 their RC labels and old version buckets do not describe the current release.
+
+## Published on Elgato Marketplace
+
+- [x] **9 November 2026: Stream Deck plugin 0.2 published.**
+  [Open the Marketplace listing](https://marketplace.elgato.com/product/sightline-prompter-34676f28-e2e5-422d-9b48-e03dfd80bebe).
+  This is the released 0.2.0 companion; Elgato displays its version as 0.2.
+  Direct downloads remain available. Newer 0.2.1 candidate builds require
+  their own validation and submission; they are not part of this publication.
 
 ## Shipped in 1.2.0
 

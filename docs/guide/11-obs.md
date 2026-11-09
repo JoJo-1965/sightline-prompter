@@ -127,7 +127,9 @@ are separate from ordinary Play/Pause and On air.
 Each model has a separate sample profile ending in **OBS**, selected
 explicitly with **Use the OBS recording profile** on a key's settings page.
 Standard layouts keep their assignments. The plugin download is attached to
-the app release; its source stays private and Marketplace listing is pending.
+the app release, and the released companion is also available free on
+[Elgato Marketplace](https://marketplace.elgato.com/product/sightline-prompter-34676f28-e2e5-422d-9b48-e03dfd80bebe) as version 0.2.
+Its source stays private; installing it does not enable OBS permissions.
 See [Stream Deck setup](06-remotes-and-screens.md#stream-deck).
 
 ## Put the slate into the recording
