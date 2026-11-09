@@ -1,5 +1,16 @@
 # Feature-matrix review record
 
+## Review comments scroll clearance — 9 November 2026
+
+Source correction queued after RC5: opening production comments can reach a
+clear position below fixed session controls in paused/review mode. The space
+follows wrapped control rows; delivery removes it with the existing note and
+reading-line transition. Native regression checks cover wheel-to-top, compact
+layout, comment visibility and pause/delivery changes. No new capability or
+controller action; the frozen 268-row RC5 matrix still describes its package.
+Guide and generated grid preamble identify the pending fix. No installer,
+website, marketing screenshot, promo script or published resource is changed.
+
 RC5 promo review, 7 November: the demo/recording scripts already contain the
 heading lead-in. A video refresh brief identifies current HUD/setup captures,
 selective performance pickups and reuse of suitable existing media. The

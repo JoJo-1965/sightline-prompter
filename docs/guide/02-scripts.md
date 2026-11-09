@@ -9,6 +9,12 @@ inline. Unquoted cues stay outside speech tracking; quoted words in a `[Say:
 "..."]` direction are spoken. Production comments are never spoken or executable.
 Keep all spoken lines outside production comments, including quotations.
 
+**Queued after RC5:** paused/review mode leaves space above the opening script
+for the floating session controls, including wrapped rows on smaller screens.
+Scroll up, or use **Back to the start**, to read the first comment in full.
+Delivery still hides preparation notes and aligns the script for reading.
+This correction is not in the existing RC5 package.
+
 In Preview 04, **Reading > Text and directions** has separate Spoken script,
 Headings, Inline directions and Production notes targets. Each has its own
 font, size, colour, bold, italic and line spacing. Appearance changes do not change

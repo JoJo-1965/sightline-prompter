@@ -26,6 +26,7 @@
 		"test:feature-grid": "node scripts/feature-grid.test.mjs",
 		"test:post-record": "node scripts/post-record.test.mjs && node scripts/pointing-cues.test.mjs",
 		"test:review-app": "node scripts/recording-review-app.test.mjs",
+		"test:review-scroll": "node scripts/review-scroll-app.test.mjs",
 		"test:production-app": "node scripts/production-app.test.mjs",
 		"test:utility-windows": "node scripts/utility-windows.test.mjs",
 		"test:settings-redesign": "node scripts/reading-appearance.test.mjs && node scripts/settings-redesign-app.test.mjs",

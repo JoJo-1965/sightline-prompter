@@ -150,6 +150,14 @@ on your own setup. OBS-scene calibration is a sampled preview, not the encoder o
 
 ## Change log
 
+### Queued after RC5 — readable opening comments
+
+- Paused/review scrolling leaves opening comments clear of the floating
+  session controls, including wrapped rows on smaller screens. Scroll up or
+  use Back to the start to read the beginning in full.
+- Starting delivery removes that review space, hides preparation notes and
+  retains reading-line alignment. Existing RC5 packages are unchanged.
+
 ### Queued after RC5 — pause directives
 
 Voice ignores bare and timed `{pause}` directives, including linked recording;

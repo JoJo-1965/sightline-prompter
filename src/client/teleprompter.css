@@ -1718,6 +1718,16 @@ body.controls-pinned .content {
 	padding-top: calc(0.5em + var(--bar-h, 40px));
 }
 
+/* Paused/review notes can scroll clear of the floating recording controls.
+   Reading uses its existing spacing and first-line alignment. */
+#preview-container:has(> #md:not(.take-reading)) {
+	padding-top: calc(0.5em + var(--review-controls-bottom, 0px));
+}
+
+body.controls-pinned #preview-container:has(> #md:not(.take-reading)) {
+	padding-top: calc(0.5em + max(var(--bar-h, 40px), var(--review-controls-bottom, 0px)));
+}
+
 #cb-progress-text {
 	position: fixed;
 	left: 10px;

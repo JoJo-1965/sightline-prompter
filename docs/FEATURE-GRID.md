@@ -15,6 +15,11 @@ Scroll; Voice will keep following naturally, including linked recording.
 Explicit `{stop}` remains a hold in either mode. This source correction is
 not in the frozen RC5 installer; the rows below still describe that package.
 
+Also queued: review scrolling will leave opening comments clear of the fixed
+session controls, including when those controls wrap on a small screen.
+Delivery keeps its reading-line layout. This is an existing-capability fix,
+not an additional feature or a change to the frozen RC5 package.
+
 Use the [searchable grid](FEATURE-GRID.html) to browse by subject or support
 level. The [CSV comparison sheet](FEATURE-GRID.csv) includes a blank reviewer
 notes column. Each section links to the detailed instructions and limitations.

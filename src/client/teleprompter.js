@@ -379,6 +379,15 @@ preparationResult.setAttribute( "aria-live", "polite" );
 sessionControls.append( uiElement( "capture-override-note" ), sectionPill, uiElement( "guide-status" ), uiElement( "obs-status" ), preparationResult );
 hud.append( sessionControls );
 
+// Review must leave enough scrollable space above the opening notes to clear
+// the fixed session controls, including when that row wraps on a small screen.
+// Delivery removes this space inside the same note/reading-line transition.
+new ResizeObserver( () => {
+	const bottom = sessionControls.offsetHeight ? sessionControls.offsetTop + sessionControls.offsetHeight : 0;
+	document.body.style.setProperty( "--review-controls-bottom", `${ Math.ceil( bottom ) }px` );
+	scheduleMeasure();
+} ).observe( sessionControls );
+
 function applyMirror() {
 	const md = uiElement( "md" );
 	if ( !md ) return;
