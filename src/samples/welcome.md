@@ -7,6 +7,10 @@ Read the ordinary text. Setup notes show while paused; short cues stay inline.
 Space starts or pauses. At each stop, try the suggested action, then continue.
 Samples are read-only: use Save a copy before making your own changes. -->
 
+<!-- RC9 READING. Scroll catch-up speed changes display movement, not speech
+recognition accuracy. Bookmark/retake actions keep navigation and logs without
+painting yellow flags over the words. -->
+
 <!-- RC8 START. With voice commands enabled, Prompter, practice / start
 practice / go runs the prompter without OBS changes. Prompter, record / start
 recording / begin confirms OBS recording first, with recording permission.
@@ -54,7 +58,9 @@ Local speech recognition can stay on my computer; online recognition is optional
 
 <!-- TRY. Reading > Text and directions has separate controls for Spoken
 script, Headings, Inline directions and Production notes. Try font, colour,
-italic and line spacing. Theme and background controls the backing colour and
+italic and line spacing. Spoken script also has independent paragraph spacing
+(100% preserves the existing gap); try it, then Cancel to retain your setup.
+Theme and background controls the backing colour and
 opacity. Save a reading theme; Apply saves the draft and Cancel discards it. -->
 
 I can make the spoken words, headings, short cues and preparation notes look

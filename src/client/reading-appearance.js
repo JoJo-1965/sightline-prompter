@@ -16,6 +16,7 @@ export const TEXT_FIELDS = {
 };
 export const APPEARANCE_DEFAULTS = {
 	readingAppearanceVersion: 1,
+	paragraphSpacing: 1,
 	scriptColour: "", headingColour: "", backgroundColour: "",
 	directionFont: "same", productionNoteFont: "same",
 	scriptBold: false, scriptItalic: false, headingBold: true, headingItalic: false,
@@ -54,6 +55,7 @@ export function appearanceFromSettings( settings, { fontSize = 3, opacity = 1 } 
 			spacing: round( ( settings[f.spacing] ?? ( target === "production" ? 1.4 : 1.3 ) ) * 100 )
 		};
 		if ( target === "inline" ) text[target].visibility = ( { dim: "Dimmed", hide: "Hidden", normal: "Normal" } )[settings.directions ?? "dim"];
+		if ( target === "script" ) text.script.paragraphSpacing = round( ( settings.paragraphSpacing ?? 1 ) * 100 );
 	}
 	return {
 		baseTheme: READING_PALETTES[settings.theme] ? READING_PALETTES[settings.theme].name : "Standard", text,
@@ -69,6 +71,7 @@ export function normaliseReadingTheme( value ) {
 		const v = value.text?.[target];
 		if ( !v || !Object.values( READING_FONTS ).includes( v.font ) || ( target === "script" && v.font === "Follow script" ) || typeof v.bold !== "boolean" || typeof v.italic !== "boolean" || ( v.color !== null && !hex( v.color ) ) ) throw new Error( `${ target }: invalid font, colour or style` );
 		text[target] = { font: v.font, size: number( v.size, target === "script" ? 100 : 10, target === "script" ? 800 : target === "production" ? 200 : 400, `${ target } size` ), color: v.color, bold: v.bold, italic: v.italic, spacing: number( v.spacing, 100, 250, `${ target } line spacing` ) };
+		if ( target === "script" ) text.script.paragraphSpacing = number( v.paragraphSpacing === undefined ? 100 : v.paragraphSpacing, 0, 300, "Script paragraph spacing" );
 		if ( target === "inline" ) {
 			if ( ![ "Normal", "Dimmed", "Hidden" ].includes( v.visibility ) ) throw new Error( "Invalid inline-direction visibility" );
 			text.inline.visibility = v.visibility;
@@ -85,6 +88,7 @@ export function normaliseReadingTheme( value ) {
 export function settingsFromTheme( input ) {
 	const theme = normaliseReadingTheme( input ), settings = { readingAppearanceVersion: 1 };
 	settings.theme = Object.keys( READING_PALETTES ).find( id => READING_PALETTES[id].name === theme.baseTheme );
+	settings.paragraphSpacing = theme.text.script.paragraphSpacing / 100;
 	for ( const [ target ] of TEXT_TARGETS ) {
 		const f = TEXT_FIELDS[target], v = theme.text[target];
 		settings[f.font] = Object.keys( READING_FONTS ).find( id => READING_FONTS[id] === v.font );

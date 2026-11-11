@@ -30,6 +30,12 @@ See [grouped release notes](docs/RELEASE-1.2.0.md) and the
 
 ## In 1.3.0 RC1 preview
 
+**RC9 usability batch:** paragraph spacing now lives with Spoken script
+appearance and persists in reading themes. Bookmark flags are removed; anchors,
+logs and enabled OBS chapters remain. Nearby ordered speech can advance through
+common-word stalls, with guarded distant relocation. Physical microphone UAT
+remains. See [RC9 notes](docs/RELEASE-1.3.0-rc.9.md).
+
 **RC8 usability batch:** record/start recording/begin confirms OBS before
 prompting; go/practice/start practice leaves OBS unchanged. Foreground gold
 voice feedback, observed recogniser-fragment handling and clear setup stage
@@ -98,8 +104,6 @@ already exist in 1.2.0; acoustic reliability still needs the real audio tests.
 | Sync | Extend RC1 per-file audio alignment with in-recording clap candidates and explicit human picture-sync review | Start/middle/end alignment and explicit uncertainty; no invented clean-camera lip-sync result |
 | Recording identity | Continue testing first-take/file association, external stop/restart and short extra recorder sessions | Saved logs checked against physical output files |
 | Voice commands | Expand recorded acoustic fixtures beyond RC1's section 7/12 and finish-tail regressions; preserve deadlines and permission gates | Reproducible recognition cases and no accidental recording actions |
-| Paragraph spacing | Make gaps between script paragraphs configurable independently of line spacing, within the existing appearance controls. Review heading and production-note block spacing alongside it; retain values in saved settings and reading themes. | Live preview matches the prompter; theme save/export/import preserves spacing; Voice alignment, section navigation and hidden comments retain correct positioning; existing layouts keep their current appearance until changed |
-| Marker display | Remove on-screen bookmark flags in all reading/review modes; retain enabled OBS chapter markers, take-log events and bookmark navigation. No additional visibility setting is needed. | Repeated restarts and marker commands leave the script clear. Removing the flags preserves marker sending, editing metadata and navigation anchors. RC8's numbered section command already restarts without adding a flag |
 | Voice and command onboarding | Internal setup trains the operator and adapts recognition to their natural words, phrases, accent and speech differences. A dedicated internal script proposes `{training}` steps to prompt, listen, compare, suggest a fix and repeat until consistent. Rerunnable from Voice settings. See the [onboarding proposal](docs/design/VOICE-TRAINING-ONBOARDING.md). | Fresh repeated utterances consistently resolve to the intended word/action; confirmed local corrections survive restart; ordinary speech does not trigger commands; accessible timing, repeat/skip/cancel and no real recorder actions during training |
 | Framing | Gather feedback on target/crop consistency, movement advice and native toolbar stacking on real multi-screen setups | Camera/projector tests across Windows, Mac and Linux; preserve manual fallback |
 | Documentation | Keep current screenshots, topic-based notes, samples, feature grid and JL copy in the same deployment review | Versioned source, checked links and exported-file consistency |

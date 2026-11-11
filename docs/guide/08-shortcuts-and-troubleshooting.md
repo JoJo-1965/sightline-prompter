@@ -16,6 +16,14 @@ same check and a Rehearsal tab for finished takes. **Recordings > Coach…**
 reviews a saved session. Pause prompting first. Missing alignment is not proof
 of missed speech, and optional filler counting must be enabled for future takes.
 
+## Bookmarks and retakes
+
+RC9 keeps bookmark navigation and editing events without painting flags over
+script words. **B** saves one, **Shift+B** returns to the last and **Ctrl+B**
+jumps to the next. Enabled OBS chapter sending remains active. Say **Prompter,
+again** or **restart section** to restart the current section. The reading-line
+triangle and sentence highlight are separate reading aids.
+
 ## Keyboard shortcuts
 
 **Ctrl+Alt+H** (Cmd+Alt+H on Mac) toggles the head guide between borderless

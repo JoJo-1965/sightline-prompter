@@ -43,7 +43,7 @@ them. Guide appearance and eye-lock preferences use Apply like other settings.
 The small **?** pill explains the adjacent option. Hover, focus or click/tap
 it. An open explanation takes the first Esc; Settings stays open.
 Sliders have matching numeric values, units and keyboard adjustment.
-Text size, line spacing, voice response and WPM use five-point increments.
+Text size, line/paragraph spacing, scroll catch-up speed and WPM use five-point increments.
 Margins, opacity, countdown and reading positions use whole values. Fine head
 alignment displays at most two decimals. Sliders and number boxes agree;
 existing stored precision is retained until you adjust the value.
@@ -82,7 +82,7 @@ does not replace reviewing a recording. **MCP, AI, and API** contains the option
 **Apps and add-ons**; Restore defaults is under **Getting started**.
 
 **Mode and pace** has one Mode selector offering
-Notes/page, Voice and Scroll. Voice shows response; Scroll shows WPM, script
+Notes/page, Voice and Scroll. Voice shows scroll catch-up speed; Scroll shows WPM, script
 pacing and countdown; Notes/page shows page-navigation guidance. Unrelated
 controls are hidden and disabled, with their values retained. The separate
 Notes checkbox is removed. Apply saves the chosen mode; Cancel restores it.
@@ -109,6 +109,14 @@ Non-script fonts can **Follow script**. Size is expressed as a percentage:
 headings are relative to script size, inline directions normally start at
 85%, and production notes at 55%. Visibility no longer changes direction size.
 Quoted words marked for speaking retain spoken-script styling and tracking.
+
+**Paragraph spacing** is under **Spoken script**, separate from wrapped line
+spacing. Choose 0–300% in five-point steps. 100% preserves the existing gap;
+0% closes it. Heading and production-note block margins retain their own rules.
+The sample and live script preview the draft; Apply saves it and Cancel reverts.
+Reading themes include this value; older themes restore the default 100%.
+
+![Paragraph spacing alongside line spacing](images/paragraph-spacing-rc9.png)
 
 **Use theme** beside a colour restores that item's palette colour.
 **Choose theme** opens **Theme and background**.

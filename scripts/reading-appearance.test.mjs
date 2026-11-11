@@ -11,6 +11,12 @@ import path from "node:path";
 
 const source = { ...APPEARANCE_DEFAULTS, theme: "cream", headingScale: 1.2, directionScale: 0.8, productionNoteScale: 1.4, directions: "normal", scriptFont: "verdana", headingFont: "atkinson", directionFont: "opendyslexic", productionNoteFont: "same", scriptItalic: true, productionNoteBold: true, scriptColour: "#112233", backgroundColour: "#ffeedd", obsEnabled: true, deepgramApiKey: "private-never-export", remoteToken: "private-never-export", padLayout: { buttons: [ "marker" ] } };
 const theme = captureReadingTheme( "Studio", source, { fontSize: 3.25, opacity: 0.62 } );
+const spaced = captureReadingTheme( "Paragraphs", { ...source, paragraphSpacing: 0.45 }, { fontSize: 3.25, opacity: 0.62 } );
+assert.equal( spaced.text.script.paragraphSpacing, 45, "Paragraph gaps are independent of line spacing" );
+assert.equal( settingsFromTheme( spaced ).settings.paragraphSpacing, 0.45 );
+const oldTheme = structuredClone( spaced ); delete oldTheme.text.script.paragraphSpacing;
+assert.equal( settingsFromTheme( oldTheme ).settings.paragraphSpacing, 1, "Older themes retain the established paragraph gaps" );
+assert.throws( () => normaliseReadingTheme( { ...spaced, text: { ...spaced.text, script: { ...spaced.text.script, paragraphSpacing: -1 } } } ), /paragraph/i );
 assert.equal( theme.text.script.size, 325 );
 assert.equal( theme.text.headings.size, 180 );
 assert.equal( theme.text.inline.size, 68 );

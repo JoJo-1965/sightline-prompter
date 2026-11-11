@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "basis": "Sightline 1.3.0 RC8 preview, documentation revision 24, 11 November 2026",
+  "basis": "Sightline 1.3.0 RC9 preview, documentation revision 25, 11 November 2026",
   "date": "11 November 2026",
   "sourceBuild": "3d6798c",
-  "buildVersion": "1.3.0-rc.8",
+  "buildVersion": "1.3.0-rc.9",
   "publicationStatus": "preview",
   "appRelease": "1.2.0",
   "pluginRelease": "0.2.1.6",
   "sourceUrl": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/pointing-production-cues/docs/FEATURE-GRID.md",
-  "sourceSha256": "66d1e94a4e287363f8c3a2fb556a4aa2ea3a24a8883b2ca3f01a8b41353339b7",
+  "sourceSha256": "2a20893faa9ec649cababceb20808f41c93dafef7c1eb8bda986fcc929359153",
   "support": [
     "Included",
     "Optional",
@@ -164,8 +164,8 @@
         {
           "name": "Speed and responsiveness",
           "support": "Included",
-          "options": "Change steady WPM or voice-following responsiveness during use.",
-          "limits": "Recognition accuracy and responsiveness are different concerns."
+          "options": "Change steady WPM or Scroll catch-up speed during use; 100% is normal.",
+          "limits": "Catch-up speed affects display movement, not recognition. RC9 accepts ordered nearby common phrases; distant relocation retains distinctive-word checks."
         },
         {
           "name": "Start countdown",
@@ -254,7 +254,7 @@
         {
           "name": "Retake and edit commands",
           "support": "Optional",
-          "options": "Again, marker, back to marker, keeper and scrap that.",
+          "options": "Again, marker, back to marker, keeper and scrap that; bookmark flags are no longer drawn.",
           "limits": "Ratings and markers describe the take log; they do not cut video automatically."
         },
         {
@@ -457,7 +457,7 @@
           "name": "Named markers",
           "support": "Included",
           "options": "`{marker}` or `{marker: Setup}` creates a navigation and edit reference.",
-          "limits": "Marker positions are timing references, not verified frame-accurate cuts."
+          "limits": "Navigation/log anchors remain without on-screen bookmark flags. Timing references are not verified frame-accurate cuts."
         },
         {
           "name": "Off-script passages",
@@ -578,10 +578,16 @@
           "limits": "Notes remain silent, show paused and hide during delivery. Existing note size remains independent of heading containers."
         },
         {
+          "name": "Script paragraph spacing",
+          "support": "Included",
+          "options": "RC9: 0–300% in five-point steps under Spoken script; previews live and persists in settings and reading themes.",
+          "limits": "100% preserves the existing one-em gap; older themes default to 100%. Heading and production-note block margins retain existing rules."
+        },
+        {
           "name": "Independent line spacing",
           "support": "Included",
           "options": "Separate script, heading, inline-direction and production-note spacing from 100–250%.",
-          "limits": "Each percentage is relative to that text type’s font height; paragraph gaps remain as written."
+          "limits": "Each percentage is relative to that text type’s font height; paragraph spacing is independent."
         },
         {
           "name": "Alignment and margins",

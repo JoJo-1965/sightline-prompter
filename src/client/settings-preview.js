@@ -130,6 +130,7 @@ export function createSettingsPreview( root, getState ) {
 					filter: `brightness(${ state.textBrightness ?? 1 })`
 				} );
 				node.hidden = target === "production" ? reading : target === "inline" && ( state.directions === "hide" || hud );
+				if ( target === "script" ) node.style.marginBlock = `${ ( appearance.text.script.paragraphSpacing ?? 100 ) / 100 }em`;
 			}
 		}
 	}

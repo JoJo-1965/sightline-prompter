@@ -33,6 +33,16 @@ const MIN_SCORE_RATIO_GLOBAL = 0.65;
 const CONTENT_WORD_MAX_DF = 3;
 const MIN_CONTENT_MATCHES_LOCAL = 2;
 const MIN_CONTENT_MATCHES_GLOBAL = 3;
+const ORDERED_LOOKAHEAD = 24;
+const CONTRACTIONS = {
+	ive: "ihave", youve: "youhave", weve: "wehave", theyve: "theyhave",
+	im: "iam", youre: "youare", were: "weare", theyre: "theyare",
+	ill: "iwill", youll: "youwill", well: "wewill", theyll: "theywill",
+	dont: "donot", doesnt: "doesnot", didnt: "didnot", isnt: "isnot",
+	arent: "arenot", wasnt: "wasnot", werent: "werenot", cant: "cannot",
+	couldnt: "couldnot", wouldnt: "wouldnot", shouldnt: "shouldnot",
+	havent: "havenot", hasnt: "hasnot", hadnt: "hadnot", wont: "willnot"
+};
 
 // Apostrophes go too, so "isn't" (heard) matches "isn’t" (typed with a curly one).
 const NORMALIZE_REGEX = /[^\w]/g;
@@ -98,6 +108,48 @@ export function createAligner( scriptWords, { synonyms = new Map(), soundAlike =
 		if ( recent.length > RECENT_WINDOW ) recent.shift();
 	}
 
+	// Ordered nearby speech can be convincing even when every word is common
+	// throughout a long script. Keep this bounded; distant relocation still
+	// needs the existing weighted/content-word checks.
+	function orderedPosition() {
+		if ( recent.length < 3 ) return null;
+		const lower = Math.max( 0, position - RECENT_WINDOW * 2 );
+		const memo = new Map(), forms = new Map();
+		const groupForms = ( list ) => {
+			const key = list.join( " " );
+			if ( !forms.has( key ) ) forms.set( key, new Set( [ list.join( "" ), list.map( w => CONTRACTIONS[w] ?? w ).join( "" ) ] ) );
+			return forms.get( key );
+		};
+		const suffix = ( heardAt, scriptAt ) => {
+			const key = `${ heardAt }:${ scriptAt }`;
+			if ( memo.has( key ) ) return memo.get( key );
+			let best = { words: 0, heard: 0, start: scriptAt + 1 };
+			if ( heardAt >= 0 && scriptAt >= lower ) {
+				for ( let h = 1; h <= Math.min( 3, heardAt + 1 ); h++ ) {
+					const heardForms = groupForms( recent.slice( heardAt - h + 1, heardAt + 1 ) );
+					for ( let s = 1; s <= Math.min( 2, scriptAt - lower + 1 ); s++ ) {
+						const expected = groupForms( scriptWords.slice( scriptAt - s + 1, scriptAt + 1 ) );
+						if ( ![ ...heardForms ].some( form => expected.has( form ) ) ) continue;
+						const before = suffix( heardAt - h, scriptAt - s );
+						const candidate = { words: before.words + s, heard: before.heard + h, start: before.words ? before.start : scriptAt - s + 1 };
+						if ( candidate.words > best.words || ( candidate.words === best.words && candidate.heard > best.heard ) ) best = candidate;
+					}
+				}
+			}
+			memo.set( key, best );
+			return best;
+		};
+		let best = null;
+		for ( let end = position; end < Math.min( scriptWords.length, position + ORDERED_LOOKAHEAD + 1 ); end++ ) {
+			const found = suffix( recent.length - 1, end );
+			if ( found.words < 3 || found.heard < 3 ) continue;
+			const strong = found.words >= 5;
+			if ( found.start > position + ( strong ? 12 : 3 ) || end > position + ( strong ? ORDERED_LOOKAHEAD : 12 ) ) continue;
+			if ( !best || found.words > best.words || ( found.words === best.words && found.heard > best.heard ) ) best = { ...found, end };
+		}
+		return best?.end ?? null;
+	}
+
 	// Best-scoring window ending in [start, end). Ties keep the earliest match.
 	function search( start, end, recentCounts ) {
 		const windowSize = recent.length;
@@ -143,8 +195,14 @@ export function createAligner( scriptWords, { synonyms = new Map(), soundAlike =
 	}
 
 	function step() {
-		if ( recent.length < MIN_RECENT_TO_STEP ) return position;
 		if ( !scriptWords.length ) return position;
+		const ordered = orderedPosition();
+		if ( ordered !== null ) {
+			position = ordered;
+			relocating = false;
+			return position;
+		}
+		if ( recent.length < MIN_RECENT_TO_STEP ) return position;
 
 		const recentCounts = buildCounts( recent );
 		const maxScore = recent.reduce( ( sum, w ) => sum + heardWeight( w ), 0 );

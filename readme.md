@@ -1,10 +1,10 @@
 # Sightline Prompter
 
-> **Development preview: 1.3.0 RC8, documentation revision 24.**
+> **Development preview: 1.3.0 RC9, documentation revision 25.**
 > The public download below is stable 1.2.0. This candidate adds optional
 > [post-record audio review](docs/guide/19-post-record-review.md) and a
 > [rerunnable guided tour](docs/guide/20-guided-tour.md). Read the
-> [RC8 notes and limits](docs/RELEASE-1.3.0-rc.8.md) before testing. This candidate
+> [RC9 notes and limits](docs/RELEASE-1.3.0-rc.9.md) before testing. This candidate
 > adds [grouped controller functions](docs/guide/21-controller-functions.md),
 > explicit reading modes, preparation/review controls and an Adjustment dial.
 > RC3 adds silent `[point left: graphic-label]` cues with presenter-relative
@@ -162,6 +162,15 @@ The free Stream Deck companion 0.2.0 is now published on
 [Elgato Marketplace](https://marketplace.elgato.com/product/sightline-prompter-34676f28-e2e5-422d-9b48-e03dfd80bebe) as version 0.2.
 The direct package remains available. This distribution update does not change
 app features, existing installations or the separate 0.2.1 preview candidate.
+
+### 1.3.0 RC9 — paragraph spacing and voice continuity
+
+Set **Paragraph spacing** under Reading > Text and directions > Spoken script.
+It is separate from line spacing, saves with reading themes and defaults to the
+existing gap. Nearby ordered phrases can now advance through common-word
+stalls. **Scroll catch-up speed** describes display movement, not recognition
+accuracy. Bookmark flags are removed from the screen; navigation, logs and
+enabled OBS chapters remain. See [RC9 notes](docs/RELEASE-1.3.0-rc.9.md).
 
 ### 1.3.0 RC8 — voice recording and practice
 

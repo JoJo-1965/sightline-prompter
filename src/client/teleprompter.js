@@ -3409,6 +3409,7 @@ function applyLayout() {
 		settings.lineHeight ?? LAYOUT_DEFAULTS.lineHeight
 	);
 	style.setProperty( "--heading-line-height", settings.headingLineHeight ?? LAYOUT_DEFAULTS.headingLineHeight );
+	style.setProperty( "--paragraph-spacing", `${ settings.paragraphSpacing ?? 1 }em` );
 	style.setProperty( "--direction-line-height", settings.directionLineHeight ?? LAYOUT_DEFAULTS.directionLineHeight );
 	style.setProperty(
 		"--heading-scale",
@@ -3767,7 +3768,7 @@ function syncControls() {
 	speedLabel.textContent = voice ? "Response" : "Speed";
 	speedInput.setAttribute( "aria-labelledby", "cb-speed-label" );
 	speedInput.closest( "label" ).title = voice
-		? "Voice response: how quickly scrolling follows your speech"
+		? "Scroll catch-up speed: how quickly the display moves to a matched word"
 		: "Scroll speed in words per minute (Ctrl+[ and Ctrl+])";
 	speedValue.textContent = voice
 		? formatSpeed( autoScrollSpeed )
@@ -6664,7 +6665,7 @@ const voicePercent = { scale: 100, unit: "%", word: "percent" };
 const NUMBER_BOXES = {
 	"cb-speed": () =>
 		settings.scrollMode === "voice"
-			? { ...voicePercent, name: "Voice responsiveness" }
+			? { ...voicePercent, name: "Scroll catch-up speed" }
 			: {
 				scale: 1,
 				unit: "wpm",
@@ -6683,7 +6684,7 @@ const NUMBER_BOXES = {
 		word: "percent",
 		name: "Background opacity"
 	} ),
-	"vp-speed": () => ( { ...voicePercent, name: "Voice responsiveness" } ),
+	"vp-speed": () => ( { ...voicePercent, name: "Scroll catch-up speed" } ),
 	"lp-margin-x": () => ( {
 		scale: 1,
 		unit: "%",
@@ -6780,7 +6781,7 @@ const NUMBER_BOXES = {
 		word: "percent from the top",
 		name: "Reading line"
 	} ),
-	"set-voice-speed": () => ( { ...voicePercent, name: "Voice responsiveness" } ),
+	"set-voice-speed": () => ( { ...voicePercent, name: "Scroll catch-up speed" } ),
 	"set-font-size": () => ( {
 		scale: 100,
 		unit: "%",

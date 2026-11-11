@@ -432,3 +432,13 @@ grid; its capability rows and frozen build reference remain unchanged until a
 new preview is packaged. No live JL claim or approved promo changes are needed.
 Review the manual-stop/timed-pause rows and remove the pending note when the
 corrected package becomes the reference. This is not a no-feature-impact claim.
+
+
+RC9 batch, 11 November 2026: reviewed paragraph spacing, common-phrase alignment,
+bookmark visibility and the catch-up-speed label. Added one capability row (269
+in total); retained the existing line-height, marker/OBS and voice limits. Updated
+Settings/voice guides, F1 descriptions, welcome tour, versioned screenshot,
+release notes and roadmap. Stable marketing/promo claims and approved HUD layout
+remain applicable; add the spacing example to the next promo capture rather
+than recutting the approved film solely for this control. Command training stays
+planned. The JL snapshot is staged as a versioned candidate, not deployed.

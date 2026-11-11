@@ -122,16 +122,19 @@ from Files > Sample scripts. Opening the sample starts no device or recorder.
 
 ![The Voice panel](images/voice-panel.png)
 
-**Voice responsiveness** sets how quickly the script glides to catch up with
-you. Higher is snappier, lower is smoother.
+**Scroll catch-up speed** (previously Voice response/responsiveness) sets how
+quickly the display glides towards recognised speech. 100% is normal; higher
+is snappier and lower is smoother. It does not improve recognition or mic gain.
+RC9 also follows nearby ordered phrases when common words caused a stall, and
+handles common contraction/compound boundaries. Distant guesses retain stricter
+checks. Try your normal voice and microphone before recording a full session.
 
 ### If ordinary words or whole lines are missed
 
 Check that Sightline is using your intended microphone, then run the room
 and voice sound checks at your normal speaking distance and level. A meter
 can move even when the input is too quiet for reliable recognition. Adjust
-the input level that actually feeds Sightline and check again; an OBS or
-Riverside recording fader may affect only that app's recording.
+the input level that actually feeds Sightline and check again; a recording-app fader may affect only that app's recording.
 
 Once the level is suitable, use **Your words** for recurring names or
 phonetic forms. Playing synthetic speech through speakers is useful for
@@ -269,7 +272,7 @@ every recognition error. This option saves no audio.
 | **reset** (or restart) | Back to the start, with the speed back to normal and the pacing clock cleared, ready for a fresh run |
 | **section 3** (1–99, including “section twenty one”) | To the start of that section. You can say it without "Prompter" too, as your spoken slate before each section: saying the section you're in counts as a retake |
 | **again** (or retake, restart section, restart sections) | Drops a marker and restarts this section, including near its start |
-| **marker** | Drops a marker |
+| **marker** | Saves a bookmark and log event without an on-screen flag; enabled OBS chapters are still sent |
 | **back to the marker** (or from the marker, last marker) | Back to the last marker, to read on from there (Shift+B) |
 | **keeper** (or keep that, good take) | Marks the take you're on, or the one you've just finished, as a keeper in the [take log](05-recording-a-take.md#the-take-log) |
 | **scrap that** (or bin it, bad take) | Marks that take to be thrown away |

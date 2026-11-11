@@ -13,7 +13,7 @@ export const SHORTCUTS = [
 			[ [ "Page Up" ], "Previous section (presenter clicker)" ],
 			[ [ "Ctrl+Home" ], "Back to the start" ],
 			[ [ "Space" ], "After {stop}, or a Scroll-mode {pause}: carry on" ],
-			[ [ "B" ], "Drop a marker at the reading line (for retakes)" ],
+			[ [ "B" ], "Save a bookmark at the reading line for retakes; no on-screen flag" ],
 			[ [ "K" ], "This take's a keeper (in the take log)" ],
 			[ [ "Shift+K" ], "Scrap this take" ],
 			[ [ "Ctrl+Shift+R" ], "Recordings: name, note, export or delete a session" ],
@@ -71,7 +71,7 @@ export const SHORTCUTS = [
 			[ [ "{stop}" ], "Hold in Scroll or Voice until you deliberately continue" ],
 			[ [ "{pause}" ], "Scroll mode only: wait for Space, the clicker or Go; ignored in Voice" ],
 			[ [ "{pause: 3s}" ], "Scroll: wait 3 seconds; Voice: take the beat yourself, with no forced hold" ],
-			[ [ "{marker}" ], "A bookmark for retakes (Ctrl+B jumps to it)" ],
+			[ [ "{marker}" ], "A silent bookmark for retakes (Ctrl+B jumps to it); enabled OBS chapters are still sent" ],
 			[ [ "{wpm: 140}" ], "On a section heading: that section's pace" ],
 			[ [ "{target: 1:20}" ], "On a section heading: that section's target time" ],
 			[ [ "Reading > Reading aids" ], "Show directives: see them as small tags, with ⚠ on typos" ]

@@ -7,6 +7,7 @@ import { READING_FONTS, normaliseReadingThemes } from "./client/reading-appearan
 export function settingsValues( values, defaults, protectedKeys = [] ) {
 	if ( !values || typeof values !== "object" || Array.isArray( values ) ) throw Object.assign( new Error( "Settings must be an object" ), { status: 400 } );
 	const known = pickKnown( values, defaults );
+	if ( Object.hasOwn( defaults, "paragraphSpacing" ) && Object.hasOwn( values, "paragraphSpacing" ) && ( !Number.isFinite( values.paragraphSpacing ) || values.paragraphSpacing < 0 || values.paragraphSpacing > 3 ) ) throw Object.assign( new Error( "paragraphSpacing must be between 0 and 3" ), { status: 400 } );
 	for ( const [ key, min, max ] of [ [ "productionNoteScale", 10 / 55, 200 / 55 ], [ "productionNoteLineHeight", 1, 2.5 ], [ "directionScale", 10 / 85, 400 / 85 ], [ "headingScale", 10 / 150, 400 / 150 ] ] ) {
 		if ( Object.hasOwn( known, key ) && ( known[key] < min || known[key] > max ) ) throw Object.assign( new Error( `${ key } must be between ${ min } and ${ max }` ), { status: 400 } );
 	}

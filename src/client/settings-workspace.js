@@ -234,9 +234,10 @@ export function createSettingsWorkspace( root, { getState, getGuideState = () =>
 			styles.append( toggle );
 		}
 		row( panel, "Style", styles );
-		range( panel, ( { script: "lp-line-height", headings: "lp-heading-line-height", inline: "lp-direction-line-height", production: "lp-production-line-height" } )[target], "Line spacing", f.spacing, { step: 5, min: 100, max: 250, scale: 100, help: "Line spacing as a percentage of this text type’s font height. Paragraph gaps remain as written." } );
+		range( panel, ( { script: "lp-line-height", headings: "lp-heading-line-height", inline: "lp-direction-line-height", production: "lp-production-line-height" } )[target], "Line spacing", f.spacing, { step: 5, min: 100, max: 250, scale: 100, help: "Space between wrapped lines, as a percentage of this text type’s font height." } );
+		if ( target === "script" ) range( panel, "lp-paragraph-spacing", "Paragraph spacing", "paragraphSpacing", { step: 5, min: 0, max: 300, scale: 100, help: "Gap around script paragraphs. 100% keeps the established one-em gap; 0% closes it and 200% doubles it. Wrapped line spacing, heading margins and production-note blocks are separate." } );
 		if ( target === "inline" ) choice( panel, "set-directions", "Visibility", "directions", [ [ "normal", "Normal" ], [ "dim", "Dimmed" ], [ "hide", "Hidden" ] ], true );
-		panel.append( el( "p", { className: "settings-inline-note" }, target === "production" ? "Production notes show while paused and hide during delivery. Everything inside stays silent, including quoted words." : target === "inline" ? "Review keeps inline bracket directions. During delivery, short silent cues use the floating HUD. Quoted words intended for speech keep the spoken-script style." : "The same font, size, colour, style and spacing pattern is used for every text target." ) );
+		panel.append( el( "p", { className: "settings-inline-note" }, target === "production" ? "Production notes show while paused and hide during delivery. Everything inside stays silent, including quoted words." : target === "inline" ? "Review keeps inline bracket directions. During delivery, short silent cues use the floating HUD. Quoted words intended for speech keep the spoken-script style." : "Each text type has independent font, size, colour, style and line spacing." ) );
 	}
 	check( targetPanels.get( "inline" ), "set-hud-cues", "Floating HUD cues during delivery", "hudCues", true, "Show short directions in a gold cue pill while reading a take. Pointing marks stay behind your text, midway between the saved head edge and screen edge. Pausing restores the inline bracket view. This does not start a recorder." );
 	function selectTarget( target ) {
@@ -369,8 +370,8 @@ export function createSettingsWorkspace( root, { getState, getGuideState = () =>
 	keyClear.control.closest( ".settings-row" ).classList.add( "voice-deepgram-only" );
 	const micTest = el( "button", { type: "button", id: "set-microphone-test" }, "Test selected microphone" );
 	microphone.append( micTest, doc.getElementById( "vp-meter" ), doc.getElementById( "vp-mic-status" ) );
-	range( mode, "set-voice-speed", "Voice response", "autoScrollSpeed", { min: 10, max: 300, scale: 100, step: 5, preview: false, help: "Response to recognised speech. This changes following speed, not microphone gain." } );
-	range( mode, "set-steady-wpm", "Scroll speed", "steadyWpm", { min: 60, max: 300, unit: "wpm", step: 5, preview: false, help: "Words per minute for Scroll mode. If Follow script pacing is on, pacing directives can replace this speed as you reach them. Voice response and Notes / page mode are independent." } );
+	range( mode, "set-voice-speed", "Scroll catch-up speed", "autoScrollSpeed", { min: 10, max: 300, scale: 100, step: 5, preview: false, help: "How quickly the display moves to a matched word. 100% is normal. Higher values move more sharply; this does not change speech recognition or microphone gain." } );
+	range( mode, "set-steady-wpm", "Scroll speed", "steadyWpm", { min: 60, max: 300, unit: "wpm", step: 5, preview: false, help: "Words per minute for Scroll mode. If Follow script pacing is on, pacing directives can replace this speed as you reach them. Scroll catch-up and Notes / page mode are independent." } );
 	range( mode, "set-countdown", "Countdown before scrolling", "countdown", { min: 0, max: 10, unit: "s", preview: false, help: "A countdown before Scroll mode starts moving. Zero starts immediately. It does not delay Voice or Notes / page mode; script pauses and recording slates are separate." } );
 	const stripSettings = controls.get( "set-eye-line" ).closest( "fieldset" );
 	check( stripSettings, "set-eye-line", "Enable eye-line strip", "eyeLine", false, "Pin a narrow reading strip near the camera. Enable it to adjust width, height and reading line. Apply updates the prompter; turning it off retains its settings." );
@@ -825,7 +826,7 @@ export function createSettingsWorkspace( root, { getState, getGuideState = () =>
 			const number = bindings.get( id ).number;
 			if ( number ) number.disabled = !active;
 		}
-		modeDescription.textContent = state.pointsMode === true ? "Notes / page: use Next and Previous to move between pages. Page timings come from the script; scrolling pace controls do not apply." : voiceMode ? voiceReady ? "Voice follows what you say. Voice response controls how quickly the script follows recognised speech." : "Voice needs enabled speech features and microphone input. Configure them in Voice before recording." : "Scroll runs at the selected WPM. Script pacing can change that speed where the script supplies a pace.";
+		modeDescription.textContent = state.pointsMode === true ? "Notes / page: use Next and Previous to move between pages. Page timings come from the script; scrolling pace controls do not apply." : voiceMode ? voiceReady ? "Voice follows what you say. Scroll catch-up speed controls how quickly the display moves to a matched word. It does not change recognition accuracy." : "Voice needs enabled speech features and microphone input. Configure them in Voice before recording." : "Scroll runs at the selected WPM. Script pacing can change that speed where the script supplies a pace.";
 		controls.get( "set-coach-fillers" ).disabled = !voiceReady || !voiceMode;
 		controls.get( "set-coach-fillers" ).title = voiceReady && voiceMode ? "Optional aggregate counts while following speech" : "Enable speech, microphone input and Voice mode first";
 		for ( const descriptor of bindings.values() ) {

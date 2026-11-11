@@ -1,5 +1,11 @@
 # Sightline Prompter features
 
+**1.3.0 RC9:** independent script paragraph spacing (0–300%) in the existing
+appearance controls, with settings/theme persistence and legacy defaults.
+Nearby ordered phrases improve Voice continuity; Scroll catch-up speed
+controls movement rather than recognition. Bookmark flags are removed while
+navigation, logs and enabled OBS chapters remain.
+
 **1.3.0 RC8:** record/start recording/begin confirms OBS before prompting;
 go/practice/start practice runs the prompter with OBS unchanged. Gold voice
 acknowledgement is mirrored into Settings; OBS setup stages explain their gates.
@@ -88,7 +94,7 @@ Deepgram. Recognition and pacing are estimates, not a transcript of record.
 
 Keep the script translucent over a call, slides or a camera picture. Configure
 speech, headings, cues and comments independently: font, size, colour, bold,
-italic and line spacing. Choose a theme or save your current reading appearance.
+italic and line spacing. RC9 adds separate script paragraph spacing. Choose a theme or save your current reading appearance.
 Adjust backing colour/opacity, margins, reading line, focus band, markers,
 eye-line strip and mirroring. Themes exclude device credentials and scripts.
 

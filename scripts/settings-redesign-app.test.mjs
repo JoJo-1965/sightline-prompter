@@ -116,7 +116,7 @@ try {
 		await fs.writeFile( path.join( artifacts, "focus-treatment.png" ), Buffer.from( shot.data, "base64" ) );
 	}
 	await settings.evaluate( 'document.querySelector("[data-tab=typography]").click()' );
-	const fivePoint = [ "set-font-size", "lp-heading-scale", "lp-direction-scale", "lp-production-scale", "lp-line-height", "lp-heading-line-height", "lp-direction-line-height", "lp-production-line-height", "set-voice-speed", "set-steady-wpm" ];
+	const fivePoint = [ "set-font-size", "lp-heading-scale", "lp-direction-scale", "lp-production-scale", "lp-line-height", "lp-paragraph-spacing", "lp-heading-line-height", "lp-direction-line-height", "lp-production-line-height", "set-voice-speed", "set-steady-wpm" ];
 	assert.deepEqual( await settings.evaluate( `${ JSON.stringify( fivePoint ) }.filter(id=>document.getElementById(id).step!=='5'||document.getElementById(id+'-number').step!=='5')` ), [], "Coarse sliders and number boxes both use five-point steps" );
 	await settings.evaluate( 'document.querySelector("[data-text-target=production]").click();const n=document.getElementById("lp-production-scale-number");n.value="76.789";n.dispatchEvent(new Event("change",{bubbles:true}))' );
 	assert.deepEqual( await settings.evaluate( '[document.getElementById("lp-production-scale").value,document.getElementById("lp-production-scale-number").value]' ), [ "75", "75" ], "Typed fractions settle to the same visible slider step" );

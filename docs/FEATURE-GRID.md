@@ -1,7 +1,7 @@
 # Sightline Prompter feature grid
 
-**Review basis: Sightline 1.3.0 RC8 preview, documentation revision 24, 11 November 2026.**
-**Build version:** `1.3.0-rc.8` · **Publication status:** Preview
+**Review basis: Sightline 1.3.0 RC9 preview, documentation revision 25, 11 November 2026.**
+**Build version:** `1.3.0-rc.9` · **Publication status:** Preview
 
 **Maintained source:** [Feature grid](https://github.com/JoJo-1965/sightline-prompter/blob/codex/pointing-production-cues/docs/FEATURE-GRID.md)
 
@@ -23,7 +23,13 @@ states still block changes. No capability or controller action is added.
 **RC8 changes:** record/start recording/begin starts confirmed recording and
 prompting; go/practice/start practice leaves OBS unchanged. Gold acknowledgements
 also appear over Settings. Setup explains missing choices and enables its top
-Review plan action when ready. The 268 capabilities remain grouped below.
+Review plan action when ready. The capabilities remain grouped below.
+
+**RC9 changes:** independent paragraph spacing persists in settings and reading
+themes, with the established gap as default. Nearby ordered speech improves
+common-word continuity. Scroll catch-up speed controls movement, not recognition.
+Bookmark flags are removed while anchors, logs and enabled OBS chapters remain.
+The 269 capabilities are grouped below.
 
 Use the [searchable grid](FEATURE-GRID.html) to browse by subject or support
 level. The [CSV comparison sheet](FEATURE-GRID.csv) includes a blank reviewer
@@ -68,7 +74,7 @@ Reference: [Scrolling and voice](guide/03-scrolling-and-voice.md) and [Recording
 | On air reading view | Included | A separate On air state changes the operator/reading presentation and configured backing. | On air describes the prompter view; use the confirmed recording pill to check the recorder. |
 | Restart and return to top | Included | Return to the beginning; reset can also restore normal pace and clear the pacing clock. | Returning to top and starting a fresh timed run are distinct actions. |
 | Section navigation | Included | Previous, next and numbered section jumps; section retakes. RC5 adds an optional Voice-only Start from section heading preference for a spoken lead-in. | Off by default; first body line remains the default. Headings retain their section identity for editorial trimming; no automatic verified cut boundary. |
-| Speed and responsiveness | Included | Change steady WPM or voice-following responsiveness during use. | Recognition accuracy and responsiveness are different concerns. |
+| Speed and responsiveness | Included | Change steady WPM or Scroll catch-up speed during use; 100% is normal. | Catch-up speed affects display movement, not recognition. RC9 accepts ordered nearby common phrases; distant relocation retains distinctive-word checks. |
 | Start countdown | Optional | Set a countdown before Scroll mode starts moving. | Does not delay Voice or Notes/page mode, and does not itself start an external recorder. |
 | Section targets | Optional | Per-section WPM and target duration, plus script-wide pacing instructions. | Targets guide delivery; they do not guarantee the final running time. |
 | Pace feedback | Included | Pacing light, elapsed time, progress and estimated time remaining. | Speech-derived figures require useful recognition data. |
@@ -88,7 +94,7 @@ Reference: [Speech engines and command phrases](guide/03-scrolling-and-voice.md)
 | Listening modes | Optional | In voice mode, Always listening, or Off. | Always listening keeps microphone recognition active while prompting is stopped. |
 | Wake word | Optional | Prompter, Computer, Teleprompter or Director. | Wake-word recognition is speech recognition, not guaranteed keyword detection. |
 | Reading and display commands | Optional | Go, pause, slower, faster, bigger, smaller, back, next and return to top. | Enable command listening; several phrases have documented aliases. |
-| Retake and edit commands | Optional | Again, marker, back to marker, keeper and scrap that. | Ratings and markers describe the take log; they do not cut video automatically. |
+| Retake and edit commands | Optional | Again, marker, back to marker, keeper and scrap that; bookmark flags are no longer drawn. | Ratings and markers describe the take log; they do not cut video automatically. |
 | Spoken section selection | Optional | Select numbered sections, including natural spoken numbers. | A section number can act as a spoken slate and a retake instruction. |
 | Explicit recording commands | Dependent | RC8: record, start recording, begin and record take confirm OBS before delivery; finish recording, and record on, off, pause or resume remain. | OBS integration and recording-control permission must be enabled. Go, practice and start practice run the prompter with OBS unchanged. |
 | Head-guide voice commands | Optional | Guide on and guide off request a definite visible or hidden state. | Controls the manual guide; it does not detect a face. |
@@ -131,7 +137,7 @@ Reference: [Script directives](SCRIPT-DIRECTIVES.md) and [AI script brief](AI-SC
 | Direction display | Optional | Normal, dimmed or hidden bracket directions; quoted spoken words remain visible. | RC3 pointing labels stay silent, including quotes. Long production comments follow the separate paused/delivering rule. |
 | Manual script stops | Included | `{stop}` holds Scroll or Voice until the user continues. Bare `{pause}` holds Scroll only in RC6. | Voice/Notes ignore script pause directives, including linked recording. Explicit stops and spoken pause commands remain deliberate. |
 | Timed pauses | Included | `{pause: 3s}` provides a countdown in Scroll mode. | Voice treats the timed tag as a visible beat cue; it does not hold, count down or pause linked recording. |
-| Named markers | Included | `{marker}` or `{marker: Setup}` creates a navigation and edit reference. | Marker positions are timing references, not verified frame-accurate cuts. |
+| Named markers | Included | `{marker}` or `{marker: Setup}` creates a navigation and edit reference. | Navigation/log anchors remain without on-screen bookmark flags. Timing references are not verified frame-accurate cuts. |
 | Off-script passages | Optional | `{listen: off}` and `{listen: on}` hold following and voice commands during ad-libs; manual continuation is required. | Enabled scratch audio and production recording can continue independently; this is not a whole-microphone privacy switch. |
 | Script sound checks | Optional | `{soundcheck: room}` and `{soundcheck: voice}` request the appropriate check. | Measurement uses the selected input and the current acoustic conditions. |
 | Script control commands | Optional | `{prompter: ...}` supports documented display, pace and marker actions. | Only documented commands are supported. |
@@ -157,7 +163,8 @@ Reference: [Layout and display](guide/04-layout-and-display.md) and [Settings](g
 | Heading size | Included | Heading scale independent of the body text. | Long headings can require rewording or a smaller scale. |
 | Inline direction appearance | Included | Independent font, size, colour, bold, italic and line spacing; Normal/Dimmed/Hidden visibility. | Visibility no longer changes size. Explicit spoken quotations retain script styling and tracking. |
 | Production note appearance | Included | Independent font, size, colour, bold, italic and line spacing for HTML production notes. | Notes remain silent, show paused and hide during delivery. Existing note size remains independent of heading containers. |
-| Independent line spacing | Included | Separate script, heading, inline-direction and production-note spacing from 100–250%. | Each percentage is relative to that text type’s font height; paragraph gaps remain as written. |
+| Script paragraph spacing | Included | RC9: 0–300% in five-point steps under Spoken script; previews live and persists in settings and reading themes. | 100% preserves the existing one-em gap; older themes default to 100%. Heading and production-note block margins retain existing rules. |
+| Independent line spacing | Included | Separate script, heading, inline-direction and production-note spacing from 100–250%. | Each percentage is relative to that text type’s font height; paragraph spacing is independent. |
 | Alignment and margins | Included | Left or centred text; side, top and bottom margin controls. | Extreme settings can reduce the usable reading area. |
 | Background and text visibility | Included | Editable backing colour, off-air/on-air opacity, text opacity and brightness. | The appearance preview does not change the content behind the prompter. |
 | Text edge | Optional | None, outline or shadow to separate words from a busy background. | Preview against the intended slides, call or camera picture. |
