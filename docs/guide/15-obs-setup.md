@@ -44,6 +44,7 @@ are chosen. The hint below the stage buttons names missing choices; either
 Review plan button opens the same review. **Result** becomes available after
 creating the reviewed setup. This assistant is optional: if your current OBS
 setup is ready, close it and use Record take on the prompter.
+The choices screen also makes clear that closing keeps the current OBS setup.
 
 ![OBS setup choices using illustrative configured sources](images/obs-setup-choices.png)
 
