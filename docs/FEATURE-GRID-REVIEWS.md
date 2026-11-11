@@ -1,5 +1,13 @@
 # Feature-matrix review record
 
+## Configurable paragraph spacing — roadmap, 11 November 2026
+
+Recorded adjustable paragraph gaps separately from the existing independent
+line-spacing controls. Planned acceptance includes appearance preview, saved
+settings/themes and correct reading alignment when comments are hidden.
+No runtime or RC8 package change; the current matrix's paragraph-gap limitation
+remains accurate. This is planned work, not a shipped capability.
+
 ## Voice-training onboarding proposal — 11 November 2026
 
 Added a roadmap/design proposal for internal onboarding that teaches commands
