@@ -1,5 +1,12 @@
 # Feature-matrix review record
 
+## Bookmark visibility preference — 11 November 2026
+
+Queued optional on-screen bookmark flags, off during delivery, while keeping
+navigation and editing/retake metadata. The current numbered-section restart
+path avoids adding a flag; Again/Retake still drops one in RC8. No running
+package, active recording or shipped feature-grid claims changed.
+
 ## Configurable paragraph spacing — roadmap, 11 November 2026
 
 Recorded adjustable paragraph gaps separately from the existing independent
