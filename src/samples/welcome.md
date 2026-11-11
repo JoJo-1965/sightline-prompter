@@ -7,6 +7,12 @@ Read the ordinary text. Setup notes show while paused; short cues stay inline.
 Space starts or pauses. At each stop, try the suggested action, then continue.
 Samples are read-only: use Save a copy before making your own changes. -->
 
+<!-- RC8 START. With voice commands enabled, Prompter, practice / start
+practice / go runs the prompter without OBS changes. Prompter, record / start
+recording / begin confirms OBS recording first, with recording permission.
+Confirm the red recording pill. The gold acknowledgement also shows over
+Settings. Finish recording explicitly. Keep command demonstrations deliberate. -->
+
 ## Start here {target: 0:20}
 
 [smile]

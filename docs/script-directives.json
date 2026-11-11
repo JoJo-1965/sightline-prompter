@@ -1,5 +1,5 @@
 {
-	"$comment": "Version 0.7.0 syntax remains unchanged. RC6 makes bare and timed pause directives Scroll-only; explicit stops remain active in Voice.",
+	"$comment": "Version 0.7.0 syntax remains unchanged. RC6 makes pauses Scroll-only; RC8 voice practice/go leaves OBS unchanged and bypasses recorder directives, recorded slates and chapters.",
 	"name": "sightline-script-directives",
 	"version": "0.7.0",
 	"status": "syntax agreed; implemented in the app (27 October 2026): pause, marker, wpm, target, pacing, mode",

@@ -186,6 +186,14 @@ your settings, so **Export Settings** takes them to another computer.
 
 ## Voice commands: "Prompter, …"
 
+In RC8, **Prompter, record**, **Prompter, start recording** and **Prompter,
+begin** confirm OBS recording, then start the prompter's delivery view.
+**Prompter, practice**, **Prompter, start practice** and **Prompter, go**
+run the prompter without starting, pausing or stopping OBS. This practice
+override ignores recorder directives, recorded slates and OBS chapters;
+it leaves your saved linked-recording preference unchanged. An explicit
+recording command or Record take returns to recording operation.
+
 The Voice panel distinguishes local processing from optional Deepgram audio
 transfer. Recognised text and optional scratch audio may still be saved locally;
 local recognition does not mean that no files are kept. See the privacy notice
@@ -206,16 +214,20 @@ the active listener immediately, including while it waits for the wake word.
 Say **"Prompter"**, leave a brief beat, say the command, then stop for a moment.
 The beat helps the recogniser separate the wake word from the command. Finish
 within four seconds of the wake acknowledgement; after that, say the wake word
-again. Commands only count at the end of a phrase. Pick a wake word your script
+again. RC8 allows an exact recording-command prefix heard within that window
+up to six seconds from the wake word to finish, accommodating delayed final
+words. Other recorder commands keep the four-second window. Commands only
+count at the end of a phrase. Pick a wake word your script
 doesn't use as an instruction: reading a complete command aloud can trigger it.
 For the Teleprompter choice, the recogniser's split spelling *tele prompter*
 works too. Split command words are held out of script tracking.
 
-As soon as it hears **"Prompter"**, a message at the bottom says
-*Listening… go · pause · again · marker*, so you know it's ready for the
-command. Another confirms what was heard, such as *Heard: "Prompter,
-slower"*, and if what followed wasn't a command it says *Didn't catch
-that*, with the words it heard, so you can say it again.
+As soon as RC8 recognises the wake word, a prominent gold acknowledgement
+appears on the script and every open Settings/utility window. It confirms
+recognised commands or explains failures without taking focus or playing a
+sound. Earlier previews display a smaller message only on the script.
+
+![Gold wake acknowledgement over the open Settings window](images/voice-acknowledgement-settings.png)
 
 ### If listening stops responding
 
@@ -249,7 +261,7 @@ every recognition error. This option saves no audio.
 | Say "Prompter, …" | What happens |
 | --- | --- |
 | **pause** (or stop, hold, wait) | Pause. In voice mode the prompter keeps listening, so you can carry on |
-| **go** (or carry on, continue, start) | Start, or carry on after a pause. While paused in voice mode, "go" on its own works too |
+| **go / practice / start practice** (or carry on, continue, start) | RC8: run the prompter while leaving OBS unchanged. While paused in voice mode, "go" on its own works too |
 | **slower** / **faster** (or slow down, speed up) | Steady scrolling: 10 words a minute slower or faster. Voice mode: less or more responsive |
 | **back** (or previous section, previous page) | Back to the start of this section, or the one before. In notes, the previous page |
 | **next section** (or next page) | On to the next section. In notes, the next page |
@@ -266,7 +278,7 @@ every recognition error. This option saves no audio.
 | **what can I say** (or help, commands) | Opens commands in grouped tabs; stays until your next command, Close or Esc. OBS commands appear only with OBS recording controls enabled |
 | **guide on · guide off** | Shows or hides the separate head-position guide; repeats keep the requested state |
 | **close** (or cancel, never mind) | Hides that list |
-| **record take** (or start recording) | Optional OBS integration: confirm recording, then start prompting. Requires enabled OBS recording controls |
+| **record / start recording / begin / record take** | Optional OBS integration: confirm recording, then start prompting. Requires enabled OBS recording controls |
 | **finish recording** (or stop recording, stopped recording, end recording, finish, end) | Optional OBS integration: stop prompting and finish the OBS recording |
 | **record on / record off** | With OBS recording permission: explicitly start or finish recording; off holds prompting |
 | **record pause / record resume** | When enabled: pause or resume the existing recording; pause holds prompting. Check your format supports pausing |

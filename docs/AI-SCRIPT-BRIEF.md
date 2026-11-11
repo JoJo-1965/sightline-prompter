@@ -1,5 +1,12 @@
 # Brief for AI script writers: Sightline Prompter scripts
 
+**RC8 recording workflow:** keep voice-command demonstrations in preparation
+comments. Use Prompter, record / start recording / begin for a confirmed OBS
+take; practice / start practice / go is rehearsal with OBS unchanged. Practice
+ignores recorder directives and recorded slates without changing the script.
+Do not promise that a command was recognised or a production file captured;
+check the confirmed recording state and a real test file.
+
 **Paste everything below the line into your script-writing AI** (ChatGPT,
 Claude, Gemini, or your own pipeline) as instructions, then describe the script
 you want. It produces scripts that Sightline Prompter can pace, stop and count

@@ -62,7 +62,12 @@ import { createSettingsDraft } from "./settings-draft.js";
 import { APPEARANCE_KEYS, READING_FONTS, READING_PALETTES, TEXT_FIELDS } from "./reading-appearance.js";
 import { voiceInputEnabled, customInputEnabled } from "./interface-state.js";
 import { addSettingsHelp } from "./settings-pages.js";
-import { uiElement, showPanelWindow, hidePanelWindow } from "./panel-windows.js";
+import { uiElement, showPanelWindow, hidePanelWindow, panelDocuments } from "./panel-windows.js";
+import { createVoiceFeedback } from "./voice-feedback.js";
+
+const voiceFeedback = createVoiceFeedback( { documents: panelDocuments } );
+let practiceRun = false;
+window.addEventListener( "sightline-panel-ready", () => voiceFeedback.refresh() );
 import {
 	indexSentences,
 	scriptSentences,
@@ -136,14 +141,17 @@ const recording = createTakeLog( {
 			ideal: settings.headGuideIdeal, showIdeal: settings.headGuideShowIdeal !== false,
 			captureStatus: "Separate protected overlay; actual OBS capture route requires verification"
 		} ),
-	onOpen: ( index, title, take ) => obsUi.chapter( `Section ${ index + 1 } · Take ${ take } · ${ title }` ),
-	onMarker: label => obsUi.chapter( label || "Sightline marker" )
+	onOpen: ( index, title, take ) => !practiceRun && obsUi.chapter( `Section ${ index + 1 } · Take ${ take } · ${ title }` ),
+	onMarker: label => !practiceRun && obsUi.chapter( label || "Sightline marker" )
 } );
 const syncReminder = createSyncReminder( { getSettings: () => settings, canShow: () => !isScrolling(), notify: text => showToast( text, 7000 ) } );
 const obsUi = createObsUi( {
 	getSettings: () => settings,
 	canStart: () => !isEditMode && !isScrolling() && !autoScrollStarting && !slating && !pointsRunning && !!md.textContent.trim() && ( pointsMode() || settings.scrollMode !== "voice" || ( usesLocalVoice() ? speechModel.installed && !speechModel.downloading && !modelMaintenance : settings.hasDeepgramKey ) ),
-	onStart: () => runRemoteAction( "play" ),
+	onStart: () => {
+		practiceRun = false;
+		runRemoteAction( "play" );
+	},
 	onFinish: () => {
 		stopSteadySession();
 		stopAutoScrollSession();
@@ -151,9 +159,12 @@ const obsUi = createObsUi( {
 		feedTakeLog( false );
 	},
 	onChange: state => { syncReminder.observe( state ); sendStatus(); },
-	toast: text => showToast( text, 4500 )
+	toast: text => {
+		showToast( text, 4500 );
+		voiceFeedback.show( "OBS recording", text );
+	}
 } );
-const linkedRecording = createRecordingLink( { getSettings: () => settings, getState: () => obsUi.state(), command: action => obsUi.action( action, { prompt: false } ) } );
+const linkedRecording = createRecordingLink( { getSettings: () => ( { ...settings, obsFollowPrompter: settings.obsFollowPrompter && !practiceRun } ), getState: () => obsUi.state(), command: action => obsUi.action( action, { prompt: false } ) } );
 let recordingSaved = 0; // the take log version last sent to be saved
 let recordingY = null; // reading line at the last tick, to see the text move on
 let pendingJumpReason = null; // "again" when a jump is a voice retake
@@ -1226,7 +1237,7 @@ function voicePauseCrossed( wordIdx, ranges ) {
 const SCRIPT_COMMAND_LABELS = { slower: "slower", faster: "faster", bigger: "bigger text", smaller: "smaller text", marker: "marker" };
 async function runScriptCommand( command ) {
 	if ( command.startsWith( "record:" ) ) {
-		if ( !settings.obsEnabled || !settings.obsControls ) return;
+		if ( practiceRun || !settings.obsEnabled || !settings.obsControls ) return;
 		const resumeVoice = autoScrollActive && !autoScrollHandle?.isHeld();
 		const resumeSteady = isSteadyRunning();
 		autoScrollHandle?.setHold( true );
@@ -1458,7 +1469,7 @@ async function prepareReading() {
 	try {
 		// A recording directive before the first spoken word runs on Play,
 		// never while loading or previewing a script.
-		if ( settings.obsEnabled && settings.obsControls && window.scrollY < 4 ) {
+		if ( !practiceRun && settings.obsEnabled && settings.obsControls && window.scrollY < 4 ) {
 			const { ranges } = buildWordIndex( md );
 			const spoken = ranges.filter( range => !range.startContainer.parentElement?.closest( "h1, h2, h3, h4, h5, h6" ) );
 			for ( const c of directivePoints.prompterCommands ) {
@@ -1927,7 +1938,7 @@ let voiceAttemptStartedAt = null;
 function voiceWake() {
 	if ( isEditMode ) return;
 	voiceAttemptStartedAt = Date.now();
-	showToast( "Listening… go · pause · again · marker", 3000 );
+	voiceFeedback.show( `Heard “${ wakeLabel( settings.wakeWord ) }”`, settings.obsEnabled && settings.obsControls ? "Say “begin” to record, or “go” to read." : "Say “go”, “pause”, “again” or “help”.", "listening" );
 	window.electron.debugLog?.( "voice: wake word acknowledged" );
 }
 
@@ -1937,6 +1948,7 @@ function voiceMiss( words ) {
 	voiceAttemptStartedAt = null;
 	feedTakeLog( isScrolling() );
 	showToast( words.length ? `Didn't catch that: “${ words.join( " " ) }”` : "Wake word heard, but no complete command. Try again.", 2500 );
+	voiceFeedback.show( "Command not recognised", words.length ? `Heard “${ words.join( " " ) }”. Say the wake word and try again.` : "Say the wake word, then a complete command.", "miss" );
 	window.electron.debugLog?.( "voice: wake heard; command not matched (see heard log)" );
 }
 
@@ -2028,8 +2040,23 @@ async function runVoiceCommand( id, value ) {
 	voiceAttemptStartedAt = null;
 	feedTakeLog( isScrolling() );
 	if ( id.startsWith( "obs-" ) ) {
-		if ( !settings.obsEnabled || !settings.obsControls ) return;
-		runRemoteAction( id );
+		if ( !settings.obsEnabled || !settings.obsControls ) {
+			voiceFeedback.show( "Recording command unavailable", "Enable OBS integration and allow recording controls in Connections.", "blocked" );
+			return;
+		}
+		if ( id === "obs-record" && isScrolling() ) {
+			if ( obsUi.state().recording === "recording" ) {
+				practiceRun = false;
+				voiceFeedback.show( "Already recording", "OBS recording and the prompter are running." );
+				return;
+			}
+			stopSteadySession();
+			await stopAutoScrollSession();
+		}
+		voiceFeedback.show( "Recording command heard", id === "obs-record" ? "Confirming OBS recording before starting the prompter…" : "Waiting for OBS to confirm the command…" );
+		if ( [ "obs-record", "obs-on", "obs-resume" ].includes( id ) ) practiceRun = false;
+		const done = await runRemoteAction( id );
+		if ( done ) voiceFeedback.show( "OBS confirmed", { "obs-record": "Recording is on. The prompter is starting.", "obs-finish": "Recording finished. The prompter is stopped.", "obs-on": "Recording is on.", "obs-off": "Recording is off.", "obs-pause": "Recording is paused.", "obs-resume": "Recording has resumed." }[id] );
 		return;
 	}
 	if ( id === "guide-on" || id === "guide-off" ) {
@@ -2040,6 +2067,7 @@ async function runVoiceCommand( id, value ) {
 	}
 	hideVoiceHelp();
 	showToast( id === "section" ? `Heard: “Section ${ value }”` : `Heard: “${ wakeLabel( settings.wakeWord ) }, ${ COMMAND_LABELS[id] ?? id }”` );
+	voiceFeedback.show( "Command heard", id === "section" ? `Section ${ value }` : COMMAND_LABELS[id] ?? id, "command", 3000 );
 	if ( id === "help" ) {
 		showVoiceHelp();
 		return;
@@ -2064,6 +2092,8 @@ async function runVoiceCommand( id, value ) {
 			setIndicator( `Paused · say “${ wakeLabel( settings.wakeWord ) }, go”` );
 		} else if ( isScrolling() ) runRemoteAction( "pause" );
 	} else if ( id === "go" ) {
+		practiceRun = true;
+		voiceFeedback.show( "Practice · prompter only", "OBS recording is unchanged.", "practice" );
 		if ( voice && scriptCheck ) carryOnFromVoiceCheck();
 		else if ( voice ) {
 			if ( !await prepareReading() ) return;
@@ -2186,7 +2216,7 @@ function showSlate() {
 	slateEl.classList.add( "flash" );
 	recording.slate( index );
 	const slateLog = recording.data().startedAt;
-	const recorded = obsUi.recordedSlate( { section: index + 1, take, title: slateEl.querySelector( ".slate-title" ).textContent, mode: settings.slate } ).then( ( result ) => {
+	const recorded = ( practiceRun ? Promise.resolve( null ) : obsUi.recordedSlate( { section: index + 1, take, title: slateEl.querySelector( ".slate-title" ).textContent, mode: settings.slate } ) ).then( ( result ) => {
 		if ( result && recording.data().startedAt === slateLog ) recording.recordedSync( result );
 		if ( result?.status === "failed" ) {
 			stopSteadySession();
@@ -5088,12 +5118,10 @@ function runRemoteAction( action, value ) {
 	if ( action === "listening-restart" ) return restartListening();
 	if ( action === "session-check" ) return workflow?.open( "session" );
 	if ( action === "obs-record" ) {
-		obsUi.action( "start" );
-		return;
+		return obsUi.action( "start" );
 	}
 	if ( action === "obs-finish" ) {
-		obsUi.action( "stop" );
-		return;
+		return obsUi.action( "stop" );
 	}
 	if ( action === "head-guide" || action === "head-guide-fullscreen" ) {
 		window.electron.headGuide( action === "head-guide" ? "toggle" : "fullscreen" );

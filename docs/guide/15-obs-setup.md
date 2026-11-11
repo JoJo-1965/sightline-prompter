@@ -39,6 +39,12 @@ a recording folder using **Choose folder…** and select a 1080p or 4K canvas.
 The proposed frame rate is 30 fps. Give the new setup a name. If that name is
 already used, the plan chooses a numbered alternative.
 
+**Review plan** unlocks after the camera, microphone and recording folder
+are chosen. The hint below the stage buttons names missing choices; either
+Review plan button opens the same review. **Result** becomes available after
+creating the reviewed setup. This assistant is optional: if your current OBS
+setup is ready, close it and use Record take on the prompter.
+
 ![OBS setup choices using illustrative configured sources](images/obs-setup-choices.png)
 
 **Review plan** shows the profile/collection name, sources, full output folder,

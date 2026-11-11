@@ -30,6 +30,11 @@ See [grouped release notes](docs/RELEASE-1.2.0.md) and the
 
 ## In 1.3.0 RC1 preview
 
+**RC8 usability batch:** record/start recording/begin confirms OBS before
+prompting; go/practice/start practice leaves OBS unchanged. Foreground gold
+voice feedback, observed recogniser-fragment handling and clear setup stage
+requirements support recording without hunting for controls.
+
 **RC7 correction:** guided OBS setup accepts an unavailable optional replay
 buffer, allowing configured camera/microphone sources to load. Active outputs
 and unconfirmed connection states remain protected. Local preview only.

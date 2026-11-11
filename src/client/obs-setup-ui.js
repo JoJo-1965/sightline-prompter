@@ -13,15 +13,20 @@ export function createObsSetupUi( root, { navigate, isBusy, toast } ) {
 		return result;
 	};
 	function paint() {
+		const missing = [ !field( "camera" ).value && "a camera", !field( "microphone" ).value && "a microphone", !directory && "a recording folder" ].filter( Boolean );
+		const canReview = ready && !missing.length;
+		field( "stage-hint" ).textContent = stage === "result" ? "Review the setup result below. No recording has been started." : stage === "review" ? "Check the plan, then choose Create separate setup. Result follows creation." : !ready ? "Sources must load before reviewing a plan. Result follows setup creation." : missing.length ? `To unlock Review plan, choose ${ missing.join( ", " ) }. Result follows setup creation.` : "Ready: choose Review plan above or below. Result follows setup creation.";
 		for ( const button of root.querySelectorAll( "[data-setup-stage]" ) ) {
 			const active = button.dataset.setupStage === stage;
 			button.setAttribute( "aria-selected", String( active ) );
 			button.tabIndex = active ? 0 : -1;
-			button.disabled = busy || ( button.dataset.setupStage === "review" && !reviewed ) || ( button.dataset.setupStage === "result" && !field( "result" ).textContent );
+			button.disabled = busy || ( button.dataset.setupStage === "review" && !reviewed && !canReview ) || ( button.dataset.setupStage === "result" && !field( "result" ).textContent );
+			button.title = button.dataset.setupStage === "review" && !reviewed ? canReview ? "Review the configured choices" : "Choose a camera, microphone and recording folder first" : button.dataset.setupStage === "result" && !field( "result" ).textContent ? "Available after creating the reviewed setup" : "";
+			button.setAttribute( "aria-describedby", "setup-stage-hint" );
 		}
 		for ( const panel of root.querySelectorAll( "[data-setup-panel]" ) ) panel.hidden = panel.dataset.setupPanel !== stage;
 		for ( const control of root.querySelectorAll( "select,input,#setup-folder,#setup-refresh,#setup-connection,#setup-restore" ) ) control.disabled = busy;
-		field( "review" ).disabled = busy || !ready || !directory || !field( "camera" ).value || !field( "microphone" ).value;
+		field( "review" ).disabled = busy || !canReview;
 		field( "apply" ).disabled = busy || !reviewed;
 		field( "apply" ).hidden = stage !== "review";
 		field( "review" ).hidden = stage !== "choices";
@@ -80,7 +85,7 @@ export function createObsSetupUi( root, { navigate, isBusy, toast } ) {
 			paint();
 		}
 	} );
-	field( "review" ).addEventListener( "click", async () => {
+	async function reviewPlan() {
 		if ( busy || field( "review" ).disabled ) return;
 		busy = true;
 		paint();
@@ -98,7 +103,8 @@ export function createObsSetupUi( root, { navigate, isBusy, toast } ) {
 			busy = false;
 			paint();
 		}
-	} );
+	}
+	field( "review" ).addEventListener( "click", reviewPlan );
 	field( "apply" ).addEventListener( "click", async () => {
 		if ( busy || !reviewed ) return;
 		busy = true;
@@ -135,14 +141,15 @@ export function createObsSetupUi( root, { navigate, isBusy, toast } ) {
 		reviewed = null;
 		paint();
 	} );
-	for ( const button of root.querySelectorAll( "[data-setup-stage]" ) ) button.addEventListener( "click", () => choose( button.dataset.setupStage ) );
-	root.querySelector( "[role=tablist]" ).addEventListener( "keydown", ( event ) => {
+	for ( const button of root.querySelectorAll( "[data-setup-stage]" ) ) button.addEventListener( "click", () => button.dataset.setupStage === "review" && !reviewed ? reviewPlan() : choose( button.dataset.setupStage ) );
+	root.querySelector( "[role=tablist]" ).addEventListener( "keydown", async ( event ) => {
 		if ( ![ "ArrowLeft", "ArrowRight", "Home", "End" ].includes( event.key ) ) return;
 		event.preventDefault();
 		const tabs = [ ...root.querySelectorAll( "[data-setup-stage]:not(:disabled)" ) ];
 		const index = tabs.indexOf( event.target );
 		const next = event.key === "Home" ? 0 : event.key === "End" ? tabs.length - 1 : ( index + ( event.key === "ArrowLeft" ? -1 : 1 ) + tabs.length ) % tabs.length;
-		choose( tabs[next].dataset.setupStage );
+		if ( tabs[next].dataset.setupStage === "review" && !reviewed ) await reviewPlan();
+		else choose( tabs[next].dataset.setupStage );
 		tabs[next].focus();
 	} );
 	field( "close" ).addEventListener( "click", close );

@@ -2,6 +2,10 @@
 // previews keep their original controller. Only exact local hosts are allowed.
 const panels = new Map();
 
+export function panelDocuments() {
+	return [ document, ...[ ...panels.values() ].filter( panel => !panel.popup.closed ).map( panel => panel.popup.document ) ];
+}
+
 export function uiElement( id ) {
 	const local = document.getElementById( id );
 	if ( local ) return local;
@@ -47,6 +51,7 @@ export async function showPanelWindow( kind, node, onResize = () => {} ) {
 		return false;
 	}
 	window.electron.utilityPanel( kind, "show" );
+	window.dispatchEvent( new Event( "sightline-panel-ready" ) );
 	onResize();
 	return true;
 }

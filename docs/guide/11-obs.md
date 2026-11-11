@@ -115,6 +115,13 @@ stopped prompter, use the Always listening option if you want to start
 hands-free. These commands require OBS integration and recording controls.
 They do not enable the integration themselves.
 
+RC8 also accepts **Prompter, record**, **start recording** or **begin** for
+Record take. **Prompter, practice**, **start practice** and **go** rehearse
+without controlling OBS, even when Link recording to prompting is enabled.
+Practice bypasses recorder directives, recorded slates and OBS chapters;
+it does not stop an already running OBS recording. Explicit recorder voice
+commands and buttons remain available. Gold feedback is visible over Settings.
+
 The local API accepts `obs-record` and `obs-finish` as command actions,
 subject to the same saved permissions. Request acceptance means the action
 was dispatched, not that OBS has confirmed it: inspect `status.obs`.

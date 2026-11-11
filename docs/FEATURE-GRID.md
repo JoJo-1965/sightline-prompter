@@ -1,7 +1,7 @@
 # Sightline Prompter feature grid
 
-**Review basis: Sightline 1.3.0 RC7 preview, documentation revision 23, 11 November 2026.**
-**Build version:** `1.3.0-rc.7` · **Publication status:** Preview
+**Review basis: Sightline 1.3.0 RC8 preview, documentation revision 24, 11 November 2026.**
+**Build version:** `1.3.0-rc.8` · **Publication status:** Preview
 
 **Maintained source:** [Feature grid](https://github.com/JoJo-1965/sightline-prompter/blob/codex/pointing-production-cues/docs/FEATURE-GRID.md)
 
@@ -19,6 +19,11 @@ These fixes do not add capabilities or change earlier frozen packages.
 **RC7 correction:** guided OBS setup accepts an unavailable optional replay
 buffer and loads configured sources. Active outputs and unknown connection
 states still block changes. No capability or controller action is added.
+
+**RC8 changes:** record/start recording/begin starts confirmed recording and
+prompting; go/practice/start practice leaves OBS unchanged. Gold acknowledgements
+also appear over Settings. Setup explains missing choices and enables its top
+Review plan action when ready. The 268 capabilities remain grouped below.
 
 Use the [searchable grid](FEATURE-GRID.html) to browse by subject or support
 level. The [CSV comparison sheet](FEATURE-GRID.csv) includes a blank reviewer
@@ -85,7 +90,7 @@ Reference: [Speech engines and command phrases](guide/03-scrolling-and-voice.md)
 | Reading and display commands | Optional | Go, pause, slower, faster, bigger, smaller, back, next and return to top. | Enable command listening; several phrases have documented aliases. |
 | Retake and edit commands | Optional | Again, marker, back to marker, keeper and scrap that. | Ratings and markers describe the take log; they do not cut video automatically. |
 | Spoken section selection | Optional | Select numbered sections, including natural spoken numbers. | A section number can act as a spoken slate and a retake instruction. |
-| Explicit recording commands | Dependent | Record take, finish recording, and record on, off, pause or resume; explicit recorder commands are a included in 1.2.0. | OBS integration and recording-control permission must be enabled. |
+| Explicit recording commands | Dependent | RC8: record, start recording, begin and record take confirm OBS before delivery; finish recording, and record on, off, pause or resume remain. | OBS integration and recording-control permission must be enabled. Go, practice and start practice run the prompter with OBS unchanged. |
 | Head-guide voice commands | Optional | Guide on and guide off request a definite visible or hidden state. | Controls the manual guide; it does not detect a face. |
 | Voice recovery and resync | Included | Listener health/recovery events and a resync command to find the reading position. | Noise, silence, paraphrasing and lost recognition can still require intervention. |
 | Recognition corrections | Optional | Personal word corrections and sound-alike handling for script alignment. | Corrections do not retrain the speech engine or guarantee command recognition. |
@@ -284,10 +289,10 @@ Reference: [Recording with OBS](guide/11-obs.md) and [OBS setup assistant](guide
 | Credentials | Included | Save the OBS password using supported operating-system protection; remove it from settings. | Operating-system credential protection availability and user profile apply. |
 | Status versus control permission | Included | Observe recorder state separately from permission to start, stop, pause and resume. | Connecting alone does not authorise recorder commands. |
 | Confirmed recording pill | Included | OFF green, RECORDING red, PAUSED orange and UNKNOWN grey; persistent included in 1.2.0. | Text accompanies colour; OBS-disabled mode hides it. |
-| Record take | Included | Confirm OBS recording before starting the prompter. | Needs a healthy connection and recording-control permission. |
+| Record take | Included | Confirm OBS recording before starting the prompter. RC8 voice aliases: record, start recording and begin. | Needs a healthy connection and recording-control permission. Gold command feedback also appears in Settings. |
 | Finish recording | Included | Finish the prompter session and request the end of the OBS recording. | Verify the acknowledged state and resolved file before handover. |
 | Continuous recording | Included | Keep one OBS recording running through prompting holds, section stops and retakes. | Default behaviour; a prompter pause is not an OBS pause. |
-| Linked recording | Optional | Link recording to prompting: confirmed start/resume, pauses with holds, finish at final stop/end. | Enable with OBS stopped; requires recording permission and a pause-capable recording format. |
+| Linked recording | Optional | Link recording to prompting: confirmed start/resume, pauses with holds, finish at final stop/end. | Enable with OBS stopped; requires recording permission and a pause-capable format. RC8 voice practice/go bypasses coupling, recorder directives, recorded slates and chapters without changing the saved preference. |
 | Explicit recorder actions | Included | Record on, off, pause and resume through supported controls, voice or optional directives. | OBS/format limitations apply; script loading alone cannot trigger recording. |
 | Recording reminder | Included | Visible recording state and start/finish controls help distinguish prompting from recording. | A reminder or On air display is not proof of a running recorder. |
 | Recording file and clock | Included | Log OBS recording starts/stops, pause/resume/restart events, file identity and reported time references. | File names and offsets remain unknown where OBS has not supplied enough information. |

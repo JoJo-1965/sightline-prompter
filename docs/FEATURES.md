@@ -1,5 +1,9 @@
 # Sightline Prompter features
 
+**1.3.0 RC8:** record/start recording/begin confirms OBS before prompting;
+go/practice/start practice runs the prompter with OBS unchanged. Gold voice
+acknowledgement is mirrored into Settings; OBS setup stages explain their gates.
+
 **1.3.0 RC7:** guided OBS setup loads sources when the optional replay buffer
 is unavailable. Active outputs and unknown states still block changes.
 

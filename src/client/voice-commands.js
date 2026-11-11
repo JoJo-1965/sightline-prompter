@@ -16,7 +16,7 @@ import { heardForms } from "./word-fixes.js";
 // The wake word, chosen in Settings > Voice, with what the recogniser tends
 // to hear for it.
 export const WAKE_WORDS = {
-	prompter: { label: "Prompter", heard: [ "prompter", "promptor", "prompters", "promoter", "popter", "pumpter" ] },
+	prompter: { label: "Prompter", heard: [ "prompter", "promptor", "prompters", "promoter", "popter", "pumpter", "pompter" ] },
 	computer: { label: "Computer", heard: [ "computer", "computers", "compuder" ] },
 	teleprompter: { label: "Teleprompter", heard: [ "teleprompter", "teleprompters", "teleprompt", "tele prompter" ] },
 	director: { label: "Director", heard: [ "director", "directors", "directa" ] }
@@ -31,7 +31,8 @@ export const COMMANDS = [
 	{ id: "obs-resume", phrases: [ "record resume", "recording resume" ] },
 	{ id: "guide-on", phrases: [ "guide on", "show guide", "show the guide", "head guide on" ] },
 	{ id: "guide-off", phrases: [ "guide off", "hide guide", "hide the guide", "head guide off" ] },
-	{ id: "obs-record", phrases: [ "record take", "start recording" ] },
+	// Exact observed recogniser forms; recorder commands never use fuzzy matching.
+	{ id: "obs-record", phrases: [ "record take", "start recording", "record", "begin", "begin recording", "recalled take", "cord take", "the cord take", "re cord take" ] },
 	{ id: "obs-finish", phrases: [ "finish recording", "stop recording", "stopped recording", "end recording", "finish", "end" ] },
 	{
 		id: "pause",
@@ -52,9 +53,10 @@ export const COMMANDS = [
 		id: "go",
 		phrases: [
 			"go",
+			"practice",
+			"start practice",
 			"go on",
 			"start",
-			"begin",
 			"play",
 			"resume",
 			"continue",
@@ -189,12 +191,13 @@ export const COMMANDS = [
 // help: [ what to say, what it does ].
 export const COMMAND_HELP = [
 	[ "guide on · guide off", "Show or hide the head-position guide", "Guide" ],
-	[ "record take · finish recording", "OBS only, when enabled with recording controls" ],
+	[ "record · start recording · begin", "Confirm OBS recording, then start prompting", "OBS" ],
+	[ "finish recording", "Finish the OBS recording and stop prompting", "OBS" ],
 	[ "finish · end", "Finish the OBS recording, when recording controls are enabled", "OBS" ],
 	[ "record on · record off", "Start or finish the recorder explicitly", "OBS" ],
 	[ "record pause · record resume", "Pause or resume the recorder explicitly", "OBS" ],
 	[ "pause", "Pause (stop, hold, wait)" ],
-	[ "go", "Start, or carry on (carry on, continue)" ],
+	[ "go · practice · start practice", "Run the prompter in practice; leave OBS unchanged" ],
 	[ "slower · faster", "Change the speed" ],
 	[ "back", "Back to the start of this section" ],
 	[ "next section", "On to the next section" ],
@@ -302,6 +305,7 @@ export function createCommandListener( {
 	const options = { extra, soundAlike };
 	const goPhrases = [ ...COMMANDS.find( c => c.id === "go" ).phrases, ...( extra.go ?? [] ) ];
 	const maxWords = Math.max( ...COMMANDS.flatMap( c => [ ...c.phrases, ...( extra[c.id] ?? [] ) ].map( p => p.split( " " ).length ) ) );
+	const recordingPrefixes = COMMANDS.find( c => c.id === "obs-record" ).phrases;
 	let pending = []; // possible wake phrase, bare section or paused resume
 	let held = null; // { wake, words, at }: an acknowledged wake word
 	let atStart = true;
@@ -322,7 +326,8 @@ export function createCommandListener( {
 		const pass = [];
 		// Expire before accepting more words: a later "reset" must not use an
 		// old wake word. No growing whole-phrase buffer during ordinary reading.
-		const deadline = held?.numberFragmentAt === undefined ? ( held?.at ?? 0 ) + 4000 : Math.min( held.at + 6000, held.numberFragmentAt + 4000 );
+		const fragmentAt = held?.numberFragmentAt ?? held?.commandFragmentAt;
+		const deadline = fragmentAt === undefined ? ( held?.at ?? 0 ) + 4000 : Math.min( held.at + 6000, fragmentAt + 4000 );
 		if ( held && clock() > deadline ) {
 			if ( held.words.length <= 3 ) onMiss( held.words );
 			pass.push( ...held.wake, ...held.words );
@@ -370,12 +375,18 @@ export function createCommandListener( {
 				atStart = false;
 			}
 		}
+		// The on-device engine can finalise RECORD separately from TAKE, or
+		// deliver the final word slightly late. Only an exact recording prefix
+		// heard within four seconds earns a bounded six-second completion window.
+		const recordingPrefix = held?.words.length && recordingPrefixes.some( phrase => phrase.startsWith( `${ textOf( held.words ) } ` ) );
+		if ( recordingPrefix ) held.commandFragmentAt ??= clock();
 		if ( final ) {
 			if ( held?.words.length ) {
+				if ( recordingPrefix && !matchCommand( held.words, options ) ) return pass;
 				// The local recogniser can end a phrase with SECTION TWEL,
 				// then deliver VE separately. Keep this exact number fragment
 				// for up to four seconds from the fragment, at most six from wake.
-				// Recorder commands retain the ordinary four-second deadline.
+				// Other commands retain the ordinary four-second deadline.
 				const fragment = held.words.map( normalize );
 				const numberWords = fragment[0] === "section" ? fragment.slice( 1 ) : fragment;
 				if ( numberWords.length === 1 && numberWords[0].length >= 3 && !sectionNumber( [ "section", ...numberWords ] ) && Object.keys( NUMBER_WORDS ).some( word => word.startsWith( numberWords[0] ) ) ) { held.numberFragmentAt ??= clock(); return pass; }

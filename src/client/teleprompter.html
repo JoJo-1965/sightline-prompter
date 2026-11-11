@@ -707,6 +707,7 @@
       <div class="modal-content workflow-content">
         <h3 id="setup-title">Set up OBS for Sightline</h3>
         <div class="workflow-tabs" role="tablist" aria-label="OBS setup stages"><button type="button" role="tab" aria-controls="setup-choices-panel" data-setup-stage="choices" id="setup-choices-tab">Choices</button><button type="button" role="tab" aria-controls="setup-review-panel" data-setup-stage="review" id="setup-review-tab">Review plan</button><button type="button" role="tab" aria-controls="setup-result-panel" data-setup-stage="result" id="setup-result-tab">Result</button></div>
+        <p id="setup-stage-hint" class="field-hint" role="status" aria-live="polite">Choose a camera, microphone and recording folder to unlock Review plan. Result follows creation.</p>
         <div class="workflow-body">
           <section data-setup-panel="choices" id="setup-choices-panel" role="tabpanel" aria-labelledby="setup-choices-tab">
             <label class="workflow-option">New profile name <input id="setup-name" value="Sightline Academy" maxlength="60"></label>
@@ -715,7 +716,7 @@
             <label class="workflow-option">Presentation source <select id="setup-presentation"></select></label>
             <label class="workflow-option">Canvas and output <select id="setup-height"><option value="2160">4K canvas · 3840 × 2160, 30 fps</option><option value="1080">1080p canvas · 1920 × 1080, 30 fps</option></select></label>
             <div class="workflow-option"><span>Recording folder</span><button type="button" id="setup-folder">Choose folder…</button><span id="setup-directory" class="field-hint">Not chosen</span></div>
-            <p class="field-hint">Reuses OBS device settings. Check the camera's native resolution separately. Presentation is optional.</p>
+            <p class="field-hint">Reuses OBS device settings. Presentation is optional. Already have an OBS setup? Close this assistant and use Record take.</p>
           </section>
           <section data-setup-panel="review" id="setup-review-panel" role="tabpanel" aria-labelledby="setup-review-tab" hidden><div id="setup-plan"></div></section>
           <section data-setup-panel="result" id="setup-result-panel" role="tabpanel" aria-labelledby="setup-result-tab" hidden><p id="setup-result"></p><button type="button" id="setup-restore" hidden>Use previous setup</button></section>

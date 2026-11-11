@@ -2,6 +2,11 @@
 
 ## Production notes and recording controls
 
+RC8 voice practice/go leaves OBS unchanged and ignores recorder directives,
+recorded slates and chapters during that run. Use an explicit recording
+command or Record take to return to recording operation; script syntax is
+unchanged. Commands demonstrated aloud should stay deliberate.
+
 HTML comments `<!-- ... -->` show production notes while paused and hide them
 during delivery. Their entire contents, including quotes and braces, stay
 outside speech tracking, timing and directive execution. Keep short `[smile]`

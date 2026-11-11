@@ -8,6 +8,12 @@ does not enable devices or start a production recording. For the audio checks,
 stay quiet for Room and read the Voice card normally. Review advice; do not
 raise gain automatically if it also amplifies room noise. Space carries on. -->
 
+<!-- RC8 COMMANDS. Rehearse with Prompter, practice / start practice / go;
+these leave OBS unchanged. When ready for a real take, use Prompter, record /
+start recording / begin. Confirm the red OBS RECORDING pill before delivery.
+Finish with Prompter, finish recording. Gold feedback remains visible over
+Settings. These are instructions to try deliberately, not spoken script. -->
+
 {soundcheck: room}
 
 {soundcheck: voice}

@@ -1,10 +1,10 @@
 # Sightline Prompter
 
-> **Development preview: 1.3.0 RC7, documentation revision 23.**
+> **Development preview: 1.3.0 RC8, documentation revision 24.**
 > The public download below is stable 1.2.0. This candidate adds optional
 > [post-record audio review](docs/guide/19-post-record-review.md) and a
 > [rerunnable guided tour](docs/guide/20-guided-tour.md). Read the
-> [RC7 notes and limits](docs/RELEASE-1.3.0-rc.7.md) before testing. This candidate
+> [RC8 notes and limits](docs/RELEASE-1.3.0-rc.8.md) before testing. This candidate
 > adds [grouped controller functions](docs/guide/21-controller-functions.md),
 > explicit reading modes, preparation/review controls and an Adjustment dial.
 > RC3 adds silent `[point left: graphic-label]` cues with presenter-relative
@@ -17,6 +17,8 @@
 > RC6 fixes review scrolling to the opening comments and makes script pauses
 > Scroll-only, including when recording is linked.
 > RC7 fixes guided OBS setup when its optional replay buffer is unavailable.
+> RC8 separates recording and practice voice commands, shows acknowledgements
+> over Settings and explains the OBS setup stages.
 
 ![Sightline Prompter: your words, your pace](docs/images/hero.png)
 
@@ -160,6 +162,17 @@ The free Stream Deck companion 0.2.0 is now published on
 [Elgato Marketplace](https://marketplace.elgato.com/product/sightline-prompter-34676f28-e2e5-422d-9b48-e03dfd80bebe) as version 0.2.
 The direct package remains available. This distribution update does not change
 app features, existing installations or the separate 0.2.1 preview candidate.
+
+### 1.3.0 RC8 — voice recording and practice
+
+Say **Prompter, record**, **start recording** or **begin** to confirm OBS is
+recording before delivery starts. **Prompter, practice**, **start practice**
+and **go** run the prompter while leaving OBS unchanged, even with linked
+recording enabled. Practice ignores recorder directives and recorded slates.
+A gold acknowledgement appears in the script and open Settings/utility
+windows. Observed recognition fragments have bounded handling. The setup
+assistant explains missing choices and unlocks its top Review plan action.
+See [RC8 notes](docs/RELEASE-1.3.0-rc.8.md).
 
 ### 1.3.0 RC7 — OBS setup reliability
 

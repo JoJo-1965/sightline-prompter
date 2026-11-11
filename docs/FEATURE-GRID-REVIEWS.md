@@ -1,5 +1,16 @@
 # Feature-matrix review record
 
+## RC8 voice and recording workflow — 11 November 2026
+
+Updated existing command, Record take and linked-recording rows, retaining
+268 capabilities. Voice practice bypasses output controls without changing
+saved preferences. Recording aliases use the existing permission/confirmation
+route. Gold feedback appears in the script and local utility windows; OBS
+setup explains stage requirements. Reviewed help, authoring notes, demo
+comments and preview marketing references together. Native regression uses
+synthetic speech/audio and simulated OBS; physical voice recognition remains
+human UAT. Existing completed recordings and promo snapshots are retained.
+
 ## RC7 OBS setup correction — 11 November 2026
 
 Reproduced OBS response 604, "Replay buffer is not available.", on Joanne's

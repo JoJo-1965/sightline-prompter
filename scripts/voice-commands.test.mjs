@@ -3,6 +3,23 @@ import assert from "node:assert/strict";
 import { COMMANDS, WAKE_WORDS, matchCommand, createCommandListener, sectionNumber } from "../src/client/voice-commands.js";
 
 assert.equal( matchCommand( [ "record", "take" ] ), "obs-record" );
+assert.equal( matchCommand( [ "begin" ] ), "obs-record", "Begin confirms OBS recording before prompting" );
+assert.equal( matchCommand( [ "record" ] ), "obs-record", "Record confirms OBS recording before prompting" );
+assert.equal( matchCommand( [ "go" ] ), "go", "Go remains prompting only" );
+for ( const phrase of [ "practice", "start practice" ] ) assert.equal( matchCommand( phrase.split( " " ) ), "go", "Practice aliases go" );
+for ( const phrase of [ "recalled take", "cord take", "the cord take", "re cord take" ] ) assert.equal( matchCommand( phrase.split( " " ) ), "obs-record", `Observed recording-command transcript: ${ phrase }` );
+{
+	let at = 0; const got = [];
+	const listener = createCommandListener( { clock: () => at, onCommand: id => got.push( id ), isPaused: () => true } );
+	listener( [ "BEGIN" ], true );
+	assert.deepEqual( got, [], "A bare begin never starts recording without its wake word" );
+	listener( [ "PROMPTER" ], true ); at = 3799; listener( [ "RECORD" ], false ); at = 4402; listener( [ "TAKE" ], true );
+	assert.deepEqual( got, [ "obs-record" ], "Observed late final TAKE retains a command prefix begun within four seconds" );
+	at = 10000; listener( [ "PROMPTER" ], true ); at = 11500; listener( [ "RECORD" ], true ); at = 12100; listener( [ "TAKE" ], true );
+	assert.deepEqual( got, [ "obs-record", "obs-record" ], "Separate final RECORD and TAKE chunks form one command" );
+	at = 20000; listener( [ "PROMPTER" ], true ); at = 23800; listener( [ "RECORD" ], false ); at = 26100; listener( [ "TAKE" ], true );
+	assert.equal( got.length, 2, "Even a valid command prefix expires six seconds after wake" );
+}
 assert.equal( matchCommand( [ "guide", "on" ] ), "guide-on" );
 assert.equal( matchCommand( [ "guide", "off" ] ), "guide-off" );
 assert.equal( matchCommand( [ "show", "the", "guide" ] ), "guide-on" );
