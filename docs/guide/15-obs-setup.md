@@ -12,6 +12,11 @@ connection, enter the local address/password, **Apply**, then test the saved
 connection. The assistant supports OBS on this computer; remote OBS can still
 be controlled using the ordinary connection settings.
 
+The replay buffer can stay disabled. RC7 recognises OBS's unavailable-buffer
+response and still loads configured sources. Recording, streaming and any
+enabled replay buffer must be stopped before setup changes; a lost connection
+or an unconfirmed output state still blocks changes.
+
 In your current OBS scene collection, add and test a camera source and an
 audio-input source for your microphone. The assistant copies those configured
 device settings. It does not discover device modes or open temporary devices

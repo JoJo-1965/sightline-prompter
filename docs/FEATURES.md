@@ -1,5 +1,8 @@
 # Sightline Prompter features
 
+**1.3.0 RC7:** guided OBS setup loads sources when the optional replay buffer
+is unavailable. Active outputs and unknown states still block changes.
+
 **1.3.0 RC6:** bare and timed `{pause}` directives are Scroll-only. Voice
 follows natural beats, including linked recording. Explicit `{stop}` and
 spoken pause commands remain deliberate. Paused review also leaves opening

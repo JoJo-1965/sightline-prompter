@@ -1,11 +1,12 @@
 # Sightline Prompter feature grid
 
-**Review basis: Sightline 1.3.0 RC6 preview, documentation revision 22, 9 November 2026.**
-**Build version:** `1.3.0-rc.6` · **Publication status:** Preview
+**Review basis: Sightline 1.3.0 RC7 preview, documentation revision 23, 11 November 2026.**
+**Build version:** `1.3.0-rc.7` · **Publication status:** Preview
 
 **Maintained source:** [Feature grid](https://github.com/JoJo-1965/sightline-prompter/blob/codex/pointing-production-cues/docs/FEATURE-GRID.md)
 
-This grid describes the preview built from `b1ea8eb`, with companion Stream
+This grid describes the preview built from `34d7e2e`, plus the RC7 OBS
+correction, with companion Stream
 Deck plugin **0.2.1.6** candidate. It includes stable 1.2.0 features plus the explicitly labelled RC additions. The build manifest also records the packaging/documentation
 snapshot. The public app release remains **1.2.0**; this document
 does not certify an individual recording setup.
@@ -15,6 +16,10 @@ Voice follows naturally, including linked recording. Explicit `{stop}` remains
 a deliberate hold. Paused review leaves opening comments clear of the floating
 session controls, including wrapped rows. Delivery keeps its reading-line layout.
 These fixes do not add capabilities or change earlier frozen packages.
+
+**RC7 correction:** guided OBS setup accepts an unavailable optional replay
+buffer and loads configured sources. Active outputs and unknown connection
+states still block changes. No capability or controller action is added.
 
 Use the [searchable grid](FEATURE-GRID.html) to browse by subject or support
 level. The [CSV comparison sheet](FEATURE-GRID.csv) includes a blank reviewer

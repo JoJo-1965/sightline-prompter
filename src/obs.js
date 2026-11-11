@@ -185,7 +185,7 @@ export function createObs( { onState = () => {}, WebSocketClass = globalThis.Web
 						clearTimeout( item.timer );
 						pending.delete( d.requestId );
 						if ( d.requestStatus?.result ) item.resolve( d.responseData ?? {} );
-						else item.reject( Object.assign( new Error( `OBS rejected ${ d.requestType }; check OBS and the recording format` ), { obsComment: d.requestStatus?.comment } ) );
+						else item.reject( Object.assign( new Error( `OBS rejected ${ d.requestType }; check OBS and the recording format` ), { obsCode: d.requestStatus?.code, obsComment: d.requestStatus?.comment } ) );
 					} else if ( op === 5 ) {
 						if ( d.eventType === "VirtualcamStateChanged" && d.eventData?.outputActive === false ) calibrationVirtual = false;
 						if ( d.eventType === "CurrentSceneCollectionChanging" ) changingScenes = true;

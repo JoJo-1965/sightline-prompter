@@ -83,7 +83,7 @@ class FakeSocket extends EventTarget {
 			if ( server.stopping > 0 && --server.stopping === 0 ) server.active = false;
 			responseData = { outputActive: server.active, outputPaused: server.paused, outputDuration: 1234 };
 		}
-		queueMicrotask( () => this.message( { op: 7, d: { requestId: d.requestId, requestType: d.requestType, requestStatus: { result }, responseData } } ) );
+		queueMicrotask( () => this.message( { op: 7, d: { requestId: d.requestId, requestType: d.requestType, requestStatus: { result, ...( !result ? server.rejectStatus : {} ) }, responseData } } ) );
 	}
 }
 
@@ -139,7 +139,9 @@ try {
 	assert.equal( obs.state().recording, "recording" );
 	assert.equal( obs.state().recordingId, id );
 	server.reject = "PauseRecord";
-	await assert.rejects( obs.command( "pause" ), /rejected/ );
+	server.rejectStatus = { code: 604, comment: "Recording does not support pausing." };
+	await assert.rejects( obs.command( "pause" ), error => /rejected/.test( error.message ) && error.obsCode === 604 && error.obsComment === server.rejectStatus.comment );
+	server.rejectStatus = null;
 	assert.equal( obs.state().recording, "recording", "An unsupported pause must not pretend OBS paused" );
 	server.reject = null;
 	await obs.command( "marker", "Setup" );

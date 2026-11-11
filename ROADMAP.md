@@ -1,6 +1,6 @@
 # Sightline Prompter roadmap
 
-Updated 9 November 2026. Released baseline: **Sightline 1.2.0** and
+Updated 11 November 2026. Released baseline: **Sightline 1.2.0** and
 **Stream Deck companion 0.2.0**.
 This is the current plan. [Earlier plans](docs/ROADMAP-HISTORY.md) are archived;
 their RC labels and old version buckets do not describe the current release.
@@ -29,6 +29,10 @@ See [grouped release notes](docs/RELEASE-1.2.0.md) and the
 [249-row feature grid](docs/FEATURE-GRID.md) for exact behaviour and limits.
 
 ## In 1.3.0 RC1 preview
+
+**RC7 correction:** guided OBS setup accepts an unavailable optional replay
+buffer, allowing configured camera/microphone sources to load. Active outputs
+and unconfirmed connection states remain protected. Local preview only.
 
 **RC5 candidate:** optional Voice-mode start at the section heading, so a
 presenter can warm up, read the title and continue naturally into the body.

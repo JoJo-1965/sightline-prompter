@@ -16,6 +16,7 @@ function fixture() {
 	let collection = "Original scenes";
 	let active = false;
 	let replay = false;
+	let replayError = null;
 	let stream = false;
 	let failure = null;
 	let sequence = 0;
@@ -33,7 +34,9 @@ function fixture() {
 			case "GetVersion": return { availableRequests: SETUP_REQUESTS };
 			case "GetRecordStatus": return { outputActive: active };
 			case "GetStreamStatus": return { outputActive: stream };
-			case "GetReplayBufferStatus": return { outputActive: replay };
+			case "GetReplayBufferStatus":
+				if ( replayError ) throw replayError;
+				return { outputActive: replay };
 			case "GetProfileList": return { profiles: [ ...profiles.keys() ], currentProfileName: profile };
 			case "GetSceneCollectionList": return { sceneCollections: [ ...collections.keys() ], currentSceneCollectionName: collection };
 			case "GetVideoSettings": return { ...p.video };
@@ -99,6 +102,8 @@ function fixture() {
 			active = value;
 		}, replay: ( value ) => {
 			replay = value;
+		}, replayError: ( value ) => {
+			replayError = value;
 		}, stream: ( value ) => {
 			stream = value;
 		}, fail: ( type ) => {
@@ -110,6 +115,32 @@ function fixture() {
 		} };
 }
 const writes = fixture => fixture.calls.filter( call => /^(?:Create|Set|Remove|Start|Stop)/.test( call.type ) );
+// OBS returns 604 when this optional output is not configured. It must not
+// prevent inspecting sources or creating a reviewed recording setup.
+const noReplay = fixture();
+noReplay.replayError( Object.assign( new Error( "Replay buffer unavailable" ), { obsCode: 604, obsComment: "Replay buffer is not available." } ) );
+assert.equal( ( await noReplay.setup.inspect() ).cameras.length, 1 );
+assert.equal( writes( noReplay ).length, 0 );
+const noReplayPlan = await noReplay.setup.plan( noReplay.choices, "recordings" );
+assert.equal( ( await noReplay.setup.apply( noReplayPlan.id ) ).ok, true );
+await noReplay.setup.restore();
+assert.equal( noReplay.profile, "Original" );
+assert.equal( noReplay.calls.some( call => /^(?:Start|Stop)/.test( call.type ) ), false );
+for ( const output of [ "active", "stream" ] ) {
+	noReplay[output]( true );
+	await assert.rejects( noReplay.setup.inspect(), /Stop OBS/ );
+	noReplay[output]( false );
+}
+for ( const error of [
+	new Error( "Disconnected" ),
+	Object.assign( new Error( "Other replay failure" ), { obsCode: 604, obsComment: "Another resource is unavailable." } ),
+	Object.assign( new Error( "Unexpected failure" ), { obsCode: 700, obsComment: "Replay buffer is not available." } )
+] ) {
+	const failed = fixture();
+	failed.replayError( error );
+	await assert.rejects( failed.setup.inspect(), candidate => candidate === error );
+	assert.equal( writes( failed ).length, 0 );
+}
 const f = fixture();
 const inspection = await f.setup.inspect();
 assert.equal( inspection.cameras.length, 1 );

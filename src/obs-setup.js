@@ -16,7 +16,17 @@ export function createObsSetup( { request, allowed, now = Date.now } ) {
 	let previous = null;
 	async function idle() {
 		allowed();
-		const outputs = await Promise.all( [ "GetRecordStatus", "GetStreamStatus", "GetReplayBufferStatus" ].map( type => request( type ) ) );
+		const outputs = await Promise.all( [ "GetRecordStatus", "GetStreamStatus", "GetReplayBufferStatus" ].map( async type => {
+			try {
+				return await request( type );
+			} catch ( error ) {
+				// OBS reports an unconfigured replay buffer as a resource error,
+				// rather than an inactive output. Only this confirmed state is idle;
+				// other failures must still prevent changes to an unknown output.
+				if ( type === "GetReplayBufferStatus" && error.obsCode === 604 && error.obsComment === "Replay buffer is not available." ) return { outputActive: false };
+				throw error;
+			}
+		} ) );
 		if ( outputs.some( value => value.outputActive || value.outputPaused ) ) throw new Error( "Stop OBS recording, streaming and replay buffer before changing its setup" );
 		allowed();
 	}

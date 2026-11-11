@@ -1,5 +1,16 @@
 # Feature-matrix review record
 
+## RC7 OBS setup correction — 11 November 2026
+
+Reproduced OBS response 604, "Replay buffer is not available.", on Joanne's
+running OBS. Source inspection no longer fails for this disabled optional
+output. Other request failures and active recording/stream/replay guards
+remain blocking. Reviewed the OBS setup guide, release notes, roadmap and
+268-entry matrix; no new capability, control, profile or script directive.
+The approved Settings layout, promo/demo scripts and controller profiles need
+no change. Capture the corrected source picker in local validation; live JL
+and Marketplace resources remain on their published versions.
+
 ## RC6 combined correction batch — 9 November 2026
 
 Promoted the two queued runtime fixes into the 1.3.0 RC6 reference, revision
