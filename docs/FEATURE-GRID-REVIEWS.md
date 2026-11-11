@@ -457,3 +457,11 @@ and unit tests preserve pointing-target geometry and control clearance. Added
 exact wake-prefixed V take/VE take fallback aliases from the recorded trace,
 with ordinary-speech negative checks. The count remains 269; no training
 feature or speech-model adaptation is claimed.
+
+## RC11 quick editing and toolbar — 11 November 2026
+
+Added paused source-preserving paragraph editing and reviewed slot/window
+controls, increasing the candidate grid to 270 capabilities. Checked help,
+guide, screenshots, welcome tour, grouped release notes, roadmap and promo
+copy together. JL uses a versioned candidate archive; stable 1.2.0 references
+and the published 0.2.0 plugin remain separate. No directive syntax changed.

@@ -64,6 +64,7 @@ import { voiceInputEnabled, customInputEnabled } from "./interface-state.js";
 import { addSettingsHelp } from "./settings-pages.js";
 import { uiElement, showPanelWindow, hidePanelWindow, panelDocuments } from "./panel-windows.js";
 import { createVoiceFeedback } from "./voice-feedback.js";
+import { createQuickEdit } from "./quick-edit-ui.js";
 
 const voiceFeedback = createVoiceFeedback( { documents: panelDocuments } );
 let practiceRun = false;
@@ -221,6 +222,7 @@ function recordingScriptSnapshot() {
 }
 
 function renderScript( html ) {
+	if ( !quickEdit?.active ) quickVoiceResume = false;
 	voiceBoundary = null;
 	md.innerHTML = html;
 	decorateScript( md, { cuePhrases, highlight: settings.highlightCues } );
@@ -524,6 +526,9 @@ function jumpToSection( index ) {
 
 // --- Editor mode state ---
 let isEditMode = false;
+let quickEdit = null;
+let quickVoiceResume = false;
+let quickRetakeSection = null;
 let isDirty = false;
 let isLoadingContent = false;
 let isNewFile = false;
@@ -721,6 +726,7 @@ function discardAndExitEditor() {
 }
 
 function toggleEditMode() {
+	if ( quickEdit?.active ) return showToast( "Save or cancel the paragraph edit first." );
 	if ( isEditMode ) {
 		// Switch to preview without discarding — keep editor state intact
 		isEditMode = false;
@@ -809,6 +815,7 @@ window.electron.onNewFile( newScript );
 
 // Listen for menu save/save-as (works from editor or preview with pending edits)
 window.electron.onMenuSave( () => {
+	if ( quickEdit?.active ) return quickEdit.save();
 	if ( isDirty ) {
 		saveEditorContent();
 	}
@@ -820,7 +827,11 @@ window.electron.onMenuSaveAs( () => {
 	}
 } );
 
-window.electron.onRequestSaveBeforeClose( () => {
+window.electron.onRequestSaveBeforeClose( async () => {
+	if ( quickEdit?.active ) {
+		if ( await quickEdit.save() ) window.electron.saveAndClose();
+		return;
+	}
 	if ( editorView && isDirty ) {
 		pendingSaveAndClose = true;
 		saveEditorContent();
@@ -1026,6 +1037,7 @@ if ( resizeHandle ) {
 
 // Handle content loaded from main process
 window.electron.onContent( ( content, snapshot ) => {
+	if ( quickEdit?.active ) quickEdit.abort();
 	// A different script must not reopen the previous script's cached editor.
 	if ( snapshot && !isEditMode && !isSaving && !isDirty && editorView ) {
 		editorView.destroy();
@@ -1562,6 +1574,7 @@ async function startAutoScrollSession() {
 	pendingDeepgramKey = null;
 	// From the top, a pause after the first few words still counts.
 	voiceWordIdx = window.scrollY < 4 ? -1 : null;
+	quickVoiceResume = false;
 	await stopCommandListening();
 	if ( usesLocalVoice() ) {
 		setIndicator( "Starting…", "connecting" );
@@ -1875,11 +1888,12 @@ uiElement( "set-listening-restart" )?.addEventListener( "click", restartListenin
 function wantCommandListening() {
 	if ( !voiceInputEnabled( settings ) ) return false;
 	const always = settings.voiceCommands === "always";
-	const wanted = always || ( cuePaused && lastCue?.listen !== "off" && settings.voiceCommands !== "off" );
+	const resumeQuickEdit = quickVoiceResume && settings.voiceCommands !== "off";
+	const wanted = always || resumeQuickEdit || ( cuePaused && lastCue?.listen !== "off" && settings.voiceCommands !== "off" );
 	return (
 		wanted
 		&& !listeningSuspended
-		&& ( settings.scrollMode !== "voice" || always )
+		&& ( settings.scrollMode !== "voice" || always || resumeQuickEdit )
 		&& usesLocalVoice()
 		&& speechModel.installed
 		&& !speechModel.downloading
@@ -2130,8 +2144,10 @@ async function runVoiceCommand( id, value ) {
 			setIndicator( `Paused · say “${ wakeLabel( settings.wakeWord ) }, go”` );
 		} else if ( isScrolling() ) runRemoteAction( "pause" );
 	} else if ( id === "go" ) {
-		if ( !voice ) practiceRun = true;
-		voiceFeedback.show( voice ? "Continue reading" : "Practice · prompter only", "OBS recording is unchanged.", voice ? "command" : "practice" );
+		const continuing = !!voice || quickVoiceResume;
+		if ( !voice && !quickVoiceResume ) practiceRun = true;
+		quickVoiceResume = false;
+		voiceFeedback.show( continuing ? "Continue reading" : "Practice · prompter only", "OBS recording is unchanged.", continuing ? "command" : "practice" );
 		if ( voice && scriptCheck ) carryOnFromVoiceCheck();
 		else if ( voice ) {
 			if ( !await prepareReading() ) return;
@@ -3722,9 +3738,24 @@ function renderSlots() {
 		btn.addEventListener( "click", () => switchToSlot( i ) );
 		slotsEl.appendChild( btn );
 	} );
+	const picker = document.createElement( "select" );
+	picker.id = "cb-slot-picker";
+	picker.setAttribute( "aria-label", "Script slot" );
+	picker.title = `Script slot ${ slotState.active + 1 } · ${ slotState.slots[slotState.active]?.name ?? "Empty" } · Ctrl+1 to Ctrl+9`;
+	slotState.slots.forEach( ( slot, index ) => {
+		const option = new Option( `Slot ${ index + 1 }${ slot ? "" : " · Empty" }`, String( index ) );
+		option.selected = index === slotState.active;
+		picker.append( option );
+	} );
+	picker.addEventListener( "change", () => {
+		if ( quickEdit?.active ) { picker.value = String( slotState.active ); return showToast( "Save or cancel the paragraph edit first." ); }
+		switchToSlot( Number( picker.value ) );
+	} );
+	slotsEl.append( picker );
 }
 
 function switchToSlot( index ) {
+	if ( quickEdit?.active ) return showToast( "Save or cancel the paragraph edit first." );
 	if ( index === slotState.active ) return;
 	stopSteadySession();
 	stopAutoScrollSession();
@@ -5153,6 +5184,7 @@ function jumpSection( step ) {
 }
 
 function runRemoteAction( action, value ) {
+	if ( quickEdit?.active && ![ "obs-finish", "obs-off" ].includes( action ) ) return false;
 	if ( action === "again" && !isEditMode ) return runVoiceCommand( "retake" );
 	if ( [ "mode-notes", "mode-voice", "mode-scroll", "mode-cycle" ].includes( action ) ) {
 		if ( isEditMode || isScrolling() ) return showToast( "Pause prompting before changing reading mode" );
@@ -5946,7 +5978,7 @@ function stopPacing() {
 	}
 	pacing = null;
 	pacingEl?.classList.add( "hidden" );
-	if ( settings.takeSummary !== false && takeLog.size ) showTakeSummary();
+	if ( !isEditMode && settings.takeSummary !== false && takeLog.size ) showTakeSummary();
 }
 
 function formatClock( seconds ) {
@@ -7036,3 +7068,53 @@ const guidedTour = createCoachMarks( {
 window.addEventListener( "sightline-guided-tour", () => guidedTour.start() );
 window.electron.onGuidedTour( () => guidedTour.start() );
 window.electron.onTourOffer( () => guidedTour.offer() );
+quickEdit = createQuickEdit( md, {
+	canStart: () => !isEditMode && !isDirty && !autoScrollStarting && !slating && !preparingRead && !pointsRunning && !isSteadyRunning() && !offScript && !scriptCheck && ( !autoScrollActive || autoScrollHandle?.isHeld() ),
+	begin: async () => {
+		quickVoiceResume = autoScrollActive && autoScrollHandle?.isHeld();
+		quickRetakeSection = voiceBoundary?.previousSection ?? null;
+		isEditMode = true;
+		clearSentence();
+		stopPacing();
+		stopSteadySession();
+		await stopAutoScrollSession();
+		await stopCommandListening();
+		sendStatus();
+		return window.electron.beginQuickEdit();
+	},
+	dirty: setDirty,
+	apply: packet => {
+		sourceSnapshot = packet.snapshot ?? null;
+		recordingSnapshotCache = null;
+		lastScriptHtml = packet.html;
+		renderScript( packet.html );
+		scheduleMeasure();
+	},
+	finish: async restorePosition => {
+		isEditMode = false;
+		if ( quickRetakeSection !== null && settings.scrollMode === "voice" ) {
+			const headings = [ ...md.querySelectorAll( "h2" ) ];
+			if ( quickRetakeSection <= headings.length ) {
+				const next = headings[quickRetakeSection];
+				const ranges = buildWordIndex( md ).ranges;
+				const index = next ? ranges.findIndex( range => !range.startContainer.parentElement.closest( "h1,h2,h3,h4,h5,h6" ) && ( next.compareDocumentPosition( range.startContainer ) & Node.DOCUMENT_POSITION_FOLLOWING ) ) : -1;
+				voiceBoundary = { previousSection: quickRetakeSection, nextWord: index < 0 ? null : index };
+			}
+		}
+		quickRetakeSection = null;
+		if ( editorView ) { editorView.destroy(); editorView = null; }
+		setDirty( false );
+		pacingTick();
+		await new Promise( resolve => requestAnimationFrame( () => requestAnimationFrame( resolve ) ) );
+		restorePosition?.();
+		previewManuallyScrolled = true;
+		savedScrollY = window.scrollY;
+		scriptIndex = sectionOnScreen();
+		updateProgress();
+		syncControls();
+		refreshControlsVisibility();
+		syncCommandListening();
+		sendStatus();
+	},
+	notice: message => showToast( message, 5000 )
+} );

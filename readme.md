@@ -1,10 +1,10 @@
 # Sightline Prompter
 
-> **Development preview: 1.3.0 RC10, documentation revision 26.**
+> **Development preview: 1.3.0 RC11, documentation revision 27.**
 > The public download below is stable 1.2.0. This candidate adds optional
 > [post-record audio review](docs/guide/19-post-record-review.md) and a
 > [rerunnable guided tour](docs/guide/20-guided-tour.md). Read the
-> [RC10 notes and limits](docs/RELEASE-1.3.0-rc.10.md) before testing. This candidate
+> [RC11 notes and limits](docs/RELEASE-1.3.0-rc.11.md) before testing. This candidate
 > adds [grouped controller functions](docs/guide/21-controller-functions.md),
 > explicit reading modes, preparation/review controls and an Adjustment dial.
 > RC3 adds silent `[point left: graphic-label]` cues with presenter-relative
@@ -162,6 +162,16 @@ The free Stream Deck companion 0.2.0 is now published on
 [Elgato Marketplace](https://marketplace.elgato.com/product/sightline-prompter-34676f28-e2e5-422d-9b48-e03dfd80bebe) as version 0.2.
 The direct package remains available. This distribution update does not change
 app features, existing installations or the separate 0.2.1 preview candidate.
+
+### 1.3.0 RC11 — quick edits and a compact toolbar
+
+While paused, double-click a spoken paragraph for small word, punctuation
+and line-break changes. Save updates that paragraph in the source file;
+Cancel keeps the original. Enter inserts a visible break, Ctrl+Enter saves
+and Escape cancels. Prompting stays paused. External changes block Save.
+On smaller windows a Slot 1–9 picker replaces the nine numbered buttons.
+Window controls stay on the first row at the top right.
+See [RC11 notes](docs/RELEASE-1.3.0-rc.11.md).
 
 ### 1.3.0 RC10 — continuous Voice passages
 

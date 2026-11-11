@@ -1,5 +1,10 @@
 # Sightline Prompter features
 
+**RC11 preview:** paused double-click paragraph editing with Save/Cancel,
+visible line breaks and source preservation. Small windows use a slot picker;
+window controls stay top right on the first row. Native checks cover editing,
+conflicts, held Voice resume and compact layouts. Human microphone UAT remains.
+
 **RC10 Voice boundaries:** `{stop}` prepares the next spoken passage without
 holding Voice. Retake returns to the completed section until you speak the next
 passage; no extra Go is needed. Stops and timed pauses still control Scroll.

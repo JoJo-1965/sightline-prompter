@@ -1,5 +1,28 @@
 # Writing scripts
 
+## Quick edits while paused — RC11 preview
+
+Double-click a spoken paragraph to adjust a word, punctuation or a line break
+without opening the full editor. The small editor shows that paragraph's
+original Markdown, including any formatting and silent cues.
+
+- **Enter** adds a visible line break.
+- **Ctrl+Enter** (Cmd+Enter on Mac) or **Save** writes the paragraph to its file.
+- **Escape** or **Cancel** discards the draft.
+
+Prompting stays paused after Save. Resume with Play or, after a paused Voice
+session, **Prompter, go**. The reading position is retained and speech tracking
+is rebuilt from the edited text. Existing recording snapshots remain intact;
+new takes can capture the revised script.
+
+This is for saved Markdown/text files. Samples are read-only: open the full
+editor and **Save a copy** first. Use **Ctrl+E** for larger changes, headings,
+complex lists, rich documents or paragraphs the quick editor cannot map safely.
+If another program changes the file, Save refuses to overwrite it and keeps
+your draft available to copy. Cancel, review the external changes and reopen.
+
+![Paused paragraph editor with Save and Cancel](images/quick-edit-rc11.png)
+
 ## Production notes
 
 Use `<!-- Check framing and remember to press Record. -->` for preparation

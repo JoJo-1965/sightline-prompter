@@ -28,7 +28,15 @@ their RC labels and old version buckets do not describe the current release.
 See [grouped release notes](docs/RELEASE-1.2.0.md) and the
 [249-row feature grid](docs/FEATURE-GRID.md) for exact behaviour and limits.
 
-## In 1.3.0 RC1 preview
+## In 1.3.0 preview
+
+**RC11 preview:** paused double-click paragraph editing with Save/Cancel,
+visible line breaks and source preservation. Small windows use a slot picker;
+window controls stay top right on the first row. Native checks cover editing,
+conflicts, held Voice resume and compact layouts. Human microphone UAT remains.
+
+See [RC11 notes](docs/RELEASE-1.3.0-rc.11.md).
+
 
 **RC10 Voice boundaries:** `{stop}` prepares the next spoken passage without
 holding Voice. Retake returns to the completed section until you speak the next
@@ -111,7 +119,7 @@ already exist in 1.2.0; acoustic reliability still needs the real audio tests.
 | Sync | Extend RC1 per-file audio alignment with in-recording clap candidates and explicit human picture-sync review | Start/middle/end alignment and explicit uncertainty; no invented clean-camera lip-sync result |
 | Recording identity | Continue testing first-take/file association, external stop/restart and short extra recorder sessions | Saved logs checked against physical output files |
 | Voice commands | Expand recorded acoustic fixtures beyond RC1's section 7/12 and finish-tail regressions; preserve deadlines and permission gates | Reproducible recognition cases and no accidental recording actions |
-| Quick script edits | Offer a paused double-click or Edit this paragraph action for words, punctuation and line breaks, with Save/Cancel, file persistence and tracking rebuilt at the same passage. Ctrl+E is the current full editor. | Verify no speech/edit conflict, protected-file Save a copy, reliable undo/cancel and retained script/recording snapshots. This is planned, not part of RC10. |
+| Quick script edits — RC11 candidate | Implemented paused paragraph Save/Cancel, visible breaks, source persistence and refreshed tracking. Ctrl+E retains the full editor. | Native checks cover source preservation, external conflicts, duplicates, read-only samples, playback gates and held Voice resume. Human microphone UAT remains. |
 | Voice and command onboarding | Internal setup trains the operator and adapts recognition to their natural words, phrases, accent and speech differences. A dedicated internal script proposes `{training}` steps to prompt, listen, compare, suggest a fix and repeat until consistent. Rerunnable from Voice settings. See the [onboarding proposal](docs/design/VOICE-TRAINING-ONBOARDING.md). | Fresh repeated utterances consistently resolve to the intended word/action; confirmed local corrections survive restart; ordinary speech does not trigger commands; accessible timing, repeat/skip/cancel and no real recorder actions during training |
 | Framing | Gather feedback on target/crop consistency, movement advice and native toolbar stacking on real multi-screen setups | Camera/projector tests across Windows, Mac and Linux; preserve manual fallback |
 | Documentation | Keep current screenshots, topic-based notes, samples, feature grid and JL copy in the same deployment review | Versioned source, checked links and exported-file consistency |

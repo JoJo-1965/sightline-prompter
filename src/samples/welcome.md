@@ -1,3 +1,8 @@
+<!-- RC11 QUICK EDIT. Save an editable copy of this tour. While paused,
+double-click a spoken paragraph, change a word or insert a line break with
+Enter. Ctrl+Enter saves; Escape cancels. Prompting stays paused. Small windows
+use a Slot 1–9 picker; window controls stay top right on the first row. -->
+
 <!-- RC10 VOICE. Stop tags are soft boundaries: read naturally into the next
 passage. Its spoken opening is positioned automatically. Retake still returns
 to the completed section until you speak the next one. Scroll honours stops.

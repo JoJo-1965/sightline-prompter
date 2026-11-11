@@ -5,6 +5,7 @@ import mammoth from "mammoth";
 import { load as loadYaml } from "js-yaml";
 import { rtfToHtml } from "./rtf.js";
 import { pdfToHtml } from "./pdf.js";
+import { preprocessScriptText } from "../script-text.js";
 
 // Rich files are shown but not edited in the built-in markdown editor;
 // edit them in Word/WordPad (or make a new PDF) and the watcher reloads them.
@@ -37,14 +38,6 @@ async function convertMDtoHTML( md ) {
 // separately, so drop them from the text. Escaped braces (\{ \}) become
 // private-use placeholders so markdown can't unescape them into directives;
 // decorate.js turns them back into braces.
-function preprocessScriptText( text ) {
-	return text
-		.replace( /^\uFEFF?---\r?\n[\s\S]*?\r?\n---[ \t]*(\r?\n|$)/, "" )
-		.replace( /\\\{/g, "\uE000" )
-		.replace( /\\\}/g, "\uE001" )
-		.replace( /^={3,}[ \t]*(\S.*?)[ \t]*=*[ \t]*$/gm, "## $1" );
-}
-
 function addPadding( html ) {
 	return html + "<p>&nbsp;</p>".repeat( 10 );
 }

@@ -1,7 +1,7 @@
 # Sightline Prompter feature grid
 
-**Review basis: Sightline 1.3.0 RC10 preview, documentation revision 26, 11 November 2026.**
-**Build version:** `1.3.0-rc.10` · **Publication status:** Preview
+**Review basis: Sightline 1.3.0 RC11 preview, documentation revision 27, 11 November 2026.**
+**Build version:** `1.3.0-rc.11` · **Publication status:** Preview
 
 **Maintained source:** [Feature grid](https://github.com/JoJo-1965/sightline-prompter/blob/codex/pointing-production-cues/docs/FEATURE-GRID.md)
 
@@ -28,13 +28,18 @@ Review plan action when ready. The capabilities remain grouped below.
 themes, with the established gap as default. Nearby ordered speech improves
 common-word continuity. Scroll catch-up speed controls movement, not recognition.
 Bookmark flags are removed while anchors, logs and enabled OBS chapters remain.
-The 269 capabilities are grouped below.
+The 270 capabilities are grouped below.
 
 **RC10 Voice boundaries:** `{stop}` prepares the next spoken passage without
 holding Voice. Retake returns to the completed section until you speak the next
 passage; no extra Go is needed. Stops and timed pauses still control Scroll.
 Use an explicit spoken Pause for a deliberate Voice hold, and finish recording
 explicitly after the final passage. Off-script and sound-check holds remain.
+
+**RC11 preview:** paused double-click paragraph editing with Save/Cancel,
+visible line breaks and source preservation. Small windows use a slot picker;
+window controls stay top right on the first row. Native checks cover editing,
+conflicts, held Voice resume and compact layouts. Human microphone UAT remains.
 
 Use the [searchable grid](FEATURE-GRID.html) to browse by subject or support
 level. The [CSV comparison sheet](FEATURE-GRID.csv) includes a blank reviewer
@@ -120,8 +125,9 @@ Reference: [Writing scripts](guide/02-scripts.md).
 | HTML import | Included | Open `.html` and `.htm` script files. | Imported content is for prompting, not a complete browser application. |
 | Google Docs links | Dependent | Import accessible Google Docs content. | Sharing and internet access must permit retrieval; private account access is not implied. |
 | Built-in Markdown editor | Included | CodeMirror editor, preview toggle, save, Save as and unsaved-change prompts. | The app does not replace a full collaborative document suite. |
+| Quick paragraph edit | Included | RC11 preview: double-click a spoken paragraph while paused. Enter inserts a visible break; Ctrl+Enter saves; Escape cancels. Source formatting and reading position are retained. | Saved Markdown/text only; samples need Save a copy. External conflicts block Save and preserve the draft. Use the full editor for other blocks or larger changes. |
 | External editing | Included | Watch an opened file and refresh when it changes externally. | Watching pauses during built-in editing to avoid conflicting edits. |
-| Script slots | Included | Nine quick-access slots, recent files and switching controls. | A slot points to its script; clearing a slot is separately confirmed. |
+| Script slots | Included | Nine quick-access slots, recent files and switching controls. RC11 uses a compact Slot 1–9 picker at 1100 pixels wide or less; wide windows retain numbered buttons. Ctrl+1…9 works in both layouts. | A slot points to its script; clearing a slot is separately confirmed. |
 | Slot clearing protection | Included | Confirmation before clearing an occupied slot. | Keep source files backed up independently of slot assignments. |
 | Sample scripts | Included | Twelve shipped samples; Start here is a twelve-stop core/RC feature tour. Focused voice, framing, recording, Notes and handover demos use separate setup comments and short cues. | Protected originals: save a copy to edit. Recording actions are opt-in exercises. The formatting diagnostic intentionally contains one unknown tag. See [Demo guide](DEMO-SCRIPTS.md). |
 | Recording preview sample | Included | Preparation, Continuous and linked recording, explicit commands and handover walkthrough. | Exercise recorder controls only with the intended test setup connected. |
@@ -184,7 +190,7 @@ Reference: [Layout and display](guide/04-layout-and-display.md) and [Remotes and
 | --- | --- | --- | --- |
 | Transparent content overlay | Included | Read over a video call, slides, camera/projector preview or other desktop content. | Sightline does not supply or embed the underlying call or presentation. |
 | Always on top | Optional | Keep the prompter above ordinary application windows. | Operating-system window rules and other topmost windows can affect stacking. |
-| Windowed and fullscreen use | Included | Size and position the prompter, or use a fullscreen reading view. RC10 wraps toolbar groups on small windows, retaining minimise/maximise/fullscreen/close controls. | Multi-window arrangements need checking on the intended display. |
+| Windowed and fullscreen use | Included | Size and position the prompter, or use a fullscreen reading view. RC11 keeps minimise/maximise/fullscreen/close at the top right on the first toolbar row; other groups wrap below. | Multi-window arrangements need checking on the intended display. |
 | Horizontal and vertical mirror | Included | Separate mirror controls, including toolbar icons. | Set the flips appropriate to the physical teleprompter glass or monitor. |
 | Prompter monitor | Optional | Explicit display selection opens full screen. A manual cross-screen drag restores a centred normal window at 75% of the destination work area; included in the reading workflow. | Windows drag handling clears eye-line mode and the pinned monitor choice. Same-display moves retain the chosen size. Requires a connected display. |
 | Eye-line strip | Optional | Compact reading strip with configurable screen height and reading-line position. | Lens alignment is a manual setup task. |

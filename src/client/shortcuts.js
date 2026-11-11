@@ -47,6 +47,9 @@ export const SHORTCUTS = [
 			[ [ "Drop a file" ], "Open it into this slot" ],
 			[ [ "Ctrl+N" ], "New script" ],
 			[ [ "Ctrl+E" ], "Edit Markdown/text, or view sample source read-only; Save a copy makes it editable" ],
+			[ [ "Double-click a paragraph" ], "While paused: quick edits to saved Markdown/text; Save or Cancel" ],
+			[ [ "Enter", "Ctrl+Enter", "Esc" ], "Quick edit: line break, Save, Cancel; prompting stays paused" ],
+			[ [ "Slot picker" ], "On smaller windows: select script slot 1–9; wide windows retain number buttons" ],
 			[ [ "Script health…" ], "Editor check: section reading times, long sentences and similar word starts; reviews unsaved text" ],
 			[ [ "Clear this slot" ], "Confirm removal from the slot; the saved script file stays intact" ],
 			[ [ "Ctrl+S", "Ctrl+Shift+S" ], "Save / Save as" ]

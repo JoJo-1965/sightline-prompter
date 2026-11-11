@@ -3,6 +3,8 @@ import path from "node:path";
 import fs from "node:fs/promises";
 import { cpSync, existsSync, readFileSync } from "node:fs";
 import chokidar from "chokidar";
+import { randomUUID } from "node:crypto";
+import { applyQuickEdit } from "./quick-edit.js";
 import stateFactory from "./utils/state.js";
 import {
 	convertMarkdown,
@@ -400,6 +402,8 @@ export const SAMPLE_SCRIPTS = [
 let openSampleRef = null;
 let watcher;
 let watcherPaused = false;
+let quickEditSession = null;
+let lastQuickEditWrite = null;
 
 let currentFontSize = defaultConfig.fontSize;
 let currentOpacity = defaultConfig.opacity;
@@ -933,6 +937,7 @@ const createWindow = ( state ) => {
 		watcher = chokidar.watch( scriptFile );
 		watcher.on( "change", async () => {
 			if ( watcherPaused ) return;
+			if ( lastQuickEditWrite?.file === scriptFile && await readRawMarkdown( scriptFile ) === lastQuickEditWrite.text ) return;
 			const md = await readAndConvertScript( scriptFile );
 			sendScriptContent( win, md );
 		} );
@@ -2345,6 +2350,43 @@ app.whenReady().then( async () => {
 	} );
 
 	// Editor IPC handlers
+	ipcMain.handle( "beginQuickEdit", async event => {
+		if ( event.sender !== win.webContents || rendererStatus.scrolling || rendererStatus.preparing || hasUnsavedChanges || quickEditSession ) return { ok: false, error: "Pause prompting and finish other edits first." };
+		if ( !currentFilePath || ![ ".md", ".markdown", ".txt" ].includes( path.extname( currentFilePath ).toLowerCase() ) ) return { ok: false, error: "Quick edit is available for saved Markdown and text scripts. Use Edit for other files." };
+		if ( isSampleFile( currentFilePath ) ) return { ok: false, error: "Sample scripts are read-only. Use Edit > Save a copy first." };
+		try {
+			const text = await fs.readFile( currentFilePath, "utf8" );
+			quickEditSession = { id: randomUUID(), file: currentFilePath, text, watcherWasPaused: watcherPaused };
+			watcherPaused = true;
+			return { ok: true, id: quickEditSession.id, text, file: currentFilePath };
+		} catch ( error ) { return { ok: false, error: error.message }; }
+	} );
+	ipcMain.handle( "saveQuickEdit", async ( event, patch ) => {
+		if ( event.sender !== win.webContents || !quickEditSession || patch?.id !== quickEditSession.id || currentFilePath !== quickEditSession.file || rendererStatus.scrolling ) return { ok: false, error: "Pause prompting and reopen this paragraph before saving." };
+		try {
+			if ( isSampleFile( currentFilePath ) ) throw new Error( "Save an editable copy first." );
+			const current = await fs.readFile( currentFilePath, "utf8" );
+			if ( current !== quickEditSession.text ) throw new Error( "The script changed outside Sightline. Cancel and reopen it; your draft is still here to copy." );
+			const text = applyQuickEdit( current, patch );
+			await fs.writeFile( currentFilePath, text, "utf8" );
+			quickEditSession.text = text;
+			lastQuickEditWrite = { file: currentFilePath, text };
+			hasUnsavedChanges = false;
+			const html = await readAndConvertScript( currentFilePath );
+			return { ok: true, html, snapshot: scriptSnapshots.get( html ) ?? null };
+		} catch ( error ) { return { ok: false, error: error.message }; }
+	} );
+	ipcMain.handle( "endQuickEdit", async ( event, id ) => {
+		if ( event.sender !== win.webContents || !quickEditSession || id !== quickEditSession.id ) return { ok: true };
+		const previous = quickEditSession;
+		quickEditSession = null;
+		watcherPaused = previous.watcherWasPaused;
+		if ( currentFilePath === previous.file && await readRawMarkdown( currentFilePath ) !== previous.text ) {
+			const html = await readAndConvertScript( currentFilePath );
+			return { ok: true, html, snapshot: scriptSnapshots.get( html ) ?? null };
+		}
+		return { ok: true };
+	} );
 	ipcMain.on( "requestRawMarkdown", async () => {
 		if ( currentFilePath && isRichFile( currentFilePath ) ) {
 			const kind = ( await googleDocs.sourceOf( currentFilePath ) )

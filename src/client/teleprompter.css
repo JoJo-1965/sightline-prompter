@@ -987,7 +987,7 @@ body {
 	align-items: center;
 	gap: 8px;
 	overflow: hidden;
-	padding: 5px 8px;
+	padding: 5px 132px 5px 8px;
 	font-family: "Segoe UI", Helvetica, Arial, sans-serif;
 	font-size: 12px;
 	color: #e8e8e8;
@@ -1021,6 +1021,27 @@ body.controls-hidden * {
 .cb-spacer {
 	flex: 1;
 }
+
+#cb-window-controls { position: absolute; top: 5px; right: 8px; }
+#cb-slot-picker { display: none; height: 26px; width: 90px; box-sizing: border-box; font: 12px "Segoe UI", sans-serif; color: #e8e8e8; background: #252b33; border: 1px solid #616b7b; border-radius: 4px; }
+@media (max-width: 1100px) {
+	#cb-slots > .cb-slot { display: none; }
+	#cb-slot-picker { display: block; }
+}
+
+body.quick-editing #control-bar { transform: none; opacity: 1; pointer-events: auto; }
+body.quick-editing, body.quick-editing * { cursor: auto !important; }
+body.quick-editing textarea { cursor: text !important; }
+#md .quick-edit-target { outline: 2px dashed #f3d16a; outline-offset: 4px; }
+.quick-edit-box { position: fixed; z-index: 2200; box-sizing: border-box; width: min(620px, calc(100vw - 24px)); overflow: auto; padding: 14px; border: 1px solid #f3d16a; border-radius: 8px; background: #252b33; color: #edf1f6; font: 14px/1.45 "Segoe UI", sans-serif; box-shadow: 0 6px 24px #0009; -webkit-app-region: no-drag; }
+.quick-edit-box h3 { margin: 0 0 10px; font: 600 17px/1.3 "Segoe UI", sans-serif; text-wrap: balance; }
+.quick-edit-box textarea { box-sizing: border-box; width: 100%; min-height: 100px; max-height: 180px; padding: 8px; resize: vertical; color: #fff; background: #191e25; border: 1px solid #7d91a9; border-radius: 4px; font: 20px/1.4 "Segoe UI", sans-serif; }
+.quick-edit-box .quick-edit-hint { margin: 7px 0; color: #bfd1df; font-size: 12px; text-wrap: pretty; }
+.quick-edit-message { margin: 6px 0; color: #ffd987; text-wrap: pretty; }
+.quick-edit-message:empty { display: none; }
+.quick-edit-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; }
+.quick-edit-actions button { padding: 6px 14px; border: 1px solid #6d7d90; border-radius: 4px; color: #fff; background: #364456; font: 14px "Segoe UI", sans-serif; }
+.quick-edit-actions button.primary { background: #006aa6; }
 
 .cb-btn,
 .cb-slot,

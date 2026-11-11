@@ -1,5 +1,10 @@
 # Shortcuts and troubleshooting
 
+**RC11 quick edit:** double-click a spoken paragraph while paused. Enter inserts
+a line break; Ctrl+Enter saves; Escape cancels. Prompting stays paused.
+Ctrl+E opens the full editor. On narrow windows, the Slot 1–9 picker replaces
+the numbered buttons; Ctrl+1…9 shortcuts still work.
+
 **Wake word sometimes stops responding:** check **Settings > Voice > Voice
 commands**. Audio/engine faults recover automatically with bounded retries;
 use **Restart listening** or click the listening badge for a manual retry.

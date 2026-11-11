@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "basis": "Sightline 1.3.0 RC10 preview, documentation revision 26, 11 November 2026",
+  "basis": "Sightline 1.3.0 RC11 preview, documentation revision 27, 11 November 2026",
   "date": "11 November 2026",
   "sourceBuild": "510b815",
-  "buildVersion": "1.3.0-rc.10",
+  "buildVersion": "1.3.0-rc.11",
   "publicationStatus": "preview",
   "appRelease": "1.2.0",
   "pluginRelease": "0.2.1.6",
   "sourceUrl": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/pointing-production-cues/docs/FEATURE-GRID.md",
-  "sourceSha256": "9770d605ec5595ac71c4bc081f2fa6b1f983f092d08fac174801266a92a5b13a",
+  "sourceSha256": "daea03ac3a6fae768cd938573fb1909fb575042c5e07502b092a1b7c94996b41",
   "support": [
     "Included",
     "Optional",
@@ -348,6 +348,12 @@
           "limits": "The app does not replace a full collaborative document suite."
         },
         {
+          "name": "Quick paragraph edit",
+          "support": "Included",
+          "options": "RC11 preview: double-click a spoken paragraph while paused. Enter inserts a visible break; Ctrl+Enter saves; Escape cancels. Source formatting and reading position are retained.",
+          "limits": "Saved Markdown/text only; samples need Save a copy. External conflicts block Save and preserve the draft. Use the full editor for other blocks or larger changes."
+        },
+        {
           "name": "External editing",
           "support": "Included",
           "options": "Watch an opened file and refresh when it changes externally.",
@@ -356,7 +362,7 @@
         {
           "name": "Script slots",
           "support": "Included",
-          "options": "Nine quick-access slots, recent files and switching controls.",
+          "options": "Nine quick-access slots, recent files and switching controls. RC11 uses a compact Slot 1–9 picker at 1100 pixels wide or less; wide windows retain numbered buttons. Ctrl+1…9 works in both layouts.",
           "limits": "A slot points to its script; clearing a slot is separately confirmed."
         },
         {
@@ -650,7 +656,7 @@
         {
           "name": "Windowed and fullscreen use",
           "support": "Included",
-          "options": "Size and position the prompter, or use a fullscreen reading view. RC10 wraps toolbar groups on small windows, retaining minimise/maximise/fullscreen/close controls.",
+          "options": "Size and position the prompter, or use a fullscreen reading view. RC11 keeps minimise/maximise/fullscreen/close at the top right on the first toolbar row; other groups wrap below.",
           "limits": "Multi-window arrangements need checking on the intended display."
         },
         {

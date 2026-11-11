@@ -120,6 +120,9 @@ contextBridge.exposeInMainWorld( "electron", {
 	resizeWindow: ( width, height ) => ipcRenderer.send( "resizeWindow", width, height ),
 
 	// Editor IPC
+	beginQuickEdit: () => ipcRenderer.invoke( "beginQuickEdit" ),
+	saveQuickEdit: patch => ipcRenderer.invoke( "saveQuickEdit", patch ),
+	endQuickEdit: id => ipcRenderer.invoke( "endQuickEdit", id ),
 	requestRawMarkdown: () => ipcRenderer.send( "requestRawMarkdown" ),
 	onRawMarkdown: callback => ipcRenderer.on( "rawMarkdown", ( _event, content, filePath, access ) => callback( content, filePath, access ) ),
 	saveFile: content => ipcRenderer.send( "saveFile", content ),

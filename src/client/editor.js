@@ -4,6 +4,7 @@ import { languages } from "@codemirror/language-data";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { Compartment, EditorState } from "@codemirror/state";
 import { sectionLine } from "./script-health.js";
+export { quickEditParagraphs } from "./quick-edit-source.js";
 
 const access = new Compartment();
 const editorAccess = readOnly => [ EditorState.readOnly.of( readOnly ), EditorView.editable.of( !readOnly ), EditorView.contentAttributes.of( { "aria-readonly": String( readOnly ), tabindex: "0" } ) ];

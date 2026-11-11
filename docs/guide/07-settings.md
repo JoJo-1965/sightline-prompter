@@ -161,8 +161,12 @@ keyboard or click a pill to read its explanation; Escape closes it.
 **Eye-line strip** subtabs. Set the monitor, always on top, toolbar visibility, capture protection,
 click-through and independent left/right and top/bottom mirroring here.
 The compact mirror buttons use the same axis icons as the main toolbar.
-RC10 wraps whole toolbar groups on smaller windows, keeping window-sizing
-actions visible. Session controls sit below the complete toolbar.
+RC11 keeps minimise, maximise/restore, fullscreen and Close at the top right
+on the first toolbar row. Other groups can wrap below. At 1100 pixels wide
+or less, the nine script buttons become a Slot 1–9 picker. Ctrl+1 through
+Ctrl+9 still switch slots. Session controls sit below the full toolbar.
+
+![Compact slots and first-row window controls](images/toolbar-compact-rc11.png)
 Enable the eye-line strip to reveal its width, height and reading-line controls.
 These use the same sliders, number boxes and help pills as other settings.
 The mouse pointer remains visible when the main toolbar hides.

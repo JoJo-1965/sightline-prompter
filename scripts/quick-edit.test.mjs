@@ -1,0 +1,24 @@
+import assert from "node:assert/strict";
+import { quickEditParagraphs } from "../src/client/quick-edit-source.js";
+import { applyQuickEdit } from "../src/quick-edit.js";
+import { convertMarkdown } from "../src/utils/content.js";
+
+const raw = '\uFEFF---\r\ntitle: Test\r\n---\r\n\r\n## Opening\r\n\r\n<!-- Keep production notes unchanged. -->\r\n\r\nHello **Joanne**, take your time. [smile] {marker: first}\r\n\r\nKeep this paragraph exactly.\r\n\r\nKeep this paragraph exactly.\r\n';
+const blocks = quickEditParagraphs( raw );
+const first = blocks.find( b => b.text.startsWith( "Hello" ) );
+assert.ok( first.html.includes( "<strong>Joanne</strong>" ) );
+assert.equal( raw.slice( first.from, first.to ), first.text );
+const next = applyQuickEdit( raw, { ...first, before: first.text, after: first.text.replace( "Joanne", "Jo" ).replace( ",", ";" ) + "  \nA new line." } );
+assert.equal( next.slice( 0, first.from ), raw.slice( 0, first.from ) );
+assert.ok( next.endsWith( raw.slice( first.to ) ) );
+assert.ok( next.includes( "[smile] {marker: first}  \r\nA new line." ) );
+assert.ok( ( await convertMarkdown( next ) ).includes( "<br" ) );
+const duplicates = blocks.filter( b => b.text === "Keep this paragraph exactly." );
+assert.equal( duplicates.length, 2 );
+const changed = applyQuickEdit( raw, { ...duplicates[1], before: duplicates[1].text, after: "Keep this sentence exactly." } );
+assert.equal( changed.match( /Keep this paragraph exactly\./g ).length, 1 );
+assert.throws( () => applyQuickEdit( raw, { from: -1, to: 4, before: "", after: "x" } ) );
+assert.throws( () => applyQuickEdit( raw, { ...first, before: "stale paragraph", after: "x" } ), /changed/ );
+assert.throws( () => applyQuickEdit( raw, { ...first, before: first.text, after: "x".repeat( 100001 ) } ), /full editor/ );
+assert.equal( quickEditParagraphs( "```\nDo not edit code\n```\n" ).length, 0 );
+console.log( "Quick edits preserve exact offsets, formatting/cues, CRLF/BOM, duplicate paragraphs and hard breaks; invalid/stale/oversized changes are rejected." );
