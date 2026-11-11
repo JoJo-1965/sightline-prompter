@@ -8,6 +8,8 @@ path avoids adding a flag; Again/Retake still drops one in RC8. No running
 package, active recording or shipped feature-grid claims changed.
 Joanne explicitly wants enabled OBS chapter markers retained: removing the
 reading-view flags must not disable marker sending or take-log entries.
+Final preference: remove visual flags in every mode, without adding another
+setting or retaining a review-only display. Marker navigation remains available.
 
 ## Configurable paragraph spacing — roadmap, 11 November 2026
 
