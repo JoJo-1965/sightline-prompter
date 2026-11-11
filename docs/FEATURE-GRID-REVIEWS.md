@@ -1,5 +1,13 @@
 # Feature-matrix review record
 
+## Voice-training onboarding proposal — 11 November 2026
+
+Added a roadmap/design proposal for internal onboarding that teaches commands
+and adapts recognition to natural speech through prompt/listen/compare/fix
+iterations until consistent. The proposed `{training}` syntax is not supported
+by RC8. No runtime, settings, samples, package, shipped capability row, generated
+feature export or live website changes; the existing feature grid remains valid.
+
 ## RC8 voice and recording workflow — 11 November 2026
 
 Updated existing command, Record take and linked-recording rows, retaining
