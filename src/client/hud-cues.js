@@ -4,6 +4,21 @@ import { parsePointingCue } from "./pointing-cues.js";
 import { guideOutline, guidePose } from "./guide-pose.js";
 
 const clamp = ( value, low, high ) => Math.max( low, Math.min( high, value ) );
+
+// Keep the cue above the active reading line, preferring the nearest clear
+// position. Pointing targets keep their separate, saved head-relative geometry.
+export function hudCuePosition( view, size, line, obstacles = [] ) {
+	const gap = 8, left = 12, right = Math.max( left, view.width - size.width - 12 );
+	const preferred = Math.max( 8, line - size.height - gap );
+	const xs = [ ( view.width - size.width ) / 2, ...obstacles.flatMap( r => [ r.left - size.width - gap, r.right + gap ] ), left, right ].map( x => clamp( x, left, right ) );
+	const ys = [ preferred, ...obstacles.map( r => r.top - size.height - gap ) ].filter( y => y >= 8 && y <= preferred ).sort( ( a, b ) => b - a );
+	for ( const y of ys ) {
+		for ( const x of xs ) {
+			if ( !obstacles.some( r => x < r.right + gap && x + size.width > r.left - gap && y < r.bottom + gap && y + size.height > r.top - gap ) ) return { x, y };
+		}
+	}
+	return { x: clamp( ( view.width - size.width ) / 2, left, right ), y: preferred };
+}
 export function hudHeadGeometry( { width, height, screenX = 0, screenY = 0 }, guide = {}, mirrored = "off" ) {
 	const reference = guide.reference?.pose ? guide.reference : null;
 	const pose = guidePose( reference?.pose ?? guide.pose ?? guide );
@@ -124,10 +139,12 @@ export function createHudCues( root, { getState, getGuide, getCursor = () => nul
 			}
 		}
 		pill.hidden = false; target.hidden = !frozen.target;
+		pill.classList.toggle( "hud-cue-compact", innerHeight < 600 );
 		const w = pill.getBoundingClientRect().width, h = pill.getBoundingClientRect().height;
-		const line = innerHeight * readingAnchor(), bottom = innerHeight * .81;
-		pill.style.left = `${ clamp( innerWidth * .2 - w / 2, 16, innerWidth - w - 16 ) }px`;
-		pill.style.top = `${ Math.abs( bottom - line ) > h * 1.5 ? Math.min( bottom, innerHeight - h - 28 ) : 72 }px`;
+		const obstacles = [ ...doc.querySelectorAll( "#control-bar,#session-controls > *,#on-air" ) ].filter( el => el.getClientRects().length ).map( el => el.getBoundingClientRect() ).filter( r => r.bottom > 0 && r.top < innerHeight );
+		const cuePosition = hudCuePosition( { width: innerWidth, height: innerHeight }, { width: w, height: h }, innerHeight * readingAnchor(), obstacles );
+		pill.style.left = `${ cuePosition.x }px`;
+		pill.style.top = `${ cuePosition.y }px`;
 	}
 	window.addEventListener( "resize", () => { frozen = null; } );
 	return { update, prepare: () => { if ( dirty ) rebuild(); }, status: () => ( { supported: true, enabled, mode: lastMode ? "recording" : "review", visible: !pill.hidden, cue: active ? { text: active.text, direction: active.point?.direction ?? null, graphic: active.point?.graphic ?? null } : null } ) };

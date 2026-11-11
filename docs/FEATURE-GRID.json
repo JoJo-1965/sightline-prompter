@@ -8,7 +8,7 @@
   "appRelease": "1.2.0",
   "pluginRelease": "0.2.1.6",
   "sourceUrl": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/pointing-production-cues/docs/FEATURE-GRID.md",
-  "sourceSha256": "b23691587c225f94374e44d39687dfe94ace54da6e95c1c99f0af4d7a7338161",
+  "sourceSha256": "39d9cb06285b070f786af28f7c2c7280cf1d85b8ce34282e814b2749c64297b9",
   "support": [
     "Included",
     "Optional",
@@ -254,7 +254,7 @@
         {
           "name": "Retake and edit commands",
           "support": "Optional",
-          "options": "Again, marker, back to marker, keeper and scrap that; bookmark flags are no longer drawn.",
+          "options": "Again/Retake, marker, back to marker, keeper and scrap that; exact wake-prefixed V take/VE take recognition fallbacks. No bookmark flags are drawn.",
           "limits": "Ratings and markers describe the take log; they do not cut video automatically."
         },
         {
@@ -492,7 +492,7 @@
         {
           "name": "Floating HUD cues",
           "support": "Optional",
-          "options": "RC4: a gold short-cue pill during delivery; paused Review restores inline bracket directions.",
+          "options": "RC10: a gold short-cue pill above the active reading line during delivery; compact on short windows. Paused Review restores inline bracket directions.",
           "limits": "No cue-induced script reflow; quoted Say speech and preparation notes remain distinct."
         },
         {

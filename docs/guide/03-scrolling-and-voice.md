@@ -333,6 +333,13 @@ voluntary-support policy, with the company's privacy contact and ICO
 registration. Setting voice commands to Off does not stop voice following,
 scratch audio or a sound check; quit the app to stop all microphone use.
 
+### Recognised Retake variants
+
+RC10 accepts the observed “V take” and “VE take” forms after the wake word.
+Say “Prompter, retake” normally; these are recognition fallbacks, not phrases
+to learn or put in spoken script copy. A plain “V take” without the wake word
+stays ordinary speech.
+
 ## Stops and timed pauses
 
 Scroll mode honours `{stop}` and `{pause}` as manual holds and timed pauses

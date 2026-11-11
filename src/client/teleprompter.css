@@ -29,6 +29,8 @@ body {
 #hud-delivery-cue { position: fixed; z-index: 999; pointer-events: none; display: flex; align-items: center; justify-content: center; gap: 14px; min-width: min(24vw, 340px); max-width: calc(100vw - 32px); padding: 12px 26px; min-height: 72px; border: 1px solid #ffe6a2; border-radius: 999px; background: #f3d16a; color: #30260d; box-shadow: 0 5px 20px #0006; font: 700 clamp(22px, 2.6vw, 42px)/1.15 "Segoe UI", sans-serif; }
 #hud-delivery-cue > span:last-child { text-wrap: balance; }
 #hud-delivery-cue svg { width: 42px; height: 42px; display: block; fill: none; stroke: currentColor; stroke-width: 2.1; stroke-linecap: round; stroke-linejoin: round; }
+#hud-delivery-cue.hud-cue-compact { min-height: 36px; padding: 6px 14px; gap: 8px; font-size: 20px; }
+#hud-delivery-cue.hud-cue-compact svg { width: 24px; height: 24px; }
 #md.hud-reading .direction .dir-text { display: none !important; }
 #md.hud-reading .hud-direction-only { display: none !important; }
 

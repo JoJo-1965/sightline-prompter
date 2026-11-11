@@ -7,6 +7,16 @@ Preserve the approved composition and behaviour. Earlier mock coordinates,
 screen-third interpretations and collision-only hiding rules are superseded.
 Approval covers this design; it does not claim the feature is built or released.
 
+## Cue-pill placement update — 11 November 2026
+
+Joanne explicitly requested: “The HUD should really be at the top just above
+the sightline or I won't see it.” This supersedes the gold cue pill's earlier
+lower-screen placement only. Position it just above the active reading line,
+use a compact pill in short windows and avoid toolbar/session controls where
+space permits. Preserve the script layout and all pointing-target geometry,
+layers, lifecycle and Recording/Review rules below. Native candidate captures
+show the revised position for review; no new settings page is introduced.
+
 ## Locked placement and behaviour
 
 - **Side target centres:** halfway across each gap between the saved head-guide

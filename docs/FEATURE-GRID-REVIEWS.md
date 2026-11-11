@@ -450,3 +450,10 @@ remain. Native tests and recorded recognition replay cover this correction.
 Reviewed help, authoring/schema, demos, roadmap and JL candidate archive together.
 The previous RC documents remain historical snapshots. Quick inline editing is
 planned; no new editor capability is claimed. Existing recordings are untouched.
+
+RC10 queued follow-up, 11 November: Joanne moved the gold HUD cue above the
+active sightline; only that pill's placement changes. Native compact captures
+and unit tests preserve pointing-target geometry and control clearance. Added
+exact wake-prefixed V take/VE take fallback aliases from the recorded trace,
+with ordinary-speech negative checks. The count remains 269; no training
+feature or speech-model adaptation is claimed.

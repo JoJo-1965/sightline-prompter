@@ -104,6 +104,8 @@ export const COMMANDS = [
 		phrases: [
 			"again",
 			"retake",
+			"v take",
+			"ve take",
 			"restart section",
 			"restart sections",
 			"take it again",

@@ -323,3 +323,13 @@ const afterBrand = createCommandListener( { clock: () => brandClock, onCommand: 
 afterBrand( [ "SIGHTLINE", "PROMPTER", "FREE" ], true ); brandClock += 3000;
 afterBrand( [ "PROMPTER", "SECTION", "THREE" ], true );
 assert.deepEqual( deliberate, [ [ "section", 3 ] ] );
+
+for ( const fragment of [ "V", "VE" ] ) {
+ const commands = [], spoken = [];
+ const listener = createCommandListener( { onCommand: id => commands.push( id ) } );
+ spoken.push( ...listener( [ fragment, "TAKE" ], true ) );
+ assert.deepEqual( commands, [], "A retake sound-alike without the wake word stays ordinary speech" );
+ assert.deepEqual( spoken, [ fragment, "TAKE" ] );
+ listener( [ "PROMPTER", fragment ], false ); listener( [ "TAKE" ], true );
+ assert.deepEqual( commands, [ "retake" ], "Observed fragmented retake is accepted only after the wake word" );
+}

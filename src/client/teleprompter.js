@@ -1720,6 +1720,7 @@ async function beginVoice( engine, deepgramKey ) {
 			audioDeviceId,
 			onStatus: ( status ) => {
 				showListeningStatus( status );
+				if ( status.type === "transcript" && voiceWordIdx === null ) voiceWordIdx = status.wordIdx;
 				if ( status.type === "closed" || status.type === "error" || status.type === "failed" ) {
 					if ( autoScrollActive ) stopAutoScrollSession();
 				} else if ( status.type === "device-fallback" ) {

@@ -170,6 +170,8 @@ and listening continues. Retake returns to the completed section until the next
 passage is spoken. Scroll still honours stops. Repeated-heading matches cannot
 jump into another section through unordered matching; explicit Resync remains.
 Toolbar groups wrap on small displays so window-sizing controls stay visible.
+HUD directions sit above the reading line; observed wake-prefixed Retake
+variants have exact fallbacks.
 See [RC10 notes](docs/RELEASE-1.3.0-rc.10.md).
 
 ### 1.3.0 RC9 — paragraph spacing and voice continuity

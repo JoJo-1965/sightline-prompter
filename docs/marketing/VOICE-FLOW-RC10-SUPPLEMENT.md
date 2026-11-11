@@ -5,6 +5,8 @@ existing recording/script snapshots and pointing/HUD plan.
 
 - Show Voice reaching a section-ending stop: the next spoken opening appears
   at the reading line and follows without another Go. The heading stays above.
+- Capture the gold HUD direction just above the reading line. The pointing
+  targets retain their established head-relative positions.
 - Before speaking that next opening, demonstrate Again returning to the section
   just completed. After delivering the new passage, Again retakes that section.
 - Demonstrate an explicit spoken Pause and Go as deliberate controls. Explain

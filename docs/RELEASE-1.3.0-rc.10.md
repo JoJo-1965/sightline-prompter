@@ -47,6 +47,18 @@ The replay no longer makes that jump. Automated tests cover soft transitions,
 reading-line positioning, Retake ownership, take-log section identity, spoken
 Pause and explicit recovery. Actual microphone acceptance remains necessary.
 
+## Visible HUD cues and Retake recognition
+
+The gold HUD direction pill now sits above the active reading line, with a
+compact form in short windows and clearance from toolbar/session controls.
+Pointing targets retain their saved head-relative positions behind the words.
+Review keeps inline directions. This follows Joanne's 11 November placement
+request and supersedes only the earlier pill location.
+
+Observed Retake transcripts “V take” and “VE take” are accepted as exact
+wake-prefixed aliases. Ordinary speech without the wake word does not trigger
+them. The correct operator phrase remains “Prompter, retake”.
+
 ## References and follow-up
 
 Help, script-writing guidance, demo comments and the 269-row feature reference

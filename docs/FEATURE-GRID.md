@@ -99,7 +99,7 @@ Reference: [Speech engines and command phrases](guide/03-scrolling-and-voice.md)
 | Listening modes | Optional | In voice mode, Always listening, or Off. | Always listening keeps microphone recognition active while prompting is stopped. |
 | Wake word | Optional | Prompter, Computer, Teleprompter or Director. | Wake-word recognition is speech recognition, not guaranteed keyword detection. |
 | Reading and display commands | Optional | Go, pause, slower, faster, bigger, smaller, back, next and return to top. | Enable command listening; several phrases have documented aliases. |
-| Retake and edit commands | Optional | Again, marker, back to marker, keeper and scrap that; bookmark flags are no longer drawn. | Ratings and markers describe the take log; they do not cut video automatically. |
+| Retake and edit commands | Optional | Again/Retake, marker, back to marker, keeper and scrap that; exact wake-prefixed V take/VE take recognition fallbacks. No bookmark flags are drawn. | Ratings and markers describe the take log; they do not cut video automatically. |
 | Spoken section selection | Optional | Select numbered sections, including natural spoken numbers. | A section number can act as a spoken slate and a retake instruction. |
 | Explicit recording commands | Dependent | RC8: record, start recording, begin and record take confirm OBS before delivery; finish recording, and record on, off, pause or resume remain. | OBS integration and recording-control permission must be enabled. Go, practice and start practice run the prompter with OBS unchanged. |
 | Head-guide voice commands | Optional | Guide on and guide off request a definite visible or hidden state. | Controls the manual guide; it does not detect a face. |
@@ -149,7 +149,7 @@ Reference: [Script directives](SCRIPT-DIRECTIVES.md) and [AI script brief](AI-SC
 | Script recording commands | Dependent | Optional `{record: on}`, `{record: off}`, `{record: pause}` and `{record: resume}`. | Require enabled OBS recording controls; loading a script never executes them. |
 | Pace, notes and page directives | Optional | Section WPM/targets, script pacing, `{mode: notes}` and `{page}`. | The script checker documents supported values and catches unknown directives. |
 
-| Floating HUD cues | Optional | RC4: a gold short-cue pill during delivery; paused Review restores inline bracket directions. | No cue-induced script reflow; quoted Say speech and preparation notes remain distinct. |
+| Floating HUD cues | Optional | RC10: a gold short-cue pill above the active reading line during delivery; compact on short windows. Paused Review restores inline bracket directions. | No cue-induced script reflow; quoted Say speech and preparation notes remain distinct. |
 | Head-relative pointing targets | Optional | RC4: centres bisect each saved head-edge/prompter-edge gap, at a shared below-eye height; words render above fixed markers. | Local reference geometry, not live gesture detection. Actual camera, mirror and multi-screen placement require UAT. |
 | HUD controller visibility | Optional | RC4: one optional action across pad, phone and mapped inputs; companion 0.2.1.6 adds a Display function with its own icon. | Capability-gated; no per-direction keys, recorder action or automatic profile replacement. |
 
