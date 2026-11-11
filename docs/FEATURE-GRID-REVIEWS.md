@@ -10,6 +10,8 @@ setup explains stage requirements. Reviewed help, authoring notes, demo
 comments and preview marketing references together. Native regression uses
 synthetic speech/audio and simulated OBS; physical voice recognition remains
 human UAT. Existing completed recordings and promo snapshots are retained.
+The packaged check also covers queued wake-listener shutdown before delivery,
+avoiding two listeners during a practice-to-record transition.
 
 ## RC7 OBS setup correction — 11 November 2026
 

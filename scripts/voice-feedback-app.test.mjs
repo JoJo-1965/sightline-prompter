@@ -69,6 +69,7 @@ try {
 	assert.equal( await main.evaluate( 'document.getElementById("cb-play").getAttribute("aria-pressed")' ), "false", "Failed OBS confirmation never starts prompting" );
 	assert.match( await panel.evaluate( 'document.getElementById("voice-feedback").textContent' ), /Simulated OBS recording failure/ );
 	await native.evaluate( "globalThis.testObsFail=false;testMain().webContents.send('obsState',testObs)" );
+	await pause( 5200 ); // Let the deliberate failure acknowledgement expire before setup captures.
 	await panel.evaluate( 'document.getElementById("set-obs-enabled").checked=true;document.getElementById("set-obs-enabled").dispatchEvent(new Event("change",{bubbles:true}))' ); await pause( 250 );
 	await panel.evaluate( 'document.getElementById("set-obs-setup-open").click()' ); const setup = await connect( "utility-window.html?panel=obssetup" ); await pause( 400 );
 	assert.match( await setup.evaluate( 'document.getElementById("setup-stage-hint").textContent' ), /camera.*microphone.*recording folder/ );

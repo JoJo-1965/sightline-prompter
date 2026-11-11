@@ -172,6 +172,8 @@ recording enabled. Practice ignores recorder directives and recorded slates.
 A gold acknowledgement appears in the script and open Settings/utility
 windows. Observed recognition fragments have bounded handling. The setup
 assistant explains missing choices and unlocks its top Review plan action.
+Wake-listener shutdown is queued before delivery starts, including a pending
+microphone startup when switching from practice into recording.
 See [RC8 notes](docs/RELEASE-1.3.0-rc.8.md).
 
 ### 1.3.0 RC7 — OBS setup reliability
