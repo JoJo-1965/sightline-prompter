@@ -1,3 +1,8 @@
+<!-- RC10 VOICE. Stop tags are soft boundaries: read naturally into the next
+passage. Its spoken opening is positioned automatically. Retake still returns
+to the completed section until you speak the next one. Scroll honours stops.
+Use an explicit spoken Pause if you want to hold Voice. -->
+
 {pacing: section, wpm: 140}
 
 # Voice control, stops and countdowns
@@ -37,7 +42,7 @@ Prompter, pause. Wait for it to hold, then Prompter, go. Finish a command within
 four seconds of the wake acknowledgement; otherwise say the wake word again.
 If command listening is off, Space still works. Stop means prompting pause. -->
 
-A planned stop gives me time to think. I can resume by voice when command
+In Scroll, a planned stop gives me time to think. In Voice, I can pause naturally. I can resume by voice when command
 listening is enabled, or use my keyboard or controller. Resuming does not
 mean that a production recorder has started.
 
@@ -109,7 +114,7 @@ This is a natural breath, without another start command in Voice. {pause}
 Here is a short beat before my next point. {pause: 3s}
 
 In Voice mode I take that beat myself. In Scroll mode the countdown waits
-and carries on. A stop, by comparison, waits for me to resume deliberately.
+and carries on. In Scroll, a stop waits for me to resume deliberately. Voice prepares the next passage.
 
 {stop}
 

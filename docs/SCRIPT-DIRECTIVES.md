@@ -1,5 +1,11 @@
 # Script directives
 
+**RC10 Voice boundaries:** `{stop}` prepares the next spoken passage without
+holding Voice. Retake returns to the completed section until you speak the next
+passage; no extra Go is needed. Stops and timed pauses still control Scroll.
+Use an explicit spoken Pause for a deliberate Voice hold, and finish recording
+explicitly after the final passage. Off-script and sound-check holds remain.
+
 ## Production notes and recording controls
 
 RC8 voice practice/go leaves OBS unchanged and ignores recorder directives,
@@ -123,8 +129,8 @@ next line:
 
 | Directive     | What it does                                                                                                             |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `{stop}`      | Stops here until you carry on: say "Prompter, go" (or just "go"), or press Space, the clicker or the phone remote. A yellow **Stopped** label shows. Works in steady and voice scrolling. In section mode the section timer stops too |
-| `{pause}`     | In Scroll mode, waits until you continue. Voice mode ignores this directive, including when recording is linked. Use `{stop}` for an intentional Voice hold |
+| `{stop}`      | Scroll: holds until you continue. Voice: positions the next spoken opening and keeps listening. Retake remains on the completed section until the next passage is spoken |
+| `{pause}`     | In Scroll mode, waits until you continue. Voice mode ignores this directive, including when recording is linked. Use an explicit spoken Pause for a Voice hold |
 | `{pause: 3s}` | Stops for 3 seconds, with a blue **Carrying on in 3** countdown, then carries on by itself. "Prompter, go" carries on sooner; "Prompter, pause" turns it into a stop. In voice scrolling it doesn't hold: the text only moves when you speak, so it shows as a small blue **⏸ 3s** mark and you take the beat yourself |
 | `{marker}`    | A bookmark you can jump to (`Ctrl+B` cycles through them), useful for retakes. Optionally named: `{marker: Setup}` (up to 40 characters) puts the name in the take log and the edit pack's marks. Each marker is logged with the take when it's read past |
 | `{listen: off}` | Off script: before an ad-lib, a demo or questions. The microphone is muted (nothing is listened to) and the prompter holds, in steady and voice scrolling, with **Off script · mic off · Space to carry on**. Space, the clicker, the remote or the Stream Deck carries on from the next `{listen: on}`, where voice following picks up again. The take log and edit pack record the time off script |

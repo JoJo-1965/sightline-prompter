@@ -1,5 +1,11 @@
 # Brief for AI script writers: Sightline Prompter scripts
 
+**RC10 Voice boundaries:** `{stop}` prepares the next spoken passage without
+holding Voice. Retake returns to the completed section until you speak the next
+passage; no extra Go is needed. Stops and timed pauses still control Scroll.
+Use an explicit spoken Pause for a deliberate Voice hold, and finish recording
+explicitly after the final passage. Off-script and sound-check holds remain.
+
 **RC8 recording workflow:** keep voice-command demonstrations in preparation
 comments. Use Prompter, record / start recording / begin for a confirmed OBS
 take; practice / start practice / go is rehearsal with OBS unchanged. Practice
@@ -111,8 +117,8 @@ the final Sightline copy contains the cue outside HTML comments. See
 | `{pacing: section}` or `{pacing: session}` | Script settings                                                   | `section` for batch or modular recording with pause points (the default); `session` for one continuous take       |
 | `{wpm: n}`                                 | Script settings, a section heading, or inline                     | Target words per minute, a whole number from 80 to 220. Inline, it applies until the end of the section           |
 | `{target: m:ss}`                           | Script settings (whole script, session mode) or a section heading | Target duration, for example `0:45`, `1:20` or `12:00`                                                            |
-| `{stop}`                                   | Inline, on its own or at the end of a sentence                    | Holds Scroll or Voice until the speaker deliberately continues. Use at section ends and retake points. For ad-libs, use the listen directives below |
-| `{pause}`                                  | Inline, at the end of a sentence                                  | Scroll-only manual hold in RC6. Voice ignores it; use `{stop}` for a deliberate hold in either mode. RC3–RC5 packages still treat bare pause as stop |
+| `{stop}`                                   | Inline, on its own or at the end of a sentence                    | Scroll holds; RC10 Voice positions the next spoken passage and keeps listening. Retake belongs to the completed section until next delivery. For ad-libs, use listen directives |
+| `{pause}`                                  | Inline, at the end of a sentence                                  | Scroll-only manual hold in RC6. Voice ignores it; use a spoken Pause for a deliberate Voice hold. RC3–RC5 packages still treat bare pause as stop |
 | `{pause: ns}`                              | Inline, at the end of a sentence                                  | A countdown: the prompter waits n seconds (1 to 30), showing "Carrying on in n", then carries on by itself, for example `{pause: 3s}`. Use 2s to 5s for a breath, a beat for emphasis, or time to look at a slide. Write them whether the speaker will use steady or voice scrolling: in voice scrolling the prompter doesn't hold, it shows the pause as a mark and the speaker takes the beat |
 | `{mode: notes}` (or `{mode: points}`) | Script settings | For a talk spoken from notes: shown a page at a time, never scrolled. A `# heading` starts a page (its title) and `{page}` starts one without a title; each `## heading` on the page is a bullet, with a short line under it if needed; put `{target: m:ss}` on the `# heading`. Without `# headings` or `{page}`, each `## section` is a page. Write each section as 3 to 6 short bullets (`- `) and give every section a `{target: m:ss}` |
 | `{marker}` or `{marker: Setup}`            | Inline                                                            | A bookmark for retakes. Put one at the start of any passage that's hard to deliver. In a long section, name one at the start of each part (`{marker: Setup}`, `{marker: Context}`), up to 40 characters, so the edit can find each part |
@@ -150,8 +156,9 @@ Several settings can share one pair of braces, separated by commas:
   where the speaker will want it every time, such as `{prompter: slower}`
   before a dense passage.
 - You don't know whether the script will be read with steady or voice scrolling,
-  so write stops and countdowns the same way for both. A `{stop}` holds in
-  both; a countdown only holds in steady scrolling.
+  so explain the mode difference: `{stop}` holds Scroll but prepares the next
+  passage in RC10 Voice. Countdowns only hold Scroll. Use a spoken Pause or
+  listen directives for deliberate Voice holds.
 - Keep literal voice-command exercises in production comments, outside spoken
   copy. Reading a complete command aloud can execute it. Do not put them inside
   quoted `[Say: …]` cues, which belong to the spoken alignment. Use short inline

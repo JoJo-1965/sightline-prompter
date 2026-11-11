@@ -307,7 +307,8 @@ export async function startAutoScroll( {
 	const wordIndex = buildWordIndex( scriptEl );
 	// Your words: heard forms count as the script word too (word-fixes.js).
 	const wordFixer = createWordFixer( wordFixes, wordIndex.words );
-	const aligner = createAligner( wordIndex.words, { synonyms: wordFixer.synonyms, soundAlike } );
+	const sectionStarts = [ ...scriptEl.querySelectorAll( "h2" ) ].map( heading => wordIndex.ranges.findIndex( range => heading.contains( range.startContainer ) ) );
+	const aligner = createAligner( wordIndex.words, { synonyms: wordFixer.synonyms, soundAlike, sectionStarts } );
 	aligner.setPosition( findWordAtViewport( wordIndex.ranges ) );
 	let takeCommands;
 	const setCommandOptions = ( options ) => {
@@ -450,6 +451,10 @@ export async function startAutoScroll( {
 		setCommandOptions,
 		restartListening: () => recovery.retry(),
 		getPosition: () => aligner.currentPosition(),
+		syncToWord( index ) {
+			aligner.setPosition( index );
+			aligner.clearRecent();
+		},
 		// Re-anchor to the visible text after the user scrolls by hand.
 		syncToViewport,
 		// "Prompter, pause" / "Prompter, go": stop and start following without

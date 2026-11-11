@@ -1,8 +1,8 @@
 {
 	"name": "sightline-prompter",
 	"productName": "Sightline Prompter",
-	"version": "1.3.0-rc.9",
-	"documentationRevision": 25,
+	"version": "1.3.0-rc.10",
+	"documentationRevision": 26,
 	"releaseDate": "2026-11-11",
 	"description": "Sightline Prompter",
 	"main": "src/main.js",

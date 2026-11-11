@@ -161,6 +161,8 @@ keyboard or click a pill to read its explanation; Escape closes it.
 **Eye-line strip** subtabs. Set the monitor, always on top, toolbar visibility, capture protection,
 click-through and independent left/right and top/bottom mirroring here.
 The compact mirror buttons use the same axis icons as the main toolbar.
+RC10 wraps whole toolbar groups on smaller windows, keeping window-sizing
+actions visible. Session controls sit below the complete toolbar.
 Enable the eye-line strip to reveal its width, height and reading-line controls.
 These use the same sliders, number boxes and help pills as other settings.
 The mouse pointer remains visible when the main toolbar hides.

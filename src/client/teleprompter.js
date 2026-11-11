@@ -221,6 +221,7 @@ function recordingScriptSnapshot() {
 }
 
 function renderScript( html ) {
+	voiceBoundary = null;
 	md.innerHTML = html;
 	decorateScript( md, { cuePhrases, highlight: settings.highlightCues } );
 	// A comments-only paragraph has no body-text line box holding it open.
@@ -1125,10 +1126,15 @@ function wordAfter( el, ranges ) {
 }
 
 function handleAutoScrollPosition( wordIdx, ranges ) {
+	if ( voiceBoundary && voiceBoundary.nextWord !== null && wordIdx >= voiceBoundary.nextWord ) {
+		voiceBoundary = null;
+		feedTakeLog( true );
+	}
 	// The words just heard end here, so the next thing to say is the word after.
 	if ( settings.highlightSentence !== false ) showSentenceAt( wordIdx + 1 );
 	const before = voiceWordIdx;
 	const pause = voicePauseCrossed( wordIdx, ranges );
+	const passageEnd = before === null || wordIdx <= before ? null : directivePoints.pauses.find( point => point.passageEnd && lastWordBefore( point, ranges ) > before && lastWordBefore( point, ranges ) <= wordIdx );
 	if ( before !== null && wordIdx > before && !autoScrollHandle?.isHeld() ) {
 		for ( const c of directivePoints.prompterCommands ) {
 			const last = lastWordBefore( c, ranges );
@@ -1136,13 +1142,42 @@ function handleAutoScrollPosition( wordIdx, ranges ) {
 		}
 	}
 	if ( Date.now() - lastManualScrollTs < MANUAL_SCROLL_GRACE_MS ) return;
+	if ( !pause && passageEnd ) {
+		advanceVoicePassage( passageEnd, ranges, wordIdx );
+		return;
+	}
 	scrollToWord( wordIdx, ranges );
 	if ( pause ) pauseVoiceAt( pause );
 	else if ( wordIdx >= ranges.length - 1 ) {
-		autoScrollHandle?.setHold( true );
-		linkedRecording.finish();
-		showPausePill( 0 );
+		setIndicator( "End of script · listening for commands" );
 	}
+}
+
+// Preview the next spoken passage without starting its take. Until fresh
+// speech reaches it, Again still belongs to the section just completed.
+let voiceBoundary = null;
+function advanceVoicePassage( point, ranges, wordIdx ) {
+	const last = lastWordBefore( point, ranges );
+	const next = ranges.findIndex( ( range, i ) => i > last && !range.startContainer.parentElement.closest( "h1,h2,h3,h4,h5,h6,.dir-text,.app-directive" ) );
+	// A recognition chunk may already include the next passage. Keep that
+	// progress rather than rewinding it and assigning Retake to the old section.
+	if ( next >= 0 && wordIdx >= next ) {
+		voiceBoundary = null;
+		scrollToWord( wordIdx, ranges, { smooth: false } );
+		feedTakeLog( true );
+		return;
+	}
+	const section = directivePoints.sections.filter( s => s.heading.compareDocumentPosition( point.el ) & Node.DOCUMENT_POSITION_FOLLOWING ).length;
+	voiceBoundary = { previousSection: Math.max( 1, section ), nextWord: next < 0 ? null : next };
+	clearPausePill();
+	cancelScroll();
+	if ( next >= 0 ) {
+		scrollToWord( next, ranges, { smooth: false } );
+		autoScrollHandle?.syncToWord( next );
+		voiceWordIdx = next - 1;
+		if ( settings.highlightSentence !== false ) showSentenceAt( next );
+	} else setIndicator( "End of script · listening for commands" );
+	window.electron.debugLog?.( `voice: soft boundary after section ${ voiceBoundary.previousSection }; ${ next >= 0 ? "next passage ready" : "end of script" }` );
 }
 
 // --- Stops and timed pauses: {stop} or {pause}, and {pause: 5s} ---
@@ -1221,8 +1256,8 @@ function lastWordBefore( point, ranges ) {
 	return point.lastWord;
 }
 
-// The explicit stop whose preceding word the speaker has just said, if any.
-// Bare and timed {pause} directives never hold Voice, including linked recording.
+// Off-script and sound-check holds still apply to Voice. Script stop/pause
+// tags do not hold it; stop tags are handled as soft passage boundaries.
 function voicePauseCrossed( wordIdx, ranges ) {
 	const before = voiceWordIdx;
 	voiceWordIdx = wordIdx;
@@ -1930,8 +1965,9 @@ function stopCommandListening() {
 
 // After a jump, voice scrolling picks up from the new place.
 function resyncAfterJump() {
+	voiceBoundary = null;
 	voiceWordIdx = null;
-	if ( autoScrollActive ) setTimeout( () => autoScrollHandle?.syncToViewport(), 700 );
+	if ( autoScrollActive ) autoScrollHandle?.syncToViewport();
 }
 
 // "Prompter": say so straight away, so you know it's listening for the rest.
@@ -2093,13 +2129,19 @@ async function runVoiceCommand( id, value ) {
 			setIndicator( `Paused · say “${ wakeLabel( settings.wakeWord ) }, go”` );
 		} else if ( isScrolling() ) runRemoteAction( "pause" );
 	} else if ( id === "go" ) {
-		practiceRun = true;
-		voiceFeedback.show( "Practice · prompter only", "OBS recording is unchanged.", "practice" );
+		if ( !voice ) practiceRun = true;
+		voiceFeedback.show( voice ? "Continue reading" : "Practice · prompter only", "OBS recording is unchanged.", voice ? "command" : "practice" );
 		if ( voice && scriptCheck ) carryOnFromVoiceCheck();
 		else if ( voice ) {
 			if ( !await prepareReading() ) return;
 			clearPausePill();
-			autoScrollHandle.setHold( false );
+			if ( autoScrollHandle.isHeld() ) autoScrollHandle.setHold( false );
+			if ( voiceBoundary && voiceBoundary.nextWord !== null ) {
+				const next = voiceBoundary.nextWord;
+				scrollToWord( next, autoScrollHandle.wordIndex.ranges, { smooth: false } );
+				autoScrollHandle.syncToWord( next );
+				voiceWordIdx = next - 1;
+			}
 			setIndicator( "Listening" );
 		} else if ( !isScrolling() ) runRemoteAction( "play" );
 	} else if ( id === "slower" || id === "faster" ) {
@@ -2120,12 +2162,18 @@ async function runVoiceCommand( id, value ) {
 		// Held at a sound check: check again.
 		startScriptSoundCheck( scriptCheck.kind, scriptCheck.pause );
 	} else if ( id === "retake" ) {
+		const completedSection = voiceBoundary?.previousSection;
+		voiceBoundary = null;
 		// Mark where it went wrong, then back to the start of the section.
 		dropMarker();
 		pendingJumpReason = "again";
 		if ( pointsMode() ) {
 			recording.jump( "again" );
 			goToPoint( pointsIndex );
+		} else if ( completedSection ) {
+			recording.jump( "again" );
+			scriptIndex = completedSection;
+			jumpToSection( completedSection );
 		} else jumpSection( 0 );
 		pendingJumpReason = null;
 		resyncAfterJump();
@@ -3765,7 +3813,7 @@ function syncControls() {
 			speedInput.value = settings.steadyWpm;
 		}
 	}
-	speedLabel.textContent = voice ? "Response" : "Speed";
+	speedLabel.textContent = voice ? "Catch-up" : "Speed";
 	speedInput.setAttribute( "aria-labelledby", "cb-speed-label" );
 	speedInput.closest( "label" ).title = voice
 		? "Scroll catch-up speed: how quickly the display moves to a matched word"
@@ -3838,6 +3886,8 @@ controlBar?.addEventListener( "mouseleave", refreshControlsVisibility );
 if ( controlBar && window.ResizeObserver ) {
 	new ResizeObserver( () => {
 		document.body.style.setProperty( "--bar-h", `${ controlBar.offsetHeight }px` );
+		const bottom = sessionControls.offsetHeight ? sessionControls.offsetTop + sessionControls.offsetHeight : 0;
+		document.body.style.setProperty( "--review-controls-bottom", `${ Math.ceil( bottom ) }px` );
 	} ).observe( controlBar );
 }
 
@@ -6093,7 +6143,7 @@ function feedTakeLog( active ) {
 	// Waiting for the slate: the take opens after it, so it gets the slate.
 	if ( slateDue || slating ) return;
 	const y = readingLineY();
-	const index = pointsMode() ? pointsIndex : sectionIndexAt( y );
+	const index = pointsMode() ? pointsIndex : voiceBoundary ? voiceBoundary.previousSection - 1 : sectionIndexAt( y );
 	const section = directivePoints.sections[index];
 	const next = directivePoints.sections[index + 1];
 	// Words still to read in this section. The line at the reading line counts
@@ -6112,7 +6162,7 @@ function feedTakeLog( active ) {
 		advanced: pointsMode()
 			? pointsRunning
 			: recordingY !== null && y > recordingY + 0.5 && left > 0,
-		atEnd: pointsMode() || left <= 3
+		atEnd: !!voiceBoundary || pointsMode() || left <= 3
 	} );
 	// Steady scrolling: a {marker} is passed when the reading line reaches it.
 	// (Voice mode logs it when the word after it is said.)

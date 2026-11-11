@@ -1,5 +1,11 @@
 # Scrolling and voice
 
+**RC10 Voice boundaries:** `{stop}` prepares the next spoken passage without
+holding Voice. Retake returns to the completed section until you speak the next
+passage; no extra Go is needed. Stops and timed pauses still control Scroll.
+Use an explicit spoken Pause for a deliberate Voice hold, and finish recording
+explicitly after the final passage. Off-script and sound-check holds remain.
+
 ## RC1: recorded section-number fixes
 
 In 1.3.0 RC1, say **Prompter, section twelve** or **Prompter twelve**.
@@ -329,46 +335,36 @@ scratch audio or a sound check; quit the app to stop all microphone use.
 
 ## Stops and timed pauses
 
-Put these in the script where you want the prompter to wait. A stop works in
-steady and voice scrolling. A countdown only holds in steady scrolling (see
-[In voice scrolling](#in-voice-scrolling) below).
+Scroll mode honours `{stop}` and `{pause}` as manual holds and timed pauses
+as countdowns. Continue with “Prompter, go”, Space or a controller.
 
-| In the script | What happens |
-| --- | --- |
-| `{stop}` | The prompter stops, and a yellow **Stopped** label shows at the bottom right. Say **"Prompter, go"** (or just **"go"**), or press Space, the clicker or the remote, to carry on |
-| `{pause}` | RC6: a manual hold in Scroll mode only. Voice ignores it, including linked recording; earlier RC3–RC5 packages treat it as stop |
-| `{pause: 5s}` | The prompter waits 5 seconds (up to 30), with a blue **Carrying on in 5** countdown and a bar that runs down, then carries on by itself |
+| In the script | Scroll | Voice in RC10 |
+| --- | --- | --- |
+| `{stop}` | Wait for deliberate continuation | Position the next spoken passage and keep listening |
+| `{pause}` | Wait for deliberate continuation | Follow your natural pause |
+| `{pause: 5s}` | Count down five seconds, then continue | Treat as a beat cue without a countdown |
 
-![A countdown: the blue label at the bottom right](images/pill-countdown.png)
+![A Scroll countdown](images/pill-countdown.png)
 
-![A stop: the yellow label, with the Prompter label showing the mic is listening for "Prompter, go"](images/pill-stop.png)
-
-During a stop or a countdown:
-
-- **"Prompter, go"** carries on straight away.
-- **"Prompter, pause"** turns a countdown into a stop, so it waits for you.
-- In steady scrolling, the microphone listens for "Prompter, go" while the
-  prompter waits, even if voice commands are set to voice mode only (the small
-  **🎙 Prompter** label shows). Set **Voice commands** to **Off** in
-  Settings > Voice > Voice commands to stop this.
+![A Scroll stop awaiting continuation](images/pill-stop.png)
 
 ### In voice scrolling
 
-In voice mode the prompter only moves when you speak, so it already waits for
-you. A `{stop}` still holds, so you can go off script, for a demo or a
-question, without the prompter jumping ahead on a word it recognises. Say
-"Prompter, go" when you're back.
+At a section-ending stop, the next section's first spoken line moves to the
+reading line, with its heading and preparation notes above it. No extra Go is
+needed. Retake still returns to the section just completed until you start
+speaking the next passage. At that point, Retake belongs to the new section.
+The take log follows the same rule; displaying the next opening does not start
+its take. An optional heading lead-in still applies to cold starts and retakes.
 
-A countdown, `{pause: 3s}`, doesn't hold or count down in voice mode. It shows
-as a small blue **⏸ 3s** mark in the script, and you take the beat yourself.
-Scripts can carry countdowns for steady scrolling without them getting in the
-way when you read by voice.
+An explicit “Prompter, pause” holds Voice deliberately; “Prompter, go” resumes.
+For an ad-lib or question, use the off-script directives below. The final
+passage leaves commands listening. Finish the recorder explicitly with
+“Prompter, finish recording” when the performance is safe.
 
-RC6 also ignores bare `{pause}` in Voice. Linked recording does not turn
-either pause form into a forced hold or countdown. Use `{stop}`
-where an intentional hold is required. Spoken **"Prompter, pause"** still
-pauses deliberately; **Next section** resumes following at the selected
-section without a separate **Go**. The navigation fix is already in RC5.
+Automatic unordered matching stays within the current section so similar
+headings cannot pull the script into another section. Ordered nearby speech
+can flow across sections; “Prompter, resync” can search the whole script.
 
 ### Off script: `{listen: off}`
 

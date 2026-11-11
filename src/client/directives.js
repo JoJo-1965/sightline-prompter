@@ -68,7 +68,8 @@ export const SOUND_CHECKS = [ "room", "voice" ];
 export const PROMPTER_COMMANDS = [ "slower", "faster", "bigger", "smaller", "marker" ];
 
 // Voice following already waits for the speaker. Script pauses are scroll-only;
-// explicit stops, off-script holds and sound checks remain deliberate holds.
+// stops become soft passage boundaries in Voice; off-script and sound checks
+// remain deliberate holds.
 export function pausesForMode( pauses, mode ) {
 	return mode === "voice" || mode === "notes"
 		? pauses.filter( pause => !pause.scrollOnly )
@@ -104,7 +105,7 @@ export function readDirectives( root ) {
 			pauses.push( { el, seconds, scrollOnly: true } );
 			// A timed pause: a beat mark in voice mode (see .beat in the CSS).
 			if ( seconds ) el.dataset.beat = `${ seconds }s`;
-		} else if ( "stop" in d ) pauses.push( { el, seconds: 0 } );
+		} else if ( "stop" in d ) pauses.push( { el, seconds: 0, scrollOnly: true, passageEnd: true } );
 		// {listen: off} is a stop with the microphone off; {listen: on} is where it carries on.
 		if ( "listen" in d ) {
 			const value = String( d.listen ).trim().toLowerCase();

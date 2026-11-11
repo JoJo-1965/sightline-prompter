@@ -32,3 +32,20 @@ unrelated.setPosition( 3 );
 for ( const word of tokens( "random appliance weather signal tomorrow unrelated noise" ) ) { unrelated.addRecognized( word ); unrelated.step(); }
 assert.equal( unrelated.currentPosition(), 3 );
 console.log( "Alignment continuity: common phrases, contractions/compounds and distant/out-of-order/unrelated guards pass" );
+
+const repeatedTitle = tokens( "sectionalpha one action to take today " + "neutral ".repeat( 100 ) + "sectionbeta one action to take today amber lanterns illuminate the garden" );
+const secondTitle = repeatedTitle.indexOf( "sectionbeta" );
+const guarded = createAligner( repeatedTitle, { sectionStarts: [ 0, secondTitle ], soundAlike: true } );
+for ( const chunk of [ "what", "one", "action to", "take", "from to", "day" ] ) {
+ for ( const word of tokens( chunk ) ) guarded.addRecognized( word );
+ guarded.step();
+ assert.ok( guarded.currentPosition() < secondTitle, "A fragmented repeated heading cannot jump into the following section" );
+}
+guarded.relocate();
+for ( const word of tokens( "amber lanterns illuminate the garden" ) ) guarded.addRecognized( word );
+assert.ok( guarded.step() >= secondTitle, "Explicit Resync retains whole-script recovery" );
+const flowing = createAligner( tokens( "we finish these opening words the next passage begins naturally" ), { sectionStarts: [ 0, 5 ] } );
+flowing.setPosition( 3 );
+for ( const word of tokens( "these opening words the next passage begins naturally" ) ) { flowing.addRecognized( word ); flowing.step(); }
+assert.equal( flowing.currentPosition(), 9, "Ordered speech can cross a section boundary without a hard hold" );
+console.log( "Repeated-heading guard, deliberate global Resync and continuous cross-section speech pass" );

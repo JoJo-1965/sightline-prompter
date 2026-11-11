@@ -442,3 +442,11 @@ release notes and roadmap. Stable marketing/promo claims and approved HUD layout
 remain applicable; add the spacing example to the next promo capture rather
 than recutting the approved film solely for this control. Command training stays
 planned. The JL snapshot is staged as a versioned candidate, not deployed.
+
+RC10, 11 November: changed existing stop/mode/retake/tracking rows; the count
+remains 269. Voice soft boundaries prepare the next spoken passage; retake and
+take identity remain on the completed section until new speech. Scroll holds
+remain. Native tests and recorded recognition replay cover this correction.
+Reviewed help, authoring/schema, demos, roadmap and JL candidate archive together.
+The previous RC documents remain historical snapshots. Quick inline editing is
+planned; no new editor capability is claimed. Existing recordings are untouched.

@@ -14,14 +14,14 @@ const tags = [
 const { pauses } = readDirectives( { querySelectorAll: () => tags } );
 const steady = pausesForMode( pauses, "steady" );
 assert.equal( steady.length, 10, "Scroll keeps bare/timed pauses and explicit holds" );
-assert.deepEqual( steady.filter( pause => pause.scrollOnly ).map( pause => pause.seconds ), [ 0, 3, 2, 0, 30 ] );
+assert.deepEqual( steady.filter( pause => pause.scrollOnly ).map( pause => pause.seconds ), [ 0, 3, 0, 2, 0, 30 ] );
 assert.equal( tags[1].dataset.beat, "3s", "Timed pauses retain the visible beat mark" );
 for ( const mode of [ "voice", "notes" ] ) {
 	const active = pausesForMode( pauses, mode );
-	assert.equal( active.length, 5, `${ mode } excludes every bare/timed pause` );
-	assert.deepEqual( active.map( pause => pause.soundcheck ?? pause.listen ?? "stop" ), [ "stop", "off", "room", "voice", "off" ], "Compound directives retain their independent checks/holds" );
+	assert.equal( active.length, 4, `${ mode } excludes every bare/timed pause` );
+	assert.deepEqual( active.map( pause => pause.soundcheck ?? pause.listen ?? "stop" ), [ "off", "room", "voice", "off" ], "Compound directives retain their independent checks/holds" );
 	assert.ok( active.every( pause => !pause.scrollOnly ) );
-	assert.equal( active[0].el.textContent, "{stop}", "An explicit stop still needs deliberate continuation" );
+	assert.equal( pauses.find( pause => pause.passageEnd ).el.textContent, "{stop}", "Voice retains the stop as a soft passage boundary" );
 }
 assert.equal( pausesForMode( pauses, "steady" ).length, 10, "Changing modes does not discard saved pause directives" );
 assert.deepEqual( pausesForMode( [], "voice" ), [] );

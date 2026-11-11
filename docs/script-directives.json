@@ -1,9 +1,9 @@
 {
-	"$comment": "Version 0.7.0 syntax remains unchanged. RC6 makes pauses Scroll-only; RC8 voice practice/go leaves OBS unchanged and bypasses recorder directives, recorded slates and chapters.",
+	"$comment": "RC10: stops are soft passage boundaries in Voice, hard holds in Scroll. Bare/timed pauses remain Scroll-only. Explicit spoken Pause, off-script holds and sound checks retain their controls.",
 	"name": "sightline-script-directives",
 	"version": "0.7.0",
 	"status": "syntax agreed; implemented in the app (27 October 2026): pause, marker, wpm, target, pacing, mode",
-	"date": "2026-11-08",
+	"date": "2026-11-11",
 	"syntax": {
 		"directive": "{ name[: value] [, name[: value]]... }",
 		"directiveDelimiters": [
@@ -27,7 +27,17 @@
 		"authoringContract": "POINTING-CUE-AUTHORING.md",
 		"authoring": "Match graphic label, presenter direction and exact spoken anchor across the shot plan, preparation comment and inline cue. Generated Sightline cues must be outside HTML comments; source wrappers require conversion. Verify output before Ready to record.",
 		"syntax": "[point direction: optional graphic label]",
-		"directions": [ "left", "right", "up", "down", "up-left", "up-right", "down-left", "down-right", "centre" ],
+		"directions": [
+			"left",
+			"right",
+			"up",
+			"down",
+			"up-left",
+			"up-right",
+			"down-left",
+			"down-right",
+			"centre"
+		],
 		"directionBasis": "presenter",
 		"spoken": false,
 		"quotedLabelsSpoken": false,
@@ -45,8 +55,18 @@
 	},
 	"directives": {
 		"record": {
-			"scopes": [ "inline" ],
-			"value": { "type": "enum", "values": [ "on", "off", "pause", "resume" ] },
+			"scopes": [
+				"inline"
+			],
+			"value": {
+				"type": "enum",
+				"values": [
+					"on",
+					"off",
+					"pause",
+					"resume"
+				]
+			},
 			"description": "Optional explicit OBS recording action. Requires OBS mode and recording controls. Executes only while reading reaches it, never on load. Off and pause hold prompting; use Play to continue. Unsupported pause requests leave prompting held with an error."
 		},
 		"pacing": {
@@ -99,7 +119,7 @@
 				"maximum": 30,
 				"example": "3s"
 			},
-			"description": "Scroll mode only: without a value, wait until the speaker continues; with a value, count down for that many seconds and resume. Voice ignores both forms, including linked recording; a timed tag remains a visual beat mark. Use {stop} for a deliberate hold in either mode. This correction is included in RC6; RC3–RC5 still hold at bare pause."
+			"description": "Scroll only: hold without a value, or count down a timed value. Voice ignores both forms. Use an explicit spoken Pause for a deliberate Voice hold."
 		},
 		"page": {
 			"scopes": [
@@ -117,7 +137,7 @@
 			"value": {
 				"type": "none"
 			},
-			"description": "Hold until the speaker deliberately continues with Prompter, go, Space, the clicker or remote. Works in Scroll and Voice. Bare {pause} is Scroll-only in RC6."
+			"description": "Scroll: hold until continued. Voice: position the next spoken passage and keep listening; Retake belongs to the completed section until the next passage is spoken. No extra Go is required. Finish the recorder explicitly at the end."
 		},
 		"marker": {
 			"scopes": [

@@ -60,10 +60,11 @@ function buildCounts( words ) {
 	return counts;
 }
 
-export function createAligner( scriptWords, { synonyms = new Map(), soundAlike = false } = {} ) {
+export function createAligner( scriptWords, { synonyms = new Map(), soundAlike = false, sectionStarts = [] } = {} ) {
 	const recent = [];
 	let position = 0;
 	let relocating = false;
+	const sections = [ ...new Set( [ 0, ...sectionStarts.filter( i => Number.isInteger( i ) && i >= 0 && i < scriptWords.length ), scriptWords.length ] ) ].sort( ( a, b ) => a - b );
 
 	const docFreq = buildCounts( scriptWords );
 	const logN = Math.log( 1 + scriptWords.length );
@@ -222,9 +223,15 @@ export function createAligner( scriptWords, { synonyms = new Map(), soundAlike =
 			return position;
 		}
 
+		// An unordered bag of words in a repeated heading must not relocate to
+		// another section. Ordered nearby speech can still cross a boundary;
+		// explicit Resync above deliberately searches the complete script.
+		const sectionEnd = sections.findIndex( end => end > position );
+		const lower = sections[Math.max( 0, sectionEnd - 1 )];
+		const upper = sections[sectionEnd] ?? scriptWords.length;
 		const local = search(
-			Math.max( 0, position - MAX_BACKWARD_JUMP ),
-			Math.min( scriptWords.length, position + FORWARD_WINDOW ),
+			Math.max( lower, position - MAX_BACKWARD_JUMP ),
+			Math.min( upper, position + FORWARD_WINDOW ),
 			recentCounts
 		);
 		const localRatio
@@ -237,7 +244,7 @@ export function createAligner( scriptWords, { synonyms = new Map(), soundAlike =
 			return position;
 		}
 
-		const global = search( 0, scriptWords.length, recentCounts );
+		const global = search( lower, upper, recentCounts );
 		if (
 			global.score >= maxScore * MIN_SCORE_RATIO_GLOBAL
 			&& global.content >= MIN_CONTENT_MATCHES_GLOBAL

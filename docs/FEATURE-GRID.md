@@ -1,7 +1,7 @@
 # Sightline Prompter feature grid
 
-**Review basis: Sightline 1.3.0 RC9 preview, documentation revision 25, 11 November 2026.**
-**Build version:** `1.3.0-rc.9` · **Publication status:** Preview
+**Review basis: Sightline 1.3.0 RC10 preview, documentation revision 26, 11 November 2026.**
+**Build version:** `1.3.0-rc.10` · **Publication status:** Preview
 
 **Maintained source:** [Feature grid](https://github.com/JoJo-1965/sightline-prompter/blob/codex/pointing-production-cues/docs/FEATURE-GRID.md)
 
@@ -11,8 +11,7 @@ snapshot. The public app release remains **1.2.0**; this document
 does not certify an individual recording setup.
 
 **RC6 corrections:** bare and timed `{pause}` directives apply only to Scroll;
-Voice follows naturally, including linked recording. Explicit `{stop}` remains
-a deliberate hold. Paused review leaves opening comments clear of the floating
+Voice follows naturally, including linked recording. RC10 supersedes the former Voice `{stop}` hold; Scroll still holds. Paused review leaves opening comments clear of the floating
 session controls, including wrapped rows. Delivery keeps its reading-line layout.
 These fixes do not add capabilities or change earlier frozen packages.
 
@@ -30,6 +29,12 @@ themes, with the established gap as default. Nearby ordered speech improves
 common-word continuity. Scroll catch-up speed controls movement, not recognition.
 Bookmark flags are removed while anchors, logs and enabled OBS chapters remain.
 The 269 capabilities are grouped below.
+
+**RC10 Voice boundaries:** `{stop}` prepares the next spoken passage without
+holding Voice. Retake returns to the completed section until you speak the next
+passage; no extra Go is needed. Stops and timed pauses still control Scroll.
+Use an explicit spoken Pause for a deliberate Voice hold, and finish recording
+explicitly after the final passage. Off-script and sound-check holds remain.
 
 Use the [searchable grid](FEATURE-GRID.html) to browse by subject or support
 level. The [CSV comparison sheet](FEATURE-GRID.csv) includes a blank reviewer
@@ -74,7 +79,7 @@ Reference: [Scrolling and voice](guide/03-scrolling-and-voice.md) and [Recording
 | On air reading view | Included | A separate On air state changes the operator/reading presentation and configured backing. | On air describes the prompter view; use the confirmed recording pill to check the recorder. |
 | Restart and return to top | Included | Return to the beginning; reset can also restore normal pace and clear the pacing clock. | Returning to top and starting a fresh timed run are distinct actions. |
 | Section navigation | Included | Previous, next and numbered section jumps; section retakes. RC5 adds an optional Voice-only Start from section heading preference for a spoken lead-in. | Off by default; first body line remains the default. Headings retain their section identity for editorial trimming; no automatic verified cut boundary. |
-| Speed and responsiveness | Included | Change steady WPM or Scroll catch-up speed during use; 100% is normal. | Catch-up speed affects display movement, not recognition. RC9 accepts ordered nearby common phrases; distant relocation retains distinctive-word checks. |
+| Speed and responsiveness | Included | Change steady WPM or Scroll catch-up speed during use; 100% is normal. | Catch-up speed affects display movement, not recognition. RC9 accepts ordered nearby common phrases; RC10 confines unordered automatic matching to the current section. Explicit Resync can search the whole script. |
 | Start countdown | Optional | Set a countdown before Scroll mode starts moving. | Does not delay Voice or Notes/page mode, and does not itself start an external recorder. |
 | Section targets | Optional | Per-section WPM and target duration, plus script-wide pacing instructions. | Targets guide delivery; they do not guarantee the final running time. |
 | Pace feedback | Included | Pacing light, elapsed time, progress and estimated time remaining. | Speech-derived figures require useful recognition data. |
@@ -135,7 +140,7 @@ Reference: [Script directives](SCRIPT-DIRECTIVES.md) and [AI script brief](AI-SC
 | Quoted spoken cues | Included | `[Say: "Section one"]` distinguishes words intended to be spoken. | Quoted words are included in the spoken script; do not use this form for silent instructions. |
 | Long production comments | Included | HTML comments hold preparation instructions; visible while paused and hidden during delivery. RC6 leaves opening comments clear of floating session controls, including wrapped rows. | All comment contents, including quoted words and directive examples, are excluded from speech tracking and command execution. |
 | Direction display | Optional | Normal, dimmed or hidden bracket directions; quoted spoken words remain visible. | RC3 pointing labels stay silent, including quotes. Long production comments follow the separate paused/delivering rule. |
-| Manual script stops | Included | `{stop}` holds Scroll or Voice until the user continues. Bare `{pause}` holds Scroll only in RC6. | Voice/Notes ignore script pause directives, including linked recording. Explicit stops and spoken pause commands remain deliberate. |
+| Manual script stops | Included | Scroll honours `{stop}`. RC10 Voice positions the next spoken passage and continues listening; Retake remains on the completed section until next delivery. | Explicit spoken Pause, off-script holds and sound checks retain deliberate controls. Finish recording explicitly. |
 | Timed pauses | Included | `{pause: 3s}` provides a countdown in Scroll mode. | Voice treats the timed tag as a visible beat cue; it does not hold, count down or pause linked recording. |
 | Named markers | Included | `{marker}` or `{marker: Setup}` creates a navigation and edit reference. | Navigation/log anchors remain without on-screen bookmark flags. Timing references are not verified frame-accurate cuts. |
 | Off-script passages | Optional | `{listen: off}` and `{listen: on}` hold following and voice commands during ad-libs; manual continuation is required. | Enabled scratch audio and production recording can continue independently; this is not a whole-microphone privacy switch. |
@@ -179,7 +184,7 @@ Reference: [Layout and display](guide/04-layout-and-display.md) and [Remotes and
 | --- | --- | --- | --- |
 | Transparent content overlay | Included | Read over a video call, slides, camera/projector preview or other desktop content. | Sightline does not supply or embed the underlying call or presentation. |
 | Always on top | Optional | Keep the prompter above ordinary application windows. | Operating-system window rules and other topmost windows can affect stacking. |
-| Windowed and fullscreen use | Included | Size and position the prompter, or use a fullscreen reading view. | Multi-window arrangements need checking on the intended display. |
+| Windowed and fullscreen use | Included | Size and position the prompter, or use a fullscreen reading view. RC10 wraps toolbar groups on small windows, retaining minimise/maximise/fullscreen/close controls. | Multi-window arrangements need checking on the intended display. |
 | Horizontal and vertical mirror | Included | Separate mirror controls, including toolbar icons. | Set the flips appropriate to the physical teleprompter glass or monitor. |
 | Prompter monitor | Optional | Explicit display selection opens full screen. A manual cross-screen drag restores a centred normal window at 75% of the destination work area; included in the reading workflow. | Windows drag handling clears eye-line mode and the pinned monitor choice. Same-display moves retain the chosen size. Requires a connected display. |
 | Eye-line strip | Optional | Compact reading strip with configurable screen height and reading-line position. | Lens alignment is a manual setup task. |

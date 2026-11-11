@@ -1,5 +1,12 @@
 # Sightline Prompter features
 
+**RC10 Voice boundaries:** `{stop}` prepares the next spoken passage without
+holding Voice. Retake returns to the completed section until you speak the next
+passage; no extra Go is needed. Stops and timed pauses still control Scroll.
+Use an explicit spoken Pause for a deliberate Voice hold, and finish recording
+explicitly after the final passage. Off-script and sound-check holds remain.
+
+
 **1.3.0 RC9:** independent script paragraph spacing (0–300%) in the existing
 appearance controls, with settings/theme persistence and legacy defaults.
 Nearby ordered phrases improve Voice continuity; Scroll catch-up speed

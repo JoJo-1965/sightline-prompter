@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "basis": "Sightline 1.3.0 RC9 preview, documentation revision 25, 11 November 2026",
+  "basis": "Sightline 1.3.0 RC10 preview, documentation revision 26, 11 November 2026",
   "date": "11 November 2026",
   "sourceBuild": "6668adc",
-  "buildVersion": "1.3.0-rc.9",
+  "buildVersion": "1.3.0-rc.10",
   "publicationStatus": "preview",
   "appRelease": "1.2.0",
   "pluginRelease": "0.2.1.6",
   "sourceUrl": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/pointing-production-cues/docs/FEATURE-GRID.md",
-  "sourceSha256": "68030a07af1e09d90ef483bfed6f92c8cdfee30af4396f431caa21b3ed7997fc",
+  "sourceSha256": "ac39465443719e1c074cde4d8bc02b2e6ca0f4fed18ae0e8a68edd80c5d3d5ce",
   "support": [
     "Included",
     "Optional",
@@ -165,7 +165,7 @@
           "name": "Speed and responsiveness",
           "support": "Included",
           "options": "Change steady WPM or Scroll catch-up speed during use; 100% is normal.",
-          "limits": "Catch-up speed affects display movement, not recognition. RC9 accepts ordered nearby common phrases; distant relocation retains distinctive-word checks."
+          "limits": "Catch-up speed affects display movement, not recognition. RC9 accepts ordered nearby common phrases; RC10 confines unordered automatic matching to the current section. Explicit Resync can search the whole script."
         },
         {
           "name": "Start countdown",
@@ -444,8 +444,8 @@
         {
           "name": "Manual script stops",
           "support": "Included",
-          "options": "`{stop}` holds Scroll or Voice until the user continues. Bare `{pause}` holds Scroll only in RC6.",
-          "limits": "Voice/Notes ignore script pause directives, including linked recording. Explicit stops and spoken pause commands remain deliberate."
+          "options": "Scroll honours `{stop}`. RC10 Voice positions the next spoken passage and continues listening; Retake remains on the completed section until next delivery.",
+          "limits": "Explicit spoken Pause, off-script holds and sound checks retain deliberate controls. Finish recording explicitly."
         },
         {
           "name": "Timed pauses",
@@ -650,7 +650,7 @@
         {
           "name": "Windowed and fullscreen use",
           "support": "Included",
-          "options": "Size and position the prompter, or use a fullscreen reading view.",
+          "options": "Size and position the prompter, or use a fullscreen reading view. RC10 wraps toolbar groups on small windows, retaining minimise/maximise/fullscreen/close controls.",
           "limits": "Multi-window arrangements need checking on the intended display."
         },
         {

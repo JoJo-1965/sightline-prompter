@@ -1,10 +1,16 @@
+<!-- RC10 VOICE. Stop tags are soft boundaries: read naturally into the next
+passage. Its spoken opening is positioned automatically. Retake still returns
+to the completed section until you speak the next one. Scroll honours stops.
+Use an explicit spoken Pause if you want to hold Voice. -->
+
 {pacing: section, wpm: 140}
 
 # Welcome to Sightline Prompter
 
 <!-- START HERE. This tour works without a camera, microphone, AI or recorder.
 Read the ordinary text. Setup notes show while paused; short cues stay inline.
-Space starts or pauses. At each stop, try the suggested action, then continue.
+Space starts or pauses. In Scroll, try the suggested action at each stop. In Voice, pause naturally
+and use a spoken Pause when you want to try a control.
 Samples are read-only: use Save a copy before making your own changes. -->
 
 <!-- RC9 READING. Scroll catch-up speed changes display movement, not speech
