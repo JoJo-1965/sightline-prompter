@@ -5,7 +5,7 @@
 
 **Maintained source:** [Feature grid](https://github.com/JoJo-1965/sightline-prompter/blob/codex/pointing-production-cues/docs/FEATURE-GRID.md)
 
-This grid describes the preview built from `2f4369e`, with companion Stream
+This grid describes the preview built from `510b815`, with companion Stream
 Deck plugin **0.2.1.6** candidate. It includes stable 1.2.0 features plus the explicitly labelled RC additions. The build manifest also records the packaging/documentation
 snapshot. The public app release remains **1.2.0**; this document
 does not certify an individual recording setup.
