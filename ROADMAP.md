@@ -35,7 +35,7 @@ visible line breaks and source preservation. Small windows use a slot picker;
 window controls stay top right on the first row. Native checks cover editing,
 conflicts, held Voice resume and compact layouts. Human microphone UAT remains.
 
-See [RC11 notes](docs/RELEASE-1.3.0-rc.11.md).
+See [RC11 notes](docs/RELEASE-1.3.0.md#rc11).
 
 
 **RC10 Voice boundaries:** `{stop}` prepares the next spoken passage without

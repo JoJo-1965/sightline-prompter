@@ -4,7 +4,7 @@
 > The public download below is stable 1.2.0. This candidate adds optional
 > [post-record audio review](docs/guide/19-post-record-review.md) and a
 > [rerunnable guided tour](docs/guide/20-guided-tour.md). Read the
-> [RC11 notes and limits](docs/RELEASE-1.3.0-rc.11.md) before testing. This candidate
+> [Complete 1.3.0 notes and limits](docs/RELEASE-1.3.0.md) before testing. This candidate
 > adds [grouped controller functions](docs/guide/21-controller-functions.md),
 > explicit reading modes, preparation/review controls and an Adjustment dial.
 > RC3 adds silent `[point left: graphic-label]` cues with presenter-relative
@@ -171,7 +171,7 @@ Cancel keeps the original. Enter inserts a visible break, Ctrl+Enter saves
 and Escape cancels. Prompting stays paused. External changes block Save.
 On smaller windows a Slot 1–9 picker replaces the nine numbered buttons.
 Window controls stay on the first row at the top right.
-See [RC11 notes](docs/RELEASE-1.3.0-rc.11.md).
+See [RC11 notes](docs/RELEASE-1.3.0.md#rc11).
 
 ### 1.3.0 RC10 — continuous Voice passages
 

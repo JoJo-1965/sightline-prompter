@@ -465,3 +465,11 @@ controls, increasing the candidate grid to 270 capabilities. Checked help,
 guide, screenshots, welcome tour, grouped release notes, roadmap and promo
 copy together. JL uses a versioned candidate archive; stable 1.2.0 references
 and the published 0.2.0 plugin remain separate. No directive syntax changed.
+
+## RC11 UAT script and cumulative notes — 11 November 2026
+
+Added a separate editable human-UAT script for paragraph Save/Cancel, Voice
+resume and compact slots. Consolidated complete 1.3.0 notes into RC1–RC11
+sections, with superseded behaviour flagged. No runtime, capability, setting,
+controller or directive changes; the 270-row exports remain valid. The running
+RC11 binary is retained while standalone notes and JL preview archives update.

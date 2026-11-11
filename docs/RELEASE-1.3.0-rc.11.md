@@ -1,5 +1,7 @@
 # Sightline 1.3.0 RC11 preview
 
+Read the [complete 1.3.0 release notes, grouped by RC](RELEASE-1.3.0.md).
+
 11 November 2026 · documentation revision 27. Includes RC10's Voice and
 recording fixes. Public stable versions remain app 1.2.0 and companion 0.2.0.
 

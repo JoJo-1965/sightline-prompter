@@ -13,6 +13,9 @@ Complete for the combined batch before tagging, publishing or deploying.
 - [ ] User guide/canonical wiki and getting-started instructions agree.
 - [ ] Affected screenshots/examples and their JL copies show the correct build.
 - [ ] README, changelog/release notes, roadmap and known limits are current.
+  Maintain cumulative version notes with an RC section for every candidate;
+  flag later corrections that supersede earlier behaviour. Individual RC files
+  remain historical snapshots, not the sole notes shipped with a candidate.
 - [ ] Script brief/spec/checker and samples agree when directives change.
 - [ ] `docs/FEATURES.md` and **`docs/FEATURE-GRID.md`** describe the exact
   options, controls, dependencies and limits; review OBS and Stream Deck separately.

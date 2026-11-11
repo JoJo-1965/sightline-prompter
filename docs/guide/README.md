@@ -1,5 +1,7 @@
 # Sightline Prompter user guide
 
+[1.3.0 candidate release notes — RC1 to RC11](../RELEASE-1.3.0.md)
+
 **Sightline 1.3.0 RC6 preview · companion candidate 0.2.1.6 · documentation revision 22**
 
 Stable download remains Sightline 1.2.0. New preview workflows are described in
