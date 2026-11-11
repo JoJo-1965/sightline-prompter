@@ -1917,7 +1917,8 @@ function syncCommandListening() {
 }
 
 function stopCommandListening() {
-	if ( !commandListening ) return commandChange;
+	// A command listener may still be opening its microphone. Queue the stop
+	// after that work instead of returning while commandListening is false.
 	commandChange = commandChange.then( async () => {
 		if ( !commandListening ) return;
 		await stopAutoScroll();
