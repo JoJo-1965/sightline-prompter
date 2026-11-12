@@ -1,5 +1,14 @@
 # Feature-matrix review record
 
+## Microphone-gain source correction — 12 November 2026
+
+Prepared explicit AGC-off capture for speech/wake and the selected-mic meter,
+with actual opener tests using fake devices. Existing room/voice measurement
+and scratch streams already disable AGC. The running RC11 binary remains
+unchanged while recording; no claim that the reported 71-to-62 change has been
+reproduced or attributed. Current capability exports retain their RC11 basis;
+review capture-policy wording and physical levels with the next combined RC.
+
 ## Sightline wake-word request — 12 November 2026
 
 Queued Sightline as another selectable wake word for the next combined RC,

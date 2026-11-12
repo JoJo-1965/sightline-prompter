@@ -2,6 +2,7 @@ import { roundControlNumber } from "./numeric-controls.js";
 import {
 	startAutoScroll,
 	stopAutoScroll,
+	openMic,
 	scrollToWord,
 	cancelScroll,
 	setScrollSpeed,
@@ -1312,8 +1313,8 @@ async function runScriptCommand( command ) {
 // noise while you stay quiet, or your voice while you read a line. The result,
 // and what to turn up or down, show on a card and go in the take log
 // (soundChecks). "Prompter, again" or Check again measures again; carrying on
-// (Space, "Prompter, go") closes it. Sightline can't set the mic's gain: the
-// recording isn't its own, so it says how far to turn it instead.
+// (Space, "Prompter, go") closes it. Checks advise on input level; capture
+// requests disable automatic gain control and do not set a Windows mic level.
 const VOICE_CHECK_LINE = "Testing, one, two, three. This is my normal speaking voice, at the level I'll use for the recording.";
 const CHECK_SECONDS = { room: 5, voice: 7 };
 let scriptCheck = null; // { kind, pause, timer, done }
@@ -4582,9 +4583,7 @@ async function startMicMeter( selectedDevice = audioDeviceId, settingsPreview = 
 	stopMicMeter();
 	const status = field( "vp-mic-status" );
 	try {
-		meterStream = await navigator.mediaDevices.getUserMedia( {
-			audio: selectedDevice ? { deviceId: { exact: selectedDevice } } : true
-		} );
+		meterStream = await openMic( selectedDevice, undefined, { processed: false } );
 	} catch ( err ) {
 		status.textContent = `Can't open this microphone: ${ err.message }`;
 		return;

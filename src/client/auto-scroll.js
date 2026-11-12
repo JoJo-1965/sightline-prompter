@@ -249,10 +249,13 @@ async function openDeepgram( deepgramKey, stream, onWords, onStatus ) {
 	};
 }
 
-async function openMic( audioDeviceId, onStatus ) {
+// Speech keeps its existing cleanup; meters request an unprocessed input.
+// Neither path should opt into automatic gain changes.
+export async function openMic( audioDeviceId, onStatus, { processed = true } = {} ) {
 	const baseAudio = {
-		echoCancellation: true,
-		noiseSuppression: true
+		echoCancellation: processed,
+		noiseSuppression: processed,
+		autoGainControl: false
 	};
 	if ( audioDeviceId ) {
 		try {

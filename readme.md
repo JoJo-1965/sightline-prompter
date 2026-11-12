@@ -156,6 +156,14 @@ on your own setup. OBS-scene calibration is a sampled preview, not the encoder o
 
 ## Change log
 
+### Queued after RC11 — microphone capture policy
+
+The next-candidate source explicitly disables automatic gain control for
+speech/wake listening and the selected-microphone test, including device
+fallback. Recording meters already request AGC off. Mock-device tests pass;
+the running RC11 package is unchanged and the reported Windows level drop
+still needs physical confirmation and attribution.
+
 ### 9 November 2026 — Stream Deck plugin published
 
 The free Stream Deck companion 0.2.0 is now published on

@@ -1,5 +1,11 @@
 # Scrolling and voice
 
+**Prepared after RC11, not yet packaged:** speech/wake capture and the selected
+microphone test explicitly request automatic gain control off. Test metering
+uses unprocessed input; speech retains its existing noise/echo processing.
+This does not control the gain settings of other apps or the audio driver.
+Check the actual input level after the combined preview is installed.
+
 **RC10 Voice boundaries:** `{stop}` prepares the next spoken passage without
 holding Voice. Retake returns to the completed section until you speak the next
 passage; no extra Go is needed. Stops and timed pauses still control Scroll.

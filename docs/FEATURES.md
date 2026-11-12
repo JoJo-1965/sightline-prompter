@@ -1,5 +1,9 @@
 # Sightline Prompter features
 
+**Prepared for the next candidate, not RC11:** explicit AGC-off capture for
+speech/wake and selected-microphone test metering. Other applications or the
+driver may still change the microphone level; physical validation remains.
+
 **RC11 preview:** paused double-click paragraph editing with Save/Cancel,
 visible line breaks and source preservation. Small windows use a slot picker;
 window controls stay top right on the first row. Native checks cover editing,
