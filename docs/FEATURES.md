@@ -199,3 +199,8 @@ Installers target Windows, Mac (Apple silicon/Intel) and Linux. Mac bundles use
 verified free ad-hoc signing and are not notarised. Read the installation guide.
 Keep using your usual recorder for production video, and verify device support,
 capture exclusion and actual picture/sound sync on your setup.
+
+RC12 dialog speech also covers the separate guide, guide-adjustment and
+recording-review windows, using the same listener and rechecking the focused
+window and enabled button before dispatch. These windows do not open another
+microphone. Native operating-system dialogs retain normal controls.

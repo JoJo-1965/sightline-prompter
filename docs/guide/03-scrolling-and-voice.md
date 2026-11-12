@@ -7,7 +7,8 @@ settings. Apply preserves your selection; reading “Sightline Prompter” is
 ordinary narration. Dynamic listening labels and command help use your choice.
 
 With command listening enabled, say the exact enabled button label in the
-foreground Sightline dialog: Continue, Continue anyway, Check again, Close,
+foreground Sightline dialog (including preparation, guide adjustments, user
+guide and recording review): Continue, Continue anyway, Check again, Close,
 Cancel, or its displayed next-step words. Gold feedback confirms the action.
 Disabled, hidden, background or ambiguous buttons do not run. Existing button
 handlers, permissions and confirmations still apply. OS file and security

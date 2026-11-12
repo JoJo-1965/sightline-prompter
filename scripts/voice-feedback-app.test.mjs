@@ -63,6 +63,12 @@ try {
 	await panel.evaluate('contextButton.disabled=false;contextButton.hidden=true');await heard("CHECK AGAIN");assert.equal(await panel.evaluate('contextClicks'),1,'Hidden action is blocked');
 	await panel.evaluate('contextButton.hidden=false;globalThis.contextDuplicate=contextButton.cloneNode(true);document.body.appendChild(contextDuplicate)');await heard("CHECK AGAIN");assert.equal(await panel.evaluate('contextClicks'),1,'Ambiguous labels do not click');
 	await panel.evaluate('contextDuplicate.remove();contextButton.remove()');
+	await main.evaluate('window.electron.openGuide("README.md")'); const guideWindow=await connect("guide.html");await pause(350);
+	await guideWindow.evaluate('globalThis.windowClicks=0;globalThis.windowButton=document.createElement("button");windowButton.textContent="Review this step";windowButton.onclick=()=>windowClicks++;document.body.appendChild(windowButton)');await pause(180);
+	await heard("REVIEW THIS STEP");assert.equal(await guideWindow.evaluate('windowClicks'),1,'Separate guide renderer joins the existing speech listener');
+	assert.equal(await guideWindow.evaluate('document.getElementById("dialog-voice-feedback").hidden'),false,'Gold acknowledgement appears in the active guide');
+	await guideWindow.evaluate('windowButton.disabled=true');await pause(180);await heard("REVIEW THIS STEP");assert.equal(await guideWindow.evaluate('windowClicks'),1,'Disabled separate-window action stays blocked');
+	await native.evaluate('testElectron.BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().endsWith("/guide.html")).close();testElectron.BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().includes("utility-window.html?panel=settings")).focus()');await pause(150);
 	await heard( "PROMPTER PRACTICE" );
 	assert.equal( await main.evaluate( 'document.getElementById("cb-play").getAttribute("aria-pressed")' ), "true" );
 	assert.equal( await native.evaluate( "testObsCalls.length" ), 0, "Practice bypasses linked recording and a startup record directive" );

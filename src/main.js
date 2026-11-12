@@ -22,6 +22,7 @@ import { createControl } from "./control.js";
 import { createHeadGuide } from "./head-guide.js";
 import { createPreRecord } from "./pre-record.js";
 import { PREPARATION_COMMANDS, preparationBlockReason } from "./client/controller-workflow.js";
+import { connectDialogVoice } from "./dialog-voice.js";
 import { createUtilityWindows } from "./utility-windows.js";
 import { captureOverride, protectWindow, setCaptureOverride, trackCaptureWindow } from "./capture-policy.js";
 import { settingsValues } from "./settings-values.js";
@@ -578,6 +579,7 @@ const createWindow = ( state ) => {
 		}
 	);
 
+	connectDialogVoice( win, __dirname );
 	utilityWindows = createUtilityWindows( { dir: __dirname, prompter: win, getSettings: () => settings, saveSettings: partial => updateSettings( partial ) } );
 	win.on( "closed", () => utilityWindows.dispose() );
 	win.webContents.on( "did-create-window", ( child, details ) => utilityWindows.didCreate( child, details ) );

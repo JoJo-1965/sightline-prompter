@@ -1329,9 +1329,16 @@ async function runScriptCommand( command ) {
 // requests disable automatic gain control and do not set a Windows mic level.
 const VOICE_CHECK_LINE = "Testing, one, two, three. This is my normal speaking voice, at the level I'll use for the recording.";
 const CHECK_SECONDS = { room: 5 };
+let nativeDialogContext = null;
+window.electron.onDialogVoiceContext?.( context => { nativeDialogContext = context; } );
 function dialogVoiceActions() {
 	if ( settings.voiceCommands === "off" ) return null;
 	const acknowledged = text => voiceFeedback.show( `Heard “${ text }”`, "Dialog action", "listening" );
+	if ( nativeDialogContext ) return { id: nativeDialogContext.id, run: phrase => {
+		const match = matchingAction( nativeDialogContext.actions, phrase );
+		if ( !match ) return [ "continue", "continue anyway", "check again", "close", "cancel" ].includes( phrase );
+		window.electron.dialogVoiceAction( nativeDialogContext.id, match.id ).then( ok => { if ( ok ) acknowledged( match.label ); } ); return true;
+	} };
 	if ( preparationStatus?.focused ) return { id: "preparation", run: phrase => {
 		const match = matchingAction( preparationStatus.voiceActions ?? [], phrase );
 		if ( !match ) return [ "continue", "continue anyway", "check again", "close", "cancel" ].includes( phrase );

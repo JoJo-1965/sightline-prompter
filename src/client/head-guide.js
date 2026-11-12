@@ -1,3 +1,5 @@
+import { enableDialogVoice } from "./dialog-voice.js";
+enableDialogVoice();
 import { guidePose, guideOutline } from "./guide-pose.js";
 import { roundControlNumber } from "./numeric-controls.js";
 import { framingMatch, visibleFramingTarget } from "./framing-position.js";

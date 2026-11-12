@@ -1,0 +1,1 @@
+#dialog-voice-feedback { position: fixed; top: 14px; right: 20px; z-index: 5000; max-width: min(440px, calc(100vw - 40px)); padding: 12px 18px; border: 1px solid #f3d16a; border-radius: 12px; background: #423714; color: #ffe397; font: 600 14px/1.4 "Segoe UI", sans-serif; text-wrap: pretty; box-shadow: 0 4px 18px #0008; }

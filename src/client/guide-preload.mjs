@@ -1,3 +1,5 @@
+import { exposeDialogVoice } from "./dialog-voice-preload.mjs";
+exposeDialogVoice();
 import { contextBridge, ipcRenderer } from "electron";
 
 contextBridge.exposeInMainWorld( "guide", {

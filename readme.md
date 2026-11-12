@@ -338,3 +338,8 @@ Sightline is a fork of David Neal's Electron Teleprompter. Original work and
 Joanne Lockwood's enhancements are distributed under the [MIT licence](LICENSE).
 See **Help > About** for credits. [SEE Change Happen](https://seechangehappen.co.uk/)
 and [Joanne Lockwood](https://joannelockwood.co.uk/) support its development.
+
+RC12 dialog speech also covers the separate guide, guide-adjustment and
+recording-review windows, using the same listener and rechecking the focused
+window and enabled button before dispatch. These windows do not open another
+microphone. Native operating-system dialogs retain normal controls.

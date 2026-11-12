@@ -1,3 +1,5 @@
+import { enableDialogVoice } from "./dialog-voice.js";
+enableDialogVoice();
 // The user guide window: a contents list on the left (from the guide's own
 // README) and the page on the right. Links between pages stay in this
 // window; web links open in the browser.

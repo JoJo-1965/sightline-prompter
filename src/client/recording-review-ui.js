@@ -1,3 +1,5 @@
+import { enableDialogVoice } from "./dialog-voice.js";
+enableDialogVoice();
 const byId = id => document.getElementById( id );
 let state = null;
 const element = ( tag, text, className ) => { const node = document.createElement( tag ); node.textContent = text; if ( className ) node.className = className; return node; };
