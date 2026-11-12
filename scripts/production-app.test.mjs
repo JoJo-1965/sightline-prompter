@@ -227,7 +227,7 @@ try {
 	// fallback check here alongside the recorder/head-guide integration fixture.
 	await evaluate( "document.getElementById('cb-tools').click();document.getElementById('cb-settings').click()" );
 	assert.equal( await evaluate( "document.querySelectorAll('[data-settings-group]').length" ), 8 );
-	assert.equal( await evaluate( "document.querySelectorAll('[data-settings-page]').length" ), 34 );
+	assert.equal( await evaluate( "['settings-topic-mode','settings-topic-layout','lp-production-colour'].every(id=>document.querySelectorAll('#'+id).length===1)" ), true );
 	assert.equal( await evaluate( "document.querySelectorAll('.settings-pagination').length" ), 0 );
 	assert.equal( await evaluate( "document.querySelectorAll('#lp-production-colour').length" ), 1 );
 	await evaluate( "document.getElementById('settings-topic-layout').click();document.getElementById('lp-reading-line').focus()" );
@@ -247,15 +247,15 @@ try {
 		assert.equal( await evaluate( "[...document.querySelectorAll('.cb-slider')].filter(s=>s.getBoundingClientRect().width>0).every(s=>{const label=s.querySelector(':scope > span:not(.slider-with-box)');const r=label.getBoundingClientRect();return label.textContent.trim().length>0&&r.width>0&&r.height>0&&r.left>=0&&r.right<=innerWidth&&getComputedStyle(label).visibility==='visible';})" ), true, `Visible sliders need visible labels at ${ width }px` );
 	}
 	await send( "Emulation.clearDeviceMetricsOverride" );
-	await evaluate( "document.getElementById('cb-mode').click()" );
-	await until( "document.getElementById('cb-speed-label').textContent==='Response'" );
-	assert.equal( await evaluate( "document.getElementById('cb-speed').closest('label').title.startsWith('Voice response:')" ), true );
+	await evaluate( "document.getElementById('cb-mode-voice').click()" );
+	await until( "document.getElementById('cb-speed-label').textContent==='Catch-up'" );
+	assert.equal( await evaluate( "document.getElementById('cb-speed').closest('label').title.startsWith('Scroll catch-up speed:')" ), true );
 	await evaluate( "document.getElementById('cb-on-air').click()" );
 	await until( "document.getElementById('cb-backing-label').textContent==='On-air BG'" );
 	await pictureOf( "#control-bar", "control-bar-voice-on-air.png" );
-	await evaluate( "document.getElementById('cb-on-air').click();document.getElementById('cb-mode').click()" );
+	await evaluate( "document.getElementById('cb-on-air').click();document.getElementById('cb-mode-scroll').click()" );
 	await until( "document.getElementById('cb-speed-label').textContent==='Speed'&&document.getElementById('cb-backing-label').textContent==='Background'" );
-	console.log( "PASS: visible slider labels at four window widths, including voice Response and on-air Background state." );
+	console.log( "PASS: visible slider labels at four window widths, including voice catch-up and on-air Background state." );
 	await evaluate( "document.body.dispatchEvent(new KeyboardEvent('keydown',{key:'F1',bubbles:true}))" );
 	assert.equal( await evaluate( "document.querySelectorAll('#help-list [role=tab]').length" ), 6 );
 	assert.equal( await evaluate( "[...document.querySelectorAll('#help-list [role=tab]')].some(tab=>tab.textContent==='Connections')" ), true );
@@ -701,7 +701,7 @@ try {
 	await until( "document.getElementById('md').textContent.includes('Recording directive')" );
 	await pause( 250 );
 	assert.equal( requests.filter( r => r === "StartRecord" ).length, startsBeforeLoad, "Loading a recording directive must not execute it" );
-	await command( "play" );
+	await command( "obs-record" );
 	await until( "window.electron.obs('status').then(r=>r.state.recording==='recording')" );
 	await until( "document.getElementById('md').classList.contains('take-reading')" );
 	assert.equal( requests.filter( r => r === "StartRecord" ).length, startsBeforeLoad + 1 );
@@ -709,7 +709,7 @@ try {
 	await until( "!document.getElementById('md').classList.contains('take-reading')" );
 	assert.equal( active, true, "Continuous mode leaves recording running during a prompting pause" );
 	await evaluate( "window.electron.obs('stop')" );
-	console.log( "PASS: real Markdown production comments render, recording directives wait for Play, and continuous-mode pauses keep recording." );
+	console.log( "PASS: real Markdown production comments render, recording directives wait for deliberate recording operation, and continuous-mode pauses keep recording." );
 	await evaluate( "window.electron.obs('start')" );
 	assert.ok( active );
 	const stops = requests.filter( r => r === "StopRecord" ).length;

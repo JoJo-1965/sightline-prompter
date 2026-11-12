@@ -1,5 +1,24 @@
 # Writing scripts
 
+## Pasted plain text and Auto format — next preview
+
+Prepared after RC12 for the next combined preview. Paste into Ctrl+E and choose
+**Auto format…**. It previews the whole script, or only selected text. The
+default adds an opening heading and short paragraphs while preserving your
+words, punctuation and ordering. Wrapping and whitespace can change.
+
+Options add a section/page per paragraph, an opening `[breathe]` cue, room/voice
+checks for Voice/Scroll, and a pace target. Recorder commands and forced stops
+are never added. Existing markup is protected; select a plain passage within
+a structured script instead. This is formatting, not a wording rewrite.
+
+Review Original and Formatted preview. **Cancel** changes nothing. **Apply
+formatting** changes the editor; normal **Undo** restores it and **Save** writes
+the file. An outdated preview is refused if the source changes. Samples need
+Save a copy before editing.
+
+![Auto format preview](images/auto-format-next.png)
+
 ## Insert codes and directions — next preview
 
 Prepared after RC12 for the next combined preview. In **Ctrl+E**, choose

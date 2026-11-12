@@ -475,3 +475,20 @@ dedicated prompter screen such as the Elgato Prompter shows up by name.
 If a monitor is unplugged or the resolution changes, the prompter and the
 control window move back onto a screen you can see, with the control bar in
 reach.
+
+## Call-overlay toolbar — next preview
+
+Prepared after RC12. Choose Voice, Page or Scroll on the toolbar, then enable
+**On top** to keep the prompter above your call. **Click-through** passes script
+clicks to the app behind while toolbar, session and recovery controls remain
+clickable. The editor accepts input while the saved preference is on.
+
+**Clean view** temporarily hides prompter chrome and the separate head guide;
+it preserves your text appearance, backing, guide/reference and recorder state.
+Hover the small top-edge tab and click **Show controls** to restore it. Escape
+works while Sightline has focus. **Ctrl+Shift+X** works from other apps; turning
+click-through off also restores the controls. Clean view starts off on launch.
+
+An optional **Clean view** action is available to pad/phone and custom mappings.
+Existing IDs/layouts remain. Companion profile changes are a separate release;
+this does not claim a new Stream Deck package has shipped.

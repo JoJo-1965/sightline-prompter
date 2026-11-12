@@ -37,6 +37,9 @@ export function helpTabs( settings, notes = false ) {
 	const display = { ...get( "Window" ), keys: get( "Window" ).keys.filter( ( [ combos ] ) => !guideKeys.has( combos[0] ) && !( combos[0] === "Ctrl+Shift+P" && settings.padEnabled === false ) && !( combos[0] === "Ctrl+Shift+D" && settings.microphoneEnabled === false ) ) };
 	const readingSections = [ reading ];
 	readingSections.push( section( "Prepare a session", [
+		[ "Voice / Page / Scroll", "Choose a toolbar reading mode while paused; Page has Previous/Next buttons and can page plain paragraphs. Your explicit choice can override a script mode for the open script" ],
+		[ "Clean view / Click-through / On top", "Call-overlay controls on the toolbar. Recover clean chrome using the top-edge Show controls tab or Escape; global Ctrl+Shift+X off also restores controls" ],
+		[ "Ctrl+E > Auto format…", "Preview plain-text paragraphs/sections and optional starter cues/checks/pace; no recorder or forced stop is added. Apply changes the editor; Undo and Save apply" ],
 		[ "Ctrl+E > Insert…", "Insert a code, speaker direction, pointing cue or production note at the cursor. Edit selected values; normal Undo/Save apply. Samples need Save a copy" ],
 		[ "Tools > Prepare to record", "Local camera alignment, optional head detection, audio check and reviewed test clip; explicitly save or restore a fixed recording reference" ],
 		[ "Help > Getting started", "Choose your initial setup or reopen it later; optional tools can be skipped" ],

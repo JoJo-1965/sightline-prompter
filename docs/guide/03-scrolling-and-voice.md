@@ -1,5 +1,15 @@
 # Scrolling and voice
 
+## Direct reading-mode controls — next preview
+
+Prepared after RC12: **Voice / Page / Scroll** are separate toolbar buttons.
+Page uses Notes mode, with Previous/Next controls and an explicit page counter.
+Unstructured scripts can page by paragraph. A script's Notes directive supplies
+the initial mode, while an explicit toolbar choice overrides it for the open
+script without editing the file. A new script starts from its own declaration.
+Pause delivery before changing mode; held Voice is allowed. Voice requires
+speech and microphone input. Mode selection does not start audio or OBS.
+
 ## RC12: voice checks, dialog actions and wake choice
 
 Choose **Sightline**, Prompter, Computer, Teleprompter or Director under Voice
@@ -84,7 +94,7 @@ pause also hold prompting. These commands disappear from help when OBS controls
 are disabled. Normal **go**, **pause** and **again** remain available; their
 recording behaviour follows the optional [linked mode](11-obs.md).
 
-Choose **Steady / Voice** on the top bar, or use **Settings > Reading > Mode
+In packaged RC12, choose **Steady / Voice** on the top bar, or use **Settings > Reading > Mode
 and pace**. Enable speech and microphone input in **Settings > Voice** before
 using voice following. Speech engine, Microphone and Voice commands have
 separate named sections.

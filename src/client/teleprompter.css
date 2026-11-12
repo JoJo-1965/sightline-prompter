@@ -1026,6 +1026,17 @@ body.controls-hidden * {
 
 #cb-utilities { position: absolute; top: 5px; right: 8px; height: 36px; gap: 3px; }
 #cb-window-controls { gap: 3px; }
+#control-bar [hidden] { display: none !important; }
+#control-bar .cb-reading-modes { padding: 2px; border: 1px solid #526073; border-radius: 6px; gap: 2px; }
+#control-bar .cb-reading-modes button[aria-pressed="true"], #control-bar .cb-overlay-tools button[aria-pressed="true"] { background: #294d70; border-color: #89c4ff; color: #fff; }
+#cb-page-navigation { margin-left: 5px; padding-left: 5px; border-left: 1px solid #526073; }
+#overlay-restore { position: fixed; top: 0; left: 50%; transform: translateX(-50%); z-index: 12000; box-sizing: border-box; width: 140px; height: 7px; overflow: hidden; padding: 0; border: 1px solid #d8bd65; border-top: 0; border-radius: 0 0 6px 6px; background: #252e3b; color: transparent; font: 12px "Segoe UI", sans-serif; -webkit-app-region: no-drag; cursor: pointer !important; }
+#overlay-restore[hidden] { display: none; }
+#overlay-restore:hover, #overlay-restore:focus-visible { height: 32px; color: #fff; outline: 2px solid #a8d5ff; outline-offset: 1px; }
+body.overlay-clean > :not(#preview-container):not(#overlay-restore):not(script), body.overlay-clean > :not(#preview-container):not(#overlay-restore):not(script) * { visibility: hidden !important; pointer-events: none !important; }
+body.overlay-clean #overlay-restore { visibility: visible !important; pointer-events: auto !important; }
+body.overlay-clean, body.overlay-clean * { cursor: auto !important; }
+body.overlay-clean #overlay-restore { cursor: pointer !important; }
 #cb-slot-picker { display: none; height: 26px; width: 90px; box-sizing: border-box; font: 12px "Segoe UI", sans-serif; color: #e8e8e8; background: #252b33; border: 1px solid #616b7b; border-radius: 4px; }
 @media (max-width: 1100px) {
 	#cb-slots > .cb-slot { display: none; }

@@ -68,6 +68,12 @@
           <output id="cb-speed-value"></output>
         </label>
       </div>
+      <div class="cb-group cb-reading-modes" id="cb-reading-modes" role="group" aria-label="Reading mode">
+        <button id="cb-mode-voice" class="cb-btn cb-text" aria-pressed="false" title="Follow your voice">Voice</button>
+        <button id="cb-mode-page" class="cb-btn cb-text" aria-pressed="false" title="Page mode: notes or one passage at a time">Page</button>
+        <button id="cb-mode-scroll" class="cb-btn cb-text" aria-pressed="false" title="Scroll steadily at your chosen pace">Scroll</button>
+        <span id="cb-page-navigation" class="cb-group" hidden><button id="cb-page-previous" class="cb-btn" aria-label="Previous page" title="Previous page">◀</button><button id="cb-page-next" class="cb-btn" aria-label="Next page" title="Next page">▶</button></span>
+      </div>
       <div class="cb-group">
         <label class="cb-slider" title="Text size (Ctrl+= / Ctrl+-)">
           <span id="cb-font-label">Text size</span>
@@ -77,7 +83,7 @@
           <span id="cb-backing-label">Background</span>
           <input id="cb-opacity" aria-labelledby="cb-backing-label" type="range" min="0" max="1" step="0.01" />
         </label>
-        <button id="cb-mode" class="cb-btn cb-text" title="Switch between steady and voice scrolling" aria-label="Voice scrolling" aria-pressed="false">Steady</button>
+
         <button id="cb-mirror-h" class="cb-btn cb-mirror-axis" data-axis="h" aria-label="Mirror left to right" aria-pressed="false" title="Mirror left to right: click again to turn off">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M9 7 3 17h6ZM15 7l6 10h-6Z" /></svg>
         </button>
@@ -87,6 +93,11 @@
         <button id="cb-edit" class="cb-btn cb-text" title="Edit script or view sample source (Ctrl+E)" aria-label="Edit script or view sample source">Edit</button>
         <button id="cb-prepare" class="cb-btn cb-text" title="Head guide, audio and test recording">Prepare to record</button>
         <button id="cb-tools" class="cb-btn cb-text" title="Recording tools, framing and quick adjustments" aria-expanded="false" aria-controls="tools-panel">Tools</button>
+      </div>
+      <div class="cb-group cb-overlay-tools" role="group" aria-label="Overlay view">
+        <button id="cb-clean-view" class="cb-btn cb-text" aria-pressed="false" title="Hide prompter controls and status for a video-call overlay; a top-edge tab restores them">Clean view</button>
+        <button id="cb-click-through" class="cb-btn cb-text" aria-pressed="false" title="Pass clicks to the app behind the script; controls stay clickable. Ctrl+Shift+X toggles this from any app">Click-through Off</button>
+        <button id="cb-on-top" class="cb-btn cb-text" aria-pressed="false" title="Keep the prompter above your call or presentation">On top Off</button>
       </div>
       <div class="cb-spacer"></div>
       <div class="cb-group" id="cb-utilities" aria-label="Help, settings and window controls">
@@ -625,13 +636,15 @@
       <div id="editor-toolbar">
         <span class="toolbar-dirty hidden" id="toolbar-dirty">●</span>
         <span class="toolbar-filename" id="toolbar-filename">No file open</span>
-        <div class="editor-actions">
+        <div class="editor-actions"><div class="editor-tool-actions">
         <button id="btn-insert-tool" type="button" aria-haspopup="dialog" aria-controls="script-tool-menu" aria-expanded="false" title="Insert script codes, speaker directions, pointing cues or production notes at the cursor">Insert…</button>
+        <button id="btn-format-script" type="button" title="Preview a starter structure for pasted plain text">Auto format…</button>
         <button id="btn-script-health" type="button">Script health…</button>
+        </div><div class="editor-file-actions">
         <button id="btn-save" class="primary">Save</button>
         <button id="btn-save-as">Save As</button>
         <button id="btn-cancel">Cancel</button>
-        </div>
+        </div></div>
       </div>
       <section id="script-tool-menu" role="dialog" aria-labelledby="script-tools-title" hidden></section>
       <div id="editor"></div>

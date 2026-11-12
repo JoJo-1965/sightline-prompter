@@ -19,11 +19,12 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 	let saveTimer;
 	let fullscreen = false;
 	let normalBounds = null;
+	let overlayClean = false, cleanControls = false, cleanToolbar = false;
 	const state = () => {
 		const s = getSettings();
 		return { locked, fullscreen, chromeless: s.headGuideChromeless === true, eyesLocked: s.headGuideEyesLocked === true, ...guidePose( { x: s.headGuideX, y: s.headGuideY, scale: s.headGuideScale, width: s.headGuideWidth, height: s.headGuideHeight, top: s.headGuideTop, bottom: s.headGuideBottom, left: s.headGuideLeft, right: s.headGuideRight } ), ideal: guidePose( s.headGuideIdeal ), showIdeal: s.headGuideShowIdeal !== false, opacity: Math.max( 0.2, Math.min( 1, Number( s.headGuideOpacity ) || 0.75 ) ), background: Math.max( 0, Math.min( 0.8, Number( s.headGuideBackground ?? 0.12 ) ) ), colour: s.headGuideColour === "gold" ? "gold" : "mint" };
 	};
-	const snapshot = () => ( { ...state(), shown: !!overlay, bounds: overlay?.getBounds() ?? getSettings().headGuideBounds ?? null, windowedBounds: normalBounds ?? getSettings().headGuideBounds ?? null, placement: getSettings().headGuidePlacement ?? "centre", placements: getSettings().headGuidePlacements ?? {}, displayId: overlay ? screen.getDisplayMatching( overlay.getBounds() ).id : null, captureOverride: captureOverride(), captureStatus: captureOverride() ? "Debug capture override on; guide may be recorded" : "Protected separate overlay; OBS capture route not verified" } );
+	const snapshot = () => ( { ...state(), shown: !!overlay && !overlayClean, overlayClean, bounds: overlay?.getBounds() ?? getSettings().headGuideBounds ?? null, windowedBounds: normalBounds ?? getSettings().headGuideBounds ?? null, placement: getSettings().headGuidePlacement ?? "centre", placements: getSettings().headGuidePlacements ?? {}, displayId: overlay ? screen.getDisplayMatching( overlay.getBounds() ).id : null, captureOverride: captureOverride(), captureStatus: captureOverride() ? "Debug capture override on; guide may be recorded" : "Protected separate overlay; OBS capture route not verified" } );
 	const send = () => {
 		const value = snapshot();
 		value.reference = getSettings().headGuideReference ?? null;
@@ -73,6 +74,10 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 		send();
 	}
 	function restack() {
+		if ( overlayClean ) {
+			overlay?.hide(); toolbar?.hide(); controls?.hide();
+			return;
+		}
 		if ( !overlay || prompter.isDestroyed() ) return;
 		overlay.setAlwaysOnTop( true, "floating" );
 		overlay.moveTop();
@@ -93,6 +98,7 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 		return { x: Math.round( area.x + ( area.width - width ) / 2 ), y: area.y + area.height - height - 12, width, height };
 	}
 	function updateToolbar( reveal = false ) {
+		if ( overlayClean ) { toolbar?.hide(); return; }
 		if ( !overlay || !toolbar || toolbar.isDestroyed() ) return;
 		const cursor = screen.getCursorScreenPoint(), now = Date.now();
 		const full = toolbarBounds( true ), tab = toolbarBounds( false );
@@ -185,6 +191,11 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 		saveSettings( { showHeadGuide: true, headGuideFullscreen: next, headGuideChromeless: next } );
 	}
 	function apply() {
+		if ( overlayClean ) {
+			if ( !getSettings().showHeadGuide ) close();
+			else restack();
+			return;
+		}
 		if ( !getSettings().showHeadGuide ) {
 			close();
 			return;
@@ -365,6 +376,23 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 	prompter.on( "focus", restack );
 	return {
 		apply, toggle, toggleFullscreen, restack, isLocked: () => locked,
+		setOverlayClean( value ) {
+			if ( overlayClean === value ) return;
+			overlayClean = value;
+			if ( value ) {
+				cleanControls = controls?.isVisible() ?? false;
+				cleanToolbar = toolbar?.isVisible() ?? false;
+				restack();
+			} else {
+				if ( getSettings().showHeadGuide ) {
+					overlay?.showInactive();
+					if ( cleanControls ) controls?.showInactive();
+					if ( cleanToolbar ) toolbar?.showInactive();
+				}
+				apply();
+			}
+			send();
+		},
 		feedback( value ) { feedback = { ...value, at: Date.now() }; send(); },
 		calibration( value ) { calibration = value; send(); },
 		async pose( value ) {

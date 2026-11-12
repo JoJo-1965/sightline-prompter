@@ -156,7 +156,19 @@ on your own setup. OBS-scene calibration is a sampled preview, not the encoder o
 
 ## Change log
 
-### Prepared after RC12 — editor insertion menu
+### Prepared after RC12 — authoring and call-overlay controls
+
+The next combined preview adds visible Voice / Page / Scroll choices, page
+navigation, recoverable Clean view, Click-through and On top. Plain scripts
+can page by paragraph, and an operator can override authored Notes mode for
+the open script. These view changes do not start or stop a recorder.
+
+Ctrl+E **Auto format…** previews a starter structure for pasted text, preserving
+its words and allowing optional section/page breaks, opening cues, audio checks
+and pace. Cancel, Undo and Save remain explicit; recorder commands and forced
+stops are not added. [Combined review](docs/uat/RC12-OVERLAY-AUTHORING-FEEDBACK.md).
+
+#### Editor insertion menu
 
 Ctrl+E **Insert…** adds grouped codes and directions at the cursor, with
 editable values, Undo, normal Save and protected samples. It covers every

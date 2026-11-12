@@ -1,3 +1,6 @@
+import { readingMode, readingModePatch } from "./reading-mode.js";
+import { createOverlayChrome } from "./overlay-chrome.js";
+import { createScriptFormatDialog } from "./script-format-dialog.js";
 import { createVoiceSample } from "./voice-sample.js";
 import { createScriptToolMenu } from "./script-tool-menu.js";
 import { visibleActions, matchingAction } from "./context-actions.js";
@@ -214,6 +217,7 @@ let reviewedRecording = null;
 let cuePhrases = [];
 let lastScriptHtml = null;
 let sourceSnapshot = null;
+let manualReadingMode = null, overlayChrome = null;
 let recordingSnapshotCache = null;
 function recordingScriptSnapshot() {
 	const sections = [ ...md.querySelectorAll( "h2" ) ].map( ( el, i ) => ( { section: i + 1, id: el.id || String( i + 1 ), title: el.textContent } ) );
@@ -564,6 +568,13 @@ const scriptToolMenu = createScriptToolMenu( {
 	insert: id => window.EditorModule.insertScriptTool( editorView, id ),
 	focusEditor: () => editorView?.focus()
 } );
+const scriptFormatDialog = createScriptFormatDialog( {
+	button: uiElement( "btn-format-script" ),
+	canEdit: () => isEditMode && !!editorView && !editorReadOnly,
+	snapshot: () => window.EditorModule.editorFormatSnapshot( editorView ),
+	apply: ( snapshot, text ) => window.EditorModule.applyEditorFormat( editorView, snapshot, text ),
+	focusEditor: () => editorView?.focus()
+} );
 const resizeHandle = uiElement( "resize-handle" );
 const autoScrollIndicator = uiElement( "auto-scroll-indicator" );
 const apiKeyModal = uiElement( "api-key-modal" );
@@ -665,8 +676,10 @@ function setDirty( dirty ) {
 }
 
 function showEditor() {
+	overlayChrome?.setClean( false );
 	scriptToolMenu.close( false );
 	scriptToolMenu.sync();
+	scriptFormatDialog.sync();
 	stopSteadySession();
 	previewContainer.classList.add( "hidden" );
 	editorContainer.classList.remove( "hidden" );
@@ -728,6 +741,7 @@ function loadEditorContent( content, filePath, access = {} ) {
 	}
 	isLoadingContent = false;
 	scriptToolMenu.sync();
+	scriptFormatDialog.sync();
 	editorView.focus();
 }
 
@@ -808,6 +822,7 @@ window.electron.onSaveResult( ( success, filePath ) => {
 		btnCancel.textContent = "Cancel";
 		if ( editorView ) window.EditorModule.setEditorReadOnly( editorView, false );
 		scriptToolMenu.sync();
+	scriptFormatDialog.sync();
 		savedEditorContent = pendingEditorSave ?? savedEditorContent;
 		setDirty( !!editorView && window.EditorModule.getEditorContent( editorView ) !== savedEditorContent );
 		isNewFile = false;
@@ -1069,6 +1084,7 @@ window.electron.onContent( ( content, snapshot ) => {
 		editorView.destroy();
 		editorView = null;
 	}
+	if ( snapshot?.name !== sourceSnapshot?.name ) { manualReadingMode = null; pointsIndex = 0; }
 	sourceSnapshot = snapshot ?? null;
 	recordingSnapshotCache = null;
 	if ( md ) {
@@ -1592,7 +1608,10 @@ async function prepareReading() {
 			const spoken = ranges.filter( range => !range.startContainer.parentElement?.closest( "h1, h2, h3, h4, h5, h6" ) );
 			for ( const c of directivePoints.prompterCommands ) {
 				if ( [ "record:on", "record:resume" ].includes( c.command ) && lastWordBefore( c, spoken ) < 0 ) {
-					if ( !await obsUi.action( c.command === "record:on" ? "start" : "resume", { prompt: false } ) ) return false;
+					// Record take may have just confirmed this state before starting
+					// prompting. Do not nest another Start inside its busy UI action.
+					const confirmed = obsUi.state();
+					if ( !( confirmed.connection === "connected" && confirmed.recording === "recording" ) && !await obsUi.action( c.command === "record:on" ? "start" : "resume", { prompt: false } ) ) return false;
 				}
 			}
 		}
@@ -1845,11 +1864,11 @@ async function beginVoice( engine, deepgramKey ) {
 	}
 }
 
-async function stopAutoScrollSession() {
+async function stopAutoScrollSession( { pauseRecorder = true } = {} ) {
 	readingRequest++;
 	if ( !autoScrollActive && !autoScrollStarting ) return;
 	autoScrollActive = false;
-	linkedRecording.pause();
+	if ( pauseRecorder ) linkedRecording.pause();
 	autoScrollStarting = false;
 	autoScrollHandle = null;
 	offScript = null;
@@ -2454,9 +2473,9 @@ async function startSteadySession() {
 	}, 1000 );
 }
 
-function stopSteadySession() {
+function stopSteadySession( { pauseRecorder = true } = {} ) {
 	readingRequest++;
-	linkedRecording.pause();
+	if ( pauseRecorder ) linkedRecording.pause();
 	hideSlate();
 	clearCuePause();
 	hideCountdown();
@@ -2804,8 +2823,8 @@ function applySettings( next ) {
 	if ( isSteadyRunning() ) setIndicator( steadyIndicatorText() );
 	const engineChanged = prev.voiceEngine !== settings.voiceEngine;
 	if ( prev.scrollMode !== settings.scrollMode || engineChanged ) {
-		stopSteadySession();
-		stopAutoScrollSession();
+		stopSteadySession( { pauseRecorder: false } );
+		stopAutoScrollSession( { pauseRecorder: false } );
 	}
 	setSentenceHighlight( settings.highlightSentence !== false );
 	// Voice mode shows timed pauses as beat marks, since it doesn't count them down.
@@ -2847,6 +2866,10 @@ function stageSettings( partial, preview = false ) {
 }
 window.electron.onSettings( ( next ) => {
 	const previous = committedSettings ?? settings;
+	if ( committedSettings && ( ( Object.hasOwn( next, "pointsMode" ) && previous.pointsMode !== next.pointsMode ) || ( Object.hasOwn( next, "scrollMode" ) && previous.scrollMode !== next.scrollMode ) ) ) {
+		const following = { ...settings, ...next };
+		manualReadingMode = following.pointsMode ? "notes" : following.scrollMode === "voice" ? "voice" : "scroll";
+	}
 	const pending = settingsDraft?.patch ?? {};
 	committedSettings = { ...settings, ...next };
 	settingsDraft?.rebase( next );
@@ -2983,6 +3006,7 @@ uiElement( "settings-save-log" )?.addEventListener( "click", async () => {
 } );
 
 async function openSettings() {
+	overlayChrome?.setClean( false );
 	if ( !settingsModal ) return;
 	if ( !settingsModal.classList.contains( "hidden" ) ) {
 		await showPanelWindow( "settings", settingsModal, () => settingsPages.layout() );
@@ -3842,8 +3866,11 @@ function switchToSlot( index ) {
 }
 
 window.electron.onSlots( ( state ) => {
+	if ( state.active !== slotState.active || state.slots?.[state.active]?.name !== slotState.slots[slotState.active]?.name ) manualReadingMode = null;
 	slotState = { active: 0, slots: [], recent: [], ...state };
 	renderSlots();
+	applyPointsView();
+	syncControls();
 	updateProgress();
 	if ( !appMenu.classList.contains( "hidden" ) ) renderAppMenu();
 } );
@@ -3881,6 +3908,63 @@ const fullBtn = uiElement( "cb-full" );
 let idleTimer = null;
 const IDLE_MS_SCROLLING = 1500;
 const IDLE_MS_STOPPED = 5000;
+let modeChanging = false;
+overlayChrome = createOverlayChrome( {
+	getSettings: () => settings,
+	editing: () => isEditMode || !!quickEdit?.active,
+	closePanels,
+	reveal: showControls,
+	notify: value => window.electron.setOverlayClean( value ),
+	ignoreMouse: value => window.electron.setIgnoreMouse( value ),
+	save: partial => window.electron.saveSettings( partial )
+} );
+
+function readingModeBusy() {
+	return modeChanging || isSteadyRunning() || pointsRunning || autoScrollStarting || preparingRead || slating || ( autoScrollActive && !autoScrollHandle?.isHeld() );
+}
+
+function syncReadingModeControls() {
+	const current = readingMode( settings, scriptDirectives.script.mode, manualReadingMode );
+	for ( const [ id, mode ] of [ [ "voice", "voice" ], [ "page", "notes" ], [ "scroll", "scroll" ] ] ) {
+		const button = uiElement( `cb-mode-${ id }` );
+		if ( !button ) continue;
+		button.setAttribute( "aria-pressed", String( current === mode ) );
+		button.disabled = isEditMode || readingModeBusy() || ( mode === "voice" && !voiceInputEnabled( settings ) );
+		button.title = mode === "voice" && !voiceInputEnabled( settings ) ? "Enable speech features and microphone input in Voice settings first" : readingModeBusy() ? "Pause prompting before changing mode" : `${ mode === "notes" ? "Page / notes" : id === "voice" ? "Follow your voice" : "Scroll at a steady pace" }${ scriptDirectives.script.mode ? "; your choice overrides this script's mode for the open script" : "" }`;
+	}
+	const navigation = uiElement( "cb-page-navigation" );
+	if ( navigation ) {
+		navigation.hidden = current !== "notes";
+		if ( current === "notes" ) {
+			uiElement( "cb-page-previous" ).disabled = pointsIndex <= 0;
+			uiElement( "cb-page-next" ).disabled = pointsIndex >= pointCount() - 1;
+		}
+	}
+}
+
+async function selectReadingMode( mode ) {
+	try {
+		const patch = readingModePatch( mode, { busy: readingModeBusy(), editing: isEditMode || !!quickEdit?.active, voice: voiceInputEnabled( settings ) } );
+		const wasPoints = pointsMode();
+		const section = Math.max( 0, sectionIndexAt( readingLineY() ) );
+		const anchor = wasPoints ? pointUnit( pointsIndex )?.heading : directivePoints.sections[section]?.heading;
+		modeChanging = true;
+		syncReadingModeControls();
+		if ( autoScrollActive ) await stopAutoScrollSession( { pauseRecorder: false } );
+		manualReadingMode = mode;
+		if ( mode === "notes" && !wasPoints ) pointsIndex = notePages ? Math.max( 0, Number( anchor?.dataset.page ) || 0 ) : section;
+		applySettings( patch );
+		applyPointsView();
+		if ( wasPoints && mode !== "notes" && anchor ) {
+			ignoreNextScroll = true;
+			window.scrollTo( 0, Math.max( 0, layoutTop( anchor ) - window.innerHeight * getReadingAnchor() ) );
+		}
+		window.electron.saveSettings( patch );
+		updateProgress();
+		sendStatus();
+	} catch ( error ) { showToast( error.message ); }
+	finally { modeChanging = false; syncReadingModeControls(); }
+}
 
 function isScrolling() {
 	return (
@@ -3893,6 +3977,7 @@ function isScrolling() {
 
 function updatePlayButton() {
 	updateOnAir();
+	syncReadingModeControls();
 	if ( !playBtn ) return;
 	const playing = isScrolling();
 	playBtn.textContent = playing ? "❚❚" : "▶";
@@ -3910,7 +3995,8 @@ function formatSpeed( value ) {
 
 function syncControls() {
 	if ( !controlBar ) return;
-	const voice = settings.scrollMode === "voice";
+	const voice = !pointsMode() && settings.scrollMode === "voice";
+	speedInput.closest( "label" ).hidden = pointsMode();
 	if ( document.activeElement !== speedInput ) {
 		if ( voice ) {
 			speedInput.min = 0.25;
@@ -3934,14 +4020,8 @@ function syncControls() {
 		: `${ settings.steadyWpm } wpm`;
 	if ( document.activeElement !== fontInput ) fontInput.value = fontSize;
 	if ( document.activeElement !== opacityInput ) opacityInput.value = liveBacking();
-	const mode = uiElement( "cb-mode" );
-	if ( mode ) {
-		mode.disabled = !voiceInputEnabled( settings );
-		mode.title = voiceInputEnabled( settings ) ? "Switch between steady scrolling and voice following" : "Enable speech features and microphone input in Settings > Voice to use voice following";
-		mode.textContent = voice ? "Voice" : "Steady";
-		mode.setAttribute( "aria-label", voice ? "Voice scrolling; switch to steady" : "Steady scrolling; switch to voice" );
-		mode.setAttribute( "aria-pressed", String( voice ) );
-	}
+	syncReadingModeControls();
+	overlayChrome?.sync();
 	syncLayoutPanel();
 	syncVoicePanel();
 	if ( !field( "tools-panel" )?.classList.contains( "hidden" ) ) liveTools?.render();
@@ -3979,6 +4059,7 @@ function refreshControlsVisibility() {
 }
 
 function showControls( event ) {
+	if ( overlayChrome?.active ) return;
 	const focused = controlBar?.contains( document.activeElement ) && document.activeElement?.matches( ":focus-visible" );
 	const farAway = event?.type === "mousemove" && event.clientY > ( controlBar?.getBoundingClientRect().bottom ?? 48 ) + window.innerHeight * 0.1;
 	if ( farAway && !settings.controlsPinned && !panelOpen() && !focused ) {
@@ -3989,6 +4070,7 @@ function showControls( event ) {
 	document.body.classList.remove( "controls-hidden" );
 	updateProgress();
 	refreshControlsVisibility();
+	overlayChrome?.pointer( event );
 }
 
 document.addEventListener( "mousemove", showControls, { passive: true } );
@@ -4027,7 +4109,9 @@ onClick( "cb-menu", ( e ) => {
 onClick( "cb-restart", goToStart );
 onClick( "cb-play", toggleAutoScrollSession );
 onClick( "cb-on-air", toggleOnAir );
-onClick( "cb-mode", () => window.electron.saveSettings( { scrollMode: settings.scrollMode === "voice" ? "steady" : "voice" } ) );
+for ( const [ suffix, mode ] of [ [ "voice", "voice" ], [ "page", "notes" ], [ "scroll", "scroll" ] ] ) onClick( `cb-mode-${ suffix }`, () => selectReadingMode( mode ) );
+onClick( "cb-page-previous", () => goToPoint( pointsIndex - 1 ) );
+onClick( "cb-page-next", () => goToPoint( pointsIndex + 1 ) );
 onClick( "cb-edit", toggleEditMode );
 onClick( "guide-controls", () => window.electron.headGuide( "adjust" ) );
 onClick( "guide-off", () => window.electron.headGuide( "hide" ) );
@@ -4129,6 +4213,7 @@ function positionToolsPanel() {
 window.addEventListener( "resize", () => requestAnimationFrame( positionToolsPanel ) );
 
 function togglePanel( id ) {
+	overlayChrome?.setClean( false );
 	if ( id === "voice-panel" ) {
 		openSettings().then( () => showSettingsTab( "engine" ) );
 		return;
@@ -4759,6 +4844,7 @@ uiElement( "help-guide" )?.addEventListener( "click", () => {
 } );
 
 async function openHelp() {
+	overlayChrome?.setClean( false );
 	closePanels();
 	renderHelp();
 	helpModal?.classList.remove( "hidden" );
@@ -5083,7 +5169,9 @@ function sendStatus() {
 		editing: isEditMode,
 		points: pointsMode(),
 		readingMode: pointsMode() ? "notes" : settings.scrollMode === "voice" ? "voice" : "scroll",
-		readingModeLocked: [ "notes", "points" ].includes( scriptDirectives.script.mode ),
+		readingModeLocked: false,
+		readingModeBusy: readingModeBusy(),
+		cleanOverlay: overlayChrome?.active ?? false,
 		sectionTitle: currentSectionTitle(),
 		speed: settings.scrollMode === "voice" ? "Voice" : `${ getWpm() } wpm`,
 		soundCheck: soundCheckOn(),
@@ -5264,13 +5352,9 @@ function runRemoteAction( action, value ) {
 	if ( quickEdit?.active && ![ "obs-finish", "obs-off" ].includes( action ) ) return false;
 	if ( action === "again" && !isEditMode ) return runVoiceCommand( "retake" );
 	if ( [ "mode-notes", "mode-voice", "mode-scroll", "mode-cycle" ].includes( action ) ) {
-		if ( isEditMode || isScrolling() ) return showToast( "Pause prompting before changing reading mode" );
-		if ( [ "notes", "points" ].includes( scriptDirectives.script.mode ) && action !== "mode-notes" ) return showToast( "This script specifies Notes mode; change its mode directive first" );
-		const modes = settings.speechEnabled === false || settings.microphoneEnabled === false ? [ "notes", "scroll" ] : [ "notes", "voice", "scroll" ], current = pointsMode() ? "notes" : settings.scrollMode === "voice" ? "voice" : "scroll";
-		const mode = action === "mode-cycle" ? modes[( modes.indexOf( current ) + 1 ) % modes.length] : action.slice( 5 );
-		if ( mode === "voice" && ( settings.speechEnabled === false || settings.microphoneEnabled === false ) ) return showToast( "Enable speech and microphone in Connections first" );
-		window.electron.saveSettings( { pointsMode: mode === "notes", ...( mode !== "notes" ? { scrollMode: mode === "voice" ? "voice" : "steady" } : {} ) } );
-		return;
+		const modes = voiceInputEnabled( settings ) ? [ "notes", "voice", "scroll" ] : [ "notes", "scroll" ];
+		const current = readingMode( settings, scriptDirectives.script.mode, manualReadingMode );
+		return selectReadingMode( action === "mode-cycle" ? modes[( modes.indexOf( current ) + 1 ) % modes.length] : action.slice( 5 ) );
 	}
 	if ( [ "obs-on", "obs-off", "obs-pause", "obs-resume" ].includes( action ) ) {
 		if ( !settings.obsEnabled || !settings.obsControls ) return;
@@ -5334,12 +5418,13 @@ function runRemoteAction( action, value ) {
 	else if ( [ "layout", "reading", "recording" ].includes( action ) ) toggleLayoutView( action );
 	else if ( action === "eye-line" ) window.electron.saveSettings( { eyeLine: !settings.eyeLine } );
 	else if ( action === "click-through" ) window.electron.saveSettings( { clickThrough: !settings.clickThrough } );
+	else if ( action === "clean-view" ) overlayChrome.setClean( value === "on" ? true : value === "off" ? false : !overlayChrome.active );
 	// Dials: value is the number of steps, + or -.
 	else if ( action === "scroll" && Number.isFinite( Number( value ) ) ) {
 		window.scrollBy( { top: Number( value ) * parseFloat( getComputedStyle( md ).lineHeight || "40" ), behavior: "smooth" } );
 	} else if ( action === "backing" && Number.isFinite( Number( value ) ) ) setLiveBacking( liveBacking() + Number( value ) * OPACITY_STEP );
 	else if ( action === "sound-check" ) toggleSoundCheck();
-	else if ( action === "scroll-mode" ) window.electron.saveSettings( { scrollMode: settings.scrollMode === "voice" ? "steady" : "voice" } );
+	else if ( action === "scroll-mode" ) selectReadingMode( readingMode( settings, scriptDirectives.script.mode, manualReadingMode ) === "voice" ? "scroll" : "voice" );
 	else if ( action === "pad" ) window.electron.saveSettings( { showPad: !settings.showPad } );
 	else if ( action === "control" ) window.electron.saveSettings( { showControl: !settings.showControl } );
 	sendStatus();
@@ -5779,8 +5864,7 @@ function jumpToNextMarker() {
 // if it isn't running); Page Up / ← goes back.
 
 function pointsMode() {
-	const mode = scriptDirectives.script.mode;
-	return mode === "points" || mode === "notes" || !!settings.pointsMode;
+	return readingMode( settings, scriptDirectives.script.mode, manualReadingMode ) === "notes";
 }
 
 function tagSections() {
@@ -5811,7 +5895,24 @@ function tagPages() {
 	const firstH2 = kids.findIndex( el => el.tagName === "H2" );
 	const isBreak = el => el.tagName !== "H1" && directivesIn( el ).some( d => "page" in d );
 	const paged = kids.some( ( el, i ) => ( el.tagName === "H1" && firstH2 >= 0 && i > firstH2 ) || isBreak( el ) );
-	if ( !paged ) return;
+	if ( !paged ) {
+		if ( firstH2 >= 0 ) return;
+		const passages = kids.filter( el => {
+			if ( !el.matches( "p,ul,ol,blockquote" ) || el.matches( ".production-note" ) ) return false;
+			const spoken = el.cloneNode( true );
+			spoken.querySelectorAll( ".app-directive,.production-note,.dir-text" ).forEach( node => node.remove() );
+			return spoken.textContent.trim().length > 0;
+		} );
+		if ( !passages.length ) return;
+		notePages = passages.map( ( heading, i ) => ( { heading, title: `Page ${ i + 1 }`, targetSeconds: null } ) );
+		let page = 0;
+		for ( const el of kids ) {
+			const index = passages.indexOf( el );
+			if ( index >= 0 ) page = index;
+			el.dataset.page = String( page );
+		}
+		return;
+	}
 	const pages = [];
 	const targetOf = ( el ) => {
 		const d = directivesIn( el ).find( x => "target" in x );
@@ -5881,6 +5982,7 @@ function goToPoint( index ) {
 	}
 	pointsIndex = Math.max( 0, index );
 	applyPointsView();
+	syncReadingModeControls();
 	updateOnAir();
 }
 
@@ -6309,10 +6411,11 @@ function rateTake( rating ) {
 }
 
 function pacingTick() {
+	syncReadingModeControls();
 	const total = pointsMode() ? pointCount() : directivePoints.sections.length;
 	const currentIndex = pointsMode() ? pointsIndex : sectionIndexAt( readingLineY() );
 	sectionPill.classList.toggle( "hidden", isEditMode || total === 0 );
-	sectionPill.textContent = `${ pointsMode() && notePages ? "Page" : "Section" } ${ Math.min( total, Math.max( 1, currentIndex + 1 ) ) } / ${ total }`;
+	sectionPill.textContent = `${ pointsMode() ? "Page" : "Section" } ${ Math.min( total, Math.max( 1, currentIndex + 1 ) ) } / ${ total }`;
 	sectionPill.title = currentSectionTitle();
 	const active = isScrolling() || cuePaused || pointsRunning;
 	feedTakeLog( active );
@@ -6713,24 +6816,8 @@ function playTone( frequency, seconds, volume ) {
 	}
 }
 
-// Click-through: mouse events pass to the window behind, except over the
-// controls. Main forwards mouse moves while ignoring, so this still runs.
-let ignoringMouse = null;
-document.addEventListener( "mousemove", ( e ) => {
-	if ( !settings.clickThrough ) {
-		ignoringMouse = null;
-		return;
-	}
-	const overControls = !!e.target.closest?.(
-		"#control-bar, .panel, #app-menu, .modal, #auto-scroll-indicator, #toast, #capture-override-note"
-	);
-	const ignore = !overControls;
-	if ( ignore !== ignoringMouse ) {
-		ignoringMouse = ignore;
-		window.electron.setIgnoreMouse( ignore );
-	}
-} );
 
+window.electron.onShowOverlayControls( () => overlayChrome?.setClean( false ) );
 window.electron.onToast( text => showToast( text ) );
 
 function openScriptReview( tab = isEditMode ? "health" : "coach", saved = null ) {
@@ -7157,6 +7244,7 @@ quickEdit = createQuickEdit( md, {
 	begin: async () => {
 		quickVoiceResume = autoScrollActive && autoScrollHandle?.isHeld();
 		quickRetakeSection = voiceBoundary?.previousSection ?? null;
+		overlayChrome?.setClean( false );
 		isEditMode = true;
 		clearSentence();
 		stopPacing();

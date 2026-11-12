@@ -82,6 +82,24 @@ export function insertScriptTool( view, id ) {
 	return true;
 }
 
+export function editorFormatSnapshot( view ) {
+	if ( !view || view.state.readOnly ) return null;
+	const source = view.state.doc.toString();
+	const range = view.state.selection.main;
+	const whole = range.empty;
+	return { source, from: whole ? 0 : range.from, to: whole ? source.length : range.to, whole };
+}
+
+export function applyEditorFormat( view, snapshot, text ) {
+	if ( !view || view.state.readOnly ) throw new Error( "Save an editable copy first." );
+	if ( view.state.doc.toString() !== snapshot.source ) throw new Error( "The script changed. Cancel and reopen Auto format to review the latest text." );
+	const before = snapshot.source.slice( 0, snapshot.from ), after = snapshot.source.slice( snapshot.to );
+	const prefix = before && !before.endsWith( "\n\n" ) ? before.endsWith( "\n" ) ? "\n" : "\n\n" : "";
+	const suffix = after && !after.startsWith( "\n" ) ? "\n" : "";
+	view.dispatch( { changes: { from: snapshot.from, to: snapshot.to, insert: prefix + text + suffix }, selection: { anchor: snapshot.from + prefix.length }, scrollIntoView: true, userEvent: "input.format" } );
+	view.focus();
+}
+
 export function getCursorLine( view ) {
 	const pos = view.state.selection.main.head;
 	return view.state.doc.lineAt( pos ).number;

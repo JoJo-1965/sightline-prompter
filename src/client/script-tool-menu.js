@@ -2,6 +2,11 @@ import { SCRIPT_TOOL_GROUPS, SCRIPT_TOOLS } from "./script-tools.js";
 
 export function createScriptToolMenu( { button, host, canInsert, insert, focusEditor } ) {
 	let group = "directions";
+	const position = () => {
+		const height = button.closest( "#editor-toolbar" ).offsetHeight;
+		host.style.top = `${ height + 8 }px`;
+		host.style.maxHeight = `${ Math.max( 80, window.innerHeight - height - 24 ) }px`;
+	};
 	const make = ( tag, text, className = "" ) => Object.assign( document.createElement( tag ), { textContent: text, className } );
 	const close = ( returnFocus = true ) => {
 		host.hidden = true;
@@ -53,7 +58,7 @@ export function createScriptToolMenu( { button, host, canInsert, insert, focusEd
 		if ( !host.hidden ) return close();
 		paint();
 		host.hidden = false;
-		host.style.top = `${ button.closest( "#editor-toolbar" ).offsetHeight + 8 }px`;
+		position();
 		button.setAttribute( "aria-expanded", "true" );
 		host.querySelector( `[data-tool-group="${ group }"]` ).focus();
 	} );
@@ -67,6 +72,7 @@ export function createScriptToolMenu( { button, host, canInsert, insert, focusEd
 			close();
 		}
 	} );
+	window.addEventListener( "resize", () => { if ( !host.hidden ) position(); } );
 	return { close, sync: () => {
 		button.disabled = !canInsert();
 		if ( button.disabled ) close( false );

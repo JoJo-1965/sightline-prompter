@@ -5,7 +5,7 @@ import { preparationBlockReason } from "./controller-workflow.js";
 const groups = {
 	Prompting: [ [ "toggle", "Play / pause", "▶" ], [ "restart", "Top", "↤" ], [ "previous-section", "Previous", "◀" ], [ "next-section", "Next", "▶" ], [ "faster", "Faster", "+" ], [ "slower", "Slower", "−" ], [ "scroll-mode", "Voice / steady", "🎙" ] ],
 	Recording: [ [ "on-air", "On air", "●" ], [ "marker", "Marker", "⚑" ], [ "back-to-marker", "To marker", "↶" ], [ "keeper", "Keeper", "✓" ], [ "scrap", "Scrap", "×" ], [ "obs-record", "Record take", "●" ], [ "obs-finish", "Finish recording", "■" ], [ "sound-check", "Sound check", "▥" ] ],
-	View: [ [ "bigger", "Bigger text", "A+" ], [ "smaller", "Smaller text", "A−" ], [ "mirror-h", "Mirror L/R", "↔" ], [ "mirror-v", "Mirror U/D", "↕" ], [ "layout", "Spacing", "↔" ], [ "reading", "Text / colour", "Aa" ], [ "recording", "Take display", "●" ], [ "eye-line", "Eye line", "◉" ], [ "click-through", "Click through", "↗" ], [ "control", "Control window", "▣" ], [ "pad", "Show / hide pad", "▦" ], [ "help", "Help", "?" ] ],
+	View: [ [ "bigger", "Bigger text", "A+" ], [ "smaller", "Smaller text", "A−" ], [ "mirror-h", "Mirror L/R", "↔" ], [ "mirror-v", "Mirror U/D", "↕" ], [ "layout", "Spacing", "↔" ], [ "reading", "Text / colour", "Aa" ], [ "recording", "Take display", "●" ], [ "eye-line", "Eye line", "◉" ], [ "click-through", "Click through", "↗" ], [ "clean-view", "Clean view", "◌" ], [ "control", "Control window", "▣" ], [ "pad", "Show / hide pad", "▦" ], [ "help", "Help", "?" ] ],
 	Listening: [ [ "listening-toggle", "Listening on / off", "🎙" ], [ "listening-restart", "Restart listening", "↻" ], [ "session-check", "Session check", "✓" ] ],
 	Guide: [ [ "head-guide", "Head guide", "◎" ], [ "head-guide-fullscreen", "Guide fullscreen", "⛶" ], [ "guide-adjustments", "Adjust guide", "◎" ], [ "guide-eyes-lock", "Lock eye position", "◉" ], [ "guide-ideal-visible", "Show ideal reference", "◎" ], [ "guide-match-ideal", "Match saved ideal", "↶" ] ],
 	Scripts: Array.from( { length: 9 }, ( _, i ) => [ `slot-${ i + 1 }`, `Slot ${ i + 1 }`, String( i + 1 ) ] )
@@ -54,7 +54,7 @@ export function controlView( id, status = {} ) {
 	if ( preparationReason ) { view.disabled = true; view.reason = preparationReason; }
 	if ( id.startsWith( "mode-" ) ) {
 		view.active = status.readingMode === id.slice( 5 );
-		view.disabled ||= !!status.scrolling || ( status.readingModeLocked && id !== "mode-notes" ) || ( id === "mode-voice" && ( status.speechEnabled === false || status.microphoneEnabled === false ) );
+		view.disabled ||= !!( status.readingModeBusy ?? status.scrolling ) || ( status.readingModeLocked && id !== "mode-notes" ) || ( id === "mode-voice" && ( status.speechEnabled === false || status.microphoneEnabled === false ) );
 		if ( view.disabled ) view.reason = "Pause prompting; check script mode and voice setup";
 	}
 	if ( [ "review-recording", "export-reviewed-pack" ].includes( id ) ) {
@@ -76,7 +76,7 @@ export function controlView( id, status = {} ) {
 		view.active = status.hud?.enabled === true;
 		view.label = view.active ? "HUD cues on" : "HUD cues off";
 	}
-	const toggles = { "on-air": "onAir", "sound-check": "soundCheck", "eye-line": "eyeLine", "click-through": "clickThrough", control: "showControl", pad: "showPad", "head-guide": "showHeadGuide", "head-guide-fullscreen": "headGuideFullscreen" };
+	const toggles = { "on-air": "onAir", "sound-check": "soundCheck", "eye-line": "eyeLine", "click-through": "clickThrough", "clean-view": "cleanOverlay", control: "showControl", pad: "showPad", "head-guide": "showHeadGuide", "head-guide-fullscreen": "headGuideFullscreen" };
 	if ( toggles[id] ) view.active = !!status[toggles[id]];
 	if ( id === "status" ) view.label = status.progress || status.sectionTitle || "Section / time";
 	if ( id === "listening-toggle" ) {

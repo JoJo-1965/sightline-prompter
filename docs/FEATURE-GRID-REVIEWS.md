@@ -1,5 +1,14 @@
 # Feature-matrix review record
 
+## Toolbar overlay and Auto format — prepared after RC12
+
+Reviewed three-mode choice/Notes overrides, paragraph pages, native click-through
+exceptions, recoverable clean chrome/guide suppression, optional shared action,
+On top, and exact-word plain-text formatting. Dedicated source/native checks
+pass. Add Clean view and Auto format capability rows with Insert tools when
+packaging the next combined candidate; update existing mode, page, window and
+controller rows then. Frozen RC12 exports remain 272 rows for its actual binary.
+
 ## Editor Insert menu — prepared after RC12
 
 Source/native checks pass for 41 authoring templates covering all existing

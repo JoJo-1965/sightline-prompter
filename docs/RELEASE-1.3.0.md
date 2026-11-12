@@ -31,6 +31,33 @@ See the [combined UAT](uat/1.3.0-RC12.md). Hardware microphone UAT remains.
 
 ## Prepared after RC12 — next combined preview
 
+### Reading and call overlays
+
+Separate Voice / Page / Scroll buttons replace the two-way toolbar switch.
+Page has Previous/Next limits and can use plain paragraphs. Authored Notes
+supplies the initial display; an explicit operator choice overrides it for
+the open script. Pause delivery before changing mode; voice prerequisites
+remain. Existing controller IDs are retained.
+
+Clean view hides prompter and guide chrome until Show controls at the top edge,
+Escape, or global click-through-off recovery. Click-through and On top are
+visible toolbar toggles. Appearance/reference and recorder state are retained.
+Clean view is transient, with an optional shared pad/phone/mapping action.
+
+An opening `{record: on}` now reuses the recording state just confirmed by
+Record take. It avoids a second Start request interrupting prompting, while
+retaining the existing recording permission checks.
+
+### Plain-text authoring
+
+Auto format in Ctrl+E previews the whole script or selected plain text. It adds
+an opening heading and paragraphs; optional sections/pages, a short cue, audio
+checks and pace use existing syntax. Original words/order stay intact. Existing
+markup is protected, Apply is in-memory, Undo restores and Save writes. No
+recorder action or forced stop is invented.
+
+### Editor insertion menu
+
 The full editor gains **Insert…**, a grouped menu with 41 code/direction
 templates. Insert at the cursor, replace selected text, edit selected values,
 then use normal Undo/Save. Every directive family, all nine pointing cues,

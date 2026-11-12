@@ -97,6 +97,13 @@ the preview manifest; other platforms require acceptance.
 
 ## Next: recording accuracy and real-world feedback
 
+**Call overlays and Auto format — source ready after RC12.** Three toolbar
+modes, paragraph paging, recoverable Clean view, Click-through and On top,
+plus plain-text formatting with optional basic codes and preview/Undo/Save.
+Combine with Insert tools in the next candidate. Physical call-overlay UAT
+and that candidate's matrix/JL archive refresh remain.
+[Combined review](docs/uat/RC12-OVERLAY-AUTHORING-FEEDBACK.md).
+
 **Editor insertion menu — source ready after RC12.** Grouped templates for
 directions, pointing, notes/headings and existing codes insert at the cursor.
 Editable values, Undo, Save, compact layouts and protected samples are checked.

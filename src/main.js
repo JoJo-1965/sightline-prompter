@@ -1730,6 +1730,7 @@ app.whenReady().then( async () => {
 		"recording",
 		"eye-line",
 		"click-through",
+		"clean-view",
 		"scroll", // value: lines, + down or - up
 		"backing", // value: steps of 5%, + or -
 		"sound-check", // the sound-check meter on or off
@@ -2653,14 +2654,18 @@ app.whenReady().then( async () => {
 		}
 	} );
 
-	ipcMain.on( "setIgnoreMouse", ( _event, ignore ) => {
-		if ( settings.clickThrough ) win.setIgnoreMouseEvents( !!ignore, { forward: true } );
+	ipcMain.on( "setOverlayClean", ( event, value ) => {
+		if ( event.sender === win.webContents && typeof value === "boolean" ) framingGuide?.setOverlayClean( value );
+	} );
+	ipcMain.on( "setIgnoreMouse", ( event, ignore ) => {
+		if ( event.sender === win.webContents && settings.clickThrough ) win.setIgnoreMouseEvents( !!ignore, { forward: true } );
 	} );
 
 	// Works even when another app has focus, so click-through can always be undone.
 	globalShortcut.register( "CommandOrControl+Shift+X", async () => {
 		const on = !settings.clickThrough;
 		await updateSettings( { clickThrough: on } );
+		if ( !on ) win.webContents.send( "showOverlayControls" );
 		win.webContents.send(
 			"toast",
 			on ? "Click-through on · clicks go to the window behind · Ctrl+Shift+X to stop" : "Click-through off"

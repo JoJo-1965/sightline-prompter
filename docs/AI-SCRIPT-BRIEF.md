@@ -1,5 +1,12 @@
 # Brief for AI script writers: Sightline Prompter scripts
 
+**Further authoring tools prepared after RC12:** Auto format previews a starter
+structure for pasted plain text. Preserve the speaker's wording. Optional
+opening cues, audio checks and pace targets are deliberate author choices;
+never invent recorder commands or forced pauses. Operators can switch Voice,
+Page and Scroll without rewriting a script's mode declaration. Scripts still
+need correct scope placement and the script checker before recording.
+
 **Authoring tools prepared after RC12:** the next editor Insert menu uses the
 existing syntax here; it adds no directives. Operators can add templates at the
 cursor and edit selected values. Generated scripts still need correct scope

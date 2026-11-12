@@ -1,5 +1,10 @@
 # Settings
 
+**Next preview after RC12:** toolbar Voice / Page / Scroll, Click-through and
+On top expose existing mode/window settings. Clean view is a temporary view
+and does not replace saved appearance/guide preferences. The signed-off
+Settings navigation and three-column composition are retained.
+
 This source guide describes **Sightline 1.2.0**, based on the approved
 interactive demo and Joanne's combined Connections/recording feedback.
 The same guide is bundled with the installer and available from Help.

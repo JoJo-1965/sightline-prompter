@@ -33,3 +33,11 @@ Use a saved editable copy and demonstrate Undo/Save. Narration: “Add a directi
 production note or control code where you need it, without remembering syntax.”
 Only claim this after the next combined preview ships; the current RC12 binary
 does not include the menu.
+
+## Further next-preview inserts
+
+Show pasting plain text, Auto format preview and explicit Apply/Save. Select
+Page, then Voice/Scroll while paused. For a call-overlay example, show On top,
+Click-through and Clean view, then recover with the top-edge Show controls tab.
+Use replacement UI inserts only with the candidate that ships these controls;
+do not relabel the existing RC12/earlier video as demonstrating them.

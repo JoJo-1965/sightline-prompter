@@ -72,4 +72,4 @@ try {
  await main.evaluate('document.getElementById("btn-insert-tool").disabled=false;document.getElementById("btn-insert-tool").click()');assert.equal(await main.evaluate('document.getElementById("script-tool-menu").hidden'),true,'Read-only protection remains in the handler');
  assert.deepEqual(errors,[]);
  console.log(JSON.stringify({pass:true,artifacts,checks:'Actual CodeMirror cursor/selection insertion, editable placeholders, single Undo, Save, preserved text, no recorder execution, wide/compact layout, Escape and read-only gates'}));
-}catch(error){console.error(error,stderr.slice(-1000));process.exitCode=1}finally{for(const socket of sockets)socket.close();child.kill()}
+}catch(error){console.error(error,stderr.slice(-1000),errors);process.exitCode=1}finally{for(const socket of sockets)socket.close();child.kill()}
