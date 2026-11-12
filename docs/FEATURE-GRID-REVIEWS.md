@@ -1,5 +1,13 @@
 # Feature-matrix review record
 
+## RC11 toolbar feedback queue — 12 November 2026
+
+Recorded narrow-window Help/Settings orphaning and wide-window misalignment
+as one toolbar utility-group correction for the next combined RC. The queue
+requires actual rendered checks alongside geometry assertions. No runtime,
+binary, settings, capability or current screenshot changes are claimed;
+RC11 and its 270-row feature reference remain unchanged during UAT.
+
 ## Bookmark visibility preference — 11 November 2026
 
 Queued optional on-screen bookmark flags, off during delivery, while keeping
