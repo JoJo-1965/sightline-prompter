@@ -1,5 +1,13 @@
 # Feature-matrix review record
 
+## RC11 window-placement feedback — 12 November 2026
+
+Queued parent-monitor first placement and independent saved placement for
+Settings and app-owned dialogs, with restart persistence and visible-screen
+fallbacks. Native-dialog ownership and OS placement limits are explicit.
+This records acceptance requirements for the next combined candidate;
+no new behaviour is claimed for RC11 or its current feature exports.
+
 ## RC11 editor exit-label feedback — 12 November 2026
 
 Queued dynamic Close/Cancel labels according to whether the full editor has
