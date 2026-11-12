@@ -1,4 +1,5 @@
 import { createVoiceSample } from "./voice-sample.js";
+import { createScriptToolMenu } from "./script-tool-menu.js";
 import { visibleActions, matchingAction } from "./context-actions.js";
 import { roundControlNumber } from "./numeric-controls.js";
 import {
@@ -556,6 +557,13 @@ const toolbarDirty = uiElement( "toolbar-dirty" );
 const btnSave = uiElement( "btn-save" );
 const btnSaveAs = uiElement( "btn-save-as" );
 const btnCancel = uiElement( "btn-cancel" );
+const scriptToolMenu = createScriptToolMenu( {
+	button: uiElement( "btn-insert-tool" ),
+	host: uiElement( "script-tool-menu" ),
+	canInsert: () => isEditMode && !!editorView && !editorReadOnly,
+	insert: id => window.EditorModule.insertScriptTool( editorView, id ),
+	focusEditor: () => editorView?.focus()
+} );
 const resizeHandle = uiElement( "resize-handle" );
 const autoScrollIndicator = uiElement( "auto-scroll-indicator" );
 const apiKeyModal = uiElement( "api-key-modal" );
@@ -657,6 +665,8 @@ function setDirty( dirty ) {
 }
 
 function showEditor() {
+	scriptToolMenu.close( false );
+	scriptToolMenu.sync();
 	stopSteadySession();
 	previewContainer.classList.add( "hidden" );
 	editorContainer.classList.remove( "hidden" );
@@ -668,6 +678,7 @@ function showEditor() {
 }
 
 function showPreview() {
+	scriptToolMenu.close( false );
 	editorContainer.classList.add( "hidden" );
 	previewContainer.classList.remove( "hidden" );
 	if ( resizeHandle ) resizeHandle.classList.remove( "hidden" );
@@ -716,6 +727,7 @@ function loadEditorContent( content, filePath, access = {} ) {
 		}, editorReadOnly );
 	}
 	isLoadingContent = false;
+	scriptToolMenu.sync();
 	editorView.focus();
 }
 
@@ -795,11 +807,12 @@ window.electron.onSaveResult( ( success, filePath ) => {
 		btnSaveAs.textContent = "Save As";
 		btnCancel.textContent = "Cancel";
 		if ( editorView ) window.EditorModule.setEditorReadOnly( editorView, false );
+		scriptToolMenu.sync();
 		savedEditorContent = pendingEditorSave ?? savedEditorContent;
 		setDirty( !!editorView && window.EditorModule.getEditorContent( editorView ) !== savedEditorContent );
 		isNewFile = false;
 		if ( filePath && toolbarFilename ) {
-			toolbarFilename.textContent = filePath.split( "/" ).pop();
+			toolbarFilename.textContent = filePath.split( /[\\/]/ ).pop();
 		}
 	}
 	if ( pendingSaveAndClose ) {

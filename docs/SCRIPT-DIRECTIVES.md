@@ -1,5 +1,13 @@
 # Script directives
 
+## Editor insertion tools — prepared after RC12
+
+The next combined preview adds **Ctrl+E > Insert…** for 41 templates covering
+all directive families, silent directions, presenter-relative pointing,
+production notes and headings. Templates insert at the cursor and replace
+selected text; editable values remain selected. Read placement hints and
+save normally. Insertion never executes a directive. Syntax is unchanged.
+
 **RC10 Voice boundaries:** `{stop}` prepares the next spoken passage without
 holding Voice. Retake returns to the completed section until you speak the next
 passage; no extra Go is needed. Stops and timed pauses still control Scroll.

@@ -1,5 +1,13 @@
 # Feature-matrix review record
 
+## Editor Insert menu — prepared after RC12
+
+Source/native checks pass for 41 authoring templates covering all existing
+directives, notes/headings and presenter-relative pointing. Syntax is unchanged.
+Add a capability row when this joins the next combined RC. The frozen RC12
+272-row exports and versioned JL archive continue to describe the shipped
+RC12 binary; they do not advertise this pending feature.
+
 ## Recorded Voice regression fixes — 12 November 2026
 
 Prepared exact Retake fallbacks, heading-aware boundary targets and bounded

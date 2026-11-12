@@ -24,3 +24,12 @@ Use the new short sample for a rehearsal. A real production clip still needs
 an explicit recorder start, a sync cue captured after Record, and an explicit
 finish. Do not claim improved recognition is guaranteed for every accent or
 microphone, or that a level gate is speech-model training.
+
+## Next-preview authoring insert (not RC12 footage)
+
+Show Ctrl+E > Insert… with the Pointing group, choose a cue and rename the
+selected graphic label. Then show a production note and a paced section.
+Use a saved editable copy and demonstrate Undo/Save. Narration: “Add a direction,
+production note or control code where you need it, without remembering syntax.”
+Only claim this after the next combined preview ships; the current RC12 binary
+does not include the menu.

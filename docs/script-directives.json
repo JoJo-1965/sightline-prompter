@@ -3,7 +3,7 @@
 	"name": "sightline-script-directives",
 	"version": "0.7.0",
 	"status": "syntax agreed; implemented in the app (27 October 2026): pause, marker, wpm, target, pacing, mode",
-	"date": "2026-11-11",
+	"date": "2026-11-12",
 	"syntax": {
 		"directive": "{ name[: value] [, name[: value]]... }",
 		"directiveDelimiters": [
@@ -174,7 +174,7 @@
 					"voice"
 				]
 			},
-			"description": "A stop that checks the microphone first, in steady and voice scrolling. room: the room's background noise, measured for 5 seconds while the speaker stays quiet; quiet (below -55 dB), ok, or noisy (above -45 dB). voice: the speaker reads a line on the card at their normal level for 7 seconds; good, too quiet, loud or clipping, with advice about voice and background noise. Continue anyway accepts a warning without forcing gain; the log retains acceptance and measurements. The result shows on a card; \"Prompter, again\" or Check again measures again, and Space or \"Prompter, go\" carries on. Each result goes in the take log (soundChecks) and the edit pack. Put {soundcheck: room} then {soundcheck: voice} at the top of a recording script, on their own lines."
+			"description": "A stop that checks the microphone first, in steady and voice scrolling. room: the room's background noise, measured for 5 seconds while the speaker stays quiet; quiet (below -55 dB), ok, or noisy (above -45 dB). voice: wait for speech onset, sample at the normal speaking level, and end after sustained silence or ten seconds; no speech is incomplete; good, too quiet, loud or clipping, with advice about voice and background noise. Continue anyway accepts a warning without forcing gain; the log retains acceptance and measurements. The result shows on a card; \"Prompter, again\" or Check again measures again, and Space or \"Prompter, go\" carries on. Each result goes in the take log (soundChecks) and the edit pack. Put {soundcheck: room} then {soundcheck: voice} at the top of a recording script, on their own lines."
 		},
 		"prompter": {
 			"scopes": [

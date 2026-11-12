@@ -1,3 +1,10 @@
+# Sightline Prompter features
+
+**Prepared after RC12:** Ctrl+E **Insert…** provides 41 grouped templates
+covering every directive family, silent/pointing cues, production notes and
+headings. Cursor insertion, editable values, Undo and Save are checked; samples
+stay protected. Awaiting the next combined preview; frozen RC12 is unchanged.
+
 **RC12 preview · 12 November 2026:** combined recording and interface fixes.
 Help, Settings and window controls form one upper-right toolbar group. The full
 editor uses Close when saved and Cancel while dirty, including Undo. App-owned

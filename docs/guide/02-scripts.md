@@ -1,5 +1,20 @@
 # Writing scripts
 
+## Insert codes and directions — next preview
+
+Prepared after RC12 for the next combined preview. In **Ctrl+E**, choose
+**Insert…**, then Directions, Pointing, Notes & sections, Pace & pauses,
+Recording & audio, or App actions. Choose an item to insert at the cursor,
+replacing selected text. Values and graphic labels remain selected so you can
+type a replacement. Pointing left/right means your own presenting side.
+
+Headings and production notes get separate lines. Read the placement hint for
+script/section settings. Normal Undo and Save apply. Inserting or saving a code
+does not execute it. Escape closes the menu and returns to the editor. Protected
+samples need **Save a copy** before insertion.
+
+![Grouped editor insertion tools](images/editor-insert-next.png)
+
 ## Full editor exit — RC12
 
 Ctrl+E opens the full editor. **Close** means the text matches the saved file;

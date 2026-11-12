@@ -1,5 +1,13 @@
 # Brief for AI script writers: Sightline Prompter scripts
 
+**Authoring tools prepared after RC12:** the next editor Insert menu uses the
+existing syntax here; it adds no directives. Operators can add templates at the
+cursor and edit selected values. Generated scripts still need correct scope
+placement and the script checker. Voice sampling now starts when speech begins
+and ends after sustained silence or ten seconds. No speech is incomplete. Do
+not prescribe a fixed seven-second voice sample or suggest that inserting a
+recorder code executes it in the editor.
+
 **RC10 Voice boundaries:** `{stop}` prepares the next spoken passage without
 holding Voice. Retake returns to the completed section until you speak the next
 passage; no extra Go is needed. Stops and timed pauses still control Scroll.

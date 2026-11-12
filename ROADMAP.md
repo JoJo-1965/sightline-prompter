@@ -97,6 +97,12 @@ the preview manifest; other platforms require acceptance.
 
 ## Next: recording accuracy and real-world feedback
 
+**Editor insertion menu — source ready after RC12.** Grouped templates for
+directions, pointing, notes/headings and existing codes insert at the cursor.
+Editable values, Undo, Save, compact layouts and protected samples are checked.
+Include in the next combined preview and its feature-grid/JL archive refresh.
+[Review](docs/uat/RC12-EDITOR-INSERT-FEEDBACK.md).
+
 **RC6 correction batch:** bare and timed `{pause}` directives are Scroll-only.
 Voice follows natural pauses without a forced hold or linked-recorder pause;
 explicit `{stop}`, sound checks and spoken pause commands remain deliberate.

@@ -29,6 +29,16 @@ editing, recorded-chunk replay, command negatives and capture constraints.
 The [RC11 feedback batch](uat/1.3.0-RC11-FEEDBACK.md) is integrated into RC12.
 See the [combined UAT](uat/1.3.0-RC12.md). Hardware microphone UAT remains.
 
+## Prepared after RC12 — next combined preview
+
+The full editor gains **Insert…**, a grouped menu with 41 code/direction
+templates. Insert at the cursor, replace selected text, edit selected values,
+then use normal Undo/Save. Every directive family, all nine pointing cues,
+comments and headings are covered. Samples remain protected and insertion
+never executes recorder actions. Windows filenames and editing marker
+visibility are tidied too. Native checks cover cursor/selection behaviour and
+compact layouts. This source change is not in the frozen RC12 package.
+
 ## Current behaviour to use in RC12
 
 - **Voice stops:** RC10 makes `{stop}` a soft passage boundary. The next spoken

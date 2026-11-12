@@ -4,6 +4,7 @@ import { languages } from "@codemirror/language-data";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { Compartment, EditorState } from "@codemirror/state";
 import { sectionLine } from "./script-health.js";
+import { scriptToolEdit } from "./script-tools.js";
 export { quickEditParagraphs } from "./quick-edit-source.js";
 
 const access = new Compartment();
@@ -65,6 +66,20 @@ export function setEditorContent( view, content ) {
 
 export function getEditorContent( view ) {
 	return view.state.doc.toString();
+}
+
+export function insertScriptTool( view, id ) {
+	if ( !view || view.state.readOnly ) return false;
+	const { from, to } = view.state.selection.main;
+	const edit = scriptToolEdit( view.state.doc.toString(), from, to, id );
+	view.dispatch( {
+		changes: { from: edit.from, to: edit.to, insert: edit.insert },
+		selection: { anchor: edit.anchor, head: edit.head },
+		scrollIntoView: true,
+		userEvent: "input.tool"
+	} );
+	view.focus();
+	return true;
 }
 
 export function getCursorLine( view ) {

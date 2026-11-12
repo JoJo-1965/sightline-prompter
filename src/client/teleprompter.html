@@ -625,11 +625,15 @@
       <div id="editor-toolbar">
         <span class="toolbar-dirty hidden" id="toolbar-dirty">●</span>
         <span class="toolbar-filename" id="toolbar-filename">No file open</span>
+        <div class="editor-actions">
+        <button id="btn-insert-tool" type="button" aria-haspopup="dialog" aria-controls="script-tool-menu" aria-expanded="false" title="Insert script codes, speaker directions, pointing cues or production notes at the cursor">Insert…</button>
         <button id="btn-script-health" type="button">Script health…</button>
         <button id="btn-save" class="primary">Save</button>
         <button id="btn-save-as">Save As</button>
         <button id="btn-cancel">Cancel</button>
+        </div>
       </div>
+      <section id="script-tool-menu" role="dialog" aria-labelledby="script-tools-title" hidden></section>
       <div id="editor"></div>
     </div>
     <button type="button" id="command-listening" class="hidden" title="Listening for the wake word on this computer. Click to restart listening. Settings > Voice > Voice commands chooses when to listen.">

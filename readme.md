@@ -156,6 +156,14 @@ on your own setup. OBS-scene calibration is a sampled preview, not the encoder o
 
 ## Change log
 
+### Prepared after RC12 — editor insertion menu
+
+Ctrl+E **Insert…** adds grouped codes and directions at the cursor, with
+editable values, Undo, normal Save and protected samples. It covers every
+directive family, comments/headings and all nine pointing positions. Inserting
+codes never executes them. Source/native checks pass; it is queued for the next
+combined preview. [Review and UAT](docs/uat/RC12-EDITOR-INSERT-FEEDBACK.md).
+
 ### 1.3.0 RC12 — combined recording and interface fixes
 
 RC12 explicitly disables automatic gain control for
