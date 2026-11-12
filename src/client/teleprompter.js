@@ -1417,7 +1417,13 @@ async function startScriptSoundCheck( kind, pause = null ) {
 	if ( kind === "voice" ) {
 		run.gate = createVoiceSample( { noise: lastRoomNoise ?? -65, armAt: Date.now() + 800 } );
 		drawCheckCard( { title, line, count: "Speak to begin" } );
-		await new Promise( resolve => { run.resolve = resolve; } );
+		await new Promise( resolve => {
+			run.resolve = resolve;
+			// Also finish incomplete if permission/device failure means no blocks arrive.
+			run.timer = setTimeout( () => { run.sample = { phase: "no-speech" }; resolve(); }, 32000 );
+			if ( !levelMeter.running ) { run.sample = { phase: "no-speech" }; resolve(); }
+		} );
+		clearTimeout( run.timer );
 		if ( scriptCheck !== run ) return;
 		if ( run.sample?.phase !== "done" ) {
 			run.done = true;
