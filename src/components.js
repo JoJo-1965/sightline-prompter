@@ -11,6 +11,7 @@ export const KIT_FILES = [
 	"scripts/sightline.mjs", "scripts/check-script.mjs", "scripts/heard-report.mjs", "scripts/edit-pack.mjs",
 	"scripts/sightline-mcp.mjs", "scripts/sightline-mcp-LICENSE.txt", "docs/MCP.md",
 	"docs/guide/17-configure-mcp.md", "docs/guide/21-controller-functions.md", "docs/CONTROLLER-COMPATIBILITY.md",
+	"docs/guide/images/operator-controls-rc14.png", "docs/guide/images/call-pad-rc14.png",
 	"src/heard-report.js", "src/recordings.js", "src/client/edit-pack.js", "src/client/take-log.js", "src/client/obs-position.js",
 	"src/recording-review-store.js", "src/client/post-record.js", "src/client/voice-commands.js", "src/client/sound-alike.js", "src/client/word-fixes.js",
 	"src/client/script-health.js", "src/client/rehearsal-coach.js", "src/client/pointing-cues.js",
