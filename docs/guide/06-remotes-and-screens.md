@@ -1,5 +1,10 @@
 # Remotes and second screens
 
+RC14 and companion 0.2.1.7 align Clean view, Click-through, On top and reading
+modes across supported control surfaces. The optional Call overlay preset
+does not replace an existing pad/profile until selected. [Mapping and recovery](../CONTROLLER-COMPATIBILITY.md).
+
+
 **RC2 companion preview:** [Grouped controller functions](21-controller-functions.md)
 adds function selectors, workflow keys and an Adjustment dial while preserving
 existing keys/profiles. The stable companion download remains 0.2.0.

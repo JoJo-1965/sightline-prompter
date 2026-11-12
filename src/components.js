@@ -10,12 +10,14 @@ export const KIT_FILES = [
 	"LICENSE",
 	"scripts/sightline.mjs", "scripts/check-script.mjs", "scripts/heard-report.mjs", "scripts/edit-pack.mjs",
 	"scripts/sightline-mcp.mjs", "scripts/sightline-mcp-LICENSE.txt", "docs/MCP.md",
+	"docs/guide/17-configure-mcp.md", "docs/guide/21-controller-functions.md", "docs/CONTROLLER-COMPATIBILITY.md",
 	"src/heard-report.js", "src/recordings.js", "src/client/edit-pack.js", "src/client/take-log.js", "src/client/obs-position.js",
 	"src/recording-review-store.js", "src/client/post-record.js", "src/client/voice-commands.js", "src/client/sound-alike.js", "src/client/word-fixes.js",
 	"src/client/script-health.js", "src/client/rehearsal-coach.js", "src/client/pointing-cues.js",
 	"docs/script-directives.json", "docs/AI-SCRIPT-BRIEF.md", "docs/SCRIPT-DIRECTIVES.md", "docs/EDIT-PACK.md", "docs/POINTING-CUE-AUTHORING.md",
 	"src/samples/batch-module.md", "src/samples/single-take.md", "src/samples/voice-and-stops.md", "src/samples/talking-points.md", "src/samples/notes.md",
 	"src/samples/welcome.md", "src/samples/prepare-to-record.md", "src/samples/recording-preview.md", "src/samples/pointing-cues.md", "src/samples/hud-cues.md", "src/samples/spoken-heading-lead-in.md", "docs/guide/22-hud-cues.md", "docs/DEMO-SCRIPTS.md",
+	"src/samples/rc13-authoring-and-overlays.md", "src/samples/rc14-controllers-and-mcp.md",
 	"skills/sightline-script/SKILL.md", "skills/sightline-session/SKILL.md"
 ];
 export async function nodeStatus() {
@@ -64,8 +66,8 @@ export function createAgentKit( { source, folder, version, trash = target => fs.
 				await fs.writeFile( path.join( staging, "package.json" ), JSON.stringify( { private: true, type: "module" } ) );
 				const files = Object.fromEntries( await Promise.all( KIT_FILES.map( async file => [ file, await digest( path.join( staging, file ) ) ] ) ) );
 				await fs.writeFile( path.join( staging, "sightline-kit.json" ), JSON.stringify( { version, files } ) );
-				await fs.writeFile( path.join( staging, "START-HERE.md" ), "# Sightline AI kit\n\nInstall Node.js 22.16 or later to run the commands. No npm install is needed.\n\n- Check a script: `node scripts/check-script.mjs your-script.md`\n- Check Sightline: `node scripts/sightline.mjs status`\n- Authoring instructions: skills/sightline-script/SKILL.md\n- Session instructions: skills/sightline-session/SKILL.md\n\nGive your assistant this kit folder as the Sightline source location. If its skill mentions `<sightline>`, use this folder. Enable AI & API in Sightline before sending commands. Installing this kit does not enable remote access or install skills into another application. Keep your own files elsewhere: Reinstall replaces this managed folder; Remove moves it to the system bin.\n" );
-				await fs.appendFile( path.join( staging, "START-HERE.md" ), "\n## Local MCP\n\nRead docs/MCP.md for desktop-client setup. Command: node; argument: this folder's absolute scripts/sightline-mcp.mjs path. Enable MCP in Connections > AI and API, then Apply. Its default access is read-only; scripting, prompting and recording need separate grants. No token belongs in client configuration.\n" );
+				await fs.writeFile( path.join( staging, "START-HERE.md" ), "# Sightline AI kit\n\nInstall Node.js 22.16 or later to run the commands. No npm install is needed.\n\n- Check a script: `node scripts/check-script.mjs your-script.md`\n- Check Sightline: `node scripts/sightline.mjs status`\n- Authoring instructions: skills/sightline-script/SKILL.md\n- Session instructions: skills/sightline-session/SKILL.md\n\nGive your assistant this kit folder as the Sightline source location. If its skill mentions `<sightline>`, use this folder. Enable the local API in Connections > MCP, AI, and API before sending commands. Installing this kit does not enable remote access or install skills into another application. Keep your own files elsewhere: Reinstall replaces this managed folder; Remove moves it to the system bin.\n" );
+				await fs.appendFile( path.join( staging, "START-HERE.md" ), "\n## Local MCP\n\nRead docs/MCP.md for desktop-client setup. Command: node; argument: this folder's absolute scripts/sightline-mcp.mjs path. Enable MCP in Connections > MCP, AI, and API, then Apply. Its default access is read-only; scripting, prompting and recording need separate grants. No token belongs in client configuration.\n" );
 				await fs.rm( previous, { recursive: true, force: true } );
 				await fs.rename( folder, previous ).catch( ( err ) => {
 					if ( err.code !== "ENOENT" ) throw err;

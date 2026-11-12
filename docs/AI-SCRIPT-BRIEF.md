@@ -1,5 +1,11 @@
 # Brief for AI script writers: Sightline Prompter scripts
 
+**RC14 controller contract:** mode/display selection is separate from delivery.
+Use explicit modes and display states through the documented API/MCP controls;
+do not invent script directives for Clean view or On top. Existing scripts and
+slots retain their identity. [Integration contract](CONTROLLER-COMPATIBILITY.md).
+
+
 **RC13 authoring tools:** Auto format previews a starter
 structure for pasted plain text. Preserve the speaker's wording. Optional
 opening cues, audio checks and pace targets are deliberate author choices;

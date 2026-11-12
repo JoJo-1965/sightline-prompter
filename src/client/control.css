@@ -472,3 +472,7 @@ button:focus-visible {
   outline: 2px solid #8fd3ff;
   outline-offset: 1px;
 }
+
+.mode-choices { display: flex; gap: 3px; padding: 3px; border: 1px solid #526073; border-radius: 6px; }
+.mode-choices button { white-space: nowrap; }
+#broadcast button { text-wrap: pretty; }

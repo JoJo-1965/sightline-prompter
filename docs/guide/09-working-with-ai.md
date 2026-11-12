@@ -1,21 +1,28 @@
 # Working with AI
 
+RC14 unifies controller and automation actions. Read status/capabilities,
+use explicit display states, and change modes while paused. The full API
+accepts `clean-view`, `click-through` and `always-on-top` with `value: "on"`
+or `"off"`; omitted values keep the toggle convention. MCP uses the bounded
+`sightline_view` tool instead. [Contract](../CONTROLLER-COMPATIBILITY.md).
+
+
 **Built around AI for the content creators of today.** Sightline is made for people who make video with an AI assistant at their
 side: content creators, and learning and development teams recording courses,
 explainers and updates at a desk or in a studio. Your AI can write the script,
 direct the prompter, run it while you record, and pick up the take log
 afterwards for the edit.
 
-Sightline doesn't record your video or audio: keep using OBS, Riverside,
-Zoom, your camera or whatever you record with. What Sightline adds is the
-accurate timings (every take, section and word, with your retakes, markers
-and ratings) and a slate to line them up with that recording, so your AI
-can find the right take and cut it without anyone scrubbing through by ear.
+Use your chosen recorder for the production master. Sightline can create a
+short preparation test and optional reference audio, and logs sections,
+retakes, markers and ratings for the edit. Live word timings are navigation
+estimates; verify cuts/captions against a recorded transcript and capture a
+sync reference after recording starts.
 
 | Step       | What the AI does                                                   | What Sightline does                                                                   |
 | ---------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------- |
 | **Write**  | Writes the script, with sections, target times, stops and countdowns | Gives the AI its instructions (the AI Script Prompt) and checks what comes back       |
-| **Record** | Loads the script and runs the prompter, if you let it             | Follows your voice, holds at every stop, marks every pause, logs every take          |
+| **Record** | Loads the script and runs the prompter, if you let it             | Follows your voice across soft stops; Scroll honours holds; logs takes          |
 | **Edit**   | Reads the edit pack, chooses the takes and plans the cuts          | Saves every take, the words you said and when, and builds the edit pack               |
 
 **Setting your AI up:** Claude Code and Codex can do all three, with two
@@ -32,9 +39,9 @@ Sightline:
 
 - `## Headings` become sections you can jump between and retake one by one.
 - `{target: 1:20}` and `{wpm: 140}` set the pace section by section.
-- `{stop}` holds the prompter until you say "Prompter, go"; `{pause: 3s}`
-  counts down and carries on. Use them before a demo, a slide change or a
-  change of shot.
+- In Scroll, `{stop}` holds and `{pause: 3s}` counts down. Voice treats a
+  stop as the next passage boundary and keeps listening; use an explicit
+  spoken Pause for a deliberate hold.
 - `{marker}` drops a marker in the take log, for the edit.
 - `[Notes in square brackets]` are directions to you, dimmed on screen.
 

@@ -3963,7 +3963,7 @@ async function selectReadingMode( mode ) {
 		updateProgress();
 		sendStatus();
 	} catch ( error ) { showToast( error.message ); }
-	finally { modeChanging = false; syncReadingModeControls(); }
+	finally { modeChanging = false; syncReadingModeControls(); sendStatus(); }
 }
 
 function isScrolling() {
@@ -5172,6 +5172,7 @@ function sendStatus() {
 		readingModeLocked: false,
 		readingModeBusy: readingModeBusy(),
 		cleanOverlay: overlayChrome?.active ?? false,
+		alwaysOnTop: !!settings.alwaysOnTop,
 		sectionTitle: currentSectionTitle(),
 		speed: settings.scrollMode === "voice" ? "Voice" : `${ getWpm() } wpm`,
 		soundCheck: soundCheckOn(),
@@ -5417,7 +5418,8 @@ function runRemoteAction( action, value ) {
 	else if ( action === "smaller" ) setFontSize( fontSize - FONT_SIZE_STEP );
 	else if ( [ "layout", "reading", "recording" ].includes( action ) ) toggleLayoutView( action );
 	else if ( action === "eye-line" ) window.electron.saveSettings( { eyeLine: !settings.eyeLine } );
-	else if ( action === "click-through" ) window.electron.saveSettings( { clickThrough: !settings.clickThrough } );
+	else if ( action === "click-through" ) window.electron.saveSettings( { clickThrough: value === "on" ? true : value === "off" ? false : !settings.clickThrough } );
+	else if ( action === "always-on-top" ) window.electron.saveSettings( { alwaysOnTop: value === "on" ? true : value === "off" ? false : !settings.alwaysOnTop } );
 	else if ( action === "clean-view" ) overlayChrome.setClean( value === "on" ? true : value === "off" ? false : !overlayChrome.active );
 	// Dials: value is the number of steps, + or -.
 	else if ( action === "scroll" && Number.isFinite( Number( value ) ) ) {

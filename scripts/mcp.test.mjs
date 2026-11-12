@@ -30,17 +30,25 @@ transport.stderr?.on( "data", chunk => stderr += chunk );
 try {
 	await client.connect( transport );
 	const tools = await client.listTools();
-	assert.equal( tools.tools.length, 7 );
+	assert.equal( tools.tools.length, 8 );
 	const call = ( name, args = {} ) => client.callTool( { name, arguments: args } );
 	const status = await call( "sightline_status" );
 	assert.equal( JSON.parse( status.content[0].text ).slot, 4 );
 	assert.equal( ( await call( "sightline_load_script", { text: "# Test" } ) ).isError, true );
 	assert.equal( ( await call( "sightline_prompt", { action: "play" } ) ).isError, true );
+	assert.equal( ( await call( "sightline_view", { action: "clean-view", value: "on" } ) ).isError, true );
 	assert.equal( writes, 0, "Read-only defaults perform no mutations" );
 	settings.mcpScripts = true;
 	const loaded = JSON.parse( ( await call( "sightline_load_script", { text: "# Test", name: "Example" } ) ).content[0].text );
 	assert.match( loaded.name, /^Example-[a-f\d]{8}$/ );
 	settings.mcpControls = true;
+	for ( const action of [ "mode-notes", "mode-voice", "mode-scroll", "mode-cycle" ] ) assert.equal( ( await call( "sightline_prompt", { action } ) ).isError, undefined, "Mode selection needs no recording grant" );
+	for ( const action of [ "clean-view", "click-through", "always-on-top" ] ) {
+		for ( const value of [ "on", "off" ] ) assert.equal( ( await call( "sightline_view", { action, value } ) ).isError, undefined );
+		const count = writes;
+		assert.equal( ( await call( "sightline_view", { action, value: "toggle" } ) ).isError, true );
+		assert.equal( writes, count, "Explicit display values only" );
+	}
 	assert.equal( ( await call( "sightline_prompt", { action: "play" } ) ).isError, true, "Prompting cannot bypass enabled OBS recording permissions" );
 	settings.mcpRecording = true;
 	assert.equal( ( await call( "sightline_prompt", { action: "play" } ) ).isError, undefined );
@@ -57,7 +65,7 @@ try {
 	await fs.rm( descriptor );
 	assert.equal( ( await call( "sightline_status" ) ).isError, true );
 	assert.equal( stderr.includes( token ), false, "Credentials never appear in adapter diagnostics" );
-	console.log( "PASS: official MCP SDK stdio handshake, seven tools, read-only defaults, scripting/control grants, recording gates, server-side enforcement and live revocation" );
+	console.log( "PASS: official MCP SDK stdio handshake, eight tools, explicit display states, paused-mode permissions, read-only defaults, recording gates, server-side enforcement and live revocation" );
 } finally {
 	await client.close();
 	await transport.close();

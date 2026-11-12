@@ -1,6 +1,8 @@
 // Original Sightline Stream Deck glyphs, reused for the pad and phone.
 // Copyright 2026 Joanne Lockwood, SEE Change Happen Ltd. MIT licence.
 const GLYPHS = {
+	"always-on-top": "<path d=\"M8 3h8m-6 0v6l-4 5h12l-4-5V3M12 14v8\"/>",
+	"clean-view": "<rect x=\"3\" y=\"4\" width=\"18\" height=\"16\" rx=\"3\"/><path d=\"M7 8h10M7 12h7M7 16h4M2 2l20 20\"/>",
 	"again": "<path d=\"M5 8V3m0 5h5M5 8a8 8 0 1 1-1 9\"/><path d=\"m11 10 5 3-5 3Z\"/>",
 	"reset-speed": "<path d=\"M4 10a8 8 0 1 1 0 6M4 10V4m0 6h6m2 2 4-4\"/>",
 	"notes": "<rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"3\"/><path d=\"M7 8h2m3 0h5M7 12h2m3 0h5M7 16h2m3 0h3\"/>",

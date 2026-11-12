@@ -385,6 +385,7 @@ const stateManager = stateFactory( defaultConfig );
 // Sample scripts shipped in src/samples, for onboarding and testing.
 export const SAMPLE_SCRIPTS = [
 	{ file: "welcome.md", label: "Start here: Sightline feature tour" },
+	{ file: "rc14-controllers-and-mcp.md", label: "RC14: controller and MCP consistency" },
 	{ file: "rc13-authoring-and-overlays.md", label: "RC13: authoring, reading modes and call overlays" },
 	{ file: "voice-and-stops.md", label: "Voice control, stops and countdowns" },
 	{ file: "rc12-audio-and-dialogs.md", label: "RC12: audio, dialog voice and quick-edit rehearsal" },
@@ -1732,6 +1733,7 @@ app.whenReady().then( async () => {
 		"eye-line",
 		"click-through",
 		"clean-view",
+		"always-on-top",
 		"scroll", // value: lines, + down or - up
 		"backing", // value: steps of 5%, + or -
 		"sound-check", // the sound-check meter on or off
@@ -1766,6 +1768,7 @@ app.whenReady().then( async () => {
 		mirrored: currentMirrored,
 		eyeLine: settings.eyeLine,
 		clickThrough: !!settings.clickThrough,
+		alwaysOnTop: !!settings.alwaysOnTop,
 		showPad: !!settings.showPad,
 		showControl: !!settings.showControl,
 		showHeadGuide: !!settings.showHeadGuide,
@@ -1891,7 +1894,7 @@ app.whenReady().then( async () => {
 		},
 		"POST /recording/delete": async ( { id } ) => {
 			if ( !settings.remoteDeleteRecordings ) {
-				throw Object.assign( new Error( "Deleting recordings isn't allowed. In the app: Settings > Controls > AI and local API > tick \"Let it delete recordings\"" ), { status: 403 } );
+				throw Object.assign( new Error( "Deleting recordings isn't allowed. In the app: Settings > Connections > MCP, AI, and API > tick \"Let it delete recordings\"" ), { status: 403 } );
 			}
 			const result = await deleteRecording( takeLogFolder(), id, file => shell.trashItem( file ) );
 			win.webContents.send( "recordingsChanged", id );
@@ -1987,9 +1990,10 @@ app.whenReady().then( async () => {
 	}
 
 	async function runControllerCommand( action, value ) {
-		if ( action === "again" || action.startsWith( "mode-" ) ) {
+		if ( action === "again" || action.startsWith( "mode-" ) || [ "clean-view", "click-through", "always-on-top" ].includes( action ) ) {
 			const view = controlView( action, remoteStatus() );
 			if ( !view || view.disabled || view.hidden ) throw new Error( view?.reason || "This control is unavailable" );
+			if ( [ "clean-view", "click-through", "always-on-top" ].includes( action ) && value !== undefined && ![ "on", "off" ].includes( value ) ) throw new Error( "Display value must be on or off; omit it to toggle" );
 		}
 		if ( Object.hasOwn( PREPARATION_COMMANDS, action ) ) {
 			const reason = preparationBlockReason( action, remoteStatus() );

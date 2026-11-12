@@ -1,7 +1,7 @@
 // Drive Sightline Prompter from the command line, for an AI agent (Claude
 // Code, Codex) or a script: load scripts into slots, run the prompter, and
 // fetch the take log and edit pack afterwards. Talks to the app's local API
-// (Settings > Remotes > "Let an AI assistant or script on this computer…"),
+// (Settings > Connections > MCP, AI, and API > "Let an AI assistant or script on this computer…"),
 // reading its address and token from remote-control.json, and never prints
 // the token.
 //
@@ -58,7 +58,7 @@ async function api( method, route, body ) {
 	try {
 		remote = JSON.parse( fs.readFileSync( path.join( settingsFolder(), "remote-control.json" ), "utf8" ) );
 	} catch {
-		fail( "Sightline isn't open with remote control on. In the app: Settings > Remotes > tick \"Let an AI assistant or script on this computer load scripts and control the teleprompter\"." );
+		fail( "Sightline isn't open with remote control on. In the app: Settings > Connections > MCP, AI, and API > tick \"Let an AI assistant or script on this computer load scripts and control the teleprompter\"." );
 	}
 	let res;
 	try {

@@ -1,5 +1,16 @@
 # Feature-matrix review record
 
+## 12 November 2026 — RC14 controller/API/MCP consistency
+
+Reviewed existing mode, display, pad/operator, companion and local MCP rows.
+On top and Clean view are shared optional controls; the operator uses three
+modes, and MCP has eight tools with explicit display values. Existing rows
+retain 275 capabilities. Companion 0.2.1.7 adds two Display options and 25
+optional call imports, preserving legacy IDs and older archive bytes.
+Help, kit/agent instructions, profiles and JL candidate archive are reviewed
+together; no stable app/plugin or live website publication is implied.
+
+
 ## 12 November 2026 — RC13 combined queue
 
 Shipped in the local RC13 preview: Insert templates, plain-text Auto format,

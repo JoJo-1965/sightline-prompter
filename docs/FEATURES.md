@@ -1,5 +1,11 @@
 # Sightline Prompter features
 
+**RC14:** shared On top/Clean view/mode controls, optional Call overlay preset,
+three-mode operator window, companion 0.2.1.7 Display choices and opt-in profiles.
+MCP adds explicit display states and paused modes, with existing grants and
+legacy control IDs retained. [Compatibility contract](CONTROLLER-COMPATIBILITY.md).
+
+
 **RC13 preview:** direct Voice/Page/Scroll and page-navigation
 buttons; recoverable Clean view, Click-through and On top; plain-text Auto
 format with optional starter cues/checks/pace and preview/Undo/Save. Source

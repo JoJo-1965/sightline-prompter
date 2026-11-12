@@ -101,6 +101,7 @@ export const SHORTCUTS = [
 			[ [ "Ctrl+Shift+A" ], "On air / off air: the on-air backing and the ON AIR light" ],
 			[ [ "Ctrl+Shift+D" ], "Sound-check meter on / off: your mic's level, loudness and the room's background noise" ],
 			[ [ "Ctrl+Shift+X" ], "Click-through on / off from any app; Off also restores Clean view controls" ],
+			[ [ "Connections > Keyboard and clickers" ], "Optionally map Clean view, Click-through, On top and reading modes; existing hotkeys are retained" ],
 			[ [ "Clean view" ], "Hide prompter chrome; hover the top-edge Show controls tab, or use Escape, to restore" ],
 			[ [ "Voice / Page / Scroll" ], "Select a toolbar mode while paused; Page shows Previous/Next controls" ],
 			[ [ "Ctrl+Shift+P" ], "Floating control pad; Customise chooses and arranges shared pad/phone buttons" ],

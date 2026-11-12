@@ -5,7 +5,7 @@ import { preparationBlockReason } from "./controller-workflow.js";
 const groups = {
 	Prompting: [ [ "toggle", "Play / pause", "▶" ], [ "restart", "Top", "↤" ], [ "previous-section", "Previous", "◀" ], [ "next-section", "Next", "▶" ], [ "faster", "Faster", "+" ], [ "slower", "Slower", "−" ], [ "scroll-mode", "Voice / steady", "🎙" ] ],
 	Recording: [ [ "on-air", "On air", "●" ], [ "marker", "Marker", "⚑" ], [ "back-to-marker", "To marker", "↶" ], [ "keeper", "Keeper", "✓" ], [ "scrap", "Scrap", "×" ], [ "obs-record", "Record take", "●" ], [ "obs-finish", "Finish recording", "■" ], [ "sound-check", "Sound check", "▥" ] ],
-	View: [ [ "bigger", "Bigger text", "A+" ], [ "smaller", "Smaller text", "A−" ], [ "mirror-h", "Mirror L/R", "↔" ], [ "mirror-v", "Mirror U/D", "↕" ], [ "layout", "Spacing", "↔" ], [ "reading", "Text / colour", "Aa" ], [ "recording", "Take display", "●" ], [ "eye-line", "Eye line", "◉" ], [ "click-through", "Click through", "↗" ], [ "clean-view", "Clean view", "◌" ], [ "control", "Control window", "▣" ], [ "pad", "Show / hide pad", "▦" ], [ "help", "Help", "?" ] ],
+	View: [ [ "bigger", "Bigger text", "A+" ], [ "smaller", "Smaller text", "A−" ], [ "mirror-h", "Mirror L/R", "↔" ], [ "mirror-v", "Mirror U/D", "↕" ], [ "layout", "Spacing", "↔" ], [ "reading", "Text / colour", "Aa" ], [ "recording", "Take display", "●" ], [ "eye-line", "Eye line", "◉" ], [ "click-through", "Click through", "↗" ], [ "clean-view", "Clean view", "◌" ], [ "always-on-top", "On top", "⌖" ], [ "control", "Control window", "▣" ], [ "pad", "Show / hide pad", "▦" ], [ "help", "Help", "?" ] ],
 	Listening: [ [ "listening-toggle", "Listening on / off", "🎙" ], [ "listening-restart", "Restart listening", "↻" ], [ "session-check", "Session check", "✓" ] ],
 	Guide: [ [ "head-guide", "Head guide", "◎" ], [ "head-guide-fullscreen", "Guide fullscreen", "⛶" ], [ "guide-adjustments", "Adjust guide", "◎" ], [ "guide-eyes-lock", "Lock eye position", "◉" ], [ "guide-ideal-visible", "Show ideal reference", "◎" ], [ "guide-match-ideal", "Match saved ideal", "↶" ] ],
 	Scripts: Array.from( { length: 9 }, ( _, i ) => [ `slot-${ i + 1 }`, `Slot ${ i + 1 }`, String( i + 1 ) ] )
@@ -15,7 +15,7 @@ CONTROL_ACTIONS.push( { id: "mirror", label: "Cycle mirror", icon: "↔", group:
 CONTROL_ACTIONS.push( { id: "hud-cues", label: "HUD cues on / off", icon: "◉", group: "View" } );
 CONTROL_ACTIONS.push( ...[
 	[ "again", "Again / restart section", "↶", "Navigation" ], [ "reset-speed", "Reset pace", "↻", "Pace" ],
-	[ "mode-notes", "Notes / pages", "▤", "Reading mode" ], [ "mode-voice", "Voice following", "🎙", "Reading mode" ], [ "mode-scroll", "Steady scroll", "↓", "Reading mode" ], [ "mode-cycle", "Cycle reading mode", "↻", "Reading mode" ],
+	[ "mode-notes", "Notes / pages", "▤", "Reading mode" ], [ "mode-voice", "Voice following", "🎙", "Reading mode" ], [ "mode-scroll", "Steady scroll", "↓", "Reading mode" ], [ "mode-cycle", "Reading mode", "↻", "Reading mode" ],
 	[ "prepare-recording", "Prepare to record", "✓", "Recording setup" ], [ "check-room-voice", "Room and voice check", "▥", "Recording setup" ],
 	[ "test-recording-start", "Start test clip", "●", "Recording setup" ], [ "test-recording-stop", "Stop test clip", "■", "Recording setup" ], [ "test-recording-play", "Review test clip", "▶", "Recording setup" ],
 	[ "recording-reference-save", "Save checked reference", "✓", "Recording setup" ], [ "back-after-break", "Back after a break", "↶", "Recording setup" ],
@@ -28,6 +28,7 @@ const pickerGroups = { restart: "Navigation", "previous-section": "Navigation", 
 for ( const item of CONTROL_ACTIONS ) if ( pickerGroups[item.id] ) item.group = pickerGroups[item.id];
 export const DEFAULT_PAD_LAYOUT = { columns: 4, buttons: [ "restart", "previous-section", "toggle", "next-section" ] };
 export const PAD_PRESETS = {
+	call: { columns: 4, buttons: [ "toggle", "mode-cycle", "previous-section", "next-section", "clean-view", "click-through", "always-on-top", "control" ] },
 	compact: DEFAULT_PAD_LAYOUT,
 	reading: { columns: 4, buttons: [ "restart", "previous-section", "toggle", "next-section", "slower", "faster", "marker", "back-to-marker" ] },
 	studio: { columns: 4, buttons: [ "obs-record", "toggle", "marker", "obs-finish", "previous-section", "next-section", "keeper", "scrap", "head-guide", "head-guide-fullscreen", "sound-check", "on-air" ] },
@@ -72,11 +73,12 @@ export function controlView( id, status = {} ) {
 		view.icon = status.scrolling ? "Ⅱ" : "▶";
 		view.active = !!status.scrolling;
 	}
+	if ( id === "clean-view" ) view.label = status.cleanOverlay ? "Show controls" : "Clean view";
 	if ( id === "hud-cues" ) {
 		view.active = status.hud?.enabled === true;
 		view.label = view.active ? "HUD cues on" : "HUD cues off";
 	}
-	const toggles = { "on-air": "onAir", "sound-check": "soundCheck", "eye-line": "eyeLine", "click-through": "clickThrough", "clean-view": "cleanOverlay", control: "showControl", pad: "showPad", "head-guide": "showHeadGuide", "head-guide-fullscreen": "headGuideFullscreen" };
+	const toggles = { "on-air": "onAir", "sound-check": "soundCheck", "eye-line": "eyeLine", "click-through": "clickThrough", "clean-view": "cleanOverlay", "always-on-top": "alwaysOnTop", control: "showControl", pad: "showPad", "head-guide": "showHeadGuide", "head-guide-fullscreen": "headGuideFullscreen" };
 	if ( toggles[id] ) view.active = !!status[toggles[id]];
 	if ( id === "status" ) view.label = status.progress || status.sectionTitle || "Section / time";
 	if ( id === "listening-toggle" ) {

@@ -5,6 +5,20 @@ description: Use when writing, rewriting or checking a script to be read from Si
 
 # Writing a Sightline Prompter script
 
+## Current RC14 contract
+
+Read `<sightline>/docs/CONTROLLER-COMPATIBILITY.md` and `docs/MCP.md` before
+controlling a current app. Refresh the managed kit after updating the app.
+Check status and advertised commands first. Use explicit `mode-notes`,
+`mode-voice` or `mode-scroll` while paused/held, and `clean-view`,
+`click-through` or `always-on-top` with on/off values for presentation.
+MCP has `sightline_view` for those three display actions. Mode/display controls
+need control permission and do not start capture or OBS recording. Keep
+delivery/recording permissions and user intent separate. Existing IDs, slots
+and edited profiles stay intact; optional presets are deliberate imports.
+Keep Insert/Auto format in the editor. Live word times are navigation estimates.
+
+
 **Where Sightline is:** the managed AI kit from **Settings > Connections
 > Apps and add-ons > AI kit**, or the Sightline Prompter source folder, a clone of
 https://github.com/JoJo-1965/sightline-prompter. Use the `SIGHTLINE_HOME`

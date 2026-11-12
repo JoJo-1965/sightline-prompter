@@ -1,10 +1,33 @@
 # Sightline 1.3.0 release notes
 
-**Current candidate: RC13 · 12 November 2026 · documentation revision 29.**
+**Current candidate: RC14 · 12 November 2026 · documentation revision 30.**
 This is the cumulative 1.3.0 history. The public stable app remains 1.2.0;
-Stream Deck companion 0.2.0 is published, with 0.2.1.6 a separate candidate.
+Stream Deck companion 0.2.0 is published, with 0.2.1.7 a separate candidate.
 The RC sections below record when each change arrived. Later corrections
 supersede earlier behaviour; they do not change frozen older packages.
+
+
+<a id="rc14"></a>
+
+## RC14 — Controllers and AI in step
+
+12 November 2026 · documentation revision 30. Includes RC13 and prior fixes.
+
+- Shared Clean view, Click-through and On top display actions, observed status
+  and optional Call overlay pad/phone preset. Three-mode operator controls use
+  the same guards and report the settled mode after switching.
+- Companion 0.2.1.7 adds two choices inside Display with distinct icons/state,
+  held-Voice mode handling and 25 opt-in Call Overlay RC14 profile imports.
+  Legacy UUIDs/functions/dials and existing profile exports are preserved.
+- MCP has eight tools: `sightline_view` uses explicit on/off values; prompting
+  adds paused reading-mode choices. Existing tools and grants remain; display
+  and mode selection do not need recording permission or start capture.
+- Help, API examples, agent skills, managed kit and setup paths match the
+  current controls. Existing hotkeys remain; new functions can be mapped.
+
+See [the contract](CONTROLLER-COMPATIBILITY.md) and [UAT](uat/1.3.0-RC14.md).
+Existing demo footage remains labelled as an earlier candidate.
+
 
 ## RC12 recording reliability
 
@@ -102,6 +125,7 @@ compact layouts. Included in RC13; the frozen RC12 package is unchanged.
 - [RC11 — Quick edits and compact slots](#rc11)
 - [RC12 — Dialogs, audio checks and recording reliability](#rc12)
 - [RC13 — Authoring and call overlays](#rc13)
+- [RC14 — Controllers and AI in step](#rc14)
 
 <a id="rc1"></a>
 

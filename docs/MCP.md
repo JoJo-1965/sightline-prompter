@@ -1,5 +1,27 @@
 # Connect a desktop AI client with MCP
 
+## RC14 display and reading controls
+
+Refresh the installed AI kit and reconnect the client's MCP server after this
+update. Existing tool names and grants remain. `sightline_status` includes the
+advertised `commands`, `readingMode`, `readingModeBusy`, `cleanOverlay`,
+`clickThrough` and `alwaysOnTop`. Check these before acting.
+
+- `sightline_prompt({"action":"mode-notes"})` selects Page while paused.
+  `mode-voice`, `mode-scroll` and `mode-cycle` use the same shared controls.
+- `sightline_view({"action":"clean-view","value":"on"})` hides chrome;
+  the same action with `"off"` restores it. `click-through` and `always-on-top`
+  accept the same explicit on/off values. Ambiguous MCP toggles are rejected.
+- These actions require the prompting/control grant. They do not start
+  prompting, microphone/camera capture or OBS; no recording grant is needed.
+  Delivery and recorder actions keep their existing recording grant checks.
+
+Active delivery and editing block mode changes. Held Voice may switch when
+`readingModeBusy` is false; Voice requires enabled speech/microphone. Existing
+script mode is an initial default; explicit selection can override it.
+See [the controller contract](CONTROLLER-COMPATIBILITY.md).
+
+
 Sightline provides a local stdio MCP server in its optional AI kit. It supports
 checking the app/version, loading a new script, selecting a slot, prompting
 controls, explicit OBS recording commands, listing recordings and reading a
@@ -46,7 +68,7 @@ get your approval before changing a recording. Use a test session first.
 
 The adapter communicates over stdio and a token-protected loopback app API.
 It does not expose a network MCP endpoint, a cloud service or OAuth login.
-The seven tools are `sightline_status`, `sightline_load_script`,
-`sightline_select_slot`, `sightline_prompt`, `sightline_record`,
+The eight tools are `sightline_status`, `sightline_load_script`,
+`sightline_select_slot`, `sightline_prompt`, `sightline_view`, `sightline_record`,
 `sightline_recordings` and `sightline_edit_pack`. Edit-pack word and caption
 timings are live estimates requiring review against the recording.

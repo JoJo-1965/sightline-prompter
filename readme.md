@@ -1,6 +1,6 @@
 # Sightline Prompter
 
-> **Development preview: 1.3.0 RC13, documentation revision 29.**
+> **Development preview: 1.3.0 RC14, documentation revision 30.**
 > The public download below is stable 1.2.0. This candidate adds optional
 > [post-record audio review](docs/guide/19-post-record-review.md) and a
 > [rerunnable guided tour](docs/guide/20-guided-tour.md). Read the

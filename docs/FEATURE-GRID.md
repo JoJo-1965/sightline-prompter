@@ -1,12 +1,12 @@
 # Sightline Prompter feature grid
 
-**Review basis: Sightline 1.3.0 RC13 preview, documentation revision 29, 12 November 2026.**
-**Build version:** `1.3.0-rc.13` · **Publication status:** Preview
+**Review basis: Sightline 1.3.0 RC14 preview, documentation revision 30, 12 November 2026.**
+**Build version:** `1.3.0-rc.14` · **Publication status:** Preview
 
 **Maintained source:** [Feature grid](https://github.com/JoJo-1965/sightline-prompter/blob/codex/pointing-production-cues/docs/FEATURE-GRID.md)
 
-This grid describes the preview built from `957637e`, with companion Stream
-Deck plugin **0.2.1.6** candidate. It includes stable 1.2.0 features plus the explicitly labelled RC additions. The build manifest also records the packaging/documentation
+This grid describes the preview built from `1b4301f`, with the RC14 consistency batch, with companion Stream
+Deck plugin **0.2.1.7** candidate. It includes stable 1.2.0 features plus the explicitly labelled RC additions. The build manifest also records the packaging/documentation
 snapshot. The public app release remains **1.2.0**; this document
 does not certify an individual recording setup.
 
@@ -57,6 +57,11 @@ recoverable Clean view with native guide suppression; visible Click-through and
 On top toggles; editor Insert templates and previewed plain-text Auto format.
 Three new rows bring this reference to 275 capabilities. Existing RC12 packages
 and their archives stay unchanged.
+
+**RC14 consistency:** On top, Clean view and mode selection are shared across
+operator/controller/API routes; MCP has eight tools and bounded explicit
+display states. Optional Call overlay presets and companion 0.2.1.7 retain
+legacy IDs/exports. Existing rows are updated; the count remains 275.
 
 ## 01 · Product, platform and installation
 
@@ -137,7 +142,7 @@ Reference: [Writing scripts](guide/02-scripts.md).
 | External editing | Included | Watch an opened file and refresh when it changes externally. | Watching pauses during built-in editing to avoid conflicting edits. |
 | Script slots | Included | Nine quick-access slots, recent files and switching controls. RC11 uses a compact Slot 1–9 picker at 1100 pixels wide or less; wide windows retain numbered buttons. Ctrl+1…9 works in both layouts. | A slot points to its script; clearing a slot is separately confirmed. |
 | Slot clearing protection | Included | Confirmation before clearing an occupied slot. | Keep source files backed up independently of slot assignments. |
-| Sample scripts | Included | Seventeen shipped samples; Start here is a core/RC feature tour, with focused RC12 audio/dialog and RC13 authoring/overlay rehearsals. Focused voice, framing, recording, Notes and handover demos use separate setup comments and short cues. | Protected originals: save a copy to edit. Recording actions are opt-in exercises. The formatting diagnostic intentionally contains one unknown tag. See [Demo guide](DEMO-SCRIPTS.md). |
+| Sample scripts | Included | Eighteen shipped samples; Start here is a core/RC feature tour, with focused RC12 audio/dialog and RC13 authoring/overlay and RC14 controller/MCP rehearsals. Focused voice, framing, recording, Notes and handover demos use separate setup comments and short cues. | Protected originals: save a copy to edit. Recording actions are opt-in exercises. The formatting diagnostic intentionally contains one unknown tag. See [Demo guide](DEMO-SCRIPTS.md). |
 | Recording preview sample | Included | Preparation, Continuous and linked recording, explicit commands and handover walkthrough. | Exercise recorder controls only with the intended test setup connected. |
 | Exact recording script | Included | Preserve the source actually used, including section IDs, slide cues and directions, in the edit pack. | The export is the recording snapshot, which can differ from a later file edit. |
 
@@ -197,14 +202,14 @@ Reference: [Layout and display](guide/04-layout-and-display.md) and [Remotes and
 | Capability | Availability | Options and behaviour | Dependencies and limits |
 | --- | --- | --- | --- |
 | Transparent content overlay | Included | Read over a video call, slides, camera/projector preview or other desktop content. | Sightline does not supply or embed the underlying call or presentation. |
-| Always on top | Optional | On top On/Off on the toolbar and in Settings keeps the prompter above ordinary application windows. | Operating-system window rules and other topmost windows can affect stacking. |
+| Always on top | Optional | On top On/Off on the toolbar, operator window, shared pad/phone/mappings and API; companion 0.2.1.7 adds a Display function. Keeps the prompter above ordinary application windows. | Operating-system window rules and other topmost windows can affect stacking. |
 | Windowed and fullscreen use | Included | Size and position the prompter, or use a fullscreen reading view. RC12 keeps Help, Settings and minimise/maximise/fullscreen/close together at the top right on the first toolbar row; other groups wrap below. | Multi-window arrangements need checking on the intended display. |
 | Horizontal and vertical mirror | Included | Separate mirror controls, including toolbar icons. | Set the flips appropriate to the physical teleprompter glass or monitor. |
 | Prompter monitor | Optional | Explicit display selection opens full screen. A manual cross-screen drag restores a centred normal window at 75% of the destination work area; included in the reading workflow. | Windows drag handling clears eye-line mode and the pinned monitor choice. Same-display moves retain the chosen size. Requires a connected display. |
 | Eye-line strip | Optional | Compact reading strip with configurable screen height and reading-line position. | Lens alignment is a manual setup task. |
 | Click-through | Optional | Toolbar On/Off passes script clicks to the content beneath while toolbar, session actions and recovery controls accept input. Editing retains input. | Ctrl+Shift+X toggles globally; turning it off restores clean-view controls. Uses the existing saved preference. |
-| Clean call overlay | Optional | RC13: transient Clean view hides prompter chrome and the native head guide, preserving text appearance, reading position, guide reference and recorder state. | Hover the small top-edge Show controls tab, use Escape while focused, or turn click-through off globally to recover. Clean view starts off on launch; optional shared pad/phone/mapping action. |
-| Operator window | Optional | Separate upright controls and script/session status while the reading window is mirrored. | A second monitor is useful but not required. |
+| Clean call overlay | Optional | RC13: transient Clean view hides prompter chrome and the native head guide, preserving text appearance, reading position, guide reference and recorder state. | Hover the small top-edge Show controls tab, use Escape while focused, or turn click-through off globally to recover. Clean view starts off on launch; shared pad/phone/mapping/API action; companion 0.2.1.7 Display key. MCP uses explicit on/off. |
+| Operator window | Optional | Separate upright controls and script/session status while the reading window is mirrored; RC14 adds three reading modes and shared Clean view/Click-through/On top controls. | A second monitor is useful but not required. |
 | Toolbar hiding | Included | Toolbar retreats when the pointer moves away; faster distance-based hiding is included in 1.2.0. | Keyboard focus keeps controls available while they are in use. |
 | Pointer visibility | Included | Mouse pointer stays visible when the toolbar hides. | Click-through remains an independent preference. |
 | Utility windows | Included | Separate Settings, help and command windows, with movable positioning. | Window stacking must still be checked in the user's chosen fullscreen arrangement. |
@@ -260,7 +265,7 @@ Reference: [Pad and phone setup](guide/06-remotes-and-screens.md).
 
 | Capability | Availability | Options and behaviour | Dependencies and limits |
 | --- | --- | --- | --- |
-| Floating control pad | Optional | Separate touch/mouse window with configurable buttons. Settings shows the complete ordered list with drag, Earlier/Later and Remove. | Enable under Connections > Pad and phone. Longer lists scroll within Settings; presets replace the draft selection. |
+| Floating control pad | Optional | Separate touch/mouse window with configurable buttons. Settings shows the complete ordered list with drag, Earlier/Later and Remove. | Enable under Connections > Pad and phone. Longer lists scroll within Settings; presets replace the draft selection only when chosen. RC14 adds an optional eight-button Call overlay preset. |
 | Interface enable switches | Included | Speech, microphone, pad, phone, custom keys, game controller, Stream Deck, OBS and local API each have an enable switch. | Off hides configuration, preserves saved values and omits disabled actions/help. Dependencies remain a separate readiness check. |
 | Separate input mappings | Optional | Keyboard/clickers and game controllers have distinct setup homes and enable switches. | Disabling custom mappings retains core shortcuts. Resetting one type preserves the other type. |
 | Select and reorder actions | Included | Choose the supported actions and drag to arrange their order. | The layout uses a defined action catalogue, not arbitrary third-party plugins. |
@@ -283,7 +288,7 @@ Reference: [Stream Deck installation, permissions and profiles](guide/06-remotes
 | Capability | Availability | Options and behaviour | Dependencies and limits |
 | --- | --- | --- | --- |
 | Companion plugin | Dependent | RC2 preview companion 0.2.1.1, paired with the app's supported control contract; stable companion remains 0.2.0. | Requires Elgato Stream Deck software; the companion is an optional installation. |
-| Grouped controller functions | Optional | RC2 preview: related new assignments use a Function selector and function-specific key artwork; all 34 published key/dial UUIDs remain registered. | No compulsory conversion or automatic profile switch; legacy settings, states and custom images retain their rules. |
+| Grouped controller functions | Optional | RC2 preview: related new assignments use a Function selector and function-specific key artwork; all 34 published key/dial UUIDs remain registered. Companion 0.2.1.7 extends Display with Clean view/On top and adds 25 separate Call Overlay RC14 imports. | No compulsory conversion or automatic profile switch; legacy settings, states and custom images retain their rules. |
 | Controller preparation workflow | Optional | RC2 preview: Prepare, combined room/voice check, test start/stop/play, detected draft lock, recording-reference restore/save and return after a break. | Explicit input enablement and existing framing/audio/test acceptance still apply; no automatic pass. Available from Stream Deck and shared pad/phone/mapped inputs. |
 | Explicit controller reading modes | Optional | RC2 preview: Notes, Voice or Scroll; cycle skips disabled voice interfaces. Again reuses the current-section retake operation. | Pause before changing mode. Authored Notes supplies the initial choice; explicit mode controls can override it for the open script. Existing action IDs are retained; the legacy two-mode action uses the shared Voice/Scroll selector. |
 | Configurable Adjustment dial | Optional | RC2 preview: pace, text size, manual scroll, sections or backing, with visible press/tap behaviour. | Existing six dial UUIDs retain behaviour. New Sections turns move once per event; pace/size repeat up to five steps. Requires a dial-capable device. |
@@ -409,8 +414,8 @@ Reference: [Working with AI and the local API](guide/09-working-with-ai.md) and 
 | AI script brief | Included | Copy documented instructions for sections, targets, cues, stops and optional control directives. | The chosen assistant generates the script; check its output before use. |
 | Assistant choice | Dependent | ChatGPT, Claude, Gemini, Copilot or another assistant can prepare a compatible script. | Assistant capabilities, costs and privacy terms are external. |
 | Local control API | Optional | Enable token-protected local endpoints to load scripts, select slots and issue supported commands. | Off by default; intended for authorised local tools, not public web pages. |
-| Local MCP connection | Optional | Seven stdio tools in the AI kit; Connections > MCP, AI, and API includes a Configure MCP guide beside the switch. | Node.js 22.16+, local API/MCP enabled and applied. Separate grants; read-only by default. No cloud MCP endpoint. See [client configuration](guide/17-configure-mcp.md). |
-| MCP permission grants | Optional | Script, prompting and OBS recording grants are enforced by the app; turning MCP off revokes active clients. | No settings edits, arbitrary file reads or recording deletion. Prompting requires the recording grant whenever OBS controls are enabled. |
+| Local MCP connection | Optional | Eight stdio tools in the AI kit, including explicit display states and paused reading-mode choices; Connections > MCP, AI, and API includes a Configure MCP guide beside the switch. | Node.js 22.16+, local API/MCP enabled and applied. Separate grants; read-only by default. No cloud MCP endpoint. See [client configuration](guide/17-configure-mcp.md). |
+| MCP permission grants | Optional | Script, prompting and OBS recording grants are enforced by the app; turning MCP off revokes active clients. | No settings edits, arbitrary file reads or recording deletion. Delivery commands require the recording grant when OBS controls are enabled; mode/display changes need only the control grant and never start capture. |
 | Live automation feedback | Included | Status and event updates expose supported state and app/control-contract versions. | Clients need to handle connection loss, permissions and unsupported capabilities. |
 | Configure through an agent | Optional | An authorised local agent can change supported settings and control prompting. | General API access is separate from the restricted Stream Deck credential. |
 | Recording-data access | Optional | Authorised tools can retrieve saved-session and edit-pack information for editorial work. | Data access is not equivalent to an integrated video-editing engine. |
@@ -460,7 +465,7 @@ Reference: [Privacy and accessibility policies](POLICIES.md) and [Acceptance wal
 | Optional word tracing | Optional | Enable recognised command-word logging to investigate actual mishearings. | May include nearby speech; only enable it for the intended diagnostic period. |
 | Recording-state honesty | Included | Confirmed stopped/recording/paused states are distinct from unknown/disconnected. | UI state cannot certify that the resulting picture/audio is usable. |
 | Hardware acceptance | Limited | Walkthrough covers real camera, mic, controls, clean tracks, sync and output inspection. | Local automated tests do not replace camera/mic and physical-control testing. |
-| Release and reference basis | Included | This grid describes the RC13 preview and companion 0.2.1.6 candidate, with maintained source and downloadable references; stable app 1.2.0 and published companion 0.2.0 remain distinct. | Platform/device acceptance and the listed feature limits still apply. Historical RC notes are archived separately. |
+| Release and reference basis | Included | This grid describes the RC13 preview and companion 0.2.1.7 candidate, with maintained source and downloadable references; stable app 1.2.0 and published companion 0.2.0 remain distinct. | Platform/device acceptance and the listed feature limits still apply. Historical RC notes are archived separately. |
 | Reviewer comparison scope | Included | Compare prompting, control, scripting, production handover, privacy and setup effort separately. | No competitor feature, price, performance ranking or endorsement is asserted here. |
 
 ## Maintaining this grid

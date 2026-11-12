@@ -1,14 +1,14 @@
 {
 	"name": "sightline-prompter",
 	"productName": "Sightline Prompter",
-	"version": "1.3.0-rc.13",
-	"documentationRevision": 29,
+	"version": "1.3.0-rc.14",
+	"documentationRevision": 30,
 	"releaseDate": "2026-11-12",
 	"description": "Sightline Prompter",
 	"main": "src/main.js",
 	"type": "module",
 	"scripts": {
-		"posttest": "node scripts/pointing-cues.test.mjs && node scripts/hud-cues.test.mjs && node scripts/directive-modes.test.mjs && node scripts/quick-edit.test.mjs && node scripts/microphone-gain.test.mjs && node scripts/rc12.test.mjs && node scripts/script-tools.test.mjs && node scripts/overlay-authoring.test.mjs",
+		"posttest": "node scripts/pointing-cues.test.mjs && node scripts/hud-cues.test.mjs && node scripts/directive-modes.test.mjs && node scripts/quick-edit.test.mjs && node scripts/microphone-gain.test.mjs && node scripts/rc12.test.mjs && node scripts/script-tools.test.mjs && node scripts/overlay-authoring.test.mjs && node scripts/controller-parity.test.mjs",
 		"test:overlay-authoring": "node scripts/overlay-authoring.test.mjs && node scripts/overlay-authoring-app.test.mjs",
 		"test:script-tools": "node scripts/script-tools.test.mjs && node scripts/script-tools-app.test.mjs",
 		"test:pointing": "node scripts/pointing-cues.test.mjs && node scripts/pointing-cues-app.test.mjs",
@@ -40,7 +40,8 @@
 		"test:script-review-app": "node scripts/script-review-app.test.mjs",
 		"test:recorded-slate": "node scripts/recorded-slate.test.mjs",
 		"test:mcp": "node scripts/build-mcp.mjs && node scripts/mcp.test.mjs",
-		"test:microphone-gain": "node scripts/microphone-gain.test.mjs"
+		"test:microphone-gain": "node scripts/microphone-gain.test.mjs",
+		"test:controller-parity": "node scripts/controller-parity.test.mjs && node scripts/controller-parity-app.test.mjs"
 	},
 	"author": "Joanne Lockwood (SEE Change Happen Ltd)",
 	"contributors": [

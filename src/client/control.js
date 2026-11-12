@@ -2,6 +2,7 @@
 // prompter's reading line, the pacing light, and the prompter's buttons.
 
 import { obsStatusText } from "./obs-ui.js";
+import { controlView } from "./control-actions.js";
 
 const md = document.getElementById( "md" );
 const preview = document.getElementById( "preview" );
@@ -197,11 +198,19 @@ function showBroadcast( s ) {
 	lit( "b-mirror-h", s.mirrored === "horizontal" || s.mirrored === "both" );
 	lit( "b-mirror-v", s.mirrored === "vertical" || s.mirrored === "both" );
 	lit( "b-eye-line", s.eyeLine );
-	lit( "b-voice", s.scrollMode === "voice" );
+
 	lit( "b-sound-check", s.soundCheck );
 	document.getElementById( "b-size" ).textContent = Number.isFinite( s.fontSize ) ? String( s.fontSize ) : "–";
 	document.getElementById( "b-backing" ).textContent = Number.isFinite( s.backing ) ? `${ s.backing }%` : "–";
 	for ( const b of broadcast ) b.disabled = !!s.editing;
+	for ( const b of document.querySelectorAll( "[data-shared]" ) ) {
+		const view = controlView( b.dataset.action, s );
+		b.disabled = view.disabled;
+		b.classList.toggle( "on", view.active );
+		b.setAttribute( "aria-pressed", String( view.active ) );
+		b.title = view.reason || view.label;
+		if ( b.dataset.action === "clean-view" ) b.textContent = view.label;
+	}
 	const obs = s.obs;
 	const obsLabel = document.getElementById( "b-obs" );
 	obsLabel.classList.toggle( "hidden", !obs?.enabled );

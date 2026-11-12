@@ -122,7 +122,14 @@
       </div>
       <button type="button" class="toggle" data-action="mirror-h" id="b-mirror-h" title="Mirror left–right, for a beam splitter">↔ Mirror</button>
       <button type="button" class="toggle" data-action="mirror-v" id="b-mirror-v" title="Mirror up–down">↕ Mirror</button>
-      <button type="button" class="toggle" data-action="scroll-mode" id="b-voice" title="Voice scrolling, which follows what you say, or steady scrolling at a set speed">Voice scroll</button>
+      <div class="mode-choices" role="group" aria-label="Reading mode">
+        <button type="button" class="toggle" data-action="mode-voice" data-shared>Voice</button>
+        <button type="button" class="toggle" data-action="mode-notes" data-shared>Page</button>
+        <button type="button" class="toggle" data-action="mode-scroll" data-shared>Scroll</button>
+      </div>
+      <button type="button" class="toggle" data-action="clean-view" data-shared>Clean view</button>
+      <button type="button" class="toggle" data-action="click-through" data-shared>Click-through</button>
+      <button type="button" class="toggle" data-action="always-on-top" data-shared>On top</button>
       <button type="button" class="toggle" data-action="eye-line" id="b-eye-line" title="Eye-line mode: a strip at the top of the screen, under the webcam">Eye-line</button>
       <button type="button" class="toggle" data-action="sound-check" id="b-sound-check" title="Sound check: the mic's level, loudness and the room's background noise, here and on the prompter when it isn't running (Ctrl+Shift+D)">Sound check</button>
       <div id="b-meter" class="hidden" role="status" aria-label="Microphone level">

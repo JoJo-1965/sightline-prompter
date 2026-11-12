@@ -1,5 +1,20 @@
 # Controller functions — RC2 preview
 
+## RC14 compatibility update
+
+Use app **1.3.0 RC14** with companion **0.2.1.7** for Display > Clean view and
+On top, each with its own icon and observed state. Reading mode supports held
+Voice through `readingModeBusy`; earlier apps keep their conservative guards.
+The operator window now has Voice/Page/Scroll and the three display toggles.
+Pad/phone and mapped inputs use the same actions. The optional Call overlay
+preset and 25 separate device-profile imports preserve existing layouts.
+See [the complete mapping and migration contract](../CONTROLLER-COMPATIBILITY.md).
+
+![Operator controls](images/operator-controls-rc14.png)
+
+![Optional call pad](images/call-pad-rc14.png)
+
+
 Use these with Sightline **1.3.0 RC2** and companion **0.2.1.1 or later**. Existing keys
 continue to work. New assignments are optional; no conversion is required.
 

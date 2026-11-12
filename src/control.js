@@ -28,7 +28,9 @@ const CONTROL_COMMANDS = [
 	"mirror-v",
 	"eye-line",
 	"sound-check",
-	"scroll-mode"
+	"scroll-mode",
+	"mode-voice", "mode-notes", "mode-scroll", "mode-cycle",
+	"clean-view", "click-through", "always-on-top"
 ];
 
 // Saved bounds are kept only if most of the window is still on a display.

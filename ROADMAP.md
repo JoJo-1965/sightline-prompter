@@ -1,5 +1,11 @@
 # Sightline Prompter roadmap
 
+**RC14 candidate:** controller/API/MCP consistency batch implemented, including
+the optional Call overlay preset and companion 0.2.1.7. Existing profiles/IDs
+remain; hardware UAT and the public 2.0 naming decision are still separate.
+[Mapping and migration](docs/CONTROLLER-COMPATIBILITY.md).
+
+
 Updated 12 November 2026. Released baseline: **Sightline 1.2.0** and
 **Stream Deck companion 0.2.0**.
 This is the current plan. [Earlier plans](docs/ROADMAP-HISTORY.md) are archived;

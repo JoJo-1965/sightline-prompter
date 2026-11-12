@@ -1,3 +1,7 @@
+<!-- RC14 CONTROLS. The operator, pad/phone and updated Stream Deck use the
+same reading/display actions. Call overlay presets are optional selections.
+Refresh the AI kit for eight MCP tools; see the focused RC14 sample. -->
+
 <!-- RC13 AUTHORING. Save a scratch copy, use Ctrl+E > Insert for codes and
 directions, or paste plain text and preview Auto format. Apply/Undo/Save remain
 explicit. See the RC13 authoring and call-overlay sample for a short rehearsal. -->

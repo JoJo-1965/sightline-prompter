@@ -1,5 +1,11 @@
 # Configure MCP
 
+RC14 adds `sightline_view` for explicit Clean view, Click-through and On top,
+and mode choices in `sightline_prompt`. Refresh the AI kit, then reconnect the
+MCP client so its tool list is current. Use status first; eight tools are
+available. [Examples and grants](../MCP.md).
+
+
 1. Open **Connections > Apps and add-ons**. Install or refresh the AI kit and
    install Node.js 22.16 or later if it is not available. Open the installed kit
    folder and find `scripts/sightline-mcp.mjs`.
@@ -22,8 +28,8 @@
 
 Clients with a different configuration format still use the same command and
 argument. For a retained preview profile, add `SIGHTLINE_SETTINGS` to that
-server's environment with the absolute preview profile directory. The launcher
-on Joanne's PC uses `D:/Sightline/Dev/Builds/Previews/settings-layout-preview-05/test-profile`.
+server's environment with the absolute preview profile directory. The RC14 launcher
+on Joanne's PC uses `D:/Sightline/Dev/Profiles/1.3.0-RC14`.
 Use the profile of the Sightline instance you actually launched.
 
 Restart/reconnect the MCP server in your AI client and ask it to check Sightline's

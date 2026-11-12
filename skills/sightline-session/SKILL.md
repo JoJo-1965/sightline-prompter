@@ -5,6 +5,20 @@ description: Use when working with Sightline Prompter around a recording session
 
 # Running a Sightline session: before, during and after
 
+## Current RC14 contract
+
+Read `<sightline>/docs/CONTROLLER-COMPATIBILITY.md` and `docs/MCP.md` before
+controlling a current app. Refresh the managed kit after updating the app.
+Check status and advertised commands first. Use explicit `mode-notes`,
+`mode-voice` or `mode-scroll` while paused/held, and `clean-view`,
+`click-through` or `always-on-top` with on/off values for presentation.
+MCP has `sightline_view` for those three display actions. Mode/display controls
+need control permission and do not start capture or OBS recording. Keep
+delivery/recording permissions and user intent separate. Existing IDs, slots
+and edited profiles stay intact; optional presets are deliberate imports.
+Keep Insert/Auto format in the editor. Live word times are navigation estimates.
+
+
 **Where Sightline is:** the managed AI kit from **Settings > Connections
 > Apps and add-ons > AI kit**, or the Sightline Prompter source folder, a clone of
 https://github.com/JoJo-1965/sightline-prompter. Use the `SIGHTLINE_HOME`
@@ -106,7 +120,7 @@ not discovered by this manifest. Preserve it and the independent scratch WAV.
 Module changes flush the old take/audio before loading another script.
 
 Controlling the app needs its local API switched on, once, by the user:
-**Settings > Controls > AI & API**, tick **Let an AI assistant or script on this computer
+**Settings > Connections > MCP, AI, and API**, tick **Let an AI assistant or script on this computer
 load scripts and control the teleprompter**. If a command says Sightline
 can't be reached, ask the user to open Sightline and tick that box. Don't
 try to switch it on any other way.
@@ -300,7 +314,7 @@ distinguish Sightline's input from another app's recording fader.
 - Don't edit, move or delete anything in Sightline's take-logs folder
   yourself: read it, build a pack somewhere else, and use the verbs above to
   name or mark sessions. `delete-recording <id>` moves one to the Recycle Bin,
-  only works if the user allowed it in Settings > Controls > AI & API, and only ever on
+  only works if the user allowed it in Settings > Connections > MCP, AI, and API, and only ever on
   the user's say-so for that session.
 - Don't send take logs, scripts or packs to any online service unless the
   user asks: they hold the user's script.
@@ -319,7 +333,7 @@ protected from API/import changes; the user enables it in Recording > Takes.
 
 ## Optional component checks
 
-Controls > AI & API reports readiness of the supplied kit commands, which need
+Connections > MCP, AI, and API reports readiness of the supplied kit commands, which need
 Node.js 22.16 or later and the kit. Other API clients do not need either.
 Components checks optional dependencies; the preview puts Stream Deck app and
 plugin checks together under Controls > Stream Deck. Installer/Locate links
