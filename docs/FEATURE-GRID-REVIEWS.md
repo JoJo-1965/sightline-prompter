@@ -1,5 +1,13 @@
 # Feature-matrix review record
 
+## Heading-alignment inconsistency — 12 November 2026
+
+Confirmed that Joanne's heading-start preference is already enabled, while
+RC11 automatic Voice boundaries target body text regardless. Queued consistent
+heading-aware targets for advance, Go and restored boundaries, with both option
+states and Retake identity in acceptance. Running RC11 remains undisturbed;
+review the existing first-spoken-line descriptions with the combined correction.
+
 ## Microphone-gain source correction — 12 November 2026
 
 Prepared explicit AGC-off capture for speech/wake and the selected-mic meter,
