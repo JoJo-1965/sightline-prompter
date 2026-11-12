@@ -1,13 +1,13 @@
 # Script directives
 
-**Mode selection prepared after RC12:** a script's Notes declaration supplies
+**RC13 mode selection:** a script's Notes declaration supplies
 its initial display. The operator may explicitly choose Voice, Page or Scroll
 for that open script without altering its source. Auto format uses only the
 existing syntax and adds no recorder commands or forced stops.
 
-## Editor insertion tools — prepared after RC12
+## Editor insertion tools — RC13
 
-The next combined preview adds **Ctrl+E > Insert…** for 41 templates covering
+RC13 adds **Ctrl+E > Insert…** for 41 templates covering
 all directive families, silent directions, presenter-relative pointing,
 production notes and headings. Templates insert at the cursor and replace
 selected text; editable values remain selected. Read placement hints and

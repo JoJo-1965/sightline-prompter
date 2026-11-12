@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "basis": "Sightline 1.3.0 RC12 preview, documentation revision 28, 12 November 2026",
+  "basis": "Sightline 1.3.0 RC13 preview, documentation revision 29, 12 November 2026",
   "date": "12 November 2026",
-  "sourceBuild": "7093fd8",
-  "buildVersion": "1.3.0-rc.12",
+  "sourceBuild": "957637e",
+  "buildVersion": "1.3.0-rc.13",
   "publicationStatus": "preview",
   "appRelease": "1.2.0",
   "pluginRelease": "0.2.1.6",
   "sourceUrl": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/pointing-production-cues/docs/FEATURE-GRID.md",
-  "sourceSha256": "9c9d4a3d7b032f0dcfc4054ec1cd05d899975b3b630cee1164d2dc88e6c43a19",
+  "sourceSha256": "75dbcd81d41092afdf13819134485ea629922d2e311b5f4f02e120719119a491",
   "support": [
     "Included",
     "Optional",
@@ -110,8 +110,8 @@
         {
           "name": "Mode selection",
           "support": "Included",
-          "options": "One Notes/page, Voice or Scroll choice in Mode and pace; relevant controls follow the selected mode.",
-          "limits": "Switching modes retains response, pace and countdown values; Voice requires enabled speech and microphone input."
+          "options": "Visible Voice / Page / Scroll toolbar buttons plus Mode and pace; relevant controls follow the selected mode.",
+          "limits": "Pause delivery before switching; held Voice can change mode. Explicit operator choice overrides an authored Notes default for the open script; Voice requires enabled speech and microphone input."
         },
         {
           "name": "Steady scrolling",
@@ -128,7 +128,7 @@
         {
           "name": "Page and talking-point mode",
           "support": "Included",
-          "options": "Notes mode displays pages of talking points; headings or explicit page breaks divide them.",
+          "options": "Notes/Page displays talking points divided by headings, explicit page breaks or plain paragraphs in unstructured scripts. Toolbar Previous/Next disable at the ends.",
           "limits": "Pages advance through navigation controls rather than continuous speech alignment."
         },
         {
@@ -348,6 +348,18 @@
           "limits": "The app does not replace a full collaborative document suite."
         },
         {
+          "name": "Editor insertion tools",
+          "support": "Included",
+          "options": "RC13: Ctrl+E > Insert… offers 41 templates in six visible groups for directions, pointing, notes/headings, pacing, recording/audio and app codes. Insert at cursor or replace selection; values remain selected; Undo and Save work normally.",
+          "limits": "Uses existing directive syntax. Protected samples need Save a copy. Inserting/saving codes does not execute them or enable interfaces."
+        },
+        {
+          "name": "Plain-text Auto format",
+          "support": "Included",
+          "options": "RC13: preview whole script or selected plain passage, add an opening heading and short paragraphs; optional sections/pages, breathing cue, sound checks and pace.",
+          "limits": "Preserves original words, punctuation and order. Existing markup is protected. Apply changes the editor; Undo and Save remain explicit. No recorder command or forced pause is added."
+        },
+        {
           "name": "Quick paragraph edit",
           "support": "Included",
           "options": "RC11 preview: double-click a spoken paragraph while paused. Enter inserts a visible break; Ctrl+Enter saves; Escape cancels. Source formatting and reading position are retained.",
@@ -374,7 +386,7 @@
         {
           "name": "Sample scripts",
           "support": "Included",
-          "options": "Twelve shipped samples; Start here is a twelve-stop core/RC feature tour. Focused voice, framing, recording, Notes and handover demos use separate setup comments and short cues.",
+          "options": "Seventeen shipped samples; Start here is a core/RC feature tour, with focused RC12 audio/dialog and RC13 authoring/overlay rehearsals. Focused voice, framing, recording, Notes and handover demos use separate setup comments and short cues.",
           "limits": "Protected originals: save a copy to edit. Recording actions are opt-in exercises. The formatting diagnostic intentionally contains one unknown tag. See [Demo guide](DEMO-SCRIPTS.md)."
         },
         {
@@ -650,7 +662,7 @@
         {
           "name": "Always on top",
           "support": "Optional",
-          "options": "Keep the prompter above ordinary application windows.",
+          "options": "On top On/Off on the toolbar and in Settings keeps the prompter above ordinary application windows.",
           "limits": "Operating-system window rules and other topmost windows can affect stacking."
         },
         {
@@ -680,8 +692,14 @@
         {
           "name": "Click-through",
           "support": "Optional",
-          "options": "Let pointer interaction reach content beneath the overlay.",
-          "limits": "Use the documented shortcut or remote control to regain interaction."
+          "options": "Toolbar On/Off passes script clicks to the content beneath while toolbar, session actions and recovery controls accept input. Editing retains input.",
+          "limits": "Ctrl+Shift+X toggles globally; turning it off restores clean-view controls. Uses the existing saved preference."
+        },
+        {
+          "name": "Clean call overlay",
+          "support": "Optional",
+          "options": "RC13: transient Clean view hides prompter chrome and the native head guide, preserving text appearance, reading position, guide reference and recorder state.",
+          "limits": "Hover the small top-edge Show controls tab, use Escape while focused, or turn click-through off globally to recover. Clean view starts off on launch; optional shared pad/phone/mapping action."
         },
         {
           "name": "Operator window",
@@ -1065,7 +1083,7 @@
           "name": "Explicit controller reading modes",
           "support": "Optional",
           "options": "RC2 preview: Notes, Voice or Scroll; cycle skips disabled voice interfaces. Again reuses the current-section retake operation.",
-          "limits": "Pause before changing mode; script-forced Notes is respected. Existing two-mode keys retain their original behaviour."
+          "limits": "Pause before changing mode. Authored Notes supplies the initial choice; explicit mode controls can override it for the open script. Existing action IDs are retained; the legacy two-mode action uses the shared Voice/Scroll selector."
         },
         {
           "name": "Configurable Adjustment dial",
@@ -1918,7 +1936,7 @@
         {
           "name": "Release and reference basis",
           "support": "Included",
-          "options": "This grid describes Sightline 1.2.0 and companion 0.2.0, with versioned source and downloadable references.",
+          "options": "This grid describes the RC13 preview and companion 0.2.1.6 candidate, with maintained source and downloadable references; stable app 1.2.0 and published companion 0.2.0 remain distinct.",
           "limits": "Platform/device acceptance and the listed feature limits still apply. Historical RC notes are archived separately."
         },
         {

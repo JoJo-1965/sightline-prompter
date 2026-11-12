@@ -1,5 +1,16 @@
 # Start here and focused demos
 
+## RC13 authoring and overlays
+
+Open **Sample scripts > RC13: authoring, reading modes and call overlays**.
+It covers Auto format on a plain scratch passage, Insert at the cursor,
+Voice/Page/Scroll selection while paused, Click-through, On top and recoverable
+Clean view. The Start here tour points to these controls too. Use Save a copy
+for edits; the sample contains no automatic recorder-start command. Existing
+scripts, take snapshots and earlier samples stay intact.
+
+## Core tour
+
 RC2's Start here notes include the grouped controller workflow. The optional
 RC2 profiles are separate imports. Use a disposable test, explicitly enable
 inputs, review picture/sound, save a checked reference and retain a fallback.

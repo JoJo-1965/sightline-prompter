@@ -1,8 +1,8 @@
 # Writing scripts
 
-## Pasted plain text and Auto format — next preview
+## Pasted plain text and Auto format — RC13
 
-Prepared after RC12 for the next combined preview. Paste into Ctrl+E and choose
+Included in RC13. Paste into Ctrl+E and choose
 **Auto format…**. It previews the whole script, or only selected text. The
 default adds an opening heading and short paragraphs while preserving your
 words, punctuation and ordering. Wrapping and whitespace can change.
@@ -17,11 +17,11 @@ formatting** changes the editor; normal **Undo** restores it and **Save** writes
 the file. An outdated preview is refused if the source changes. Samples need
 Save a copy before editing.
 
-![Auto format preview](images/auto-format-next.png)
+![Auto format preview](images/auto-format-rc13.png)
 
-## Insert codes and directions — next preview
+## Insert codes and directions — RC13
 
-Prepared after RC12 for the next combined preview. In **Ctrl+E**, choose
+Included in RC13. In **Ctrl+E**, choose
 **Insert…**, then Directions, Pointing, Notes & sections, Pace & pauses,
 Recording & audio, or App actions. Choose an item to insert at the cursor,
 replacing selected text. Values and graphic labels remain selected so you can
@@ -32,7 +32,7 @@ script/section settings. Normal Undo and Save apply. Inserting or saving a code
 does not execute it. Escape closes the menu and returns to the editor. Protected
 samples need **Save a copy** before insertion.
 
-![Grouped editor insertion tools](images/editor-insert-next.png)
+![Grouped editor insertion tools](images/editor-insert-rc13.png)
 
 ## Full editor exit — RC12
 

@@ -1,3 +1,7 @@
+<!-- RC13 AUTHORING. Save a scratch copy, use Ctrl+E > Insert for codes and
+directions, or paste plain text and preview Auto format. Apply/Undo/Save remain
+explicit. See the RC13 authoring and call-overlay sample for a short rehearsal. -->
+
 <!-- RC11 QUICK EDIT. Save an editable copy of this tour. While paused,
 double-click a spoken paragraph, change a word or insert a line break with
 Enter. Ctrl+Enter saves; Escape cancels. Prompting stays paused. Small windows
@@ -43,7 +47,9 @@ section whenever you are ready.
 
 <!-- TRY. Put a slide, video call or camera preview behind Sightline. Adjust
 Background on the toolbar. Move the pointer away to let the toolbar hide.
-Return it to the top when you need the controls. No camera is opened by this tour. -->
+Return it to the top when you need the controls. For a call, try On top and
+Click-through, then Clean view. Hover the top-edge Show controls tab to recover;
+Ctrl+Shift+X toggles click-through globally. No camera is opened by this tour. -->
 
 My script can sit over a presentation, a video call or a camera preview.
 I can see the content through the prompter while keeping my place.
@@ -53,7 +59,8 @@ For a simpler view, I can choose an opaque background and read just the script.
 
 ## Choose your reading mode {target: 0:25}
 
-<!-- TRY. Reading > Mode and pace offers Scroll, Voice and Notes / page.
+<!-- TRY. The toolbar offers Voice, Page and Scroll directly. Pause before
+switching; Page uses Previous/Next. Reading > Mode and pace has the same choice.
 Scroll needs no microphone. Voice needs enabled speech and microphone input.
 For a focused Notes exercise, open Sample scripts > Notes, a page at a time. -->
 

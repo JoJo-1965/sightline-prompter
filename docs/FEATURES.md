@@ -1,14 +1,14 @@
 # Sightline Prompter features
 
-**Also prepared after RC12:** direct Voice/Page/Scroll and page-navigation
+**RC13 preview:** direct Voice/Page/Scroll and page-navigation
 buttons; recoverable Clean view, Click-through and On top; plain-text Auto
 format with optional starter cues/checks/pace and preview/Undo/Save. Source
-checks pass. These join the next combined build; frozen RC12 remains unchanged.
+checks pass. Included in RC13; frozen RC12 remains unchanged.
 
-**Prepared after RC12:** Ctrl+E **Insert…** provides 41 grouped templates
+**RC13:** Ctrl+E **Insert…** provides 41 grouped templates
 covering every directive family, silent/pointing cues, production notes and
 headings. Cursor insertion, editable values, Undo and Save are checked; samples
-stay protected. Awaiting the next combined preview; frozen RC12 is unchanged.
+stay protected. Included in RC13; frozen RC12 is unchanged.
 
 **RC12 preview · 12 November 2026:** combined recording and interface fixes.
 Help, Settings and window controls form one upper-right toolbar group. The full

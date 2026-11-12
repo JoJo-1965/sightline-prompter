@@ -1,6 +1,6 @@
 # Settings
 
-**Next preview after RC12:** toolbar Voice / Page / Scroll, Click-through and
+**RC13 preview:** toolbar Voice / Page / Scroll, Click-through and
 On top expose existing mode/window settings. Clean view is a temporary view
 and does not replace saved appearance/guide preferences. The signed-off
 Settings navigation and three-column composition are retained.

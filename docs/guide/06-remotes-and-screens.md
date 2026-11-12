@@ -476,9 +476,9 @@ If a monitor is unplugged or the resolution changes, the prompter and the
 control window move back onto a screen you can see, with the control bar in
 reach.
 
-## Call-overlay toolbar — next preview
+## Call-overlay toolbar — RC13
 
-Prepared after RC12. Choose Voice, Page or Scroll on the toolbar, then enable
+Included in RC13. Choose Voice, Page or Scroll on the toolbar, then enable
 **On top** to keep the prompter above your call. **Click-through** passes script
 clicks to the app behind while toolbar, session and recovery controls remain
 clickable. The editor accepts input while the saved preference is on.

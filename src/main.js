@@ -385,6 +385,7 @@ const stateManager = stateFactory( defaultConfig );
 // Sample scripts shipped in src/samples, for onboarding and testing.
 export const SAMPLE_SCRIPTS = [
 	{ file: "welcome.md", label: "Start here: Sightline feature tour" },
+	{ file: "rc13-authoring-and-overlays.md", label: "RC13: authoring, reading modes and call overlays" },
 	{ file: "voice-and-stops.md", label: "Voice control, stops and countdowns" },
 	{ file: "rc12-audio-and-dialogs.md", label: "RC12: audio, dialog voice and quick-edit rehearsal" },
 	{ file: "recording-preview.md", label: "Recording preview: preparation, modes and handover" },

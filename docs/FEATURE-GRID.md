@@ -1,11 +1,11 @@
 # Sightline Prompter feature grid
 
-**Review basis: Sightline 1.3.0 RC12 preview, documentation revision 28, 12 November 2026.**
-**Build version:** `1.3.0-rc.12` · **Publication status:** Preview
+**Review basis: Sightline 1.3.0 RC13 preview, documentation revision 29, 12 November 2026.**
+**Build version:** `1.3.0-rc.13` · **Publication status:** Preview
 
 **Maintained source:** [Feature grid](https://github.com/JoJo-1965/sightline-prompter/blob/codex/pointing-production-cues/docs/FEATURE-GRID.md)
 
-This grid describes the preview built from `7093fd8`, with companion Stream
+This grid describes the preview built from `957637e`, with companion Stream
 Deck plugin **0.2.1.6** candidate. It includes stable 1.2.0 features plus the explicitly labelled RC additions. The build manifest also records the packaging/documentation
 snapshot. The public app release remains **1.2.0**; this document
 does not certify an individual recording setup.
@@ -52,6 +52,12 @@ is outside the current product. These labels describe capability, not a test
 result. Options marked “RC1 preview” require this candidate and are not part
 of the stable 1.2.0 installer. Published and preview versions remain distinct.
 
+**RC13 additions:** direct Voice / Page / Scroll buttons and paragraph pages;
+recoverable Clean view with native guide suppression; visible Click-through and
+On top toggles; editor Insert templates and previewed plain-text Auto format.
+Three new rows bring this reference to 275 capabilities. Existing RC12 packages
+and their archives stay unchanged.
+
 ## 01 · Product, platform and installation
 
 Reference: [Getting started](guide/01-getting-started.md) and [Policies](POLICIES.md).
@@ -75,10 +81,10 @@ Reference: [Scrolling and voice](guide/03-scrolling-and-voice.md) and [Recording
 
 | Capability | Availability | Options and behaviour | Dependencies and limits |
 | --- | --- | --- | --- |
-| Mode selection | Included | One Notes/page, Voice or Scroll choice in Mode and pace; relevant controls follow the selected mode. | Switching modes retains response, pace and countdown values; Voice requires enabled speech and microphone input. |
+| Mode selection | Included | Visible Voice / Page / Scroll toolbar buttons plus Mode and pace; relevant controls follow the selected mode. | Pause delivery before switching; held Voice can change mode. Explicit operator choice overrides an authored Notes default for the open script; Voice requires enabled speech and microphone input. |
 | Steady scrolling | Included | Automatic scrolling at a chosen words-per-minute pace. | Timings are estimates and depend on the script and delivery. |
 | Voice following | Optional | Advances through the script as recognised speech matches the words being read. | Requires microphone access and a configured local or online speech engine. |
-| Page and talking-point mode | Included | Notes mode displays pages of talking points; headings or explicit page breaks divide them. | Pages advance through navigation controls rather than continuous speech alignment. |
+| Page and talking-point mode | Included | Notes/Page displays talking points divided by headings, explicit page breaks or plain paragraphs in unstructured scripts. Toolbar Previous/Next disable at the ends. | Pages advance through navigation controls rather than continuous speech alignment. |
 | Start, pause and resume | Included | Toolbar, keyboard, voice and enabled remote controls. | Recorder behaviour is separately configured in the OBS section. |
 | Current-section status | Included | Yellow section/total pill on the persistent recorder status row. | Explicitly paged Notes shows page/total. Follows script navigation and retakes, including when the toolbar hides. |
 | On air reading view | Included | A separate On air state changes the operator/reading presentation and configured backing. | On air describes the prompter view; use the confirmed recording pill to check the recorder. |
@@ -125,11 +131,13 @@ Reference: [Writing scripts](guide/02-scripts.md).
 | HTML import | Included | Open `.html` and `.htm` script files. | Imported content is for prompting, not a complete browser application. |
 | Google Docs links | Dependent | Import accessible Google Docs content. | Sharing and internet access must permit retrieval; private account access is not implied. |
 | Built-in Markdown editor | Included | CodeMirror editor, preview toggle, save, Save as and unsaved-change prompts. | The app does not replace a full collaborative document suite. |
+| Editor insertion tools | Included | RC13: Ctrl+E > Insert… offers 41 templates in six visible groups for directions, pointing, notes/headings, pacing, recording/audio and app codes. Insert at cursor or replace selection; values remain selected; Undo and Save work normally. | Uses existing directive syntax. Protected samples need Save a copy. Inserting/saving codes does not execute them or enable interfaces. |
+| Plain-text Auto format | Included | RC13: preview whole script or selected plain passage, add an opening heading and short paragraphs; optional sections/pages, breathing cue, sound checks and pace. | Preserves original words, punctuation and order. Existing markup is protected. Apply changes the editor; Undo and Save remain explicit. No recorder command or forced pause is added. |
 | Quick paragraph edit | Included | RC11 preview: double-click a spoken paragraph while paused. Enter inserts a visible break; Ctrl+Enter saves; Escape cancels. Source formatting and reading position are retained. | Saved Markdown/text only; samples need Save a copy. External conflicts block Save and preserve the draft. Use the full editor for other blocks or larger changes. |
 | External editing | Included | Watch an opened file and refresh when it changes externally. | Watching pauses during built-in editing to avoid conflicting edits. |
 | Script slots | Included | Nine quick-access slots, recent files and switching controls. RC11 uses a compact Slot 1–9 picker at 1100 pixels wide or less; wide windows retain numbered buttons. Ctrl+1…9 works in both layouts. | A slot points to its script; clearing a slot is separately confirmed. |
 | Slot clearing protection | Included | Confirmation before clearing an occupied slot. | Keep source files backed up independently of slot assignments. |
-| Sample scripts | Included | Twelve shipped samples; Start here is a twelve-stop core/RC feature tour. Focused voice, framing, recording, Notes and handover demos use separate setup comments and short cues. | Protected originals: save a copy to edit. Recording actions are opt-in exercises. The formatting diagnostic intentionally contains one unknown tag. See [Demo guide](DEMO-SCRIPTS.md). |
+| Sample scripts | Included | Seventeen shipped samples; Start here is a core/RC feature tour, with focused RC12 audio/dialog and RC13 authoring/overlay rehearsals. Focused voice, framing, recording, Notes and handover demos use separate setup comments and short cues. | Protected originals: save a copy to edit. Recording actions are opt-in exercises. The formatting diagnostic intentionally contains one unknown tag. See [Demo guide](DEMO-SCRIPTS.md). |
 | Recording preview sample | Included | Preparation, Continuous and linked recording, explicit commands and handover walkthrough. | Exercise recorder controls only with the intended test setup connected. |
 | Exact recording script | Included | Preserve the source actually used, including section IDs, slide cues and directions, in the edit pack. | The export is the recording snapshot, which can differ from a later file edit. |
 
@@ -189,12 +197,13 @@ Reference: [Layout and display](guide/04-layout-and-display.md) and [Remotes and
 | Capability | Availability | Options and behaviour | Dependencies and limits |
 | --- | --- | --- | --- |
 | Transparent content overlay | Included | Read over a video call, slides, camera/projector preview or other desktop content. | Sightline does not supply or embed the underlying call or presentation. |
-| Always on top | Optional | Keep the prompter above ordinary application windows. | Operating-system window rules and other topmost windows can affect stacking. |
+| Always on top | Optional | On top On/Off on the toolbar and in Settings keeps the prompter above ordinary application windows. | Operating-system window rules and other topmost windows can affect stacking. |
 | Windowed and fullscreen use | Included | Size and position the prompter, or use a fullscreen reading view. RC12 keeps Help, Settings and minimise/maximise/fullscreen/close together at the top right on the first toolbar row; other groups wrap below. | Multi-window arrangements need checking on the intended display. |
 | Horizontal and vertical mirror | Included | Separate mirror controls, including toolbar icons. | Set the flips appropriate to the physical teleprompter glass or monitor. |
 | Prompter monitor | Optional | Explicit display selection opens full screen. A manual cross-screen drag restores a centred normal window at 75% of the destination work area; included in the reading workflow. | Windows drag handling clears eye-line mode and the pinned monitor choice. Same-display moves retain the chosen size. Requires a connected display. |
 | Eye-line strip | Optional | Compact reading strip with configurable screen height and reading-line position. | Lens alignment is a manual setup task. |
-| Click-through | Optional | Let pointer interaction reach content beneath the overlay. | Use the documented shortcut or remote control to regain interaction. |
+| Click-through | Optional | Toolbar On/Off passes script clicks to the content beneath while toolbar, session actions and recovery controls accept input. Editing retains input. | Ctrl+Shift+X toggles globally; turning it off restores clean-view controls. Uses the existing saved preference. |
+| Clean call overlay | Optional | RC13: transient Clean view hides prompter chrome and the native head guide, preserving text appearance, reading position, guide reference and recorder state. | Hover the small top-edge Show controls tab, use Escape while focused, or turn click-through off globally to recover. Clean view starts off on launch; optional shared pad/phone/mapping action. |
 | Operator window | Optional | Separate upright controls and script/session status while the reading window is mirrored. | A second monitor is useful but not required. |
 | Toolbar hiding | Included | Toolbar retreats when the pointer moves away; faster distance-based hiding is included in 1.2.0. | Keyboard focus keeps controls available while they are in use. |
 | Pointer visibility | Included | Mouse pointer stays visible when the toolbar hides. | Click-through remains an independent preference. |
@@ -276,7 +285,7 @@ Reference: [Stream Deck installation, permissions and profiles](guide/06-remotes
 | Companion plugin | Dependent | RC2 preview companion 0.2.1.1, paired with the app's supported control contract; stable companion remains 0.2.0. | Requires Elgato Stream Deck software; the companion is an optional installation. |
 | Grouped controller functions | Optional | RC2 preview: related new assignments use a Function selector and function-specific key artwork; all 34 published key/dial UUIDs remain registered. | No compulsory conversion or automatic profile switch; legacy settings, states and custom images retain their rules. |
 | Controller preparation workflow | Optional | RC2 preview: Prepare, combined room/voice check, test start/stop/play, detected draft lock, recording-reference restore/save and return after a break. | Explicit input enablement and existing framing/audio/test acceptance still apply; no automatic pass. Available from Stream Deck and shared pad/phone/mapped inputs. |
-| Explicit controller reading modes | Optional | RC2 preview: Notes, Voice or Scroll; cycle skips disabled voice interfaces. Again reuses the current-section retake operation. | Pause before changing mode; script-forced Notes is respected. Existing two-mode keys retain their original behaviour. |
+| Explicit controller reading modes | Optional | RC2 preview: Notes, Voice or Scroll; cycle skips disabled voice interfaces. Again reuses the current-section retake operation. | Pause before changing mode. Authored Notes supplies the initial choice; explicit mode controls can override it for the open script. Existing action IDs are retained; the legacy two-mode action uses the shared Voice/Scroll selector. |
 | Configurable Adjustment dial | Optional | RC2 preview: pace, text size, manual scroll, sections or backing, with visible press/tap behaviour. | Existing six dial UUIDs retain behaviour. New Sections turns move once per event; pace/size repeat up to five steps. Requires a dial-capable device. |
 | Workflow status and review keys | Optional | RC2 preview: recorder/framing/preparation display, optional press, open current logged review and export a reviewed edit pack. | New displays default to no press. Export requires matching analysis and destination selection; no automatic transcription/model download. |
 | Virtual RC profiles | Optional | RC2 preview: separate on-screen Virtual 8 × 5 and Plus layouts; existing standard/OBS profiles remain available. | Import explicitly. Virtual device type 11 is separate from MCP Deck type 14. |
@@ -451,7 +460,7 @@ Reference: [Privacy and accessibility policies](POLICIES.md) and [Acceptance wal
 | Optional word tracing | Optional | Enable recognised command-word logging to investigate actual mishearings. | May include nearby speech; only enable it for the intended diagnostic period. |
 | Recording-state honesty | Included | Confirmed stopped/recording/paused states are distinct from unknown/disconnected. | UI state cannot certify that the resulting picture/audio is usable. |
 | Hardware acceptance | Limited | Walkthrough covers real camera, mic, controls, clean tracks, sync and output inspection. | Local automated tests do not replace camera/mic and physical-control testing. |
-| Release and reference basis | Included | This grid describes Sightline 1.2.0 and companion 0.2.0, with versioned source and downloadable references. | Platform/device acceptance and the listed feature limits still apply. Historical RC notes are archived separately. |
+| Release and reference basis | Included | This grid describes the RC13 preview and companion 0.2.1.6 candidate, with maintained source and downloadable references; stable app 1.2.0 and published companion 0.2.0 remain distinct. | Platform/device acceptance and the listed feature limits still apply. Historical RC notes are archived separately. |
 | Reviewer comparison scope | Included | Compare prompting, control, scripting, production handover, privacy and setup effort separately. | No competitor feature, price, performance ranking or endorsement is asserted here. |
 
 ## Maintaining this grid

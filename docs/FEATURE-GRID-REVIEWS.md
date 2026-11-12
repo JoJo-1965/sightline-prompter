@@ -1,5 +1,17 @@
 # Feature-matrix review record
 
+## 12 November 2026 — RC13 combined queue
+
+Shipped in the local RC13 preview: Insert templates, plain-text Auto format,
+Voice/Page/Scroll selection and paragraph pages, recoverable Clean view/native
+guide suppression, Click-through and On top toolbar toggles. Reviewed the
+existing editor, mode, navigation, window and controller rows; added three
+capability rows (275 total). Existing controller IDs remain; the separate
+plugin candidate and stable Marketplace package are unchanged. Synced the JL
+review snapshot and versioned archive; no live website deployment. See
+[queue review and UAT](uat/1.3.0-RC13.md).
+
+
 ## Toolbar overlay and Auto format — prepared after RC12
 
 Reviewed three-mode choice/Notes overrides, paragraph pages, native click-through

@@ -30,6 +30,10 @@ See [grouped release notes](docs/RELEASE-1.2.0.md) and the
 
 ## In 1.3.0 preview
 
+**RC13:** editor Insert templates, plain-text Auto format, three visible reading
+modes and recoverable Clean view, Click-through and On top toolbar controls.
+Includes RC12; [queue review and UAT](docs/uat/1.3.0-RC13.md).
+
 **RC12:** combined toolbar utility alignment, clean/dirty editor exit, remembered
 dialog screens, foreground button-label commands, speech-driven audio checks,
 optional Sightline wake word, applied-input diagnostics, short-take assessment,
@@ -97,17 +101,17 @@ the preview manifest; other platforms require acceptance.
 
 ## Next: recording accuracy and real-world feedback
 
-**Call overlays and Auto format — source ready after RC12.** Three toolbar
+**Call overlays and Auto format — included in RC13.** Three toolbar
 modes, paragraph paging, recoverable Clean view, Click-through and On top,
 plus plain-text formatting with optional basic codes and preview/Undo/Save.
-Combine with Insert tools in the next candidate. Physical call-overlay UAT
-and that candidate's matrix/JL archive refresh remain.
+Combined with Insert tools in RC13, with an updated matrix/JL review archive.
+Physical call-overlay UAT remains.
 [Combined review](docs/uat/RC12-OVERLAY-AUTHORING-FEEDBACK.md).
 
-**Editor insertion menu — source ready after RC12.** Grouped templates for
+**Editor insertion menu — included in RC13.** Grouped templates for
 directions, pointing, notes/headings and existing codes insert at the cursor.
 Editable values, Undo, Save, compact layouts and protected samples are checked.
-Include in the next combined preview and its feature-grid/JL archive refresh.
+Included in the RC13 preview and its feature-grid/JL archive refresh.
 [Review](docs/uat/RC12-EDITOR-INSERT-FEEDBACK.md).
 
 **RC6 correction batch:** bare and timed `{pause}` directives are Scroll-only.

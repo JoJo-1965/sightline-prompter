@@ -1,6 +1,6 @@
 # Sightline Prompter
 
-> **Development preview: 1.3.0 RC12, documentation revision 28.**
+> **Development preview: 1.3.0 RC13, documentation revision 29.**
 > The public download below is stable 1.2.0. This candidate adds optional
 > [post-record audio review](docs/guide/19-post-record-review.md) and a
 > [rerunnable guided tour](docs/guide/20-guided-tour.md). Read the
@@ -156,9 +156,9 @@ on your own setup. OBS-scene calibration is a sampled preview, not the encoder o
 
 ## Change log
 
-### Prepared after RC12 — authoring and call-overlay controls
+### 1.3.0 RC13 — authoring and call-overlay controls
 
-The next combined preview adds visible Voice / Page / Scroll choices, page
+RC13 adds visible Voice / Page / Scroll choices, page
 navigation, recoverable Clean view, Click-through and On top. Plain scripts
 can page by paragraph, and an operator can override authored Notes mode for
 the open script. These view changes do not start or stop a recorder.
@@ -174,7 +174,7 @@ Ctrl+E **Insert…** adds grouped codes and directions at the cursor, with
 editable values, Undo, normal Save and protected samples. It covers every
 directive family, comments/headings and all nine pointing positions. Inserting
 codes never executes them. Source/native checks pass; it is queued for the next
-combined preview. [Review and UAT](docs/uat/RC12-EDITOR-INSERT-FEEDBACK.md).
+RC13 preview. [Review and UAT](docs/uat/RC12-EDITOR-INSERT-FEEDBACK.md).
 
 ### 1.3.0 RC12 — combined recording and interface fixes
 

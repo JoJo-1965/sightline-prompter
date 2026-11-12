@@ -1,6 +1,6 @@
 # Sightline 1.3.0 release notes
 
-**Current candidate: RC12 · 12 November 2026 · documentation revision 28.**
+**Current candidate: RC13 · 12 November 2026 · documentation revision 29.**
 This is the cumulative 1.3.0 history. The public stable app remains 1.2.0;
 Stream Deck companion 0.2.0 is published, with 0.2.1.6 a separate candidate.
 The RC sections below record when each change arrived. Later corrections
@@ -29,7 +29,13 @@ editing, recorded-chunk replay, command negatives and capture constraints.
 The [RC11 feedback batch](uat/1.3.0-RC11-FEEDBACK.md) is integrated into RC12.
 See the [combined UAT](uat/1.3.0-RC12.md). Hardware microphone UAT remains.
 
-## Prepared after RC12 — next combined preview
+<a id="rc13"></a>
+
+## RC13 — Authoring and call overlays
+
+12 November 2026 · documentation revision 29. Includes the full RC12 batch,
+with the three subsequent feedback requests reviewed together before packaging.
+See the [queue review and UAT](uat/1.3.0-RC13.md).
 
 ### Reading and call overlays
 
@@ -64,9 +70,9 @@ then use normal Undo/Save. Every directive family, all nine pointing cues,
 comments and headings are covered. Samples remain protected and insertion
 never executes recorder actions. Windows filenames and editing marker
 visibility are tidied too. Native checks cover cursor/selection behaviour and
-compact layouts. This source change is not in the frozen RC12 package.
+compact layouts. Included in RC13; the frozen RC12 package is unchanged.
 
-## Current behaviour to use in RC12
+## Current behaviour to use in RC13
 
 - **Voice stops:** RC10 makes `{stop}` a soft passage boundary. The next spoken
   opening is positioned and listening continues. Scroll still honours stops
@@ -95,6 +101,7 @@ compact layouts. This source change is not in the frozen RC12 package.
 - [RC10 — Continuous Voice passages](#rc10)
 - [RC11 — Quick edits and compact slots](#rc11)
 - [RC12 — Dialogs, audio checks and recording reliability](#rc12)
+- [RC13 — Authoring and call overlays](#rc13)
 
 <a id="rc1"></a>
 
