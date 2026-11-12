@@ -1,5 +1,12 @@
 # Feature-matrix review record
 
+## Sightline wake-word request — 12 November 2026
+
+Queued Sightline as another selectable wake word for the next combined RC,
+with current-selection retention, consistent labels and tests against false
+commands during product-name narration. No current wake-word option or RC11
+capability claim changed; update the grid when the candidate implements it.
+
 ## RC11 contextual voice and audio-check feedback — 12 November 2026
 
 Queued speakable active-dialog button labels while already in attention mode,
