@@ -156,13 +156,21 @@ on your own setup. OBS-scene calibration is a sampled preview, not the encoder o
 
 ## Change log
 
-### Queued after RC11 — microphone capture policy
+### Queued after RC11 — recording reliability
 
 The next-candidate source explicitly disables automatic gain control for
 speech/wake listening and the selected-microphone test, including device
 fallback. Recording meters already request AGC off. Mock-device tests pass;
 the running RC11 package is unchanged and the reported Windows level drop
 still needs physical confirmation and attribution.
+
+A reviewed long recording reproduced seven Retake misses. Exact wake-prefixed
+recogniser variants now resolve in replay; ordinary speech remains protected.
+Bounded ordered recovery advances sooner after misheard words without widening
+cross-section relocation. Automatic section advance, Go and restored boundaries
+now honour Start from section heading. These are next-candidate source changes,
+not a replacement for the running RC11 package. See the
+[reliability review](docs/uat/VOICE-RELIABILITY-2026-11-12.md).
 
 ### 9 November 2026 — Stream Deck plugin published
 

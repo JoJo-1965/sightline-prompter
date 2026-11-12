@@ -1,5 +1,16 @@
 # Feature-matrix review record
 
+## Recorded Voice regression fixes — 12 November 2026
+
+Prepared exact Retake fallbacks, heading-aware boundary targets and bounded
+within-section ordered recovery after reviewing a completed 22-section take.
+Recorded-chunk replay recovers 7/7 observed command misses; three tracking
+windows move about three seconds sooner. Native heading/body, Go, Retake and
+quick-edit checks pass. These are pending-source corrections, not a changed
+RC11 binary or new capability count. The full combined RC must update version
+metadata, current guide screenshots and JL references together. Private clinical
+script/media/transcript evidence is kept outside this public repository.
+
 ## Heading-alignment inconsistency — 12 November 2026
 
 Confirmed that Joanne's heading-start preference is already enabled, while

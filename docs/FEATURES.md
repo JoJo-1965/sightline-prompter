@@ -3,6 +3,9 @@
 **Prepared for the next candidate, not RC11:** explicit AGC-off capture for
 speech/wake and selected-microphone test metering. Other applications or the
 driver may still change the microphone level; physical validation remains.
+The same source batch adds exact recorded Retake fallbacks, heading-aware
+Voice boundaries and bounded within-section recovery after misheard words.
+See [source validation and limits](uat/VOICE-RELIABILITY-2026-11-12.md).
 
 **RC11 preview:** paused double-click paragraph editing with Save/Cancel,
 visible line breaks and source preservation. Small windows use a slot picker;

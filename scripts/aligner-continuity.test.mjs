@@ -49,3 +49,19 @@ flowing.setPosition( 3 );
 for ( const word of tokens( "these opening words the next passage begins naturally" ) ) { flowing.addRecognized( word ); flowing.step(); }
 assert.equal( flowing.currentPosition(), 9, "Ordered speech can cross a section boundary without a hard hold" );
 console.log( "Repeated-heading guard, deliberate global Resync and continuous cross-section speech pass" );
+
+const sharedPhrase = tokens( "we can discuss the next part together" );
+const unclearOpening = tokens( "A useful opening title several unusual names were hard to recognise while the speaker introduced the people and explained the setting" );
+const bridgeScript = [ ...unclearOpening, ...sharedPhrase, ...Array( 30 ).fill( "neutral" ), ...Array.from( { length: 5 }, () => sharedPhrase ).flat() ];
+const bridge = createAligner( bridgeScript, { sectionStarts: [ 0, unclearOpening.length + sharedPhrase.length + 30 ] } );
+bridge.setPosition( 3 );
+for ( const word of tokens( "unrecognised names followed by" ) ) bridge.addRecognized( word );
+for ( const word of sharedPhrase ) { bridge.addRecognized( word ); bridge.step(); }
+assert.equal( bridge.currentPosition(), unclearOpening.length + sharedPhrase.length - 1, "An ordered common phrase recovers a short gap after misheard names" );
+
+const nextSection = [ ...unclearOpening, ...Array( 5 ).fill( "neutral" ), ...sharedPhrase ];
+const crossSection = createAligner( nextSection, { sectionStarts: [ 0, unclearOpening.length ] } );
+crossSection.setPosition( 3 );
+for ( const word of sharedPhrase ) { crossSection.addRecognized( word ); crossSection.step(); }
+assert.equal( crossSection.currentPosition(), 3, "The wider recovery cannot jump into the following section" );
+console.log( "Ordered recovery bridges misheard names within a section without widening cross-section relocation" );

@@ -6,6 +6,15 @@ uses unprocessed input; speech retains its existing noise/echo processing.
 This does not control the gain settings of other apps or the audio driver.
 Check the actual input level after the combined preview is installed.
 
+The same next-candidate source honours **Start from section heading** at soft
+Voice boundaries and when Go or quick-edit restoration reuses that target.
+When off, the body-line option remains. A mid-paragraph edit keeps its place.
+Observed Retake transcripts A RETAKE, VO TAKE, PTAKE and VOTE have exact
+wake-prefixed fallbacks. Continue to say **Prompter, retake**; those spellings
+are decoder corrections, not additional phrases to learn. Bounded ordered
+recovery can follow a clear phrase after misheard names within the current
+section; it does not remove the need for microphone UAT or personal word fixes.
+
 **RC10 Voice boundaries:** `{stop}` prepares the next spoken passage without
 holding Voice. Retake returns to the completed section until you speak the next
 passage; no extra Go is needed. Stops and timed pauses still control Scroll.

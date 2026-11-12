@@ -6,6 +6,29 @@ Stream Deck companion 0.2.0 is published, with 0.2.1.6 a separate candidate.
 The RC sections below record when each change arrived. Later corrections
 supersede earlier behaviour; they do not change frozen older packages.
 
+## Next candidate — source fixes awaiting the combined package
+
+12 November 2026. RC11 remains the current packaged candidate. These changes
+are prepared in source and do not describe a silently updated RC11 binary.
+
+- **Retake recognition:** exact wake-prefixed A RETAKE, VO TAKE, PTAKE and VOTE
+  fallbacks recover all seven observed misses in recorded-chunk replay. Keep
+  using the operator phrase Prompter, retake. Ordinary speech is excluded.
+- **Voice recovery:** a longer ordered phrase can bridge a short gap after
+  misheard words within the current section; repeated headings and unrelated
+  speech retain their guards. The observed replay advances about three seconds
+  sooner, not perfectly through every recognition error.
+- **Heading alignment:** automatic boundaries, Go and restored targets follow
+  the existing Start from section heading preference. The off state retains
+  body-line positioning; ordinary mid-paragraph edit/resume keeps its place.
+- **Microphone capture:** speech/wake listening and test metering explicitly
+  request AGC off. Other apps/driver settings can still alter the input level.
+
+Source checks include both heading states, Retake ownership and paused quick
+editing, recorded-chunk replay, command negatives and capture constraints.
+The remaining [RC11 feedback batch](uat/1.3.0-RC11-FEEDBACK.md) still needs
+integration and a combined build; no release or live deployment is implied.
+
 ## Current behaviour to use in RC11
 
 - **Voice stops:** RC10 makes `{stop}` a soft passage boundary. The next spoken

@@ -33,7 +33,8 @@ async function connect( fragment ) {
 }
 
 try {
- const main=await connect('teleprompter.html'), native=await connect('main-process');await pause(500);
+ const main=await connect('teleprompter.html'), native=await connect('main-process');
+ for(let n=0;n<100&&await main.evaluate('document.querySelectorAll("#md h2").length')!==2;n++)await pause(100);await pause(800);
  await native.evaluate("globalThis.headingElectron=process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron');for(const channel of ['speechStart','speechAudio','speechStop'])headingElectron.ipcMain.removeAllListeners(channel);headingElectron.ipcMain.on('speechStart',(event,options)=>{globalThis.headingSpeechSession=options.session;event.sender.send('speechState',{type:'ready',session:options.session})});headingElectron.ipcMain.on('speechAudio',()=>{});headingElectron.ipcMain.on('speechStop',()=>{});headingElectron.BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().includes('teleprompter.html')).webContents.send('speechModel',{installed:true})");
  await main.evaluate("window.alert=text=>{globalThis.headingStartError=text};navigator.mediaDevices.getUserMedia=async()=>{globalThis.headingAudio=new AudioContext();const oscillator=headingAudio.createOscillator(),output=headingAudio.createMediaStreamDestination();oscillator.connect(output);oscillator.start();return output.stream};document.querySelector('#voice-offer button:last-child')?.click()");
  const config=JSON.parse(await fs.readFile(path.join(profile,'remote-control.json'),'utf8'));
@@ -42,7 +43,7 @@ try {
  const position=async(selector)=>main.evaluate('(async()=>{const {buildWordIndex}=await import("./word-index.js"),r=buildWordIndex(document.getElementById("md")).ranges.find(range=>range.startContainer.parentElement.closest('+JSON.stringify(selector)+'));return {top:r.getBoundingClientRect().top,line:innerHeight*.33,scroll:scrollY};})()');
  const aligned=async(selector,label)=>{const measured=await position(selector);assert.ok(Math.abs(measured.top-measured.line)<3,label+': '+JSON.stringify(measured));};
  const heard=async words=>{await native.evaluate("headingElectron.BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().includes('teleprompter.html')).webContents.send('speechWords',{session:headingSpeechSession,words:"+JSON.stringify(words.split(/\s+/))+",final:true})");await pause(900);};
- await main.evaluate('scrollTo(0,0);document.getElementById("cb-play").click()');await pause(700);
+ await main.evaluate('scrollTo(0,0);document.getElementById("cb-play").click()');for(let n=0;n<50&&await main.evaluate('document.getElementById("cb-play").getAttribute("aria-pressed")')!=="true";n++)await pause(100);await pause(250);
  assert.equal(await main.evaluate('globalThis.headingStartError??null'),null,'Voice pipeline starts: no modal error');
  await aligned('h2','Cold Voice start begins at the section heading');
  const before=await position('h2');

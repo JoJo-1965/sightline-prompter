@@ -333,3 +333,17 @@ for ( const fragment of [ "V", "VE" ] ) {
  listener( [ "PROMPTER", fragment ], false ); listener( [ "TAKE" ], true );
  assert.deepEqual( commands, [ "retake" ], "Observed fragmented retake is accepted only after the wake word" );
 }
+
+for ( const phrase of [ "A RETAKE", "VO TAKE", "PTAKE", "VOTE" ] ) {
+	for ( let split = 1; split <= phrase.split( " " ).length; split++ ) {
+		const commands = [];
+		const listener = createCommandListener( { onCommand: id => commands.push( id ) } );
+		const words = [ "PROMPTER", ...phrase.split( " " ) ];
+		listener( words.slice( 0, split ), false );
+		listener( words.slice( split ), true );
+		assert.deepEqual( commands, [ "retake" ], "Recorded Retake variant needs the wake prefix: " + phrase );
+	}
+	const listener = createCommandListener( { onCommand: () => assert.fail( "Ordinary speech must not trigger a retake" ) } );
+	assert.deepEqual( listener( phrase.split( " " ), true ), phrase.split( " " ) );
+}
+console.log( "Recorded Retake variants, chunk splits and ordinary-speech negatives pass" );

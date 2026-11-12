@@ -496,6 +496,12 @@ function readSectionHeading() {
 	return settings.startFromSectionHeading === true && settings.scrollMode === "voice" && !pointsMode();
 }
 
+function sectionStartExclusions() {
+	return readSectionHeading()
+		? "h1,h3,h4,h5,h6,.dir-text,.app-directive"
+		: "h1,h2,h3,h4,h5,h6,.dir-text,.app-directive";
+}
+
 // Voice can optionally start at the H2 as a spoken lead-in. Other modes and
 // the default continue to position the first script line at the reading line.
 function sectionStartScroll( index ) {
@@ -508,7 +514,7 @@ function sectionStartScroll( index ) {
 	while ( el && !el.offsetHeight && el.nextElementSibling ) el = el.nextElementSibling;
 	const spoken = buildWordIndex( md ).ranges.find( range => {
 		const parent = range.startContainer.parentElement;
-		if ( parent.closest( readSectionHeading() ? "h1,h3,h4,h5,h6,.dir-text,.app-directive" : "h1,h2,h3,h4,h5,h6,.dir-text,.app-directive" ) ) return false;
+		if ( parent.closest( sectionStartExclusions() ) ) return false;
 		if ( !( anchor.compareDocumentPosition( range.startContainer ) & Node.DOCUMENT_POSITION_FOLLOWING ) ) return false;
 		const next = document.getElementsByName( index + 1 )[0];
 		return !next || !!( next.compareDocumentPosition( range.startContainer ) & Node.DOCUMENT_POSITION_PRECEDING );
@@ -1171,7 +1177,7 @@ function handleAutoScrollPosition( wordIdx, ranges ) {
 let voiceBoundary = null;
 function advanceVoicePassage( point, ranges, wordIdx ) {
 	const last = lastWordBefore( point, ranges );
-	const next = ranges.findIndex( ( range, i ) => i > last && !range.startContainer.parentElement.closest( "h1,h2,h3,h4,h5,h6,.dir-text,.app-directive" ) );
+	const next = ranges.findIndex( ( range, i ) => i > last && !range.startContainer.parentElement.closest( sectionStartExclusions() ) );
 	// A recognition chunk may already include the next passage. Keep that
 	// progress rather than rewinding it and assigning Retake to the old section.
 	if ( next >= 0 && wordIdx >= next ) {
@@ -7096,7 +7102,7 @@ quickEdit = createQuickEdit( md, {
 			if ( quickRetakeSection <= headings.length ) {
 				const next = headings[quickRetakeSection];
 				const ranges = buildWordIndex( md ).ranges;
-				const index = next ? ranges.findIndex( range => !range.startContainer.parentElement.closest( "h1,h2,h3,h4,h5,h6" ) && ( next.compareDocumentPosition( range.startContainer ) & Node.DOCUMENT_POSITION_FOLLOWING ) ) : -1;
+				const index = next ? ranges.findIndex( range => !range.startContainer.parentElement.closest( sectionStartExclusions() ) && ( next.compareDocumentPosition( range.startContainer ) & Node.DOCUMENT_POSITION_FOLLOWING ) ) : -1;
 				voiceBoundary = { previousSection: quickRetakeSection, nextWord: index < 0 ? null : index };
 			}
 		}

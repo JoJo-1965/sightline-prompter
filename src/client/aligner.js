@@ -34,6 +34,7 @@ const CONTENT_WORD_MAX_DF = 3;
 const MIN_CONTENT_MATCHES_LOCAL = 2;
 const MIN_CONTENT_MATCHES_GLOBAL = 3;
 const ORDERED_LOOKAHEAD = 24;
+const ORDERED_RECOVERY_LOOKAHEAD = 48;
 const CONTRACTIONS = {
 	ive: "ihave", youve: "youhave", weve: "wehave", theyve: "theyhave",
 	im: "iam", youre: "youare", were: "weare", theyre: "theyare",
@@ -141,11 +142,17 @@ export function createAligner( scriptWords, { synonyms = new Map(), soundAlike =
 			return best;
 		};
 		let best = null;
-		for ( let end = position; end < Math.min( scriptWords.length, position + ORDERED_LOOKAHEAD + 1 ); end++ ) {
+		const sectionEnd = sections.find( end => end > position ) ?? scriptWords.length;
+		for ( let end = position; end < Math.min( scriptWords.length, position + ORDERED_RECOVERY_LOOKAHEAD + 1 ); end++ ) {
 			const found = suffix( recent.length - 1, end );
 			if ( found.words < 3 || found.heard < 3 ) continue;
 			const strong = found.words >= 5;
-			if ( found.start > position + ( strong ? 12 : 3 ) || end > position + ( strong ? ORDERED_LOOKAHEAD : 12 ) ) continue;
+			const nearby = found.start <= position + ( strong ? 12 : 3 ) && end <= position + ( strong ? ORDERED_LOOKAHEAD : 12 );
+			// Names and compound words can be misheard before a clear common
+			// phrase. A longer ordered suffix can bridge that short gap, but
+			// only within this section: it cannot seek out a repeated heading.
+			const recover = found.words >= 5 && found.heard >= 5 && found.start <= position + 36 && end < sectionEnd;
+			if ( !nearby && !recover ) continue;
 			if ( !best || found.words > best.words || ( found.words === best.words && found.heard > best.heard ) ) best = { ...found, end };
 		}
 		return best?.end ?? null;
