@@ -1,5 +1,14 @@
 # Feature-matrix review record
 
+## RC11 contextual voice and audio-check feedback — 12 November 2026
+
+Queued speakable active-dialog button labels while already in attention mode,
+including audio-check Continue/Check again, and a speech-triggered voice sample
+ending on sustained silence or a ten-second cap. Foreground scope, ordinary
+speech exclusions, existing button prerequisites and native-dialog limits are
+explicit. These are next-candidate requirements; RC11 runtime and the current
+270-row capability exports are unchanged by this queue entry.
+
 ## RC11 window-placement feedback — 12 November 2026
 
 Queued parent-monitor first placement and independent saved placement for
