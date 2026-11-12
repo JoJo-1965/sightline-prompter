@@ -45,6 +45,7 @@ export function commandRanges( words, events = [] ) {
 		if ( !wake && !bareSection ) continue;
 		// The product name in ordinary speech is not a command attempt.
 		if ( wake && norm( words[i - 1]?.word ?? "" ) === "sightline" ) continue;
+		if ( norm( words[i].word ) === "sightline" && norm( words[i + 1]?.word ?? "" ) === "prompter" ) continue;
 		const start = i + ( wake ? 1 : 0 );
 		let matched = null, finish = start;
 		for ( let j = start; j < Math.min( words.length, start + 6 ); j++ ) {

@@ -1,5 +1,8 @@
 import { framingPose, framingMatch, detectedPose, detectedFramingTarget, visibleFramingTarget, audioCheckAdvice } from "./framing-position.js";
 import { guideOutline } from "./guide-pose.js";
+import { visibleActions } from "./context-actions.js";
+import { createVoiceSample } from "./voice-sample.js";
+import { microphoneDiagnostics } from "./microphone-diagnostics.js";
 import { PREPARATION_COMMANDS, preparationBlockReason } from "./controller-workflow.js";
 
 const $ = id => document.getElementById( id );
@@ -199,7 +202,7 @@ function panel() {
 	if ( state.step === 0 ) html += "<h2 id=\"panel-title\">Align your head</h2><p>Use the manual guide as usual. Optional local detection adds colour feedback and arrows against the fixed target.</p><label class=\"switch\" for=\"tracking\"><strong>Position feedback</strong><input id=\"tracking\" type=\"checkbox\" " + ( state.tracking ? "checked " : "" ) + ( cameraStream ? "" : "disabled" ) + "></label><p class=\"model-note\">On-device detection · no account or cloud processing.</p><div class=\"actions\"><button type=\"button\" id=\"lock-current\" " + ( state.mode === "return" || !state.tracking || !state.person || m.kind === "lost" ? "disabled" : "" ) + ">Lock current position</button><button type=\"button\" id=\"restore-reference\" " + ( saved ? "" : "disabled" ) + ">Restore saved reference</button></div><div class=\"note\">" + ( state.mode === "return" ? "Match the saved frame. Choose New setup to change its target." : "Lock current uses the detected position and size as a draft. Save the reference after reviewing your test." ) + "</div><h3>Manual guide adjustment</h3>" + guideControls() + ( !state.tracking ? "<label class=\"check\"><input id=\"manual-confirm\" type=\"checkbox\" " + ( state.manualConfirmed ? "checked" : "" ) + ">I have checked the framing against the manual guide.</label>" : "" ) + "<div class=\"next\"><button type=\"button\" class=\"primary\" id=\"accept-frame\" " + ( m.aligned ? "" : "disabled" ) + ">Framing checked · next</button><p>" + ( state.tracking ? "Realign until green. Manual adjustment is available with position feedback off." : "Enable your camera, then confirm the framing yourself." ) + "</p></div>";
 	else if ( state.step === 1 ) {
 		const advice = state.audio ? audioCheckAdvice( state.audio ) : null;
-		html += "<h2 id=\"panel-title\">Verify your audio</h2><p>Check voice and room noise together, then listen to the test before deciding whether to change gain.</p><div class=\"microphone-field\"><label for=\"microphone-device\">Microphone</label><select id=\"microphone-device\" " + ( state.measuring ? "disabled" : "" ) + ">" + deviceOptions( "audioinput", state.microphoneId ) + "</select></div><h3>Voice and room level</h3><div class=\"meter\" id=\"audio-meter\" style=\"--level:0%\"></div><div class=\"scale\"><span>−60 dBFS</span><span>−30</span><span>−12</span><span>0</span></div><div class=\"actions\"><button type=\"button\" id=\"measure-audio\" " + ( state.measuring ? "disabled" : "" ) + ">" + ( state.measuring ? "Checking levels…" : "Enable mic and run check" ) + "</button></div><p id=\"audio-phase\" class=\"model-note\">" + ( state.measuring ? "Stay quiet briefly, then speak when prompted." : "First remain quiet for one second, then speak a short sentence." ) + "</p>";
+		html += "<h2 id=\"panel-title\">Verify your audio</h2><p>Check voice and room noise together, then listen to the test before deciding whether to change gain.</p><div class=\"microphone-field\"><label for=\"microphone-device\">Microphone</label><select id=\"microphone-device\" " + ( state.measuring ? "disabled" : "" ) + ">" + deviceOptions( "audioinput", state.microphoneId ) + "</select></div><h3>Voice and room level</h3><div class=\"meter\" id=\"audio-meter\" style=\"--level:0%\"></div><div class=\"scale\"><span>−60 dBFS</span><span>−30</span><span>−12</span><span>0</span></div><div class=\"actions\"><button type=\"button\" id=\"measure-audio\" " + ( state.measuring ? "disabled" : "" ) + ">" + ( state.measuring ? "Checking levels…" : state.audioAttempted ? "Check again" : "Enable mic and run check" ) + "</button></div><p id=\"audio-phase\" class=\"model-note\">" + ( state.measuring ? "Stay quiet briefly, then speak when prompted." : "First remain quiet for one second, then speak a short sentence." ) + "</p>";
 		if ( state.audio ) html += "<dl class=\"result-grid\">" + [ [ "Voice level", state.audio.voice, "dBFS" ], [ "Voice above room", state.audio.voice - state.audio.noise, "dB" ], [ "Loudest peak", state.audio.peak, "dBFS" ], [ "Background noise", state.audio.noise, "dBFS" ] ].map( ( [ label, value, unit ] ) => `<div><dt>${ label }</dt><dd>${ value.toFixed( 1 ) } ${ unit }</dd></div>` ).join( "" ) + "</dl><div class=\"note " + ( !advice.usable ? "danger" : advice.advisory ? "warning" : "success" ) + "\">" + advice.text + "</div>" + ( advice.usable && advice.advisory ? "<label class=\"check\"><input type=\"checkbox\" id=\"accept-audio-warning\" " + ( state.audioOverride ? "checked" : "" ) + ">Continue with this advisory result and review the test recording.</label>" : "" );
 		html += "<div class=\"next\"><button type=\"button\" class=\"primary\" id=\"accept-audio\" " + ( !advice?.usable || ( advice.advisory && !state.audioOverride ) || state.measuring ? "disabled" : "" ) + ">Audio checked · next</button><p>Input gain is not changed. The test clip uses this selected microphone.</p></div>";
 	} else if ( state.step === 2 ) {
@@ -384,6 +387,7 @@ async function connectMicrophone() {
 	microphoneStream?.getTracks().forEach( t => t.stop() );
 	await audioContext?.close().catch( () => {} );
 	microphoneStream = await navigator.mediaDevices.getUserMedia( { video: false, audio: { ...( state.microphoneId !== "default" ? { deviceId: { exact: state.microphoneId } } : {} ), echoCancellation: false, noiseSuppression: false, autoGainControl: false } } );
+	window.preRecord.report( { microphone: microphoneDiagnostics( microphoneStream, state.microphoneId ) } );
 	state.microphoneId = microphoneStream.getAudioTracks()[0].getSettings().deviceId || state.microphoneId;
 	audioContext = new AudioContext();
 	await audioContext.resume();
@@ -394,6 +398,7 @@ async function connectMicrophone() {
 }
 async function measureAudio() {
 	state.audio = null;
+	state.audioAttempted = true;
 	state.audioAccepted = false;
 	state.audioOverride = false;
 	state.measuring = true;
@@ -411,36 +416,29 @@ async function measureAudio() {
 		throw error;
 	}
 	const start = performance.now(), noise = [], voice = [], peaks = [], samples = new Float32Array( analyser.fftSize );
-	let announced = false;
+	const percentile = ( values, p ) => [ ...values ].sort( ( a, b ) => a - b )[Math.floor( ( values.length - 1 ) * p )] ?? -100;
+	let gate = null;
 	say( "Stay quiet for a moment to measure room noise." );
 	measuringTimer = setInterval( () => {
 		if ( disposed ) return;
 		analyser.getFloatTimeDomainData( samples );
 		const rms = Math.sqrt( samples.reduce( ( sum, n ) => sum + n * n, 0 ) / samples.length ), peak = samples.reduce( ( max, n ) => Math.max( max, Math.abs( n ) ), 0 );
-		const db = Math.max( -100, 20 * Math.log10( Math.max( 0.00001, rms ) ) ), elapsed = performance.now() - start;
-		window.preRecord.report( { meter: { active: true, phase: elapsed < 1200 ? "room" : "voice", level: db, peak: Math.max( -100, 20 * Math.log10( Math.max( 0.00001, peak ) ) ) } } );
+		const db = Math.max( -100, 20 * Math.log10( Math.max( 0.00001, rms ) ) ), now = performance.now(), elapsed = now - start;
+		const peakDb = Math.max( -100, 20 * Math.log10( Math.max( 0.00001, peak ) ) );
+		window.preRecord.report( { meter: { active: true, phase: elapsed < 1200 ? "room" : "voice", level: db, peak: peakDb } } );
 		if ( $( "audio-meter" ) ) $( "audio-meter" ).style.setProperty( "--level", `${ Math.max( 0, Math.min( 100, ( db + 60 ) / 60 * 100 ) ) }%` );
-		if ( elapsed < 1200 ) noise.push( db );
-		else {
-			voice.push( db );
-			peaks.push( Math.max( -100, 20 * Math.log10( Math.max( 0.00001, peak ) ) ) );
-			if ( !announced ) {
-				announced = true;
-				say( "Now say a short sentence at your normal recording voice." );
-				if ( $( "audio-phase" ) ) $( "audio-phase" ).textContent = "Speak normally for three seconds.";
-			}
-		}
-		if ( elapsed >= 4400 ) {
-			clearInterval( measuringTimer );
-			measuringTimer = null;
-			const percentile = ( values, p ) => values.sort( ( a, b ) => a - b )[Math.floor( ( values.length - 1 ) * p )] ?? -100;
-			state.audio = { noise: percentile( noise, 0.6 ), voice: percentile( voice, 0.75 ), peak: Math.max( -100, ...peaks ) };
-			state.measuring = false;
-			window.preRecord.report( { meter: { active: false } } );
-			panel();
-			renderSteps();
-			say( "Audio check complete. Review the readings and make a test recording." );
-		}
+		if ( elapsed < 1200 ) { noise.push( db ); return; }
+		if ( !gate ) { gate = createVoiceSample( { noise: percentile( noise, 0.6 ), armAt: now + 600 } ); say( "Now say a short sentence at your normal recording voice." ); }
+		const sample = gate.sample( now, db );
+		if ( sample.phase === "speaking" ) { voice.push( db ); peaks.push( peakDb ); }
+		if ( $( "audio-phase" ) ) $( "audio-phase" ).textContent = sample.phase === "waiting" ? "Speak to begin · up to 10 seconds" : `Voice check · ${ sample.remaining } seconds remaining`;
+		if ( ![ "done", "no-speech" ].includes( sample.phase ) ) return;
+		clearInterval( measuringTimer ); measuringTimer = null;
+		state.audio = sample.phase === "done" ? { noise: percentile( noise, 0.6 ), voice: percentile( voice, 0.75 ), peak: Math.max( -100, ...peaks ) } : null;
+		state.measuring = false;
+		window.preRecord.report( { meter: { active: false } } );
+		panel(); renderSteps();
+		say( state.audio ? "Audio check complete. Review the readings and make a test recording." : "No clear voice sample. Check your microphone, then check again." );
 	}, 50 );
 }
 async function recordTest() {
@@ -771,3 +769,21 @@ renderInput();
 render();
 window.preRecord.input( "ready" );
 if ( saved ) say( "A recording reference is available. Choose Restore saved reference to match previous shots." );
+
+// The main process rechecks the foreground owner before relaying an action.
+window.preRecord.onGuideAction( request => {
+	if ( request.name !== "voice-action" || !document.hasFocus() ) return;
+	const button = visibleActions( document ).find( item => item.id === request.value );
+	if ( button ) {
+		let feedback = $( "dialog-voice-feedback" );
+		if ( !feedback ) { feedback = document.createElement( "div" ); feedback.id = "dialog-voice-feedback"; feedback.setAttribute( "role", "status" ); document.body.appendChild( feedback ); }
+		feedback.textContent = `Heard “${ button.textContent.trim() }”`;
+		feedback.hidden = false; setTimeout( () => { feedback.hidden = true; }, 3000 ); button.click();
+	}
+} );
+let actionReport;
+new MutationObserver( () => {
+	clearTimeout( actionReport );
+	actionReport = setTimeout( () => window.preRecord.report( { voiceActions: visibleActions( document ).filter( b => b.id ).map( b => ( { id: b.id, label: b.textContent.trim() } ) ) } ), 80 );
+} ).observe( document.body, { childList: true, subtree: true, attributes: true, attributeFilter: [ "disabled", "hidden", "class" ] } );
+window.preRecord.report( { voiceActions: visibleActions( document ).filter( b => b.id ).map( b => ( { id: b.id, label: b.textContent.trim() } ) ) } );

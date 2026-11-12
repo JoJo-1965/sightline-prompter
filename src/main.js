@@ -78,7 +78,7 @@ async function readAndConvertScript( file ) {
 }
 
 // Help > User Guide: the pages in docs/guide, in their own window.
-const guide = createGuide( { dir: __dirname } );
+const guide = createGuide( { dir: __dirname, dialogParent: () => utilityWindows.dialogParent(), getSettings: () => settings, saveSettings: partial => updateSettings( partial ) } );
 // Scripts from Google Docs links, kept in the app's folder.
 const googleDocs = createGoogleDocs( { dir: app.getPath( "userData" ) } );
 ipcMain.on( "openGuide", ( _event, page ) => guide.open( page ) );
@@ -319,7 +319,7 @@ app.on( "child-process-gone", ( _event, details ) =>
 ipcMain.on( "debugLog", ( _event, text ) => {
 	if ( typeof text !== "string" ) return;
 	const problem = /^(error|unhandled rejection)\b/.test( text );
-	if ( problem || settings.debugMode ) logProblem( `page: ${ text.slice( 0, 500 ) }` );
+	if ( problem || settings.debugMode || /^\[microphone(?: meter| scratch)?\]/.test( text ) ) logProblem( `page: ${ text.slice( 0, 500 ) }` );
 } );
 
 // Settings > Debug > Support logs: the log, with what this computer
@@ -385,6 +385,7 @@ const stateManager = stateFactory( defaultConfig );
 export const SAMPLE_SCRIPTS = [
 	{ file: "welcome.md", label: "Start here: Sightline feature tour" },
 	{ file: "voice-and-stops.md", label: "Voice control, stops and countdowns" },
+	{ file: "rc12-audio-and-dialogs.md", label: "RC12: audio, dialog voice and quick-edit rehearsal" },
 	{ file: "recording-preview.md", label: "Recording preview: preparation, modes and handover" },
 	{ file: "pointing-cues.md", label: "Pointing and graphic cues" },
 	{ file: "hud-cues.md", label: "HUD cues and pointing targets" },
@@ -1023,7 +1024,7 @@ const createWindow = ( state ) => {
 	// One log per script per day, saved as the takes happen, in the app's
 	// take-logs folder: "<script> <yyyy-mm-dd>.json".
 	const takeLogDir = takeLogFolder();
-	const recordingReview = createRecordingReview( { dir: __dirname, profile: app.getPath( "userData" ),
+	const recordingReview = createRecordingReview( { dir: __dirname, profile: app.getPath( "userData" ), dialogParent: () => utilityWindows.dialogParent(), getSettings: () => settings, saveSettings: partial => updateSettings( partial ),
 		busy: () => rendererStatus.scrolling === true || [ "recording", "paused" ].includes( obs?.state().recording ),
 		readme: editPackBrief, openGuide: name => guide.open( name ) } );
 	win.once( "closed", () => recordingReview.dispose() );
@@ -2040,7 +2041,7 @@ app.whenReady().then( async () => {
 	} );
 	framingGuide.apply();
 	win.on( "closed", () => framingGuide.dispose() );
-	preRecord = createPreRecord( { dir: __dirname, prompter: win, getSettings: () => settings, saveSettings: partial => updateSettings( partial ), guide: framingGuide, obs, onStatus: () => publishRemoteState(), probeObs: async () => obs.state().connection === "connected" || ( await externalComponents.status() ).obs.installed, busy: () => rendererStatus.scrolling === true || [ "recording", "paused" ].includes( obs.state().recording ) } );
+	preRecord = createPreRecord( { dir: __dirname, prompter: win, dialogParent: () => utilityWindows.dialogParent(), getSettings: () => settings, saveSettings: partial => updateSettings( partial ), guide: framingGuide, obs, onStatus: () => publishRemoteState(), probeObs: async () => obs.state().connection === "connected" || ( await externalComponents.status() ).obs.installed, busy: () => rendererStatus.scrolling === true || [ "recording", "paused" ].includes( obs.state().recording ) } );
 	win.on( "closed", () => preRecord.dispose() );
 	if ( process.argv.includes( "--prepare-recording" ) ) win.webContents.once( "did-finish-load", () => preRecord.open() );
 	const speech = createSpeech( { dir: __dirname, win, busy: () => !!rendererStatus.scrolling || [ "recording", "paused" ].includes( obs.state().recording ) } );

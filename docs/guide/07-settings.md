@@ -285,3 +285,15 @@ recording route: check a short recorded file.
 **F1 / ?** and voice help use grouped topics and omit disabled feature keys.
 See the [screenshot gallery](settings-gallery.md) and
 [privacy, terms and support](../POLICIES.md).
+
+## RC12 dialog placement and voice
+
+![RC12 utility controls on a compact prompter](images/toolbar-compact-rc12.png)
+
+Sightline windows first open on the parent’s monitor, then remember their own
+monitor, position and size. Settings, help/tools panels, preparation, recording
+review, guide adjustments and the user guide use saved placement. A missing
+monitor falls back to the parent and visible work area. Native OS dialogs keep
+the correct owner and platform-supported placement. With listening enabled,
+say an enabled button’s exact label in the foreground Sightline dialog. Hidden
+or disabled controls retain their gates.

@@ -1,6 +1,7 @@
 // A framing aid above the camera preview, never an OBS scene source.
 import { BrowserWindow, globalShortcut, ipcMain, screen } from "electron";
 import path from "node:path";
+import { windowPlacement, rememberWindow } from "./utils/window-placement.js";
 import { fitInside } from "./utils/fit.js";
 import { guidePose } from "./client/guide-pose.js";
 import { captureOverride, protectWindow } from "./capture-policy.js";
@@ -130,15 +131,17 @@ export function createHeadGuide( { dir, prompter, getSettings, saveSettings, sav
 		}
 		if ( !controls ) {
 			const area = screen.getDisplayMatching( prompter.getBounds() ).workArea;
-			const saved = getSettings().headGuideControlsBounds;
+			const saved = getSettings().utilityWindowBounds?.guideAdjustments ?? getSettings().headGuideControlsBounds;
 			const toolbarBottom = Math.max( area.y + 60, prompter.getBounds().y + 64 );
 			const height = Math.min( 740, Math.max( 420, area.y + area.height - toolbarBottom - 12 ) );
-			const bounds = fitInside( saved ?? { x: area.x + area.width - 400, y: area.y + area.height - height - 12, width: 390, height }, area );
-			if ( bounds.y < toolbarBottom && area.height >= 500 ) {
+			const bounds = saved ? windowPlacement( saved, prompter.getBounds(), screen.getAllDisplays(), { width: 390, height: 650 } ) : fitInside( { x: area.x + area.width - 400, y: area.y + area.height - height - 12, width: 390, height }, area );
+			if ( !saved && bounds.y < toolbarBottom && area.height >= 500 ) {
 				bounds.y = toolbarBottom;
 				bounds.height = Math.min( bounds.height, area.y + area.height - bounds.y );
 			}
 			controls = new BrowserWindow( { ...bounds, minWidth: Math.min( 350, area.width ), minHeight: Math.min( 460, area.height ), show: false, minimizable: false, maximizable: false, fullscreenable: false, autoHideMenuBar: true, title: "Guide adjustments", backgroundColor: "#15222b", webPreferences: { nodeIntegration: false, contextIsolation: true, sandbox: false, preload: path.join( dir, "client", "head-guide-preload.mjs" ) } } );
+			controls.setParentWindow( prompter );
+			rememberWindow( controls, "guideAdjustments", { screen, getSettings, saveSettings } );
 			protectWindow( controls, !!getSettings().hideFromCapture );
 			controls.setAlwaysOnTop( true, "screen-saver" );
 			controls.loadFile( path.join( dir, "client", "head-guide.html" ), { query: { controls: "1" } } );

@@ -1,15 +1,15 @@
 # Sightline 1.3.0 release notes
 
-**Current candidate: RC11 · 11 November 2026 · documentation revision 27.**
+**Current candidate: RC12 · 12 November 2026 · documentation revision 28.**
 This is the cumulative 1.3.0 history. The public stable app remains 1.2.0;
 Stream Deck companion 0.2.0 is published, with 0.2.1.6 a separate candidate.
 The RC sections below record when each change arrived. Later corrections
 supersede earlier behaviour; they do not change frozen older packages.
 
-## Next candidate — source fixes awaiting the combined package
+## RC12 recording reliability
 
-12 November 2026. RC11 remains the current packaged candidate. These changes
-are prepared in source and do not describe a silently updated RC11 binary.
+12 November 2026. The combined RC12 includes these source fixes; frozen RC11
+packages are unchanged.
 
 - **Retake recognition:** exact wake-prefixed A RETAKE, VO TAKE, PTAKE and VOTE
   fallbacks recover all seven observed misses in recorded-chunk replay. Keep
@@ -26,10 +26,10 @@ are prepared in source and do not describe a silently updated RC11 binary.
 
 Source checks include both heading states, Retake ownership and paused quick
 editing, recorded-chunk replay, command negatives and capture constraints.
-The remaining [RC11 feedback batch](uat/1.3.0-RC11-FEEDBACK.md) still needs
-integration and a combined build; no release or live deployment is implied.
+The [RC11 feedback batch](uat/1.3.0-RC11-FEEDBACK.md) is integrated into RC12.
+See the [combined UAT](uat/1.3.0-RC12.md). Hardware microphone UAT remains.
 
-## Current behaviour to use in RC11
+## Current behaviour to use in RC12
 
 - **Voice stops:** RC10 makes `{stop}` a soft passage boundary. The next spoken
   opening is positioned and listening continues. Scroll still honours stops
@@ -57,6 +57,7 @@ integration and a combined build; no release or live deployment is implied.
 - [RC9 — Paragraph spacing and Voice continuity](#rc9)
 - [RC10 — Continuous Voice passages](#rc10)
 - [RC11 — Quick edits and compact slots](#rc11)
+- [RC12 — Dialogs, audio checks and recording reliability](#rc12)
 
 <a id="rc1"></a>
 
@@ -606,3 +607,54 @@ toolbars. Synthetic audio and simulated recording checks are not microphone UAT.
 The guide, F1 help, welcome tour, roadmap, promo supplement and 270-row feature
 grid describe this preview. JL copy and downloads are staged separately from
 the public stable website. Test with a backed-up copy of the current profile.
+
+<a id="rc12"></a>
+
+## RC12 — Dialogs, audio checks and recording reliability
+
+12 November 2026 · documentation revision 28.
+
+### Interface and editing
+
+- Help, Settings and all four window controls stay together on the top-right
+  first row. Narrow windows keep the slot picker; wide views retain nine slots.
+- Full-editor Close/Cancel follows the saved text, including Undo and successful
+  saves. Failed/cancelled saves retain drafts; discard and sample-copy gates remain.
+- App-owned utility windows, preparation, recording review, guide adjustments
+  and the offline guide remember separate monitor/bounds. First open follows
+  the parent; removed screens fall back to the parent's visible work area.
+  Native OS dialogs use their actual owner and platform placement. Settings
+  snapshots are replaced atomically so readers do not encounter half-written JSON.
+
+### Voice and audio
+
+- Enabled foreground Sightline dialog button labels are speakable without a
+  repeated wake word while command listening is enabled. The same handlers,
+  confirmations and permissions apply. Hidden/disabled/background/ambiguous
+  actions are excluded; this does not control arbitrary native OS prompts.
+- Voice-check sampling waits for onset, allows breaths and ends after sustained
+  silence or ten seconds. Room baseline remains quiet. No speech is incomplete.
+  Both preparation and script checks use the same local level gate.
+- Sightline joins the selectable wake words without replacing saved choices.
+  Ordinary product-name narration remains protected.
+- Speech/wake and selected-input tests explicitly request AGC off. Actual input
+  names and applied processing flags are recorded locally for support, without
+  new recordings/uploads or hardware-gain changes. The Windows level report
+  remains a physical UAT item, not an attributed driver/application fix.
+- Marked/discarded takes below 1.5 seconds retain raw readings and raw warnings
+  but say Too short to assess instead of issuing a quiet/noisy verdict. Clipping
+  monitoring remains. CSV adds assessment/raw-warning fields after older columns.
+- The Retake, heading alignment and bounded following fixes above are included.
+
+### Evidence and handover
+
+![Compact RC12 toolbar](guide/images/toolbar-compact-rc12.png)
+
+![Clean editor with Close](guide/images/editor-clean-rc12.png)
+
+Automated checks use isolated profiles and synthetic devices/OBS. Recorded
+replay evidence remains qualified; real microphone/recognition UAT is required.
+Use [RC12 UAT](uat/1.3.0-RC12.md) and the short **rc12-audio-and-dialogs** sample.
+The original promo/Frimley scripts and recordings are preserved. The promo
+supplement lists replacement UI inserts; the older video is not an RC12 recut.
+Stable app 1.2.0, live website and Marketplace publication remain separate.

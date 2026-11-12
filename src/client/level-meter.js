@@ -10,6 +10,8 @@
 // Sightline doesn't record, so these describe the mic as Sightline hears it,
 // before OBS or Riverside process it: a good guide, not the final figure.
 
+import { microphoneDiagnostics } from "./microphone-diagnostics.js";
+
 const BLOCK_SECONDS = 0.1;
 const KEEP_BLOCKS = 4 * 60 * 60 * 10; // four hours of blocks
 
@@ -130,6 +132,7 @@ export function createLevelMeter( { onLevel } = {} ) {
 
 	async function start( deviceId ) {
 		const s = await openMic( deviceId );
+		window.electron?.debugLog?.( `[microphone meter] ${ JSON.stringify( microphoneDiagnostics( s, deviceId ) ) }` );
 		const c = new AudioContext();
 		await c.audioWorklet.addModule( new URL( "./level-worklet.js", import.meta.url ) );
 		const node = new AudioWorkletNode( c, "level-blocks", {

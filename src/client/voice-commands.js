@@ -16,6 +16,7 @@ import { heardForms } from "./word-fixes.js";
 // The wake word, chosen in Settings > Voice, with what the recogniser tends
 // to hear for it.
 export const WAKE_WORDS = {
+	sightline: { label: "Sightline", heard: [ "sightline", "sight line", "site line" ] },
 	prompter: { label: "Prompter", heard: [ "prompter", "promptor", "prompters", "promoter", "popter", "pumpter", "pompter" ] },
 	computer: { label: "Computer", heard: [ "computer", "computers", "compuder" ] },
 	teleprompter: { label: "Teleprompter", heard: [ "teleprompter", "teleprompters", "teleprompt", "tele prompter" ] },
@@ -298,6 +299,7 @@ export function createCommandListener( {
 	onCommand,
 	onWake = () => {},
 	onMiss = () => {},
+	contextActions = () => null,
 	isPaused = () => false,
 	wakeWord = "prompter",
 	commandWords = [], // Settings > Voice > Your words > Command words
@@ -316,6 +318,7 @@ export function createCommandListener( {
 	let held = null; // { wake, words, at }: an acknowledged wake word
 	let atStart = true;
 	let previousInput = "", previousInputAt = -Infinity;
+	let contextBuffer = [], contextId = null;
 	const textOf = words => words.map( normalize ).filter( Boolean ).join( " " );
 	const bareCommand = ( words ) => {
 		const n = sectionNumber( words );
@@ -329,6 +332,14 @@ export function createCommandListener( {
 	};
 
 	return function take( words, final ) {
+		const context = contextActions();
+		if ( context?.id !== contextId ) { contextBuffer = []; contextId = context?.id; }
+		if ( context ) {
+			contextBuffer.push( ...words );
+			if ( !final && contextBuffer.length <= 16 ) return [];
+			words = contextBuffer; contextBuffer = [];
+			if ( context.run( textOf( words ) ) ) { pending = []; held = null; atStart = true; return []; }
+		}
 		const pass = [];
 		// Expire before accepting more words: a later "reset" must not use an
 		// old wake word. No growing whole-phrase buffer during ordinary reading.
@@ -351,6 +362,9 @@ export function createCommandListener( {
 			if ( productName && !held ) {
 				pass.push( ...pending, word ); pending = []; atStart = false;
 				continue;
+			}
+			if ( held && wakeKey === "sightline" && !held.words.length && normalize( word ) === "prompter" ) {
+				pass.push( ...held.wake, word ); held = null; atStart = false; continue;
 			}
 			if ( held ) {
 				held.words.push( word );

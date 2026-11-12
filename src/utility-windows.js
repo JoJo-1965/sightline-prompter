@@ -1,18 +1,20 @@
-import { ipcMain, screen, shell } from "electron";
+import { BrowserWindow, ipcMain, screen, shell } from "electron";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { fitInside } from "./utils/fit.js";
 import { protectWindow } from "./capture-policy.js";
+import { windowPlacement, rememberWindow } from "./utils/window-placement.js";
 
 // Only the local, same-origin panel hosts may retain an opener. Their live DOM
 // and handlers belong to the prompter; no second speech or recording engine runs.
 export function createUtilityWindows( { dir, prompter, getSettings, saveSettings } ) {
 	const host = pathToFileURL( path.join( dir, "client", "utility-window.html" ) ).href;
 	const windows = new Map();
+	const owners = new Map();
 	let dirty = false;
 	let focused = null;
-	let timer;
 	const kinds = [ "settings", "help", "voicehelp", "workflow", "obssetup", "tools", "preview" ];
+	const dialogParent = () => BrowserWindow.getFocusedWindow() ?? prompter;
 	const kindOf = ( url, frameName ) => kinds.find( kind => url === `${ host }?panel=${ kind }` && frameName === `sightline-${ kind }` );
 	const restack = () => {
 		for ( const [ kind, win ] of [ ...windows ].sort( ( [ a ], [ b ] ) => Number( a === focused ) - Number( b === focused ) ) ) {
@@ -66,20 +68,21 @@ export function createUtilityWindows( { dir, prompter, getSettings, saveSettings
 			restack();
 		},
 		dialogParent() {
-			for ( const win of windows.values() ) if ( !win.isDestroyed() && win.isFocused() ) return win;
-			return prompter;
+			return dialogParent();
 		},
 		openHandler( { url, frameName } ) {
 			const kind = kindOf( url, frameName );
 			if ( !kind ) return null;
-			const anchor = kind === "preview" && windows.get( "settings" ) && !windows.get( "settings" ).isDestroyed() ? windows.get( "settings" ).getBounds() : prompter.getBounds();
+			const owner = kind === "preview" && windows.get( "settings" ) && !windows.get( "settings" ).isDestroyed() ? windows.get( "settings" ) : dialogParent();
+			owners.set( kind, owner );
+			const anchor = owner.getBounds();
 			const area = screen.getDisplayMatching( anchor ).workArea;
 			const size = kind === "preview" ? { width: 360, height: 560 } : kind === "tools" ? { width: 560, height: 440 } : kind === "settings" ? { width: 1080, height: 730 } : [ "workflow", "obssetup" ].includes( kind ) ? { width: 676, height: 599 } : kind === "voicehelp" ? { width: 776, height: 639 } : { width: 996, height: 679 };
 			const candidate = getSettings().utilityWindowBounds?.[kind];
 			const minimum = kind === "preview" ? { width: 300, height: 360 } : kind === "settings" ? { width: 576, height: 539 } : { width: 380, height: 420 };
 			const saved = candidate && [ "x", "y", "width", "height" ].every( key => Number.isFinite( candidate[key] ) ) && candidate.width >= minimum.width && candidate.height >= minimum.height ? candidate : null;
 			const placement = kind === "preview" ? { x: anchor.x + anchor.width + 12 + size.width <= area.x + area.width ? anchor.x + anchor.width + 12 : anchor.x - size.width - 12, y: anchor.y } : { x: Math.round( area.x + ( area.width - size.width ) / 2 ), y: Math.round( area.y + ( area.height - size.height ) / 2 ) };
-			const bounds = fitInside( saved ?? { ...size, ...placement }, area );
+			const bounds = saved ? windowPlacement( saved, anchor, screen.getAllDisplays(), size ) : fitInside( { ...size, ...placement }, area );
 			return { action: "allow", overrideBrowserWindowOptions: { ...bounds, show: false, frame: true, transparent: false, backgroundColor: "#2a2d34", resizable: true, minimizable: false, maximizable: false, fullscreenable: false, minWidth: Math.min( minimum.width, area.width ), minHeight: Math.min( minimum.height, area.height ), autoHideMenuBar: true, webPreferences: { nodeIntegration: false, contextIsolation: true, sandbox: false, preload: path.join( dir, "client", "utility-window-preload.mjs" ) } } };
 		},
 		didCreate( win, details ) {
@@ -88,7 +91,8 @@ export function createUtilityWindows( { dir, prompter, getSettings, saveSettings
 			windows.set( kind, win );
 			// A native owner keeps the panel above its prompter even when Windows
 			// promotes the fullscreen owner after an asynchronous window.open.
-			win.setParentWindow( prompter );
+			win.setParentWindow( owners.get( kind ) ?? prompter );
+			rememberWindow( win, kind, { screen, getSettings, saveSettings } );
 			protectWindow( win, !!getSettings().hideFromCapture );
 			win.setAlwaysOnTop( true, "screen-saver" );
 			win.on( "focus", () => {
@@ -98,15 +102,6 @@ export function createUtilityWindows( { dir, prompter, getSettings, saveSettings
 				event.preventDefault();
 				closeRequest( kind );
 			} );
-			const remember = () => {
-				clearTimeout( timer );
-				timer = setTimeout( () => {
-					const bounds = Object.fromEntries( [ ...windows ].filter( ( [ , window ] ) => !window.isDestroyed() ).map( ( [ name, window ] ) => [ name, window.getBounds() ] ) );
-					saveSettings( { utilityWindowBounds: { ...getSettings().utilityWindowBounds, ...bounds } } );
-				}, 200 );
-			};
-			win.on( "move", remember );
-			win.on( "resize", remember );
 			let loaded = false;
 			win.webContents.on( "did-navigate", ( _event, url ) => {
 				if ( url === details.url ) loaded = true;
@@ -120,7 +115,6 @@ export function createUtilityWindows( { dir, prompter, getSettings, saveSettings
 			} );
 		},
 		dispose() {
-			clearTimeout( timer );
 			ipcMain.removeListener( "utilityPanel", action );
 			prompter.removeListener( "focus", onFocus );
 			screen.removeListener( "display-removed", refit );

@@ -50,7 +50,9 @@ export function helpTabs( settings, notes = false ) {
 		[ "HUD cues", "Gold delivery cues and pointing targets follow the script. Side targets bisect the head-edge/screen-edge gaps, below the saved eyes and behind your words" ],
 		[ "HUD visibility", "Reading > Text and directions > Inline directions; optional HUD cues on/off in pad, phone or mappings. Companion 0.2.1.6 adds Display > HUD cues" ],
 		[ "Spoken heading lead-in", "In Voice mode enable Reading > Mode and pace > Start from section heading. Warm up, read the title, settle and deliver the body; the editor trims the heading from the recording" ],
-		[ "Sound checks", "Review level and noise together. Continue anyway accepts a warning and logs it; adding gain also raises background noise" ]
+		[ "Sound checks", "Room baseline stays quiet; voice sampling waits for speech, ends on silence or at ten seconds. No speech is incomplete. Gain is unchanged" ],
+		[ "Dialog voice actions", "With listening enabled, say an enabled foreground button label: Continue, Check again, Close or its next-step words. Hidden/disabled/background actions and native OS prompts are excluded" ],
+		[ "Wake word", "Voice settings offers Sightline, Prompter, Computer, Teleprompter or Director; your current choice is retained" ]
 	] ) );
 	recording.push( section( "Rehearsal review", [
 		[ "Tools > Script & rehearsal review", "Review finished takes: pace, sentence alignment and logged rereads. Unmatched text is not proof of a missed line" ],

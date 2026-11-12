@@ -145,6 +145,9 @@ export function createTakeLog( { clock = () => Date.now(), sentences = () => [],
 			// noisy). Null when it wasn't measured.
 			loudness: measureLoudness( done.openedAt, end )
 		};
+		if ( take.loudness && seconds < MIN_TAKE_SECONDS ) {
+			take.loudness = { ...take.loudness, assessment: "too-short", assessmentText: "Too short to assess", rawWarning: take.loudness.warning, warning: take.loudness.warning === "clipping" ? "clipping" : null };
+		}
 		log.takes.push( take );
 		event( "take-end", { section: take.section, take: take.take, status } );
 		version++;
@@ -543,7 +546,9 @@ export function takeLogCsv( data ) {
 			"peak_dbfs",
 			"noise_dbfs",
 			"above_noise_db",
-			"level_warning"
+			"level_warning",
+			"level_assessment",
+			"raw_level_warning"
 		]
 	];
 	for ( const t of data.takes ) {
@@ -573,7 +578,9 @@ export function takeLogCsv( data ) {
 			t.loudness?.peak ?? "",
 			t.loudness?.noise ?? "",
 			t.loudness?.aboveNoise ?? "",
-			t.loudness?.warning ?? ""
+			t.loudness?.warning ?? "",
+			t.loudness?.assessmentText ?? "",
+			t.loudness?.rawWarning ?? ""
 		] );
 	}
 	return rows.map( r => r.map( csvCell ).join( "," ) ).join( "\r\n" ) + "\r\n";

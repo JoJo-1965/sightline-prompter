@@ -56,6 +56,13 @@ try {
 	assert.equal( await native.evaluate( "testObsCalls.length" ), 0, "Disabled integration does not receive a recording request" );
 	assert.match( await panel.evaluate( 'document.getElementById("voice-feedback").textContent' ), /unavailable/ );
 	await configure( true );
+	// Use actual recogniser callbacks against an active popup's button handlers.
+	await panel.evaluate('globalThis.contextClicks=0;globalThis.contextButton=document.createElement("button");contextButton.textContent="Check again";contextButton.id="context-uat";contextButton.onclick=()=>contextClicks++;document.body.appendChild(contextButton)');
+	await heard("CHECK AGAIN");assert.equal(await panel.evaluate('contextClicks'),1,'Visible dialog button text is speakable without wake');
+	await panel.evaluate('contextButton.disabled=true');await heard("CHECK AGAIN");assert.equal(await panel.evaluate('contextClicks'),1,'Disabled action is blocked');
+	await panel.evaluate('contextButton.disabled=false;contextButton.hidden=true');await heard("CHECK AGAIN");assert.equal(await panel.evaluate('contextClicks'),1,'Hidden action is blocked');
+	await panel.evaluate('contextButton.hidden=false;globalThis.contextDuplicate=contextButton.cloneNode(true);document.body.appendChild(contextDuplicate)');await heard("CHECK AGAIN");assert.equal(await panel.evaluate('contextClicks'),1,'Ambiguous labels do not click');
+	await panel.evaluate('contextDuplicate.remove();contextButton.remove()');
 	await heard( "PROMPTER PRACTICE" );
 	assert.equal( await main.evaluate( 'document.getElementById("cb-play").getAttribute("aria-pressed")' ), "true" );
 	assert.equal( await native.evaluate( "testObsCalls.length" ), 0, "Practice bypasses linked recording and a startup record directive" );

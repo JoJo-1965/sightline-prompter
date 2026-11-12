@@ -75,10 +75,27 @@ try {
  // Window buttons stay at the top right, and narrow toolbars use one slot picker.
  for(const [width,height] of [[1920,900],[1024,600],[768,450],[560,500]]){
   await native.evaluate('quickElectron.BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().includes("teleprompter.html")).setSize('+width+','+height+')');await pause(200);await main.call('Input.dispatchMouseEvent',{type:'mouseMoved',x:20,y:15});await main.evaluate('document.body.classList.remove("controls-hidden");document.getElementById("toast")?.classList.remove("visible")');await pause(350);
-  const layout=await main.evaluate('(()=>{const ids=["cb-min","cb-max","cb-full","cb-close"],r=id=>document.getElementById(id).getBoundingClientRect(),b=r("control-bar");return {size:[innerWidth,innerHeight],right:innerWidth-r("cb-close").right,first:ids.every(id=>Math.abs(r(id).top-b.top-5)<2),picker:!!document.getElementById("cb-slot-picker").getClientRects().length,numbers:[...document.querySelectorAll("#cb-slots .cb-slot")].filter(e=>e.getClientRects().length).length,clipped:[...document.querySelectorAll("#control-bar button,#control-bar select,#control-bar input")].filter(e=>e.getClientRects().length).filter(e=>{const r=e.getBoundingClientRect();return r.right>innerWidth+.5||r.left<0||r.bottom>b.bottom+.5}).map(e=>e.id)};})()');
+  const layout=await main.evaluate('(()=>{const ids=["cb-help","cb-settings","cb-min","cb-max","cb-full","cb-close"],r=id=>document.getElementById(id).getBoundingClientRect(),b=r("control-bar");return {size:[innerWidth,innerHeight],right:innerWidth-r("cb-close").right,first:ids.every(id=>Math.abs((r(id).top+r(id).height/2)-(r("cb-utilities").top+r("cb-utilities").height/2))<2 && r(id).top < b.top+20),picker:!!document.getElementById("cb-slot-picker").getClientRects().length,numbers:[...document.querySelectorAll("#cb-slots .cb-slot")].filter(e=>e.getClientRects().length).length,clipped:[...document.querySelectorAll("#control-bar button,#control-bar select,#control-bar input")].filter(e=>e.getClientRects().length).filter(e=>{const r=e.getBoundingClientRect();return r.right>innerWidth+.5||r.left<0||r.bottom>b.bottom+.5}).map(e=>e.id)};})()');
   assert.equal(layout.first,true,'Window controls stay on the first line');assert.ok(layout.right>=6&&layout.right<=10,'Window controls stay at the right edge');assert.deepEqual(layout.clipped,[]);assert.equal(layout.picker,layout.size[0]<=1100);assert.equal(layout.numbers,layout.size[0]<=1100?0:9);
   const shot=await main.call('Page.captureScreenshot',{format:'png'});await fs.writeFile(path.join(artifacts,`toolbar-${width}.png`),Buffer.from(shot.data,'base64'));
  }
+ // Full editor clean/dirty/Undo/save lifecycle, using real CodeMirror input.
+ await main.evaluate('document.getElementById("cb-edit").click()');await pause(350);
+ assert.equal(await main.evaluate('document.getElementById("btn-cancel").textContent'),'Close');
+ await fs.writeFile(path.join(artifacts,'editor-clean.png'),Buffer.from((await main.call('Page.captureScreenshot',{format:'png'})).data,'base64'));
+ await main.evaluate('document.querySelector(".cm-content").focus()');
+ await main.call('Input.insertText',{text:'A small correction. '});await pause(150);
+ assert.equal(await main.evaluate('document.getElementById("btn-cancel").textContent'),'Cancel');
+ await fs.writeFile(path.join(artifacts,'editor-dirty.png'),Buffer.from((await main.call('Page.captureScreenshot',{format:'png'})).data,'base64'));
+ await main.call('Input.dispatchKeyEvent',{type:'keyDown',key:'z',code:'KeyZ',modifiers:2,windowsVirtualKeyCode:90});
+ await main.call('Input.dispatchKeyEvent',{type:'keyUp',key:'z',code:'KeyZ',modifiers:2,windowsVirtualKeyCode:90});await pause(150);
+ assert.equal(await main.evaluate('document.getElementById("btn-cancel").textContent'),'Close','Undo returns to the saved baseline');
+ await main.call('Input.insertText',{text:'An intentional edit. '});await pause(150);
+ await native.evaluate('quickElectron.BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().includes("teleprompter.html")).webContents.send("saveResult",false)');await pause(100);
+ assert.equal(await main.evaluate('document.getElementById("btn-cancel").textContent'),'Cancel','Failed save retains the draft');
+ await main.evaluate('document.getElementById("btn-save").click()');await pause(350);
+ assert.equal(await main.evaluate('document.getElementById("btn-cancel").textContent'),'Close','Successful save updates the baseline');
+ await main.evaluate('document.getElementById("btn-cancel").click()');await pause(300);
  // Native backend also rejects edits while scrolling.
  await main.evaluate('document.getElementById("cb-play").click()');await pause(350);const denied=await main.evaluate('window.electron.beginQuickEdit()');assert.equal(denied.ok,false);await main.evaluate('document.getElementById("cb-play").click()');await pause(250);
  await main.evaluate('window.electron.openSample("welcome.md")');for(let i=0;i<100&&!await main.evaluate('document.getElementById("md").textContent.includes("Welcome to Sightline")');i++)await pause(50);const sample=await main.evaluate('window.electron.beginQuickEdit()');assert.equal(sample.ok,false);assert.match(sample.error,/read-only/);

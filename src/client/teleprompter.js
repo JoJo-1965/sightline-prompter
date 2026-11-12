@@ -1,3 +1,5 @@
+import { createVoiceSample } from "./voice-sample.js";
+import { visibleActions, matchingAction } from "./context-actions.js";
 import { roundControlNumber } from "./numeric-controls.js";
 import {
 	startAutoScroll,
@@ -644,8 +646,10 @@ function scrollPreviewToCursorLine() {
 	}
 }
 
+let savedEditorContent = "", pendingEditorSave = null;
 function setDirty( dirty ) {
 	isDirty = dirty;
+	if ( btnCancel ) btnCancel.textContent = editorReadOnly ? "Back to prompter" : dirty ? "Cancel" : "Close";
 	window.electron.setEditorDirty( dirty );
 	if ( toolbarDirty ) {
 		toolbarDirty.classList.toggle( "hidden", !dirty );
@@ -686,6 +690,7 @@ function enterEditMode() {
 
 function loadEditorContent( content, filePath, access = {} ) {
 	const rawContent = content ?? "";
+	savedEditorContent = rawContent.replace( /\r\n/g, "\n" );
 	editorReadOnly = access.readOnly === true;
 	btnSave.disabled = editorReadOnly;
 	btnSaveAs.textContent = editorReadOnly ? "Save a copy…" : "Save As";
@@ -707,9 +712,7 @@ function loadEditorContent( content, filePath, access = {} ) {
 	} else {
 		editorView = window.EditorModule.createEditor( editorDiv, rawContent, () => {
 			scriptReview?.changed();
-			if ( !isDirty && !isLoadingContent ) {
-				setDirty( true );
-			}
+			if ( !isLoadingContent ) setDirty( window.EditorModule.getEditorContent( editorView ) !== savedEditorContent );
 		}, editorReadOnly );
 	}
 	isLoadingContent = false;
@@ -764,6 +767,7 @@ function saveEditorContent() {
 	if ( !editorView || editorReadOnly ) return;
 	isSaving = true;
 	const content = window.EditorModule.getEditorContent( editorView );
+	pendingEditorSave = content;
 	if ( isNewFile ) {
 		window.electron.saveFileAs( content );
 	} else {
@@ -775,6 +779,7 @@ function saveEditorContentAs() {
 	if ( !editorView ) return;
 	isSaving = true;
 	const content = window.EditorModule.getEditorContent( editorView );
+	pendingEditorSave = content;
 	window.electron.saveFileAs( content );
 }
 
@@ -790,7 +795,8 @@ window.electron.onSaveResult( ( success, filePath ) => {
 		btnSaveAs.textContent = "Save As";
 		btnCancel.textContent = "Cancel";
 		if ( editorView ) window.EditorModule.setEditorReadOnly( editorView, false );
-		setDirty( false );
+		savedEditorContent = pendingEditorSave ?? savedEditorContent;
+		setDirty( !!editorView && window.EditorModule.getEditorContent( editorView ) !== savedEditorContent );
 		isNewFile = false;
 		if ( filePath && toolbarFilename ) {
 			toolbarFilename.textContent = filePath.split( "/" ).pop();
@@ -798,7 +804,7 @@ window.electron.onSaveResult( ( success, filePath ) => {
 	}
 	if ( pendingSaveAndClose ) {
 		pendingSaveAndClose = false;
-		window.electron.saveAndClose();
+		if ( success && !isDirty ) window.electron.saveAndClose();
 	}
 } );
 
@@ -1322,7 +1328,27 @@ async function runScriptCommand( command ) {
 // (Space, "Prompter, go") closes it. Checks advise on input level; capture
 // requests disable automatic gain control and do not set a Windows mic level.
 const VOICE_CHECK_LINE = "Testing, one, two, three. This is my normal speaking voice, at the level I'll use for the recording.";
-const CHECK_SECONDS = { room: 5, voice: 7 };
+const CHECK_SECONDS = { room: 5 };
+function dialogVoiceActions() {
+	if ( settings.voiceCommands === "off" ) return null;
+	const acknowledged = text => voiceFeedback.show( `Heard “${ text }”`, "Dialog action", "listening" );
+	if ( preparationStatus?.focused ) return { id: "preparation", run: phrase => {
+		const match = matchingAction( preparationStatus.voiceActions ?? [], phrase );
+		if ( !match ) return [ "continue", "continue anyway", "check again", "close", "cancel" ].includes( phrase );
+		window.electron.preRecordVoiceAction( match.id ).then( ok => { if ( ok ) acknowledged( match.label ); } ); return true;
+	} };
+	const doc = panelDocuments().find( item => item.hasFocus() );
+	if ( !doc ) return null;
+	const root = doc !== document ? doc.body : !checkCard.classList.contains( "hidden" ) ? checkCard : [ ...document.querySelectorAll( '.modal:not(.hidden),[role="dialog"]:not(.hidden)' ) ].find( item => item.getClientRects().length );
+	if ( !root ) return null;
+	return { id: root, run: phrase => {
+		const button = matchingAction( visibleActions( root ), phrase );
+		if ( !button ) return [ "continue", "continue anyway", "check again", "close", "cancel" ].includes( phrase ) || !!matchingAction( [ ...root.querySelectorAll( "button" ) ], phrase );
+		acknowledged( button.textContent.trim() ); button.click(); return true;
+	} };
+}
+window.electron.onMicrophoneDiagnostic?.( value => window.electron.debugLog( `[microphone] ${ JSON.stringify( value ) }` ) );
+let lastRoomNoise = null;
 let scriptCheck = null; // { kind, pause, timer, done }
 const checkCard = document.createElement( "div" );
 checkCard.id = "soundcheck-card";
@@ -1349,8 +1375,9 @@ function drawCheckCard( { title, line = "", count = null, result = null, done = 
 	if ( done ) {
 		const proceed = add( "button", "sc-continue", result && ![ "good", "quiet", "ok" ].includes( result.verdict ) ? "Continue anyway" : "Continue" );
 		proceed.type = "button";
+		proceed.disabled = !scriptCheck?.measured;
 		proceed.addEventListener( "click", () => {
-			if ( !scriptCheck?.done ) return;
+			if ( !scriptCheck?.done || !scriptCheck.measured ) return;
 			recording.soundCheck( { ...scriptCheck.measured, kind: scriptCheck.kind, verdict: result?.verdict, advice: result?.advice ?? "", accepted: true }, sectionIndexAt( readingLineY() ) );
 			if ( autoScrollActive ) carryOnFromVoiceCheck();
 			else if ( cuePaused ) resumeFromCue();
@@ -1379,23 +1406,32 @@ async function startScriptSoundCheck( kind, pause = null ) {
 	// A moment for the microphone to open, then count.
 	await new Promise( r => setTimeout( r, 700 ) );
 	if ( scriptCheck !== run ) return;
-	const from = Date.now();
-	let left = CHECK_SECONDS[kind];
-	drawCheckCard( { title, line, count: left } );
-	await new Promise( ( resolve ) => {
+	let from = Date.now();
+	if ( kind === "voice" ) {
+		run.gate = createVoiceSample( { noise: lastRoomNoise ?? -65, armAt: Date.now() + 800 } );
+		drawCheckCard( { title, line, count: "Speak to begin" } );
+		await new Promise( resolve => { run.resolve = resolve; } );
+		if ( scriptCheck !== run ) return;
+		if ( run.sample?.phase !== "done" ) {
+			run.done = true;
+			drawCheckCard( { title: "Voice check incomplete", result: { verdict: "warn", text: "No voice sample captured", advice: "No clear voice sample. Check the selected microphone, then choose Check again." }, done: true } );
+			syncLevelMeter( false );
+			return;
+		}
+		from = run.sample.from;
+	} else await new Promise( resolve => {
+		let left = CHECK_SECONDS.room;
+		run.resolve = resolve;
 		run.timer = setInterval( () => {
 			left--;
-			if ( scriptCheck !== run || left <= 0 ) {
-				clearInterval( run.timer );
-				resolve();
-				return;
-			}
+			if ( scriptCheck !== run || left <= 0 ) { clearInterval( run.timer ); resolve(); return; }
 			const count = checkCard.querySelector( ".sc-count" );
 			if ( count ) count.textContent = String( left );
 		}, 1000 );
 	} );
 	if ( scriptCheck !== run ) return;
-	const measured = levelMeter.measure( from, Date.now() );
+	const measured = levelMeter.measure( from, kind === "voice" ? run.sample.to : Date.now() );
+	if ( kind === "room" ) lastRoomNoise = measured?.noise ?? measured?.lufs ?? -65;
 	run.measured = measured;
 	const result = soundCheckVerdict( kind, measured );
 	recording.soundCheck( {
@@ -1432,6 +1468,7 @@ function openingSoundCheck() {
 // Voice scrolling, carrying on from a sound check: the next check, or back to
 // following the script.
 async function carryOnFromVoiceCheck() {
+	if ( scriptCheck && ( !scriptCheck.done || !scriptCheck.measured ) ) return showToast( "Complete the audio check or choose Check again first." );
 	const next = nextSoundCheck( scriptCheck?.pause );
 	if ( next ) {
 		pauseVoiceAt( next );
@@ -1448,6 +1485,7 @@ async function carryOnFromVoiceCheck() {
 function endScriptSoundCheck() {
 	if ( !scriptCheck ) return;
 	clearInterval( scriptCheck.timer );
+	scriptCheck.resolve?.();
 	scriptCheck = null;
 	checkCard.classList.add( "hidden" );
 	syncLevelMeter( isScrolling() || cuePaused || pointsRunning );
@@ -1759,6 +1797,7 @@ async function beginVoice( engine, deepgramKey ) {
 			onCommand: settings.voiceCommands === "off" ? null : runVoiceCommand,
 			onWake: voiceWake,
 			onMiss: voiceMiss,
+			contextActions: dialogVoiceActions,
 			wakeWord: settings.wakeWord ?? "prompter"
 		} );
 		autoScrollActive = true;
@@ -1934,7 +1973,8 @@ function syncCommandListening() {
 					onCommand: runVoiceCommand,
 					onWake: voiceWake,
 					onMiss: voiceMiss,
-					wakeWord: settings.wakeWord ?? "prompter",
+					contextActions: dialogVoiceActions,
+				wakeWord: settings.wakeWord ?? "prompter",
 					commandWords: settings.commandWords ?? [],
 					soundAlike: settings.soundAlike !== false,
 					isPaused: () => cuePaused,
@@ -2707,7 +2747,13 @@ function applySettings( next ) {
 	if ( autoScrollActive && !voiceInputEnabled( settings ) ) stopAutoScrollSession();
 	if ( voiceOffer ) voiceOffer.classList.toggle( "hidden", settings.speechEnabled === false );
 	if ( prev.voiceCommands !== settings.voiceCommands ) commandFailure = false;
-	autoScrollHandle?.setCommandOptions( { onCommand: settings.voiceCommands === "off" ? null : runVoiceCommand, wakeWord: settings.wakeWord ?? "prompter", commandWords: settings.commandWords ?? [], soundAlike: settings.soundAlike !== false } );
+	autoScrollHandle?.setCommandOptions( {
+		onCommand: settings.voiceCommands === "off" ? null : runVoiceCommand,
+		contextActions: dialogVoiceActions,
+		wakeWord: settings.wakeWord ?? "prompter",
+		commandWords: settings.commandWords ?? [],
+		soundAlike: settings.soundAlike !== false
+	} );
 	const preferences = settingsDraft?.value ?? settings;
 	syncPadSettings( preferences.padLayout );
 	mappingSettings?.sync( preferences.inputMappings );
@@ -6060,6 +6106,13 @@ const meterPercent = db => Math.min( 100, Math.max( 0, ( ( db + 60 ) / 60 ) * 10
 
 function showLevel( { level, peak = null, shortTerm = null, room = null, preparation = false } ) {
 	if ( preparationStatus.meter.active && !preparation ) return;
+	if ( scriptCheck?.gate && !scriptCheck.done ) {
+		const run = scriptCheck;
+		run.sample = run.gate.sample( Date.now(), level );
+		const count = checkCard?.querySelector( ".sc-count" );
+		if ( count ) count.textContent = run.sample.phase === "waiting" ? "Speak to begin" : String( run.sample.remaining );
+		if ( [ "done", "no-speech" ].includes( run.sample.phase ) ) run.resolve?.();
+	}
 	// The control window shows the meter too, even while a take runs.
 	if ( controlOpen ) window.electron.sendPreviewLevel( { level, peak, shortTerm, room } );
 	if ( meterEl.classList.contains( "hidden" ) ) return;
@@ -6396,7 +6449,7 @@ function showTakeSummary() {
 	if ( levelsLine ) {
 		const measured = logged.takes.filter( t => t.loudness ).slice( -6 );
 		levelsLine.textContent = measured.length
-			? `Mic levels: ${ measured.map( t => `S${ t.section } take ${ t.take } ${ t.loudness.lufs ?? "–" } LUFS${ t.loudness.warning ? ` (${ t.loudness.warning })` : "" }` ).join( " · " ) }`
+			? `Mic levels: ${ measured.map( t => `S${ t.section } take ${ t.take } ${ t.loudness.lufs ?? "–" } LUFS${ t.loudness.assessmentText ? ` (${ t.loudness.assessmentText })` : t.loudness.warning ? ` (${ t.loudness.warning })` : "" }` ).join( " · " ) }`
 			: "";
 	}
 	const full = [ ...takeLog.values() ].some( r => !r.partial );

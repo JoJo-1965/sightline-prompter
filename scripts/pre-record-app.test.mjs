@@ -11,6 +11,13 @@ const profile = await fs.mkdtemp( path.join( os.tmpdir(), "sightline-settings-re
 const artifacts = path.resolve( process.env.SIGHTLINE_TEST_ARTIFACTS ?? path.join( profile, "screenshots" ) ); await fs.mkdir( artifacts, { recursive: true } );
 await fs.writeFile( path.join( profile, "script.md" ), '# Settings preview\n\n## Welcome\n\n[smile] Read naturally, at your own pace.\n\n<!-- Preparation notes do not count as speech. -->\n\n' + 'This is a spoken script for checking the reading appearance.\n\n'.repeat( 30 ) );
 await fs.writeFile( path.join( profile, "app-state.json" ), JSON.stringify( { width: 1100, height: 760, fontSize: 3, opacity: 1, recentFiles: [ path.join( profile, "script.md" ) ], settings: { interfaceSettingsVersion: 1, readingAppearanceVersion: 1, speechEnabled: false, microphoneEnabled: false, padEnabled: false, gamepadEnabled: false, keyboardMappingsEnabled: false, voiceCommands: "off", scrollMode: "steady", scratchAudio: false, takeLoudness: "off", countdown: 0, slate: "off", debugMode: true, checkUpdates: false, obsEnabled: false, phoneRemote: false, remoteControl: false, streamDeck: false, hideFromCapture: false } } ) );
+// Quiet room, a sustained synthetic voice-level burst, then silence. A
+// constant tone is not a valid onset/end fixture for an adaptive room baseline.
+const audioFixture = path.join(profile, "microphone.wav");
+const rate=48000, count=rate*10, wav=Buffer.alloc(44+count*2);
+wav.write("RIFF");wav.writeUInt32LE(wav.length-8,4);wav.write("WAVEfmt ",8);wav.writeUInt32LE(16,16);wav.writeUInt16LE(1,20);wav.writeUInt16LE(1,22);wav.writeUInt32LE(rate,24);wav.writeUInt32LE(rate*2,28);wav.writeUInt16LE(2,32);wav.writeUInt16LE(16,34);wav.write("data",36);wav.writeUInt32LE(count*2,40);
+for(let i=0;i<count;i++){const t=i/rate, amplitude=t>=2&&t<5?.08:.0001;wav.writeInt16LE(Math.round(Math.sin(i*2*Math.PI*220/rate)*amplitude*32767),44+i*2)}
+await fs.writeFile(audioFixture,wav);
 const env = { ...process.env }; delete env.ELECTRON_RUN_AS_NODE;
 let obsMock = null, obsImage = "", obsRequests = [];
 if ( process.env.SIGHTLINE_TEST_OBS === "1" ) {
@@ -18,7 +25,7 @@ if ( process.env.SIGHTLINE_TEST_OBS === "1" ) {
  obsMock.on("connection",socket=>{socket.send(JSON.stringify({op:0,d:{rpcVersion:1}}));socket.on("message",raw=>{const {op,d}=JSON.parse(raw);if(op===1)return socket.send(JSON.stringify({op:2,d:{negotiatedRpcVersion:1}}));obsRequests.push(d);let responseData={};if(d.requestType==="GetVersion")responseData={availableRequests:["GetSourceScreenshot","GetSceneList"]};if(d.requestType==="GetRecordStatus")responseData={outputActive:false,outputPaused:false};if(d.requestType==="GetSceneList")responseData={scenes:[{sceneName:"Camera clean"},{sceneName:"Slides"}],currentProgramSceneName:"Camera clean"};if(d.requestType==="GetSourceScreenshot")responseData={imageData:obsImage};socket.send(JSON.stringify({op:7,d:{requestId:d.requestId,requestType:d.requestType,requestStatus:{result:true},responseData}}));});});
  const seed=JSON.parse(await fs.readFile(path.join(profile,"app-state.json"),"utf8")); Object.assign(seed.settings,{obsEnabled:true,obsHost:"127.0.0.1",obsPort:obsMock.address().port,obsControls:false,obsPassword:""});await fs.writeFile(path.join(profile,"app-state.json"),JSON.stringify(seed));
 }
-const child = spawn( process.env.SIGHTLINE_TEST_EXE ?? require( "electron" ), [ ...( process.env.SIGHTLINE_TEST_EXE ? [] : [ "." ] ), "--inspect=0", `--user-data-dir=${ profile }`, `--remote-debugging-port=${ port }`, "--disable-renderer-backgrounding", "--use-fake-ui-for-media-stream", "--use-file-for-fake-audio-capture=D:/Sightline/Dev/Testing/Pre-Record-UAT/microphone.wav", "--use-fake-device-for-media-stream", "--use-file-for-fake-video-capture=D:/Sightline/Dev/Testing/Pre-Record-UAT/camera.y4m" ], { cwd: root, env, windowsHide: true, stdio: [ "ignore", "pipe", "pipe" ] } );
+const child = spawn( process.env.SIGHTLINE_TEST_EXE ?? require( "electron" ), [ ...( process.env.SIGHTLINE_TEST_EXE ? [] : [ "." ] ), "--inspect=0", `--user-data-dir=${ profile }`, `--remote-debugging-port=${ port }`, "--disable-renderer-backgrounding", "--use-fake-ui-for-media-stream", `--use-file-for-fake-audio-capture=${audioFixture}`, "--use-fake-device-for-media-stream", "--use-file-for-fake-video-capture=D:/Sightline/Dev/Testing/Pre-Record-UAT/camera.y4m" ], { cwd: root, env, windowsHide: true, stdio: [ "ignore", "pipe", "pipe" ] } );
 let stderr = ""; child.stderr.on( "data", data => stderr += data ); child.stdout.resume();
 const pause = ms => new Promise( resolve => setTimeout( resolve, ms ) );
 const sockets = [], errors = [];
@@ -200,7 +207,7 @@ try {
  await pause(400);
  assert.equal(await main.evaluate('!document.getElementById("level-meter").classList.contains("hidden")'),true,"Room/voice preparation automatically shows the prompter meter even when its manual meter is off");
  assert.match(await main.evaluate('document.querySelector("#level-meter .lm-text").textContent'),/Room noise check|Voice check/);
- await waitFor('!!document.getElementById("accept-audio-warning")||!document.getElementById("accept-audio").disabled',"Actual microphone check",10000);
+ await waitFor('!!document.getElementById("accept-audio-warning")||!document.getElementById("accept-audio").disabled',"Actual microphone check",16000);
  if(await page.evaluate('!!document.getElementById("accept-audio-warning")'))await click("accept-audio-warning");
  assert.equal(await main.evaluate('document.getElementById("level-meter").classList.contains("hidden")'),true,"The automatic meter returns to the prior hidden state after measurement");
  await click("accept-audio");await click("record-test");await pause(1600);await click("stop-test");

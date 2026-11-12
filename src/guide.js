@@ -2,7 +2,8 @@
 // are the same Markdown files that read on GitHub, turned into HTML here so
 // the guide works offline and always matches the installed version.
 
-import { BrowserWindow, ipcMain, shell } from "electron";
+import { BrowserWindow, ipcMain, shell, screen } from "electron";
+import { windowPlacement, rememberWindow } from "./utils/window-placement.js";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import fs from "node:fs/promises";
@@ -10,7 +11,7 @@ import showdown from "showdown";
 
 const PAGE_NAME = /^(?:(?:\.\.\/)?[\w-][\w.-]*\.md|\.\.\/\.\.\/(?:ROADMAP|readme)\.md)$/;
 
-export function createGuide( { dir } ) {
+export function createGuide( { dir, dialogParent, getSettings, saveSettings } ) {
 	const guideDir = path.join( dir, "..", "docs", "guide" );
 	const converter = new showdown.Converter( {
 		tables: true,
@@ -40,9 +41,10 @@ export function createGuide( { dir } ) {
 			guide.focus();
 			return;
 		}
+		const parent = dialogParent();
+		const bounds = windowPlacement( getSettings().utilityWindowBounds?.guide, parent.getBounds(), screen.getAllDisplays(), { width: 1000, height: 780 } );
 		guide = new BrowserWindow( {
-			width: 1000,
-			height: 780,
+			...bounds, parent,
 			minWidth: 560,
 			minHeight: 400,
 			title: "Sightline Prompter user guide",
@@ -54,6 +56,7 @@ export function createGuide( { dir } ) {
 				preload: path.join( dir, "client", "guide-preload.mjs" )
 			}
 		} );
+		rememberWindow( guide, "guide", { screen, getSettings, saveSettings } );
 		// No app menu here: its shortcuts act on the prompter (Ctrl+W would close it).
 		guide.removeMenu();
 		guide.loadFile( path.join( dir, "client", "guide.html" ) );

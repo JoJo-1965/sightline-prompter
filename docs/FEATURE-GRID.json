@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "basis": "Sightline 1.3.0 RC11 preview, documentation revision 27, 11 November 2026",
-  "date": "11 November 2026",
+  "basis": "Sightline 1.3.0 RC12 preview, documentation revision 28, 12 November 2026",
+  "date": "12 November 2026",
   "sourceBuild": "d8ec45f",
-  "buildVersion": "1.3.0-rc.11",
+  "buildVersion": "1.3.0-rc.12",
   "publicationStatus": "preview",
   "appRelease": "1.2.0",
   "pluginRelease": "0.2.1.6",
   "sourceUrl": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/pointing-production-cues/docs/FEATURE-GRID.md",
-  "sourceSha256": "561411f20f0b5963e4686ec8c26ee432bb64d84c6828fdef937bdf9be2ac2265",
+  "sourceSha256": "22103cbad613d1e73db36983493a82525549b2971ded7897aed834323925f8b6",
   "support": [
     "Included",
     "Optional",
@@ -231,7 +231,7 @@
           "name": "Microphone choice",
           "support": "Included",
           "options": "Select the input used for voice following and command recognition.",
-          "limits": "Device availability, drivers and operating-system permissions apply."
+          "limits": "Device availability, drivers and operating-system permissions apply. AGC is requested off; actual input/processing flags enter the local support log, without hardware-gain changes."
         },
         {
           "name": "Listening modes",
@@ -242,7 +242,7 @@
         {
           "name": "Wake word",
           "support": "Optional",
-          "options": "Prompter, Computer, Teleprompter or Director.",
+          "options": "Sightline, Prompter, Computer, Teleprompter or Director. Saved choice is retained.",
           "limits": "Wake-word recognition is speech recognition, not guaranteed keyword detection."
         },
         {
@@ -254,7 +254,7 @@
         {
           "name": "Retake and edit commands",
           "support": "Optional",
-          "options": "Again/Retake, marker, back to marker, keeper and scrap that; exact wake-prefixed V take/VE take recognition fallbacks. No bookmark flags are drawn.",
+          "options": "Again/Retake, marker, back to marker, keeper and scrap that; exact wake-prefixed V take/VE take, A RETAKE, VO TAKE, PTAKE and VOTE recognition fallbacks. No bookmark flags are drawn.",
           "limits": "Ratings and markers describe the take log; they do not cut video automatically."
         },
         {
@@ -656,7 +656,7 @@
         {
           "name": "Windowed and fullscreen use",
           "support": "Included",
-          "options": "Size and position the prompter, or use a fullscreen reading view. RC11 keeps minimise/maximise/fullscreen/close at the top right on the first toolbar row; other groups wrap below.",
+          "options": "Size and position the prompter, or use a fullscreen reading view. RC12 keeps Help, Settings and minimise/maximise/fullscreen/close together at the top right on the first toolbar row; other groups wrap below.",
           "limits": "Multi-window arrangements need checking on the intended display."
         },
         {
@@ -1342,8 +1342,8 @@
         {
           "name": "Room and voice checks",
           "support": "Optional",
-          "options": "Separate background-noise and speech checks; the prompter meter appears automatically during measurement.",
-          "limits": "Previous meter visibility returns afterwards. Preparation relays existing measurements without opening a second microphone stream."
+          "options": "Quiet room baseline followed by voice-onset sampling; speech ends after sustained silence or ten seconds. The meter appears automatically.",
+          "limits": "No speech is incomplete. Retry has a settling interval. Previous meter visibility returns afterwards; preparation relays its existing measurements."
         },
         {
           "name": "Advisory low-level handling",
@@ -1360,7 +1360,7 @@
         {
           "name": "Logged audio measures",
           "support": "Included",
-          "options": "Loudness LUFS, peak dBFS, background noise, voice-above-noise and warnings.",
+          "options": "Loudness LUFS, peak dBFS, noise, voice-above-noise and warnings. Takes below 1.5 seconds say Too short to assess, retaining raw readings/warnings and clipping alerts.",
           "limits": "Available only when measured; accepted warnings are retained with the session."
         },
         {
@@ -1808,6 +1808,18 @@
           "support": "Optional",
           "options": "Import/export supported settings in JSON or XML, including structured pad layouts and word lists.",
           "limits": "Secrets and sensitive opt-ins are not a way to bypass explicit permissions."
+        },
+        {
+          "name": "Foreground dialog speech",
+          "support": "Optional",
+          "options": "Say the exact enabled button label in an active Sightline dialog without another wake word; gold feedback confirms.",
+          "limits": "Command listening must be on. Hidden, disabled, background or ambiguous actions do not run; native OS prompts retain normal controls."
+        },
+        {
+          "name": "Remembered dialog placement",
+          "support": "Included",
+          "options": "App-owned Settings/help/tools, preparation, recording review, guide adjustments and user guide remember their monitor and bounds; first open follows the parent.",
+          "limits": "Removed monitors fall back to the parent work area. Native dialogs retain correct ownership and OS placement."
         },
         {
           "name": "Settings access",

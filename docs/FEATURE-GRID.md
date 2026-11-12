@@ -1,7 +1,7 @@
 # Sightline Prompter feature grid
 
-**Review basis: Sightline 1.3.0 RC11 preview, documentation revision 27, 11 November 2026.**
-**Build version:** `1.3.0-rc.11` · **Publication status:** Preview
+**Review basis: Sightline 1.3.0 RC12 preview, documentation revision 28, 12 November 2026.**
+**Build version:** `1.3.0-rc.12` · **Publication status:** Preview
 
 **Maintained source:** [Feature grid](https://github.com/JoJo-1965/sightline-prompter/blob/codex/pointing-production-cues/docs/FEATURE-GRID.md)
 
@@ -100,11 +100,11 @@ Reference: [Speech engines and command phrases](guide/03-scrolling-and-voice.md)
 | Offline speech recognition | Optional | On-computer recognition with a downloadable local model. | Initial component download and microphone permission are required; results depend on voice and environment. |
 | Recognition language | Limited | The supplied offline Zipformer model and current recognition configuration use English. | Do not assume multilingual recognition because the external provider offers other languages. |
 | Online speech recognition | Dependent | Optional Deepgram engine with the user's API key. | Requires internet access, a Deepgram account and its service terms; audio leaves the computer. |
-| Microphone choice | Included | Select the input used for voice following and command recognition. | Device availability, drivers and operating-system permissions apply. |
+| Microphone choice | Included | Select the input used for voice following and command recognition. | Device availability, drivers and operating-system permissions apply. AGC is requested off; actual input/processing flags enter the local support log, without hardware-gain changes. |
 | Listening modes | Optional | In voice mode, Always listening, or Off. | Always listening keeps microphone recognition active while prompting is stopped. |
-| Wake word | Optional | Prompter, Computer, Teleprompter or Director. | Wake-word recognition is speech recognition, not guaranteed keyword detection. |
+| Wake word | Optional | Sightline, Prompter, Computer, Teleprompter or Director. Saved choice is retained. | Wake-word recognition is speech recognition, not guaranteed keyword detection. |
 | Reading and display commands | Optional | Go, pause, slower, faster, bigger, smaller, back, next and return to top. | Enable command listening; several phrases have documented aliases. |
-| Retake and edit commands | Optional | Again/Retake, marker, back to marker, keeper and scrap that; exact wake-prefixed V take/VE take recognition fallbacks. No bookmark flags are drawn. | Ratings and markers describe the take log; they do not cut video automatically. |
+| Retake and edit commands | Optional | Again/Retake, marker, back to marker, keeper and scrap that; exact wake-prefixed V take/VE take, A RETAKE, VO TAKE, PTAKE and VOTE recognition fallbacks. No bookmark flags are drawn. | Ratings and markers describe the take log; they do not cut video automatically. |
 | Spoken section selection | Optional | Select numbered sections, including natural spoken numbers. | A section number can act as a spoken slate and a retake instruction. |
 | Explicit recording commands | Dependent | RC8: record, start recording, begin and record take confirm OBS before delivery; finish recording, and record on, off, pause or resume remain. | OBS integration and recording-control permission must be enabled. Go, practice and start practice run the prompter with OBS unchanged. |
 | Head-guide voice commands | Optional | Guide on and guide off request a definite visible or hidden state. | Controls the manual guide; it does not detect a face. |
@@ -190,7 +190,7 @@ Reference: [Layout and display](guide/04-layout-and-display.md) and [Remotes and
 | --- | --- | --- | --- |
 | Transparent content overlay | Included | Read over a video call, slides, camera/projector preview or other desktop content. | Sightline does not supply or embed the underlying call or presentation. |
 | Always on top | Optional | Keep the prompter above ordinary application windows. | Operating-system window rules and other topmost windows can affect stacking. |
-| Windowed and fullscreen use | Included | Size and position the prompter, or use a fullscreen reading view. RC11 keeps minimise/maximise/fullscreen/close at the top right on the first toolbar row; other groups wrap below. | Multi-window arrangements need checking on the intended display. |
+| Windowed and fullscreen use | Included | Size and position the prompter, or use a fullscreen reading view. RC12 keeps Help, Settings and minimise/maximise/fullscreen/close together at the top right on the first toolbar row; other groups wrap below. | Multi-window arrangements need checking on the intended display. |
 | Horizontal and vertical mirror | Included | Separate mirror controls, including toolbar icons. | Set the flips appropriate to the physical teleprompter glass or monitor. |
 | Prompter monitor | Optional | Explicit display selection opens full screen. A manual cross-screen drag restores a centred normal window at 75% of the destination work area; included in the reading workflow. | Windows drag handling clears eye-line mode and the pinned monitor choice. Same-display moves retain the chosen size. Requires a connected display. |
 | Eye-line strip | Optional | Compact reading strip with configurable screen height and reading-line position. | Lens alignment is a manual setup task. |
@@ -331,10 +331,10 @@ Reference: [Sound check and scratch audio](guide/05-recording-a-take.md) and [Pr
 | Capability | Availability | Options and behaviour | Dependencies and limits |
 | --- | --- | --- | --- |
 | Microphone level display | Optional | Live sound-level information during applicable microphone use. | Measures the input as Sightline receives it, before another tool's later processing. |
-| Room and voice checks | Optional | Separate background-noise and speech checks; the prompter meter appears automatically during measurement. | Previous meter visibility returns afterwards. Preparation relays existing measurements without opening a second microphone stream. |
+| Room and voice checks | Optional | Quiet room baseline followed by voice-onset sampling; speech ends after sustained silence or ten seconds. The meter appears automatically. | No speech is incomplete. Retry has a settling interval. Previous meter visibility returns afterwards; preparation relays its existing measurements. |
 | Advisory low-level handling | Included | Explain quiet/noisy/clipping conditions and allow Continue anyway. | Increasing gain can also increase background noise; the user decides the compromise. |
 | Per-take loudness | Optional | Voice-mode-only, Always during prompting, or Off. | Always mode opens the microphone during prompting; monitoring is not a mastering process. |
-| Logged audio measures | Included | Loudness LUFS, peak dBFS, background noise, voice-above-noise and warnings. | Available only when measured; accepted warnings are retained with the session. |
+| Logged audio measures | Included | Loudness LUFS, peak dBFS, noise, voice-above-noise and warnings. Takes below 1.5 seconds say Too short to assess, retaining raw readings/warnings and clipping alerts. | Available only when measured; accepted warnings are retained with the session. |
 | Scratch recording | Optional | Independent local microphone WAVs for timing and edit checks. | Scratch audio is a reference, not a guarantee of production quality or a replacement for the clean mic master. |
 | Local take slate | Optional | Off, Flash and beep, or Flash only; visible choices. | A flash seen only on the operator display does not prove recorded camera/audio sync. |
 | Recorded sync reference | Dependent | Slate IDs and known picture/tone routing into OBS, logged against takes. | The selected recorded scene and audio track must actually contain the reference. |
@@ -428,6 +428,8 @@ Reference: [Settings](guide/07-settings.md), [Screenshot gallery](guide/settings
 | Onboarding and components | Included | First-use setup plus Getting started at the top of Settings, showing the current script, mode, text appearance and optional-tool guidance; included in the reading workflow. | Components remain optional. Opening guidance does not enable devices or integrations; changes use Apply. |
 | Restore defaults | Included | Getting started > Restore defaults returns preferences to the initial setup after confirmation. | Does not uninstall add-ons or delete scripts and recording media. |
 | Settings transfer | Optional | Import/export supported settings in JSON or XML, including structured pad layouts and word lists. | Secrets and sensitive opt-ins are not a way to bypass explicit permissions. |
+| Foreground dialog speech | Optional | Say the exact enabled button label in an active Sightline dialog without another wake word; gold feedback confirms. | Command listening must be on. Hidden, disabled, background or ambiguous actions do not run; native OS prompts retain normal controls. |
+| Remembered dialog placement | Included | App-owned Settings/help/tools, preparation, recording review, guide adjustments and user guide remember their monitor and bounds; first open follows the parent. | Removed monitors fall back to the parent work area. Native dialogs retain correct ownership and OS placement. |
 | Settings access | Included | Toolbar settings control and a Settings item in the hamburger menu. | The menu remains an accessible route when toolbar icons are less obvious. |
 | Grouped help | Included | Tabbed shortcuts and commands; relevant help follows enabled modes/features. | Disabled OBS features do not need to display unusable recording keys. |
 | Built-in user guide | Included | Illustrated guide, settings screenshots, samples and recording acceptance walkthrough. | The shared source guide is canonical; a separate GitHub wiki is not enabled. |

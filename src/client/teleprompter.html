@@ -89,7 +89,7 @@
         <button id="cb-tools" class="cb-btn cb-text" title="Recording tools, framing and quick adjustments" aria-expanded="false" aria-controls="tools-panel">Tools</button>
       </div>
       <div class="cb-spacer"></div>
-      <div class="cb-group">
+      <div class="cb-group" id="cb-utilities" aria-label="Help, settings and window controls">
         <button
           id="cb-help"
           class="cb-btn"
@@ -101,23 +101,23 @@
         <button id="cb-settings" class="cb-btn" title="Settings (Ctrl+,)" aria-label="Settings">
           ⚙
         </button>
-      </div>
-      <div class="cb-group" id="cb-window-controls" aria-label="Window controls">
-        <button id="cb-min" class="cb-btn" title="Minimise (Ctrl+Shift+M)" aria-label="Minimise">
-          —
-        </button>
-        <button
-          id="cb-max"
-          class="cb-btn"
-          aria-label="Maximise or restore"
-          title="Maximise / restore (Shift+F11)"
-        >
-          ▢
-        </button>
-        <button id="cb-full" class="cb-btn" title="Full screen (F11)" aria-label="Full screen" aria-pressed="false">⛶</button>
-        <button id="cb-close" class="cb-btn cb-close" title="Close (Ctrl+W)" aria-label="Close Sightline">
-          ✕
-        </button>
+        <div class="cb-group" id="cb-window-controls" aria-label="Window controls">
+          <button id="cb-min" class="cb-btn" title="Minimise (Ctrl+Shift+M)" aria-label="Minimise">
+            —
+          </button>
+          <button
+            id="cb-max"
+            class="cb-btn"
+            aria-label="Maximise or restore"
+            title="Maximise / restore (Shift+F11)"
+          >
+            ▢
+          </button>
+          <button id="cb-full" class="cb-btn" title="Full screen (F11)" aria-label="Full screen" aria-pressed="false">⛶</button>
+          <button id="cb-close" class="cb-btn cb-close" title="Close (Ctrl+W)" aria-label="Close Sightline">
+            ✕
+          </button>
+        </div>
       </div>
     </div>
     <nav id="app-menu" class="hidden" aria-label="Files menu"></nav>
@@ -835,6 +835,7 @@
           <label class="row" title="Say the wake word, leave a brief beat, then finish the command within four seconds. Applying a new choice refreshes listening immediately"
             >Wake word
             <select id="set-wake-word">
+              <option value="sightline">Sightline</option>
               <option value="prompter">Prompter</option>
               <option value="computer">Computer</option>
               <option value="teleprompter">Teleprompter</option>

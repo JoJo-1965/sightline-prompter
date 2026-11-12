@@ -1,5 +1,12 @@
 # Writing scripts
 
+## Full editor exit — RC12
+
+Ctrl+E opens the full editor. **Close** means the text matches the saved file;
+**Cancel** means unsaved changes remain and asks before discarding. Successful
+Save or Undo back to the saved text restores Close. Failed/cancelled saves keep
+your draft. Samples use Back to prompter and Save a copy.
+
 ## Quick edits while paused — RC11 preview
 
 Double-click a spoken paragraph to adjust a word, punctuation or a line break

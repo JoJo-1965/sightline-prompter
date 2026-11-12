@@ -1,11 +1,14 @@
-# Sightline Prompter features
-
-**Prepared for the next candidate, not RC11:** explicit AGC-off capture for
-speech/wake and selected-microphone test metering. Other applications or the
-driver may still change the microphone level; physical validation remains.
-The same source batch adds exact recorded Retake fallbacks, heading-aware
-Voice boundaries and bounded within-section recovery after misheard words.
-See [source validation and limits](uat/VOICE-RELIABILITY-2026-11-12.md).
+**RC12 preview · 12 November 2026:** combined recording and interface fixes.
+Help, Settings and window controls form one upper-right toolbar group. The full
+editor uses Close when saved and Cancel while dirty, including Undo. App-owned
+dialogs remember their own screen and bounds, starting on their parent's screen.
+Enabled button labels are speakable in the foreground Sightline dialog while
+command listening is on; native OS prompts retain normal controls. Voice checks
+wait for speech and finish after sustained silence or ten seconds; no speech is
+incomplete. Sightline is an optional wake word. Capture requests AGC off and logs
+actual input processing locally; short takes retain raw readings without a
+misleading quiet verdict. Heading-aware Voice boundaries and recorded Retake
+fallbacks are included. [RC12 checks and limits](uat/1.3.0-RC12.md).
 
 **RC11 preview:** paused double-click paragraph editing with Save/Cancel,
 visible line breaks and source preservation. Small windows use a slot picker;

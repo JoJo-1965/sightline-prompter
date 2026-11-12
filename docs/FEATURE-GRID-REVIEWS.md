@@ -540,3 +540,11 @@ resume and compact slots. Consolidated complete 1.3.0 notes into RC1–RC11
 sections, with superseded behaviour flagged. No runtime, capability, setting,
 controller or directive changes; the 270-row exports remain valid. The running
 RC11 binary is retained while standalone notes and JL preview archives update.
+
+## 12 November 2026 — RC12
+
+Reviewed toolbar, editor exit, dialog placement/voice actions, speech sampling,
+wake choice, applied-input diagnostics and short-take assessment together.
+Two capability rows added: foreground dialog speech and remembered placement.
+Existing microphone, wake, Retake, toolbar and measurement rows updated.
+272 capabilities in 18 groups; stable 1.2.0 snapshot remains 249.

@@ -121,3 +121,13 @@ made a new code, scan the new QR code.
 
 **A [note] is showing as normal text.** Check the brackets are closed: the
 note must end with `]`.
+
+## RC12 audio diagnostics
+
+The local support log includes the actual selected input and applied AGC,
+noise suppression and echo cancellation, with not reported for unavailable
+track settings. It contains no new audio recording or automatic upload.
+Sightline requests AGC off and never sets hardware microphone gain. If the
+Windows level changes, compare before/after with other audio apps closed.
+Marked or discarded takes shorter than 1.5 seconds say Too short to assess;
+raw measures remain in JSON/CSV and clipping warnings are retained.

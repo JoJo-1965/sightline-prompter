@@ -122,7 +122,7 @@ const header = csvOf( { takes: [ paced ] } ).split( "\r\n" )[0].split( "," );
 assert.deepEqual( header.slice( 0, 13 ), [ "section", "title", "take", "start", "end", "duration", "status", "rating", "slate", "use", "started_at", "ended_at", "markers" ] );
 assert.deepEqual( header.slice( 13, 20 ), [ "words", "spoken_seconds", "speaking_seconds", "speaking_wpm", "overall_wpm", "target_seconds", "vs_target_seconds" ] );
 // Then the mic's level (roadmap 42), after the pace.
-assert.deepEqual( header.slice( 20 ), [ "loudness_lufs", "peak_dbfs", "noise_dbfs", "above_noise_db", "level_warning" ] );
+assert.deepEqual( header.slice( 20, 25 ), [ "loudness_lufs", "peak_dbfs", "noise_dbfs", "above_noise_db", "level_warning" ] );
 console.log( "pace passes" );
 
 // Labelled markers (roadmap 45): {marker: Setup} carries its name; a script

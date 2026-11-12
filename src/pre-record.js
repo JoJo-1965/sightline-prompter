@@ -1,4 +1,4 @@
-import { app, BrowserWindow, dialog, ipcMain, net, protocol } from "electron";
+import { app, BrowserWindow, dialog, ipcMain, net, protocol, screen } from "electron";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
@@ -7,10 +7,11 @@ import { checkedFramingReference, framingPose, framingObservation } from "./clie
 import { guidePose } from "./client/guide-pose.js";
 import { PREPARATION_COMMANDS, preparationBlockReason } from "./client/controller-workflow.js";
 import { randomUUID } from "node:crypto";
+import { windowPlacement, rememberWindow } from "./utils/window-placement.js";
 
 protocol.registerSchemesAsPrivileged( [ { scheme: "sightline", privileges: { standard: true, secure: true, supportFetchAPI: true, corsEnabled: true } } ] );
 
-export function createPreRecord( { dir, prompter, getSettings, saveSettings, busy, guide, obs, probeObs = async () => false, onStatus = () => {} } ) {
+export function createPreRecord( { dir, prompter, getSettings, saveSettings, dialogParent = () => prompter, busy, guide, obs, probeObs = async () => false, onStatus = () => {} } ) {
 	const requests = new Map();
 	let workflow = {};
 	const controllerStatus = () => ( { ...workflow, open: !!window && !window.isDestroyed() && window.isVisible(), hasReference: !!getSettings().headGuideReference || !!getSettings().preRecordReference, testRecording: recording, testSaving: status.test.state === "saving", test: status.test.state } );
@@ -48,6 +49,8 @@ export function createPreRecord( { dir, prompter, getSettings, saveSettings, bus
 	};
 	let status = { test: { state: getSettings().preRecordReference?.testReviewed ? "saved" : "idle", at: getSettings().preRecordReference?.savedAt ?? null }, meter: { active: false } };
 	const publish = ( value ) => {
+		if ( Array.isArray( value?.voiceActions ) ) status.voiceActions = value.voiceActions.filter( item => typeof item.id === "string" && typeof item.label === "string" ).slice( 0, 40 ).map( item => ( { id: item.id.slice( 0, 80 ), label: item.label.slice( 0, 100 ) } ) );
+		status.focused = !!window && !window.isDestroyed() && window.isVisible() && window.isFocused();
 		if ( value?.controllerResult && requests.has( value.controllerResult.id ) ) {
 			const request = requests.get( value.controllerResult.id );
 			clearTimeout( request.timer ); requests.delete( value.controllerResult.id );
@@ -78,7 +81,7 @@ export function createPreRecord( { dir, prompter, getSettings, saveSettings, bus
 	};
 	protocol.handle( "sightline", ( request ) => {
 		const url = new URL( request.url ), name = url.pathname.slice( 1 );
-		const allowed = /^(pre-record\.(html|css|js)|controller-workflow\.js|framing-position\.js|guide-pose\.js|framing-worker-bundle\.js|vision-runtime\/[a-zA-Z0-9_.-]+)$/.test( name );
+		const allowed = /^(pre-record\.(html|css|js)|context-actions\.js|voice-sample\.js|microphone-diagnostics\.js|controller-workflow\.js|framing-position\.js|guide-pose\.js|framing-worker-bundle\.js|vision-runtime\/[a-zA-Z0-9_.-]+)$/.test( name );
 		if ( url.hostname !== "prepare" || !allowed ) return new Response( "Not found", { status: 404 } );
 		return net.fetch( pathToFileURL( path.join( dir, "client", name ) ).href );
 	} );
@@ -97,7 +100,11 @@ export function createPreRecord( { dir, prompter, getSettings, saveSettings, bus
 			return true;
 		}
 		ready = false;
-		window = new BrowserWindow( { width: 1440, height: 980, minWidth: 600, minHeight: 580, show: !background, title: "Sightline · Prepare to record", parent: prompter, modal: false, backgroundColor: "#14171c", webPreferences: { backgroundThrottling: false, nodeIntegration: false, sandbox: false, preload: path.join( dir, "client/pre-record-preload.mjs" ) } } );
+		const parent = dialogParent();
+		const bounds = windowPlacement( getSettings().utilityWindowBounds?.preparation, parent.getBounds(), screen.getAllDisplays(), { width: 1440, height: 980 } );
+		window = new BrowserWindow( { ...bounds, minWidth: Math.min( 600, bounds.width ), minHeight: Math.min( 580, bounds.height ), show: !background, title: "Sightline · Prepare to record", parent, modal: false, backgroundColor: "#14171c", webPreferences: { backgroundThrottling: false, nodeIntegration: false, sandbox: false, preload: path.join( dir, "client/pre-record-preload.mjs" ) } } );
+		rememberWindow( window, "preparation", { screen, getSettings, saveSettings } );
+		window.on( "focus", () => publish( {} ) ); window.on( "blur", () => publish( {} ) ); window.on( "hide", () => publish( {} ) );
 		protectWindow( window, getSettings().hideFromCapture === true );
 		window.setAlwaysOnTop( true, "screen-saver" );
 		window.webContents.setWindowOpenHandler( () => ( { action: "deny" } ) );
@@ -193,7 +200,10 @@ export function createPreRecord( { dir, prompter, getSettings, saveSettings, bus
 		if ( trusted( event ) ) { recording = value === true; publish( {} ); }
 	};
 	const report = ( event, value ) => {
-		if ( trusted( event ) ) publish( value );
+		if ( trusted( event ) ) {
+			if ( value?.microphone ) prompter.webContents.send( "microphoneDiagnostic", value.microphone );
+			publish( value );
+		}
 	};
 	const getStatus = event => event.sender === prompter.webContents ? status : null;
 	const close = ( event, backgroundOnly = false ) => {
@@ -203,9 +213,17 @@ export function createPreRecord( { dir, prompter, getSettings, saveSettings, bus
 	ipcMain.on( "preRecordActivity", activity );
 	ipcMain.on( "preRecordReport", report );
 	ipcMain.handle( "preRecordStatus", getStatus );
+	ipcMain.handle( "preRecordVoiceAction", ( event, id ) => {
+		if ( event.sender !== prompter.webContents || !window || window.isDestroyed() || !window.isVisible() || !window.isFocused() || !status.voiceActions?.some( a => a.id === id ) ) return false;
+		window.webContents.send( "preRecordGuideAction", { name: "voice-action", value: id } ); return true;
+	} );
 	ipcMain.on( "closePreRecord", close );
 	ipcMain.handle( "preRecord", action );
-	return { open, sync, guideAction, command, status: controllerStatus, dispose() {
+	return { open, sync, guideAction, command,
+		voiceAction( id ) {
+			if ( !window || window.isDestroyed() || !window.isVisible() || !window.isFocused() || !status.voiceActions?.some( item => item.id === id ) ) return false;
+			window.webContents.send( "preRecordGuideAction", { name: "voice-action", value: id } ); return true;
+		}, status: controllerStatus, dispose() {
 		for ( const request of requests.values() ) { clearTimeout( request.timer ); request.reject( new Error( "Preparation closed" ) ); }
 		requests.clear();
 		quitting = true;
@@ -214,6 +232,7 @@ export function createPreRecord( { dir, prompter, getSettings, saveSettings, bus
 		ipcMain.removeListener( "preRecordActivity", activity );
 		ipcMain.removeListener( "preRecordReport", report );
 		ipcMain.removeHandler( "preRecordStatus" );
+		ipcMain.removeHandler( "preRecordVoiceAction" );
 		ipcMain.removeListener( "closePreRecord", close );
 		ipcMain.removeHandler( "preRecord" );
 		protocol.unhandle( "sightline" );

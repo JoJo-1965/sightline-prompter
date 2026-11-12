@@ -1,19 +1,36 @@
 # Scrolling and voice
 
-**Prepared after RC11, not yet packaged:** speech/wake capture and the selected
-microphone test explicitly request automatic gain control off. Test metering
-uses unprocessed input; speech retains its existing noise/echo processing.
-This does not control the gain settings of other apps or the audio driver.
-Check the actual input level after the combined preview is installed.
+## RC12: voice checks, dialog actions and wake choice
 
-The same next-candidate source honours **Start from section heading** at soft
-Voice boundaries and when Go or quick-edit restoration reuses that target.
-When off, the body-line option remains. A mid-paragraph edit keeps its place.
-Observed Retake transcripts A RETAKE, VO TAKE, PTAKE and VOTE have exact
-wake-prefixed fallbacks. Continue to say **Prompter, retake**; those spellings
-are decoder corrections, not additional phrases to learn. Bounded ordered
-recovery can follow a clear phrase after misheard names within the current
-section; it does not remove the need for microphone UAT or personal word fixes.
+Choose **Sightline**, Prompter, Computer, Teleprompter or Director under Voice
+settings. Apply preserves your selection; reading “Sightline Prompter” is
+ordinary narration. Dynamic listening labels and command help use your choice.
+
+With command listening enabled, say the exact enabled button label in the
+foreground Sightline dialog: Continue, Continue anyway, Check again, Close,
+Cancel, or its displayed next-step words. Gold feedback confirms the action.
+Disabled, hidden, background or ambiguous buttons do not run. Existing button
+handlers, permissions and confirmations still apply. OS file and security
+prompts need their normal controls; ordinary script speech outside these
+contexts retains wake-word protection.
+
+Keep quiet for the room baseline, then speak normally. The voice-check clock
+starts on voice onset, allows brief breaths and ends after sustained silence
+or at ten seconds. Silence is incomplete; retry after checking the input.
+Check again has a short settling period so the request is not the sample.
+The prompter meter appears during measurement and returns to its prior state.
+Quiet/noisy results are advisory; no gain change is forced.
+
+Speech/wake and measurement capture request AGC off. The local support log
+records the actual input name and applied AGC/noise/echo flags (or not reported).
+Sightline never sets Windows microphone volume. Other apps or drivers may
+still change it; the reported hardware-level drop is not attributed.
+
+Start from section heading now applies at automatic Voice boundaries, Go and
+restored boundary targets. Turn it off for body-line positioning. Mid-paragraph
+edits retain their place. Exact wake-prefixed recorded Retake variants improve
+recognition, and a bounded ordered phrase can recover after a short within-section
+gap. Neither change guarantees recognition for every delivery or microphone.
 
 **RC10 Voice boundaries:** `{stop}` prepares the next spoken passage without
 holding Voice. Retake returns to the completed section until you speak the next

@@ -1,6 +1,6 @@
 # Sightline Prompter
 
-> **Development preview: 1.3.0 RC11, documentation revision 27.**
+> **Development preview: 1.3.0 RC12, documentation revision 28.**
 > The public download below is stable 1.2.0. This candidate adds optional
 > [post-record audio review](docs/guide/19-post-record-review.md) and a
 > [rerunnable guided tour](docs/guide/20-guided-tour.md). Read the
@@ -156,21 +156,27 @@ on your own setup. OBS-scene calibration is a sampled preview, not the encoder o
 
 ## Change log
 
-### Queued after RC11 — recording reliability
+### 1.3.0 RC12 — combined recording and interface fixes
 
-The next-candidate source explicitly disables automatic gain control for
+RC12 explicitly disables automatic gain control for
 speech/wake listening and the selected-microphone test, including device
 fallback. Recording meters already request AGC off. Mock-device tests pass;
-the running RC11 package is unchanged and the reported Windows level drop
+earlier RC11 packages remain unchanged and the reported Windows level drop
 still needs physical confirmation and attribution.
 
 A reviewed long recording reproduced seven Retake misses. Exact wake-prefixed
 recogniser variants now resolve in replay; ordinary speech remains protected.
 Bounded ordered recovery advances sooner after misheard words without widening
 cross-section relocation. Automatic section advance, Go and restored boundaries
-now honour Start from section heading. These are next-candidate source changes,
-not a replacement for the running RC11 package. See the
+now honour Start from section heading. These are included in the combined RC12 preview. See the
 [reliability review](docs/uat/VOICE-RELIABILITY-2026-11-12.md).
+
+Help, Settings and window controls now stay together. Full-editor Close/Cancel
+tracks saved text and Undo. Dialogs remember their screen; enabled foreground
+button labels are speakable. Voice checks wait for speech and end on silence
+or ten seconds. Sightline is an optional wake word. Local input diagnostics and
+short-take assessment improve the handover. See [RC12 UAT](docs/uat/1.3.0-RC12.md)
+and the [complete version history](docs/RELEASE-1.3.0.md#rc12).
 
 ### 9 November 2026 — Stream Deck plugin published
 

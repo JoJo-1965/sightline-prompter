@@ -14,6 +14,8 @@ contextBridge.exposeInMainWorld( "electron", {
 	headGuide: ( action = "toggle", value ) => ipcRenderer.send( "headGuideAction", action, value ),
 	prepareRecording: () => ipcRenderer.send( "openPreRecord" ),
 	controllerCommand: id => ipcRenderer.invoke( "controllerCommand", id ),
+	preRecordVoiceAction: id => ipcRenderer.invoke( "preRecordVoiceAction", id ),
+	onMicrophoneDiagnostic: callback => on( "microphoneDiagnostic", callback ),
 	preRecordStatus: () => ipcRenderer.invoke( "preRecordStatus" ),
 	onPreRecordStatus: callback => on( "preRecordStatus", callback ),
 	utilityPanel: ( kind, action, value ) => ipcRenderer.send( "utilityPanel", kind, action, value ),

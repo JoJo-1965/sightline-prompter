@@ -1,4 +1,5 @@
-import { BrowserWindow, dialog, ipcMain, shell } from "electron";
+import { BrowserWindow, dialog, ipcMain, shell, screen } from "electron";
+import { windowPlacement, rememberWindow } from "./utils/window-placement.js";
 import fs from "node:fs/promises";
 import { createReadStream } from "node:fs";
 import path from "node:path";
@@ -15,7 +16,7 @@ const safeJson = async file => {
 	return JSON.parse( ( await fs.readFile( file, "utf8" ) ).replace( /^\uFEFF/, "" ) );
 };
 
-export function createRecordingReview( { dir, profile, busy = () => false, readme = async () => "", openGuide = () => {} } ) {
+export function createRecordingReview( { dir, profile, dialogParent, getSettings, saveSettings, busy = () => false, readme = async () => "", openGuide = () => {} } ) {
 	let window = null, data = null, source = null, reference = null, media = [], transcripts = [], offsets = [], inputs = [], report = null;
 	let active = null, runningAction = false, message = "Choose a finished session. Original logs and recordings stay unchanged.", runtime = null;
 	const configFile = path.join( profile, "recording-review-runtime.json" );
@@ -178,7 +179,10 @@ export function createRecordingReview( { dir, profile, busy = () => false, readm
 		async open( file ) {
 			if ( !window || window.isDestroyed() ) {
 				try { config = { ...config, ...JSON.parse( await fs.readFile( configFile, "utf8" ) ) }; } catch { /* Optional runtime config. */ }
-				window = new BrowserWindow( { width: 1180, height: 850, minWidth: 680, minHeight: 500, title: "Sightline Recording review", backgroundColor: "#242b33", show: false, webPreferences: { nodeIntegration: false, sandbox: false, preload: path.join( dir, "client", "recording-review-preload.mjs" ) } } );
+				const parent = dialogParent();
+				const bounds = windowPlacement( getSettings().utilityWindowBounds?.recordingReview, parent.getBounds(), screen.getAllDisplays(), { width: 1180, height: 850 } );
+				window = new BrowserWindow( { ...bounds, parent, minWidth: Math.min( 680, bounds.width ), minHeight: Math.min( 500, bounds.height ), title: "Sightline Recording review", backgroundColor: "#242b33", show: false, webPreferences: { nodeIntegration: false, sandbox: false, preload: path.join( dir, "client", "recording-review-preload.mjs" ) } } );
+				rememberWindow( window, "recordingReview", { screen, getSettings, saveSettings } );
 				window.removeMenu(); window.webContents.setWindowOpenHandler( () => ( { action: "deny" } ) ); window.webContents.on( "will-navigate", e => e.preventDefault() );
 				window.on( "closed", () => { active?.cancel(); window = null; } );
 				await window.loadFile( path.join( dir, "client", "recording-review.html" ) );

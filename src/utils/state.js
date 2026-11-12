@@ -1,6 +1,7 @@
 import { app } from "electron";
 import { join } from "node:path";
 import fs from "node:fs/promises";
+import { atomicStateWriter } from "./atomic-state.js";
 
 export default ( defaultConfig ) => {
 	const userFolder = app.getPath( "userData" );
@@ -19,9 +20,7 @@ export default ( defaultConfig ) => {
 		}
 	}
 
-	async function writeAppState( state ) {
-		await fs.writeFile( appStateFile, JSON.stringify( state ) );
-	}
+	const writeAppState = atomicStateWriter( appStateFile );
 
 	return {
 		readAppState,

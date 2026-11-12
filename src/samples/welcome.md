@@ -271,3 +271,5 @@ For a graphic, I point towards the marker, then return to the lens. The words sc
 Read the section title to find your rhythm, settle for a beat, then begin the script with a relaxed expression.
 
 {stop}
+
+<!-- RC12: Use Prepare to record for framing, quiet-room baseline, voice-onset sampling and a reviewed test. Say the active dialog’s enabled button label when listening is on. The optional Sightline wake word does not replace your current choice. See the rc12-audio-and-dialogs sample for a short rehearsal. -->

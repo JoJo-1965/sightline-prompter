@@ -10,6 +10,8 @@
 // and the take log's `audio` fields (file, startedAt, endedAt, start, end;
 // session time = file time + start), or tell them first. Add fields only.
 
+import { microphoneDiagnostics } from "./microphone-diagnostics.js";
+
 const RATE = 16000;
 const BLOCK_MS = 100; // mic-worklet.js sends 100 ms blocks
 
@@ -42,6 +44,7 @@ export function createScratchRecorder() {
 		async start( deviceId ) {
 			if ( ctx ) return;
 			stream = await openMic( deviceId );
+			window.electron?.debugLog?.( `[microphone scratch] ${ JSON.stringify( microphoneDiagnostics( stream, deviceId ) ) }` );
 			await window.electron.scratchAudioStart( { sampleRate: RATE } );
 			ctx = new AudioContext( { sampleRate: RATE } );
 			await ctx.audioWorklet.addModule( new URL( "./mic-worklet.js", import.meta.url ) );

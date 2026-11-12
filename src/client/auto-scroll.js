@@ -18,6 +18,7 @@ import {
 import { createAligner } from "./aligner.js";
 import { createWordFixer } from "./word-fixes.js";
 import { createCommandListener } from "./voice-commands.js";
+import { microphoneDiagnostics } from "./microphone-diagnostics.js";
 import { createSpeechRecovery } from "./speech-recovery.js";
 
 const DEEPGRAM_QUERY = new URLSearchParams( {
@@ -257,11 +258,17 @@ export async function openMic( audioDeviceId, onStatus, { processed = true } = {
 		noiseSuppression: processed,
 		autoGainControl: false
 	};
+	const opened = stream => {
+		const diagnostic = { type: "input-settings", ...microphoneDiagnostics( stream, audioDeviceId ) };
+		window.electron?.debugLog?.( `[microphone] ${ JSON.stringify( diagnostic ) }` );
+		onStatus?.( diagnostic );
+		return stream;
+	};
 	if ( audioDeviceId ) {
 		try {
-			return await navigator.mediaDevices.getUserMedia( {
+			return opened( await navigator.mediaDevices.getUserMedia( {
 				audio: { ...baseAudio, deviceId: { exact: audioDeviceId } }
-			} );
+			} ) );
 		} catch ( err ) {
 			// Saved device is gone (unplugged, USB hub removed, etc) — fall back
 			// to the system default rather than failing the whole session.
@@ -271,7 +278,7 @@ export async function openMic( audioDeviceId, onStatus, { processed = true } = {
 			onStatus?.( { type: "device-fallback", requestedDeviceId: audioDeviceId } );
 		}
 	}
-	return navigator.mediaDevices.getUserMedia( { audio: baseAudio } );
+	return opened( await navigator.mediaDevices.getUserMedia( { audio: baseAudio } ) );
 }
 
 // engine: "local" (on this computer) or "deepgram" (online, needs deepgramKey).
@@ -288,6 +295,7 @@ export async function startAutoScroll( {
 	onReview = null, // command-filtered word deltas, only during active voice following
 	onCommand = null,
 	onWake = () => {}, // the wake word was heard
+	contextActions = () => null,
 	onMiss = () => {}, // ( words ): what followed it wasn't a command
 	wakeWord = "prompter", // Settings > Voice: prompter, computer, teleprompter or director
 	isPaused = null, // also counts as paused for a bare "go" (a {stop} in steady scrolling)
@@ -315,7 +323,7 @@ export async function startAutoScroll( {
 	aligner.setPosition( findWordAtViewport( wordIndex.ranges ) );
 	let takeCommands;
 	const setCommandOptions = ( options ) => {
-		takeCommands = options.onCommand ? createCommandListener( { onWake, onMiss, isPaused: () => held || !!isPaused?.(), ...options } ) : null;
+		takeCommands = options.onCommand ? createCommandListener( { onWake, onMiss, contextActions, isPaused: () => held || !!isPaused?.(), ...options } ) : null;
 	};
 	setCommandOptions( { onCommand, wakeWord, commandWords, soundAlike } );
 	let held = false; // "Prompter, pause": keep listening, stop following
