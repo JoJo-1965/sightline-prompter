@@ -1,5 +1,12 @@
 # Feature-matrix review record
 
+## RC11 editor exit-label feedback — 12 November 2026
+
+Queued dynamic Close/Cancel labels according to whether the full editor has
+unsaved changes. Save/Undo transitions and failed-save retention are part of
+acceptance. This is feedback for the next combined candidate, not an RC11
+runtime or capability change; current feature exports remain valid.
+
 ## RC11 toolbar feedback queue — 12 November 2026
 
 Recorded narrow-window Help/Settings orphaning and wide-window misalignment
