@@ -8,6 +8,10 @@ production. Native recording and framework migration are separate decisions.
 Restored the existing value-first/effort-second classification: proposed ★★/L
 for the complete module and ★★/M for the first proof of concept, with explicit
 ordering behind core reliability/onboarding and smaller ready ★★ work.
+Clarified that the first demo phase needs independent camera and screen/app
+masters through OBS/per-source recording, identified audio and verified file
+offsets. Existing clean-camera documentation is reusable; dual-source demo
+association and mouse-event capture remain proposed work.
 This is proposed work with no committed delivery version/date. The RC14
 275-row reference and frozen packages remain unchanged; no app, companion,
 website or Marketplace publication is part of this roadmap edit.

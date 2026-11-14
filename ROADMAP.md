@@ -203,11 +203,19 @@ product or repository is an implementation decision after the prototype.
 
 | Phase | Proposed scope | Evidence before expanding |
 | --- | --- | --- |
-| 1 · Capture and event log | Use OBS for the screen/window recording. Collect synchronised cursor positions, clicks and opt-in shortcut events, with source bounds and display scaling. Export them alongside the script, sections, takes and production cues. | A short real demo retains a clean original recording and a correctly aligned event log through pause/resume, window movement and display scaling. Event timing must use the recording clock, not live speech-word estimates. Script/guide exclusion must be verified on the chosen capture route. |
+| 1 · Capture and event log | Use OBS with Source Record or an equivalent per-source plugin to retain independent clean camera/headshot and screen/app masters, plus identified narration audio. A composed preview is optional. Reuse the documented clean-camera route. Collect cursor positions, clicks and opt-in shortcut events in screen-source coordinates, with source bounds and scaling. Associate each actual output file with the session, script, sections, takes and production cues. | A real demo produces both video masters and identified audio. Verify start/stop/pause/resume for every output, filenames, per-file start offsets, sync and drift; the main OBS recording state alone does not verify plugin outputs. Keep the original full frames. Use the recording clock for events, not live speech-word estimates. Verify script/guide exclusion in each capture route. |
 | 2 · Presentation effects | Preview and render cursor highlights, click rings, shortcut labels, smooth zooms and pans from the recorded events. Keep effects editable and preserve the original full-frame video. | The operator can adjust or remove a zoom, avoid rapid mouse-follow movement and regenerate the result without recording again. Check text legibility, crop limits, timing and render output. Live highlighting is a separate optional presentation choice. |
 | 3 · Script-directed demos | Associate authored sections and production cues with zoom/highlight targets and graphic inserts. Let a production agent propose an edit using the event log and take choices. | Script, gesture/action and recorded target agree; a reviewed edit plan can be revised before export. Existing scripts, action IDs and profiles retain their meaning; add useful functions within the existing controller groups. |
 
 Start with a Windows proof of concept using one real product demonstration.
+Independent camera and screen files let Production switch between the presenter,
+the demonstrated application and picture-in-picture, and zoom the screen without
+enlarging the presenter. The OBS/source plugin performs capture; Sightline's
+new work is event logging, output association and the production handover.
+See the [existing clean-camera guidance](docs/guide/11-obs.md#separate-clean-camera-and-microphone)
+and [Source Record](https://obsproject.com/forum/resources/source-record.1285/).
+The existing guide documents a separate camera route, not a completed dual-source
+Demo mode or automatic discovery of the plugin's output files.
 Broader platform/input permissions and performance need their own acceptance.
 Built-in screen recording can follow if the OBS-based workflow demonstrates
 demand; it is not a dependency for the first useful event-log handover.
