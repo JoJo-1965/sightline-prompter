@@ -222,6 +222,30 @@ demand; it is not a dependency for the first useful event-log handover.
 This plan does not add screen recording, mouse effects or automatic demo
 editing to the current RC, feature grid, downloads or public product claims.
 
+### Optional two-pass demo workflow
+
+Support recording the demonstration and presenter separately, as well as the
+single-pass camera/screen route. A demo mistake should require a new demo take;
+a narration mistake should require a new presenter take. Retain both sets of
+originals and identify the capture pass and armed outputs explicitly.
+
+| Pass | Capture and review | Handover |
+| --- | --- | --- |
+| A · Demonstration | Record the clean screen/app, cursor/click/shortcut events and named demo steps. Optional scratch commentary helps review. Select the useful demo takes before recording the presenter. | Keep the original media/event clocks and a versioned list of selected source ranges. Correcting a demo step does not discard the presenter material. |
+| B · Presenter and narration | Play back the selected demonstration behind the prompter while recording camera and microphone. Follow the corresponding script/step. Pause or replay a demo step and retake the narration without re-running the application. | Link presenter takes to stable demo-step IDs and selected source ranges. Keep pass-specific files, source clocks and retake choices; do not treat separately recorded passes as simultaneous footage. |
+
+Production assembles a shared edit timeline from those links. Pauses, trims,
+speed changes and held frames need explicit source-to-edit mappings so that
+mouse effects, narration and graphic cues remain aligned. A single clock
+offset cannot align two independently performed passes. Preserve the full
+screen and camera masters for later cuts, picture-in-picture and reframing.
+
+Phase 1's **★★/M** proof of concept can validate separate pass/file identities,
+step references and a manual playback handover. Linked playback transport and
+automatic edit-timeline coordination belong to the complete **★★/L** Demo mode,
+after that foundation is proven. This does not move the item ahead of the
+recording reliability, onboarding and smaller ready improvements above it.
+
 ## Later: connections and platform delivery
 
 | Topic | Scope and dependencies |

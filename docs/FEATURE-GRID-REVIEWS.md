@@ -12,6 +12,11 @@ Clarified that the first demo phase needs independent camera and screen/app
 masters through OBS/per-source recording, identified audio and verified file
 offsets. Existing clean-camera documentation is reusable; dual-source demo
 association and mouse-event capture remain proposed work.
+Added an optional two-pass workflow: record/review the demonstration first,
+then camera/narration over playback. Pass-specific originals, stable step IDs
+and source-to-edit mappings keep separate retakes usable. The first proof of
+concept covers data/manual handover; linked playback/edit coordination remains
+within the larger proposed module. Value/effort and queue position are unchanged.
 This is proposed work with no committed delivery version/date. The RC14
 275-row reference and frozen packages remain unchanged; no app, companion,
 website or Marketplace publication is part of this roadmap edit.
