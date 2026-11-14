@@ -68,8 +68,13 @@ optional Call overlay preset and companion 0.2.1.7. Existing profiles and action
 IDs remain compatible. This is acceptance of implemented work, not a new
 feature backlog; see [mapping and migration](docs/CONTROLLER-COMPATIBILITY.md).
 
-- [ ] Complete a real recording: Voice start/resume, section changes, Retake,
-  quick edits, OBS outputs and take/file association.
+- [x] Review the existing 22-section production recording and its logs. The
+  recorded Retake/tracking issues informed the earlier corrections; see the
+  [recorded reliability review](docs/uat/VOICE-RELIABILITY-2026-11-12.md).
+- [ ] Run a short RC15 regression recording: Voice start/resume, section
+  changes, Retake, quick edits, OBS outputs and take/file association. Use the
+  existing production recording as evidence; a new full performance is not
+  required solely to repeat release acceptance.
 - [ ] Check the actual microphone, sound checks, framing and multi-monitor
   window/toolbar behaviour; investigate any repeatable level change.
 - [ ] Check Stream Deck, pad/phone, API and MCP on the devices and clients used

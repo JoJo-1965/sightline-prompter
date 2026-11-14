@@ -1,5 +1,13 @@
 # Feature-matrix review record
 
+## RC15 acceptance clarification — no capability change
+
+The existing 22-section production recording and recorded reliability review
+already count as real-world evidence. The remaining RC15 operator check is a
+short regression of subsequent changes, not a requirement to rerecord the whole
+film. Updated roadmap/checklist only; the frozen RC15 package, 276-row reference,
+controller contracts and published claims remain unchanged.
+
 ## 14 November 2026 — roadmap structure and priority highlights
 
 Restored a top-level ranked highlights table using the standing value-first,
