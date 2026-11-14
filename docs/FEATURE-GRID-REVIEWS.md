@@ -1,5 +1,15 @@
 # Feature-matrix review record
 
+## 14 November 2026 — roadmap structure and priority highlights
+
+Restored a top-level ranked highlights table using the standing value-first,
+effort-second rules. Separated current release acceptance, remaining development,
+unranked later candidates and completed/preview history; retained the detailed
+scope and acceptance evidence. Planning scores/sizes do not promise a release.
+This is navigation and planning only: no supported capability, runtime, frozen
+RC14 package, 275-row feature reference or live website claim changes.
+
+
 ## Product-demo roadmap proposal — no current feature impact
 
 Added a phased Demo mode track after the core release stabilises: OBS-based
