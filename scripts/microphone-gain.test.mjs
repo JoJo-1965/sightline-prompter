@@ -41,11 +41,11 @@ globalThis.AudioContext = class {
 	sampleRate = 48000;
 	destination = {};
 	audioWorklet = { addModule: async () => {} };
-	createMediaStreamSource() { return { connect() {} }; }
-	createGain() { return { gain: {}, connect() {} }; }
+	createMediaStreamSource() { return { connect( target ) { return target; } }; }
+	createGain() { return { gain: {}, connect( target ) { return target; } }; }
 	async close() {}
 };
-globalThis.AudioWorkletNode = class { port = {}; connect() {} };
+globalThis.AudioWorkletNode = class { port = {}; connect( target ) { return target; } };
 let inputDiagnostic;
 const meter = createLevelMeter( { onInput: input => { inputDiagnostic = input; } } );
 await meter.start( "meter-device" );
