@@ -3,6 +3,8 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { once } from "node:events";
+import { execFile } from "node:child_process";
+import { promisify } from "node:util";
 import { Client } from "@modelcontextprotocol/client";
 import { StdioClientTransport } from "@modelcontextprotocol/client/stdio";
 import { startRemoteServer } from "../src/remote.js";
@@ -28,6 +30,11 @@ const transport = new StdioClientTransport( { command: process.execPath, args: [
 let stderr = "";
 transport.stderr?.on( "data", chunk => stderr += chunk );
 try {
+	const run = promisify( execFile );
+	const checked = await run( process.execPath, [ path.resolve( "scripts/sightline-mcp.mjs" ), "--check" ], { env: { ...process.env, SIGHTLINE_SETTINGS: folder }, windowsHide: true } );
+	assert.equal( JSON.parse( checked.stdout ).ok, true );
+	assert.equal( checked.stdout.includes( token ) || checked.stderr.includes( token ), false );
+	assert.equal( writes, 0, "CLI connection checking never mutates the app" );
 	await client.connect( transport );
 	const tools = await client.listTools();
 	assert.equal( tools.tools.length, 8 );
@@ -62,6 +69,7 @@ try {
 	}
 	settings.mcpEnabled = false;
 	assert.equal( ( await call( "sightline_status" ) ).isError, true, "Disabling MCP revokes an already-connected client" );
+	await assert.rejects( run( process.execPath, [ path.resolve( "scripts/sightline-mcp.mjs" ), "--check" ], { env: { ...process.env, SIGHTLINE_SETTINGS: folder }, windowsHide: true } ), error => error.code === 1 && !error.stderr.includes( token ) );
 	await fs.rm( descriptor );
 	assert.equal( ( await call( "sightline_status" ) ).isError, true );
 	assert.equal( stderr.includes( token ), false, "Credentials never appear in adapter diagnostics" );

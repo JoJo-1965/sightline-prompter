@@ -34,6 +34,7 @@ export function createObs( { onState = () => {}, WebSocketClass = globalThis.Web
 	let setup = null;
 	let recordRevision = 0;
 	let recordTransition = null;
+	let identityGap = false;
 	let calibrationVirtual = false;
 	let calibrationScenes = [];
 	let calibrationFrameBusy = false;
@@ -107,15 +108,19 @@ export function createObs( { onState = () => {}, WebSocketClass = globalThis.Web
 			return;
 		}
 		const recording = !data.outputActive ? "stopped" : data.outputPaused ? "paused" : "recording";
-		const fresh = data.outputActive && ( !state.recordingId || state.recording === "stopped" || recordTransition === "starting" );
+		const clockRestarted = data.outputActive && [ "recording", "paused" ].includes( state.recording ) && state.fileClockUnknown !== true && Number.isFinite( data.outputDuration ) && Number.isFinite( state.outputDuration ) && data.outputDuration + 1000 < state.outputDuration;
+		const fresh = data.outputActive && ( !state.recordingId || state.recording === "stopped" || recordTransition === "starting" || clockRestarted );
+		const identityUncertain = fresh && ( identityGap || clockRestarted );
 		recordTransition = null;
 		publish( {
 			recording,
-			...( fresh ? { recordingId: randomUUID(), outputPath: null, fileClockUnknown: false } : {} ),
+			...( fresh ? { recordingId: randomUUID(), outputPath: null, fileClockUnknown: false, identityUncertain, identityReason: identityUncertain ? "OBS continuity was interrupted; check the actual output files" : "Observed active OBS recording" } : {} ),
+			...( typeof data.outputPath === "string" && data.outputPath ? { outputPath: data.outputPath } : {} ),
 			outputDuration: Number.isFinite( data.outputDuration ) ? data.outputDuration : fresh ? null : state.outputDuration,
 			durationObservedAt: Number.isFinite( data.outputDuration ) ? new Date().toISOString() : fresh ? null : state.durationObservedAt,
 			error: null
 		} );
+		if ( fresh ) identityGap = false;
 	}
 	function refresh() {
 		if ( changingScenes ) return Promise.reject( new Error( "OBS is changing scene collections; wait for it to finish" ) );
@@ -136,6 +141,7 @@ export function createObs( { onState = () => {}, WebSocketClass = globalThis.Web
 		return polling;
 	}
 	function lost( message ) {
+		if ( state.recordingId && state.recording !== "stopped" ) identityGap = true;
 		clearConnection();
 		publish( { connection: config.enabled ? "disconnected" : "disabled", recording: null, chapters: false, error: message } );
 		if ( config.enabled ) retry = setTimeout( () => connect().catch( () => {} ), reconnectMs );
@@ -197,13 +203,12 @@ export function createObs( { onState = () => {}, WebSocketClass = globalThis.Web
 							if ( [ "OBS_WEBSOCKET_OUTPUT_STARTING", "OBS_WEBSOCKET_OUTPUT_STOPPING" ].includes( record.outputState ) ) {
 								recordTransition = record.outputState === "OBS_WEBSOCKET_OUTPUT_STARTING" ? "starting" : "stopping";
 								publish( { recording: null } );
-							} else recordStatus( { outputActive: record.outputActive, outputPaused: record.outputState === "OBS_WEBSOCKET_OUTPUT_PAUSED" } );
-							if ( record.outputPath ) publish( { outputPath: record.outputPath } );
+							} else recordStatus( { outputActive: record.outputActive, outputPaused: record.outputState === "OBS_WEBSOCKET_OUTPUT_PAUSED", outputPath: record.outputPath } );
 						}
 						if ( d.eventType === "RecordFileChanged" ) {
 							recordRevision++;
 							if ( d.eventData.oldOutputPath ) publish( { outputPath: d.eventData.oldOutputPath } );
-							publish( { outputPath: d.eventData.newOutputPath, recordingId: randomUUID(), fileClockUnknown: true } );
+							publish( { outputPath: d.eventData.newOutputPath ?? null, recordingId: randomUUID(), fileClockUnknown: true, identityUncertain: false, identityReason: "OBS split-file event; file clock needs measurement" } );
 						}
 					}
 				} catch {
@@ -336,8 +341,13 @@ export function createObs( { onState = () => {}, WebSocketClass = globalThis.Web
 					await refresh();
 					stillAllowed();
 					if ( state.recording === "stopped" ) return snapshot();
+					const stoppedId = state.recordingId;
 					const result = await request( "StopRecord" );
 					stillAllowed();
+					if ( state.recordingId !== stoppedId ) {
+						if ( result.outputPath && stoppedId ) publish( { finalizedRecording: { recordingId: stoppedId, outputPath: result.outputPath, connection: "connected", recording: "stopped", observedAt: new Date().toISOString() } } );
+						throw new Error( "The previous output stopped, but another OBS recording has started. Check OBS before continuing." );
+					}
 					publish( { outputPath: result.outputPath ?? state.outputPath } );
 					await waitForRecording( "stopped" );
 				}

@@ -1,6 +1,6 @@
 # Sightline Prompter
 
-> **Development preview: 1.3.0 RC14, documentation revision 30.**
+> **Development preview: 1.3.0 RC15, documentation revision 31.**
 > The public download below is stable 1.2.0. This candidate adds optional
 > [post-record audio review](docs/guide/19-post-record-review.md) and a
 > [rerunnable guided tour](docs/guide/20-guided-tour.md). Read the
@@ -155,6 +155,15 @@ on your own setup. OBS-scene calibration is a sampled preview, not the encoder o
 · [Roadmap](ROADMAP.md)
 
 ## Change log
+
+### 1.3.0 RC15 — recording evidence and useful setup
+
+Take/file associations handle late OBS replies and expose reconnect/split-file
+uncertainty. Recorded-audio review isolates neighbouring takes, reports timing
+quality and can recompare saved words. Copy profile-specific MCP configuration
+and run a read-only connection check; inspect microphone, command and OBS
+diagnostics in Debug. Existing controllers, scripts and permission grants remain.
+See [complete notes and limits](docs/RELEASE-1.3.0.md#rc15).
 
 ### 1.3.0 RC13 — authoring and call-overlay controls
 

@@ -95,7 +95,8 @@ export function helpTabs( settings, notes = false ) {
 		...( settings.padEnabled !== false || settings.phoneRemote ? [ [ "Pad and phone buttons", "Choose and arrange shared actions. Named button selection and Earlier/Later replace numbered pages" ] ] : [] ),
 		...( settings.obsEnabled && settings.obsControls ? [ [ "Finish recording hold", "Pad and phone require one second by default. Release early to cancel; Stream Deck has its own per-key setting" ] ] : [] ),
 		[ "Call overlay controls", "Optional pad/phone preset; Stream Deck Display adds Clean view and On top in companion 0.2.1.7. Operator mode buttons match the prompter; saved layouts stay intact" ],
-		[ "Connections > MCP, AI, and API", "Refresh the AI kit and reconnect for eight MCP tools. sightline_view sets display on/off; sightline_prompt selects paused reading modes. Read status/capabilities first; recording keeps separate grants" ],
+		[ "Connections > MCP, AI, and API", "Configure MCP opens copyable setup for the active profile and a read-only connection check. Refresh the AI kit and reconnect for eight tools; recording keeps separate grants" ],
+		[ "Debug > Status and recovery", "Inspect opened microphone/processing, listening, recent command words/results and OBS state. Clear recent words when finished; persistent tracing remains opt-in" ],
 		[ "Connections > Apps and add-ons", "Install, repair or remove the offline speech model and AI kit; check Node.js for AI commands" ],
 		[ "Getting started > Restore defaults", "Reset preferences and pairings only after confirmation; scripts, recordings and installed add-ons are retained" ]
 	] ) ] } );

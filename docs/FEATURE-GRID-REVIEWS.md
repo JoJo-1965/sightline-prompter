@@ -623,3 +623,12 @@ wake choice, applied-input diagnostics and short-take assessment together.
 Two capability rows added: foreground dialog speech and remembered placement.
 Existing microphone, wake, Retake, toolbar and measurement rows updated.
 272 capabilities in 18 groups; stable 1.2.0 snapshot remains 249.
+
+## 14 November 2026 — RC15 requested recording/setup batch
+
+Reviewed roadmap items 2, 3, 6 and 7 together. Extended take/file references,
+recorded comparison/timing qualifications and local MCP setup/checking. Added
+session diagnostics as one capability: 276 entries, with old controllers and
+eight MCP tools unchanged. Help, built-in reference, UAT, sample/promo capture
+guidance and JL candidate archive are reviewed together. No current stable
+release, Marketplace submission or live website deployment is implied.

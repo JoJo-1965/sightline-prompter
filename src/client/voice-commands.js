@@ -299,6 +299,7 @@ export function createCommandListener( {
 	onCommand,
 	onWake = () => {},
 	onMiss = () => {},
+	onResolved = () => {},
 	contextActions = () => null,
 	isPaused = () => false,
 	wakeWord = "prompter",
@@ -320,6 +321,10 @@ export function createCommandListener( {
 	let previousInput = "", previousInputAt = -Infinity;
 	let contextBuffer = [], contextId = null;
 	const textOf = words => words.map( normalize ).filter( Boolean ).join( " " );
+	const resolved = ( action, value, words ) => {
+		onResolved( { action, value, heard: words.join( " " ) } );
+		if ( value === undefined ) onCommand( action ); else onCommand( action, value );
+	};
 	const bareCommand = ( words ) => {
 		const n = sectionNumber( words );
 		if ( n ) return [ "section", n ];
@@ -354,7 +359,7 @@ export function createCommandListener( {
 		// A separately finalised wake safely ends that complete section request.
 		if ( !held && atStart && final && words.length === 1 && isWake( textOf( words ) ) ) {
 			const completed = sectionNumber( pending );
-			if ( completed ) { onCommand( "section", completed ); pending = []; }
+			if ( completed ) { resolved( "section", completed, pending ); pending = []; }
 		}
 		for ( const word of words ) {
 			const productName = wakeKey === "prompter" && previousInput === "sightline" && clock() - previousInputAt < 1800 && normalize( word ) === "prompter";
@@ -412,8 +417,8 @@ export function createCommandListener( {
 				if ( numberWords.length === 1 && numberWords[0].length >= 3 && !sectionNumber( [ "section", ...numberWords ] ) && Object.keys( NUMBER_WORDS ).some( word => word.startsWith( numberWords[0] ) ) ) { held.numberFragmentAt ??= clock(); return pass; }
 				const n = sectionNumber( held.words ) ?? sectionNumber( [ "section", ...held.words ] );
 				const id = n ? null : matchCommand( held.words, options );
-				if ( n ) onCommand( "section", n );
-				else if ( id ) onCommand( id );
+				if ( n ) resolved( "section", n, [ ...held.wake, ...held.words ] );
+				else if ( id ) resolved( id, undefined, [ ...held.wake, ...held.words ] );
 				else {
 					if ( held.words.length <= 3 ) onMiss( held.words );
 					pass.push( ...held.wake, ...held.words );
@@ -421,7 +426,7 @@ export function createCommandListener( {
 				held = null;
 			}
 			const bare = atStart && bareCommand( pending );
-			if ( bare ) onCommand( ...bare );
+			if ( bare ) resolved( bare[0], bare[1], pending );
 			else pass.push( ...pending );
 			pending = [];
 			atStart = true;

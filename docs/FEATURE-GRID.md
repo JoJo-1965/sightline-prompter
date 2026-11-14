@@ -1,11 +1,11 @@
 # Sightline Prompter feature grid
 
-**Review basis: Sightline 1.3.0 RC14 preview, documentation revision 30, 12 November 2026.**
-**Build version:** `1.3.0-rc.14` · **Publication status:** Preview
+**Review basis: Sightline 1.3.0 RC15 preview, documentation revision 31, 14 November 2026.**
+**Build version:** `1.3.0-rc.15` · **Publication status:** Preview
 
 **Maintained source:** [Feature grid](https://github.com/JoJo-1965/sightline-prompter/blob/codex/pointing-production-cues/docs/FEATURE-GRID.md)
 
-This grid describes the preview built from `1ee8d0c`, with the RC14 consistency batch, with companion Stream
+This grid describes the preview built from `1ee8d0c`, with the RC15 recording/setup batch, with companion Stream
 Deck plugin **0.2.1.7** candidate. It includes stable 1.2.0 features plus the explicitly labelled RC additions. The build manifest also records the packaging/documentation
 snapshot. The public app release remains **1.2.0**; this document
 does not certify an individual recording setup.
@@ -142,7 +142,7 @@ Reference: [Writing scripts](guide/02-scripts.md).
 | External editing | Included | Watch an opened file and refresh when it changes externally. | Watching pauses during built-in editing to avoid conflicting edits. |
 | Script slots | Included | Nine quick-access slots, recent files and switching controls. RC11 uses a compact Slot 1–9 picker at 1100 pixels wide or less; wide windows retain numbered buttons. Ctrl+1…9 works in both layouts. | A slot points to its script; clearing a slot is separately confirmed. |
 | Slot clearing protection | Included | Confirmation before clearing an occupied slot. | Keep source files backed up independently of slot assignments. |
-| Sample scripts | Included | Eighteen shipped samples; Start here is a core/RC feature tour, with focused RC12 audio/dialog and RC13 authoring/overlay and RC14 controller/MCP rehearsals. Focused voice, framing, recording, Notes and handover demos use separate setup comments and short cues. | Protected originals: save a copy to edit. Recording actions are opt-in exercises. The formatting diagnostic intentionally contains one unknown tag. See [Demo guide](DEMO-SCRIPTS.md). |
+| Sample scripts | Included | Nineteen shipped samples; Start here is a core/RC feature tour, with focused RC12 audio/dialog and RC13 authoring/overlay and RC14 controller/MCP plus RC15 recording/setup rehearsals. Focused voice, framing, recording, Notes and handover demos use separate setup comments and short cues. | Protected originals: save a copy to edit. Recording actions are opt-in exercises. The formatting diagnostic intentionally contains one unknown tag. See [Demo guide](DEMO-SCRIPTS.md). |
 | Recording preview sample | Included | Preparation, Continuous and linked recording, explicit commands and handover walkthrough. | Exercise recorder controls only with the intended test setup connected. |
 | Exact recording script | Included | Preserve the source actually used, including section IDs, slide cues and directions, in the edit pack. | The export is the recording snapshot, which can differ from a later file edit. |
 
@@ -328,7 +328,7 @@ Reference: [Recording with OBS](guide/11-obs.md) and [OBS setup assistant](guide
 | Explicit recorder actions | Included | Record on, off, pause and resume through supported controls, voice or optional directives. | OBS/format limitations apply; script loading alone cannot trigger recording. |
 | Recording reminder | Included | Visible recording state and start/finish controls help distinguish prompting from recording. | A reminder or On air display is not proof of a running recorder. |
 | Recording file and clock | Included | Log OBS recording starts/stops, pause/resume/restart events, file identity and reported time references. | File names and offsets remain unknown where OBS has not supplied enough information. |
-| Take-to-file references | Included | Section starts, takes and markers link to OBS recording segments and clock positions. | Estimated timing and discontinuities are retained as such; inspect the media for precise edits. |
+| Take-to-file references | Included | RC15: late Stop replies retain the old identity; reconnect gaps, clock resets and split files are explicit. Recording review and recording-links.json show per-take observed files and estimated clocks. | Unknown files or continuity require review; no automatic discovery/bundling of every external master or verified picture sync. |
 | OBS chapters | Optional | Send section starts and named markers as recording chapters. | Requires support from the OBS version, output format and recording state. |
 | Recorded slate source | Optional | Prepare a browser-source picture/tone route for a reference in the recorded output. | Add it to the recorded scene and include the routed audio track; confirm it in a test file. |
 | Setup assistant | Optional | Review and apply a separate OBS profile/scene collection using selected existing camera, mic and presentation sources. | Does not guess hardware; source types must be supported and configured first. |
@@ -370,7 +370,7 @@ Reference: [Take log and edit pack](guide/05-recording-a-take.md) and [Productio
 | Take summary | Included | Review pace, target difference, completion and available sound/recognition feedback. | Results depend on the information captured for that take. |
 | Saved recording browser | Included | Revisit saved sessions and export reports/edit packs. | The log browser is not a video editor or media-management system. |
 | Core log exports | Included | `take-log.json` and `takes.csv`. | Field availability can differ between older and newer sessions. |
-| Timing qualifications | Included | `timing-quality.json` and `TIMING-NOTES.md` explain unverified alignment, caption and pace estimates. | Original production brief and existing schemas are retained. Clock observations do not verify camera lip sync. |
+| Timing qualifications | Included | timing-quality.json and TIMING-NOTES.md distinguish live estimates from recorded transcripts; RC15 adds shared-start, zero-duration, overlap and low-confidence diagnostics. | Listening remains required; unreliable pace is withheld and audio offsets do not prove camera picture sync. |
 | Word and sentence detail | Optional | `words.csv` and `sentences.csv` retain live voice-following estimates. | Word times can lag or bunch; unmatched words do not prove an omission. Use recorded-audio transcription for cuts and captions. |
 | Edit marks | Included | `edit-marks.csv` and `edit-marks.json`, including markers, pauses and rereads where available. | Suggestions and recognition-derived boundaries need editorial review. |
 | Draft captions | Optional | `captions.srt` and `captions.vtt`, built from available aligned speech/script data. | Review text and timing before publication; not a guaranteed verbatim transcript. |
@@ -385,7 +385,7 @@ Reference: [Take log and edit pack](guide/05-recording-a-take.md) and [Productio
 
 | Local post-record transcript | Optional | RC1 preview: explicitly transcribe the selected reference audio with local faster-whisper small.en; progress, cancellation and recording guard. | Separate Python environment and cached English model; about 500 MB model download. No automatic post-stop job or cloud upload. |
 | Timed transcript import | Optional | RC1 preview: import word/start/end or w/s/e JSON; choose session clock or provide a file offset. | Ordered finite word times required. No Python needed; an imported transcript still needs review. |
-| Recorded delivery comparison | Optional | RC1 preview: expected/heard substitutions, insertions and omission candidates, with single-take priority and listening links. | Low agreement is uncertain, not a confirmed misread. Original take choices remain unchanged. |
+| Recorded delivery comparison | Optional | RC15: separate adjacent take windows, explicit unavailable transcript coverage and Recompare saved transcript, retaining substitutions/insertions/omission candidates and listening links. | No later-take borrowing, confirmed misread or automatic keeper changes. Requires timed words; recompare does not download models or retranscribe. |
 | Command cut ranges | Optional | RC1 preview: post-record start/end ranges for recognised or missed attempts, with available live callback outcomes. | Review before cutting quoted commands. Legacy execution may be unknown; live callback times remain estimates and raw speech tracing stays opt-in. |
 
 ## 15 · Script review and rehearsal coaching
@@ -414,7 +414,7 @@ Reference: [Working with AI and the local API](guide/09-working-with-ai.md) and 
 | AI script brief | Included | Copy documented instructions for sections, targets, cues, stops and optional control directives. | The chosen assistant generates the script; check its output before use. |
 | Assistant choice | Dependent | ChatGPT, Claude, Gemini, Copilot or another assistant can prepare a compatible script. | Assistant capabilities, costs and privacy terms are external. |
 | Local control API | Optional | Enable token-protected local endpoints to load scripts, select slots and issue supported commands. | Off by default; intended for authorised local tools, not public web pages. |
-| Local MCP connection | Optional | Eight stdio tools in the AI kit, including explicit display states and paused reading-mode choices; Connections > MCP, AI, and API includes a Configure MCP guide beside the switch. | Node.js 22.16+, local API/MCP enabled and applied. Separate grants; read-only by default. No cloud MCP endpoint. See [client configuration](guide/17-configure-mcp.md). |
+| Local MCP connection | Optional | Eight stdio tools; RC15 adds active-profile JSON/Codex configuration, Copy, a read-only prerequisite/connection check and adapter --check. | Node.js 22.16+, installed AI kit and applied API/MCP settings. No token in copied setup; reconnect a real client to verify discovery. Read-only by default; separate grants. See [setup](guide/17-configure-mcp.md). |
 | MCP permission grants | Optional | Script, prompting and OBS recording grants are enforced by the app; turning MCP off revokes active clients. | No settings edits, arbitrary file reads or recording deletion. Delivery commands require the recording grant when OBS controls are enabled; mode/display changes need only the control grant and never start capture. |
 | Live automation feedback | Included | Status and event updates expose supported state and app/control-contract versions. | Clients need to handle connection loss, permissions and unsupported capabilities. |
 | Configure through an agent | Optional | An authorised local agent can change supported settings and control prompting. | General API access is separate from the restricted Stream Deck credential. |
@@ -463,6 +463,7 @@ Reference: [Privacy and accessibility policies](POLICIES.md) and [Acceptance wal
 | Local recording information | Included | Keep script snapshots, recognised timing, take choices and optional scratch audio for handover. | These files can contain personal or confidential content; manage them as production material. |
 | Diagnostic logging | Optional | Debug > Status and recovery shows listening health, Restart listening and a speech-settings link. Recovery events help investigate failures. | Uses applied speech/microphone settings. Recognised-word tracing is separate and off by default. |
 | Optional word tracing | Optional | Enable recognised command-word logging to investigate actual mishearings. | May include nearby speech; only enable it for the intended diagnostic period. |
+| Session microphone/command/OBS diagnostics | Optional | RC15: Debug status shows actual input/processing, listening, recent resolved/missed command words/results and separate OBS states. Clear or ten-minute expiry removes recent command words. | Session-only; no new microphone/capture request, persistent command trace, support-log word inclusion or automatic upload. Ordinary script speech is not retained by this panel. |
 | Recording-state honesty | Included | Confirmed stopped/recording/paused states are distinct from unknown/disconnected. | UI state cannot certify that the resulting picture/audio is usable. |
 | Hardware acceptance | Limited | Walkthrough covers real camera, mic, controls, clean tracks, sync and output inspection. | Local automated tests do not replace camera/mic and physical-control testing. |
 | Release and reference basis | Included | This grid describes the RC13 preview and companion 0.2.1.7 candidate, with maintained source and downloadable references; stable app 1.2.0 and published companion 0.2.0 remain distinct. | Platform/device acceptance and the listed feature limits still apply. Historical RC notes are archived separately. |

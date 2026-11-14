@@ -4,6 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import { spawn } from "node:child_process";
 import { createRequire } from "node:module";
+import net from "node:net";
 
 const root = process.cwd(), require = createRequire( path.join( root, "package.json" ) ), port = 9366;
 assert.equal( await fetch( `http://127.0.0.1:${ port }/json/version` ).then( () => true ).catch( () => false ), false, "Use a free isolated test port" );
@@ -20,12 +21,12 @@ if(process.env.SIGHTLINE_REVIEW_PYTHON)await fs.writeFile(path.join(profile,"rec
 
 const env = { ...process.env }; delete env.ELECTRON_RUN_AS_NODE;
 const child = spawn( process.env.SIGHTLINE_TEST_EXE ?? require( "electron" ), [ ...( process.env.SIGHTLINE_TEST_EXE ? [] : [ "." ] ), "--inspect=0", `--user-data-dir=${ profile }`, `--remote-debugging-port=${ port }`, "--disable-renderer-backgrounding", "--disable-features=CalculateNativeWinOcclusion" ], { cwd: root, env, windowsHide: true, stdio: [ "ignore", "pipe", "pipe" ] } );
-let stderr = ""; child.stderr.on( "data", data => stderr += data ); child.stdout.resume();
+let stderr = ""; child.stderr.on( "data", data => stderr += data ); child.stdout.on( "data", data => stderr += data );
 const pause = ms => new Promise( resolve => setTimeout( resolve, ms ) );
 const sockets = [], errors = [];
 async function connect( fragment ) {
 	let target;
-	for ( let n = 0; n < 100; n++ ) {
+	for ( let n = 0; n < 300; n++ ) {
 		target = fragment === "main-process" ? { webSocketDebuggerUrl: stderr.match( /Debugger listening on (ws:\/\/127\.0\.0\.1:\d+\/[^\s]+)/ )?.[1] } : ( await fetch( `http://127.0.0.1:${ port }/json/list` ).then( r => r.json() ).catch( () => [] ) ).find( t => t.url.includes( fragment ) );
 		if ( target?.webSocketDebuggerUrl ) break;
 		await pause( 100 );
@@ -45,16 +46,20 @@ try {
  await native.evaluate("globalThis.reviewTestElectron=process.getBuiltinModule('module').createRequire(process.cwd()+'/package.json')('electron');globalThis.reviewSelections=[];reviewTestElectron.dialog.showOpenDialog=async()=>({canceled:false,filePaths:[reviewSelections.shift()]});reviewTestElectron.shell.openPath=async()=>'';");
  await native.evaluate("reviewTestElectron.Menu.getApplicationMenu().items.find(x=>x.label==='File').submenu.items.find(x=>x.label==='Review recorded audio…').click()");
  const review=await connect("recording-review.html");await pause(100);
+ await wait(()=>review.evaluate("document.documentElement.dataset.reviewReady==='true'"),'review ready');
  assert.equal(await main.evaluate("typeof window.recordingReview"),"undefined","Review IPC is exposed only to the review window");
  const select=async file=>native.evaluate(`reviewSelections.push(${JSON.stringify(file)})`);
  await select(fixturePath);await review.evaluate("document.getElementById('choose-log').click()");
- await wait(()=>review.evaluate("document.getElementById('session-summary').textContent.includes('Review fixture')"),"session selection");
+ await wait(()=>review.evaluate("document.getElementById('session-summary').textContent.includes('Review fixture')"),"session selection").catch(async error=>{console.error('Review state:',await review.evaluate("document.body.innerText"),errors);throw error;});
  assert.equal(await review.evaluate("document.getElementById('reference-offset').value"),"0");
  await wait(()=>review.evaluate("document.getElementById('player').duration===4"),"local reference playback metadata");
  assert.equal(await review.evaluate("document.getElementById('transcribe').disabled"),true,"No implicit dependency/model download");
  await select(transcriptPath);await review.evaluate("document.getElementById('import').click()");
  await wait(()=>review.evaluate("document.querySelectorAll('#review-takes .take').length===1"),"transcript comparison");
  assert.match(await review.evaluate("document.getElementById('review-takes').textContent"),/the → a/);
+ assert.match(await review.evaluate("document.getElementById('timing-quality').textContent"),/estimates from recorded audio/);
+ assert.equal(await review.evaluate("document.getElementById('recompare').disabled"),false);await review.evaluate("window.recordingReview.action('recompare')");await wait(()=>review.evaluate("document.getElementById('cancel').disabled"),"saved transcript recompare");
+ assert.match(await review.evaluate("document.getElementById('recording-links').textContent"),/no recorder evidence/);
  assert.equal(await fs.readFile(fixturePath,"utf8"),originalLog,"Original log stays byte-for-byte intact");
  const sidecarNames=await fs.readdir(path.join(profile,"recording-reviews"));assert.equal(sidecarNames.length,1);
  const sidecarPath=path.join(profile,"recording-reviews",sidecarNames[0]),savedReview=await fs.readFile(sidecarPath,"utf8");
@@ -67,7 +72,7 @@ try {
  const destination=path.join(profile,"exports");await fs.mkdir(destination);await select(destination);await review.evaluate("document.getElementById('export').click()");await wait(()=>review.evaluate("document.getElementById('status').textContent.includes('exported')"),"reviewed export");
  const pack=path.join(destination,"Sightline reviewed edit pack");assert.ok((await fs.readFile(path.join(pack,"words.csv"),"utf8")).includes('"a"'));assert.ok(await fs.stat(path.join(pack,"live-words.csv")));assert.equal(await fs.readFile(fixturePath,"utf8"),originalLog);
  for(const [width,height]of [[1180,850],[700,620]]){await review.call("Emulation.setDeviceMetricsOverride",{width,height,deviceScaleFactor:1,mobile:false});assert.equal(await review.evaluate("document.documentElement.scrollWidth<=innerWidth"),true,"No horizontal overflow");}
- await review.call("Emulation.clearDeviceMetricsOverride");await fs.writeFile(path.join(artifacts,"recording-review.png"),Buffer.from((await review.call("Page.captureScreenshot",{format:"png"})).data,"base64"));
+ await review.call("Emulation.setDeviceMetricsOverride",{width:1180,height:1120,deviceScaleFactor:1,mobile:false});await review.evaluate("document.getElementById('recording-links').closest('details').open=true");await fs.writeFile(path.join(artifacts,"recording-review.png"),Buffer.from((await review.call("Page.captureScreenshot",{format:"png"})).data,"base64"));await review.call("Emulation.clearDeviceMetricsOverride");
  if(process.env.SIGHTLINE_REVIEW_EVIDENCE){
   const evidence=process.env.SIGHTLINE_REVIEW_EVIDENCE, log=path.join(evidence,"edit-pack","take-log.json"), original=await fs.readFile(log);
   await select(log);await review.evaluate("document.getElementById('choose-log').click()");await wait(()=>review.evaluate("document.getElementById('session-summary').textContent.includes('15 takes')"),"production source selected");
@@ -84,6 +89,28 @@ try {
   await fs.writeFile(path.join(artifacts,"recording-review-production.png"),Buffer.from((await review.call("Page.captureScreenshot",{format:"png"})).data,"base64"));
  }
  await main.evaluate("document.getElementById('cb-settings').click()");const settings=await connect("panel=settings");await pause(100);
+ await main.evaluate("window.electron.components('kit','install')");
+ const setup=await main.evaluate("window.electron.mcpSetup('info','json')");
+ assert.equal(JSON.parse(setup.configurations.json).mcpServers.sightline.env.SIGHTLINE_SETTINGS,profile.replaceAll('\\','/'));
+ assert.equal(JSON.stringify(setup).includes('token'),false,'Setup returns no token');
+ await native.evaluate("reviewTestElectron.clipboard.writeText=text=>globalThis.copiedMcpConfiguration=text");
+ const portProbe=net.createServer();await new Promise(resolve=>portProbe.listen(0,'127.0.0.1',resolve));const setupPort=portProbe.address().port;await new Promise(resolve=>portProbe.close(resolve));
+ await main.evaluate(`window.electron.saveSettings({remoteControl:true,mcpEnabled:true,remotePort:${setupPort}})`);await pause(250);
+ await settings.evaluate("[...document.querySelectorAll('button')].find(b=>b.textContent==='MCP, AI, and API').click();document.getElementById('set-mcp-help').click()");
+ await wait(()=>settings.evaluate("document.getElementById('mcp-client-config').value.includes('SIGHTLINE_SETTINGS')"),'profile-specific configuration');
+ await settings.evaluate("[...document.querySelectorAll('.mcp-connection-setup button')].find(b=>b.textContent==='Copy configuration').click()");
+ await wait(()=>native.evaluate("typeof copiedMcpConfiguration==='string'"),'configuration copy');
+ await settings.evaluate("[...document.querySelectorAll('.mcp-connection-setup button')].find(b=>b.textContent==='Check connection').click()");
+ await wait(()=>settings.evaluate("document.querySelector('.mcp-connection-setup [role=status]').textContent.includes('answered')"),'read-only connection check').catch(async error=>{console.error(await settings.evaluate("document.querySelector('.mcp-connection-setup [role=status]').textContent"));throw error;});
+ assert.equal(await settings.evaluate("document.querySelector('.settings-preview-pane').getClientRects().length>0"),true,'Approved Settings preview composition is retained');
+ await settings.evaluate("document.getElementById('mcp-client-config').scrollIntoView({block:'center'})");await pause(80);await fs.writeFile(path.join(artifacts,'mcp-setup-rc15.png'),Buffer.from((await settings.call('Page.captureScreenshot',{format:'png'})).data,'base64'));
+ await native.evaluate("reviewTestElectron.BrowserWindow.getAllWindows().find(w=>w.webContents.getURL().includes('teleprompter.html')).webContents.send('microphoneDiagnostic',{input:'USB microphone (test fixture)',requested:'selected input',applied:{autoGainControl:false,noiseSuppression:true,echoCancellation:false}})");
+ await settings.evaluate("[...document.querySelectorAll('button')].find(b=>b.textContent==='Status and recovery').click();document.getElementById('session-diagnostics').open=true");
+ await wait(()=>settings.evaluate("document.getElementById('session-diagnostic-rows').textContent.includes('USB microphone')"),'applied microphone diagnostic');
+ assert.match(await settings.evaluate("document.getElementById('session-diagnostic-rows').textContent"),/AGC: off/);
+ await fs.writeFile(path.join(artifacts,'session-diagnostics-rc15.png'),Buffer.from((await settings.call('Page.captureScreenshot',{format:'png'})).data,'base64'));
+ await settings.call('Emulation.setDeviceMetricsOverride',{width:700,height:620,deviceScaleFactor:1,mobile:false});assert.equal(await settings.evaluate('document.documentElement.scrollWidth<=innerWidth'),true);await settings.call('Emulation.clearDeviceMetricsOverride');
+ await main.evaluate("window.electron.saveSettings({remoteControl:false,mcpEnabled:false})");await pause(250);
  const preferences=async()=>{const value=JSON.parse(await fs.readFile(path.join(profile,"app-state.json"),"utf8")).settings;delete value.utilityWindowBounds;return JSON.stringify(value);};
  const beforeSettings=await preferences();
  await settings.evaluate("document.querySelector('[data-tab=\"getting-started\"]').click();document.getElementById('settings-start-tour').click()");await wait(()=>settings.evaluate("document.querySelector('.sightline-coach-card')?.dataset.step==='0'"),"tour starts");

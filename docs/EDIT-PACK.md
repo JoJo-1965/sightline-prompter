@@ -420,3 +420,18 @@ Do not treat these observations as a continuous or frame-accurate timecode
 map. Connection loss can leave gaps or unknown file associations. Use the
 slate or scratch audio for precise synchronisation, and preserve uncertain
 associations rather than guessing a filename or offset.
+
+## RC15 recording associations and timing quality
+
+Every export adds recording-links.json with section/take, observed recording
+IDs, reported output paths, estimated start/end clocks and review requirements.
+No recorder evidence, unresolved files, multiple files and uncertain continuity
+remain explicit. A late OBS Stop reply belongs to the old recording identity;
+connection gaps and split clocks must be checked against the actual media.
+
+Post-record timing-quality.json adds transcriptTimingQuality and takeTimingQuality
+summaries for zero durations, shared starts, overlaps and low confidence.
+Adjacent-take windows prevent borrowing a later repeated opening. Uncovered
+takes are unavailable evidence. Comparison can be refreshed from saved words;
+source logs, keeper choices and live-* exports are retained. These additions
+do not establish frame-accurate cuts or camera picture sync.

@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "basis": "Sightline 1.3.0 RC14 preview, documentation revision 30, 12 November 2026",
-  "date": "12 November 2026",
+  "basis": "Sightline 1.3.0 RC15 preview, documentation revision 31, 14 November 2026",
+  "date": "14 November 2026",
   "sourceBuild": "1ee8d0c",
-  "buildVersion": "1.3.0-rc.14",
+  "buildVersion": "1.3.0-rc.15",
   "publicationStatus": "preview",
   "appRelease": "1.2.0",
   "pluginRelease": "0.2.1.7",
   "sourceUrl": "https://github.com/JoJo-1965/sightline-prompter/blob/codex/pointing-production-cues/docs/FEATURE-GRID.md",
-  "sourceSha256": "ecb2752c35967676432e5628f718ae1a7bb068242d70776082436b32697767e7",
+  "sourceSha256": "bb6695f55b5e0604221e18ac07cb13ef9c847ee92dc512a3f76b3b3456115cf7",
   "support": [
     "Included",
     "Optional",
@@ -386,7 +386,7 @@
         {
           "name": "Sample scripts",
           "support": "Included",
-          "options": "Eighteen shipped samples; Start here is a core/RC feature tour, with focused RC12 audio/dialog and RC13 authoring/overlay and RC14 controller/MCP rehearsals. Focused voice, framing, recording, Notes and handover demos use separate setup comments and short cues.",
+          "options": "Nineteen shipped samples; Start here is a core/RC feature tour, with focused RC12 audio/dialog and RC13 authoring/overlay and RC14 controller/MCP plus RC15 recording/setup rehearsals. Focused voice, framing, recording, Notes and handover demos use separate setup comments and short cues.",
           "limits": "Protected originals: save a copy to edit. Recording actions are opt-in exercises. The formatting diagnostic intentionally contains one unknown tag. See [Demo guide](DEMO-SCRIPTS.md)."
         },
         {
@@ -1284,8 +1284,8 @@
         {
           "name": "Take-to-file references",
           "support": "Included",
-          "options": "Section starts, takes and markers link to OBS recording segments and clock positions.",
-          "limits": "Estimated timing and discontinuities are retained as such; inspect the media for precise edits."
+          "options": "RC15: late Stop replies retain the old identity; reconnect gaps, clock resets and split files are explicit. Recording review and recording-links.json show per-take observed files and estimated clocks.",
+          "limits": "Unknown files or continuity require review; no automatic discovery/bundling of every external master or verified picture sync."
         },
         {
           "name": "OBS chapters",
@@ -1478,8 +1478,8 @@
         {
           "name": "Timing qualifications",
           "support": "Included",
-          "options": "`timing-quality.json` and `TIMING-NOTES.md` explain unverified alignment, caption and pace estimates.",
-          "limits": "Original production brief and existing schemas are retained. Clock observations do not verify camera lip sync."
+          "options": "timing-quality.json and TIMING-NOTES.md distinguish live estimates from recorded transcripts; RC15 adds shared-start, zero-duration, overlap and low-confidence diagnostics.",
+          "limits": "Listening remains required; unreliable pace is withheld and audio offsets do not prove camera picture sync."
         },
         {
           "name": "Word and sentence detail",
@@ -1562,8 +1562,8 @@
         {
           "name": "Recorded delivery comparison",
           "support": "Optional",
-          "options": "RC1 preview: expected/heard substitutions, insertions and omission candidates, with single-take priority and listening links.",
-          "limits": "Low agreement is uncertain, not a confirmed misread. Original take choices remain unchanged."
+          "options": "RC15: separate adjacent take windows, explicit unavailable transcript coverage and Recompare saved transcript, retaining substitutions/insertions/omission candidates and listening links.",
+          "limits": "No later-take borrowing, confirmed misread or automatic keeper changes. Requires timed words; recompare does not download models or retranscribe."
         },
         {
           "name": "Command cut ranges",
@@ -1684,8 +1684,8 @@
         {
           "name": "Local MCP connection",
           "support": "Optional",
-          "options": "Eight stdio tools in the AI kit, including explicit display states and paused reading-mode choices; Connections > MCP, AI, and API includes a Configure MCP guide beside the switch.",
-          "limits": "Node.js 22.16+, local API/MCP enabled and applied. Separate grants; read-only by default. No cloud MCP endpoint. See [client configuration](guide/17-configure-mcp.md)."
+          "options": "Eight stdio tools; RC15 adds active-profile JSON/Codex configuration, Copy, a read-only prerequisite/connection check and adapter --check.",
+          "limits": "Node.js 22.16+, installed AI kit and applied API/MCP settings. No token in copied setup; reconnect a real client to verify discovery. Read-only by default; separate grants. See [setup](guide/17-configure-mcp.md)."
         },
         {
           "name": "MCP permission grants",
@@ -1920,6 +1920,12 @@
           "support": "Optional",
           "options": "Enable recognised command-word logging to investigate actual mishearings.",
           "limits": "May include nearby speech; only enable it for the intended diagnostic period."
+        },
+        {
+          "name": "Session microphone/command/OBS diagnostics",
+          "support": "Optional",
+          "options": "RC15: Debug status shows actual input/processing, listening, recent resolved/missed command words/results and separate OBS states. Clear or ten-minute expiry removes recent command words.",
+          "limits": "Session-only; no new microphone/capture request, persistent command trace, support-log word inclusion or automatic upload. Ordinary script speech is not retained by this panel."
         },
         {
           "name": "Recording-state honesty",

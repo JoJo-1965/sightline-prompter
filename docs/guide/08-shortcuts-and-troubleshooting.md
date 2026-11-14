@@ -131,3 +131,17 @@ Sightline requests AGC off and never sets hardware microphone gain. If the
 Windows level changes, compare before/after with other audio apps closed.
 Marked or discarded takes shorter than 1.5 seconds say Too short to assess;
 raw measures remain in JSON/CSV and clipping warnings are retained.
+
+## RC15 session diagnostics
+
+Open **Debug > Status and recovery > Microphone, commands and OBS diagnostics**.
+See the microphone actually opened, applied AGC/noise/echo processing, listener
+state, recent command words and resolved action/result. OBS connection and
+recording are separate, with explanations for disabled controls or failures.
+
+Recent command words stay in memory for ten minutes and can be cleared at once.
+Ordinary script speech is not retained by this panel. Persistent command-word
+tracing is still a separate opt-in control, and the existing support-log export
+does not automatically include these command words. No new recording starts.
+
+![Session diagnostics in the actual app](images/session-diagnostics-rc15.png)

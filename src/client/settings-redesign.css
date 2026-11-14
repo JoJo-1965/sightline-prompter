@@ -204,3 +204,10 @@ body:not(.utility-window) #settings-modal.settings-redesign .settings-content {w
 }
 .settings-hud-example { display: inline-flex; align-items: center; padding: 7px 14px; margin: 4px 0 8px; border-radius: 999px; background: #f3d16a; color: #30260d; font: 700 15px/1.2 "Segoe UI", sans-serif; }
 .settings-hud-example[hidden] { display: none; }
+.mcp-connection-setup,.session-diagnostics{margin-top:16px;min-width:0}
+.mcp-connection-setup summary,.session-diagnostics summary{cursor:pointer;font-weight:600;text-wrap:balance}
+.mcp-connection-setup textarea{display:block;width:100%;max-width:100%;margin:12px 0;font:12px/1.5 Consolas,monospace;white-space:pre;overflow:auto;resize:vertical;box-sizing:border-box}
+.mcp-connection-setup p,.session-diagnostics p,.session-diagnostics dd{text-wrap:pretty}
+.session-diagnostics dl{display:grid;grid-template-columns:minmax(110px,1fr) minmax(0,2fr);gap:10px 16px}
+.session-diagnostics dt{font-weight:600}.session-diagnostics dd{margin:0;overflow-wrap:anywhere}
+@media(max-width:650px){.session-diagnostics dl{grid-template-columns:1fr;gap:6px}.session-diagnostics dd{margin-bottom:8px}}

@@ -95,10 +95,27 @@ export function alignWords( expected, heard ) {
 	return { operations: operations.reverse(), from: j, to: end, matches: operations.filter( o => o.type === "match" ).length };
 }
 
-function reportTake( take, allWords, commands, takeCount ) {
+export function transcriptTimingQuality( words ) {
+	const zeroDuration = words.filter( w => w.end <= w.start ).length;
+	const sharedStarts = words.filter( ( w, i ) => i > 0 && w.start === words[i - 1].start ).length;
+	const overlaps = words.filter( ( w, i ) => i > 0 && w.start < words[i - 1].end - .02 ).length;
+	const lowConfidence = words.filter( w => finite( w.probability ) && w.probability < .5 ).length;
+	return { status: !words.length ? "unavailable" : zeroDuration || sharedStarts || overlaps || lowConfidence ? "needs-listening" : "estimated-from-recorded-audio",
+		words: words.length, zeroDuration, sharedStarts, overlaps, lowConfidence, verified: false };
+}
+
+function reportTake( take, allWords, takes, takeCount ) {
 	const expected = ( take.sentences ?? [] ).flatMap( sentence => sentence.text.trim().split( /\s+/ ).map( ( word, i ) => ( { word, i: sentence.from + i, sentence: sentence.s } ) ) );
-	const heard = allWords.filter( w => w.end >= take.start - 3 && w.start <= take.end + 2 );
+	// A small live-clock allowance must not borrow a matching phrase from an
+	// adjacent take. Repeated openings otherwise hide a false start.
+	const previous = takes.filter( t => t !== take && t.end <= take.start ).sort( ( a, b ) => b.end - a.end )[0];
+	const next = takes.filter( t => t !== take && t.start >= take.end ).sort( ( a, b ) => a.start - b.start )[0];
+	const overlaps = takes.some( t => t !== take && t.start < take.end && t.end > take.start );
+	const from = overlaps ? take.start : Math.max( take.start - 3, previous ? ( previous.end + take.start ) / 2 : -Infinity );
+	const to = overlaps ? take.end : Math.min( take.end + 2, next ? ( take.end + next.start ) / 2 : Infinity );
+	const heard = allWords.filter( w => ( w.start + w.end ) / 2 >= from && ( w.start + w.end ) / 2 < to );
 	if ( !expected.length ) return { section: take.section, take: take.take, status: "unavailable", reason: "No script sentence snapshot", words: [], issues: [] };
+	if ( !heard.length ) return { section: take.section, take: take.take, status: "unavailable", reason: "No transcript words cover this take. Check the audio selection and session offset; missing evidence does not establish missing speech.", words: [], issues: [], timingQuality: transcriptTimingQuality( [] ) };
 	if ( expected.length > 1500 || heard.length > 6000 || expected.length * heard.length > 2500000 ) return { section: take.section, take: take.take, status: "unavailable", reason: "Split this long take into sections for script comparison. The full transcript is retained.", words: [], issues: [] };
 	const alignment = alignWords( expected, heard ), coverage = alignment.matches / expected.length;
 	const selected = heard.slice( alignment.from, alignment.to ).map( w => {
@@ -122,17 +139,19 @@ function reportTake( take, allWords, commands, takeCount ) {
 			complete: status !== "uncertain" && ops.every( o => o.type === "match" ) };
 	} );
 	const probabilities = selected.map( w => w.probability ).filter( finite );
-	const quality = status === "review" && end - start >= 2 && selected.length >= 3 && selected.every( w => w.end > w.start ) && ( !probabilities.length || probabilities.reduce( ( a, b ) => a + b, 0 ) / probabilities.length >= .5 );
+	const timingQuality = transcriptTimingQuality( selected );
+	const quality = status === "review" && timingQuality.status === "estimated-from-recorded-audio" && end - start >= 2 && selected.length >= 3 && ( !probabilities.length || probabilities.reduce( ( a, b ) => a + b, 0 ) / probabilities.length >= .5 );
 	return { section: take.section, take: take.take, title: take.title, status, expectedText: expected.map( w => w.word ).join( " " ), heardText: selected.map( w => w.word ).join( " " ),
 		start, end, coverage: round( coverage ), wordCount: selected.length, estimatedWpm: quality ? Math.round( selected.length / ( end - start ) * 60 ) : null,
-		words: selected, sentences, issues, timingSource: "post-record-transcription", reviewRequired: true };
+		words: selected, sentences, issues, timingQuality, comparisonWindow: { from, to }, timingSource: "post-record-transcription", reviewRequired: true };
 }
 
 export function buildPostRecord( data, transcripts, recordings = [] ) {
 	const words = transcripts.flatMap( t => t.words ).sort( ( a, b ) => a.start - b.start );
 	const commands = commandRanges( words, data.events );
-	const reports = ( data.takes ?? [] ).map( take => reportTake( take, words, commands, data.takes.filter( t => t.section === take.section && t.status !== "skipped" ).length ) );
-	return { schemaVersion: 1, timingSource: "post-record-transcription", transcripts, recordings, commandRanges: commands, takes: reports,
+	const reports = ( data.takes ?? [] ).map( take => reportTake( take, words, data.takes, data.takes.filter( t => t.section === take.section && t.status !== "skipped" ).length ) );
+	return { schemaVersion: 1, analysisVersion: 2, timingSource: "post-record-transcription", transcripts, recordings, commandRanges: commands, takes: reports,
+		timingQuality: transcriptTimingQuality( words ),
 		sync: { pictureSync: "unverified", audioMeasured: recordings.some( r => r.status === "measured" ), recordedReference: ( data.recordedSync ?? [] ).some( r => r.verified === true ),
 			warning: "Audio alignment does not verify picture-to-sound sync. Check an in-recording slate or visible clap." } };
 }
@@ -184,7 +203,7 @@ export function postRecordFiles( data, liveFiles ) {
 	const marks = [ ...JSON.parse( liveFiles["edit-marks.json"] ?? "[]" ).filter( m => ![ "skipped", "sentence", "pause" ].includes( m.type ) ), ...review.commandRanges ];
 	out["edit-marks.json"] = JSON.stringify( marks.sort( ( a, b ) => a.t - b.t ), null, 2 );
 	out["edit-marks.csv"] = csv( [ [ "t", "section", "take", "type", "detail", "duration", "start", "end", "action", "outcome", "review_required" ], ...marks.map( m => [ m.t, m.section, m.take, m.type, m.heard ?? m.detail, m.duration ?? ( m.end ? round( m.end - m.start ) : null ), m.start ?? m.t, m.end ?? ( m.t + ( m.duration ?? 0 ) ), m.action, m.outcome, m.reviewRequired ?? false ] ) ] );
-	out["timing-quality.json"] = JSON.stringify( { source: "post-record-transcription", reviewed: false, automaticCutSafe: false, pictureSync: "unverified", originalLiveFiles: "live-*", limitations: [ "Transcript words and times still need listening and editorial review.", "Delivery differences are candidates, not confirmed errors.", "Command cut ranges may include quoted commands; review before removal.", "Audio-derived offsets do not establish picture-to-sound sync." ] }, null, 2 );
+	out["timing-quality.json"] = JSON.stringify( { source: "post-record-transcription", reviewed: false, automaticCutSafe: false, pictureSync: "unverified", originalLiveFiles: "live-*", transcriptTimingQuality: review.timingQuality ?? null, takeTimingQuality: review.takes.map( take => ( { section: take.section, take: take.take, quality: take.timingQuality ?? null } ) ), limitations: [ "Transcript words and times still need listening and editorial review.", "Delivery differences are candidates, not confirmed errors.", "Command cut ranges may include quoted commands; review before removal.", "Audio-derived offsets do not establish picture-to-sound sync." ] }, null, 2 );
 	out["TIMING-NOTES.md"] = "# Post-record timing review\n\nStandard word and caption files now use the selected post-record transcript. The original live estimates are retained as live-* files. Delivery differences and command cut ranges are suggestions requiring listening; none is an instruction to cut automatically. Check clock mappings and recording-offsets.json. Audio alignment cannot establish picture sync.\n";
 	return out;
 }

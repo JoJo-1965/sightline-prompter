@@ -341,3 +341,14 @@ handle missing copies. Installed files do
 not confirm a live connection or the newest third-party version; retain the
 OBS connection and Stream Deck protocol checks. OBS on another computer needs
 no local installation. Component discovery never enables recording permissions.
+
+## RC15 evidence and setup
+
+Use the running app's Connection setup and test for profile-specific JSON or
+Codex configuration; reconnect and verify eight tools with sightline_status.
+Keep the existing grants and never copy a token into configuration or chat.
+Read recording-links.json for take/file evidence and timing-quality.json for
+recorded/live provenance and uncertain word timing. Missing transcript coverage
+is unavailable evidence. Never use a later retake's matching opening to certify
+an earlier take; retain original logs and keeper choices. Recent command words
+in Debug are session-only; persistent tracing still requires its own opt-in.

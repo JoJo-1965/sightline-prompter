@@ -1,6 +1,6 @@
 # Review the recorded audio
 
-**1.3.0 RC1 preview · Windows tested.** This workflow adds evidence after a
+**1.3.0 RC15 preview · Windows tested.** This workflow adds evidence after a
 session. Original logs, recordings, ratings and keeper choices stay intact.
 Live following is useful for prompting; its times are not final edit points.
 
@@ -128,3 +128,23 @@ deliberately with your editor; Sightline does not send it to an AI service.
 
 [Recording workflow](05-recording-a-take.md) · [Production handover](12-production-handover.md)
 · [Guided tour](20-guided-tour.md)
+
+## RC15 timing quality and take/file evidence
+
+Open **Recording and file associations** to see which OBS identity and reported
+filename belong to each take. Unknown filenames, multiple files and interrupted
+continuity remain explicit. The export adds `recording-links.json`; it does
+not automatically bundle or verify every external master.
+
+Take comparisons use separate neighbouring time windows, so a later retake's
+matching opening cannot make an earlier false start appear complete. No words
+in a take's transcript window means unavailable evidence, rather than a missing
+speech verdict. Check the selected soundtrack and session offset.
+
+Timing quality shows shared starts, zero-length words, overlaps and low word
+confidence. Suspect timing does not produce a pace score. Even clean timing
+remains an estimate requiring listening. **Recompare saved transcript** refreshes
+the comparison using saved words without downloading a model or transcribing
+again. Original logs and keeper choices stay intact.
+
+![Recorded-audio review with timing quality](images/recording-review-rc15.png)

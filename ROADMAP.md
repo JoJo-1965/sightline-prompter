@@ -1,6 +1,6 @@
 # Sightline Prompter roadmap
 
-Updated 14 November 2026. **Current candidate: 1.3.0 RC14 + Stream Deck 0.2.1.7.**
+Updated 14 November 2026. **Current candidate: 1.3.0 RC15 + Stream Deck 0.2.1.7.**
 Released baseline: **Sightline 1.2.0 + Stream Deck 0.2.0**. The plugin is on
 Elgato Marketplace; the public 2.0 naming decision remains separate.
 
@@ -10,18 +10,18 @@ Read from top to bottom: finish the release gate, then take the development
 queue in priority order. Value first, then effort; prerequisites can hold an
 item back. Scores and sizes are planning assessments, not delivery promises.
 
-| Order | Outcome | Value | Size | Position / next step |
-| --- | --- | --- | --- | --- |
-| Now | [Accept and release the core candidate](#release-acceptance) | Release gate | UAT | Real recording, microphone, monitor and controller checks; resolve blockers and approve publication. |
-| 1 | [Reliable Voice and commands](#recording-and-onboarding-detail) | ★★★ | M | Reproduce recorded misses and tracking stalls; extend regression audio. |
-| 2 | [Trustworthy take/file identity](#recording-and-onboarding-detail) | ★★★ | M | Verify first takes, external recorder restarts and every actual output file. |
-| 3 | [Accurate edit-pack word timings](#recording-and-onboarding-detail) | ★★★ | M | Extend post-record transcription, review and optional automatic processing. |
-| 4 | [Measured recording sync](#recording-and-onboarding-detail) | ★★★ | M | Check file offsets, recorded sync cues and picture/sound alignment. |
-| 5 | [Accessible command training](#recording-and-onboarding-detail) | ★★★ | L | Guided, repeatable onboarding for commands and natural speech differences. |
-| 6 | [Easier local MCP setup](#smaller-connections-and-diagnostics-work) | ★★ | S | Broaden client examples and explain capability discovery. |
-| 7 | [Useful opt-in diagnostics](#smaller-connections-and-diagnostics-work) | ★★ | M | Make troubleshooting easier while keeping scripts, media and secrets private. |
-| 8 | [Demo capture prototype](#after-the-core-release-product-demos-and-demo-mode) | ★★ | M | OBS camera/screen masters, input events, named steps and two-pass handover; optional Playwright runner. |
-| 9 | [Full Demo mode](#after-the-core-release-product-demos-and-demo-mode) | ★★ | L | Editable mouse effects, zooms, shortcut labels and coordinated scripted production; depends on prototype. |
+| Order | Outcome | Value | Size | v2 scope | Position / next step |
+| --- | --- | --- | --- | --- | --- |
+| Now | [Accept and release the core candidate](#release-acceptance) | Release gate | UAT | Release acceptance | Real recording, microphone, monitor and controller checks; resolve blockers and approve publication. |
+| 1 | [Reliable Voice and commands](#recording-and-onboarding-detail) | ★★★ | M | Existing-feature fixes / UAT | Reproduce recorded misses and tracking stalls; extend regression audio. |
+| 2 | [Trustworthy take/file identity](#recording-and-onboarding-detail) | ★★★ | M | RC15 batch | Verify first takes, external recorder restarts and every actual output file. |
+| 3 | [Accurate edit-pack word timings](#recording-and-onboarding-detail) | ★★★ | M | RC15 review improvements; automation later | Extend post-record transcription, review and optional automatic processing. |
+| 4 | [Measured recording sync](#recording-and-onboarding-detail) | ★★★ | M | Validate existing; extensions later | Check file offsets, recorded sync cues and picture/sound alignment. |
+| 5 | [Accessible command training](#recording-and-onboarding-detail) | ★★★ | L | After v2 | Guided, repeatable onboarding for commands and natural speech differences. |
+| 6 | [Easier local MCP setup](#smaller-connections-and-diagnostics-work) | ★★ | S | RC15 batch | Broaden client examples and explain capability discovery. |
+| 7 | [Useful opt-in diagnostics](#smaller-connections-and-diagnostics-work) | ★★ | M | RC15 batch | Make troubleshooting easier while keeping scripts, media and secrets private. |
+| 8 | [Demo capture prototype](#after-the-core-release-product-demos-and-demo-mode) | ★★ | M | After v2 | OBS camera/screen masters, input events, named steps and two-pass handover; optional Playwright runner. |
+| 9 | [Full Demo mode](#after-the-core-release-product-demos-and-demo-mode) | ★★ | L | After v2 | Editable mouse effects, zooms, shortcut labels and coordinated scripted production; depends on prototype. |
 
 Later candidates and research are listed [below](#later-connections-and-platform-delivery).
 They need scope, dependencies and value/size assessment before entering this
@@ -35,6 +35,19 @@ complete module follows remaining ready ★★/S–M work. ★ extras come last.
 [research](#longer-term-exploration-platform-and-commercial-model) ·
 [completed and preview reference](#completed-and-preview-reference).
 Release-by-release changes belong in the [grouped release notes](docs/RELEASE-1.3.0.md).
+
+## V2 release scope
+
+The current RC contains the accumulated prompting, authoring, HUD, recording
+review, controller and local MCP features. **Joanne requested the bounded batch
+for items 2, 3, 6 and 7.** RC15 implements those additions; physical acceptance
+and any reproducible correctness fixes remain release work. Item 3 covers the
+existing explicit recorded-audio workflow, with automatic post-stop processing
+deferred. Items 4 and 5 retain their separate future extensions.
+
+This scope adds no full training loop, advanced sync analysis or Demo mode.
+See [RC15 scope and acceptance](docs/uat/1.3.0-RC15.md) and the
+[cumulative feature history](docs/RELEASE-1.3.0.md).
 
 ## Priority and size rules
 
@@ -50,7 +63,7 @@ standing rules; release numbers do not determine priority.
 
 ## Release acceptance
 
-RC14's controller/API/MCP consistency batch is implemented, including the
+RC15's recording evidence/setup batch and RC14's controller/API/MCP work are implemented, including the
 optional Call overlay preset and companion 0.2.1.7. Existing profiles and action
 IDs remain compatible. This is acceptance of implemented work, not a new
 feature backlog; see [mapping and migration](docs/CONTROLLER-COMPATIBILITY.md).
@@ -66,14 +79,16 @@ feature backlog; see [mapping and migration](docs/CONTROLLER-COMPATIBILITY.md).
 - [ ] Choose the public version and obtain publication sign-off. Marketplace
   submission of the newer companion is a separate release step.
 
-See [RC14 UAT](docs/uat/1.3.0-RC14.md) and the
+See [RC15 UAT](docs/uat/1.3.0-RC15.md) and the
 [detailed acceptance register](#candidate-acceptance-register).
 
 ## Recording and onboarding detail
 
 Priorities **1–5**, in the same order as the highlights. Existing RC1 review
 and alignment tools provide the starting point; these rows describe remaining
-work. Scope and acceptance evidence stay together.
+work. Scope and acceptance evidence stay together. Items 2 and 3 now have an
+RC15 implementation; automated processing and broader review controls remain
+follow-ups, while physical correctness checks belong in release acceptance.
 
 | Topic | Next work | Acceptance evidence |
 | --- | --- | --- |
@@ -91,7 +106,7 @@ claim that the current app retrains its speech model.
 
 ## Smaller connections and diagnostics work
 
-Priorities **6–7**. These bounded follow-ups fit ahead of the demo prototype;
+Priorities **6–7**, implemented in the RC15 batch for acceptance. These fit ahead of the demo prototype;
 remote/cloud MCP and authentication are separate later candidates.
 
 | Topic | Next work | Acceptance evidence |

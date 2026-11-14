@@ -1,16 +1,17 @@
 import { obsPosition } from "./client/obs-position.js";
+import { recordingAssociations } from "./client/recording-associations.js";
 
 // Shared across module logs, so stopping OBS can fill in the file name even
 // after the reader has moved to another script.
 export function createObsLedger() {
 	const recordings = new Map();
-	let previousId = null;
-	return {
-		observe( state ) {
-			const id = state.recordingId ?? previousId;
+	function observe( state ) {
+			const id = state.recordingId;
 			if ( !id ) return false;
-			previousId = id;
 			const entry = recordings.get( id ) ?? { recordingId: id, outputPath: null, events: [] };
+			if ( entry.outputPath && state.outputPath && entry.outputPath !== state.outputPath ) entry.pathConflict = [ ...new Set( [ ...( entry.pathConflict ?? [] ), entry.outputPath, state.outputPath ] ) ];
+			if ( state.identityUncertain ) entry.identityUncertain = true;
+			if ( state.identityReason ) entry.identityReason = state.identityReason;
 			const position = obsPosition( { ...state, recordingId: id } );
 			const event = { recording: state.recording, connection: state.connection, outputPath: state.outputPath ?? entry.outputPath };
 			const last = entry.events.at( -1 );
@@ -20,12 +21,18 @@ export function createObsLedger() {
 			entry.lastClockObservation = position;
 			recordings.set( id, entry );
 			return changed;
+	}
+	return {
+		observe( state ) {
+			const finalized = state.finalizedRecording ? observe( state.finalizedRecording ) : false;
+			return observe( state ) || finalized;
 		},
 		attach( log ) {
 			const ids = new Set( [ ...( log.obs ?? [] ).map( e => e.recordingId ), ...( log.takes ?? [] ).flatMap( t => [ t.obsStart?.recordingId, t.obsEnd?.recordingId ] ), ...( log.events ?? [] ).map( e => e.obs?.recordingId ), ...( log.recordedSync ?? [] ).map( e => e.recordingId ) ].filter( Boolean ) );
 			const merged = new Map( ( log.obsRecordings ?? [] ).map( r => [ r.recordingId, r ] ) );
 			for ( const id of ids ) if ( recordings.has( id ) ) merged.set( id, recordings.get( id ) );
-			return { ...log, obsRecordings: [ ...merged.values() ] };
+			const linked = { ...log, obsRecordings: [ ...merged.values() ] };
+			return { ...linked, recordingLinks: recordingAssociations( linked ) };
 		}
 	};
 }

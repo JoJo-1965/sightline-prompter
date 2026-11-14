@@ -72,3 +72,24 @@ The eight tools are `sightline_status`, `sightline_load_script`,
 `sightline_select_slot`, `sightline_prompt`, `sightline_view`, `sightline_record`,
 `sightline_recordings` and `sightline_edit_pack`. Edit-pack word and caption
 timings are live estimates requiring review against the recording.
+
+## RC15 setup and connection troubleshooting
+
+Settings provides profile-specific JSON and Codex CLI configuration under
+**Connection setup and test**. Keep existing client entries; configuration has
+no token. After Apply, **Check connection** verifies local prerequisites and
+read-only status. It reports missing kit/Node, a mismatched profile, unreachable
+app or revoked access. Reconnect the client and call sightline_status to verify
+all eight tools and their current grants.
+
+The installed adapter supports `node /absolute/kit/scripts/sightline-mcp.mjs --check`.
+Set SIGHTLINE_SETTINGS to the intended profile first. The check exits after a
+read-only status request, prints no token and changes no settings or recorder.
+The ordinary stdio command still exposes exactly the existing eight tools.
+
+For edit packs, inspect timing-quality.json and recording-links.json before
+using timing or file associations. Keep live estimates separate from recorded
+transcripts and uncertainty. See the [setup guide](guide/17-configure-mcp.md).
+
+Client references: [MCP local-server configuration](https://modelcontextprotocol.io/docs/develop/connect-local-servers).
+The Codex command syntax is checked against the installed CLI's mcp add help.

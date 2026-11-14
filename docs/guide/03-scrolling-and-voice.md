@@ -496,3 +496,12 @@ the previous voice stop and position the spoken opening at the reading marker.
 The ordinary product name Sightline Prompter is protected against arming the
 following word as a section command. Keep a keyboard/pad fallback and verify
 recognition with your own microphone; a parser test does not prove acoustics.
+
+## Inspect an acknowledged command
+
+In RC15, Debug > Status and recovery shows recent command words, the canonical
+action and its result beside actual input/listener and OBS status. Resolved
+command phrases are session-only and expire after ten minutes, with Clear
+available. This does not enable persistent command tracing or retain ordinary
+script speech. Check this panel when a wake word is acknowledged but the
+expected action does not happen.

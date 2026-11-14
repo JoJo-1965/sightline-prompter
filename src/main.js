@@ -32,6 +32,7 @@ import { readReadingTheme, writeReadingTheme } from "./reading-theme-files.js";
 import { readScriptSnapshot } from "./script-snapshot.js";
 import { createSpeech } from "./speech.js";
 import { createAgentKit, nodeStatus } from "./components.js";
+import { mcpConfigurations, checkMcpConnection } from "./mcp-setup.js";
 import { createDefaultsRestore, shippedState, resetBlocked } from "./restore-defaults.js";
 import { createExternalComponents } from "./external-components.js";
 import { normaliseMappings } from "./client/input-mappings.js";
@@ -386,6 +387,7 @@ const stateManager = stateFactory( defaultConfig );
 export const SAMPLE_SCRIPTS = [
 	{ file: "welcome.md", label: "Start here: Sightline feature tour" },
 	{ file: "rc14-controllers-and-mcp.md", label: "RC14: controller and MCP consistency" },
+	{ file: "rc15-recording-review-and-setup.md", label: "RC15: recording evidence and useful setup" },
 	{ file: "rc13-authoring-and-overlays.md", label: "RC13: authoring, reading modes and call overlays" },
 	{ file: "voice-and-stops.md", label: "Voice control, stops and countdowns" },
 	{ file: "rc12-audio-and-dialogs.md", label: "RC12: audio, dialog voice and quick-edit rehearsal" },
@@ -2055,6 +2057,20 @@ app.whenReady().then( async () => {
 	const speech = createSpeech( { dir: __dirname, win, busy: () => !!rendererStatus.scrolling || [ "recording", "paused" ].includes( obs.state().recording ) } );
 	const kitFolder = path.join( app.getPath( "userData" ), "ai-kit" );
 	const kit = createAgentKit( { source: app.getAppPath(), folder: kitFolder, version: app.getVersion(), trash: target => shell.trashItem( target ) } );
+	ipcMain.handle( "mcpSetup", async ( event, action = "info", format = "json" ) => {
+		if ( event.sender !== win.webContents || ![ "info", "copy", "check" ].includes( action ) || ![ "json", "codex" ].includes( format ) ) throw new Error( "Use MCP setup from Settings" );
+		const adapter = path.join( kitFolder, "scripts", "sightline-mcp.mjs" );
+		const configurations = mcpConfigurations( { adapter, profile: app.getPath( "userData" ) } );
+		const installed = existsSync( adapter );
+		let message = installed ? "Configuration uses this Sightline profile. Reconnect your client after copying it." : "Install or refresh the AI kit in Apps and add-ons first.";
+		if ( action === "copy" ) { clipboard.writeText( configurations[format] ); message = `${ installed ? "Copied" : "Copied; install the AI kit before connecting" }. Existing client entries should be retained.`; }
+		if ( action === "check" ) {
+			const node = await nodeStatus();
+			const kitStatus = await kit.status();
+			message = !kitStatus.installed || !kitStatus.current ? "Install or refresh the AI kit in Apps and add-ons first." : !node.ready ? "Install Node.js 22.16 or later, then check again." : ( await checkMcpConnection( app.getPath( "userData" ) ) ).message;
+		}
+		return { configurations, installed, message };
+	} );
 	const externalComponents = createExternalComponents( { folder: app.getPath( "userData" ) } );
 	let previousResetState = null;
 	const restoreDefaults = createDefaultsRestore( {

@@ -72,8 +72,23 @@ import { addSettingsHelp } from "./settings-pages.js";
 import { uiElement, showPanelWindow, hidePanelWindow, panelDocuments } from "./panel-windows.js";
 import { createVoiceFeedback } from "./voice-feedback.js";
 import { createQuickEdit } from "./quick-edit-ui.js";
+import { createSessionDiagnostics, diagnosticRows } from "./session-diagnostics.js";
 
 const voiceFeedback = createVoiceFeedback( { documents: panelDocuments } );
+const sessionDiagnostics = createSessionDiagnostics();
+function renderSessionDiagnostics( state ) {
+	const host = uiElement( "session-diagnostic-rows" );
+	if ( !host ) return;
+	host.replaceChildren();
+	const snapshot = sessionDiagnostics.snapshot();
+	snapshot.listener = listenerHealth;
+	for ( const [ label, value ] of diagnosticRows( snapshot, state ?? obsUi.state() ) ) {
+		const name = host.ownerDocument.createElement( "dt" ), text = host.ownerDocument.createElement( "dd" );
+		name.textContent = label; text.textContent = value; host.append( name, text );
+	}
+}
+window.addEventListener( "sightline-diagnostics-refresh", () => renderSessionDiagnostics() );
+window.addEventListener( "sightline-diagnostics-clear", () => { sessionDiagnostics.clear(); renderSessionDiagnostics(); } );
 let practiceRun = false;
 window.addEventListener( "sightline-panel-ready", () => voiceFeedback.refresh() );
 import {
@@ -166,7 +181,7 @@ const obsUi = createObsUi( {
 		if ( pointsRunning ) togglePoints();
 		feedTakeLog( false );
 	},
-	onChange: state => { syncReminder.observe( state ); sendStatus(); },
+	onChange: state => { syncReminder.observe( state ); renderSessionDiagnostics( state ); sendStatus(); },
 	toast: text => {
 		showToast( text, 4500 );
 		voiceFeedback.show( "OBS recording", text );
@@ -1383,7 +1398,7 @@ function dialogVoiceActions() {
 		acknowledged( button.textContent.trim() ); button.click(); return true;
 	} };
 }
-window.electron.onMicrophoneDiagnostic?.( value => window.electron.debugLog( `[microphone] ${ JSON.stringify( value ) }` ) );
+window.electron.onMicrophoneDiagnostic?.( value => { sessionDiagnostics.input( value ); renderSessionDiagnostics(); window.electron.debugLog( `[microphone] ${ JSON.stringify( value ) }` ); } );
 let lastRoomNoise = null;
 let scriptCheck = null; // { kind, pause, timer, done }
 const checkCard = document.createElement( "div" );
@@ -1921,10 +1936,13 @@ let listenerHealth = { state: "off" };
 const commandPill = uiElement( "command-listening" );
 
 function showListeningStatus( status ) {
+	if ( status.type === "input-settings" ) { sessionDiagnostics.input( status ); renderSessionDiagnostics(); return; }
+	if ( status.type === "command-resolved" ) { sessionDiagnostics.command( { heard: status.heard, action: status.action, outcome: "recognised", reason: "" } ); renderSessionDiagnostics(); return; }
 	if ( status.type === "transcript" || status.type === "device-fallback" ) return;
 	const failed = [ "failed", "error", "closed" ].includes( status.type );
 	const recovering = status.type === "recovering";
 	listenerHealth = { state: failed ? "failed" : recovering ? "recovering" : "listening", reason: status.reason ?? status.error ?? null, audioAt: status.audioAt ?? listenerHealth.audioAt ?? null, engineAt: status.engineAt ?? listenerHealth.engineAt ?? null };
+	sessionDiagnostics.listening( listenerHealth ); renderSessionDiagnostics();
 	const label = recovering ? "Restarting listening…" : failed ? "Listening stopped · use Restart listening" : `Listening for “${ wakeLabel( settings.wakeWord ) }”`;
 	if ( field( "set-listening-status" ) ) field( "set-listening-status" ).textContent = label;
 	if ( commandPill ) commandPill.textContent = label;
@@ -2082,12 +2100,14 @@ let voiceAttemptStartedAt = null;
 function voiceWake() {
 	if ( isEditMode ) return;
 	voiceAttemptStartedAt = Date.now();
+	sessionDiagnostics.command( { heard: wakeLabel( settings.wakeWord ), action: "", outcome: "waiting for command", reason: "" } ); renderSessionDiagnostics();
 	voiceFeedback.show( `Heard “${ wakeLabel( settings.wakeWord ) }”`, settings.obsEnabled && settings.obsControls ? "Say “begin” to record, or “go” to read." : "Say “go”, “pause”, “again” or “help”.", "listening" );
 	window.electron.debugLog?.( "voice: wake word acknowledged" );
 }
 
 function voiceMiss( words ) {
 	if ( isEditMode ) return;
+	sessionDiagnostics.command( { heard: words.join( " " ), action: "", outcome: "not recognised", reason: words.length ? "No complete supported command matched" : "No complete command arrived before the attention window ended" } ); renderSessionDiagnostics();
 	recording.commandAttempt( { outcome: "unmatched", startAt: voiceAttemptStartedAt, heard: settings.traceCommands ? words.join( " " ) : null } );
 	voiceAttemptStartedAt = null;
 	feedTakeLog( isScrolling() );
@@ -2180,11 +2200,13 @@ function resetPrompter() {
 
 async function runVoiceCommand( id, value ) {
 	if ( isEditMode ) return;
+	sessionDiagnostics.command( { action: id === "section" ? `section ${ value }` : id, outcome: "recognised", reason: "" } ); renderSessionDiagnostics();
 	recording.commandAttempt( { action: id, value: value ?? null, outcome: id.startsWith( "obs-" ) && ( !settings.obsEnabled || !settings.obsControls ) ? "blocked — recording controls disabled" : "recognised", startAt: voiceAttemptStartedAt } );
 	voiceAttemptStartedAt = null;
 	feedTakeLog( isScrolling() );
 	if ( id.startsWith( "obs-" ) ) {
 		if ( !settings.obsEnabled || !settings.obsControls ) {
+			sessionDiagnostics.command( { outcome: "blocked", reason: "OBS integration or recording controls are disabled" } ); renderSessionDiagnostics();
 			voiceFeedback.show( "Recording command unavailable", "Enable OBS integration and allow recording controls in Connections.", "blocked" );
 			return;
 		}
@@ -2200,6 +2222,7 @@ async function runVoiceCommand( id, value ) {
 		voiceFeedback.show( "Recording command heard", id === "obs-record" ? "Confirming OBS recording before starting the prompter…" : "Waiting for OBS to confirm the command…" );
 		if ( [ "obs-record", "obs-on", "obs-resume" ].includes( id ) ) practiceRun = false;
 		const done = await runRemoteAction( id );
+		sessionDiagnostics.command( { outcome: done ? "completed" : "not completed", reason: done ? "OBS confirmed the requested action" : obsUi.state().error ?? "Check OBS connection, recorder state and permissions" } ); renderSessionDiagnostics();
 		if ( done ) voiceFeedback.show( "OBS confirmed", { "obs-record": "Recording is on. The prompter is starting.", "obs-finish": "Recording finished. The prompter is stopped.", "obs-on": "Recording is on.", "obs-off": "Recording is off.", "obs-pause": "Recording is paused.", "obs-resume": "Recording has resumed." }[id] );
 		return;
 	}

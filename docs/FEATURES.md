@@ -1,5 +1,10 @@
 # Sightline Prompter features
 
+**RC15:** explicit take/file evidence, isolated recorded-word comparison and
+timing warnings, profile-correct MCP configuration/checks and session-only
+microphone/command/OBS diagnostics. Existing controller contracts remain.
+[Scope and limits](RELEASE-1.3.0.md#rc15).
+
 **RC14:** shared On top/Clean view/mode controls, optional Call overlay preset,
 three-mode operator window, companion 0.2.1.7 Display choices and opt-in profiles.
 MCP adds explicit display states and paused modes, with existing grants and

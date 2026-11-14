@@ -7,6 +7,7 @@ import crypto from "node:crypto";
 import { spawn } from "node:child_process";
 import { pathToFileURL } from "node:url";
 import { buildPostRecord, normaliseTranscript } from "./client/post-record.js";
+import { recordingAssociations } from "./client/recording-associations.js";
 import { editPack } from "./client/edit-pack.js";
 import { logFingerprint, reviewedLog, saveReview, reviewInputsUnchanged } from "./recording-review-store.js";
 
@@ -28,6 +29,7 @@ export function createRecordingReview( { dir, profile, dialogParent, getSettings
 		reference: reference ? { ...reference, name: path.basename( reference.file ), url: pathToFileURL( reference.file ).href, file: undefined } : null,
 		media: media.map( m => ( { name: path.basename( m.file ), id: m.id, offset: offsets.find( o => o.id === m.id ) ?? null } ) ),
 		transcripts: transcripts.map( t => ( { name: t.name, words: t.words.length, offsetS: t.sessionOffsetS, sourceClock: t.sourceClock, engine: t.engine } ) ),
+		recordingLinks: data ? recordingAssociations( data ).map( link => ( { ...link, files: link.files.map( file => ( { ...file, outputPath: file.outputPath ? path.basename( file.outputPath ) : null } ) ) } ) ) : [],
 		report: report ? { ...report, transcripts: undefined, takes: report.takes.map( t => ( { ...t, words: undefined, sentences: undefined, issues: t.issues.slice( 0, 100 ) } ) ) } : null
 	} );
 	const update = text => { if ( text ) message = text; if ( window && !window.isDestroyed() ) window.webContents.send( "recordingReviewState", summary() ); };
@@ -130,6 +132,10 @@ export function createRecordingReview( { dir, profile, dialogParent, getSettings
 			const next = normaliseTranscript( raw, { offsetS: offset, name: path.basename( reference.file ) } );
 			next.sourceSha256 = input.sha256;
 			transcripts = [ next ]; reference.startS = offset; await rebuild();
+		} else if ( name === "recompare" ) {
+			if ( !data || !transcripts.length ) throw Error( "Transcribe or import timed words first" );
+			if ( !await reviewInputsUnchanged( report ?? { inputs } ) ) throw Error( "A source audio file changed. Analyse it again first." );
+			await rebuild();
 		} else if ( name === "import" ) {
 			if ( !data ) throw Error( "Choose a session first" );
 			const file = await choose( "transcript" );
@@ -187,7 +193,7 @@ export function createRecordingReview( { dir, profile, dialogParent, getSettings
 				window.on( "closed", () => { active?.cancel(); window = null; } );
 				await window.loadFile( path.join( dir, "client", "recording-review.html" ) );
 			}
-			if ( file && !runningAction ) { try { await load( file ); } catch ( error ) { update( error.message ); } }
+			if ( file && !runningAction ) { try { await load( file ); } catch ( error ) { update( error.code === "ENOENT" ? "No saved take log for this script yet. Choose a finished session." : error.message ); } }
 			window.show(); window.focus();
 		},
 		dispose() { active?.cancel(); window?.destroy(); window = null; ipcMain.removeHandler( "recordingReview" ); }

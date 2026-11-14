@@ -86,7 +86,7 @@ assert.equal( takeCues( old )[0].text.startsWith( "Have you ever" ), true );
 const pack = editPack( data, "# brief" );
 assert.deepEqual( Object.keys( pack ).sort(), [
 	"README.md", "TIMING-NOTES.md", "captions.srt", "captions.vtt", "edit-marks.csv", "edit-marks.json",
-	"rehearsal-coach.json", "sentences.csv", "take-log.json", "takes.csv", "timing-quality.json", "words.csv"
+	"recording-links.json", "rehearsal-coach.json", "sentences.csv", "take-log.json", "takes.csv", "timing-quality.json", "words.csv"
 ] );
 assert.equal( JSON.parse( pack["timing-quality.json"] ).verifiedAgainstAudio, false );
 assert.equal( pack["README.md"], "# brief", "Preserve a supplied production brief exactly" );

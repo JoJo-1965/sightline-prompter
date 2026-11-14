@@ -32,7 +32,12 @@ function render( next ) {
 	byId( "download" ).disabled = next.busy || !next.runtime;
 	byId( "import" ).disabled = next.busy || !next.source;
 	byId( "export" ).disabled = next.busy || !next.report;
+	byId( "recompare" ).disabled = next.busy || !next.transcripts.length;
+	const links = byId( "recording-links" ); links.replaceChildren();
+	for ( const link of next.recordingLinks ?? [] ) links.append( element( "p", `Section ${ link.section } · Take ${ link.take }: ${ link.status.replaceAll( "-", " " ) }${ link.files.length ? ` · ${ link.files.map( file => file.outputPath ?? "filename not received" ).join( ", " ) }` : "" }` ) );
 	byId( "transcript-summary" ).textContent = next.transcripts.length ? next.transcripts.map( t => `${ t.name }: ${ t.words } words · ${ t.sourceClock === "session" ? "session clock" : `file zero at session ${ number( t.offsetS ) } s` }` ).join( "; " ) : "No post-record transcript yet.";
+	const timing = next.report?.timingQuality;
+	byId( "timing-quality" ).textContent = !timing ? "Timing quality will appear after transcription or import." : timing.status === "needs-listening" ? `Check word timings: ${ timing.zeroDuration } zero-length words, ${ timing.sharedStarts } shared starts, ${ timing.overlaps } overlaps and ${ timing.lowConfidence } low-confidence words. Pace and cuts need listening review.` : "Word timings are estimates from recorded audio. Listen before using them for final cuts or captions.";
 	const recordings = byId( "recordings" ); recordings.replaceChildren();
 	for ( const file of next.media ) {
 		const row = element( "div", "", "recording-item" ); row.append( element( "strong", file.name ) );
@@ -46,6 +51,7 @@ function render( next ) {
 		const row = element( "article", "", "take" ), title = element( "div", "", "take-summary" );
 		title.append( element( "h3", `Section ${ take.section } · Take ${ take.take }` ), element( "span", take.status === "unavailable" ? "No transcript range" : `${ Math.round( ( take.coverage ?? 0 ) * 100 ) }% script match`, "badge" ) ); row.append( title );
 		if ( take.reason ) row.append( element( "p", take.reason, "hint" ) );
+		if ( take.timingQuality?.status === "needs-listening" ) row.append( element( "p", "Timing needs listening review; the transcript contains bunched, overlapping or low-confidence words.", "warning" ) );
 		if ( take.heardText ) row.append( element( "p", `Heard: ${ take.heardText }` ) );
 		if ( take.expectedText ) row.append( element( "p", `Script: ${ take.expectedText }`, "hint" ) );
 		for ( const issue of take.issues ) {
@@ -53,7 +59,7 @@ function render( next ) {
 			item.append( element( "span", issue.kind ), element( "span", `${ issue.expected || "—" } → ${ issue.heard || "—" } · ${ issue.priority }` ) );
 			const button = element( "button", "Listen" ); button.disabled = !next.reference || next.busy; button.addEventListener( "click", () => listen( issue.start ) ); item.append( button ); row.append( item );
 		}
-		if ( !take.issues.length ) row.append( element( "p", "No delivery difference identified. Listening is still required.", "hint" ) );
+		if ( !take.issues.length && take.status !== "unavailable" ) row.append( element( "p", "No delivery difference identified. Listening is still required.", "hint" ) );
 		review.append( row );
 	}
 	const commands = byId( "commands" ); commands.replaceChildren();
@@ -63,9 +69,10 @@ function render( next ) {
 		const button = element( "button", "Listen" ); button.disabled = !next.reference || next.busy; button.addEventListener( "click", () => listen( command.start ) ); row.append( button ); commands.append( row );
 	}
 }
-for ( const name of [ "choose-log", "choose-reference", "choose-python", "check", "download", "add-media", "cancel", "export", "help" ] ) byId( name ).addEventListener( "click", () => action( name ) );
+for ( const name of [ "choose-log", "choose-reference", "choose-python", "check", "download", "add-media", "cancel", "export", "help", "recompare" ] ) byId( name ).addEventListener( "click", () => action( name ) );
 byId( "transcribe" ).addEventListener( "click", () => action( "transcribe", { offsetS: byId( "reference-offset" ).value } ) );
 byId( "import-clock" ).addEventListener( "change", () => byId( "import-offset-label" ).hidden = byId( "import-clock" ).value !== "file" );
 byId( "import" ).addEventListener( "click", () => action( "import", { clock: byId( "import-clock" ).value, offsetS: byId( "import-offset" ).value } ) );
 window.recordingReview.onState( render );
 await action( "state" );
+document.documentElement.dataset.reviewReady = "true";

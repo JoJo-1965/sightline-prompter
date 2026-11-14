@@ -1,11 +1,46 @@
 # Sightline 1.3.0 release notes
 
-**Current candidate: RC14 · 12 November 2026 · documentation revision 30.**
+**Current candidate: RC15 · 14 November 2026 · documentation revision 31.**
 This is the cumulative 1.3.0 history. The public stable app remains 1.2.0;
 Stream Deck companion 0.2.0 is published, with 0.2.1.7 a separate candidate.
 The RC sections below record when each change arrived. Later corrections
 supersede earlier behaviour; they do not change frozen older packages.
 
+
+<a id="rc15"></a>
+
+## RC15 — Recording evidence, MCP setup and diagnostics
+
+14 November 2026 · documentation revision 31. Includes RC14. This is the
+bounded batch for roadmap items 2, 3, 6 and 7 in the proposed v2 release scope.
+The package retains the development version 1.3.0-rc.15; public naming and
+publication remain release decisions.
+
+- **Recording associations:** late Stop responses cannot give an older file
+  to a newer recording. Reconnect gaps and observed clock restarts are explicit
+  uncertainty; split files keep separate identities and unverified clocks.
+  Recording review and `recording-links.json` expose take/file evidence.
+- **Recorded word timings:** adjacent takes cannot borrow each other's repeated
+  openings. Missing transcript coverage is unavailable evidence. Shared starts,
+  zero durations, overlapping and low-confidence words produce timing warnings;
+  unreliable pace is withheld. Recompare saved transcript refreshes comparison
+  without another model run. Original logs, live exports and keepers remain.
+- **MCP setup:** Connections > MCP, AI, and API provides copyable JSON and a
+  Codex CLI command using the installed adapter and this running profile.
+  Check connection is read-only; the adapter also accepts `--check`.
+  Eight tools, existing schemas and separate permission grants remain.
+- **Diagnostics:** Debug > Status and recovery shows the opened microphone,
+  applied processing, listening state, recent command words/results and OBS
+  connection/recording state. Command words expire after ten minutes or Clear;
+  they are session-only. Persistent command tracing remains separately opt-in.
+
+Existing Stream Deck IDs/profiles and pad/phone mappings retain their meaning.
+No new controller buttons or directive syntax are required. Automatic post-stop
+transcription, full command training, additional sync analysis and Demo mode
+remain later work. Physical recording/microphone/device UAT is still required.
+
+[RC15 checklist](uat/1.3.0-RC15.md) · [Recording review](guide/19-post-record-review.md)
+· [MCP setup](guide/17-configure-mcp.md) · [Diagnostics](guide/08-shortcuts-and-troubleshooting.md)
 
 <a id="rc14"></a>
 
@@ -111,6 +146,8 @@ compact layouts. Included in RC13; the frozen RC12 package is unchanged.
   can resume using the revised words. Earlier take snapshots stay intact.
 
 ## Candidate sections
+
+- [RC15 — Recording evidence, MCP setup and diagnostics](#rc15)
 
 - [RC1 — Recorded evidence and onboarding](#rc1)
 - [RC2 — Controller workflows](#rc2)

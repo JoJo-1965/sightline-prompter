@@ -323,7 +323,7 @@ export async function startAutoScroll( {
 	aligner.setPosition( findWordAtViewport( wordIndex.ranges ) );
 	let takeCommands;
 	const setCommandOptions = ( options ) => {
-		takeCommands = options.onCommand ? createCommandListener( { onWake, onMiss, contextActions, isPaused: () => held || !!isPaused?.(), ...options } ) : null;
+		takeCommands = options.onCommand ? createCommandListener( { onWake, onMiss, onResolved: result => onStatus?.( { type: "command-resolved", ...result } ), contextActions, isPaused: () => held || !!isPaused?.(), ...options } ) : null;
 	};
 	setCommandOptions( { onCommand, wakeWord, commandWords, soundAlike } );
 	let held = false; // "Prompter, pause": keep listening, stop following

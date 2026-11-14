@@ -78,3 +78,13 @@ bare pause; use RC6 to test the corrected behaviour.
 RC1 adds two final stops for post-record review and the cancelable Settings tour.
 Use [post-record setup](guide/19-post-record-review.md) for local runtime/import
 instructions. A tour never starts a device or applies preferences.
+
+## RC15 recording and setup rehearsal
+
+Use a short disposable two-take script to compare repeated openings, then open
+Recording review and inspect timing quality and file associations. Recompare
+saved words and inspect the new export evidence. Show active-profile MCP setup
+with read-only access, then Debug's session diagnostics. Use the
+[RC15 UAT checklist](uat/1.3.0-RC15.md) and
+[promo capture supplement](marketing/RC15-PROMO-SUPPLEMENT.md). The existing
+approved promo film remains an earlier candidate until refreshed footage is cut.

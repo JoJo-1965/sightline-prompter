@@ -4,6 +4,7 @@ import { INTERFACES, interfaceEnabled } from "./interface-state.js";
 import { createSettingsPreview } from "./settings-preview.js";
 import { roundControlNumber, steppedControlNumber } from "./numeric-controls.js";
 import { workflowRows } from "./workflow.js";
+import { addMcpSetup } from "./mcp-setup-ui.js";
 
 // Forms are assembled once, before their controllers attach. Settings keeps
 // ownership for its lifetime; Tools never borrows any of these nodes.
@@ -445,8 +446,13 @@ export function createSettingsWorkspace( root, { getState, getGuideState = () =>
 		config.append( links );
 		check( config, "set-mcp-enabled", "Enable local MCP", "mcpEnabled", false, "Optional stdio adapter for a desktop AI client. Read-only by default; scripts and controls require the separate grants below. Apply changes, then use the MCP instructions in your installed AI kit." );
 		const mcpHelp = el( "button", { id: "set-mcp-help", type: "button" }, "Configure MCP…" );
-		mcpHelp.addEventListener( "click", () => window.electron.openGuide( "17-configure-mcp.md" ) );
+		mcpHelp.addEventListener( "click", () => {
+			const setup = config.querySelector( ".mcp-connection-setup" );
+			setup.open = true;
+			setup.scrollIntoView( { block: "start" } );
+		} );
 		config.append( mcpHelp );
+		addMcpSetup( config );
 		const mcpOptions = el( "fieldset", { className: "settings-mcp-options" } );
 		mcpOptions.dataset.mcpOptions = "true";
 		check( mcpOptions, "set-mcp-scripts", "Allow script loading and slots", "mcpScripts", false, "Lets the MCP client load uniquely named scripts and select a script slot. Existing files are retained." );
@@ -623,6 +629,13 @@ export function createSettingsWorkspace( root, { getState, getGuideState = () =>
 	const healthNote = el( "p", { className: "field-hint" }, "Restart uses the applied speech and microphone settings. Listening recovery events are logged without recognised words; command-word tracing is a separate option." );
 	healthNote.dataset.essential = "true";
 	health.append( healthNote );
+	const diagnostics = el( "details", { id: "session-diagnostics", className: "session-diagnostics" } );
+	diagnostics.append( el( "summary", {}, "Microphone, commands and OBS diagnostics" ), el( "dl", { id: "session-diagnostic-rows" } ) );
+	const diagnosticNote = el( "p", { className: "field-hint" }, "Recent command words stay in memory for ten minutes. Clear them when finished; command-word logging remains a separate opt-in setting." );
+	const clearDiagnostic = el( "button", { id: "session-diagnostics-clear", type: "button" }, "Clear command words" );
+	clearDiagnostic.addEventListener( "click", () => window.dispatchEvent( new Event( "sightline-diagnostics-clear" ) ) );
+	diagnostics.addEventListener( "toggle", () => window.dispatchEvent( new Event( "sightline-diagnostics-refresh" ) ) );
+	diagnostics.append( diagnosticNote, clearDiagnostic ); health.append( diagnostics );
 	const screenTopics = el( "fieldset" );
 	screenTopics.dataset.tab = "screens";
 	screenTopics.dataset.settingsFirst = "true";
