@@ -97,7 +97,7 @@ export function measure( blocks ) {
 // onLevel( { level, peak, momentary, shortTerm, room } ), ten times a second:
 // level and peak in dBFS, loudness in LUFS, room (background noise over the
 // last ten seconds) in dBFS; null where there isn't enough yet.
-export function createLevelMeter( { onLevel } = {} ) {
+export function createLevelMeter( { onLevel, onInput = () => {} } = {} ) {
 	let ctx = null;
 	let stream = null;
 	let starting = null;
@@ -132,6 +132,7 @@ export function createLevelMeter( { onLevel } = {} ) {
 
 	async function start( deviceId ) {
 		const s = await openMic( deviceId );
+		onInput( microphoneDiagnostics( s, deviceId ) );
 		window.electron?.debugLog?.( `[microphone meter] ${ JSON.stringify( microphoneDiagnostics( s, deviceId ) ) }` );
 		const c = new AudioContext();
 		await c.audioWorklet.addModule( new URL( "./level-worklet.js", import.meta.url ) );

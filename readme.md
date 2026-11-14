@@ -163,6 +163,7 @@ uncertainty. Recorded-audio review isolates neighbouring takes, reports timing
 quality and can recompare saved words. Copy profile-specific MCP configuration
 and run a read-only connection check; inspect microphone, command and OBS
 diagnostics in Debug. Existing controllers, scripts and permission grants remain.
+The input diagnostic also updates when a room or voice check opens its meter.
 See [complete notes and limits](docs/RELEASE-1.3.0.md#rc15).
 
 ### 1.3.0 RC13 — authoring and call-overlay controls

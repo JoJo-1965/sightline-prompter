@@ -629,6 +629,8 @@ Existing microphone, wake, Retake, toolbar and measurement rows updated.
 Reviewed roadmap items 2, 3, 6 and 7 together. Extended take/file references,
 recorded comparison/timing qualifications and local MCP setup/checking. Added
 session diagnostics as one capability: 276 entries, with old controllers and
-eight MCP tools unchanged. Help, built-in reference, UAT, sample/promo capture
+eight MCP tools unchanged. Meter-only room/voice checks also report their opened
+input to the same session panel, without a second capture stream. Existing
+help, built-in reference, UAT, sample/promo capture
 guidance and JL candidate archive are reviewed together. No current stable
 release, Marketplace submission or live website deployment is implied.

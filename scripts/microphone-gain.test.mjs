@@ -34,3 +34,23 @@ failure = Object.assign( new Error( "Permission denied" ), { name: "NotAllowedEr
 await assert.rejects( openMic( "denied-device" ), { name: "NotAllowedError" } );
 assert.equal( requests.length, 1, "Permission denial must not open another device" );
 console.log( "Microphone capture: AGC off for speech, meters and device fallback; permission denial is retained. No hardware used." );
+
+const { createLevelMeter } = await import( "../src/client/level-meter.js" );
+stream.getAudioTracks = () => [ { label: "Meter input fixture", getSettings: () => ( { autoGainControl: false, deviceId: "private-input-id" } ) } ];
+globalThis.AudioContext = class {
+	sampleRate = 48000;
+	destination = {};
+	audioWorklet = { addModule: async () => {} };
+	createMediaStreamSource() { return { connect() {} }; }
+	createGain() { return { gain: {}, connect() {} }; }
+	async close() {}
+};
+globalThis.AudioWorkletNode = class { port = {}; connect() {} };
+let inputDiagnostic;
+const meter = createLevelMeter( { onInput: input => { inputDiagnostic = input; } } );
+await meter.start( "meter-device" );
+assert.equal( inputDiagnostic.input, "Meter input fixture" );
+assert.equal( inputDiagnostic.applied.autoGainControl, false );
+assert.equal( JSON.stringify( inputDiagnostic ).includes( "private-input-id" ), false );
+await meter.stop();
+console.log( "Meter-only checks report actual input processing without opening an extra capture stream." );

@@ -6246,7 +6246,7 @@ let soundCheck = false;
 let preparationStatus = { meter: { active: false }, test: { state: "idle" } };
 let peakHold = { db: -Infinity, at: 0 };
 let clipAt = 0;
-const levelMeter = createLevelMeter( { onLevel: showLevel } );
+const levelMeter = createLevelMeter( { onLevel: showLevel, onInput: input => { sessionDiagnostics.input( input ); renderSessionDiagnostics(); } } );
 const meterEl = document.createElement( "div" );
 meterEl.id = "level-meter";
 meterEl.className = "hidden";
