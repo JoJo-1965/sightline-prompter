@@ -1,5 +1,14 @@
 # Feature-matrix review record
 
+## Product-demo roadmap proposal — no current feature impact
+
+Added a phased Demo mode track after the core release stabilises: OBS-based
+capture/event logging, editable presentation effects, then script-directed
+production. Native recording and framework migration are separate decisions.
+This is proposed work with no committed delivery version/date. The RC14
+275-row reference and frozen packages remain unchanged; no app, companion,
+website or Marketplace publication is part of this roadmap edit.
+
 ## 12 November 2026 — RC14 controller/API/MCP consistency
 
 Reviewed existing mode, display, pad/operator, companion and local MCP rows.

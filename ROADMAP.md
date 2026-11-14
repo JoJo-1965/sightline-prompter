@@ -161,6 +161,34 @@ already exist in 1.2.0; acoustic reliability still needs the real audio tests.
 | Framing | Gather feedback on target/crop consistency, movement advice and native toolbar stacking on real multi-screen setups | Camera/projector tests across Windows, Mac and Linux; preserve manual fallback |
 | Documentation | Keep current screenshots, topic-based notes, samples, feature grid and JL copy in the same deployment review | Versioned source, checked links and exported-file consistency |
 
+## After the core release: product demos and Demo mode
+
+**Proposed optional feature track after 2.0 stabilises.** The current 1.3 RC
+family remains the release/UAT priority; a 2.0 public version is still a
+separate sign-off decision. Recording reliability, accessibility and command
+onboarding retain priority when operator feedback shows a blocker. Demo mode
+can then be the next feature exploration, ahead of a framework migration.
+Choose its exact 2.x release after a bounded proof of concept; no date or
+delivery version is promised here.
+
+Keep the capture/event/effects engine modular while sharing Sightline's
+scripts, takes, recording state, edit-pack clock, OBS, API/MCP and existing
+controller families. It belongs in the Sightline workflow; a separate public
+product or repository is an implementation decision after the prototype.
+
+| Phase | Proposed scope | Evidence before expanding |
+| --- | --- | --- |
+| 1 · Capture and event log | Use OBS for the screen/window recording. Collect synchronised cursor positions, clicks and opt-in shortcut events, with source bounds and display scaling. Export them alongside the script, sections, takes and production cues. | A short real demo retains a clean original recording and a correctly aligned event log through pause/resume, window movement and display scaling. Event timing must use the recording clock, not live speech-word estimates. Script/guide exclusion must be verified on the chosen capture route. |
+| 2 · Presentation effects | Preview and render cursor highlights, click rings, shortcut labels, smooth zooms and pans from the recorded events. Keep effects editable and preserve the original full-frame video. | The operator can adjust or remove a zoom, avoid rapid mouse-follow movement and regenerate the result without recording again. Check text legibility, crop limits, timing and render output. Live highlighting is a separate optional presentation choice. |
+| 3 · Script-directed demos | Associate authored sections and production cues with zoom/highlight targets and graphic inserts. Let a production agent propose an edit using the event log and take choices. | Script, gesture/action and recorded target agree; a reviewed edit plan can be revised before export. Existing scripts, action IDs and profiles retain their meaning; add useful functions within the existing controller groups. |
+
+Start with a Windows proof of concept using one real product demonstration.
+Broader platform/input permissions and performance need their own acceptance.
+Built-in screen recording can follow if the OBS-based workflow demonstrates
+demand; it is not a dependency for the first useful event-log handover.
+This plan does not add screen recording, mouse effects or automatic demo
+editing to the current RC, feature grid, downloads or public product claims.
+
 ## Later: connections and platform delivery
 
 | Topic | Scope and dependencies |
@@ -172,11 +200,13 @@ already exist in 1.2.0; acoustic reliability still needs the real audio tests.
 | Privacy and diagnostics | Improve opt-in diagnostics without collecting scripts, recordings or secrets by default |
 | Support | Consider a supporters wall when useful, respecting visibility choices. Voluntary support does not gate app features |
 
-## Explore for Sightline 2.0: platform and commercial model
+## Longer-term exploration: platform and commercial model
 
 Saved at Joanne's request, 8 November 2026. These are separate research
 questions, with no commitment to migrate, introduce charges or change licensing.
-They do not change RC5's scope or interrupt its UAT and release work.
+They do not gate the current candidate's UAT or a possible 2.0 public release.
+Calling the current product milestone 2.0 would not commit it to a Rust port,
+new licence or paid edition.
 
 | Topic | Exploration and decision criteria |
 | --- | --- |
@@ -203,7 +233,8 @@ See [MIT permissions](https://choosealicense.com/licenses/mit/), the
 - Right-to-left scripts and translated interface packs remain on hold. English
   directives and command words are the current reference.
 - General production video recording, automatic finished-video editing and a
-  browser edition are not current Sightline features.
+  browser edition are not current Sightline features. The optional Demo mode
+  track above is a future proposal, not a delivered capture/editing capability.
 - Face identity, gaze correction, automatic projector-window discovery and
   automatic fitting of the head guide to an arbitrary window are not provided.
 - Future paid plugin editions are a separate product/licensing decision.
