@@ -17,6 +17,10 @@ then camera/narration over playback. Pass-specific originals, stable step IDs
 and source-to-edit mappings keep separate retakes usable. The first proof of
 concept covers data/manual handover; linked playback/edit coordination remains
 within the larger proposed module. Value/effort and queue position are unchanged.
+Added optional scripted Pass A sources: a reviewed Playwright CLI browser flow
+or a desktop automation adapter. Runner step/event logs feed the same proposed
+contract, with explicit cursor rendering and coordinate mapping. This is a
+future integration, not existing Sightline automation or a bundled dependency.
 This is proposed work with no committed delivery version/date. The RC14
 275-row reference and frozen packages remain unchanged; no app, companion,
 website or Marketplace publication is part of this roadmap edit.

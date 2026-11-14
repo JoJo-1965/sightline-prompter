@@ -246,6 +246,40 @@ automatic edit-timeline coordination belong to the complete **★★/L** Demo mo
 after that foundation is proven. This does not move the item ahead of the
 recording reliability, onboarding and smaller ready improvements above it.
 
+### Optional scripted demonstration pass
+
+Pass A can be performed manually, driven by a saved Playwright browser script,
+or driven by a desktop automation adapter when the product is a native app.
+The runner is an optional external component; Sightline coordinates recording,
+step references and the handover. It does not need to become a general-purpose
+browser or desktop automation framework.
+
+For a browser demo, record an initial flow with Playwright codegen, review the
+generated locators and run the saved script through the CLI in a visible
+browser. Use stable element targets and readiness checks, prepared demo data,
+deliberate typing/mouse movement and pauses that make each action readable.
+Repeat a named step or the full demo and retain only reviewed successful takes.
+See [Playwright codegen](https://playwright.dev/docs/codegen),
+[actions](https://playwright.dev/docs/input) and
+[video recording](https://playwright.dev/docs/videos).
+
+Use OBS/window capture for the browser-master route, with Playwright's own
+video as an alternative browser-only source where appropriate. Validate the
+chosen video dimensions, cursor presentation and completed output files.
+The automated runner should emit step IDs, actual start/end times, action
+results, pointer/target positions and shortcut events into the same demo-event
+contract as manual capture. Do not rely on a desktop cursor sampler to observe
+all programmatic browser actions. Render the intended cursor/click effects
+deliberately, and map browser-viewport coordinates to the recorded source.
+
+Desktop automation follows the same step/event contract, using application/UI
+targets where available; raw screen coordinates are a fallback requiring
+controlled window placement and scaling. Scripted input is optional and never
+replaces manual recording. A first browser proof of concept can cover one
+repeatable product flow; universal desktop replay and automatic authoring stay
+outside that bounded **★★/M** capture prototype. The complete integration stays
+**★★/L**, in the same queue position already recorded above.
+
 ## Later: connections and platform delivery
 
 | Topic | Scope and dependencies |
