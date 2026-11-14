@@ -11,6 +11,19 @@ Updated 12 November 2026. Released baseline: **Sightline 1.2.0** and
 This is the current plan. [Earlier plans](docs/ROADMAP-HISTORY.md) are archived;
 their RC labels and old version buckets do not describe the current release.
 
+## Priority and size rules
+
+Order proposed development by **value first, then effort**. These are the
+existing rules, restored from the archived roadmap; release numbers do not
+determine priority.
+
+- **Value:** ★★★ changes recording day; ★★ clearly better; ★ nice to have.
+- **Size:** S is about a person's day; M a few days; L a week or more.
+  These are relative effort classes, not delivery dates or AI-time promises.
+- Within a value band, ready S work precedes M, then L. Dependencies and
+  release-blocking defects still govern what can proceed. Completed features
+  awaiting UAT are acceptance work, not a fresh development backlog.
+
 ## Published on Elgato Marketplace
 
 - [x] **9 November 2026: Stream Deck plugin 0.2 published.**
@@ -165,11 +178,23 @@ already exist in 1.2.0; acoustic reliability still needs the real audio tests.
 
 **Proposed optional feature track after 2.0 stabilises.** The current 1.3 RC
 family remains the release/UAT priority; a 2.0 public version is still a
-separate sign-off decision. Recording reliability, accessibility and command
-onboarding retain priority when operator feedback shows a blocker. Demo mode
-can then be the next feature exploration, ahead of a framework migration.
-Choose its exact 2.x release after a bounded proof of concept; no date or
-delivery version is promised here.
+separate sign-off decision. This is a **★★ value / L size** enhancement:
+clearly useful for product demos, with substantial capture, input-event and
+rendering work. The first OBS/event-log proof of concept is **★★ / M**.
+These are proposed effort/value assessments, not a promised v2.1 allocation.
+
+| Work item | Value | Size | Priority and sequence |
+| --- | --- | --- | --- |
+| Demo capture and event-log proof of concept | ★★ | M | After core recording/Voice reliability, accessible command onboarding and the queued recording-timing/sync work. It joins the ready ★★/M band after higher-value work and ready ★★/S improvements. Validate this before committing the full module. |
+| Complete Demo mode: highlights, shortcuts, zoom/pan and script-directed production | ★★ | L | After the proof of concept and remaining ready ★★/S–M work; before ★ nice-to-have enhancements. A successful prototype justifies continuing, not automatically jumping the queue. |
+
+In practical sequence: **core reliability and release acceptance → command
+onboarding/training and recording/edit-pack accuracy → smaller ready ★★
+improvements → Demo proof of concept → complete Demo mode → ★ extras**.
+The prototype may be grouped with other ★★/M work once its prerequisites are
+ready. Framework migration remains a separate research decision with no
+automatic priority over this feature. Select the delivery version after the
+prototype and queue review; no date or release version is committed here.
 
 Keep the capture/event/effects engine modular while sharing Sightline's
 scripts, takes, recording state, edit-pack clock, OBS, API/MCP and existing

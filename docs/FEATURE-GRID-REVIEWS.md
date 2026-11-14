@@ -5,6 +5,9 @@
 Added a phased Demo mode track after the core release stabilises: OBS-based
 capture/event logging, editable presentation effects, then script-directed
 production. Native recording and framework migration are separate decisions.
+Restored the existing value-first/effort-second classification: proposed ★★/L
+for the complete module and ★★/M for the first proof of concept, with explicit
+ordering behind core reliability/onboarding and smaller ready ★★ work.
 This is proposed work with no committed delivery version/date. The RC14
 275-row reference and frozen packages remain unchanged; no app, companion,
 website or Marketplace publication is part of this roadmap edit.
