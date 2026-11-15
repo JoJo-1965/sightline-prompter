@@ -37,6 +37,7 @@ export function helpTabs( settings, notes = false ) {
 	const display = { ...get( "Window" ), keys: get( "Window" ).keys.filter( ( [ combos ] ) => !guideKeys.has( combos[0] ) && !( combos[0] === "Ctrl+Shift+P" && settings.padEnabled === false ) && !( combos[0] === "Ctrl+Shift+D" && settings.microphoneEnabled === false ) ) };
 	const readingSections = [ reading ];
 	readingSections.push( section( "Prepare a session", [
+		[ "Toolbar and session status", "When the toolbar hides, section and recorder controls move to the top. They stay put under the pointer; move into the clear top edge to reveal the toolbar. The script keeps its position" ],
 		[ "Voice / Page / Scroll", "Choose a toolbar reading mode while paused; Page has Previous/Next buttons and can page plain paragraphs. Your explicit choice can override a script mode for the open script" ],
 		[ "Clean view / Click-through / On top", "Call-overlay controls on the toolbar. Recover clean chrome using the top-edge Show controls tab or Escape; global Ctrl+Shift+X off also restores controls" ],
 		[ "Ctrl+E > Auto format…", "Preview plain-text paragraphs/sections and optional starter cues/checks/pace; no recorder or forced stop is added. Apply changes the editor; Undo and Save apply" ],

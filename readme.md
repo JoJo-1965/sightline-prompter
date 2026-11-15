@@ -1,6 +1,6 @@
 # Sightline Prompter
 
-> **Development preview: 1.3.0 RC15, documentation revision 31.**
+> **Development preview: 1.3.0 RC16, documentation revision 32.**
 > The public download below is stable 1.2.0. This candidate adds optional
 > [post-record audio review](docs/guide/19-post-record-review.md) and a
 > [rerunnable guided tour](docs/guide/20-guided-tour.md). Read the
@@ -155,6 +155,14 @@ on your own setup. OBS-scene calibration is a sampled preview, not the encoder o
 · [Roadmap](ROADMAP.md)
 
 ## Change log
+
+### 1.3.0 RC16 — toolbar and persistent status alignment
+
+The section/recorder row moves to the top when the toolbar hides and returns
+below it when shown. Recorder buttons stay put under the pointer. Review text
+keeps its position and clearance through hiding, resize and reveal. Includes
+RC15; existing settings, scripts and device profiles remain compatible.
+See [RC16 notes and checks](docs/RELEASE-1.3.0.md#rc16).
 
 ### 1.3.0 RC15 — recording evidence and useful setup
 

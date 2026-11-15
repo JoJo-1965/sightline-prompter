@@ -1,11 +1,11 @@
 # Sightline Prompter feature grid
 
-**Review basis: Sightline 1.3.0 RC15 preview, documentation revision 31, 14 November 2026.**
-**Build version:** `1.3.0-rc.15` · **Publication status:** Preview
+**Review basis: Sightline 1.3.0 RC16 preview, documentation revision 32, 15 November 2026.**
+**Build version:** `1.3.0-rc.16` · **Publication status:** Preview
 
 **Maintained source:** [Feature grid](https://github.com/JoJo-1965/sightline-prompter/blob/codex/pointing-production-cues/docs/FEATURE-GRID.md)
 
-This grid describes the preview built from `96b9593`, with the RC15 recording/setup batch, with companion Stream
+This grid describes the preview built from `96b9593`, with the RC16 toolbar position correction, with companion Stream
 Deck plugin **0.2.1.7** candidate. It includes stable 1.2.0 features plus the explicitly labelled RC additions. The build manifest also records the packaging/documentation
 snapshot. The public app release remains **1.2.0**; this document
 does not certify an individual recording setup.
@@ -91,7 +91,7 @@ Reference: [Scrolling and voice](guide/03-scrolling-and-voice.md) and [Recording
 | Voice following | Optional | Advances through the script as recognised speech matches the words being read. | Requires microphone access and a configured local or online speech engine. |
 | Page and talking-point mode | Included | Notes/Page displays talking points divided by headings, explicit page breaks or plain paragraphs in unstructured scripts. Toolbar Previous/Next disable at the ends. | Pages advance through navigation controls rather than continuous speech alignment. |
 | Start, pause and resume | Included | Toolbar, keyboard, voice and enabled remote controls. | Recorder behaviour is separately configured in the OBS section. |
-| Current-section status | Included | Yellow section/total pill on the persistent recorder status row. | Explicitly paged Notes shows page/total. Follows script navigation and retakes, including when the toolbar hides. |
+| Current-section status | Included | Yellow section/total pill on the persistent recorder row; RC16 docks that row near the top while the toolbar hides. | Explicitly paged Notes shows page/total. Follows navigation and retakes. Toolbar visibility does not move the reading text. |
 | On air reading view | Included | A separate On air state changes the operator/reading presentation and configured backing. | On air describes the prompter view; use the confirmed recording pill to check the recorder. |
 | Restart and return to top | Included | Return to the beginning; reset can also restore normal pace and clear the pacing clock. | Returning to top and starting a fresh timed run are distinct actions. |
 | Section navigation | Included | Previous, next and numbered section jumps; section retakes. RC5 adds an optional Voice-only Start from section heading preference for a spoken lead-in. | Off by default; first body line remains the default. Headings retain their section identity for editorial trimming; no automatic verified cut boundary. |
@@ -210,7 +210,7 @@ Reference: [Layout and display](guide/04-layout-and-display.md) and [Remotes and
 | Click-through | Optional | Toolbar On/Off passes script clicks to the content beneath while toolbar, session actions and recovery controls accept input. Editing retains input. | Ctrl+Shift+X toggles globally; turning it off restores clean-view controls. Uses the existing saved preference. |
 | Clean call overlay | Optional | RC13: transient Clean view hides prompter chrome and the native head guide, preserving text appearance, reading position, guide reference and recorder state. | Hover the small top-edge Show controls tab, use Escape while focused, or turn click-through off globally to recover. Clean view starts off on launch; shared pad/phone/mapping/API action; companion 0.2.1.7 Display key. MCP uses explicit on/off. |
 | Operator window | Optional | Separate upright controls and script/session status while the reading window is mirrored; RC14 adds three reading modes and shared Clean view/Click-through/On top controls. | A second monitor is useful but not required. |
-| Toolbar hiding | Included | Toolbar retreats when the pointer moves away; faster distance-based hiding is included in 1.2.0. | Keyboard focus keeps controls available while they are in use. |
+| Toolbar hiding | Included | RC16: the persistent section/recorder row docks near the top while the toolbar hides and returns below it on reveal. Buttons keep their position and visible pointer on hover; the script stays in place. | Pinned controls and quick editing retain toolbar clearance. Clean view still hides session controls. Review notes retain clearance after a hidden resize. |
 | Pointer visibility | Included | Mouse pointer stays visible when the toolbar hides. | Click-through remains an independent preference. |
 | Utility windows | Included | Separate Settings, help and command windows, with movable positioning. | Window stacking must still be checked in the user's chosen fullscreen arrangement. |
 | Capture protection | Limited | Request that supported capture paths exclude Sightline utility/reading windows. | Platform, capture method and compositor determine the result; verify the actual recording. |

@@ -1,5 +1,14 @@
 # Feature-matrix review record
 
+## 15 November 2026 — RC16 toolbar/session-row correction
+
+Reviewed Toolbar hiding and Current-section status: top docking while hidden,
+full-height clearance on reveal, stable pointer access and review text position.
+Native checks cover four widths, hidden resize, quick edit, pin and Clean view.
+No new capability, controller action or permission: 276 rows remain. Layout
+help, cumulative notes, screenshots and the JL preview reference are updated
+for the new candidate. RC15 remains frozen; no stable/live publication implied.
+
 ## RC15 acceptance clarification — no capability change
 
 The existing 22-section production recording and recorded reliability review

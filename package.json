@@ -1,9 +1,9 @@
 {
 	"name": "sightline-prompter",
 	"productName": "Sightline Prompter",
-	"version": "1.3.0-rc.15",
-	"documentationRevision": 31,
-	"releaseDate": "2026-11-14",
+	"version": "1.3.0-rc.16",
+	"documentationRevision": 32,
+	"releaseDate": "2026-11-15",
 	"description": "Sightline Prompter",
 	"main": "src/main.js",
 	"type": "module",
@@ -41,7 +41,8 @@
 		"test:recorded-slate": "node scripts/recorded-slate.test.mjs",
 		"test:mcp": "node scripts/build-mcp.mjs && node scripts/mcp.test.mjs",
 		"test:microphone-gain": "node scripts/microphone-gain.test.mjs",
-		"test:controller-parity": "node scripts/controller-parity.test.mjs && node scripts/controller-parity-app.test.mjs"
+		"test:controller-parity": "node scripts/controller-parity.test.mjs && node scripts/controller-parity-app.test.mjs",
+		"test:session-toolbar": "node scripts/session-toolbar-app.test.mjs"
 	},
 	"author": "Joanne Lockwood (SEE Change Happen Ltd)",
 	"contributors": [

@@ -419,9 +419,15 @@ hud.append( sessionControls );
 // Review must leave enough scrollable space above the opening notes to clear
 // the fixed session controls, including when that row wraps on a small screen.
 // Delivery removes this space inside the same note/reading-line transition.
+function updateReviewControlsInset() {
+	const height = sessionControls.offsetHeight;
+	// Reserve the revealed toolbar's space even while hidden, so revealing it
+	// or resizing a hidden toolbar cannot move text or cover opening notes.
+	const top = Math.max( 50, ( uiElement( "control-bar" )?.offsetHeight ?? 40 ) + 8 );
+	document.body.style.setProperty( "--review-controls-bottom", `${ height ? Math.ceil( top + height ) : 0 }px` );
+}
 new ResizeObserver( () => {
-	const bottom = sessionControls.offsetHeight ? sessionControls.offsetTop + sessionControls.offsetHeight : 0;
-	document.body.style.setProperty( "--review-controls-bottom", `${ Math.ceil( bottom ) }px` );
+	updateReviewControlsInset();
 	scheduleMeasure();
 } ).observe( sessionControls );
 
@@ -4083,6 +4089,7 @@ function refreshControlsVisibility() {
 
 function showControls( event ) {
 	if ( overlayChrome?.active ) return;
+	if ( event?.type === "mousemove" && document.body.classList.contains( "controls-hidden" ) && event.target?.closest?.( "#session-controls" ) ) return;
 	const focused = controlBar?.contains( document.activeElement ) && document.activeElement?.matches( ":focus-visible" );
 	const farAway = event?.type === "mousemove" && event.clientY > ( controlBar?.getBoundingClientRect().bottom ?? 48 ) + window.innerHeight * 0.1;
 	if ( farAway && !settings.controlsPinned && !panelOpen() && !focused ) {
@@ -4102,8 +4109,7 @@ controlBar?.addEventListener( "mouseleave", refreshControlsVisibility );
 if ( controlBar && window.ResizeObserver ) {
 	new ResizeObserver( () => {
 		document.body.style.setProperty( "--bar-h", `${ controlBar.offsetHeight }px` );
-		const bottom = sessionControls.offsetHeight ? sessionControls.offsetTop + sessionControls.offsetHeight : 0;
-		document.body.style.setProperty( "--review-controls-bottom", `${ Math.ceil( bottom ) }px` );
+		updateReviewControlsInset();
 	} ).observe( controlBar );
 }
 

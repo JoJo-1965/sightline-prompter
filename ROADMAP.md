@@ -1,6 +1,6 @@
 # Sightline Prompter roadmap
 
-Updated 14 November 2026. **Current candidate: 1.3.0 RC15 + Stream Deck 0.2.1.7.**
+Updated 15 November 2026. **Current candidate: 1.3.0 RC16 + Stream Deck 0.2.1.7.**
 Released baseline: **Sightline 1.2.0 + Stream Deck 0.2.0**. The plugin is on
 Elgato Marketplace; the public 2.0 naming decision remains separate.
 
@@ -71,7 +71,7 @@ feature backlog; see [mapping and migration](docs/CONTROLLER-COMPATIBILITY.md).
 - [x] Review the existing 22-section production recording and its logs. The
   recorded Retake/tracking issues informed the earlier corrections; see the
   [recorded reliability review](docs/uat/VOICE-RELIABILITY-2026-11-12.md).
-- [ ] Run a short RC15 regression recording: Voice start/resume, section
+- [ ] Run the short current-RC regression checks: Voice start/resume, section
   changes, Retake, quick edits, OBS outputs and take/file association. Use the
   existing production recording as evidence; a new full performance is not
   required solely to repeat release acceptance.
@@ -84,7 +84,7 @@ feature backlog; see [mapping and migration](docs/CONTROLLER-COMPATIBILITY.md).
 - [ ] Choose the public version and obtain publication sign-off. Marketplace
   submission of the newer companion is a separate release step.
 
-See [RC15 UAT](docs/uat/1.3.0-RC15.md) and the
+See [RC16 UAT](docs/uat/1.3.0-RC16.md) and the
 [detailed acceptance register](#candidate-acceptance-register).
 
 ## Recording and onboarding detail
@@ -305,6 +305,10 @@ See [grouped release notes](docs/RELEASE-1.2.0.md) and the
 [current feature grid](docs/FEATURE-GRID.md) for exact behaviour and limits.
 
 ### In 1.3.0 preview
+
+**RC16:** persistent session controls follow toolbar visibility, with stable
+pointer access, script position and review-note clearance after hidden resize.
+Includes RC15; [short regression check](docs/uat/1.3.0-RC16.md).
 
 **RC13:** editor Insert templates, plain-text Auto format, three visible reading
 modes and recoverable Clean view, Click-through and On top toolbar controls.

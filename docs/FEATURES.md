@@ -1,5 +1,9 @@
 # Sightline Prompter features
 
+**RC16:** the persistent section/recorder row docks at the top while the toolbar
+hides, returning below it on reveal. Hovering recorder controls preserves their
+position and pointer; review text keeps its place. Existing capabilities remain.
+
 **RC15:** explicit take/file evidence, isolated recorded-word comparison and
 timing warnings, profile-correct MCP configuration/checks and session-only
 microphone/command/OBS diagnostics. Existing controller contracts remain.

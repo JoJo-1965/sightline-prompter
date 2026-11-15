@@ -1,8 +1,18 @@
 # Layout and display
 
-This guide describes Sightline 1.2.0 and is also bundled with the installer.
+This guide includes the RC16 preview corrections alongside the released layout controls.
 
 ## Toolbar and live tools
+
+In RC16, hiding the main toolbar moves the section pill and recorder row up to
+the top edge. Revealing the toolbar places that row below it. The script stays
+in place during the transition. Move the pointer onto a recorder button to use
+it without moving the row; move into the clear top edge to reveal the toolbar.
+Pinned controls stay open, and Clean view still hides the session row.
+
+![Session controls below the shown toolbar](images/toolbar-shown-rc16.png)
+
+![Session controls at the top while the toolbar is hidden](images/toolbar-hidden-rc16.png)
 
 **Edit**, immediately left of **Tools**, edits the current script; samples
 open as read-only source. The toolbar has separate left/right and top/bottom
@@ -78,8 +88,8 @@ Long notes remain silent regardless of their display settings.
 
 **Reading > Screens and mirroring** uses named Window/mirroring and Eye-line
 strip choices. Set the monitor, always on top, toolbar visibility, click-through
-and capture preference there. The mouse pointer remains visible when the
-toolbar hides.
+and capture preference there. The mouse pointer remains visible over interactive session
+controls while the toolbar hides.
 
 ## Mirroring
 
