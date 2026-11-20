@@ -1,4 +1,5 @@
-# Installers for Windows, macOS (Apple silicon and Intel) and Linux.
+# Installers for Windows, macOS (Apple silicon) and Linux. The Intel Mac build was dropped on 20 Nov 2026 (Joanne):
+# macOS runner minutes count ten times against the GitHub Actions allowance.
 # Runs the tests, then builds with electron-builder (package.json "build").
 # A push of a version tag (v1.0.0) also gathers the installers into a DRAFT
 # release, which stays hidden until it is published by hand.
@@ -23,9 +24,6 @@ jobs:
             files: dist/*.exe
           - os: macos-latest
             label: macos-apple-silicon
-            files: dist/*.dmg
-          - os: macos-15-intel
-            label: macos-intel
             files: dist/*.dmg
           - os: ubuntu-latest
             label: linux
